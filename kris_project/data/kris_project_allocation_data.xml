@@ -30,6 +30,7 @@
             <field name="item_id" ref="allocation_item_central"/>
             <field name="sequence">10</field>
             <field name="allocation_pct">35.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89"/>
         </record>
         <record id="allocation_template_line_faculty" model="kris.project.allocation.template.line">
             <field name="template_id" ref="allocation_template_standard"/>
@@ -48,6 +49,7 @@
             <field name="item_id" ref="allocation_item_kris"/>
             <field name="sequence">40</field>
             <field name="allocation_pct">10.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_99"/>
         </record>
 
     </data>

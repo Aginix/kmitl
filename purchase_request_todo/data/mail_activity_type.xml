@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- UC3: notify the requester when the PR (พ.1) changes status (approved/rejected) -->
+    <record id="mail_activity_pr_status_fyi" model="mail.activity.type">
+        <field name="name">Purchase request status update</field>
+        <field name="summary">The purchase request changed status</field>
+        <field name="todo_category">acknowledgement</field>
+        <field name="res_model">purchase.request.approval</field>
+        <field name="icon">fa-info-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

@@ -26,32 +26,41 @@
                 <!-- Profile Info tab -->
                 <page string="Profile Info" name="profile_info">
                     <group>
-                        <group string="Thai Name">
+                        <group name="thai_name" string="Thai Name">
                             <field name="applicant_title" />
                             <field name="first_name" />
                             <field name="middle_name" />
                             <field name="last_name" />
                         </group>
-                        <group string="English Name">
+                        <group name="english_name" string="English Name">
                             <field name="first_name_en" />
                             <field name="middle_name_en" />
                             <field name="last_name_en" />
                         </group>
                     </group>
                     <group>
-                        <group string="Personal Info">
+                        <group name="personal_info" string="Personal Info">
                             <field name="identification_id" />
                             <field name="birthday" />
                             <field name="gender" />
                             <field name="nationality_id" />
                             <field name="marital" />
                         </group>
+                        <group
+                            name="spouse" string="Spouse"
+                            attrs="{'invisible': [('marital', '!=', 'married')]}"
+                        >
+                            <field name="spouse_prefix" />
+                            <field name="spouse_first_name" />
+                            <field name="spouse_middle_name" />
+                            <field name="spouse_last_name" />
+                        </group>
                     </group>
                 </page>
                 <!-- Contact & Address tab -->
                 <page string="Contact &amp; Address" name="contact_address">
                     <group>
-                        <group string="Registered Address">
+                        <group name="registered_address" string="Registered Address">
                             <field name="address_street" />
                             <field name="address_zip_id" />
                             <field name="address_city" />
@@ -59,7 +68,7 @@
                             <field name="address_zip" />
                             <field name="address_country_id" />
                         </group>
-                        <group string="Current Address">
+                        <group name="current_address" string="Current Address">
                             <field name="current_street" />
                             <field name="current_zip_id" />
                             <field name="current_city" />
@@ -67,14 +76,14 @@
                             <field name="current_zip" />
                             <field name="current_country_id" />
                         </group>
-                        <group string="Emergency Contact">
+                        <group name="emergency_contact" string="Emergency Contact">
                             <field name="emergency_contact_name" />
                             <field name="emergency_contact_relation" />
                             <field name="emergency_contact_phone" />
                             <field name="emergency_contact_email" />
                         </group>
                     </group>
-                    <group string="Health">
+                    <group name="health" string="Health">
                         <field name="congenital_disease" />
                     </group>
                 </page>
@@ -123,7 +132,7 @@
                     <field name="job_role" invisible="1" />
                     <group>
                         <group
-                            string="Academic"
+                            name="academic" string="Academic"
                             attrs="{'invisible': [('job_role', '!=', 'academic')]}"
                         >
                             <field name="academic_standing_id" />
@@ -136,7 +145,7 @@
                             <field name="academic_position_filename" invisible="1" />
                         </group>
                         <group
-                            string="OCSC Exam"
+                            name="ocsc_exam" string="OCSC Exam"
                             attrs="{'invisible': [('job_role', '!=', 'support')]}"
                         >
                             <field name="has_ocsc_exam" />
@@ -162,7 +171,7 @@
                     </group>
                     <group>
                         <group
-                            string="English Test"
+                            name="english_test" string="English Test"
                             attrs="{'invisible': [('job_role', '!=', 'academic')]}"
                         >
                             <field name="english_test_type" />
@@ -176,7 +185,7 @@
                             <field name="english_score_filename" invisible="1" />
                         </group>
                         <group
-                            string="Skills"
+                            name="skills" string="Skills"
                             attrs="{'invisible': [('job_role', '!=', 'support')]}"
                         >
                             <field name="foreign_language_skills" />
@@ -189,7 +198,7 @@
                 <!-- Documents tab -->
                 <page string="Documents" name="documents">
                     <group>
-                        <group string="Personal Documents">
+                        <group name="personal_documents" string="Personal Documents">
                             <field name="id_card_file" filename="id_card_filename" />
                             <field name="id_card_filename" invisible="1" />
                             <field
@@ -208,7 +217,7 @@
                             <field name="military_certificate_filename" invisible="1" />
                         </group>
                         <group
-                            string="Work Documents"
+                            name="work_documents" string="Work Documents"
                             attrs="{'invisible': [('job_role', '!=', 'academic')]}"
                         >
                             <field name="resume_file" filename="resume_filename" />
@@ -221,7 +230,7 @@
                         </group>
                     </group>
                     <group>
-                        <group string="Application Documents">
+                        <group name="application_documents" string="Application Documents">
                             <field name="exam_fee_file" filename="exam_fee_filename" />
                             <field name="exam_fee_filename" invisible="1" />
                             <field

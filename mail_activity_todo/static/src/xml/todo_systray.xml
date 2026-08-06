@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="mail_activity_todo.TodoSystray" owl="1">
+        <Dropdown position="'bottom-end'" beforeOpen.bind="fetchData">
+            <t t-set-slot="toggler">
+                <span class="o_mail_activity_todo_systray_toggle">
+                    <i class="fa fa-fw fa-check-square-o" role="img" aria-label="Todos" title="Todos"/>
+                    <t t-if="state.totalCount > 0">
+                        <span class="badge" t-esc="state.totalCount"/>
+                    </t>
+                </span>
+            </t>
+            <div class="o_mail_activity_todo_systray" style="min-width: 360px;">
+                <div class="o_mail_activity_todo_systray_header d-flex align-items-center px-3 py-2 border-bottom">
+                    <span class="fw-bold">Todos</span>
+                    <span class="ms-auto badge bg-primary text-white" t-if="state.totalCount > 0" t-esc="state.totalCount"/>
+                </div>
+                <t t-if="state.groups.length === 0">
+                    <div class="text-muted text-center py-4">
+                        <i class="fa fa-check-circle fa-2x mb-2 d-block"/>
+                        <span>No pending todos</span>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="o_mail_activity_todo_systray_items" style="max-height: 420px; overflow-y: auto;">
+                        <t t-foreach="state.groups" t-as="group" t-key="group.model">
+                            <DropdownItem onSelected="() => this.onGroupClick(group)" class="'o_mail_activity_todo_group px-3 py-2'">
+                                <div class="d-flex align-items-center">
+                                    <img t-if="group.icon" t-att-src="group.icon" class="o_mail_activity_todo_group_icon me-2" alt=""/>
+                                    <span class="flex-grow-1 text-truncate fw-semibold" t-esc="group.name"/>
+                                    <span class="badge rounded-pill text-bg-primary ms-2" t-esc="group.total_count"/>
+                                </div>
+                                <div class="small mt-1">
+                                    <span t-if="group.overdue_count" class="text-danger me-2">
+                                        <t t-esc="group.overdue_count"/> Late
+                                    </span>
+                                    <span t-if="group.today_count" class="text-warning me-2">
+                                        <t t-esc="group.today_count"/> Today
+                                    </span>
+                                    <span t-if="group.planned_count" class="text-muted">
+                                        <t t-esc="group.planned_count"/> Upcoming
+                                    </span>
+                                </div>
+                            </DropdownItem>
+                        </t>
+                    </div>
+                    <div class="border-top px-3 py-2 text-center">
+                        <a href="#" class="text-primary" t-on-click.prevent="onViewAllClick">
+                            <i class="fa fa-list me-1"/>View all
+                        </a>
+                    </div>
+                </t>
+            </div>
+        </Dropdown>
+    </t>
+
+</templates>

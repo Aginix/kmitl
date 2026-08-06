@@ -7,8 +7,8 @@
     "depends": [
         "purchase_request_kmitl",
         "purchase_request_budget",
-        "purchase_request_vendor_kmitl",
         "advance_payment",
+        "advance_payment_budget",
     ],
     "data": [
         "views/purchase_request_views.xml",

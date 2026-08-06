@@ -111,8 +111,8 @@ class KrisProjectDashboard(models.Model):
         # --- top_leaders: top 10 by total received amount ---
         leader_amounts = defaultdict(float)
         for receipt in receipts:
-            if receipt.project_id.leader_id:
-                leader_amounts[receipt.project_id.leader_id.name] += receipt.amount
+            if receipt.project_id.manager_id:
+                leader_amounts[receipt.project_id.manager_id.name] += receipt.amount
         top_leaders_list = [
             {"name": n, "amount": a}
             for n, a in sorted(
@@ -126,8 +126,8 @@ class KrisProjectDashboard(models.Model):
         )
         for project in projects:
             department_name = (
-                project.department_id.complete_name
-                if project.department_id
+                project.department_analytic_id.complete_name
+                if project.department_analytic_id
                 else _("(ไม่ระบุ)")
             )
             for line in project.allocation_line_ids:
@@ -151,7 +151,9 @@ class KrisProjectDashboard(models.Model):
         # --- filter_options ---
         categories = self.env["kris.project.category"].search([])
         types = self.env["kris.project.type"].search([])
-        fiscal_years = self.env["account.fiscal.year"].search(
+        # sudo: read access to account.fiscal.year is limited to accounting
+        # groups; KRIS officers/viewers need it only as dashboard filter options.
+        fiscal_years = self.env["account.fiscal.year"].sudo().search(
             [], order="date_from desc"
         )
 

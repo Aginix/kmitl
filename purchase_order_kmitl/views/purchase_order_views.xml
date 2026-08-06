@@ -88,34 +88,9 @@
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <page name="document" string="Attachment">
-                    <field
-                        name="attachment_ids"
-                        context="{'default_res_model': 'purchase.order'}"
-                    >
-                        <tree default_order="sequence">
-                            <field name="sequence" widget="handle" />
-                            <field name="name" string="File Name" required="1" />
-                            <field name="description" />
-                        </tree>
-                        <form>
-                            <sheet>
-                                <group>
-                                    <field
-                                        name="res_model"
-                                        invisible="1"
-                                        readonly="0"
-                                    />
-                                    <field name="res_id" invisible="1" readonly="0" />
-                                    <field name="name" required="1" invisible="1" />
-                                    <field name="datas" filename="name" required="1" />
-                                    <field
-                                        name="description"
-                                        placeholder="Description"
-                                    />
-                                </group>
-                            </sheet>
-                        </form>
-                    </field>
+                    <field name="attachment_ids"
+                           widget="many2many_binary"
+                           context="{'default_res_model': 'purchase.order'}"/>
                 </page>
             </xpath>
 
@@ -143,7 +118,7 @@
                 <attribute name="attrs">{'invisible': ['|', '|', ('state', '!=', 'draft'), ('invoice_plan_ids', '=', []), ('invoice_count', '>', 0)]}</attribute>
             </xpath>
             <xpath expr="/form/sheet/notebook" position="before">
-                <group string="ข้อมูล" name="information_section">
+                <group string="Purchase Details" name="information_section">
                     <group>
                         <field
                             name="account_fiscal_year_id"
@@ -164,7 +139,7 @@
                 <field name="invoice_count" invisible="1" />
 
                 <group
-                    string="งวดงาน"
+                    string="Invoice Plan"
                     name="invoice_plan_section"
                     attrs="{'readonly': [('invoice_count', '>', 0)]}"
                 >
@@ -185,6 +160,7 @@
                 <field name="contract_number" optional="show" />
                 <field name="contract_name" />
                 <field name="contract_type_id" />
+                <field name="department_id" optional="hide"/>
             </field>
 
             <!-- Add work_start after partner_id -->

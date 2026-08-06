@@ -5,20 +5,20 @@
         <field name="model">purchase.guarantee</field>
         <field
             name="inherit_id"
-            ref="l10n_th_gov_purchase_guarantee.view_purchase_guarantee_form"
+            ref="purchase_guarantee_kmitl.view_purchase_guarantee_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//sheet" position="before">
-                <header>
-                    <button
-                        name="action_create_payment"
-                        string="สร้างใบส่งเงิน"
-                        type="object"
-                        class="btn-primary"
-                    />
-                </header>
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="has_active_payment" invisible="1"/>
+                <button
+                    name="action_create_payment"
+                    string="Create Payment"
+                    type="object"
+                    class="btn-primary"
+                    attrs="{'invisible': [('has_active_payment', '=', True)]}"
+                />
             </xpath>
-            <xpath expr="//div[@name='button_box']" position="inside">
+            <xpath expr="//button[@name='action_view_purchase_order']" position="after">
                 <button
                     name="action_view_payments"
                     type="object"

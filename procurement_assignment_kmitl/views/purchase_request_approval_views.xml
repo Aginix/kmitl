@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- PA has no Assigned Officer of its own; it derives from its parent PR
+         (request_id.assigned_to). See docs/adr/0001. -->
+    <record
+        id="view_purchase_request_approval_search_assignment"
+        model="ir.ui.view"
+    >
+        <field name="name">purchase.request.approval.search.assignment</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_search"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='approved']" position="after">
+                <separator />
+                <filter
+                    name="assigned_to_me"
+                    string="Assigned to me"
+                    domain="[('request_id.assigned_to', '=', uid)]"
+                />
+                <filter
+                    name="unassigned"
+                    string="Unassigned"
+                    domain="[('request_id.assigned_to', '=', False)]"
+                />
+            </xpath>
+            <xpath expr="//filter[@name='draft']" position="before">
+                <field name="pr_assigned_to" />
+            </xpath>
+        </field>
+    </record>
+
+    <record
+        id="view_purchase_request_approval_tree_assignment"
+        model="ir.ui.view"
+    >
+        <field name="name">purchase.request.approval.tree.assignment</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_tree"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='requested_by']" position="after">
+                <field
+                    name="pr_assigned_to"
+                    widget="many2one_avatar_user"
+                    optional="hide"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

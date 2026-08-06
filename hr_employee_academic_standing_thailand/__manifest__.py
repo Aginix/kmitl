@@ -1,6 +1,6 @@
 {
     "name": "HR Employee Academic Standing Thailand",
-    "version": "16.0.1.0.4",
+    "version": "16.0.1.0.6",
     "summary": """ HR Employee Academic Standing Thailand Summary """,
     "author": "nopparuts, Aginix Technologies",
     "website": "https://github.com/aginix/kmitl-odoo",

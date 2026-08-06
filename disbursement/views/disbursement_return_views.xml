@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Form: return / re-verification buttons -->
+    <record id="view_disbursement_request_form_return" model="ir.ui.view">
+        <field name="name">disbursement.request.form.return</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_submit']" position="before">
+                <button
+                    name="action_return_open_wizard"
+                    type="object"
+                    string="Return"
+                    class="btn-warning"
+                    groups="disbursement.group_disbursement_officer"
+                    attrs="{'invisible': ['|', ('state', '!=', 'signed'), ('returned_to_source', '=', True)]}"
+                />
+                <button
+                    name="action_resubmit_verification"
+                    type="object"
+                    string="Resubmit to Verification"
+                    class="oe_highlight"
+                    attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('returned_for_edit', '=', False)]}"
+                />
+                <button
+                    name="action_return_verification_open_wizard"
+                    type="object"
+                    string="Return to Verification"
+                    class="btn-warning"
+                    groups="disbursement.group_disbursement_manager"
+                    attrs="{'invisible': [('state', '!=', 'verified')]}"
+                />
+            </xpath>
+            <xpath expr="//header/field[@name='state']" position="after">
+                <field name="returned_for_edit" invisible="1" />
+            </xpath>
+            <!-- Hide the normal Submit for a returned draft; the creator uses
+                 "Resubmit to Verification" instead (which skips the head sign). -->
+            <xpath expr="//header/button[@name='action_submit']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'draft'), ('returned_for_edit', '=', True)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search: returned-to-source / returned-to-verification filters -->
+    <record id="view_disbursement_request_search_return" model="ir.ui.view">
+        <field name="name">disbursement.request.search.return</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='signed']" position="after">
+                <separator />
+                <filter
+                    name="returned_to_source"
+                    string="Returned to Source"
+                    domain="[('returned_to_source', '=', True)]"
+                />
+                <filter
+                    name="returned_to_verification"
+                    string="Returned to Verification"
+                    domain="[('returned_to_verification', '=', True)]"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

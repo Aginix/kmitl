@@ -39,7 +39,7 @@
         <field name="model">purchase.order.change.field</field>
         <field name="arch" type="xml">
             <search>
-                <group expand="1" string="Group By">
+                <group expand="1" name="group_by" string="Group By">
                     <filter
                         string="change_id"
                         name="change_id"

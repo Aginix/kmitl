@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
     <record id="pr_exception_procurement_plan_1" model="exception.rule">
-        <field name="name">มูลค่าของการขอซื้อขอจ้างไม่สามารถเกินแผนจัดซื้อจัดจ้างได้</field>
-        <field name="description">แผนจัดซื้อจัดจ้าง</field>
+        <field name="name">The value of the procurement request cannot exceed the procurement plan.</field>
+        <field name="description">Procurement Plan</field>
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code"><![CDATA[
@@ -13,8 +13,8 @@ if self.use_procurement_plan and self.procurement_plan_id and self.estimated_cos
     </record>
 
     <record id="pr_exception_procurement_plan_budget" model="exception.rule">
-        <field name="name">ข้อมูลการใช้งบประมาณไม่ตรงกับแผนจัดซื้อจัดจ้าง</field>
-        <field name="description">แผนจัดซื้อจัดจ้าง</field>
+        <field name="name">The budget allocation information does not match the procurement plan.</field>
+        <field name="description">Procurement Plan</field>
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code"><![CDATA[

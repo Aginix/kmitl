@@ -1,6 +1,6 @@
 {
     "name": "Purchase Work Acceptance Kmitl",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "summary": """ Purchase Work Acceptance Kmitl Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
@@ -12,6 +12,7 @@
         'base_tier_validation_server_action',
         'base_tier_validation_comment',
         'purchase_work_acceptance_tier_validation',
+        'purchase_work_acceptance_invoice_plan',
         'purchase_request_kmitl',
         'thai_date_utils',
         'l10n_th_amount_to_text',
@@ -28,6 +29,7 @@
         "report/report_committee_acceptance.xml",
         "views/purchase_order_views.xml",
         "views/work_acceptance_views.xml",
+        "views/purchase_invoice_plan_views.xml",
         "views/report_work_acceptance.xml",
         "views/report_committee_acceptance.xml",
     ],

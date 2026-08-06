@@ -1,0 +1,57 @@
+.o_kmitl_aged {
+    height: 100%;
+    overflow: auto;
+
+    // Group the filter controls in a light panel, set apart from the data.
+    .o_kmitl_aged_filterpanel {
+        padding: 0.75rem 0.75rem 0.5rem;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e3e8;
+        border-radius: 0.5rem;
+    }
+
+    .o_kmitl_aged_table_wrap {
+        overflow-x: auto;
+        border: 1px solid #e0e3e8;
+        border-radius: 0.5rem;
+    }
+
+    .o_kmitl_aged_table {
+        th {
+            background-color: #f8f9fa;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        td,
+        th {
+            font-size: 1rem;
+            // Tabular figures keep the amount columns aligned (no digit jitter).
+            font-variant-numeric: tabular-nums;
+        }
+        // Negative amounts in a muted accounting red. The minus sign already
+        // carries the meaning, so colour is only a secondary cue.
+        .o_kmitl_amount_neg {
+            color: #b03030;
+        }
+        .o_kmitl_aged_partner {
+            min-width: 18rem;
+        }
+        .o_kmitl_aged_account td {
+            background-color: #f1f3f5;
+        }
+        .o_kmitl_aged_indent {
+            padding-left: 1.5rem;
+        }
+        .o_kmitl_aged_indent2 {
+            padding-left: 3rem;
+            font-size: 0.9rem;
+        }
+        .o_kmitl_aged_ml td {
+            font-size: 0.9rem;
+        }
+        tfoot td {
+            background-color: #f1f3f5;
+            border-top: 2px solid #d6dae0;
+        }
+    }
+}

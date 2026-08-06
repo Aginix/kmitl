@@ -16,23 +16,23 @@
                                 <field name="title" />
                             </group>
                             <group>
-                                <group string="Thai Name">
+                                <group name="thai_name" string="Thai Name">
                                     <field name="first_name" />
                                     <field name="middle_name" />
                                     <field name="last_name" />
                                 </group>
-                                <group string="English Name">
+                                <group name="english_name" string="English Name">
                                     <field name="first_name_en" />
                                     <field name="middle_name_en" />
                                     <field name="last_name_en" />
                                 </group>
                             </group>
-                            <group string="Contact Info">
+                            <group name="contact_info" string="Contact Info">
                                 <group>
                                     <field name="email" />
                                     <field name="phone" />
                                 </group>
-                                <group string="Registered Address">
+                                <group name="registered_address" string="Registered Address">
                                     <field name="address_street" />
                                     <field name="address_zip_id" />
                                     <field name="address_city" />
@@ -40,7 +40,7 @@
                                     <field name="address_zip" />
                                     <field name="address_country_id" />
                                 </group>
-                                <group string="Current Address">
+                                <group name="current_address" string="Current Address">
                                     <field name="same_as_registered_address" />
                                     <field name="current_street" />
                                     <field name="current_zip_id" />
@@ -59,7 +59,7 @@
                                     <field name="nationality_id" />
                                 </group>
                             </group>
-                            <group string="Family">
+                            <group name="family" string="Family">
                                 <group>
                                     <field name="marital" />
                                 </group>

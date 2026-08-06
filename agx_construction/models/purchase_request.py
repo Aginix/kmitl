@@ -5,8 +5,6 @@ class PurchaseRequest(models.Model):
 
     _inherit = "purchase.request"
 
-    is_construction = fields.Boolean(string="Construction", readonly=True)
-
     project_id = fields.Many2one(
         comodel_name="construction.project",
         string="Construction Project",

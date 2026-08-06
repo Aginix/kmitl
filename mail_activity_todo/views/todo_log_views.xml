@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- ================= Completed Todos (history) ================= -->
+    <record id="view_todo_log_tree" model="ir.ui.view">
+        <field name="name">todo.log.tree</field>
+        <field name="model">todo.log</field>
+        <field name="arch" type="xml">
+            <tree string="Completed Todos" create="false" edit="false">
+                <field name="completed_date" string="Completed on" />
+                <field name="todo_category" />
+                <field name="summary" string="Subject" />
+                <field name="res_name" string="Source" />
+                <field name="res_model_id" string="App" optional="show" />
+                <field name="completed_by" />
+                <field name="user_id" optional="hide" />
+                <field name="date_deadline" optional="hide" />
+                <button
+                    name="action_open_document"
+                    type="object"
+                    string="Open Source"
+                    icon="fa-external-link"
+                    class="btn-link"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_todo_log_search" model="ir.ui.view">
+        <field name="name">todo.log.search</field>
+        <field name="model">todo.log</field>
+        <field name="arch" type="xml">
+            <search string="Completed Todos">
+                <field name="summary" string="Subject" />
+                <field name="res_name" string="Source" />
+                <filter
+                    name="completed_by_me"
+                    string="Completed by me"
+                    domain="[('completed_by', '=', uid)]"
+                />
+                <separator />
+                <filter
+                    name="completed_30d"
+                    string="Last 30 days"
+                    domain="[('completed_date', '&gt;=', (context_today() - relativedelta(days=30)).strftime('%Y-%m-%d'))]"
+                />
+                <group expand="0" name="group_by" string="Group By">
+                    <filter
+                        name="group_category"
+                        string="Category"
+                        context="{'group_by': 'todo_category'}"
+                    />
+                    <filter
+                        name="group_model"
+                        string="Source App"
+                        context="{'group_by': 'res_model_id'}"
+                    />
+                    <filter
+                        name="group_completed_by"
+                        string="Completed by"
+                        context="{'group_by': 'completed_by'}"
+                    />
+                    <filter
+                        name="group_completed_date"
+                        string="Completed on"
+                        context="{'group_by': 'completed_date:week'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_completed_todos" model="ir.actions.act_window">
+        <field name="name">Completed</field>
+        <field name="res_model">todo.log</field>
+        <field name="view_mode">tree</field>
+        <field name="search_view_id" ref="view_todo_log_search" />
+        <field name="context">{'search_default_completed_by_me': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No completed Todos yet</p>
+            <p>Todos you finish are archived here for reference.</p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_todo_completed"
+        name="Completed"
+        parent="menu_my_todos_root"
+        action="action_completed_todos"
+        sequence="2"
+    />
+
+</odoo>

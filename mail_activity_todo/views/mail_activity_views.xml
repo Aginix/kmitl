@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Expose the Todo category on the activity type: an admin sets it once
+         per type, and it auto-fills onto every activity of that type
+         (mail_activity.py::_compute_todo_category). This is the single place
+         the category is configured now that the per-activity picker is gone. -->
+    <record id="mail_activity_type_view_form_todo" model="ir.ui.view">
+        <field name="name">mail.activity.type.form.todo</field>
+        <field name="model">mail.activity.type</field>
+        <field name="inherit_id" ref="mail.mail_activity_type_view_form" />
+        <field name="arch" type="xml">
+            <field name="category" position="after">
+                <field name="todo_category" />
+            </field>
+        </field>
+    </record>
+
+    <!-- ================= Inbox list (L1) ================= -->
+    <record id="view_my_todo_tree" model="ir.ui.view">
+        <field name="name">mail.activity.todo.tree</field>
+        <field name="model">mail.activity</field>
+        <field name="arch" type="xml">
+            <tree
+                string="Todos"
+                create="false"
+                edit="false"
+                decoration-bf="is_read_by_me == False"
+                decoration-muted="is_read_by_me == True"
+                decoration-danger="state == 'overdue' and todo_category == 'execution'"
+                decoration-warning="state == 'today' and todo_category == 'execution'"
+            >
+                <field
+                    name="state"
+                    string="State"
+                    widget="badge"
+                    optional="show"
+                    decoration-danger="state == 'overdue'"
+                    decoration-warning="state == 'today'"
+                />
+                <field name="todo_category" optional="show" />
+                <field name="summary" string="Subject" />
+                <field name="res_name" string="Source" />
+                <field name="res_model_id" string="App" optional="show" />
+                <field name="user_id" optional="hide" />
+                <field name="date_deadline" string="Deadline" />
+                <field name="is_read_by_me" invisible="1" />
+                <button
+                    name="action_open_document"
+                    type="object"
+                    string="Open Source"
+                    icon="fa-external-link"
+                    class="btn-link"
+                />
+                <button
+                    name="action_mark_read"
+                    type="object"
+                    string="Mark as Read"
+                    icon="fa-check"
+                    attrs="{'invisible': ['|', ('todo_category', '=', 'execution'), ('is_read_by_me', '=', True)]}"
+                />
+                <button
+                    name="action_mark_unread"
+                    type="object"
+                    string="Mark as Unread"
+                    icon="fa-undo"
+                    attrs="{'invisible': ['|', ('todo_category', '=', 'execution'), ('is_read_by_me', '=', False)]}"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <!-- ================= Inbox compact form ================= -->
+    <record id="view_my_todo_form" model="ir.ui.view">
+        <field name="name">mail.activity.todo.form</field>
+        <field name="model">mail.activity</field>
+        <field name="arch" type="xml">
+            <form string="Todo" create="false" edit="false">
+                <header>
+                    <button
+                        name="action_open_document"
+                        type="object"
+                        string="Open Source Document"
+                        class="btn-primary"
+                        icon="fa-external-link"
+                    />
+                    <button
+                        name="action_mark_read"
+                        type="object"
+                        string="Mark as Read"
+                        icon="fa-check"
+                        attrs="{'invisible': ['|', ('todo_category', '=', 'execution'), ('is_read_by_me', '=', True)]}"
+                    />
+                    <button
+                        name="action_mark_unread"
+                        type="object"
+                        string="Mark as Unread"
+                        icon="fa-undo"
+                        attrs="{'invisible': ['|', ('todo_category', '=', 'execution'), ('is_read_by_me', '=', False)]}"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="summary" readonly="1" /></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="todo_category" />
+                            <!-- res_model is required by activity_type_id's domain -->
+                            <field name="res_model" invisible="1" />
+                            <field name="activity_type_id" />
+                            <field name="res_name" string="Source Document" />
+                            <field name="res_model_id" string="App" />
+                        </group>
+                        <group>
+                            <field name="date_deadline" />
+                            <field name="state" string="State" />
+                            <field name="user_id" />
+                            <field name="is_read_by_me" invisible="1" />
+                        </group>
+                    </group>
+                    <group string="Note">
+                        <field name="note" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================= Search + filters + searchpanel ================= -->
+    <record id="view_my_todo_search" model="ir.ui.view">
+        <field name="name">mail.activity.todo.search</field>
+        <field name="model">mail.activity</field>
+        <field name="arch" type="xml">
+            <search string="Todos">
+                <field name="summary" string="Subject" />
+                <field name="res_name" string="Source" />
+                <field name="activity_type_id" />
+                <filter
+                    name="unread"
+                    string="Unread"
+                    domain="[('is_read_by_me', '=', False)]"
+                />
+                <filter
+                    name="read"
+                    string="Read / Dismissed"
+                    domain="[('is_read_by_me', '=', True)]"
+                />
+                <separator />
+                <filter
+                    name="overdue"
+                    string="Overdue"
+                    domain="[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
+                />
+                <filter
+                    name="today"
+                    string="Today"
+                    domain="[('date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"
+                />
+                <filter
+                    name="planned"
+                    string="Planned"
+                    domain="[('date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"
+                />
+                <group expand="0" name="group_by" string="Group By">
+                    <filter
+                        name="group_category"
+                        string="Category"
+                        context="{'group_by': 'todo_category'}"
+                    />
+                    <filter
+                        name="group_type"
+                        string="Activity Type"
+                        context="{'group_by': 'activity_type_id'}"
+                    />
+                    <filter
+                        name="group_model"
+                        string="Source App"
+                        context="{'group_by': 'res_model_id'}"
+                    />
+                    <filter
+                        name="group_deadline"
+                        string="Deadline"
+                        context="{'group_by': 'date_deadline'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field name="todo_category" string="Category" enable_counters="1" />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <!-- ================= Action + menu ================= -->
+    <record id="action_my_todos" model="ir.actions.act_window">
+        <field name="name">Todos</field>
+        <field name="res_model">mail.activity</field>
+        <field name="view_mode">tree,form</field>
+        <field
+            name="domain"
+        >[('is_my_todo', '=', True)]</field>
+        <field name="context">{'search_default_unread': 1}</field>
+        <field name="search_view_id" ref="view_my_todo_search" />
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'sequence': 1, 'view_mode': 'tree', 'view_id': ref('view_my_todo_tree')}),
+                   (0, 0, {'sequence': 2, 'view_mode': 'form', 'view_id': ref('view_my_todo_form')})]"
+        />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No pending todos 🎉</p>
+            <p>Work awaiting you from every app shows up here.</p>
+        </field>
+    </record>
+
+    <!-- Bulk actions in the list "Action" menu (dismissable Todos only —
+         everything except Execution — enforced server-side in
+         action_mark_read/unread). -->
+    <record id="action_server_mark_read" model="ir.actions.server">
+        <field name="name">Mark as Read</field>
+        <field name="model_id" ref="mail.model_mail_activity" />
+        <field name="binding_model_id" ref="mail.model_mail_activity" />
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">records.action_mark_read()</field>
+    </record>
+    <record id="action_server_mark_unread" model="ir.actions.server">
+        <field name="name">Mark as Unread</field>
+        <field name="model_id" ref="mail.model_mail_activity" />
+        <field name="binding_model_id" ref="mail.model_mail_activity" />
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">records.action_mark_unread()</field>
+    </record>
+
+    <menuitem
+        id="menu_my_todos_root"
+        name="Todos"
+        sequence="10"
+        web_icon="mail_activity_todo,static/description/icon.png"
+    />
+    <menuitem
+        id="menu_todo_inbox"
+        name="Inbox"
+        parent="menu_my_todos_root"
+        action="action_my_todos"
+        sequence="1"
+    />
+
+</odoo>

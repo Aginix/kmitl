@@ -30,13 +30,52 @@ class WorkAcceptance(models.Model):
         "If not checked, WA will be approved by paper outside Odoo, "
         "and the result of WA will be filled in by procurement officer",
     )
-    attachment_ids = fields.One2many(
+    # attachment_ids is the "regular" documents tab on the paper-WA flow.
+    # Kept separate from supporting_document_ids by excluding the m2m set
+    # at compute time — do NOT distinguish via ir.attachment.res_field: any
+    # value there triggers AccessError for non-system users in Odoo core
+    # (see odoo/addons/base/models/ir_attachment.py — check()).
+    attachment_ids = fields.Many2many(
         "ir.attachment",
-        "res_id",
         string="Document Attachments",
-        domain=[("res_model", "=", "work.acceptance")],
-        tracking=True,
+        compute="_compute_attachment_ids",
+        inverse="_inverse_attachment_ids",
     )
+    supporting_document_ids = fields.Many2many(
+        "ir.attachment",
+        "work_acceptance_supporting_doc_rel",
+        "wa_id",
+        "attachment_id",
+        string="Supporting Documents",
+    )
+
+    @api.depends("supporting_document_ids")
+    def _compute_attachment_ids(self):
+        # Filter ("res_field", "=", False) is defensive: legacy rows still
+        # carry res_field='supporting_document_ids' from PR #1026, and any
+        # read on them raises AccessError for non-system users. Even after
+        # the SQL cleanup that resets them, the filter also guards against
+        # future stray res_field values leaking into this list.
+        Attachment = self.env["ir.attachment"]
+        for rec in self:
+            if not isinstance(rec.id, int):
+                rec.attachment_ids = Attachment
+                continue
+            atts = Attachment.search([
+                ("res_model", "=", "work.acceptance"),
+                ("res_id", "=", rec.id),
+                ("res_field", "=", False),
+            ])
+            rec.attachment_ids = atts - rec.supporting_document_ids
+
+    def _inverse_attachment_ids(self):
+        for rec in self:
+            for att in rec.attachment_ids:
+                if att.res_model != "work.acceptance" or att.res_id != rec.id:
+                    att.write({
+                        "res_model": "work.acceptance",
+                        "res_id": rec.id,
+                    })
 
     work_acceptance_committee_ids = fields.One2many(
         comodel_name="work.acceptance.committee",
@@ -71,12 +110,12 @@ class WorkAcceptance(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    date_receive = fields.Date(
-        string="Received Date",
-        default=lambda self: self._default_start_date(),
-        required=True,
+
+    deliverables = fields.Text(
+        string="Deliverables",
+        related="installment_id.deliverables",
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        store=False,
     )
 
     # PO date snapshots (captured at WA creation, immune to PO edits)
@@ -155,19 +194,19 @@ class WorkAcceptance(models.Model):
         store=True,
     )
     date_committee_received = fields.Date(
-        string="วันที่คณะกรรมการได้รับเอกสาร",
+        string="Committee Received Date",
         readonly=True,
         states={"draft": [("readonly", False)]},
         tracking=True,
     )
     date_contract_complete = fields.Date(
-        string="วันที่เสร็จถูกต้องตามสัญญา",
+        string="Contract Complete Date",
         readonly=True,
         states={"draft": [("readonly", False)]},
         tracking=True,
     )
     date_work_handover = fields.Date(
-        string="วันที่รับมอบงานแล้ว",
+        string="Work Handover Date",
         readonly=True,
         states={"draft": [("readonly", False)]},
         tracking=True,

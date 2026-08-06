@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
+     IAM-scoped additions to the Operating Unit views: a user count on the
+     list and the assigned-users list on the form. Both gated to the IAM
+     manager so other OU-aware users (e.g. budget OU managers) see no change. -->
+<odoo>
+
+    <record id="view_operating_unit_tree_iam" model="ir.ui.view">
+        <field name="name">operating.unit.tree.iam</field>
+        <field name="model">operating.unit</field>
+        <field name="inherit_id" ref="operating_unit.view_operating_unit_tree" />
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field
+                    name="iam_user_count"
+                    string="# Users"
+                    groups="iam.group_iam_manager"
+                />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_operating_unit_form_iam" model="ir.ui.view">
+        <field name="name">operating.unit.form.iam</field>
+        <field name="model">operating.unit</field>
+        <field name="inherit_id" ref="operating_unit.view_operating_unit_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='main_group']" position="after">
+                <notebook groups="iam.group_iam_manager">
+                    <page name="iam_users" string="Users">
+                        <field name="user_ids" nolabel="1" readonly="1">
+                            <tree>
+                                <field name="name" />
+                                <field name="login" />
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

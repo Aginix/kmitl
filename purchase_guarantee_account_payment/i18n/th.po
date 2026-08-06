@@ -1,0 +1,46 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_guarantee_account_payment
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-08 05:06+0000\n"
+"PO-Revision-Date: 2026-06-08 05:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_guarantee_account_payment
+#: model:ir.model.fields,field_description:purchase_guarantee_account_payment.field_purchase_guarantee__payment_count
+msgid "Payment Count"
+msgstr ""
+
+#. module: purchase_guarantee_account_payment
+#: model:ir.model,name:purchase_guarantee_account_payment.model_account_payment
+#: model:ir.model.fields,field_description:purchase_guarantee_account_payment.field_purchase_guarantee__payment_ids
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_account_payment.view_purchase_guarantee_form
+msgid "Payments"
+msgstr "การชำระเงิน"
+
+#. module: purchase_guarantee_account_payment
+#: model:ir.model,name:purchase_guarantee_account_payment.model_purchase_guarantee
+#: model:ir.model.fields,field_description:purchase_guarantee_account_payment.field_account_payment__purchase_guarantee_id
+msgid "Purchase Guarantee"
+msgstr ""
+
+#. module: purchase_guarantee_account_payment
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_account_payment.view_purchase_guarantee_form
+msgid "Create Payment"
+msgstr "สร้างใบส่งเงิน"
+
+#. module: purchase_guarantee_account_payment
+#. odoo-python
+#: code:addons/purchase_guarantee_account_payment/models/purchase_guarantee.py:0
+#, python-format
+msgid "ไม่สามารถสร้างใบส่งเงินสำหรับประเภทหลักประกัน '%s' ได้"
+msgstr "ไม่สามารถสร้างใบส่งเงินสำหรับประเภทหลักประกัน '%s' ได้"

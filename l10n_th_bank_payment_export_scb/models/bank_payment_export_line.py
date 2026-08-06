@@ -71,13 +71,20 @@ class BankPaymentExportLine(models.Model):
         return sender_bank_code, sender_branch_code, sender_acc_number
 
     def _get_acc_number_digit(self, partner_bank_id):
-        """For Bahtnet (BNT) of SCB, we need to sanitize account number origin"""
+        """SCB credit-account formatting per product code.
+
+        - DCP (Direct Credit): exactly 10 digits, zero-padded.
+        - BNT / PAY / MCL / ...: the raw sanitized SCB account number
+          (left-justified in the field). It must NOT be zero-filled to 11
+          digits like the generic interbank formatter, which would prepend a
+          spurious leading zero to a 10-digit SCB account (real sample shows
+          a 10-digit credit account such as ``0882428018``).
+        """
         if self.payment_export_id.bank == "SICOTHBK":
-            if self.payment_export_id.scb_product_code == "BNT":
-                return sanitize_account_number(partner_bank_id.acc_number)
+            sanitize_acc_number = (
+                sanitize_account_number(partner_bank_id.acc_number) or ""
+            )
             if self.payment_export_id.scb_product_code == "DCP":
-                sanitize_acc_number = sanitize_account_number(
-                    partner_bank_id.acc_number
-                )
                 return sanitize_acc_number.zfill(10)
+            return sanitize_acc_number
         return super()._get_acc_number_digit(partner_bank_id)

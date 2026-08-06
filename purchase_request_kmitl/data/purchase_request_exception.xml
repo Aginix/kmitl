@@ -1,259 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo noupdate="1">
 
-    <!-- Disabled old l10n exception rules -->
-    <record id="pr_exception_1" model="exception.rule">
-        <field name="name">ระเบียบ วงเงินเล็กน้อย มูลค่าไม่เกิน 100,000 บาท</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "วงเงินเล็กน้อย":
-    estimated_cost = self.get_estimated_cost_currency()
-    if estimated_cost &gt; 100000:
-        failed=True
-        </field>
-    </record>
-    <record id="pr_exception_1_1" model="exception.rule">
-        <field
-            name="name"
-        >ระเบียบ วงเงินเล็กน้อย ต้องมีกรรมการตรวจรับอย่างน้อย 1 คน</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "วงเงินเล็กน้อย":
-    if len(self.work_acceptance_committee_ids) &lt; 1:
-        failed=True
-        </field>
-    </record>
-    <record id="pr_exception_2" model="exception.rule">
-        <field name="name">ระเบียบ 79 วรรคสอง มูลค่าไม่เกิน 500,000 บาท</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "79 วรรคสอง":
-    estimated_cost = self.get_estimated_cost_currency()
-    if estimated_cost &gt; 500000:
-        failed=True
-        </field>
-    </record>
-    <record id="pr_exception_2_1" model="exception.rule">
-        <field name="name">ระเบียบ 79 วรรคสอง ต้องมีกรรมการตรวจรับอย่างน้อย 1 คน</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "79 วรรคสอง":
-    if len(self.work_acceptance_committee_ids) &lt; 1:
-        failed=True
-        </field>
-    </record>
-    <record id="pr_exception_3" model="exception.rule">
-        <field name="name">ระเบียบ ว.119 มูลค่าไม่เกิน 10,000 บาท</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "ว.119":
-    estimated_cost = self.get_estimated_cost_currency()
-    if estimated_cost &gt; 10000:
-        failed=True
-        </field>
-    </record>
-    <record id="pr_exception_3_1" model="exception.rule">
-        <field name="name">ระเบียบ ว.119 ต้องมีกรรมการตรวจรับอย่างน้อย 1 คน</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "ว.119":
-    if len(self.work_acceptance_committee_ids) &lt; 1:
-        failed=True
-        </field>
-    </record>
-    <record id="pr_exception_4" model="exception.rule">
-        <field
-            name="name"
-        >ซื้อ/จ้าง/เช่า ไม่เกิน 500,000 บาท ต้องมีกรรมการตรวจรับอย่างน้อย 3 คน</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "จัดซื้อจัดจ้างผ่านพัสดุ":
-    estimated_cost = self.get_estimated_cost_currency()
-    if self.procurement_type_id.name == "ซื้อ/จ้าง/เช่า" and estimated_cost &lt;= 500000:
-        if len(self.work_acceptance_committee_ids) &lt; 3:
-            failed=True
-        </field>
-    </record>
-    <record id="pr_exception_5" model="exception.rule">
-        <field
-            name="name"
-        >ซื้อ/จ้าง/เช่า เกิน 500,000 บาท วิธีการจัดซื้อจัดจ้าง เฉพาะเจาะจง ต้องมีกรรมการตรวจรับอย่างน้อย 3 คน</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "จัดซื้อจัดจ้างผ่านพัสดุ":
-    estimated_cost = self.get_estimated_cost_currency()
-    if self.procurement_method_id.name == "เฉพาะเจาะจง" and self.procurement_type_id.name == "ซื้อ/จ้าง/เช่า" and estimated_cost &gt; 500000:
-        if len(self.work_acceptance_committee_ids) &lt; 3:
-            failed=True
-        </field>
-    </record>
-    <record id="pr_exception_5_1" model="exception.rule">
-        <field
-            name="name"
-        >ซื้อ/จ้าง/เช่า เกิน 500,000 บาท วิธีการจัดซื้อจัดจ้าง ไม่เฉพาะเจาะจง ต้องมีกรรมการจัดซื้อจัดจ้างอย่างน้อย 3 คน และกรรมการตรวจรับอย่างน้อย 3 คน</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "จัดซื้อจัดจ้างผ่านพัสดุ":
-    estimated_cost = self.get_estimated_cost_currency()
-    if self.procurement_method_id.name != "เฉพาะเจาะจง" and self.procurement_type_id.name == "ซื้อ/จ้าง/เช่า" and estimated_cost &gt; 500000:
-        if len(self.procurement_committee_ids) &lt; 3:
-            failed=True
-        if len(self.work_acceptance_committee_ids) &lt; 3:
-            failed=True
-        </field>
-    </record>
-    <record id="pr_exception_6" model="exception.rule">
-        <field
-            name="name"
-        >จ้างที่ปรึกษา ต้องมีกรรมการจัดซื้อจัดจ้างอย่างน้อย 5 คน</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "จัดซื้อจัดจ้างผ่านพัสดุ":
-    if self.procurement_type_id.name == "จ้างที่ปรึกษา":
-        if len(self.procurement_committee_ids) &lt; 5:
-            failed=True
-        </field>
-    </record>
-    <record id="pr_exception_6_1" model="exception.rule">
-        <field name="name">จ้างที่ปรึกษา ต้องมีกรรมการตรวจรับอย่างน้อย 5 คน</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "จัดซื้อจัดจ้างผ่านพัสดุ":
-    if self.procurement_type_id.name == "จ้างที่ปรึกษา":
-        if len(self.work_acceptance_committee_ids) &lt; 5:
-            failed=True
-        </field>
-    </record>
-    <record id="pr_exception_7" model="exception.rule">
-        <field
-            name="name"
-        >จ้างออกแบบและควบคุมงานก่อสร้าง ต้องมีกรรมการจัดซื้อจัดจ้างอย่างน้อย 3 คน</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "จัดซื้อจัดจ้างผ่านพัสดุ":
-    if self.procurement_type_id.name == "จ้างออกแบบและควบคุมงานก่อสร้าง":
-        if len(self.procurement_committee_ids) &lt; 3:
-            failed=True
-        </field>
-    </record>
-    <record id="pr_exception_7_1" model="exception.rule">
-        <field
-            name="name"
-        >จ้างออกแบบและควบคุมงานก่อสร้าง ต้องมีกรรมการตรวจรับอย่างน้อย 3 คน</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if self.purchase_type_id.name == "จัดซื้อจัดจ้างผ่านพัสดุ":
-    if self.procurement_type_id.name == "จ้างออกแบบและควบคุมงานก่อสร้าง":
-        if len(self.work_acceptance_committee_ids) &lt; 3:
-            failed=True
-        </field>
-    </record>
-    <record id="pr_exception_committee_1" model="exception.rule">
-        <field name="name">คณะกรรมการมากกว่า 1 คน ต้องมีประธาน 1 คน</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if len(self.procurement_committee_ids) &gt; 1:
-    if len(self.procurement_committee_ids.filtered(lambda l: l.approve_role == "chairman")) != 1:
-        failed=True
-if len(self.work_acceptance_committee_ids) &gt; 1:
-    if len(self.work_acceptance_committee_ids.filtered(lambda l: l.approve_role == "chairman")) != 1:
-        failed=True
-        </field>
-    </record>
-    <record id="pr_exception_committee_2" model="exception.rule">
-        <field name="name">คณะกรรมการ 1 คนต้องไม่เป็นประธาน</field>
-        <field
-            name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
-        <field name="model">purchase.request</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="active">False</field>
-        <field name="code">
-if len(self.procurement_committee_ids) == 1:
-    if self.procurement_committee_ids.filtered(lambda l: l.approve_role == "chairman"):
-        failed=True
-if len(self.work_acceptance_committee_ids) == 1:
-    if self.work_acceptance_committee_ids.filtered(lambda l: l.approve_role == "chairman"):
-        failed=True
-        </field>
-    </record>
-
     <!-- Active KMITL exception rules -->
+    <!-- ต้องมีรายการสินค้าอย่างน้อย 1 อย่าง -->
     <record id="pr_exception_product_1" model="exception.rule">
-        <field name="name">ต้องมีรายการสินค้าอย่างน้อย 1 อย่าง</field>
+        <field name="name">At least one item must be listed.</field>
         <field
             name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
+        >The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)</field>
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -262,11 +16,12 @@ if not self.line_ids:
         </field>
     </record>
 
+    <!-- ต้องมีคณะกรรมการตรวจรับพัสดุ จำนวน 1 รายชื่อ -->
     <record id="kmitl_pr_exception_committee_1" model="exception.rule">
-        <field name="name">ต้องมีคณะกรรมการตรวจรับพัสดุ จำนวน 1 รายชื่อ</field>
+        <field name="name">At least one Work Acceptance Committee must be selected.</field>
         <field
             name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
+        >The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)</field>
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -275,13 +30,14 @@ if len(self.work_acceptance_committee_ids) &lt; 1:
         </field>
     </record>
 
+    <!-- การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน จำนวน 1 รายชื่อ -->
     <record id="kmitl_pr_exception_committee_2" model="exception.rule">
         <field
             name="name"
-        >การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน จำนวน 1 รายชื่อ </field>
+        >For procurement exceeding 100,000 baht, At least one TOR Committee must be selected.</field>
         <field
             name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
+        >The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)</field>
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -291,13 +47,14 @@ if self.estimated_cost &gt; 100000:
         </field>
     </record>
 
+    <!-- การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดราคากลาง จำนวน 1 รายชื่อ -->
     <record id="kmitl_pr_exception_committee_3" model="exception.rule">
         <field
             name="name"
-        >การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดราคากลาง จำนวน 1 รายชื่อ </field>
+        >For procurement exceeding 100,000 baht, At least one Price Determine Committee must be selected.</field>
         <field
             name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
+        >The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)</field>
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -307,13 +64,14 @@ if self.estimated_cost &gt; 100000:
         </field>
     </record>
 
+    <!-- การจัดซื้อจัดจ้าง เกิน 500,000 บาท ต้องมี ต้องมีคณะกรรมการพิจารณาผล จำนวน 1 รายชื่อ  -->
     <record id="kmitl_pr_exception_committee_4" model="exception.rule">
         <field
             name="name"
-        >การจัดซื้อจัดจ้าง เกิน 500,000 บาท ต้องมี ต้องมีคณะกรรมการพิจารณาผล จำนวน 1 รายชื่อ </field>
+        >For procurement exceeding 500,000 baht, At least one Evaluation Committee must be selected.</field>
         <field
             name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
+        >The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)</field>
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">

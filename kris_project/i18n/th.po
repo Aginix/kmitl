@@ -547,8 +547,8 @@ msgid "Type of the exception activity on record."
 msgstr ""
 
 #. module: kris_project
-#: model:res.groups,name:kris_project.group_kris_project_user
-msgid "User"
+#: model:res.groups,name:kris_project.group_kris_project_viewer
+msgid "Viewer"
 msgstr ""
 
 #. module: kris_project
@@ -603,6 +603,8 @@ msgstr "กรุณาเลือกแม่แบบการจัดสร
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__allocation_ids
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__allocation_line_id
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
 msgid "Allocation"
 msgstr "การจัดสรร"
 
@@ -614,6 +616,7 @@ msgstr "การจัดสรรตามงวด"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__receipt_allocation_ids
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
 msgid "Allocation based on revenue."
 msgstr "การจัดสรรตามรายรับ"
@@ -637,8 +640,18 @@ msgstr "การเงิน"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__maintenance_deduction_type__custom
-msgid "Custom"
-msgstr "กำหนดเอง"
+msgid "Custom %"
+msgstr "กำหนดเปอร์เซ็นต์เอง"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__maintenance_deduction_type__fixed
+msgid "Fixed Amount"
+msgstr "ระบุจำนวนเงิน"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__maintenance_deduction_fixed_amount
+msgid "จำนวนเงินค่าบำรุง"
+msgstr ""
 
 #. module: kris_project
 #. odoo-javascript
@@ -659,8 +672,18 @@ msgstr "ข้อมูลงวด"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-msgid "Contract Information"
-msgstr "ข้อมูลสัญญา"
+msgid "Contract Information (Institute - Employer)"
+msgstr "ข้อมูลสัญญา (สถาบัน - ผู้ว่าจ้าง)"
+
+#. module: kris_project
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+msgid "Contract/MOU Information (KRIS - Project Manager)"
+msgstr "ข้อมูลสัญญา/บันทึกข้อตกลง (KRIS - หัวหน้าโครงการ)"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__kris_contract_date
+msgid "Contract/MOU Date"
+msgstr "วันที่จัดทำสัญญา/บันทึกข้อตกลง"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
@@ -671,6 +694,11 @@ msgstr "ข้อมูลโครงการ"
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__revenue_remaining
 msgid "Revenue Remaining"
 msgstr "คงเหลือ"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__over_revenue
+msgid "Over Revenue"
+msgstr "รับเกินจากโครงการ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__equipment_cost
@@ -815,8 +843,12 @@ msgid "บันทึกข้อมูลโครงการบริกา�
 msgstr ""
 
 #. module: kris_project
+#. odoo-python
+#: code:addons/kris_project/models/kris_project.py:0
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
+#, python-format
 msgid "Revenue Record"
 msgstr "บันทึกรายรับ"
 
@@ -928,8 +960,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__name
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template_line__item_id
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment_allocation__name
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_allocation__name
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__name
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_installment_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
 msgid "Allocator"
 msgstr "ผู้รับจัดสรร"
@@ -953,7 +987,7 @@ msgstr "มูลค่าครุภัณฑ์ในงวด"
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__project_value
 msgid "Project Value"
-msgstr "มูลค่างาน"
+msgstr "มูลค่างานทั้งหมด"
 
 #. module: kris_project
 #: model:exception.rule,description:kris_project.kris_excep_no_project_value
@@ -999,14 +1033,18 @@ msgstr ""
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__cancel
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__cancel
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_state_wizard_form
 msgid "Cancel"
 msgstr "ยกเลิก"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment_allocation__remaining_amount
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_allocation__remaining_amount
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__remaining_amount
 msgid "Remaining Amount"
 msgstr "ยอดคงเหลือที่จัดสรรได้"
 
@@ -1045,6 +1083,7 @@ msgstr "ยังเก็บรายได้ไม่ครบ"
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__confirmed
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_state_wizard_form
 msgid "Confirm"
 msgstr "ยืนยัน"
 
@@ -1053,7 +1092,7 @@ msgstr "ยืนยัน"
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
 msgid "In Progress"
-msgstr "อยู่ระหว่างดำเนินการ"
+msgstr "อยู่ระยะเวลาโครงการ"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
@@ -1156,6 +1195,32 @@ msgid "Draft"
 msgstr "ร่าง"
 
 #. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__suspended
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__suspended
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state__suspended
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_in_progress__suspended
+msgid "Suspended"
+msgstr "ชะลอโครงการ"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__terminated
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__terminated
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state__terminated
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_in_progress__terminated
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_suspended__terminated
+msgid "Terminated"
+msgstr "ยุติโครงการ"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__conditional_close
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__conditional_close
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state__conditional_close
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_in_progress__conditional_close
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_suspended__conditional_close
+msgid "Closed with Conditions"
+msgstr "ปิดโครงการแบบมีเงื่อนไข"
+
+#. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_item__sequence
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__sequence
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template_line__sequence
@@ -1220,8 +1285,8 @@ msgstr "วิธีคิดค่าบำรุง"
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_allocation__currency_id
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__currency_id
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__currency_id
-msgid "สกุลเงิน"
-msgstr ""
+msgid "Currency"
+msgstr "สกุลเงิน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__state
@@ -1259,13 +1324,23 @@ msgstr "สามารถรีเซ็ตได้เฉพาะโครง
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__department_id
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
-msgid "Department"
-msgstr "หน่วยงาน"
+msgid "Leader Department"
+msgstr "หน่วยงานของหัวหน้าโครงการ"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__government
-msgid "Government"
-msgstr "หน่วยงานรัฐ"
+msgid "Government Agency"
+msgstr "ส่วนราชการ/หน่วยงานของรัฐ"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__public_organization
+msgid "Public Organization"
+msgstr "หน่วยงานในกำกับของรัฐ"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__independent_organization
+msgid "Independent Organization"
+msgstr "องค์กรอิสระ"
 
 #. module: kris_project
 #. odoo-javascript
@@ -1277,10 +1352,13 @@ msgid "Category"
 msgstr "หมวดหมู่"
 
 #. module: kris_project
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__note
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__note
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__note
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_state_wizard__note
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#, python-format
 msgid "Note"
 msgstr "หมายเหตุ"
 
@@ -1305,8 +1383,8 @@ msgid "Advance Deduction"
 msgstr "หักเงินล่วงหน้า"
 
 #. module: kris_project
-#: model:ir.model.fields,field_description:kris_project.field_kris_project__leader_id
-msgid "Project Leader"
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__manager_id
+msgid "Project Manager"
 msgstr "หัวหน้าโครงการ"
 
 #. module: kris_project
@@ -1320,7 +1398,10 @@ msgid "Responsible"
 msgstr "เจ้าหน้าที่ KRIS"
 
 #. module: kris_project
+#. odoo-python
+#: code:addons/kris_project/models/kris_project.py:0
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#, python-format
 msgid "Add Installment"
 msgstr "เพิ่มงวด"
 
@@ -1331,8 +1412,13 @@ msgstr "เพิ่มรายรับ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__contract_number
-msgid "Contract Number"
-msgstr "เลขที่สัญญา"
+msgid "Employer Contract Number"
+msgstr "เลขที่สัญญาผู้ว่าจ้าง"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__project_code
+msgid "Project Code"
+msgstr "รหัสโครงการ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__name
@@ -1353,19 +1439,27 @@ msgstr "เลือกแม่แบบ..."
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__done
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__done
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state__done
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_in_progress__done
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_suspended__done
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
 msgid "Done"
-msgstr "เสร็จสิ้น"
+msgstr "โครงการเสร็จสิ้น"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__private
-msgid "Private"
-msgstr "เอกชน"
+msgid "Private Company"
+msgstr "บริษัทเอกชน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__attachment_ids
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__attachment_ids
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__attachment_ids
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
 msgid "Attachment"
 msgstr "เอกสารแนบ"
 
@@ -1451,3 +1545,76 @@ msgstr "เลขประจำตัวผู้เสียภาษี"
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 msgid "Client/Funding Organization"
 msgstr "ผู้ว่าจ้าง/หน่วยงานผู้ให้ทุน"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__extra_value
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_installment__extra_income
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__extra_income
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__extra_income
+msgid "Extra Value"
+msgstr "ค่า Extra"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__department_analytic_id
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__department_analytic_id
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template_line__department_analytic_id
+msgid "Department Budget Code"
+msgstr "รหัสงบประมาณหน่วยงาน"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__extra_analytic_id
+msgid "Extra Payee"
+msgstr "ผู้รับค่า Extra"
+
+#. module: kris_project
+#: model:ir.actions.act_window,name:kris_project.action_kris_project_state_wizard
+#: model:ir.model,name:kris_project.model_kris_project_state_wizard
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_state_wizard_form
+msgid "Change Project Status"
+msgstr "ปรับสถานะโครงการ"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_state_wizard__new_state_from_in_progress
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_state_wizard__new_state_from_suspended
+msgid "New Status"
+msgstr "สถานะใหม่"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_suspended__in_progress
+msgid "Resume"
+msgstr "ดำเนินการต่อ"
+
+#. module: kris_project
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_state_wizard_form
+msgid "Enter the reason for this status change..."
+msgstr "ระบุเหตุผลของการปรับสถานะ..."
+
+#. module: kris_project
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
+#, python-format
+msgid "Please select a new status."
+msgstr "กรุณาเลือกสถานะใหม่"
+
+#. module: kris_project
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
+#, python-format
+msgid "Please provide a note for this status change."
+msgstr "กรุณาระบุหมายเหตุสำหรับการปรับสถานะนี้"
+
+#. module: kris_project
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
+#, python-format
+msgid "<b>Note:</b> %s"
+msgstr "<b>หมายเหตุ:</b> %s"
+
+#. module: kris_project
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
+#, python-format
+msgid "None"
+msgstr "ไม่มี"

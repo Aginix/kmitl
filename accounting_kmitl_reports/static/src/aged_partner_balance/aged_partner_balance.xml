@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="accounting_kmitl_reports.AgedPartnerBalance" owl="1">
+        <div class="o_kmitl_aged o_action_manager p-3">
+            <div class="o_kmitl_aged_header d-flex align-items-center mb-3">
+                <h2 class="m-0 flex-grow-1"><t t-esc="title" /></h2>
+                <button class="btn btn-secondary me-2" t-on-click="exportCsv">
+                    <i class="fa fa-file-text-o me-1" />Export CSV
+                </button>
+                <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
+                    <i class="fa fa-file-excel-o me-1" />Export Excel
+                </button>
+                <button class="btn btn-primary" t-on-click="printPdf">
+                    <i class="fa fa-file-pdf-o me-1" />Print PDF
+                </button>
+            </div>
+
+            <!-- Filter bar -->
+            <div class="o_kmitl_aged_filterpanel mb-3">
+                <div class="o_kmitl_aged_filters row g-2">
+                <div class="col-md-2">
+                    <label class="o_form_label">As of</label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.dateAt"
+                        t-on-change="onDateAtChange"
+                    />
+                </div>
+                <div class="col-md-6 d-flex align-items-end gap-3">
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="kmitl_aged_posted"
+                            t-att-checked="state.onlyPosted"
+                            t-on-change="onTogglePosted"
+                        />
+                        <label class="form-check-label" for="kmitl_aged_posted">Posted entries only</label>
+                    </div>
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="kmitl_aged_details"
+                            t-att-checked="state.showDetails"
+                            t-on-change="onToggleDetails"
+                        />
+                        <label class="form-check-label" for="kmitl_aged_details">Show move line details</label>
+                    </div>
+                </div>
+
+                <!-- KMITL accounting dimensions -->
+                <div class="col-md-3">
+                    <label class="o_form_label">Departments</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'departments']]"
+                        placeholder="labels.departments"
+                        selected="state.departments"
+                        onChange="(sel) => this.onSelectionChange('departments', sel)"
+                        withOnlySelf="true"
+                        onlySelf="state.dimOnlySelf.departments"
+                        onOnlySelfChange="(val) => this.onToggleDimOnlySelf('departments', val)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Sources</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'sources']]"
+                        placeholder="labels.sources"
+                        selected="state.sources"
+                        onChange="(sel) => this.onSelectionChange('sources', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Funds</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'funds']]"
+                        placeholder="labels.funds"
+                        selected="state.funds"
+                        onChange="(sel) => this.onSelectionChange('funds', sel)"
+                        withOnlySelf="true"
+                        onlySelf="state.dimOnlySelf.funds"
+                        onOnlySelfChange="(val) => this.onToggleDimOnlySelf('funds', val)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Activities</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'activities']]"
+                        placeholder="labels.activities"
+                        selected="state.activities"
+                        onChange="(sel) => this.onSelectionChange('activities', sel)"
+                        withOnlySelf="true"
+                        onlySelf="state.dimOnlySelf.activities"
+                        onOnlySelfChange="(val) => this.onToggleDimOnlySelf('activities', val)"
+                    />
+                </div>
+
+                <!-- Standard filters (collapsed by default) -->
+                <div class="col-12">
+                    <button
+                        class="btn btn-link p-0 o_kmitl_aged_more"
+                        t-on-click="toggleAdvanced"
+                    >
+                        <i
+                            t-att-class="state.showAdvanced ? 'fa fa-caret-down me-1' : 'fa fa-caret-right me-1'"
+                        />
+                        <t t-if="state.showAdvanced">Hide partner / account filters</t>
+                        <t t-else="">More filters</t>
+                    </button>
+                </div>
+                <t t-if="state.showAdvanced">
+                    <div class="col-md-3">
+                        <label class="o_form_label">Partners</label>
+                        <MultiRecordSelect
+                            resModel="'res.partner'"
+                            placeholder="labels.partners"
+                            selected="state.partners"
+                            onChange="(sel) => this.onSelectionChange('partners', sel)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Accounts</label>
+                        <MultiRecordSelect
+                            resModel="'account.account'"
+                            domain="[['company_id', '=', companyId], ['reconcile', '=', true]]"
+                            placeholder="labels.accounts"
+                            selected="state.accounts"
+                            onChange="(sel) => this.onSelectionChange('accounts', sel)"
+                        />
+                    </div>
+                </t>
+                </div>
+            </div>
+
+            <!-- Report table -->
+            <div class="o_kmitl_aged_table_wrap">
+                <table class="table table-sm table-bordered o_kmitl_aged_table">
+                    <thead>
+                        <tr>
+                            <th class="o_kmitl_aged_partner">Partner</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-end">Current</th>
+                            <th class="text-end">1-30</th>
+                            <th class="text-end">31-60</th>
+                            <th class="text-end">61-90</th>
+                            <th class="text-end">91-120</th>
+                            <th class="text-end">120+</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-if="state.loading">
+                            <td colspan="8" class="text-center text-muted">Loading...</td>
+                        </tr>
+                        <tr t-elif="!state.accounts_data.length">
+                            <td colspan="8" class="text-center text-muted">No data</td>
+                        </tr>
+                        <t t-foreach="state.accounts_data" t-as="account" t-key="account.id">
+                            <tr class="o_kmitl_aged_account fw-bold">
+                                <td><t t-esc="account.code" /> - <t t-esc="account.name" /></td>
+                                <td class="text-end" t-att-class="negClass(account.residual)" t-esc="format(account.residual)" />
+                                <td class="text-end" t-att-class="negClass(account.current)" t-esc="format(account.current)" />
+                                <td class="text-end" t-att-class="negClass(account['30_days'])" t-esc="format(account['30_days'])" />
+                                <td class="text-end" t-att-class="negClass(account['60_days'])" t-esc="format(account['60_days'])" />
+                                <td class="text-end" t-att-class="negClass(account['90_days'])" t-esc="format(account['90_days'])" />
+                                <td class="text-end" t-att-class="negClass(account['120_days'])" t-esc="format(account['120_days'])" />
+                                <td class="text-end" t-att-class="negClass(account.older)" t-esc="format(account.older)" />
+                            </tr>
+                            <t t-foreach="account.partners" t-as="partner" t-key="partner_index">
+                                <tr class="o_kmitl_aged_partner_row">
+                                    <td class="o_kmitl_aged_indent" t-esc="partner.name" />
+                                    <td class="text-end" t-att-class="negClass(partner.residual)" t-esc="format(partner.residual)" />
+                                    <td class="text-end" t-att-class="negClass(partner.current)" t-esc="format(partner.current)" />
+                                    <td class="text-end" t-att-class="negClass(partner['30_days'])" t-esc="format(partner['30_days'])" />
+                                    <td class="text-end" t-att-class="negClass(partner['60_days'])" t-esc="format(partner['60_days'])" />
+                                    <td class="text-end" t-att-class="negClass(partner['90_days'])" t-esc="format(partner['90_days'])" />
+                                    <td class="text-end" t-att-class="negClass(partner['120_days'])" t-esc="format(partner['120_days'])" />
+                                    <td class="text-end" t-att-class="negClass(partner.older)" t-esc="format(partner.older)" />
+                                </tr>
+                                <t t-if="state.showDetails and partner.move_lines">
+                                    <tr
+                                        class="o_kmitl_aged_ml text-muted"
+                                        t-foreach="partner.move_lines"
+                                        t-as="ml"
+                                        t-key="ml_index"
+                                    >
+                                        <td class="o_kmitl_aged_indent2">
+                                            <t t-esc="ml.date" /> · <t t-esc="ml.entry" />
+                                            <t t-if="ml.ref_label"> · <t t-esc="ml.ref_label" /></t>
+                                        </td>
+                                        <td class="text-end" t-att-class="negClass(ml.residual)" t-esc="format(ml.residual)" />
+                                        <td class="text-end" t-att-class="negClass(ml.current)" t-esc="format(ml.current)" />
+                                        <td class="text-end" t-att-class="negClass(ml['30_days'])" t-esc="format(ml['30_days'])" />
+                                        <td class="text-end" t-att-class="negClass(ml['60_days'])" t-esc="format(ml['60_days'])" />
+                                        <td class="text-end" t-att-class="negClass(ml['90_days'])" t-esc="format(ml['90_days'])" />
+                                        <td class="text-end" t-att-class="negClass(ml['120_days'])" t-esc="format(ml['120_days'])" />
+                                        <td class="text-end" t-att-class="negClass(ml.older)" t-esc="format(ml.older)" />
+                                    </tr>
+                                </t>
+                            </t>
+                        </t>
+                    </tbody>
+                    <tfoot t-if="state.accounts_data.length">
+                        <tr class="fw-bold">
+                            <td>Total</td>
+                            <td class="text-end" t-att-class="negClass(state.totals.residual)" t-esc="format(state.totals.residual)" />
+                            <td class="text-end" t-att-class="negClass(state.totals.current)" t-esc="format(state.totals.current)" />
+                            <td class="text-end" t-att-class="negClass(state.totals['30_days'])" t-esc="format(state.totals['30_days'])" />
+                            <td class="text-end" t-att-class="negClass(state.totals['60_days'])" t-esc="format(state.totals['60_days'])" />
+                            <td class="text-end" t-att-class="negClass(state.totals['90_days'])" t-esc="format(state.totals['90_days'])" />
+                            <td class="text-end" t-att-class="negClass(state.totals['120_days'])" t-esc="format(state.totals['120_days'])" />
+                            <td class="text-end" t-att-class="negClass(state.totals.older)" t-esc="format(state.totals.older)" />
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </t>
+
+</templates>

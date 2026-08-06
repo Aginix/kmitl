@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
+    <!-- ต้องกรอกชื่อรายการ -->
     <record id="pr_line_exception_name_required" model="exception.rule">
-        <field name="name">ต้องกรอกชื่อรายการ</field>
-        <field name="description">ชื่อรายการห้ามปล่อยว่าง</field>
+        <field name="name">You need to fill in the item name.</field>
+        <field name="description">The item name must not be left blank.</field>
         <field name="model">purchase.request.line</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -13,9 +14,10 @@ for line in self:
         </field>
     </record>
 
+    <!-- ราคาต้องมากกว่า 0 -->
     <record id="pr_line_exception_price_unit_min_0" model="exception.rule">
-        <field name="name">ราคาต่อหน่วยต้องมากกว่า 0</field>
-        <field name="description">ระบบไม่อนุญาตให้ราคาต่อหน่วยเป็น 0 หรือค่าติดลบ</field>
+        <field name="name">The unit price must be greater than 0.</field>
+        <field name="description">The system does not allow the unit price to be 0 or negative.</field>
         <field name="model">purchase.request.line</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">

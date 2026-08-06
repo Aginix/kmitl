@@ -2,7 +2,7 @@
 <odoo>
     <menuitem id="menu_advance_payment_root"
         name="สัญญายืมเงิน"
-        sequence="50"
+        sequence="6"
         web_icon="advance_payment,static/description/icon.png"
         groups="advance_payment.group_advance_payment_user"/>
 
@@ -11,12 +11,6 @@
         parent="menu_advance_payment_root"
         action="action_advance_payment"
         sequence="10"/>
-
-    <menuitem id="menu_advance_payment_usage_line"
-        name="รายการบันทึกการใช้เงินยืม"
-        parent="menu_advance_payment_root"
-        action="action_advance_payment_usage_line"
-        sequence="20"/>
 
     <menuitem id="menu_advance_payment_config"
         name="การกำหนดค่า"

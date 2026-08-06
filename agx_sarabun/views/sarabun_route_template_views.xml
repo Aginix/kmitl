@@ -1,95 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Tree View -->
-    <record id="sarabun_route_template_view_tree" model="ir.ui.view">
-        <field name="name">sarabun.route.template.view.tree</field>
+    <record id="view_sarabun_route_template_tree" model="ir.ui.view">
+        <field name="name">sarabun.route.template.tree</field>
         <field name="model">sarabun.route.template</field>
         <field name="arch" type="xml">
-            <tree string="Route Templates">
+            <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="department_id"/>
                 <field name="document_type_id"/>
+                <field name="department_id"/>
                 <field name="origin_model"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
     </record>
 
-    <!-- Form View -->
-    <record id="sarabun_route_template_view_form" model="ir.ui.view">
-        <field name="name">sarabun.route.template.view.form</field>
+    <record id="view_sarabun_route_template_form" model="ir.ui.view">
+        <field name="name">sarabun.route.template.form</field>
         <field name="model">sarabun.route.template</field>
         <field name="arch" type="xml">
-            <form string="Route Template">
+            <form>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name"/>
-                        <h1>
-                            <field name="name" placeholder="e.g., Standard Approval Flow"/>
-                        </h1>
+                        <h1><field name="name" placeholder="e.g. PR Approval (&lt; 100k)"/></h1>
                     </div>
                     <group>
-                        <group string="Basic">
-                            <field name="sequence"/>
-                            <field name="active"/>
+                        <group string="Scope (auto-match for from_record)">
+                            <field name="document_type_id"/>
+                            <field name="department_id"/>
+                            <field name="origin_model" placeholder="purchase.request"/>
+                            <field name="condition_domain" placeholder="[('amount_total', '&gt;=', 100000)]"/>
                         </group>
-                        <group string="Description">
-                            <field name="description" placeholder="Description..." nolabel="1"/>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active" widget="boolean_toggle"/>
                         </group>
                     </group>
-                    <notebook>
-                        <page string="Route Steps" name="steps">
-                            <field name="line_ids">
-                                <tree string="Route Steps" editable="bottom">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="routing_type"/>
-                                    <field name="recipient_type"/>
-                                    <field name="user_id" attrs="{'invisible': [('recipient_type', '!=', 'user')], 'required': [('recipient_type', '=', 'user')]}"/>
-                                    <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')], 'required': [('recipient_type', '=', 'department')]}"/>
-                                    <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Scope &amp; Conditions" name="scope">
-                            <group>
-                                <group string="Scope">
-                                    <field name="department_id" options="{'no_create': True}"/>
-                                    <field name="document_type_id" options="{'no_create': True}"/>
-                                    <field name="origin_model"/>
-                                </group>
-                                <group string="Condition">
-                                    <field name="condition_domain" placeholder="[('amount_total', '>=', 100000)]"/>
-                                </group>
-                            </group>
-                            <group>
-                                <p class="text-muted">
-                                    <strong>Scope:</strong> Leave empty to match all. If set, template only matches documents with matching criteria.<br/>
-                                    <strong>Condition Domain:</strong> Python domain expression evaluated against origin record. Examples:<br/>
-                                    - <code>[('amount_total', '&gt;=', 100000)]</code> - Amount >= 100,000<br/>
-                                    - <code>[('is_urgent', '=', True)]</code> - Urgent flag is set<br/>
-                                    - <code>[('state', '=', 'approved')]</code> - State is approved
-                                </p>
-                            </group>
-                        </page>
-                    </notebook>
+                    <separator string="Route Steps (seed)"/>
+                    <field name="line_ids">
+                        <tree editable="bottom">
+                            <field name="order"/>
+                            <field name="verb"/>
+                            <field name="for_info"/>
+                            <field name="target_mode"/>
+                            <field name="position_id"
+                                   attrs="{'column_invisible': [('parent.id', '=', False)], 'required': [('target_mode', '=', 'position')], 'readonly': [('target_mode', '!=', 'position')]}"/>
+                            <field name="employee_id"
+                                   attrs="{'required': [('target_mode', '=', 'person')], 'readonly': [('target_mode', '!=', 'person')]}"/>
+                            <field name="department_id"
+                                   attrs="{'required': [('target_mode', '=', 'unit')], 'readonly': [('target_mode', '!=', 'unit')]}"/>
+                        </tree>
+                    </field>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <!-- Action -->
     <record id="action_sarabun_route_template" model="ir.actions.act_window">
         <field name="name">Route Templates</field>
         <field name="res_model">sarabun.route.template</field>
         <field name="view_mode">tree,form</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Create a route template
-            </p>
-            <p>
-                Route templates define standard routing paths for documents.
-            </p>
-        </field>
     </record>
 </odoo>

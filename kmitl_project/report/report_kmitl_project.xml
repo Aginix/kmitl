@@ -72,7 +72,7 @@
                                 หน่วยงาน
                                 <span
                                     class="ms-2"
-                                    t-out="o.department_id.complete_name"
+                                    t-out="o.department_analytic_id.name"
                                 />
                             </div>
                         </div>
@@ -135,7 +135,7 @@
                                     <th class="text-center" style="width: 8%">ลำดับ</th>
                                     <th class="text-center">รายละเอียด</th>
                                     <th class="text-center">จำนวน</th>
-                                    <th class="text-end">ราคาต่อหน่วย</th>
+                                    <th class="text-end">ราคา</th>
                                     <th class="text-end">จำนวนเงิน</th>
                                 </tr>
                             </thead>

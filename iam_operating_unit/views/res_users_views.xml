@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl). -->
+<odoo>
+
+    <!-- Optional (hidden by default) Operating Units column on the Users list.
+         Uses the assigned_operating_unit_ids Many2many (a One2many like
+         operating_unit_ids cannot render in a tree); these are the OUs
+         explicitly assigned to the user. -->
+    <record id="view_users_tree_iam_ou" model="ir.ui.view">
+        <field name="name">res.users.tree.iam-ou</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree" />
+        <field name="arch" type="xml">
+            <field name="company_id" position="after">
+                <field
+                    name="assigned_operating_unit_ids"
+                    string="Operating Units"
+                    widget="many2many_tags"
+                    optional="hide"
+                    groups="iam.group_iam_manager"
+                />
+            </field>
+        </field>
+    </record>
+
+    <!-- "With / Without Operating Unit" filters on the Users search view.
+         Filters on assigned_operating_unit_ids (the stored Many2many) for the
+         same reason the tree column does: operating_unit_ids is a non-stored
+         compute with no search method and cannot back a filter domain. Gated to
+         the IAM manager to match the OU column and keep the standard Users
+         search (used under Settings) uncluttered for everyone else. -->
+    <record id="view_users_search_iam_ou" model="ir.ui.view">
+        <field name="name">res.users.search.iam-ou</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_search" />
+        <field name="arch" type="xml">
+            <filter name="Inactive" position="after">
+                <separator groups="iam.group_iam_manager" />
+                <filter
+                    name="filter_with_operating_unit"
+                    string="With Operating Unit"
+                    domain="[('assigned_operating_unit_ids', '!=', False)]"
+                    groups="iam.group_iam_manager"
+                />
+                <filter
+                    name="filter_without_operating_unit"
+                    string="Without Operating Unit"
+                    domain="[('assigned_operating_unit_ids', '=', False)]"
+                    groups="iam.group_iam_manager"
+                />
+            </filter>
+        </field>
+    </record>
+
+</odoo>

@@ -260,8 +260,8 @@ class ProcurementPlanPortal(http.Controller):
         # State label map
         state_labels = {
             "new": "ยังไม่เริ่ม",
-            "on_hold": "รอดำเนินการ",
-            "ready": "พร้อม",
+            "on_hold": "ชะลอโครงการ",
+            "ready": "รอดำเนินการ",
             "in_progress": "กำลังดำเนินการ",
             "done": "เสร็จสิ้น",
             "cancel": "ยกเลิก",

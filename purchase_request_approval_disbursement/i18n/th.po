@@ -18,15 +18,6 @@ msgstr ""
 "X-Generator: Poedit 3.8\n"
 
 #. module: purchase_request_approval_disbursement
-#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
-msgid ""
-"<strong>Note:</strong>\n"
-"                            If you select \"Use Purchase Order\", you must create a Purchase Order."
-msgstr ""
-"<strong>หมายเหตุ:</strong>\n"
-"                            ถ้าหากเลือก “สร้างสัญญา/ใบสั่งซื้อ/จ้าง”, ระบบจะบังคับให้สร้างสัญญา/ใบสั่งซื้อ/จ้าง เท่านั้น"
-
-#. module: purchase_request_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_search
 msgid "Bill Status"
 msgstr ""
@@ -35,8 +26,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/purchase_request_approval_disbursement/models/purchase_request_approval.py:0
 #, python-format
-msgid "Billing %(dr_name)s for %(pa_name)s created successfully, waiting for operation."
-msgstr "ตามรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ %(pa_name)s ได้จัดทำใบขอเบิกเลขที่ %(dr_name)s แล้ว อยู่ระหว่างดำเนินการ"
+msgid ""
+"Billing %(dr_name)s for %(pa_name)s created successfully, waiting for "
+"operation."
+msgstr ""
+"ตามรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ %(pa_name)s ได้จัดทำใบขอเบิกเลขที่ "
+"%(dr_name)s แล้ว อยู่ระหว่างดำเนินการ"
 
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__billing_status
@@ -46,7 +41,27 @@ msgstr "สถานะการเบิก"
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__cancel
 msgid "Cancelled"
-msgstr "ตีกลับ"
+msgstr "ยกเลิก"
+
+#. module: purchase_request_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid "Confirm Correction"
+msgstr "ยืนยันการแก้ไข"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__disbursement_return_bank_id
+msgid "Correction Bank Account"
+msgstr "บัญชีธนาคารที่แก้ไข"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__disbursement_return_attachment_ids
+msgid "Correction Evidence"
+msgstr "เอกสารหลักฐานการแก้ไข"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__disbursement_return_note
+msgid "Correction Note"
+msgstr "หมายเหตุการแก้ไข"
 
 #. module: purchase_request_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
@@ -57,6 +72,11 @@ msgstr "สร้างใบขอเบิก"
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
 msgid "Create Purchase Order"
 msgstr "สร้างสัญญา/ใบสั่งซื้อ/จ้าง"
+
+#. module: purchase_request_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid "Disbursement Correction"
+msgstr "การแก้ไขใบขอเบิก"
 
 #. module: purchase_request_approval_disbursement
 #: model:ir.model,name:purchase_request_approval_disbursement.model_disbursement_request
@@ -83,6 +103,11 @@ msgstr "เบิกจ่ายเสร็จสิ้น"
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__draft
 msgid "Draft"
 msgstr "ร่าง"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__in_progress
+msgid "In Progress"
+msgstr "อยู่ระหว่างเบิกจ่าย"
 
 #. module: purchase_request_approval_disbursement
 #. odoo-python
@@ -117,6 +142,11 @@ msgid "Purchase Request Approval"
 msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
 
 #. module: purchase_request_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid "Purchase Request Approval Form"
+msgstr "แบบรายงานคำขอซื้อ/จ้าง (พจ.1)"
+
+#. module: purchase_request_approval_disbursement
 #: model:ir.model,name:purchase_request_approval_disbursement.model_purchase_request_line
 msgid "Purchase Request Line"
 msgstr "คำขอซื้อขอจ้างไลน์"
@@ -127,6 +157,16 @@ msgid "Purchases count"
 msgstr ""
 
 #. module: purchase_request_approval_disbursement
+#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__state__returned
+msgid "Returned"
+msgstr "ตีกลับ"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__state__returned
+msgid "Returned"
+msgstr "ตีกลับ"
+
+#. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__submitted
 msgid "Submitted"
 msgstr "รออนุมัติ"
@@ -135,7 +175,9 @@ msgstr "รออนุมัติ"
 #. odoo-python
 #: code:addons/purchase_request_approval_disbursement/models/disbursement_request.py:0
 #, python-format
-msgid "This record has been created from: <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
+msgid ""
+"This record has been created from: <a href=\"%(link)s\" "
+"target=\"_blank\">%(name)s</a>"
 msgstr "เอกสารนี้ถูกสร้างจาก : <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
 
 #. module: purchase_request_approval_disbursement
@@ -149,11 +191,28 @@ msgid "Use Purchase Order"
 msgstr "สร้างสัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase_request_approval_disbursement
-#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__in_progress
-msgid "In Progress"
-msgstr "อยู่ระหว่างเบิกจ่าย"
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__contract_mode
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid "Contract Mode"
+msgstr "วิธีการดำเนินการ"
 
 #. module: purchase_request_approval_disbursement
-#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
-msgid "Purchase Request Approval Form"
-msgstr "แบบรายงานคำขอซื้อ/จ้าง (พจ.1)"
+#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__contract_mode__with_po
+msgid "Create Contract / Purchase Order"
+msgstr "สร้างสัญญา / ใบสั่งซื้อ / จ้าง"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__contract_mode__no_po
+msgid "No Contract / Purchase Order"
+msgstr "ไม่ทำสัญญา / ใบสั่งซื้อ / จ้าง"
+
+#. module: purchase_request_approval_disbursement
+#. odoo-python
+#: code:addons/purchase_request_approval_disbursement/models/purchase_request_approval.py:0
+#, python-format
+msgid ""
+"Please select 'Contract Mode' (Create Contract / Purchase Order, or No "
+"Contract) before proceeding."
+msgstr ""
+"กรุณาเลือก 'วิธีการดำเนินการ' (สร้างสัญญา/ใบสั่งซื้อ/จ้าง หรือ ไม่ทำสัญญา) "
+"ก่อนดำเนินการต่อ"

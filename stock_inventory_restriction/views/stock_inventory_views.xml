@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <record id="stock_inventory.menu_action_inventory_tree" model="ir.ui.menu">
-        <field name="groups_id" eval="[(4, ref('stock_inventory_restriction.can_do_inventory_adjustment'))]"/>
-    </record>
-</odoo>

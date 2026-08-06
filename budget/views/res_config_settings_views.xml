@@ -11,6 +11,17 @@
                 <div class="app_settings_block" data-string="Budget" string="Budget" data-key="budget" groups="budget.group_budget_manager">
                     <h2>การตั้งค่างบประมาณ</h2>
                     <div class="row mt16 o_settings_container" name="budget_settings">
+                        <div class="col-12 col-lg-6 o_setting_box" id="budget_overview_enabled_setting">
+                            <div class="o_setting_left_pane">
+                                <field name="budget_overview_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="budget_overview_enabled"/>
+                                <div class="text-muted">
+                                    แสดงหน้าภาพรวม (การ์ดตามประเภทงบ + การเคลื่อนไหวล่าสุด) เป็นหน้าแรกเมื่อเข้าโมดูลงบประมาณ — ปิดเพื่อซ่อนเมนูภาพรวม
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-12 col-lg-6 o_setting_box" id="budget_allow_negative_setting">
                             <div class="o_setting_left_pane">
                                 <field name="budget_allow_negative"/>

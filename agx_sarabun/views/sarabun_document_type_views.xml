@@ -1,62 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Tree View -->
-    <record id="sarabun_document_type_view_tree" model="ir.ui.view">
-        <field name="name">sarabun.document.type.view.tree</field>
+    <record id="view_sarabun_document_type_tree" model="ir.ui.view">
+        <field name="name">sarabun.document.type.tree</field>
         <field name="model">sarabun.document.type</field>
         <field name="arch" type="xml">
-            <tree string="Document Types">
+            <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="code"/>
-                <field name="sequence_id"/>
-                <field name="default_route_template_id"/>
+                <field name="kind"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
     </record>
 
-    <!-- Form View -->
-    <record id="sarabun_document_type_view_form" model="ir.ui.view">
-        <field name="name">sarabun.document.type.view.form</field>
+    <record id="view_sarabun_document_type_form" model="ir.ui.view">
+        <field name="name">sarabun.document.type.form</field>
         <field name="model">sarabun.document.type</field>
         <field name="arch" type="xml">
-            <form string="Document Type">
+            <form>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name"/>
-                        <h1>
-                            <field name="name" placeholder="e.g., Internal Memo"/>
-                        </h1>
+                        <h1><field name="name" placeholder="e.g. บันทึกข้อความกองคลัง"/></h1>
                     </div>
                     <group>
                         <group>
-                            <field name="code"/>
+                            <field name="kind"/>
                             <field name="sequence"/>
-                            <field name="active"/>
                         </group>
                         <group>
-                            <field name="sequence_id"/>
-                            <field name="default_route_template_id"/>
+                            <field name="active" widget="boolean_toggle"/>
                         </group>
                     </group>
-                    <group>
-                        <field name="description" placeholder="Description of this document type..."/>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                    <group string="Bindings">
+                        <div colspan="2" class="text-muted">
+                            Register sequence (P3), default seed route (P2) and report
+                            template (P5) bindings are added in their phases.
+                        </div>
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <!-- Action -->
     <record id="action_sarabun_document_type" model="ir.actions.act_window">
         <field name="name">Document Types</field>
         <field name="res_model">sarabun.document.type</field>
         <field name="view_mode">tree,form</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Create a document type
-            </p>
-        </field>
     </record>
 </odoo>

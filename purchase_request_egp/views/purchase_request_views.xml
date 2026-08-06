@@ -25,7 +25,7 @@
                 <page
                     string="e-GP"
                     name="egp_page"
-                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', 'not in', ('approved', 'in_progress', 'done'))]}"
+                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', 'not in', ('approved', 'in_progress', 'in_egp', 'done'))]}"
                 >
                     <group>
                         <!-- remove required in attrs -->
@@ -33,6 +33,7 @@
                             name="egp_project_id"
                             attrs="{
                                 'readonly': [('can_edit_egp', '=', False)],
+                                'required': [('egp_status', '=', 'in_progress')],
                             }"
                             class="o_required_modifier"
                         />
@@ -52,16 +53,8 @@
                     name="action_egp_in_progress"
                     type="object"
                     string="อยู่ในกระบวนการ e-GP"
-                    attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('egp_status', '!=', 'waiting')]}"
+                    attrs="{'invisible': ['|', ('state', '!=', 'in_egp'), ('egp_status', '!=', 'waiting')]}"
                     class="btn-primary"
-                />
-                <!-- Add reject button on state approved when EGP -->
-                <button
-                    name="button_rejected_egp"
-                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', '!=', 'approved')]}"
-                    string="Reject"
-                    type="object"
-                    groups="purchase_request.group_purchase_request_manager"
                 />
             </xpath>
             <xpath expr="//button[@type='action']" position="after">
@@ -172,6 +165,25 @@
                 <field
                     name="is_egp"
                     attrs="{'readonly': ['|', ('estimated_cost', '&gt;', 100000), ('is_editable', '=', False)]}"
+                />
+            </xpath>
+
+            <!-- Dual statusbar: KMITL view already sets the non-e-GP list;
+                 here we make it invisible when is_egp=True and add an e-GP
+                 statusbar after it. is_egp is present in this view via the
+                 xpath above. -->
+            <xpath expr="//form/header/field[@name='state']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('is_egp', '=', True)]}</attribute>
+            </xpath>
+
+            <xpath expr="//form/header/field[@name='state']" position="after">
+                <field
+                    name="state"
+                    widget="statusbar"
+                    statusbar_visible="draft,to_verify,to_submit,to_approve,in_egp,in_progress,done"
+                    attrs="{'invisible': [('is_egp', '=', False)]}"
                 />
             </xpath>
         </field>

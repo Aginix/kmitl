@@ -46,14 +46,14 @@
                             เลขที่เอกสาร
                             <span
                                 class="ms-2 fw-normal"
-                                t-out="o.main_sarabun_document_id.name"
+                                t-out="o.active_sarabun_document_id.name"
                             />
                         </div>
                         <div class="col">
                             วันที่
                             <span
                                 class="ms-2 fw-normal"
-                                t-esc="o.format_date_thai(o.main_sarabun_document_id.date)"
+                                t-esc="o.format_date_thai(o.active_sarabun_document_id.date)"
                             />
                         </div>
                     </div>
@@ -62,7 +62,7 @@
                             หน่วยงาน
                             <span
                                 class="ms-2"
-                                t-out="o.main_sarabun_document_id.sender_display"
+                                t-out="o.active_sarabun_document_id.sender_department_id.display_name"
                             />
                         </div>
                     </div>
@@ -71,7 +71,7 @@
                             เรื่อง
                             <span
                                 class="ms-2"
-                                t-out="o.main_sarabun_document_id.subject"
+                                t-out="o.active_sarabun_document_id.subject"
                             />
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                             เรียน
                             <span
                                 class="ms-2"
-                                t-out="o.main_sarabun_document_id.recipient"
+                                t-out="o.active_sarabun_document_id.addressee"
                             />
                         </div>
                     </div>
@@ -146,7 +146,7 @@
                                 <th>ลำดับ</th>
                                 <th class="text-center">รายละเอียด</th>
                                 <th class="text-center">จำนวน</th>
-                                <th class="text-end">ราคาต่อหน่วย</th>
+                                <th class="text-end">ราคา</th>
                                 <th class="text-end">จำนวนเงิน</th>
                             </tr>
                         </thead>
@@ -219,7 +219,7 @@
                         t-call="purchase_request_sarabun.report_purchase_request_budget"
                     />
 
-                    <div class="my-4"></div>
+                    <div class="my-4" />
                     <div class="mb-2">
                         และพร้อมกันนี้ได้แนบเอกสารประกอบการพิจารณา ดังนี้
                     </div>
@@ -233,7 +233,7 @@
                             ใบเสนอราคาพัสดุ จำนวน
                             <span
                                 class="fw-bolder text-decoration-underline"
-                                t-out="len(o.attachment_ids.filtered(lambda x: x.attachment_type == 'rfq'))"
+                                t-out="len(o.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_rfq')))"
                             />
                             ชุด
                         </li>
@@ -241,7 +241,7 @@
                             เอกสารคุณสมบัติ จำนวน
                             <span
                                 class="fw-bolder text-decoration-underline"
-                                t-out="len(o.attachment_ids.filtered(lambda x: x.attachment_type == 'tor'))"
+                                t-out="len(o.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_tor')))"
                             />
                             ชุด
                         </li>
@@ -249,12 +249,6 @@
                             t-call="purchase_request_sarabun.report_purchase_request_committee"
                         />
                     </ol>
-
-                    <div class="my-5" style="height: 10px" />
-
-                    <!-- <t
-                        t-call="purchase_request_sarabun.report_purchase_request_sign"
-                    /> -->
                 </div>
             </t>
         </xpath>
@@ -287,7 +281,7 @@
                 </ol>
             </li>
         </t>
-        <t t-else=""></t>
+        <t t-else="" />
         <li>
             ขออนุมัติแต่งตั้งคณะกรรมการตรวจรับพัสดุ ดังต่อไปนี้
             <ol>
@@ -341,28 +335,19 @@
         </table>
     </template>
 
-    <template id="report_purchase_request_sign">
-        <div class="my-5">
-            <div class="my-2 d-inline-block">
-                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้ขอให้จัดหา</div>
-                <div class="text-center my-2">
-                    ( <span t-field="o.requested_by" />
-                    )
-                </div>
-            </div>
-        </div>
-        <div class="my-5" />
-        <div class="my-5">
-            <div class="my-2 d-inline-block">
-                <div>ลงชื่อ <t t-out="'.' * 80" /></div>
-                <div class="text-center">
-                    ( <span t-field="o.requested_by" />
-                    )
-                </div>
-                <div class="text-center">
-                    คณบดี <span t-out="o.department_id.master_department_id.name" />
-                </div>
-            </div>
-        </div>
+    <!-- ADR-0007: append sarabun's เกษียน trail + signature block at the tail of the
+         source report (the origin embeds sarabun's block). Resolved from the origin
+         via active_sarabun_document_id; renders nothing until steps complete.
+         priority 99 so it applies after this module's layout replace. -->
+    <template
+        id="report_purchase_request_sarabun_endorsement"
+        inherit_id="purchase_request.report_purchase_request"
+        priority="99"
+    >
+        <xpath expr="//div[@class='page']" position="inside">
+            <t t-call="agx_sarabun.sarabun_endorsement_block">
+                <t t-set="doc" t-value="o.active_sarabun_document_id" />
+            </t>
+        </xpath>
     </template>
 </odoo>

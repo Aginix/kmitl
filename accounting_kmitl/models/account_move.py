@@ -6,12 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class AccountMove(models.Model):
     _name = "account.move"
-    _inherit = ["account.move", "budget.commitment.mixin",
-                "analytic.distribution.mixin"]
-
-    # Budget commitment mixin configuration
-    _commitment_id_field = "budget_commitment_id"
-    _commitment_account_id_field = "budget_account_id"
+    _inherit = ["account.move", "analytic.distribution.mixin", "base.exception"]
 
     # --- State ---
     state = fields.Selection(
@@ -19,19 +14,19 @@ class AccountMove(models.Model):
         ondelete={"submitted": "set default"},
     )
 
-    # --- Budget fields ---
-    budget_commitment_id = fields.Many2one(
-        "budget.commitment",
-        string="Budget Commitment",
-        copy=False,
-        help="Related budget commitment for this journal entry",
-    )
-    budget_account_id = fields.Many2one(
-        "budget.account",
-        string="Budget Account",
-        domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
-        help="Budget account to be used for commitment",
-    )
+    # --- Defaults ---
+    @api.model
+    def default_get(self, fields_list):
+        """Default Bill Date to today for vendor bills."""
+        res = super().default_get(fields_list)
+        move_type = self._context.get("default_move_type") or res.get("move_type")
+        if (
+            "invoice_date" in fields_list
+            and not res.get("invoice_date")
+            and move_type == "in_invoice"
+        ):
+            res["invoice_date"] = fields.Date.context_today(self)
+        return res
 
     # --- Compute ---
     @api.depends("date", "auto_post", "state")
@@ -49,10 +44,17 @@ class AccountMove(models.Model):
 
     # --- Actions ---
     def action_submit(self):
-        """Submit (lock) the journal entry; assign sequence number."""
+        """Submit (lock) the journal entry; assign sequence number.
+
+        Runs base_exception checks before locking so accidental entries
+        (e.g. same-account Dr/Cr self-canceling pair) are surfaced.
+        """
         for move in self:
             if move.state != "draft":
                 raise UserError(_("Only draft entries can be submitted."))
+        to_check = self.filtered(lambda m: not m.ignore_exception)
+        if to_check and to_check.detect_exceptions():
+            return to_check._popup_exceptions()
         self.write({"state": "submitted"})
         # Assign sequence number on submit
         for move in self.sorted(lambda m: (m.date, m.ref or "", m.id)):
@@ -68,23 +70,20 @@ class AccountMove(models.Model):
                     _("Only submitted entries can be reset to draft.")
                 )
             move.state = "draft"
+            move.exception_ids = False
+            move.main_exception_id = False
+            move.ignore_exception = False
         return True
 
-    def action_view_budget_commitment(self):
-        """View related budget commitment."""
-        self.ensure_one()
-        if not self.budget_commitment_id:
-            raise UserError(
-                _("No budget commitment linked to this journal entry")
-            )
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Budget Commitment"),
-            "res_model": "budget.commitment",
-            "res_id": self.budget_commitment_id.id,
-            "view_mode": "form",
-            "target": "current",
-        }
+    @api.model
+    def _get_popup_action(self):
+        return self.env.ref(
+            "accounting_kmitl.action_account_move_exception_confirm"
+        )
+
+    @api.model
+    def _reverse_field(self):
+        return "account_move_ids"
 
     # --- Budget validation ---
     def _check_analytic_distribution_complete(self):
@@ -124,30 +123,6 @@ class AccountMove(models.Model):
                         tax_inv.tax_invoice_number = ref
                 if not tax_inv.tax_invoice_date:
                     tax_inv.tax_invoice_date = move.date
-
-    # --- Onchange ---
-    @api.onchange("budget_commitment_id")
-    def _onchange_budget_commitment_id(self):
-        """Auto-populate budget account and analytic distribution
-        from budget commitment."""
-        if self.budget_commitment_id:
-            self.budget_account_id = self.budget_commitment_id.account_id
-            commitment = self.budget_commitment_id
-            analytic_accounts = {}
-            if commitment.activity_analytic_id:
-                analytic_accounts[commitment.activity_analytic_id.id] = 100
-                self.activity_analytic_id = commitment.activity_analytic_id
-            if commitment.department_analytic_id:
-                analytic_accounts[commitment.department_analytic_id.id] = 100
-                self.department_analytic_id = commitment.department_analytic_id
-            if commitment.fund_analytic_id:
-                analytic_accounts[commitment.fund_analytic_id.id] = 100
-                self.fund_analytic_id = commitment.fund_analytic_id
-            if commitment.source_analytic_id:
-                analytic_accounts[commitment.source_analytic_id.id] = 100
-                self.source_analytic_id = commitment.source_analytic_id
-            if analytic_accounts:
-                self.analytic_distribution = analytic_accounts
 
     @api.model_create_multi
     def create(self, vals_list):

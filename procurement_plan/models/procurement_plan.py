@@ -80,12 +80,6 @@ class ProcurementPlan(models.Model):
         readonly=False,
         tracking=True,
     )
-    procurement_method_id = fields.Many2one(
-        comodel_name="procurement.method",
-        string="Procurement Method",
-        required=False,
-        tracking=True,
-    )
     state = fields.Selection(
         [
             ("draft", "Draft"),
@@ -234,6 +228,7 @@ class ProcurementPlan(models.Model):
                 ) or _("New")
 
     def action_reset_to_draft(self):
+        self._release_plan_commitment()
         self.write({"state": "draft"})
 
     def action_new(self):
@@ -248,12 +243,13 @@ class ProcurementPlan(models.Model):
             or not self.approval_signing_eta
             or not self.contract_order_signing_eta
             or not self.acceptance_eta
-            or not self.procurement_method_id
         ):
             raise UserError(_("กรุณาระบุแผนการดำเนินงานให้เสร็จสิ้นทั้งหมด"))
+        self._reserve_plan_commitment()
         self.write({"state": "ready"})
 
     def action_on_hold(self):
+        self._release_plan_commitment()
         self.write({"state": "on_hold"})
 
     def action_in_progress(self):
@@ -261,6 +257,125 @@ class ProcurementPlan(models.Model):
 
     def action_done(self):
         self.write({"state": "done"})
+
+    def _reserve_plan_commitment(self):
+        """Reserve one shared budget.commitment for the plan when it is made
+        ready (D1). Idempotent: skips when an active (non-cancelled) commitment
+        already exists. Blocks on insufficient budget unless budget.allow_negative
+        is set. Downstream PR/PO/DR draw this single commitment down."""
+        self.ensure_one()
+        if self.budget_commitment_ids.filtered(lambda c: c.state != "cancel"):
+            return
+        if not self.budget_account_id:
+            raise UserError(
+                _("กรุณาระบุรหัสงบประมาณก่อนตั้งสถานะรอดำเนินการ")
+            )
+        if self.total_price <= 0:
+            raise UserError(
+                _("กรุณาระบุวงเงินรวมให้มากกว่า 0 ก่อนจองงบประมาณ")
+            )
+        analytic_data = {
+            "account_id": self.budget_account_id.id,
+            "activity_analytic_id": self.activity_analytic_id.id or False,
+            "department_analytic_id": self.department_analytic_id.id or False,
+            "fund_analytic_id": self.fund_analytic_id.id or False,
+            "source_analytic_id": self.source_analytic_id.id or False,
+            # The source appropriation is tagged with this plan's own
+            # procurement_plan dimension; the check must carry it too, otherwise
+            # the engine pins procurement_plan empty and excludes the very
+            # appropriation being drawn from (→ false "insufficient budget").
+            "procurement_plan_analytic_id": self.analytic_account_id.id or False,
+        }
+        allow_negative = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("budget.allow_negative", False)
+        )
+        if not allow_negative:
+            self.env["budget.controller"].check_budget_availability(
+                analytic_data,
+                self.total_price,
+                self.account_fiscal_year_id.id,
+                self.company_id.id,
+            )
+        commitment = self.env["budget.commitment"].create(
+            self._prepare_plan_commitment_vals()
+        )
+        commitment.action_reserve()
+        self.message_post(
+            body=_("จองงบประมาณ %s จำนวน %s")
+            % (
+                commitment.name,
+                format_amount(self.env, self.total_price, self.currency_id),
+            )
+        )
+
+    def _prepare_plan_commitment_vals(self):
+        """Build the create vals for the plan's shared reservation commitment.
+        Split out of ``_reserve_plan_commitment`` so bridge modules can enrich the
+        commitment — e.g. stamp the plan's operating unit so the reservation lands
+        in the same OU as the plan/appropriation — without re-implementing the
+        whole reservation flow."""
+        self.ensure_one()
+        dist = dict(self.analytic_distribution or {})
+        return {
+            "account_id": self.budget_account_id.id,
+            "amount": self.total_price,
+            "analytic_distribution": dist or False,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
+            "company_id": self.company_id.id,
+            "date": fields.Date.context_today(self),
+            "ref": self.name,
+            # ชื่อรายการของแผน = ชื่อใบจอง (budget.commitment._rec_name shows it
+            # next to the number, so a drawing document can tell reservations apart).
+            "title": self.description,
+            "description": self.description,
+            "procurement_plan_id": self.id,
+            "user_id": self.env.user.id,
+            "line_ids": [
+                (
+                    0,
+                    0,
+                    {
+                        "move_type": "reserve",
+                        "account_id": self.budget_account_id.id,
+                        "analytic_distribution": dist or False,
+                        "amount": self.total_price,
+                        "name": _("Initial reservation"),
+                    },
+                )
+            ],
+        }
+
+    def _release_plan_commitment(self):
+        """Release the plan's reservation when it leaves the active band
+        (on hold / reset to draft). Cancels the commitment only while it is still
+        untouched AND usage has not started; once the plan is in progress (a
+        downstream document has linked the reservation) or any obligate/consume
+        draw-down exists, the commitment is kept and a note is posted so in-flight
+        spending is never stranded (D3)."""
+        for plan in self:
+            in_use = plan.state == "in_progress"
+            for commitment in plan.budget_commitment_ids.filtered(
+                lambda c: c.state in ("reserved", "partial")
+            ):
+                if (
+                    in_use
+                    or commitment.total_obligated
+                    or commitment.total_consumed
+                ):
+                    plan.message_post(
+                        body=_(
+                            "งบประมาณที่จองไว้ (%s) มีการใช้งานแล้ว "
+                            "จึงไม่ยกเลิกการจอง"
+                        )
+                        % commitment.name
+                    )
+                    continue
+                commitment.action_cancel()
+                plan.message_post(
+                    body=_("ยกเลิกการจองงบประมาณ %s") % commitment.name
+                )
 
     can_edit = fields.Boolean(compute="_compute_can_edit")
 

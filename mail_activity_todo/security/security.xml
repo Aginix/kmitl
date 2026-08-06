@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- A read receipt is private: each user sees and manages only their own. -->
+    <record id="todo_read_own_rule" model="ir.rule">
+        <field name="name">Todo read receipts: own only</field>
+        <field name="model_id" ref="model_todo_read" />
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+    </record>
+
+    <!--
+      Completed-Todo history mirrors inbox visibility (ADR-0004). The core engine
+      restricts to Todos the user completed or that were addressed to them
+      personally. The role-in-unit layer adds a second (OR-combined) rule for
+      group Todos routed to a role the user holds in one of their units.
+    -->
+    <record id="todo_log_own_rule" model="ir.rule">
+        <field name="name">Completed Todos: own / completed by me</field>
+        <field name="model_id" ref="model_todo_log" />
+        <field
+            name="domain_force"
+        >['|', ('completed_by', '=', user.id), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+    </record>
+</odoo>

@@ -14,12 +14,12 @@
 
             <!-- Declare invisible computed fields in header -->
             <xpath
-                expr="//header/field[@name='is_editable']"
+                expr="//header/field[@name='has_active_disbursement']"
                 position="after"
             >
                 <field name="show_create_disbursement_button" invisible="1" />
-                <field name="show_create_advance_payment_button" invisible="1" />
                 <field name="advance_payment_count" invisible="1" />
+                <field name="has_advance_divergence" invisible="1" />
             </xpath>
 
             <!-- Override "Create Bill" button to use our computed visibility field -->
@@ -32,21 +32,11 @@
                 </attribute>
             </xpath>
 
-            <!-- Add "Create Advance Payment" button after "Create Bill" -->
-            <xpath
-                expr="//header/button[@name='action_create_disbursement_request']"
-                position="after"
-            >
-                <button
-                    name="action_create_advance_payment"
-                    string="Create Advance Payment"
-                    type="object"
-                    class="btn-primary oe_highlight"
-                    attrs="{'invisible': [('show_create_advance_payment_button', '=', False)]}"
-                />
-            </xpath>
+            <!-- Borrowing is pulled from the loan side: the participant opens
+                 their own สัญญายืม and picks this request (ADR-0003). There is
+                 deliberately no "Create Advance Payment" button here. -->
 
-            <!-- Add stat button for linked advance payment -->
+            <!-- Stat button: every loan drawn against this request -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button
                     name="action_view_advance_payment"
@@ -58,9 +48,57 @@
                     <field
                         name="advance_payment_count"
                         widget="statinfo"
-                        string="Advance Payment"
+                        string="สัญญายืมเงิน"
                     />
                 </button>
+            </xpath>
+
+            <!-- Borrowing headroom, visible from approval onwards -->
+            <xpath expr="//field[@name='total_actual_amount']" position="before">
+                <field name="borrowing_cap" invisible="1" />
+                <field
+                    name="borrowed_amount"
+                    widget="monetary"
+                    attrs="{'invisible': [('advance_payment_count', '=', 0)]}"
+                />
+                <field
+                    name="borrowing_headroom"
+                    widget="monetary"
+                    attrs="{'invisible': [('advance_payment_count', '=', 0)]}"
+                />
+            </xpath>
+
+            <!-- Funding Loan per เงินยืม row: which สัญญายืม the money came out
+                 of — chosen, not matched to the recipient (ADR-0003). -->
+            <xpath
+                expr="//field[@name='allocation_ids']/tree/field[@name='partner_bank_id']"
+                position="before"
+            >
+                <field
+                    name="advance_payment_id"
+                    domain="[('approval_request_id', '=', parent.id), ('state', '!=', 'cancel')]"
+                    options="{'no_create': True, 'no_create_edit': True}"
+                    attrs="{
+                        'readonly': [('parent.is_actual_editable', '=', False)],
+                        'required': ['&amp;', ('payment_type', '=', 'advance'),
+                                     ('parent.advance_payment_count', '!=', 0)],
+                        'column_invisible': [('parent.advance_payment_count', '=', 0)]
+                    }"
+                />
+            </xpath>
+
+            <!-- Divergence between what a borrower reported and what this
+                 request itemises against their loan -->
+            <xpath expr="//field[@name='allocation_ids']" position="before">
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    attrs="{'invisible': [('has_advance_divergence', '=', False)]}"
+                >
+                    <strong>ยอดไม่ตรงกับรายงานค่าใช้จ่ายของผู้ยืม</strong>
+                    — ผลรวมแถวเงินยืมของสัญญาบางใบไม่เท่ากับยอดที่ผู้ยืมรายงานไว้
+                    ตรวจสอบได้จากปุ่มสัญญายืมเงินด้านบน
+                </div>
             </xpath>
 
         </field>

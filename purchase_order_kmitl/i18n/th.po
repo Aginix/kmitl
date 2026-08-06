@@ -464,7 +464,7 @@ msgstr "<strong>การซื้อนี้ถูกยกเลิกแล�
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
 msgid "<strong>Unit Price</strong>"
-msgstr "<strong>ราคาต่อหน่วย</strong>"
+msgstr "<strong>ราคา</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
@@ -696,7 +696,7 @@ msgstr "อนุมัติสั่งซื้อ"
 #: model:ir.model,name:purchase_order_kmitl.model_ir_attachment
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
 msgid "Attachment"
-msgstr "การแนบ"
+msgstr "เอกสารแนบ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_attachment_count
@@ -3037,12 +3037,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_unit
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "Unit Price"
-msgstr "ราคาต่อหน่วย"
+msgstr "ราคา"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Unit Price:"
-msgstr "ราคาต่อหน่วย:"
+msgstr "ราคา:"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_uom
@@ -3362,13 +3362,13 @@ msgstr ""
 
 #. module: purchase_order_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form_invoice_plan
-msgid "ข้อมูล"
-msgstr ""
+msgid "Purchase Details"
+msgstr "ข้อมูล"
 
 #. module: purchase_order_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form_invoice_plan
-msgid "งวดงาน"
-msgstr ""
+msgid "Invoice Plan"
+msgstr "งวดงาน"
 
 #. module: purchase_no_rfq
 #: model_terms:ir.ui.view,arch_db:purchase_no_rfq.purchase_order_form

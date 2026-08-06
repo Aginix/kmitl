@@ -6,16 +6,46 @@
         id="menu_accounting_root"
         name="Accounting"
         web_icon="accounting_kmitl,static/description/icon.png"
-        sequence="55"
+        sequence="7"
         groups="accounting_kmitl.group_accounting_kmitl_user"
     />
 
-    <!-- ใบตั้งเจ้าหนี้ (Vendor Bills) -->
+    <!-- Dashboard (landing page — lowest sequence so it opens first) -->
+    <menuitem
+        id="menu_accounting_dashboard"
+        name="Dashboard"
+        parent="menu_accounting_root"
+        action="action_accounting_dashboard"
+        sequence="5"
+    />
+
+    <!-- เจ้าหนี้ (Accounts Payable) -->
+    <menuitem
+        id="menu_payable"
+        name="เจ้าหนี้"
+        parent="menu_accounting_root"
+        sequence="10"
+    />
     <menuitem
         id="menu_vendor_bills"
-        name="ใบตั้งเจ้าหนี้"
-        parent="menu_accounting_root"
+        name="ใบตั้งหนี้"
+        parent="menu_payable"
         action="account.action_move_in_invoice_type"
+        sequence="10"
+    />
+
+    <!-- ลูกหนี้ (Accounts Receivable) -->
+    <menuitem
+        id="menu_receivable"
+        name="ลูกหนี้"
+        parent="menu_accounting_root"
+        sequence="11"
+    />
+    <menuitem
+        id="menu_receivable_bills"
+        name="ใบตั้งหนี้"
+        parent="menu_receivable"
+        action="account.action_move_out_invoice_type"
         sequence="10"
     />
 
@@ -30,9 +60,9 @@
     <menuitem
         id="menu_vendor_payment_moves"
         name="ใบล้างเจ้าหนี้"
-        parent="menu_accounting_root"
+        parent="menu_payable"
         action="action_vendor_payment_moves"
-        sequence="15"
+        sequence="20"
     />
 
     <!-- Journal Entries -->
@@ -42,6 +72,32 @@
         parent="menu_accounting_root"
         action="account.action_move_journal_line"
         sequence="20"
+    />
+
+    <!-- All account.move entries (รายการเดินบัญชี) under Journal Entries -->
+    <menuitem
+        id="menu_account_entries"
+        name="Account Entries"
+        parent="menu_journal_entries"
+        action="action_account_entries"
+        sequence="5"
+    />
+
+    <!-- All Journal Items (account.move.line) under Journal Entries -->
+    <record id="action_account_move_lines_all" model="ir.actions.act_window">
+        <field name="name">Journal Items</field>
+        <field name="res_model">account.move.line</field>
+        <field name="view_mode">tree,pivot,graph,kanban,form</field>
+        <field name="search_view_id" ref="account.view_account_move_line_filter"/>
+        <field name="domain">[('display_type', 'not in', ('line_section', 'line_note'))]</field>
+        <field name="context">{'search_default_group_by_move': 1, 'create': 0}</field>
+    </record>
+    <menuitem
+        id="menu_journal_items_all"
+        name="Journal Items"
+        parent="menu_journal_entries"
+        action="action_account_move_lines_all"
+        sequence="10"
     />
 
     <!-- Reports submenu (placeholder — extend ผ่านโมดูล report ในอนาคต) -->
@@ -80,6 +136,20 @@
         parent="menu_accounting_config"
         action="account.action_tax_form"
         sequence="30"
+    />
+    <menuitem
+        id="menu_config_payment_methods"
+        name="Payment Methods"
+        parent="menu_accounting_config"
+        action="action_account_payment_method"
+        sequence="40"
+    />
+    <menuitem
+        id="menu_config_payment_method_lines"
+        name="Payment Method Lines"
+        parent="menu_accounting_config"
+        action="action_account_payment_method_line"
+        sequence="50"
     />
 
 </odoo>

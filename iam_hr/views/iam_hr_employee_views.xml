@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
+     IAM-scoped, read-only employee views used to spot employees that are not
+     yet linked to a backend user (res.users). We read hr.employee.public (the
+     SQL-view projection every internal user may read), so the IAM manager
+     never needs hr.employee access (mirrors the department views' philosophy).
+     Only public-projection fields are ever shown. -->
+<odoo>
+
+    <record id="iam_hr_view_employee_search" model="ir.ui.view">
+        <field name="name">hr.employee.public.search.iam</field>
+        <field name="model">hr.employee.public</field>
+        <field name="arch" type="xml">
+            <search string="Employees">
+                <field
+                    name="name"
+                    string="Employee"
+                    filter_domain="['|', ('name', 'ilike', self), ('work_email', 'ilike', self)]"
+                />
+                <field name="department_id" />
+                <separator />
+                <filter
+                    name="iam_no_user"
+                    string="Without User"
+                    domain="[('user_id', '=', False)]"
+                />
+                <filter
+                    name="iam_has_user"
+                    string="With User"
+                    domain="[('user_id', '!=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_department"
+                        string="Department"
+                        context="{'group_by': 'department_id'}"
+                    />
+                    <filter
+                        name="group_company"
+                        string="Company"
+                        context="{'group_by': 'company_id'}"
+                        groups="base.group_multi_company"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="iam_hr_view_employee_tree" model="ir.ui.view">
+        <field name="name">hr.employee.public.tree.iam</field>
+        <field name="model">hr.employee.public</field>
+        <field name="arch" type="xml">
+            <tree string="Employees" create="0">
+                <field name="name" />
+                <field name="department_id" />
+                <field name="job_title" />
+                <field name="work_email" />
+                <field name="user_id" />
+                <field name="company_id" groups="base.group_multi_company" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="iam_hr_view_employee_form" model="ir.ui.view">
+        <field name="name">hr.employee.public.form.iam</field>
+        <field name="model">hr.employee.public</field>
+        <field name="arch" type="xml">
+            <form string="Employee" create="0" edit="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="department_id" />
+                            <field name="job_title" />
+                        </group>
+                        <group>
+                            <field name="work_email" widget="email" />
+                            <field name="user_id" />
+                            <field name="company_id" groups="base.group_multi_company" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_iam_employee" model="ir.actions.act_window">
+        <field name="name">Employees</field>
+        <field name="res_model">hr.employee.public</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="iam_hr_view_employee_search" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No employees found</p>
+            <p>Use the <b>Without User</b> / <b>With User</b> filters to review
+                which employees are linked to a backend user.</p>
+        </field>
+    </record>
+    <record id="action_iam_employee_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1" />
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="iam_hr_view_employee_tree" />
+        <field name="act_window_id" ref="action_iam_employee" />
+    </record>
+    <record id="action_iam_employee_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2" />
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="iam_hr_view_employee_form" />
+        <field name="act_window_id" ref="action_iam_employee" />
+    </record>
+
+</odoo>

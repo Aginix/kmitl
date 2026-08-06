@@ -1,0 +1,591 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* receipt_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-05-29 00:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: receipt_kmitl
+#: model:ir.model,name:receipt_kmitl.model_kmitl_receipt
+msgid "KMITL Cash Receipt"
+msgstr "ใบเสร็จรับเงิน สจล."
+
+#. module: receipt_kmitl
+#: model:ir.model,name:receipt_kmitl.model_kmitl_receipt_line
+msgid "KMITL Receipt Line"
+msgstr "รายการใบเสร็จรับเงิน"
+
+#. module: receipt_kmitl
+#: model:ir.model,name:receipt_kmitl.model_kmitl_payment_method
+msgid "Receipt Payment Method"
+msgstr "วิธีชำระเงินของใบเสร็จ"
+
+#. module: receipt_kmitl
+#: model:ir.model,name:receipt_kmitl.model_kmitl_cash_deposit
+msgid "Cash Deposit Slip"
+msgstr "ใบนำส่งเงินสด"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__name
+msgid "Receipt Number"
+msgstr "เลขที่ใบเสร็จ"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__date
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Date"
+msgstr "วันที่"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__department_id
+msgid "Issuing Department"
+msgstr "หน่วยงานผู้ออก"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__payment_method_id
+#: model:ir.actions.act_window,name:receipt_kmitl.action_payment_method
+#: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_payment_methods
+msgid "Payment Method"
+msgstr "วิธีชำระเงิน"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__partner_id
+msgid "Partner"
+msgstr "คู่ค้า"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__customer_name
+msgid "Customer Name (snapshot)"
+msgstr "ชื่อลูกค้า (สำเนา)"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__customer_tax_id
+msgid "Tax ID (snapshot)"
+msgstr "เลขประจำตัวผู้เสียภาษี (สำเนา)"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__customer_address
+msgid "Customer Address (snapshot)"
+msgstr "ที่อยู่ลูกค้า (สำเนา)"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__customer_branch_code
+msgid "Branch Code (snapshot)"
+msgstr "รหัสสาขา (สำเนา)"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__line_ids
+msgid "Lines"
+msgstr "รายการ"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__move_id
+msgid "Journal Entry"
+msgstr "รายการบัญชี"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__deposit_id
+msgid "Cash Deposit"
+msgstr "ใบนำส่งเงินสด"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__user_id
+msgid "Issued By"
+msgstr "ออกโดย"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__state__draft
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_cash_deposit__state__draft
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
+msgid "Draft"
+msgstr "ร่าง"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__state__confirmed
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
+msgid "Confirmed"
+msgstr "ยืนยันแล้ว"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__state__posted
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_cash_deposit__state__posted
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
+msgid "Posted"
+msgstr "ลงบัญชีแล้ว"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__state__cancelled
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_cash_deposit__state__cancelled
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
+msgid "Cancelled"
+msgstr "ยกเลิกแล้ว"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_cash_deposit__state__submitted
+msgid "Submitted"
+msgstr "ส่งแล้ว"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__product_id
+msgid "Product"
+msgstr "สินค้า"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__name
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Description"
+msgstr "รายการ"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__account_id
+msgid "Income Account"
+msgstr "บัญชีรายได้"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__journal_id
+msgid "Journal"
+msgstr "สมุดรายวัน"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,help:receipt_kmitl.field_kmitl_payment_method__journal_id
+msgid "Journal used for the receipt's journal entry."
+msgstr "สมุดรายวันที่ใช้บันทึกรายการบัญชีของใบเสร็จ"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__account_id
+msgid "Debit Account"
+msgstr "บัญชีเดบิต"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,help:receipt_kmitl.field_kmitl_payment_method__account_id
+msgid ""
+"GL account debited when a receipt using this payment method is posted (e.g. "
+"cash on hand, bank clearing)."
+msgstr ""
+"บัญชีแยกประเภทที่ถูกเดบิตเมื่อมีการลงบัญชีใบเสร็จที่ใช้วิธีชำระเงินนี้ "
+"(เช่น เงินสดในมือ บัญชีพักธนาคาร)"
+
+#. module: receipt_kmitl
+#: model:ir.model.constraint,message:receipt_kmitl.constraint_kmitl_payment_method_name_unique
+msgid "Payment method name must be unique."
+msgstr "ชื่อวิธีชำระเงินต้องไม่ซ้ำกัน"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__payment_type
+msgid "Payment Type"
+msgstr "ประเภทการชำระเงิน"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__cash
+msgid "Cash"
+msgstr "เงินสด"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__cheque
+msgid "Cheque"
+msgstr "เช็ค"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__transfer
+msgid "Money Transfer"
+msgstr "เงินโอน"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__other
+msgid "Other"
+msgstr "อื่นๆ"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_cash_deposit__name
+msgid "Deposit Number"
+msgstr "เลขที่ใบนำส่ง"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_cash_deposit__department_id
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
+msgid "Department"
+msgstr "หน่วยงาน"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_cash_deposit__receipt_ids
+#: model:ir.actions.act_window,name:receipt_kmitl.action_receipt_kmitl
+#: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_root
+#: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_receipts
+msgid "Receipts"
+msgstr "ใบเสร็จรับเงิน"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_res_users__kmitl_department_ids
+msgid "KMITL Departments"
+msgstr "หน่วยงาน สจล."
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_res_config_settings__receipt_kmitl_walkin_partner_id
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.res_config_settings_view_form_receipt_kmitl
+msgid "Walk-in Partner"
+msgstr "คู่ค้าทั่วไป (Walk-in)"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,help:receipt_kmitl.field_res_config_settings__receipt_kmitl_walkin_partner_id
+msgid ""
+"Default partner used on KMITL receipts when no specific partner is selected."
+msgstr "คู่ค้าเริ่มต้นที่ใช้บนใบเสร็จรับเงิน สจล. เมื่อไม่ได้เลือกคู่ค้าที่เฉพาะเจาะจง"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.res_config_settings_view_form_receipt_kmitl
+msgid "Default partner used on receipts when no specific partner is selected."
+msgstr "คู่ค้าเริ่มต้นที่ใช้บนใบเสร็จเมื่อไม่ได้เลือกคู่ค้าที่เฉพาะเจาะจง"
+
+#. module: receipt_kmitl
+#: model:ir.actions.act_window,name:receipt_kmitl.action_receipt_kmitl_config
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.res_config_settings_view_form_receipt_kmitl
+msgid "KMITL Receipt Settings"
+msgstr "ตั้งค่าใบเสร็จรับเงิน สจล."
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.res_config_settings_view_form_receipt_kmitl
+msgid "KMITL Receipt"
+msgstr "ใบเสร็จรับเงิน สจล."
+
+#. module: receipt_kmitl
+#: model:ir.actions.act_window,name:receipt_kmitl.action_cash_deposit
+#: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_cash_deposits
+msgid "Cash Deposits"
+msgstr "ใบนำส่งเงินสด"
+
+#. module: receipt_kmitl
+#: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_operations
+msgid "Operations"
+msgstr "การดำเนินงาน"
+
+#. module: receipt_kmitl
+#: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_configuration
+msgid "Configuration"
+msgstr "การตั้งค่า"
+
+#. module: receipt_kmitl
+#: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_settings
+msgid "Settings"
+msgstr "ตั้งค่า"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
+msgid "Confirm"
+msgstr "ยืนยัน"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
+msgid "Post"
+msgstr "ลงบัญชี"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_cash_deposit_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_cash_deposit_form
+msgid "Reset to Draft"
+msgstr "กลับเป็นร่าง"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
+msgid "Header"
+msgstr "ส่วนหัว"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
+msgid "Customer"
+msgstr "ลูกค้า"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_cash_deposit_form
+msgid "Notes"
+msgstr "หมายเหตุ"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
+msgid "Accounting"
+msgstr "บัญชี"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
+msgid "Pending Deposit"
+msgstr "รอนำส่ง"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
+msgid "State"
+msgstr "สถานะ"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_cash_deposit_form
+msgid "Pull Pending Receipts"
+msgstr "ดึงใบเสร็จที่รอนำส่ง"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_cash_deposit_form
+msgid "Submit to Treasury"
+msgstr "ส่งให้สำนักคลัง"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_cash_deposit_form
+msgid "Review & Post"
+msgstr "ตรวจสอบและลงบัญชี"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Receipt"
+msgstr "ใบเสร็จรับเงิน"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Receipt No.:"
+msgstr "เลขที่:"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Date:"
+msgstr "วันที่:"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Department:"
+msgstr "หน่วยงาน:"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Customer:"
+msgstr "ผู้ชำระเงิน:"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Tax ID:"
+msgstr "เลขประจำตัวผู้เสียภาษี:"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Branch:"
+msgstr "สาขา:"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Qty"
+msgstr "จำนวน"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Unit Price"
+msgstr "ราคา"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Total"
+msgstr "รวมทั้งสิ้น"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Payment Method:"
+msgstr "วิธีชำระเงิน:"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Received by"
+msgstr "ผู้รับเงิน"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "Authorized by"
+msgstr "ผู้มีอำนาจลงนาม"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "CANCELLED"
+msgstr "ยกเลิก"
+
+#. module: receipt_kmitl
+#: model:ir.module.category,name:receipt_kmitl.module_category_receipt_kmitl
+msgid "Receipt KMITL"
+msgstr "ใบเสร็จรับเงิน สจล."
+
+#. module: receipt_kmitl
+#: model:res.groups,name:receipt_kmitl.group_receipt_kmitl_cashier
+msgid "Cashier"
+msgstr "พนักงานการเงิน"
+
+#. module: receipt_kmitl
+#: model:res.groups,name:receipt_kmitl.group_receipt_kmitl_central_finance
+msgid "Central Finance"
+msgstr "การเงินกลาง"
+
+#. module: receipt_kmitl
+#: model:res.groups,name:receipt_kmitl.group_receipt_kmitl_manager
+msgid "Central Finance Manager"
+msgstr "ผู้จัดการการเงินกลาง"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Only draft receipts can be confirmed."
+msgstr "สามารถยืนยันได้เฉพาะใบเสร็จที่เป็นร่างเท่านั้น"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Add at least one line before confirming."
+msgstr "กรุณาเพิ่มรายการอย่างน้อยหนึ่งรายการก่อนยืนยัน"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Line '%s' has no income account."
+msgstr "รายการ '%s' ยังไม่ได้ระบุบัญชีรายได้"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Line '%s' must have a positive amount."
+msgstr "รายการ '%s' ต้องมีจำนวนเงินมากกว่าศูนย์"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Only confirmed receipts can be posted (%s)."
+msgstr "สามารถลงบัญชีได้เฉพาะใบเสร็จที่ยืนยันแล้ว (%s)"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Receipt %s"
+msgstr "ใบเสร็จ %s"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Payment method '%s' has no debit account."
+msgstr "วิธีชำระเงิน '%s' ยังไม่ได้ระบุบัญชีเดบิต"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid ""
+"Posted receipts cannot be cancelled. Use a reversal/credit note from "
+"Accounting."
+msgstr ""
+"ใบเสร็จที่ลงบัญชีแล้วไม่สามารถยกเลิกได้ "
+"กรุณาใช้การกลับรายการ/ใบลดหนี้จากระบบบัญชี"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid ""
+"Receipt %s is in cash deposit %s; remove it from the deposit first."
+msgstr "ใบเสร็จ %s อยู่ในใบนำส่งเงิน %s กรุณานำออกจากใบนำส่งก่อน"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Only cancelled receipts can be reset to draft."
+msgstr "สามารถกลับเป็นร่างได้เฉพาะใบเสร็จที่ยกเลิกแล้วเท่านั้น"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Only draft or cancelled receipts can be deleted."
+msgstr "สามารถลบได้เฉพาะใบเสร็จที่เป็นร่างหรือยกเลิกแล้วเท่านั้น"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "Can only pull receipts on draft deposits."
+msgstr "ดึงใบเสร็จได้เฉพาะใบนำส่งที่เป็นร่างเท่านั้น"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "No pending confirmed receipts found for this department."
+msgstr "ไม่พบใบเสร็จที่ยืนยันแล้วและรอนำส่งของหน่วยงานนี้"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "Only draft deposits can be submitted."
+msgstr "สามารถส่งได้เฉพาะใบนำส่งที่เป็นร่างเท่านั้น"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "Add at least one receipt before submitting."
+msgstr "กรุณาเพิ่มใบเสร็จอย่างน้อยหนึ่งใบก่อนส่ง"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "Receipt %s must be confirmed."
+msgstr "ใบเสร็จ %s ต้องอยู่ในสถานะยืนยันแล้ว"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "Receipt %s belongs to a different department."
+msgstr "ใบเสร็จ %s อยู่คนละหน่วยงาน"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "Receipt %s belongs to a different company."
+msgstr "ใบเสร็จ %s อยู่คนละบริษัท"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "Receipt %s uses a different currency than the deposit."
+msgstr "ใบเสร็จ %s ใช้สกุลเงินต่างจากใบนำส่ง"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "Only submitted deposits can be posted."
+msgstr "สามารถลงบัญชีได้เฉพาะใบนำส่งที่ส่งแล้วเท่านั้น"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "Receipt %s is not in confirmed state."
+msgstr "ใบเสร็จ %s ไม่ได้อยู่ในสถานะยืนยันแล้ว"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "Posted deposits cannot be cancelled."
+msgstr "ใบนำส่งที่ลงบัญชีแล้วไม่สามารถยกเลิกได้"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "Only submitted or cancelled deposits can reset."
+msgstr "สามารถกลับเป็นร่างได้เฉพาะใบนำส่งที่ส่งแล้วหรือยกเลิกแล้วเท่านั้น"
+
+#. module: receipt_kmitl
+#: code:addons/receipt_kmitl/models/cash_deposit.py:0
+#, python-format
+msgid "Posted deposits cannot be deleted."
+msgstr "ใบนำส่งที่ลงบัญชีแล้วไม่สามารถลบได้"

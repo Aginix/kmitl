@@ -57,11 +57,35 @@ class BankPaymentExport(models.Model):
     # -------------------------------------------------------------------------
     # Overrides: accept submitted payments instead of posted
     # -------------------------------------------------------------------------
+    def _transfer_payment_method(self):
+        """The KMITL เงินโอน method — the only one an e-payment file carries."""
+        return self.env.ref(
+            "account_kmitl.payment_method_transfer_out",
+            raise_if_not_found=False,
+        )
+
     def _check_constraint_create_bank_payment_export(self, payments):
         """Override to accept submitted payments instead of posted."""
         comment_template = payments[0].bank_payment_template_id
         previous_currency = False
+        method_transfer_out = self._transfer_payment_method()
         for payment in payments:
+            if payment.kmitl_payment_type_id.is_cheque:
+                raise UserError(
+                    _("Cheque payments cannot be exported to the bank: %s")
+                    % payment.name
+                )
+            if (
+                method_transfer_out
+                and payment.payment_method_id != method_transfer_out
+            ):
+                raise UserError(
+                    _(
+                        "You can export bank payments with the '%s' payment "
+                        "method only."
+                    )
+                    % method_transfer_out.name
+                )
             if payment.bank_payment_template_id != comment_template:
                 raise UserError(
                     _("All payments must have the same bank payment template.")
@@ -78,24 +102,36 @@ class BankPaymentExport(models.Model):
                 )
             previous_currency = payment.currency_id
 
-    def action_confirm(self):
-        """Trigger tier validation on exported payments after confirm."""
-        res = super().action_confirm()
-        for line in self.export_line_ids:
-            move = line.payment_id.move_id
-            if move.need_validation and move.state == "submitted":
-                move.request_validation()
-        return res
+    # -------------------------------------------------------------------------
+    # E-payment result confirmation (manual, whole batch)
+    # -------------------------------------------------------------------------
+    def action_mark_all_epayment_success(self):
+        self.mapped("export_line_ids")._apply_epayment_result("success")
+
+    def action_mark_all_epayment_failed(self):
+        self.mapped("export_line_ids")._apply_epayment_result("failed")
 
     # -------------------------------------------------------------------------
     def _domain_payment_id(self):
+        """Select submitted KMITL transfer payments (instead of posted Manual
+        ones) when pulling every payment into an export batch."""
         domain = super()._domain_payment_id()
-        # Replace ("state", "=", "posted") with ("state", "=", "submitted")
+        method_transfer_out = self._transfer_payment_method()
         new_domain = []
         for leaf in domain:
             if isinstance(leaf, (list, tuple)) and leaf[0] == "state":
                 new_domain.append(("state", "=", "submitted"))
+            elif (
+                isinstance(leaf, (list, tuple))
+                and leaf[0] == "payment_method_id"
+                and method_transfer_out
+            ):
+                new_domain.append(
+                    ("payment_method_id", "=", method_transfer_out.id)
+                )
             else:
                 new_domain.append(leaf)
+        # Cheques are handed over physically, never sent in an e-payment file.
+        new_domain.append(("kmitl_payment_type_id.is_cheque", "=", False))
         return new_domain
 

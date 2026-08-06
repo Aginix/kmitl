@@ -53,21 +53,21 @@
                         </h1>
                     </div>
                     <group>
-                        <group string="มิติบัญชี">
+                        <group name="analytic_dimensions" string="มิติบัญชี">
                             <field name="account_fiscal_year_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="source_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="budget_type" required="1" attrs="{'readonly': [('id', '!=', False)]}" />
                             <field name="appropriation_type" />
                         </group>
-                        <group string="ข้อมูลทั่วไป">
+                        <group name="general_info" string="ข้อมูลทั่วไป">
                             <field name="date" invisible="1" />
                             <field name="user_id" widget="many2one_avatar_user" readonly="1" groups="!base.group_erp_manager" />
                             <field name="user_id" widget="many2one_avatar_user" groups="base.group_erp_manager" />
                             <field name="ref" />
                             <field name="note" />
                         </group>
-                        <group string="การเชื่อมโยง" attrs="{'invisible': [('state', '!=', 'posted')]}">
+                        <group name="linkage" string="การเชื่อมโยง" attrs="{'invisible': [('state', '!=', 'posted')]}">
                             <field name="budget_move_id" readonly="1" />
                         </group>
                     </group>
@@ -239,7 +239,7 @@
                 <separator />
                 <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter name="group_by_state" string="สถานะ" context="{'group_by': 'state'}" />
                     <filter name="group_by_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'account_fiscal_year_id'}" />
                     <filter name="group_by_source" string="แหล่งเงิน" context="{'group_by': 'source_analytic_id'}" />
@@ -266,7 +266,7 @@
                 <separator />
                 <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter name="group_by_state" string="สถานะ" context="{'group_by': 'parent_state'}" />
                     <filter name="group_by_budget_type" string="ประเภท" context="{'group_by': 'budget_type'}" />
                     <filter name="group_by_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'account_fiscal_year_id'}" />
@@ -415,7 +415,7 @@
                 <filter name="review" string="รอตรวจสอบ" domain="[('parent_state', '=', 'review')]" />
                 <filter name="posted" string="อนุมัติแล้ว" domain="[('parent_state', '=', 'posted')]" />
                 <separator />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter name="group_by_deduct_analytic" string="ส่วนงานที่หักโอน" context="{'group_by': 'deduct_analytic_id'}" />
                     <filter name="group_by_account" string="รายการ" context="{'group_by': 'account_id'}" />
                     <filter name="group_by_appropriation" string="เลขที่จัดสรร" context="{'group_by': 'appropriation_id'}" />

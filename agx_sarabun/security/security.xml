@@ -9,7 +9,6 @@
         </record>
 
         <!-- User Groups -->
-        <!-- Sarabun User inherits from base.group_user to get mail.activity access -->
         <record id="group_sarabun_user" model="res.groups">
             <field name="name">User</field>
             <field name="category_id" ref="module_category_sarabun"/>
@@ -20,14 +19,19 @@
             <field name="name">Manager</field>
             <field name="category_id" ref="module_category_sarabun"/>
             <field name="implied_ids" eval="[(4, ref('group_sarabun_user'))]"/>
-            <field name="users" eval="[(4, ref('base.user_admin'))]" />
+            <field name="users" eval="[(4, ref('base.user_admin'))]"/>
         </record>
     </data>
 
     <data noupdate="0">
-        <!-- Record Rules -->
+        <!-- ============================================================
+             P1 record rules — sender + manager only.
+             Route-visibility for step actors (sender + actors of active/
+             completed routing steps; future/waiting steps hidden) is added in
+             P4 once sarabun.routing.step exists — see DESIGN.md §6 / ADR.
+             ============================================================ -->
 
-        <!-- Users can see documents where they are sender -->
+        <!-- A user sees the หนังสือ they authored -->
         <record id="sarabun_document_sender_rule" model="ir.rule">
             <field name="name">Sarabun Document: Sender Access</field>
             <field name="model_id" ref="model_sarabun_document"/>
@@ -36,34 +40,34 @@
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
-        </record>
-
-        <!-- Users can read documents where they are recipient -->
-        <record id="sarabun_document_recipient_rule" model="ir.rule">
-            <field name="name">Sarabun Document: Recipient Read Access</field>
-            <field name="model_id" ref="model_sarabun_document"/>
-            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
-            <field name="domain_force">[('recipient_ids.user_id', '=', user.id)]</field>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- Users can read documents where they have activities assigned -->
-        <record id="sarabun_document_activity_rule" model="ir.rule">
-            <field name="name">Sarabun Document: Activity Access</field>
+        <!-- Reached actor (READ ONLY) — the visibility key (ADR-0013). A user may read
+             a หนังสือ once it has REACHED them, i.e. they hold (or have ever held) a
+             sarabun.step.recipient row on any of its steps. Keyed on the STORED
+             reached_user_ids, which aggregates recipient users across ACTIVE +
+             ARCHIVED steps (resolved active_test=False): being involved is a property
+             of the หนังสือ, not of the current attempt, so read PERSISTS after the
+             หนังสือ completes and across ตีกลับ / ดึงกลับ / Reset — a raw
+             routing_step_ids traversal would drop prior-attempt holders once the chain
+             is archived (the join injects active_test on sarabun.routing.step). Same
+             permanent per-person ledger as the Incoming box, so the two never diverge;
+             waiting/future steps (no recipient yet) still grant nothing. Read-only:
+             only the sender may write, only a manager may delete (route actions run
+             authority-check-then-sudo). -->
+        <record id="sarabun_document_actor_rule" model="ir.rule">
+            <field name="name">Sarabun Document: Reached Actor (read)</field>
             <field name="model_id" ref="model_sarabun_document"/>
             <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
-            <field name="domain_force">[('activity_ids.user_id', '=', user.id)]</field>
+            <field name="domain_force">[('reached_user_ids', 'in', user.id)]</field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- Managers can see all documents -->
+        <!-- Managers see everything -->
         <record id="sarabun_document_manager_rule" model="ir.rule">
             <field name="name">Sarabun Document: Manager Access</field>
             <field name="model_id" ref="model_sarabun_document"/>
@@ -71,52 +75,102 @@
             <field name="domain_force">[(1, '=', 1)]</field>
         </record>
 
-        <!-- Company rule -->
+        <!-- Multi-company -->
         <record id="sarabun_document_company_rule" model="ir.rule">
             <field name="name">Sarabun Document: Multi-company</field>
             <field name="model_id" ref="model_sarabun_document"/>
-            <field name="domain_force">[
-                '|', ('company_id', '=', False), ('company_id', 'in', company_ids)
-            ]</field>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
         </record>
 
-        <!-- Routing Line Rules -->
-        <!-- Users can see all routing lines of documents they are involved in -->
-        <record id="sarabun_routing_line_user_rule" model="ir.rule">
-            <field name="name">Sarabun Routing Line: User Access</field>
-            <field name="model_id" ref="model_sarabun_routing_line"/>
+        <!-- Routing steps: visible to the document's sender, the step's snapshot
+             actors, and the actor who acted. (Full Route-visibility on the
+             document itself — incl. activating step actors — lands in P4.) -->
+        <!-- A step is readable iff its parent document is readable: an actor who can
+             see the document sees the whole Route (เกษียน trail / who-acts-next).
+             Write/create allowed so the action methods (act_on_step: insert for
+             Direct, reassign for Delegate, stamp on complete) can run as the acting
+             user; the active-step-actor authority check lives in the method, not the
+             rule (DESIGN §6.7/6.8). -->
+        <record id="sarabun_routing_step_user_rule" model="ir.rule">
+            <field name="name">Sarabun Routing Step: User Access</field>
+            <field name="model_id" ref="model_sarabun_routing_step"/>
             <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+            <!-- A step is readable iff its parent document is: the sender, or anyone
+                 the หนังสือ has ever reached (reached_user_ids — spans archived
+                 attempts, unlike the active-scoped routing_step_ids traversal). -->
             <field name="domain_force">[
                 '|',
-                ('document_id.sender_user_id', '=', user.id),
-                ('document_id.recipient_ids.user_id', '=', user.id)
+                    ('document_id.sender_user_id', '=', user.id),
+                    ('document_id.reached_user_ids', 'in', user.id)
             ]</field>
         </record>
-
-        <!-- Recipient Rules -->
-        <!-- Users can see recipients where they are the recipient or sender of document -->
-        <record id="sarabun_recipient_user_rule" model="ir.rule">
-            <field name="name">Sarabun Recipient: User Access</field>
-            <field name="model_id" ref="model_sarabun_document_recipient"/>
-            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
-            <field name="domain_force">[
-                '|',
-                ('document_id.sender_user_id', '=', user.id),
-                ('user_id', '=', user.id)
-            ]</field>
-        </record>
-
-        <!-- Managers can see all recipients -->
-        <record id="sarabun_recipient_manager_rule" model="ir.rule">
-            <field name="name">Sarabun Recipient: Manager Access</field>
-            <field name="model_id" ref="model_sarabun_document_recipient"/>
+        <record id="sarabun_routing_step_manager_rule" model="ir.rule">
+            <field name="name">Sarabun Routing Step: Manager Access</field>
+            <field name="model_id" ref="model_sarabun_routing_step"/>
             <field name="groups" eval="[(4, ref('group_sarabun_manager'))]"/>
             <field name="domain_force">[(1, '=', 1)]</field>
         </record>
 
-        <!-- Route Template - All users can read -->
+        <!-- Side models scoped to the parent หนังสือ's readability (ADR-0013). Both
+             previously carried NO ir.rule, so any Sarabun user could read the full
+             recipient ledger / step↔activity links of documents they cannot open. -->
+
+        <!-- sarabun.step.recipient — the per-person reach/read ledger. Read-only for
+             users (rows are engine-minted via sudo); readable iff the parent document
+             is (sender or reached). Managers see all. -->
+        <record id="sarabun_step_recipient_user_rule" model="ir.rule">
+            <field name="name">Sarabun Step Recipient: parent-document scope (read)</field>
+            <field name="model_id" ref="model_sarabun_step_recipient"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="domain_force">[
+                '|',
+                    ('document_id.sender_user_id', '=', user.id),
+                    ('document_id.reached_user_ids', 'in', user.id)
+            ]</field>
+        </record>
+        <record id="sarabun_step_recipient_manager_rule" model="ir.rule">
+            <field name="name">Sarabun Step Recipient: Manager Access</field>
+            <field name="model_id" ref="model_sarabun_step_recipient"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- sarabun.routing.step.activity — the step↔activity link. Read-only for
+             users, scoped to the parent document's readability (write/unlink trimmed
+             off — the link is engine-owned, created/cleared via sudo). Managers manage. -->
+        <record id="sarabun_routing_step_activity_user_rule" model="ir.rule">
+            <field name="name">Sarabun Step↔Activity Link: parent-document scope (read)</field>
+            <field name="model_id" ref="model_sarabun_routing_step_activity"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="domain_force">[
+                '|',
+                    ('step_id.document_id.sender_user_id', '=', user.id),
+                    ('step_id.document_id.reached_user_ids', 'in', user.id)
+            ]</field>
+        </record>
+        <record id="sarabun_routing_step_activity_manager_rule" model="ir.rule">
+            <field name="name">Sarabun Step↔Activity Link: Manager Access</field>
+            <field name="model_id" ref="model_sarabun_routing_step_activity"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- Route templates: all users may read (to select a seed); managers manage. -->
         <record id="sarabun_route_template_read_rule" model="ir.rule">
-            <field name="name">Sarabun Route Template: Read Access</field>
+            <field name="name">Sarabun Route Template: Read</field>
             <field name="model_id" ref="model_sarabun_route_template"/>
             <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
             <field name="domain_force">[(1, '=', 1)]</field>
@@ -124,22 +178,6 @@
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
-        </record>
-
-        <!-- Managers can manage route templates -->
-        <record id="sarabun_route_template_manager_rule" model="ir.rule">
-            <field name="name">Sarabun Route Template: Manager Access</field>
-            <field name="model_id" ref="model_sarabun_route_template"/>
-            <field name="groups" eval="[(4, ref('group_sarabun_manager'))]"/>
-            <field name="domain_force">[(1, '=', 1)]</field>
-        </record>
-
-        <!-- Inbox Rules -->
-        <record id="sarabun_inbox_user_rule" model="ir.rule">
-            <field name="name">Sarabun Inbox: Own Records Only</field>
-            <field name="model_id" ref="model_sarabun_inbox"/>
-            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
-            <field name="domain_force">[('user_id', '=', user.id)]</field>
         </record>
     </data>
 </odoo>

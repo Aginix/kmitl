@@ -1,0 +1,101 @@
+/** @odoo-module **/
+
+import { Component, useState, useRef, useExternalListener } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
+
+/**
+ * A small reusable multi-select / single-select that searches records with
+ * the native ``name_search`` RPC (the same call the standard autocomplete
+ * uses) and renders the picks as removable badges. Used for the journal /
+ * partner / account filters and the four KMITL dimensions.
+ *
+ * Props:
+ *  - resModel: model to search
+ *  - domain: base domain applied to the search
+ *  - placeholder: input placeholder
+ *  - single: keep at most one selection (used for the account code range)
+ *  - selected: Array<{id, name}> currently selected (controlled by parent)
+ *  - onChange: called with the new Array<{id, name}>
+ *  - withOnlySelf: render an "only the specified entry" checkbox below the box
+ *    (used by the hierarchical KMITL dimension filters)
+ *  - onlySelf: current state of that checkbox (controlled by parent)
+ *  - onOnlySelfChange: called with the new boolean when the checkbox toggles
+ */
+export class MultiRecordSelect extends Component {
+    setup() {
+        this.orm = useService("orm");
+        this.state = useState({ query: "", open: false, options: [] });
+        this.root = useRef("root");
+        useExternalListener(window, "mousedown", (ev) => this.onClickAway(ev));
+    }
+
+    get selected() {
+        return this.props.selected || [];
+    }
+
+    get inputVisible() {
+        return !this.props.single || this.selected.length === 0;
+    }
+
+    onClickAway(ev) {
+        if (this.root.el && !this.root.el.contains(ev.target)) {
+            this.state.open = false;
+        }
+    }
+
+    async _search(query) {
+        const selectedIds = this.selected.map((r) => r.id);
+        const domain = [...(this.props.domain || []), ["id", "not in", selectedIds]];
+        const results = await this.orm.call(this.props.resModel, "name_search", [], {
+            name: query || "",
+            args: domain,
+            operator: "ilike",
+            limit: 12,
+        });
+        this.state.options = results.map(([id, name]) => ({ id, name }));
+    }
+
+    async onFocus() {
+        this.state.open = true;
+        await this._search(this.state.query);
+    }
+
+    async onInput(ev) {
+        this.state.query = ev.target.value;
+        this.state.open = true;
+        await this._search(this.state.query);
+    }
+
+    add(option) {
+        const next = this.props.single ? [option] : [...this.selected, option];
+        this.state.query = "";
+        this.state.options = [];
+        this.state.open = false;
+        this.props.onChange(next);
+    }
+
+    remove(id) {
+        this.props.onChange(this.selected.filter((r) => r.id !== id));
+    }
+}
+
+MultiRecordSelect.template = "accounting_kmitl_reports.MultiRecordSelect";
+MultiRecordSelect.props = {
+    resModel: String,
+    domain: { type: Array, optional: true },
+    placeholder: { type: String, optional: true },
+    single: { type: Boolean, optional: true },
+    selected: { type: Array, optional: true },
+    onChange: Function,
+    withOnlySelf: { type: Boolean, optional: true },
+    onlySelf: { type: Boolean, optional: true },
+    onOnlySelfChange: { type: Function, optional: true },
+};
+MultiRecordSelect.defaultProps = {
+    domain: [],
+    placeholder: "",
+    single: false,
+    selected: [],
+    withOnlySelf: false,
+    onlySelf: false,
+};

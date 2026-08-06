@@ -37,11 +37,6 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
                 {"name": "Test Procurement"}
             )
 
-        # Purchase type
-        cls.purchase_type = cls.env["purchase.type"].search(
-            [("is_default", "=", True)], limit=1
-        )
-
         # Procurement method
         cls.procurement_method = cls.env["procurement.method"].search([], limit=1)
         if not cls.procurement_method:
@@ -199,7 +194,7 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         pr.action_create_advance_payment()
         ap = pr.advance_payment_id
         # Simulate approval + disbursement (bypass actual payment creation)
-        ap.write({"state": "approved", "disbursement_state": "pending"})
+        ap.write({"state": "waiting_transfer", "disbursement_state": "pending"})
         msg_count_before = len(pr.message_ids)
         ap.action_start()
         pr.invalidate_recordset()
@@ -217,7 +212,7 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
                 "loan_reason": "Standalone",
             }
         )
-        ap.write({"state": "approved"})
+        ap.write({"state": "waiting_transfer"})
         # Should not raise even without reference
         ap.action_start()
         self.assertEqual(ap.state, "in_progress")

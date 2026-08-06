@@ -14,9 +14,12 @@ class AdvancePaymentExceptionConfirm(models.TransientModel):
     def action_confirm(self):
         self.ensure_one()
         if self.ignore and not self.exception_ids.filtered("is_blocking"):
-            self.related_model_id.button_draft()
+            # Ignoring non-blocking exceptions: re-run the submit so the
+            # request advances properly (assigns the number, checks the
+            # one-active rule, posts the message) — now that the exception is
+            # ignored the popup is skipped.
             self.related_model_id.ignore_exception = True
-            self.related_model_id.state = "submitted"
+            self.related_model_id.action_submit()
         else:
             self.related_model_id.ignore_exception = False
         return super().action_confirm()

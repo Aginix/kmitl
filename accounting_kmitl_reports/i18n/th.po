@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-12 00:00+0000\n"
-"PO-Revision-Date: 2026-05-12 00:00+0700\n"
+"POT-Creation-Date: 2026-06-05 00:00+0000\n"
+"PO-Revision-Date: 2026-06-05 00:00+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -17,24 +17,616 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model:ir.actions.client,name:accounting_kmitl_reports.action_trial_balance_kmitl
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_trial_balance_kmitl
 #: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_trial_balance_kmitl
-msgid "งบทดลอง"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Trial Balance"
+msgstr "งบทดลอง"
 
 #. module: accounting_kmitl_reports
-#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_pl_kmitl
 #: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_pl_kmitl
-msgid "งบกำไรขาดทุน"
-msgstr ""
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_pl_kmitl
+msgid "Profit and Loss"
+msgstr "งบกำไรขาดทุน"
 
 #. module: accounting_kmitl_reports
-#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_bs_kmitl
 #: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_bs_kmitl
-msgid "งบแสดงฐานะการเงิน"
-msgstr ""
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_bs_kmitl
+msgid "Balance Sheet"
+msgstr "งบแสดงฐานะการเงิน"
 
 #. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/cash_flow/cash_flow.xml:0
+#: model:ir.actions.client,name:accounting_kmitl_reports.action_cash_flow_kmitl
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_cash_flow_kmitl
 #: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_cf_kmitl
-#: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_cf_kmitl
-msgid "งบกระแสเงินสด"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.cash_flow_kmitl
+msgid "Cash Flow Statement"
+msgstr "งบกระแสเงินสด"
+
+#. module: accounting_kmitl_reports
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "From"
+msgstr "ตั้งแต่"
+
+#. module: accounting_kmitl_reports
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "to"
+msgstr "ถึง"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Account"
+msgstr "บัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Opening"
+msgstr "ยอดยกมา"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "During Period"
+msgstr "ระหว่างงวด"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Ending"
+msgstr "ยอดคงเหลือ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Debit"
+msgstr "เดบิต"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Credit"
+msgstr "เครดิต"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Balance"
+msgstr "ยอดดุล"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Total"
+msgstr "รวม"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Print PDF"
+msgstr "พิมพ์ PDF"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Export Excel"
+msgstr "ส่งออก Excel"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Date From"
+msgstr "วันที่เริ่มต้น"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Date To"
+msgstr "วันที่สิ้นสุด"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Posted entries only"
+msgstr "เฉพาะรายการที่ลงบัญชีแล้ว"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Hide accounts at 0"
+msgstr "ซ่อนบัญชีที่ยอดเป็นศูนย์"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "More filters"
+msgstr "ตัวกรองเพิ่มเติม"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Hide journal / partner / account filters"
+msgstr "ซ่อนตัวกรองสมุดรายวัน / คู่ค้า / บัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Account code range"
+msgstr "ช่วงรหัสบัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Loading..."
+msgstr "กำลังโหลด..."
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "No data"
+msgstr "ไม่มีข้อมูล"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Departments"
+msgstr "ส่วนงาน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Sources"
+msgstr "แหล่งเงิน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Funds"
+msgstr "กองทุน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Activities"
+msgstr "กิจกรรม"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Journals"
+msgstr "สมุดรายวัน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Partners"
+msgstr "คู่ค้า"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Accounts"
+msgstr "บัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+msgid "From code"
+msgstr "จากรหัส"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+msgid "To code"
+msgstr "ถึงรหัส"
+
+#. module: accounting_kmitl_reports
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_cash_flow_kmitl_xlsx
+msgid "Cash Flow Statement (XLSX)"
+msgstr "งบกระแสเงินสด (XLSX)"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Operating Activities"
+msgstr "กระแสเงินสดจากกิจกรรมดำเนินงาน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Investing Activities"
+msgstr "กระแสเงินสดจากกิจกรรมลงทุน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Financing Activities"
+msgstr "กระแสเงินสดจากกิจกรรมจัดหาเงิน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Net profit (loss)"
+msgstr "กำไร(ขาดทุน)สุทธิ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Changes in operating assets and liabilities"
+msgstr "การเปลี่ยนแปลงในสินทรัพย์และหนี้สินดำเนินงาน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Net cash from operating activities"
+msgstr "เงินสดสุทธิจากกิจกรรมดำเนินงาน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Net cash from investing activities"
+msgstr "เงินสดสุทธิจากกิจกรรมลงทุน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Net cash from financing activities"
+msgstr "เงินสดสุทธิจากกิจกรรมจัดหาเงิน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Net increase (decrease) in cash"
+msgstr "เงินสดเพิ่ม(ลด)สุทธิ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Cash at beginning of period"
+msgstr "เงินสดต้นงวด"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Cash at end of period"
+msgstr "เงินสดปลายงวด"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/cash_flow/cash_flow.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.cash_flow_kmitl
+msgid "Item"
+msgstr "รายการ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/cash_flow/cash_flow.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.cash_flow_kmitl
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model:ir.actions.act_window,name:accounting_kmitl_reports.action_general_ledger_wizard_kmitl
+#: model:ir.actions.client,name:accounting_kmitl_reports.action_general_ledger_kmitl
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_ledger_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_general_ledger_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "General Ledger"
+msgstr "บัญชีแยกประเภท"
+
+#. module: accounting_kmitl_reports
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_ledger_kmitl_xlsx
+msgid "General Ledger (XLSX)"
+msgstr "บัญชีแยกประเภท (XLSX)"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Date"
+msgstr "วันที่"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Entry"
+msgstr "เลขที่ใบสำคัญ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Journal"
+msgstr "สมุดรายวัน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Partner"
+msgstr "คู่ค้า"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Label"
+msgstr "คำอธิบาย"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_ledger_kmitl_xlsx
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Opening Balance"
+msgstr "ยอดยกมา"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_ledger_kmitl_xlsx
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Ending Balance"
+msgstr "ยอดคงเหลือ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Change criteria"
+msgstr "เปลี่ยนเงื่อนไข"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "No entries for the selected criteria."
+msgstr "ไม่มีรายการตามเงื่อนไขที่เลือก"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Open"
+msgstr "เปิด"
+
+#. module: accounting_kmitl_reports
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.view_general_ledger_wizard_kmitl_form
+msgid "View Report"
+msgstr "ดูรายงาน"
+
+#. module: accounting_kmitl_reports
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.view_general_ledger_wizard_kmitl_form
+msgid "Leave empty for all accounts"
+msgstr "เว้นว่างเพื่อแสดงทุกบัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Issue"
+msgstr "เลขที่"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Remark"
+msgstr "หมายเหตุ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Cheque"
+msgstr "เช็ค"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Carried Forward"
+msgstr "ยอดยกไป"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Maker"
+msgstr "ผู้ทำ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Narration"
+msgstr "บันทึกย่อ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
+msgid "Fund"
+msgstr "กองทุน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
+msgid "Activity"
+msgstr "กิจกรรม"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
+msgid "Source"
+msgstr "แหล่งเงิน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Balance brought forward"
+msgstr "ยอดยกมา (หน้าก่อน)"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Previous page"
+msgstr "หน้าก่อนหน้า"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Next page"
+msgstr "หน้าถัดไป"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Rows per page"
+msgstr "แถวต่อหน้า"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_journal_kmitl.py:0
+#: code:addons/accounting_kmitl_reports/static/src/general_journal/general_journal.js:0
+#: model:ir.actions.client,name:accounting_kmitl_reports.action_general_journal_kmitl
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_journal_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_general_journal_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_journal_kmitl
+msgid "General Journal"
+msgstr "สมุดรายวันทั่วไป"
+
+#. module: accounting_kmitl_reports
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_journal_kmitl_xlsx
+msgid "General Journal (XLSX)"
+msgstr "สมุดรายวันทั่วไป (XLSX)"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/aged_partner_balance/aged_partner_balance.js:0
+#: model:ir.actions.client,name:accounting_kmitl_reports.action_aged_receivable_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_aged_receivable_kmitl
+msgid "Aged Receivable"
+msgstr "ลูกหนี้ตามอายุ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/aged_partner_balance/aged_partner_balance.js:0
+#: model:ir.actions.client,name:accounting_kmitl_reports.action_aged_payable_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_aged_payable_kmitl
+msgid "Aged Payable"
+msgstr "เจ้าหนี้ตามอายุ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_journal_kmitl.py:0
+#: code:addons/accounting_kmitl_reports/static/src/general_journal/general_journal.js:0
+msgid "Number"
+msgstr "เลขที่"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_journal/general_journal.js:0
+msgid "Reference"
+msgstr "อ้างอิง"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_journal_kmitl.py:0
+msgid "Dimensions"
+msgstr "มิติทางบัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_journal_kmitl.py:0
+#: code:addons/accounting_kmitl_reports/static/src/general_journal/general_journal.js:0
+msgid "Date-Time"
+msgstr "วันเวลา"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: code:addons/accounting_kmitl_reports/static/src/general_journal/general_journal.xml:0
+msgid "Expand all"
+msgstr "ขยายทุกแถว"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Only the specified entry"
+msgstr "เฉพาะรายการที่เลือก (ไม่รวมระดับย่อย)"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/aged_partner_balance/aged_partner_balance.xml:0
+#: code:addons/accounting_kmitl_reports/static/src/cash_flow/cash_flow.xml:0
+#: code:addons/accounting_kmitl_reports/static/src/general_journal/general_journal.js:0
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Export CSV"
+msgstr "ส่งออก CSV"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/aged_partner_balance_kmitl.py:0
+#: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
+#: code:addons/accounting_kmitl_reports/models/trial_balance_kmitl.py:0
+msgid "Account Code"
+msgstr "รหัสบัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/aged_partner_balance_kmitl.py:0
+#: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
+#: code:addons/accounting_kmitl_reports/models/trial_balance_kmitl.py:0
+msgid "Account Name"
+msgstr "ชื่อบัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/trial_balance_kmitl.py:0
+msgid "Opening Debit"
+msgstr "เดบิตยอดยกมา"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/trial_balance_kmitl.py:0
+msgid "Opening Credit"
+msgstr "เครดิตยอดยกมา"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/trial_balance_kmitl.py:0
+msgid "Period Debit"
+msgstr "เดบิตระหว่างงวด"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/trial_balance_kmitl.py:0
+msgid "Period Credit"
+msgstr "เครดิตระหว่างงวด"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/trial_balance_kmitl.py:0
+msgid "Period Balance"
+msgstr "ยอดดุลระหว่างงวด"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/trial_balance_kmitl.py:0
+msgid "Ending Debit"
+msgstr "เดบิตยอดคงเหลือ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/trial_balance_kmitl.py:0
+msgid "Ending Credit"
+msgstr "เครดิตยอดคงเหลือ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
+msgid "Counterpart Account"
+msgstr "บัญชีคู่"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/aged_partner_balance_kmitl.py:0
+msgid "Current"
+msgstr "ยังไม่ถึงกำหนด"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/aged_partner_balance_kmitl.py:0
+msgid "1-30"
+msgstr "1-30 วัน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/aged_partner_balance_kmitl.py:0
+msgid "31-60"
+msgstr "31-60 วัน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/aged_partner_balance_kmitl.py:0
+msgid "61-90"
+msgstr "61-90 วัน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/aged_partner_balance_kmitl.py:0
+msgid "91-120"
+msgstr "91-120 วัน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/aged_partner_balance_kmitl.py:0
+msgid "120+"
+msgstr "มากกว่า 120 วัน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Section"
+msgstr "หมวด"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Type"
+msgstr "ประเภท"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Group"
+msgstr "กลุ่มย่อย"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Detail"
+msgstr "รายละเอียด"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Subtotal"
+msgstr "ยอดรวมย่อย"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/cash_flow_statement_kmitl.py:0
+msgid "Summary"
+msgstr "สรุป"

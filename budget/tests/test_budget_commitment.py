@@ -131,6 +131,7 @@ class TestBudgetCommitment(TransactionCase):
         """Create a commitment in draft state with a single reserve line."""
         vals = {
             "date": date.today(),
+            "title": "Test commitment",
             "account_id": (account_id or self.account_1).id,
             "amount": amount,
             "analytic_distribution": self._header_analytic(),
@@ -182,6 +183,7 @@ class TestBudgetCommitment(TransactionCase):
         c = self.env["budget.commitment"].create(
             {
                 "date": date.today(),
+                "title": "Test commitment",
                 "account_id": self.account_1.id,
                 "amount": 50_000,
                 "analytic_distribution": self._header_analytic(),
@@ -398,6 +400,7 @@ class TestBudgetCommitment(TransactionCase):
             self.env["budget.commitment"].create(
                 {
                     "date": date.today(),
+                "title": "Test commitment",
                     "account_id": self.account_1.id,
                     "amount": 0,
                     "analytic_distribution": self._header_analytic(),
@@ -413,6 +416,7 @@ class TestBudgetCommitment(TransactionCase):
             self.env["budget.commitment"].create(
                 {
                     "date": date.today(),
+                "title": "Test commitment",
                     "account_id": self.account_1.id,
                     "amount": -1,
                     "analytic_distribution": self._header_analytic(),
@@ -526,3 +530,139 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(c.total_consumed, 50_000)
         self.assertNotEqual(c1.budget_move_id, c2.budget_move_id)
         self.assertEqual(len(c.budget_move_ids), 2)
+
+    # ====================================================================
+    # 14. Phase 1 — state-machine guards & auto-transitions
+    # ====================================================================
+
+    def test_200_b1_block_obligate_on_draft(self):
+        """B1: a forward obligate is rejected while the commitment is draft."""
+        c = self._create_commitment(100_000)  # stays draft (no action_reserve)
+        with self.assertRaises(UserError):
+            self._add_line(c, "obligate", 50_000)
+
+    def test_201_b3_auto_done_on_full_consume(self):
+        """B3: state auto-advances to done when consumption reaches the reservation."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 100_000)
+        self.assertEqual(c.state, "partial")
+        self._add_line(c, "consume", 100_000)
+        self.assertEqual(c.state, "done")
+
+    def test_202_b3_revert_to_reserved_on_cancel(self):
+        """B3: cancelling the only obligation reverts partial -> reserved."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        ob = self._add_line(c, "obligate", 40_000)
+        self.assertEqual(c.state, "partial")
+        ob.action_cancel()
+        self.assertEqual(c.state, "reserved")
+
+    def test_203_b1_reversal_allowed_after_done(self):
+        """B1: a refund (negative consume) is postable after done and reopens it."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 100_000)
+        self._add_line(c, "consume", 100_000)
+        self.assertEqual(c.state, "done")
+        # Negative consume = refund: allowed even though state is done.
+        self._add_line(c, "consume", -10_000)
+        self.assertEqual(c.total_consumed, 90_000)
+        self.assertEqual(c.state, "partial")  # auto-reopened by _sync_state
+
+    def test_204_b2_negative_net_total_blocked(self):
+        """B2: a reversal that drives a net total below zero is rejected."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        # Nothing consumed yet; a -10k consume would make total_consumed negative.
+        with self.assertRaises(ValidationError):
+            self._add_line(c, "consume", -10_000)
+
+    def test_205_appropriation_move_defaults_initial(self):
+        """FIX-1: appropriation moves auto-get 'initial'; entry/explicit are untouched."""
+        Move = self.env["budget.move"]
+        appro = Move.create({"move_type": "appropriation", "budget_type": "expense"})
+        self.assertEqual(appro.appropriation_type, "initial")
+        entry = Move.create({"move_type": "entry", "budget_type": "expense"})
+        self.assertFalse(entry.appropriation_type)
+        explicit = Move.create(
+            {
+                "move_type": "appropriation",
+                "budget_type": "expense",
+                "appropriation_type": "supplementary",
+            }
+        )
+        self.assertEqual(explicit.appropriation_type, "supplementary")
+
+    # ====================================================================
+    # 6. Return leftover reserved budget (ส่งคืนเงินเหลือจ่าย / คืนจอง)
+    # ====================================================================
+
+    def _return_wizard(self, commitment, **ctx):
+        """Open + return the leftover via the confirmation wizard."""
+        action = commitment.action_return_leftover()
+        self.assertEqual(action["res_model"], "budget.commitment.return.wizard")
+        wizard = (
+            self.env["budget.commitment.return.wizard"]
+            .with_context(**action["context"], **ctx)
+            .create({})
+        )
+        return wizard
+
+    def test_60_return_leftover_releases_reservation(self):
+        """Returning the leftover posts a -reserve line and closes the commitment."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        # Disburse 550 (obligate + consume together, like the DR flow).
+        self._add_line(c, "obligate", 550)
+        self._add_line(c, "consume", 550)
+        self.assertEqual(c.available_to_obligate, 50)
+        self.assertEqual(c.state, "partial")
+        wizard = self._return_wizard(c)
+        self.assertEqual(wizard.return_amount, 50)
+        wizard.action_confirm()
+        # Reserved dropped to consumed; leftover back in the pool; commitment done.
+        self.assertEqual(c.total_reserved, 550)
+        self.assertEqual(c.available_to_obligate, 0)
+        self.assertEqual(c.state, "done")
+        ret = c.line_ids.filtered(lambda l: l.is_return)
+        self.assertEqual(len(ret), 1)
+        self.assertEqual(ret.move_type, "reserve")
+        self.assertEqual(ret.amount, -50)
+        self.assertFalse(ret.budget_move_id)  # no GL/budget move for คืนจอง
+
+    def test_61_return_inherits_reserve_account_and_dims(self):
+        """The return line mirrors the first reserve line's account + dimensions."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "obligate", 500)
+        self._add_line(c, "consume", 500)
+        self._return_wizard(c).action_confirm()
+        ret = c.line_ids.filtered(lambda l: l.is_return)
+        self.assertEqual(ret.account_id, c.account_id)
+        self.assertEqual(ret.analytic_distribution, self._line_analytic())
+
+    def test_62_return_stamps_source_document_from_context(self):
+        """A return opened from a source doc stamps res_model/res_id for audit."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "obligate", 550)
+        self._add_line(c, "consume", 550)
+        wizard = self._return_wizard(
+            c, default_res_model="budget.commitment", default_res_id=c.id
+        )
+        wizard.action_confirm()
+        ret = c.line_ids.filtered(lambda l: l.is_return)
+        self.assertEqual(ret.res_model, "budget.commitment")
+        self.assertEqual(ret.res_id, c.id)
+
+    def test_63_return_blocked_when_nothing_left(self):
+        """No leftover -> the action refuses to open the wizard."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "obligate", 600)
+        self._add_line(c, "consume", 600)
+        self.assertEqual(c.available_to_obligate, 0)
+        with self.assertRaises(UserError):
+            c.action_return_leftover()

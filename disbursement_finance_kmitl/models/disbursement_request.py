@@ -1,11 +1,57 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+
+# Groups that gate each post-bill payment-execution step.
+AUDITOR_GROUP = "disbursement_finance_kmitl.group_disbursement_payment_auditor"
+AUTHORIZER_GROUP = (
+    "disbursement_finance_kmitl.group_disbursement_payment_authorizer"
+)
+FINANCE_GROUP = "disbursement_finance_kmitl.group_disbursement_payment_finance"
+
+# Execution Todos fanned out to the group responsible for the next step.
+TO_AUDIT_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_audit"
+TO_AUTHORIZE_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_authorize"
+TO_PAY_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_pay"
 
 
 class DisbursementRequest(models.Model):
+    """Post-bill payment-execution workflow on the disbursement request.
+
+    After the accounting office posts the vendor bills (``bills_posted``), the
+    request enters a second, forward-only approval phase that is separate from
+    the pre-bill request approval (signed/verified/approved):
+
+        bills_posted
+          -> payment_audited      (auditor       : action_audit)
+          -> payment_authorized   (rector delegate: action_authorize)
+          -> paid                 (finance        : action_confirm_paid)
+          -> cleared              (accounting posts the payment move through the
+                                   account.move maker-checker; set in
+                                   account_move._post)
+
+    Budget was already obligated/consumed once at ``approved`` and is never
+    touched again here.
+    """
+
     _inherit = "disbursement.request"
+
+    state = fields.Selection(
+        selection_add=[
+            ("payment_audited", "Payment Audited"),
+            ("payment_authorized", "Authorized for Disbursement"),
+            ("paid", "Paid"),
+            ("cleared", "Cleared"),
+            ("cancel",),
+        ],
+        ondelete={
+            "payment_audited": "set default",
+            "payment_authorized": "set default",
+            "paid": "set default",
+            "cleared": "set default",
+        },
+    )
 
     pipeline_status = fields.Selection(
         selection_add=[
@@ -25,110 +71,253 @@ class DisbursementRequest(models.Model):
             ("payment_draft", "Payment Draft"),
             ("payment_posted", "Payment Posted"),
             ("done", "Done"),
+            ("payment_audited", "Payment Audited"),
+            ("payment_authorized", "Authorized for Disbursement"),
+            ("paid", "Paid"),
+            ("cleared", "Cleared"),
         ],
         ondelete={
             "payment_draft": "set default",
             "payment_posted": "set default",
             "done": "set default",
+            "payment_audited": "set default",
+            "payment_authorized": "set default",
+            "paid": "set default",
+            "cleared": "set default",
         },
     )
 
-    payment_ids = fields.Many2many(
+    # One2many via the stored back-reference on account.payment, so payment
+    # progress recomputes reactively (no search() inside computes).
+    payment_ids = fields.One2many(
         comodel_name="account.payment",
-        compute="_compute_payment_ids",
+        inverse_name="disbursement_request_id",
         string="Payments",
+        copy=False,
     )
     payment_count = fields.Integer(
-        compute="_compute_payment_ids",
+        compute="_compute_payment_info",
         string="Payment Count",
     )
     payment_status_display = fields.Char(
         string="Payment Status",
-        compute="_compute_payment_ids",
+        compute="_compute_payment_info",
     )
     payment_move_ids = fields.Many2many(
         comodel_name="account.move",
-        compute="_compute_payment_ids",
+        compute="_compute_payment_info",
         string="Payment Journal Entries",
     )
     payment_move_count = fields.Integer(
-        compute="_compute_payment_ids",
+        compute="_compute_payment_info",
         string="Payment Move Count",
     )
 
-    @api.depends("bill_ids", "bill_ids.state", "bill_ids.payment_state")
-    def _compute_payment_ids(self):
-        Payment = self.env["account.payment"]
+    @api.depends("payment_ids", "payment_ids.state", "payment_ids.move_id")
+    def _compute_payment_info(self):
         for rec in self:
-            payments = Payment
-            for bill in rec.bill_ids:
-                payments |= bill._get_reconciled_payments()
-                payments |= Payment.search([
-                    ("to_reconcile_payment_line_ids.move_id", "=", bill.id),
-                ])
-            active_payments = payments.filtered(lambda p: p.state != "cancel")
-            rec.payment_ids = active_payments
-            total = len(active_payments)
+            active = rec.payment_ids.filtered(lambda p: p.state != "cancel")
+            total = len(active)
             rec.payment_count = total
-            posted = len(
-                active_payments.filtered(lambda p: p.state == "posted")
-            )
+            posted = len(active.filtered(lambda p: p.state == "posted"))
             rec.payment_status_display = (
                 _("จ่ายแล้ว %s/%s", posted, total) if total else ""
             )
-            payment_moves = active_payments.mapped("move_id")
-            rec.payment_move_ids = payment_moves
-            rec.payment_move_count = len(payment_moves)
+            moves = active.mapped("move_id")
+            rec.payment_move_ids = moves
+            rec.payment_move_count = len(moves)
 
     @api.depends(
+        "state",
         "bill_ids",
         "bill_ids.state",
         "bill_ids.payment_state",
+        "payment_ids",
+        "payment_ids.state",
     )
     def _compute_pipeline_status(self):
+        # Base sets pre_approval/approved; the accounting bridge sets
+        # bill_draft/bill_posted while state is approved/bills_posted.
         super()._compute_pipeline_status()
-        Payment = self.env["account.payment"]
         for rec in self:
-            if rec.state != "approved":
-                continue
-            active_bills = rec.bill_ids.filtered(lambda b: b.state != "cancel")
-            if not active_bills:
-                continue
-            if all(b.payment_state == "paid" for b in active_bills):
+            if rec.state == "cleared":
                 rec.pipeline_status = "done"
-                continue
-            all_payments = Payment
-            for bill in active_bills:
-                all_payments |= bill._get_reconciled_payments()
-                all_payments |= Payment.search([
-                    ("to_reconcile_payment_line_ids.move_id", "=", bill.id),
-                ])
-            active_payments = all_payments.filtered(
-                lambda p: p.state != "cancel"
-            )
-            if active_payments.filtered(lambda p: p.state == "posted"):
-                rec.pipeline_status = "payment_posted"
-            elif active_payments:
-                rec.pipeline_status = "payment_draft"
+            elif rec.state in ("payment_authorized", "paid"):
+                active = rec.payment_ids.filtered(lambda p: p.state != "cancel")
+                if active.filtered(lambda p: p.state == "posted"):
+                    rec.pipeline_status = "payment_posted"
+                elif active:
+                    rec.pipeline_status = "payment_draft"
 
+    # ------------------------------------------------------------------
+    # Todo fan-out (mirrors accounting_kmitl_workflow._schedule_approval_todo)
+    # ------------------------------------------------------------------
+    def _schedule_payment_todo(self, activity_xmlid, group_xmlid):
+        """Push an execution Todo to every member of the responsible group."""
+        group = self.env.ref(group_xmlid, raise_if_not_found=False)
+        if not group:
+            return
+        for rec in self:
+            for user in group.users:
+                rec.activity_schedule(
+                    activity_xmlid, user_id=user.id, note=rec.name or ""
+                )
+
+    def write(self, vals):
+        res = super().write(vals)
+        # Entering bills_posted (set by the accounting bridge when the last
+        # bill posts) opens the payment-execution phase: notify the auditors.
+        if vals.get("state") == "bills_posted":
+            self._schedule_payment_todo(TO_AUDIT_ACTIVITY, AUDITOR_GROUP)
+        return res
+
+    # ------------------------------------------------------------------
+    # Workflow actions (forward-only, no reject in this phase)
+    # ------------------------------------------------------------------
+    def action_audit(self):
+        """Auditor verifies the disbursement after the bills are posted."""
+        for record in self:
+            if record.state != "bills_posted":
+                raise UserError(
+                    _("Only bills-posted requests can be audited.")
+                )
+            record.state = "payment_audited"
+            record.activity_feedback([TO_AUDIT_ACTIVITY])
+            record._schedule_payment_todo(TO_AUTHORIZE_ACTIVITY, AUTHORIZER_GROUP)
+        return True
+
+    def action_authorize(self):
+        """Rector delegate authorizes the disbursement (approve to pay)."""
+        for record in self:
+            if record.state != "payment_audited":
+                raise UserError(
+                    _("Only audited requests can be authorized for payment.")
+                )
+            record.state = "payment_authorized"
+            record.activity_feedback([TO_AUTHORIZE_ACTIVITY])
+            record._schedule_payment_todo(TO_PAY_ACTIVITY, FINANCE_GROUP)
+        return True
+
+    def action_confirm_paid(self):
+        """Finance confirms the bank actually paid every payment of the DR."""
+        for record in self:
+            if record.state != "payment_authorized":
+                raise UserError(
+                    _("Only authorized requests can be confirmed as paid.")
+                )
+            active = record.payment_ids.filtered(lambda p: p.state != "cancel")
+            if not active:
+                raise UserError(
+                    _("Create the payment(s) before confirming the payment.")
+                )
+            not_success = active.filtered(
+                lambda p: p.bank_result_status != "success"
+            )
+            if not_success:
+                raise UserError(
+                    _(
+                        "The bank has not confirmed success for payment(s): "
+                        "%s. Mark the bank result on the payment export first."
+                    )
+                    % ", ".join(not_success.mapped("name"))
+                )
+            record.state = "paid"
+            record.activity_feedback([TO_PAY_ACTIVITY])
+        return True
+
+    def _payment_batch(self, single_method, valid_state):
+        """Run a per-record action in isolated savepoints (mirror of
+        accounting_kmitl_workflow.action_approve_batch)."""
+        candidates = self.filtered(lambda r: r.state == valid_state)
+        done = self.browse()
+        failures = []
+        for record in candidates:
+            try:
+                with self.env.cr.savepoint():
+                    getattr(record, single_method)()
+                done |= record
+            except (UserError, ValidationError) as error:
+                self.env.invalidate_all()
+                failures.append(
+                    (record.display_name, error.args and error.args[0] or _("error"))
+                )
+            except Exception as error:  # noqa: BLE001 - isolate per-record
+                self.env.invalidate_all()
+                failures.append((record.display_name, str(error)))
+        message = _("%s request(s) processed.") % len(done)
+        if failures:
+            message += "\n" + _("Could not process:") + "\n"
+            message += "\n".join(
+                "• %s — %s" % (name, reason) for name, reason in failures
+            )
+        if failures and not done:
+            notification_type = "danger"
+        elif failures:
+            notification_type = "warning"
+        else:
+            notification_type = "success"
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Disbursement"),
+                "message": message,
+                "type": notification_type,
+                "sticky": bool(failures),
+            },
+        }
+
+    def action_audit_batch(self):
+        return self._payment_batch("action_audit", "bills_posted")
+
+    def action_authorize_batch(self):
+        return self._payment_batch("action_authorize", "payment_audited")
+
+    # ------------------------------------------------------------------
+    # Cancel guard
+    # ------------------------------------------------------------------
     def action_cancel(self):
-        """Block cancel if any payment exists for the linked bills."""
+        """Block cancel once paid/cleared or when a payment is posted."""
         for record in self:
             if record.state == "cancel":
                 continue
-            if record.bill_ids and record.payment_ids:
+            if record.state in ("paid", "cleared"):
+                raise UserError(
+                    _("Cannot cancel a request that is already paid/cleared.")
+                )
+            active = record.payment_ids.filtered(lambda p: p.state != "cancel")
+            posted = active.filtered(lambda p: p.state == "posted")
+            if posted:
                 raise UserError(
                     _(
-                        "Cannot cancel: there are payments linked to bills. "
-                        "Remove payments first."
+                        "Cannot cancel: payment(s) %s already posted. "
+                        "Reverse them first."
+                    )
+                    % ", ".join(posted.mapped("name"))
+                )
+            if active:
+                raise UserError(
+                    _(
+                        "Cannot cancel: there are payment(s) in progress. "
+                        "Remove them first."
                     )
                 )
         return super().action_cancel()
 
+    # ------------------------------------------------------------------
+    # Payment creation (finance)
+    # ------------------------------------------------------------------
     def action_create_payment(self):
-        """Create draft payments directly from DR, one per posted unpaid bill."""
+        """Create draft payments from the DR, one per posted unpaid bill."""
         self.ensure_one()
-        existing_payments = self.payment_ids
+        if self.state != "payment_authorized":
+            raise UserError(
+                _("The disbursement must be authorized before creating "
+                  "the payment.")
+            )
+        existing_payments = self.payment_ids.filtered(
+            lambda p: p.state != "cancel"
+        )
         if existing_payments:
             raise UserError(
                 _(
@@ -138,29 +327,44 @@ class DisbursementRequest(models.Model):
                 )
                 % ", ".join(existing_payments.mapped("name"))
             )
-        unpaid_bills = self.bill_ids.filtered(
-            lambda b: b.state == "posted"
-            and b.payment_state in ("not_paid", "partial")
+        posted_bills = self.bill_ids.filtered(lambda b: b.state == "posted")
+        partial_bills = posted_bills.filtered(
+            lambda b: b.payment_state == "partial"
+        )
+        if partial_bills:
+            raise UserError(
+                _(
+                    "Partial payment is not supported. Bill(s) %s are already "
+                    "partially paid."
+                )
+                % ", ".join(partial_bills.mapped("name"))
+            )
+        unpaid_bills = posted_bills.filtered(
+            lambda b: b.payment_state == "not_paid"
         )
         if not unpaid_bills:
             raise UserError(_("No posted unpaid bills to pay."))
 
-        journal = self.env["account.journal"].search(
-            [
-                ("type", "=", "bank"),
-                ("company_id", "=", self.company_id.id),
-            ],
-            limit=1,
-        )
-        if not journal:
-            raise UserError(
-                _("No bank journal found for company %s.")
-                % self.company_id.name
-            )
         payment_type = self.env.ref(
             "finance_kmitl.payment_type_normal_outbound",
             raise_if_not_found=False,
         )
+        journal = payment_type.journal_id if payment_type else False
+        if not journal:
+            journal = self.env["account.journal"].search(
+                [
+                    ("type", "=", "bank"),
+                    ("company_id", "=", self.company_id.id),
+                ],
+                order="sequence, id",
+                limit=1,
+            )
+        if not journal:
+            raise UserError(
+                _("No bank journal configured for the outbound payment type "
+                  "or company %s.")
+                % self.company_id.name
+            )
 
         payments = self.env["account.payment"]
         for bill in unpaid_bills:
@@ -194,6 +398,7 @@ class DisbursementRequest(models.Model):
                         })
 
             payment_vals = {
+                "disbursement_request_id": self.id,
                 "partner_id": bill.partner_id.id,
                 "amount": amount,
                 "currency_id": bill.currency_id.id,
@@ -207,12 +412,6 @@ class DisbursementRequest(models.Model):
                 payment_vals["write_off_line_vals"] = write_off_line_vals
             if payment_type:
                 payment_vals["kmitl_payment_type_id"] = payment_type.id
-            if bill.budget_commitment_id:
-                payment_vals["budget_commitment_id"] = (
-                    bill.budget_commitment_id.id
-                )
-            if bill.budget_account_id:
-                payment_vals["budget_account_id"] = bill.budget_account_id.id
 
             payment = self.env["account.payment"].create(payment_vals)
             payment.to_reconcile_payment_line_ids = payable_lines
@@ -237,14 +436,6 @@ class DisbursementRequest(models.Model):
                 subtype_xmlid="mail.mt_note",
             )
 
-        if len(payments) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "res_model": "account.payment",
-                "res_id": payments.id,
-                "view_mode": "form",
-                "target": "current",
-            }
         return {
             "type": "ir.actions.act_window",
             "name": _("Payments"),
@@ -255,17 +446,8 @@ class DisbursementRequest(models.Model):
         }
 
     def action_view_payments(self):
-        """Open related payment(s)."""
+        """Open related payment(s) in list view."""
         self.ensure_one()
-        if self.payment_count == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "name": _("Payment"),
-                "res_model": "account.payment",
-                "res_id": self.payment_ids.id,
-                "view_mode": "form",
-                "target": "current",
-            }
         return {
             "type": "ir.actions.act_window",
             "name": _("Payments"),

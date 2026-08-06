@@ -11,15 +11,28 @@ class BankPaymentExportLine(models.Model):
     # -------------------------------------------------------------------------
     @api.model
     def _domain_payment_id(self):
-        method_manual_out = self.env.ref("account.account_payment_method_manual_out")
+        """Only KMITL transfer payments awaiting the bank are selectable.
+
+        Overrides the base domain twice over: it accepts ``submitted``
+        payments (KMITL exports before posting) and keys off the KMITL
+        เงินโอน method instead of Odoo's stock Manual one, so cheque and cash
+        payments never end up in an e-payment file.
+        """
+        method_transfer_out = self.env.ref(
+            "account_kmitl.payment_method_transfer_out",
+            raise_if_not_found=False,
+        )
+        if not method_transfer_out:
+            return "[('id', '=', 0)]"
         domain = (
             "[('export_status', '=', 'draft'), "
             "('state', '=', 'submitted'), "
             "('payment_method_id', '=', %s), "
+            "('kmitl_payment_type_id.is_cheque', '=', False), "
             "('journal_id.type', '=', 'bank'), "
             "('company_id', '=', company_id), "
             "('currency_id', '=', currency_id)]"
-            % (method_manual_out.id)
+            % (method_transfer_out.id)
         )
         return domain
 
@@ -44,3 +57,30 @@ class BankPaymentExportLine(models.Model):
         string="E-Payment Note",
         copy=False,
     )
+
+    # -------------------------------------------------------------------------
+    # E-payment result confirmation (manual)
+    # -------------------------------------------------------------------------
+    def _apply_epayment_result(self, status, ref=None, date=None, note=None):
+        """Record the bank result on the export line and propagate it to the
+        payment so downstream flows (e.g. the disbursement request) can react.
+
+        A later phase adds a bank-result file import wizard that funnels every
+        parsed row through this same choke point.
+        """
+        for line in self:
+            vals = {"epayment_status": status}
+            vals["epayment_date"] = date or fields.Datetime.now()
+            if ref is not None:
+                vals["epayment_ref"] = ref
+            if note is not None:
+                vals["epayment_note"] = note
+            line.write(vals)
+            if line.payment_id:
+                line.payment_id.bank_result_status = status
+
+    def action_mark_epayment_success(self):
+        self._apply_epayment_result("success")
+
+    def action_mark_epayment_failed(self):
+        self._apply_epayment_result("failed")

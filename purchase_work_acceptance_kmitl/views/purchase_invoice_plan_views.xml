@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Invoice plan tree: WA reference, WA status and deliverables -->
+    <record id="view_purchase_invoice_plan_tree" model="ir.ui.view">
+        <field name="name">view.purchase.invoice.plan.tree.kmitl</field>
+        <field name="model">purchase.invoice.plan</field>
+        <field
+            name="inherit_id"
+            ref="purchase_invoice_plan.view_purchase_invoice_plan_tree"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_invoiced']" position="after">
+                <field name="deliverables" />
+            </xpath>
+            <xpath expr="/tree" position="inside">
+                <field name="wa_id" optional="show" />
+                <field
+                    name="wa_state"
+                    widget="badge"
+                    decoration-info="wa_state == 'draft'"
+                    decoration-success="wa_state == 'accept'"
+                    optional="show"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
