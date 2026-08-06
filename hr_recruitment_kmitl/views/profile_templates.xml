@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Add "My Profile" link to portal home -->
     <template
@@ -1577,7 +1577,8 @@
                                                 <t
                                                     t-set="label"
                                                 >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
-                                                    หรือได้รับการยกเว้นการเกณฑ์ทหาร <br /> (ใบ สด.8
+                                                    หรือได้รับการยกเว้นการเกณฑ์ทหาร <br
+                                                    /> (ใบ สด.8
                                                     สด.9 หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ)<span
                                                         class="text-danger ms-1"
                                                     >*</span></t>

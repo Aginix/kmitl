@@ -327,10 +327,7 @@
                                             class="col-form-label"
                                         >ความสัมพันธ์</label>
                                         <span class="text-danger">*</span>
-                                        <select
-                                            class="form-select"
-                                            disabled="disabled"
-                                        >
+                                        <select class="form-select" disabled="disabled">
                                             <option value="">เลือกความสัมพันธ์</option>
                                             <t
                                                 t-foreach="request.env['hr.employee.relative.relation'].sudo().search([])"
@@ -497,7 +494,9 @@
                                                 t-set="name"
                                                 t-valuef="family_house_registration_#{family_index}"
                                             />
-                                            <t t-set="label">สำเนาทะเบียนบ้าน <span class="text-danger">*</span></t>
+                                            <t t-set="label">สำเนาทะเบียนบ้าน <span
+                                                    class="text-danger"
+                                                >*</span></t>
                                             <t
                                                 t-set="description"
                                             >รองรับ PDF หรือรูปภาพ</t>
@@ -520,7 +519,11 @@
                                                 t-set="name"
                                                 t-valuef="family_id_card_#{family_index}"
                                             />
-                                            <t t-set="label">บัตรประชาชน / สูติบัตร <span class="text-danger">*</span></t>
+                                            <t
+                                                t-set="label"
+                                            >บัตรประชาชน / สูติบัตร <span
+                                                    class="text-danger"
+                                                >*</span></t>
                                             <t
                                                 t-set="description"
                                             >รองรับ PDF หรือรูปภาพ</t>
@@ -712,7 +715,9 @@
                                         <t
                                             t-set="name"
                                         >family_house_registration___INDEX__</t>
-                                        <t t-set="label">สำเนาทะเบียนบ้าน <span class="text-danger">*</span></t>
+                                        <t t-set="label">สำเนาทะเบียนบ้าน <span
+                                                class="text-danger"
+                                            >*</span></t>
                                         <t t-set="description">รองรับ PDF หรือรูปภาพ</t>
                                         <t t-set="required" t-value="False" />
                                     </t>
@@ -722,7 +727,9 @@
                                         t-call="hr_recruitment_kmitl.document_upload_item"
                                     >
                                         <t t-set="name">family_id_card___INDEX__</t>
-                                        <t t-set="label">บัตรประชาชน / สูติบัตร <span class="text-danger">*</span></t>
+                                        <t t-set="label">บัตรประชาชน / สูติบัตร <span
+                                                class="text-danger"
+                                            >*</span></t>
                                         <t t-set="description">รองรับ PDF หรือรูปภาพ</t>
                                         <t t-set="required" t-value="False" />
                                     </t>
