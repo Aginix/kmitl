@@ -62,7 +62,7 @@ class TestP1DataModel(SarabunCommon):
         doc = self._make_doc()
         self.assertEqual(doc.numbering_mode, "auto")
         with self.assertRaises(ValidationError):
-            doc.numbering_mode = "manual"
+            doc.numbering_mode = "reserved"
             doc.flush_recordset()
 
     def test_content_body_is_editable_rich_text(self):

@@ -103,8 +103,6 @@
                                    attrs="{'invisible': ['|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned'))]}"/>
                             <field name="reserved_number_id"
                                    attrs="{'invisible': ['|', '|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned')), ('numbering_mode', '!=', 'reserved')]}"/>
-                            <field name="manual_counter"
-                                   attrs="{'invisible': ['|', '|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned')), ('numbering_mode', 'not in', ('manual', 'gap'))]}"/>
                         </group>
                     </group>
                     <group name="header">

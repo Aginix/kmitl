@@ -71,13 +71,13 @@ class SarabunDocumentSequence(models.Model):
             seq.next_counter = (max(current.mapped("counter"), default=0) + 1)
 
     # ------------------------------------------------------------- allocation
-    def allocate(self, document, counter=None, max_retries=3):
+    def allocate(self, document, max_retries=3):
         """Atomically register the next official number (DESIGN §4.3).
 
         Row-locks the register, computes ``MAX(counter)+1`` (per fiscal_year) under
-        the lock — or uses the given ``counter`` (manual/gap) — writes the ledger
-        row, and relies on ``unique(sequence_id, counter, fiscal_year)`` + a bounded
-        retry as the backstop. Replaces the old max()+1 race.
+        the lock, writes the ledger row, and relies on
+        ``unique(sequence_id, counter, fiscal_year)`` + a bounded retry as the
+        backstop. Replaces the old max()+1 race.
         """
         self.ensure_one()
         fy = self._fiscal_year_for(fields.Date.context_today(self))
@@ -89,16 +89,13 @@ class SarabunDocumentSequence(models.Model):
                         "SELECT id FROM sarabun_document_sequence WHERE id = %s FOR UPDATE",
                         (self.id,),
                     )
-                    if counter is None:
-                        self.env.cr.execute(
-                            "SELECT COALESCE(MAX(counter), 0) + 1 "
-                            "FROM sarabun_document_number "
-                            "WHERE sequence_id = %s AND fiscal_year = %s",
-                            (self.id, fy),
-                        )
-                        use_counter = self.env.cr.fetchone()[0]
-                    else:
-                        use_counter = counter
+                    self.env.cr.execute(
+                        "SELECT COALESCE(MAX(counter), 0) + 1 "
+                        "FROM sarabun_document_number "
+                        "WHERE sequence_id = %s AND fiscal_year = %s",
+                        (self.id, fy),
+                    )
+                    use_counter = self.env.cr.fetchone()[0]
                     number = Number.create({
                         "sequence_id": self.id,
                         "counter": use_counter,
@@ -112,9 +109,8 @@ class SarabunDocumentSequence(models.Model):
             except psycopg2.IntegrityError:
                 if attempt + 1 == max_retries:
                     raise UserError(_(
-                        "Could not allocate a register number (number %s is taken). "
-                        "Please try again."
-                    ) % (counter if counter is not None else ""))
+                        "Could not allocate a register number. Please try again."
+                    ))
                 continue
 
 

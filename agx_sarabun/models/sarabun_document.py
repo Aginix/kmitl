@@ -319,18 +319,11 @@ class SarabunDocument(models.Model):
         selection=[
             ("auto", "Auto (next available)"),
             ("reserved", "Reserved number"),
-            ("gap", "Fill a gap"),
-            ("manual", "Manual"),
         ],
         string="Numbering Mode",
         default="auto",
-        help="from_record always registers automatically; reserved/gap/manual are "
-        "for manual compose (memo/circular).",
-    )
-    manual_counter = fields.Integer(
-        string="Manual Number",
-        help="The counter to use in manual/gap mode (routed through the same "
-        "atomic allocation + unique backstop).",
+        help="from_record always registers automatically; reserved (a pre-reserved "
+        "number) is for manual compose (memo/circular).",
     )
     reserved_number_id = fields.Many2one(
         comodel_name="sarabun.document.number",
@@ -1013,7 +1006,7 @@ class SarabunDocument(models.Model):
             if doc.kind == "from_record" and doc.numbering_mode != "auto":
                 raise ValidationError(_(
                     "from_record documents register automatically; "
-                    "reserved/gap/manual numbering is for manual compose only."
+                    "reserved numbering is for manual compose only."
                 ))
 
     def _resolve_sequence(self):
@@ -1065,10 +1058,6 @@ class SarabunDocument(models.Model):
                 "document_id": self.id,
                 "used_date": fields.Datetime.now(),
             })
-        elif self.numbering_mode in ("manual", "gap"):
-            if not self.manual_counter:
-                raise UserError(_("Enter the number to use."))
-            number = seq.allocate(self, counter=self.manual_counter)
         else:  # auto
             number = seq.allocate(self)
         self.register_number_id = number

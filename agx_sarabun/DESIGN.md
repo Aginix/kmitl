@@ -170,7 +170,7 @@ Inherits `mail.thread`, `mail.activity.mixin`, `portal.mixin`, `thai.date.mixin`
 | `enclosure_ids` | O2m → `sarabun.enclosure` | **สิ่งที่ส่งมาด้วย**, ordered. |
 | `sequence_id` | M2o → `sarabun.document.sequence` (computed, stored, editable) | **เล่มทะเบียน** this หนังสือ issues from (ADR-0012). Defaults to the unit's เล่มทะเบียนหลัก / only book; editable while draft/returned; **pinned at send**. |
 | `register_number_id` | M2o → `sarabun.document.number` | The register ledger row; set by `_register()` at completion (ADR-0010). |
-| `numbering_mode` | Selection `auto`(default)/`reserved`/`gap`/`manual` | Constrained to `auto` for `from_record` (see §4). |
+| `numbering_mode` | Selection `auto`(default)/`reserved` | Constrained to `auto` for `from_record` (see §4). |
 | `signed_pdf` | Binary (`attachment=True`) | **ฉบับลงนาม** — frozen immutable PDF at `completed`. Before that, preview renders live. |
 | `signed_pdf_filename` | Char | Render filename (reuses origin filename via `_get_report_base_filename`). |
 | `signed_at` | Datetime | Freeze timestamp. |
@@ -747,7 +747,7 @@ read access).
 
 ### 3.5 Number voiding on reject / cancel
 
-> **Superseded for the normal path by [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md).** Because the number is now assigned at **completion**, a rejected (#5) or cancelled (#6) หนังสือ — both pre-completion — was **never numbered**, so there is nothing to void and no gap to record. `_void_register(reason)` is retained but is a **guarded no-op** on this path (kept for the reserved/manual compose paths). The paragraph below describes the *former* at-send behaviour and is kept for historical context.
+> **Superseded for the normal path by [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md).** Because the number is now assigned at **completion**, a rejected (#5) or cancelled (#6) หนังสือ — both pre-completion — was **never numbered**, so there is nothing to void and no gap to record. `_void_register(reason)` is retained but is a **guarded no-op** on this path (kept for the reserved compose path). The paragraph below describes the *former* at-send behaviour and is kept for historical context.
 
 Per ระเบียบงานสารบรรณ, an official register number is **never reusable**
 (ADR-0002). When a *registered* Document (one that reached `circulating`) is
@@ -998,9 +998,9 @@ constraint; พ.ศ. exists only in the rendered string. The full Thai date on t
 header is formatted by the report layer from the send datetime, not stored on the
 number.
 
-### 4.6 reserved / gap / manual modes — manual-compose only
+### 4.6 reserved mode — manual-compose only
 
-CONTEXT scopes reserved/gap/manual to **manual compose only**. v1 focuses on
+CONTEXT scopes non-`auto` numbering to **manual compose only**. v1 focuses on
 `from_record`, whose registration is purely **auto** (§4.3). So `numbering_mode`
 on `sarabun.document` is constrained:
 
@@ -1008,8 +1008,6 @@ on `sarabun.document` is constrained:
 |---|---|---|
 | `auto` | all (the only mode for `from_record`) | `allocate` draws `MAX(counter)+1` atomically. |
 | `reserved` | `memo` / `circular` | Consume a pre-`reserved` `sarabun.document.number` row (clerk pre-booked it). |
-| `gap` | `memo` / `circular` | Fill a permanent gap left by a **genuinely-skipped / never-allocated** counter (chosen via wizard). **`voided` rows are explicitly excluded** — a voided number is permanent and never fillable (ADR-0002). |
-| `manual` | `memo` / `circular` | Clerk types the counter; still routed through `allocate`'s lock + unique constraint, so a manual collision is rejected, not silently overwritten. |
 
 ```python
 @api.constrains("numbering_mode", "kind")
@@ -1018,11 +1016,14 @@ def _check_numbering_mode_scope(self):
         if doc.kind == "from_record" and doc.numbering_mode != "auto":
             raise ValidationError(_(
                 "from_record documents register automatically; "
-                "reserved/gap/manual numbering is for manual compose only."))
+                "reserved numbering is for manual compose only."))
 ```
 
-All three manual modes funnel through the **same `allocate` path** (lock + unique
-backstop) rather than the old `use_number()` bare-create.
+The earlier `gap` / `manual` counter modes (and the `manual_counter` field) were
+dropped: `gap` was code-identical to `manual`, and its intended purpose — refill a
+voided counter — never worked, because a `voided` row keeps its
+`(sequence, counter, fiscal_year)` slot so the unique constraint rejects the
+reissue. Neither was reachable in the `auto`-only `from_record` flow.
 
 ### 4.7 Voiding — permanent gap, never reissued
 
