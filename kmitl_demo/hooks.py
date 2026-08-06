@@ -263,17 +263,16 @@ def _ensure_sarabun_register(env, department):
     return seq
 
 
-def _ensure_sarabun_position(env, name, code, department=None, sequence=10):
-    """Create a สารบรรณ Position (idempotent by code). Seeded with NO holder — a
+def _ensure_sarabun_position(env, name, department=None, sequence=10):
+    """Create a สารบรรณ Position (idempotent by name). Seeded with NO holder — a
     res.users id in holder_ids would break the hr.employee FK; assign the real
     personnel (คณบดี / ผอ. / อธิการบดี) before go-live."""
     Position = env["sarabun.position"]
-    position = Position.search([("code", "=", code)], limit=1)
+    position = Position.search([("name", "=", name)], limit=1)
     if not position:
         position = Position.create(
             {
                 "name": name,
-                "code": code,
                 "sequence": sequence,
                 "department_id": department.id if department else False,
             }
@@ -294,20 +293,15 @@ def _setup_sarabun_org_demo(env):
     Positions carry no holder (see :func:`_ensure_sarabun_position`).
     """
     _logger.info("Seeding e-Saraban org demo (positions / offices / registers)...")
-    _ensure_sarabun_position(env, "อธิการบดี", "RECTOR", sequence=1)
+    _ensure_sarabun_position(env, "อธิการบดี", sequence=1)
 
     roots = env["hr.department"].search([("parent_id", "=", False)], order="id")
     for dept in roots:
         name = dept.name or ""
-        code = dept.code or str(dept.id)
         if name.startswith(("คณะ", "วิทยาลัย")):
-            _ensure_sarabun_position(
-                env, "คณบดี%s" % name, "DEAN-%s" % code, dept, sequence=5
-            )
+            _ensure_sarabun_position(env, "คณบดี%s" % name, dept, sequence=5)
         elif name.startswith("สำนัก"):
-            _ensure_sarabun_position(
-                env, "ผู้อำนวยการ%s" % name, "DIR-%s" % code, dept, sequence=5
-            )
+            _ensure_sarabun_position(env, "ผู้อำนวยการ%s" % name, dept, sequence=5)
         # ธุรการหน่วยงาน — every root ส่วนงาน is a document office
         dept.is_sarabun_office = True
         # ทะเบียนหนังสือ — one register per root ส่วนงาน
