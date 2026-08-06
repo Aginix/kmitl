@@ -464,7 +464,7 @@ msgstr "<strong>การซื้อนี้ถูกยกเลิกแล�
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
 msgid "<strong>Unit Price</strong>"
-msgstr "<strong>ราคาต่อหน่วย</strong>"
+msgstr "<strong>ราคา</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
@@ -3037,12 +3037,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_unit
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "Unit Price"
-msgstr "ราคาต่อหน่วย"
+msgstr "ราคา"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Unit Price:"
-msgstr "ราคาต่อหน่วย:"
+msgstr "ราคา:"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_uom

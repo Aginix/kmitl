@@ -135,7 +135,7 @@
                                     <th class="text-center" style="width: 8%">ลำดับ</th>
                                     <th class="text-center">รายละเอียด</th>
                                     <th class="text-center">จำนวน</th>
-                                    <th class="text-end">ราคาต่อหน่วย</th>
+                                    <th class="text-end">ราคา</th>
                                     <th class="text-end">จำนวนเงิน</th>
                                 </tr>
                             </thead>

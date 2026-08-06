@@ -1081,7 +1081,7 @@ msgstr ""
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__price_unit
 msgid "Unit Price"
-msgstr "ราคาต่อหน่วย"
+msgstr "ราคา"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__amount_untaxed
