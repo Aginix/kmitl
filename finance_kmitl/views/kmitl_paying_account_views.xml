@@ -11,16 +11,22 @@
         <field name="name">account.payment.method.line.paying.tree</field>
         <field name="model">account.payment.method.line</field>
         <field name="arch" type="xml">
+            <!-- payment_type, available_payment_method_ids and company_id are
+                 carried because core's own domains on payment_method_id and
+                 payment_account_id read them; a view that leaves one out fails
+                 validation. -->
             <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
+                <field name="payment_type" invisible="1"/>
+                <field name="available_payment_method_ids" invisible="1"/>
+                <field name="company_id" invisible="1"/>
                 <field name="journal_id"/>
                 <field name="payment_method_id"/>
                 <field name="bank_id" optional="show"/>
                 <field name="acc_number" optional="show"/>
                 <field name="payment_account_id"/>
                 <field name="cheque_layout_id" optional="hide"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
             </tree>
         </field>
     </record>
@@ -42,8 +48,14 @@
                     </div>
                     <group>
                         <group string="ใบสำคัญและวิธีจ่าย">
-                            <field name="journal_id" options="{'no_create': True}"/>
+                            <!-- payment_type and available_payment_method_ids are
+                                 read by core's domain on payment_method_id, and
+                                 company_id by its domain on payment_account_id,
+                                 so all three have to be in the view. -->
+                            <field name="payment_type" invisible="1"/>
                             <field name="available_payment_method_ids" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="journal_id" options="{'no_create': True}"/>
                             <field name="payment_method_id"
                                    options="{'no_create': True}"/>
                         </group>
@@ -61,8 +73,6 @@
                             <field name="cheque_layout_id"
                                    attrs="{'invisible': [('payment_method_code', '!=', 'kmitl_cheque')]}"
                                    options="{'no_create': True}"/>
-                            <field name="company_id"
-                                   groups="base.group_multi_company"/>
                         </group>
                     </group>
                 </sheet>
@@ -74,11 +84,13 @@
         <field name="name">account.payment.method.line.paying.search</field>
         <field name="model">account.payment.method.line</field>
         <field name="arch" type="xml">
+            <!-- Only fields whose domain is literal or absent are declared
+                 here: the same domain validation applies to search views, and
+                 journal_id / payment_method_id would drag their siblings in for
+                 no gain — the group-by filters below need no field node. -->
             <search>
                 <field name="name"/>
                 <field name="bank_id"/>
-                <field name="journal_id"/>
-                <field name="payment_method_id"/>
                 <group expand="0" string="Group By">
                     <filter string="ธนาคาร" name="group_bank"
                             context="{'group_by': 'bank_id'}"/>
