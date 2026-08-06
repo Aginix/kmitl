@@ -3124,30 +3124,3 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_mixin__sarabun_state__returned
 msgid "รอการแก้ไขเอกสาร (Pending Revision)"
 msgstr "รอการแก้ไขเอกสาร"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "ตีกลับ"
-msgstr "ตีกลับ"
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_return_wizard_form
-msgid "ตีกลับเอกสาร"
-msgstr "ตีกลับเอกสาร"
-
-#. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_return_wizard
-msgid "Sarabun ตีกลับ (Return without sign) Wizard"
-msgstr "Wizard ตีกลับเอกสารสารบรรณ"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_return_wizard__reason
-msgid "เหตุผลการตีกลับ (Reason)"
-msgstr "เหตุผลการตีกลับ"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__can_return
-msgid "Can Return"
-msgstr "ตีกลับได้"

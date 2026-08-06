@@ -30,7 +30,6 @@
         # Wizards
         "wizard/sarabun_step_act_wizard_views.xml",
         "wizard/sarabun_recall_wizard_views.xml",
-        "wizard/sarabun_return_wizard_views.xml",
         "wizard/sarabun_send_wizard_views.xml",
         # Views
         "views/sarabun_document_type_views.xml",

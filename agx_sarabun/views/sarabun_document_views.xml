@@ -34,9 +34,6 @@
                     <button name="action_act_on_my_step" type="object"
                             string="Act on My Step" class="oe_highlight"
                             attrs="{'invisible': [('my_active_step_id', '=', False)]}"/>
-                    <button name="action_open_return_wizard" type="object"
-                            string="ตีกลับ"
-                            attrs="{'invisible': ['|', ('state', '!=', 'circulating'), ('can_return', '=', False)]}"/>
                     <button name="action_open_recall_wizard" type="object"
                             string="ดึงกลับ / ยกเลิกการส่ง"
                             attrs="{'invisible': [('can_withdraw', '=', False)]}"/>
@@ -143,7 +140,6 @@
                     <field name="is_editable" invisible="1"/>
                     <field name="has_signed" invisible="1"/>
                     <field name="can_withdraw" invisible="1"/>
-                    <field name="can_return" invisible="1"/>
                     <field name="my_active_step_id" invisible="1"/>
                     <field name="next_step_order" invisible="1"/>
                     <notebook>
