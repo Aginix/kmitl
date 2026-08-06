@@ -402,6 +402,50 @@ class PurchaseRequestApproval(models.Model):
         if self.request_id:
             self.request_id.button_rejected()
 
+    def action_open_return_cancel_wizard(self):
+        """Open the ตีกลับ/ยกเลิก wizard from PA draft — 3 modes:
+        keep-number, new-number, cancel-all."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ตีกลับ/ยกเลิก พจ.1"),
+            "res_model": "purchase.request.approval.return.cancel.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_approval_id": self.id},
+        }
+
+    def _action_return_keep_number(self, reason):
+        """ส่งกลับแก้ไข (เก็บเลข พจ.1) — PA stays as-is (name preserved so it
+        will be reused on the next submit), PR is sent back to draft (which
+        also cancels its budget commitment via purchase_request_budget)."""
+        self.ensure_one()
+        pa_body = _(
+            "ตีกลับ พจ.1 %(pa)s (เก็บเลข) เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
+        pr_body = _(
+            "พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข (เก็บเลข). เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
+        return self.request_id.button_draft()
+
+    def _action_return_new_number(self, reason):
+        """ส่งกลับแก้ไข (ไม่เก็บเลข พจ.1) — PA is cancelled (a fresh PA with a
+        new name will be created on the next submit), PR is sent back to
+        draft."""
+        self.ensure_one()
+        pa_body = _(
+            "ตีกลับ พจ.1 %(pa)s (ไม่เก็บเลข) เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
+        pr_body = _(
+            "พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข (ไม่เก็บเลข). เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
+        self.write({"state": "cancelled"})
+        return self.request_id.button_draft()
+
     def copy(self, default=None):
         default = dict(default or {})
         self.ensure_one()

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_request_approval_return_cancel_wizard_form" model="ir.ui.view">
+        <field name="name">purchase.request.approval.return.cancel.wizard.form</field>
+        <field name="model">purchase.request.approval.return.cancel.wizard</field>
+        <field name="arch" type="xml">
+            <form string="ตีกลับ/ยกเลิก พจ.1">
+                <group>
+                    <field name="approval_id" invisible="1"/>
+                    <field name="mode" widget="radio"/>
+                    <field name="reason" placeholder="กรุณาระบุเหตุผล..."/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="ยืนยัน" type="object" class="btn-primary"/>
+                    <button string="ปิด" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

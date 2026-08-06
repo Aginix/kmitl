@@ -71,7 +71,7 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
 
         exists = self.env["purchase.request.approval"].search(
-            [("request_id", "=", self.id)], limit=1
+            [("request_id", "=", self.id), ("state", "!=", "cancelled")], limit=1
         )
 
         if exists:

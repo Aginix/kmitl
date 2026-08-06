@@ -1616,3 +1616,8 @@ msgstr "ราคา"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__estimated_cost
 msgid "Estimated Cost"
 msgstr "จำนวนเงิน"
+
+#. module: purchase_request_approval
+#: model:ir.model,name:purchase_request_approval.model_purchase_request_approval_return_cancel_wizard
+msgid "Purchase Request Approval Return/Cancel Wizard"
+msgstr "Wizard ตีกลับ/ยกเลิก พจ.1"
