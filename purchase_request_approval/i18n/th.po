@@ -1585,7 +1585,7 @@ msgstr "สินค้า"
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__name
 msgid "Description"
-msgstr "ชื่อรายการ"
+msgstr "รายการ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__product_qty
@@ -1595,7 +1595,7 @@ msgstr "จำนวน"
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__product_uom_id
 msgid "UoM"
-msgstr "หน่วยวัด"
+msgstr "หน่วยนับ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__price_unit
