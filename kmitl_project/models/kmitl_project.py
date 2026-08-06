@@ -498,8 +498,7 @@ class KmitlProject(models.Model):
                     "เนื่องจากมีรายการงบประมาณที่ยังไม่ได้ระบุจำนวนเงิน (ต้องมากกว่า 0):\n%s"
                 )
                 % "\n".join(
-                    "- %s" % (line.budget_item_id.complete_name or _("(ไม่ระบุรายการ)"))
-                    for line in bad
+                    "- %s" % (line.name or _("(ไม่ระบุรายการ)")) for line in bad
                 )
             )
 

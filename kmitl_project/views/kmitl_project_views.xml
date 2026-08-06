@@ -179,7 +179,16 @@
                             </group>
                             <div attrs="{'invisible': [('has_income', '=', False)]}">
                                 <separator string="รายรับ" />
-                                <field name="income_line_ids" nolabel="1" colspan="2" context="{'default_budget_type': 'income'}" />
+                                <field name="income_line_ids" nolabel="1" colspan="2" context="{'default_budget_type': 'income'}">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="budget_type" invisible="1" />
+                                        <field name="name" placeholder="ชื่อรายการรายรับ (พิมพ์เอง)" />
+                                        <field name="budget_item_id" string="เลือกจากรายการ" options="{'no_create': True, 'no_open': True}" optional="show" />
+                                        <field name="description" placeholder="คำอธิบาย" optional="hide" />
+                                        <field name="amount" sum="รวม" />
+                                    </tree>
+                                </field>
                             </div>
                             <separator string="รายจ่าย" />
                             <field name="expense_line_ids" nolabel="1" colspan="2" widget="project_budget_table" context="{'default_budget_type': 'expense'}" />
@@ -316,10 +325,11 @@
             <tree editable="bottom">
                 <field name="sequence" widget="handle" />
                 <field name="budget_type" invisible="1" />
-                <field name="category_id" invisible="1" />
                 <field name="category_complete_name" invisible="1" />
                 <field name="category_parent_path" invisible="1" />
-                <field name="budget_item_id" options="{'no_create': True, 'no_open': True}" />
+                <field name="category_id" string="ประเภทงบ" options="{'no_create': True}" optional="show" />
+                <field name="name" placeholder="ชื่อรายการรายจ่าย (พิมพ์เอง)" />
+                <field name="budget_item_id" string="เลือกจากรายการ" options="{'no_create': True, 'no_open': True}" optional="hide" />
                 <field name="unit" optional="hide" />
                 <field name="unit_price" optional="hide" />
                 <field name="description" placeholder="คำอธิบาย (แตกตัวคูณ)" />

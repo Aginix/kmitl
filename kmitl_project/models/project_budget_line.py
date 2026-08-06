@@ -10,10 +10,10 @@ _logger = logging.getLogger(__name__)
 
 class ProjectBudgetLine(models.Model):
     """One line of a project's Project Budget Plan — an income (รายรับ) or expense
-    (รายจ่าย) entry pointing at a catalog Budget Item, with a free-text แตกตัวคูณ
-    breakdown and a manually entered amount. Unit and unit price are shown from the
-    item as reference only (see ADR-0002). ``category_id`` (the item's ประเภทงบ) is
-    what the expense table groups into nested sections."""
+    (รายจ่าย) entry. Its identity is a free-text ``name`` typed by the planner; a
+    catalog Budget Item may optionally be picked to pre-fill the name (and its
+    reference unit/price). ``category_id`` (ประเภทงบ) is what the expense table
+    groups into nested sections. The amount is entered manually (see ADR-0002)."""
 
     _name = "project.budget.line"
     _description = "บรรทัดแผนงบประมาณโครงการ"
@@ -31,10 +31,23 @@ class ProjectBudgetLine(models.Model):
         string="ประเภท",
         required=True,
     )
+    # Free-text label of the line. Required so every line is identified; a picked
+    # catalog item fills it, but it can equally be typed by hand.
+    name = fields.Char(string="รายการ", required=True)
+    # The ประเภทงบ this line belongs to — set directly on expense lines (or defaulted
+    # from the section it is added under), and drives the nested section grouping in
+    # the expense table. Income lines have none.
+    category_id = fields.Many2one(
+        comodel_name="project.budget.category",
+        string="ประเภทงบ",
+        ondelete="restrict",
+        index=True,
+    )
+    # Optional convenience — pick a catalog Budget Item to pre-fill name/category and
+    # carry its reference unit/price. Not required: lines may be pure free text.
     budget_item_id = fields.Many2one(
         comodel_name="project.budget.item",
-        string="รายการ",
-        required=True,
+        string="เลือกจากรายการ",
         ondelete="restrict",
         # Scope the picker to the section's ประเภทงบ subtree when one is set (a line
         # added from a section header), otherwise offer every item of the type.
@@ -42,25 +55,16 @@ class ProjectBudgetLine(models.Model):
         " ('category_id', 'child_of', category_id)] if category_id"
         " else [('budget_type', '=', budget_type)]",
     )
-    # The ประเภทงบ of the chosen item — drives the nested section grouping in the
-    # expense table. Stored so the list can order/cluster by it; defaulted per
-    # section on add and kept in step with the chosen item via onchange.
-    category_id = fields.Many2one(
-        comodel_name="project.budget.category",
-        string="ประเภทงบ",
-        ondelete="restrict",
-        index=True,
-    )
     # The chosen category's label and materialised path, exposed so the OWL table
-    # can build the nested (up to 3-level) section headers client-side without
-    # extra RPCs. Stored so the list can also order by the path server-side.
+    # can build the nested section headers client-side without extra RPCs. Stored so
+    # the list can also order by the path server-side.
     category_complete_name = fields.Char(
         related="category_id.complete_name", store=True
     )
     category_parent_path = fields.Char(
         related="category_id.parent_path", store=True
     )
-    # Reference only — the standard rate carried by the chosen item.
+    # Reference only — the standard rate carried by the chosen item (if any).
     unit = fields.Char(
         string="หน่วยนับ", related="budget_item_id.unit", readonly=True
     )
@@ -80,6 +84,8 @@ class ProjectBudgetLine(models.Model):
 
     @api.onchange("budget_item_id")
     def _onchange_budget_item_id(self):
-        """Keep the category in step with the chosen item's ประเภทงบ."""
+        """Picking a catalog item pre-fills the free-text name and the ประเภทงบ
+        (income items carry none). Typing a name by hand needs no item."""
         if self.budget_item_id:
+            self.name = self.budget_item_id.name
             self.category_id = self.budget_item_id.category_id
