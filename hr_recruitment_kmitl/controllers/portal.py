@@ -102,8 +102,7 @@ class HrRecruitmentPortal(CustomerPortal):
         sorted_records = records.sorted(
             key=lambda r: (
                 r.education_level_id.level if r.education_level_id else 0,
-                getattr(r, "graduation_date", False)
-                or fields.Date.from_string("1900-01-01"),
+                getattr(r, "graduate_year", 0) or 0,
                 r.id,
             ),
             reverse=True,
@@ -124,14 +123,12 @@ class HrRecruitmentPortal(CustomerPortal):
                     "country": rec.country_id.name
                     if getattr(rec, "country_id", False)
                     else "-",
-                    "graduation_date": self._format_date(
-                        getattr(rec, "graduation_date", False)
-                    )
-                    or "-",
+                    "start_year": getattr(rec, "start_year", "") or "-",
+                    "graduate_year": getattr(rec, "graduate_year", "") or "-",
                     "certificate_filename": certificate_filename,
                     "certificate_url": (
                         "/web/content?model=%s&id=%d&field=certificate_file"
-                        "&filename_field=certificate_filename&download=true"
+                        "&filename_field=certificate_filename&download=false"
                         % (education_model, rec.id)
                     )
                     if certificate_filename
@@ -139,7 +136,7 @@ class HrRecruitmentPortal(CustomerPortal):
                     "transcript_filename": transcript_filename,
                     "transcript_url": (
                         "/web/content?model=%s&id=%d&field=transcript_file"
-                        "&filename_field=transcript_filename&download=true"
+                        "&filename_field=transcript_filename&download=false"
                         % (education_model, rec.id)
                     )
                     if transcript_filename
@@ -248,7 +245,7 @@ class HrRecruitmentPortal(CustomerPortal):
     def _applicant_file_url(self, application, field_name, filename_field):
         return (
             "/web/content?model=hr.applicant&id=%d&field=%s"
-            "&filename_field=%s&download=true"
+            "&filename_field=%s&download=false"
             % (application.id, field_name, filename_field)
         )
 

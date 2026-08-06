@@ -1,11 +1,12 @@
 {
     "name": "HR Recruitment KMITL",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "summary": "Custom theme and pages for KMITL recruitment website",
     "author": "Aginix Technologies, KMITL",
     "category": "Website",
     "depends": [
         "website",
+        "auth_signup",
         "website_hr_recruitment",
         "theme_kmitl",
         "base_location",
@@ -20,6 +21,7 @@
     "data": [
         "security/ir.model.access.csv",
         "security/security.xml",
+        "data/hr_relative_relation_data.xml",
         "data/server_actions.xml",
         "data/website_data.xml",
         "views/snippets/s_benefit_card.xml",
@@ -46,9 +48,13 @@
         "web.assets_frontend": [
             "hr_recruitment_kmitl/static/src/scss/theme.scss",
             "hr_recruitment_kmitl/static/src/xml/website_form.xml",
+            "hr_recruitment_kmitl/static/src/js/file_upload_guard.js",
             "hr_recruitment_kmitl/static/src/js/profile_page.js",
             "hr_recruitment_kmitl/static/src/js/apply_page.js",
             "hr_recruitment_kmitl/static/src/js/onboarding_family.js",
+            "hr_recruitment_kmitl/static/src/js/onboarding_starting_date.js",
+            "hr_recruitment_kmitl/static/src/js/onboarding_validation.js",
+            "hr_recruitment_kmitl/static/src/js/onboarding_tabs.js",
         ],
         "web._assets_frontend_helpers": [
             (

@@ -198,10 +198,21 @@
                                             <t
                                                 t-call="hr_recruitment_kmitl.application_readonly_field"
                                             >
-                                                <t t-set="label">สำเร็จการศึกษาเมื่อ</t>
+                                                <t t-set="label">ปีที่เริ่มศึกษา</t>
                                                 <t
                                                     t-set="value"
-                                                    t-value="edu.get('graduation_date')"
+                                                    t-value="edu.get('start_year')"
+                                                />
+                                            </t>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <t
+                                                t-call="hr_recruitment_kmitl.application_readonly_field"
+                                            >
+                                                <t t-set="label">ปีที่สำเร็จการศึกษา</t>
+                                                <t
+                                                    t-set="value"
+                                                    t-value="edu.get('graduate_year')"
                                                 />
                                             </t>
                                         </div>
