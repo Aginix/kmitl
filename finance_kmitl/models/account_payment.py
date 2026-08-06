@@ -51,59 +51,23 @@ class AccountPayment(models.Model):
         "by the finance office instead.",
     )
     is_cheque_payment = fields.Boolean(
-        related="kmitl_payment_type_id.is_cheque",
         string="Is Cheque Payment",
+        compute="_compute_is_cheque_payment",
     )
 
-    paying_account_id = fields.Many2one(
-        comodel_name="kmitl.paying.account",
-        string="Paying Account",
-        copy=False,
-        tracking=True,
-        states={"draft": [("readonly", False)]},
-        readonly=True,
-        help="หัวจ่าย — the institute's bank account the money leaves from, "
-        "paired with the way it leaves. KMITL settles a payable in one step "
-        "(no outstanding/transit account), so the payment is booked against "
-        "that pair's GL account.",
-    )
-
-    @api.depends(
-        "paying_account_id.payment_account_id",
-        "payment_method_line_id",
-        "payment_type",
-    )
-    def _compute_outstanding_account_id(self):
-        """Book the payment straight against the paying account (หัวจ่าย).
-
-        Odoo's two-step model parks the money on an outstanding account until
-        the bank statement is reconciled. KMITL does not run bank statements —
-        a payment *is* the settlement — so the money side of the entry goes
-        directly to the chosen paying account, and the outstanding account only
-        serves payments that have none (i.e. everything outside the
-        disbursement flow).
-        """
-        super()._compute_outstanding_account_id()
+    @api.depends("payment_method_line_id.payment_method_id.code")
+    def _compute_is_cheque_payment(self):
         for payment in self:
-            if payment.paying_account_id.payment_account_id:
-                payment.outstanding_account_id = (
-                    payment.paying_account_id.payment_account_id
-                )
+            payment.is_cheque_payment = (
+                payment.payment_method_line_id.payment_method_id.code
+                == "kmitl_cheque"
+            )
 
-    def _get_valid_liquidity_accounts(self):
-        """Accept the paying account as the payment's money account.
-
-        Core recognises a move line as the liquidity line only when its account
-        is one it knows about (the journal's default, the method line's
-        outstanding account, ...). Since the money is booked against the paying
-        account instead, it has to be added here — otherwise ``_seek_for_lines``
-        files it as a write-off and every create/write on the payment fails the
-        "one and only one outstanding account" check.
-        """
-        return (
-            super()._get_valid_liquidity_accounts()
-            | self.paying_account_id.payment_account_id
-        )
+    # หัวจ่าย is ``payment_method_line_id``: the money side of the entry is that
+    # line's own payment_account_id, which core already reads and already counts
+    # as a valid liquidity account. Nothing to override — KMITL simply never
+    # reconciles a bank statement afterwards, so what Odoo calls the outstanding
+    # account is the final one here.
 
     def action_mark_bank_result_success(self):
         """Finance manually confirms a cheque payment was actually paid.
@@ -133,37 +97,6 @@ class AccountPayment(models.Model):
             payment.amount_wht = sum(abs(line.balance) for line in wht_lines)
             payment.amount_before_wht = payment.amount + payment.amount_wht
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        # Payments created programmatically (e.g. from a disbursement request)
-        # never run the onchange. The method line is injected into the values
-        # rather than written afterwards so the journal entry is built with the
-        # right outstanding account straight away.
-        for vals in vals_list:
-            self._kmitl_inject_payment_method_line(vals)
-        return super().create(vals_list)
-
-    @api.model
-    def _kmitl_inject_payment_method_line(self, vals):
-        """Preset the เช็ค / เงินสด method line for its operation type."""
-        if vals.get("payment_method_line_id") or not vals.get(
-            "kmitl_payment_type_id"
-        ):
-            return
-        payment_type = self.env["kmitl.payment.type"].browse(
-            vals["kmitl_payment_type_id"]
-        )
-        code = payment_type._kmitl_method_code()
-        if not code:
-            return
-        journal = self.env["account.journal"].browse(
-            vals.get("journal_id") or payment_type.journal_id.id
-        )
-        direction = vals.get("payment_type") or payment_type.direction
-        line = journal._kmitl_method_line(direction, code)
-        if line:
-            vals["payment_method_line_id"] = line.id
-
     @api.depends("cheque_register_ids")
     def _compute_cheque_register_count(self):
         for payment in self:
@@ -176,12 +109,10 @@ class AccountPayment(models.Model):
         ever gain an export and neither may be held back by the export gate.
         """
         self.ensure_one()
-        # Keyed off the operation type, which the disbursement flow sets
-        # explicitly — the method line is only a consequence of it, and a cash
-        # payment whose line was never forced would otherwise look like a
-        # transfer and be held back forever.
-        payment_type = self.kmitl_payment_type_id
-        if payment_type.is_cheque or payment_type.is_cash:
+        # Keyed off the paying account's own method: it is what the officer
+        # picked, so it cannot disagree with how the money actually leaves.
+        code = self.payment_method_line_id.payment_method_id.code
+        if code in ("kmitl_cheque", "kmitl_cash"):
             return False
         return self.payment_type == "outbound"
 
@@ -204,7 +135,7 @@ class AccountPayment(models.Model):
         entered by the finance officer, who then issues it from the register.
         """
         for payment in self.filtered(
-            lambda p: p.kmitl_payment_type_id.is_cheque and not p.cheque_register_ids
+            lambda p: p.is_cheque_payment and not p.cheque_register_ids
         ):
             self.env["cheque.register"].create(
                 payment._prepare_cheque_register_vals()
@@ -218,7 +149,7 @@ class AccountPayment(models.Model):
             "amount": self.amount,
             "currency_id": self.currency_id.id,
             "journal_id": self.journal_id.id,
-            "paying_account_id": self.paying_account_id.id,
+            "paying_account_id": self.payment_method_line_id.id,
             "cheque_date": self.date,
             "ref": self.ref or self.name,
             "payment_id": self.id,
@@ -279,28 +210,30 @@ class AccountPayment(models.Model):
 
     @api.onchange("kmitl_payment_type_id")
     def _onchange_kmitl_payment_type_id(self):
+        """The operation type sets the direction and its default voucher.
+
+        It no longer says anything about *how* the money moves — the paying
+        account does that — so it stops touching the method line.
+        """
         if self.kmitl_payment_type_id:
             self.payment_type = self.kmitl_payment_type_id.direction
             if self.kmitl_payment_type_id.journal_id:
                 self.journal_id = self.kmitl_payment_type_id.journal_id
-            self._apply_kmitl_payment_method_line()
 
-    def _apply_kmitl_payment_method_line(self):
-        """Point a cheque / cash operation type at its own method line.
+    @api.onchange("payment_method_line_id")
+    def _onchange_payment_method_line_id(self):
+        """A paying account belongs to one voucher journal, so choosing it
+        settles the voucher too.
 
-        Without this such a payment would keep the journal's default method
-        (เงินโอน, the first line) and would then look like a transfer to the
-        bank export.
+        This inverts Odoo's direction (journal first, then its method lines) on
+        purpose: here the officer knows which account the money leaves from, and
+        the ใบสำคัญ follows from it — which is why the journal stays hidden on
+        the form.
         """
         for payment in self:
-            code = payment.kmitl_payment_type_id._kmitl_method_code()
-            if not code:
-                continue
-            line = payment.journal_id._kmitl_method_line(
-                payment.payment_type, code
-            )
-            if line:
-                payment.payment_method_line_id = line
+            journal = payment.payment_method_line_id.journal_id
+            if journal and payment.journal_id != journal:
+                payment.journal_id = journal
 
     @api.depends("kmitl_payment_type_id")
     def _compute_destination_account_id(self):
@@ -357,27 +290,26 @@ class AccountPayment(models.Model):
         # Deliberately NOT including payment_method_line_id: rebuilding the
         # move collapses the withholding-tax write-off lines (they are
         # recreated from name/account/amount only, losing wht_tax_id and
-        # tax_base_amount). The method line is instead set in the create values
-        # so the move is built against the right outstanding account from the
-        # start, and a UI change of the operation type re-synchronises through
-        # kmitl_payment_type_id anyway.
+        # tax_base_amount). A change of paying account repoints the money line
+        # surgically in write() instead.
         return (
             *super()._get_trigger_fields_to_synchronize(),
             "kmitl_payment_type_id",
         )
 
     def write(self, vals):
-        """Follow a change of paying account on the journal entry.
+        """Follow a change of paying account (หัวจ่าย) on the journal entry.
 
-        ``paying_account_id`` is deliberately kept out of the synchronisation
-        triggers (a full move rebuild would collapse the withholding-tax
-        write-off lines), so the money line is repointed surgically instead.
+        ``payment_method_line_id`` is deliberately kept out of the
+        synchronisation triggers (a full move rebuild would collapse the
+        withholding-tax write-off lines), so the money line is repointed
+        surgically instead.
         """
         # The money line has to be found BEFORE the write: afterwards the
         # account it still carries is the old one, which no longer counts as a
         # liquidity account, so _seek_for_lines would no longer return it.
         stale_lines = {}
-        if "paying_account_id" in vals:
+        if "payment_method_line_id" in vals:
             for payment in self:
                 if payment.state in ("draft", "submitted"):
                     stale_lines[payment.id] = payment._seek_for_lines()[0]
@@ -391,9 +323,9 @@ class AccountPayment(models.Model):
         # life there, and its entry is not posted yet.
         for payment in self:
             lines = stale_lines.get(payment.id)
-            if not payment.paying_account_id or not lines:
+            if not lines:
                 continue
-            gl_account = payment.paying_account_id.payment_account_id
+            gl_account = payment.payment_method_line_id.payment_account_id
             if not gl_account:
                 continue
             stale = lines.filtered(lambda l: l.account_id != gl_account)

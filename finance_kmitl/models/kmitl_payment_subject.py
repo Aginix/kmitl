@@ -32,11 +32,11 @@ class KmitlPaymentSubject(models.Model):
     name = fields.Char(required=True, translate=True)
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
-    default_payment_type_id = fields.Many2one(
-        comodel_name="kmitl.payment.type",
+    default_payment_method_id = fields.Many2one(
+        comodel_name="account.payment.method",
         string="Default Method",
         required=True,
-        domain="[('direction', '=', 'outbound')]",
+        domain="[('payment_type', '=', 'outbound')]",
         help="วิธีจ่าย this subject is normally paid by. It picks which of the "
         "allowed paying accounts apply — the auditor overrides by choosing a "
         "paying account of another method.",
@@ -49,7 +49,7 @@ class KmitlPaymentSubject(models.Model):
         "off, every payee is paid from the main paying account.",
     )
     default_paying_account_id = fields.Many2one(
-        comodel_name="kmitl.paying.account",
+        comodel_name="account.payment.method.line",
         string="Main / Fallback Paying Account",
         help="With auto-match off: the one account (หัวจ่ายหลัก) every payee "
         "is paid from. With auto-match on: the fallback (หัวจ่ายสำรอง) for a "
@@ -57,7 +57,7 @@ class KmitlPaymentSubject(models.Model):
         "institute-wide default on the company applies.",
     )
     allowed_paying_account_ids = fields.Many2many(
-        comodel_name="kmitl.paying.account",
+        comodel_name="account.payment.method.line",
         relation="kmitl_payment_subject_paying_account_rel",
         column1="subject_id",
         column2="paying_account_id",
@@ -93,7 +93,7 @@ class KmitlPaymentSubject(models.Model):
                     % subject.name
                 )
 
-    @api.constrains("default_paying_account_id", "default_payment_type_id")
+    @api.constrains("default_paying_account_id", "default_payment_method_id")
     def _check_default_account_method(self):
         """The main/fallback account has to be able to pay the subject's way.
 
@@ -104,7 +104,7 @@ class KmitlPaymentSubject(models.Model):
             account = subject.default_paying_account_id
             if (
                 account
-                and account.payment_type_id != subject.default_payment_type_id
+                and account.payment_method_id != subject.default_payment_method_id
             ):
                 raise ValidationError(
                     _(
@@ -112,8 +112,8 @@ class KmitlPaymentSubject(models.Model):
                         "%(account_method)s but the subject is paid by "
                         "%(subject_method)s.",
                         subject=subject.name,
-                        account_method=account.payment_type_id.name,
-                        subject_method=subject.default_payment_type_id.name,
+                        account_method=account.payment_method_id.name,
+                        subject_method=subject.default_payment_method_id.name,
                     )
                 )
 
@@ -141,7 +141,7 @@ class KmitlPaymentSubject(models.Model):
         """
         self.ensure_one()
         allowed = self.allowed_paying_account_ids.filtered(
-            lambda a: a.payment_type_id == self.default_payment_type_id
+            lambda a: a.payment_method_id == self.default_payment_method_id
         )
         if self.auto_match_payee_bank and bank:
             match = allowed.filtered(lambda a: a.bank_id == bank)

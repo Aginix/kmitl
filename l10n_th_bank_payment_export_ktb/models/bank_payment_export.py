@@ -162,8 +162,8 @@ class BankPaymentExport(models.Model):
         senders = set()
         bics = set()
         for payment in payments:
-            paying_account = payment.paying_account_id
-            if paying_account:
+            paying_account = payment.payment_method_line_id
+            if paying_account.bank_account_id:
                 senders.add(("account", paying_account.id))
                 bics.add(paying_account.bank_account_id.bank_id.bic)
             else:

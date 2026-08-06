@@ -8,7 +8,7 @@
             <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="default_payment_type_id"/>
+                <field name="default_payment_method_id"/>
                 <field name="default_paying_account_id" optional="show"/>
                 <field name="allowed_paying_account_ids" widget="many2many_tags" optional="show"/>
             </tree>
@@ -27,7 +27,7 @@
                     </div>
                     <group>
                         <group string="วิธีจ่าย">
-                            <field name="default_payment_type_id" options="{'no_create': True}"/>
+                            <field name="default_payment_method_id" options="{'no_create': True}"/>
                         </group>
                         <group string="หัวจ่าย">
                             <field name="auto_match_payee_bank"/>

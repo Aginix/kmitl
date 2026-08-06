@@ -28,7 +28,8 @@ class BankPaymentExportLine(models.Model):
             "[('export_status', '=', 'draft'), "
             "('state', '=', 'submitted'), "
             "('payment_method_id', '=', %s), "
-            "('kmitl_payment_type_id.is_cheque', '=', False), "
+            "('payment_method_line_id.payment_method_id.code', '!=', "
+            "'kmitl_cheque'), "
             "('journal_id.type', '=', 'bank'), "
             "('company_id', '=', company_id), "
             "('currency_id', '=', currency_id)]"
@@ -67,16 +68,16 @@ class BankPaymentExportLine(models.Model):
     # account as the fallback for payments made outside the disbursement flow.
     sending_account_id = fields.Many2one(
         comodel_name="res.partner.bank",
-        related="payment_id.paying_account_id.bank_account_id",
+        related="payment_id.payment_method_line_id.bank_account_id",
         string="Sending Account",
         readonly=True,
     )
 
-    @api.depends("payment_id.paying_account_id")
+    @api.depends("payment_id.payment_method_line_id")
     def _compute_sending_account(self):
         super()._compute_sending_account()
         for line in self:
-            bank_account = line.payment_id.paying_account_id.bank_account_id
+            bank_account = line.payment_id.payment_method_line_id.bank_account_id
             if bank_account:
                 line.sending_bank_id = bank_account.bank_id
                 line.sending_acc_number = bank_account.acc_number

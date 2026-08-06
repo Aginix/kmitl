@@ -77,7 +77,7 @@ class BankPaymentExport(models.Model):
         previous_currency = False
         method_transfer_out = self._transfer_payment_method()
         for payment in payments:
-            if payment.kmitl_payment_type_id.is_cheque:
+            if payment.is_cheque_payment:
                 raise UserError(
                     _("Cheque payments cannot be exported to the bank: %s")
                     % payment.name
@@ -139,6 +139,12 @@ class BankPaymentExport(models.Model):
             else:
                 new_domain.append(leaf)
         # Cheques are handed over physically, never sent in an e-payment file.
-        new_domain.append(("kmitl_payment_type_id.is_cheque", "=", False))
+        new_domain.append(
+            (
+                "payment_method_line_id.payment_method_id.code",
+                "!=",
+                "kmitl_cheque",
+            )
+        )
         return new_domain
 

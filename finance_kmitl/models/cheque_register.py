@@ -42,13 +42,14 @@ class ChequeRegister(models.Model):
         help="The voucher type (ใบสำคัญ) the cheque was issued under.",
     )
     paying_account_id = fields.Many2one(
-        comodel_name="kmitl.paying.account",
+        comodel_name="account.payment.method.line",
         string="Bank/Cheque Book",
-        domain="[('is_cheque', '=', True)]",
+        domain="[('payment_account_id', '!=', False), "
+        "('payment_method_id.code', '=', 'kmitl_cheque')]",
         tracking=True,
-        help="หัวจ่าย — the account the cheque is drawn on. Through its bank "
-        "account it carries the bank and the account number, and it identifies "
-        "the cheque book.",
+        help="หัวจ่าย — the paying account the cheque is drawn on. Through its "
+        "bank account it carries the bank and the account number, and it "
+        "identifies the cheque book.",
     )
     bank_id = fields.Many2one(
         comodel_name="res.bank",

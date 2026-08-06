@@ -703,7 +703,7 @@ msgid "Main Paying Journal"
 msgstr "หัวจ่ายหลัก (สมุดธนาคาร)"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__default_payment_type_id
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__default_payment_method_id
 msgid "Default Method"
 msgstr "วิธีจ่ายตั้งต้น"
 
@@ -739,46 +739,41 @@ msgid "Allowed Paying Accounts"
 msgstr "หัวจ่ายที่อนุญาต"
 
 #. module: finance_kmitl
-#: model:ir.model,name:finance_kmitl.model_kmitl_paying_account
-msgid "KMITL Paying Account (หัวจ่าย)"
-msgstr "หัวจ่าย"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_paying_account__payment_account_id
-msgid "GL Account"
-msgstr "บัญชีแยกประเภท (GL)"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_paying_account__bank_account_id
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment_method_line__bank_account_id
 msgid "Bank Account"
 msgstr "บัญชีธนาคาร"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_paying_account__payment_type_id
-#: model:ir.model.fields,field_description:finance_kmitl.field_disbursement_payment_line__payment_type_id
-msgid "Payment Method"
-msgstr "วิธีจ่าย"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_paying_account__acc_number
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment_method_line__acc_number
 msgid "Account Number"
 msgstr "เลขที่บัญชี"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_paying_account__is_cheque
-msgid "Paid by Cheque"
-msgstr "จ่ายด้วยเช็ค"
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__journal_id
+msgid "Default Voucher"
+msgstr "ใบสำคัญตั้งต้น"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_paying_account__is_cash
-msgid "Paid in Cash"
-msgstr "จ่ายด้วยเงินสด"
+#: model:ir.model,name:finance_kmitl.model_kmitl_payment_type
+msgid "KMITL Payment Purpose"
+msgstr "ประเภทรายการ (วัตถุประสงค์)"
 
 #. module: finance_kmitl
-#: model:ir.model.constraint,message:finance_kmitl.constraint_kmitl_paying_account_bank_account_method_uniq
+#: code:addons/finance_kmitl/models/account_payment_method_line.py:0
+#, python-format
 msgid ""
-"A bank account can only have one paying account per payment method."
-msgstr "บัญชีธนาคารหนึ่งบัญชีมีหัวจ่ายได้เพียงหนึ่งรายการต่อหนึ่งวิธีจ่าย"
+"Paying account '%s' pays through a bank, so it needs the institute's bank "
+"account the money leaves from."
+msgstr "หัวจ่าย '%s' จ่ายผ่านธนาคาร จึงต้องระบุบัญชีธนาคารของสถาบันที่เงินออก"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment_method_line.py:0
+#, python-format
+msgid ""
+"Paying accounts on bank account %(bank_account)s must book to the same GL "
+"account: '%(other)s' uses %(other_account)s. Money leaving one bank account "
+"leaves the same ledger account however it is paid."
+msgstr "หัวจ่ายทุกรายการของบัญชีธนาคาร %(bank_account)s ต้องลงบัญชีแยกประเภทตัวเดียวกัน: '%(other)s' ใช้ %(other_account)s — เงินที่ออกจากบัญชีธนาคารเดียวกันย่อมออกจากบัญชีแยกประเภทเดียวกันไม่ว่าจ่ายด้วยวิธีใด"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/kmitl_payment_subject.py:0

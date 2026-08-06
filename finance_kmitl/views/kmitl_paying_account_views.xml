@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- หัวจ่าย is a payment method line: Odoo already models "on this voucher
+         journal, money may move this way, booked against this account". These
+         views are that model presented as the treasury office's master data,
+         narrowed to the lines that actually name their GL account — the ones
+         Odoo seeds on every bank journal by default do not, and are not paying
+         accounts. -->
     <record id="kmitl_paying_account_view_tree" model="ir.ui.view">
-        <field name="name">kmitl.paying.account.tree</field>
-        <field name="model">kmitl.paying.account</field>
+        <field name="name">account.payment.method.line.paying.tree</field>
+        <field name="model">account.payment.method.line</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="bank_account_id"/>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="journal_id"/>
+                <field name="payment_method_id"/>
                 <field name="bank_id" optional="show"/>
-                <field name="payment_type_id"/>
+                <field name="acc_number" optional="show"/>
                 <field name="payment_account_id"/>
                 <field name="cheque_layout_id" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" optional="hide"/>
@@ -17,32 +26,41 @@
     </record>
 
     <record id="kmitl_paying_account_view_form" model="ir.ui.view">
-        <field name="name">kmitl.paying.account.form</field>
-        <field name="model">kmitl.paying.account</field>
+        <field name="name">account.payment.method.line.paying.form</field>
+        <field name="model">account.payment.method.line</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field
+                                name="name"
+                                placeholder="e.g. เงินโอน – ธ.กรุงไทย /หัวตะเข้ /CA-028-6-01583-8"
+                            />
+                        </h1>
+                    </div>
                     <group>
-                        <group string="บัญชีธนาคาร">
+                        <group string="ใบสำคัญและวิธีจ่าย">
+                            <field name="journal_id" options="{'no_create': True}"/>
+                            <field name="available_payment_method_ids" invisible="1"/>
+                            <field name="payment_method_id"
+                                   options="{'no_create': True}"/>
+                            <field name="code" invisible="1"/>
+                        </group>
+                        <group string="บัญชีและการลงบัญชี">
+                            <!-- The institute's own bank account: the sending
+                                 account of the e-payment file and the cheque
+                                 book the register controls. Empty for cash. -->
                             <field name="bank_account_id"
                                    options="{'no_create': True}"/>
-                            <field name="bank_id"/>
-                            <field name="acc_number"/>
-                        </group>
-                        <group string="วิธีจ่ายและการลงบัญชี">
-                            <field name="payment_type_id"
-                                   options="{'no_create': True}"/>
-                            <!-- The GL account belongs to the pair, not to the
-                                 bank account: a cheque drawn on this account is
-                                 booked against "เช็คจ่าย" until it clears, a
-                                 transfer straight against the bank account. -->
+                            <!-- Naming this account is what makes the line a
+                                 paying account at all. -->
                             <field name="payment_account_id"
                                    options="{'no_create': True}"/>
-                            <field name="is_cheque" invisible="1"/>
                             <field name="cheque_layout_id"
-                                   attrs="{'invisible': [('is_cheque', '=', False)]}"
+                                   attrs="{'invisible': [('code', '!=', 'kmitl_cheque')]}"
                                    options="{'no_create': True}"/>
-                            <field name="active" widget="boolean_toggle"/>
                             <field name="company_id"
                                    groups="base.group_multi_company"/>
                         </group>
@@ -53,22 +71,21 @@
     </record>
 
     <record id="kmitl_paying_account_view_search" model="ir.ui.view">
-        <field name="name">kmitl.paying.account.search</field>
-        <field name="model">kmitl.paying.account</field>
+        <field name="name">account.payment.method.line.paying.search</field>
+        <field name="model">account.payment.method.line</field>
         <field name="arch" type="xml">
             <search>
-                <field name="bank_account_id"/>
+                <field name="name"/>
                 <field name="bank_id"/>
-                <field name="payment_type_id"/>
-                <filter string="เช็ค" name="cheque"
-                        domain="[('is_cheque', '=', True)]"/>
-                <filter string="เงินสด" name="cash"
-                        domain="[('is_cash', '=', True)]"/>
+                <field name="journal_id"/>
+                <field name="payment_method_id"/>
                 <group expand="0" string="Group By">
                     <filter string="ธนาคาร" name="group_bank"
                             context="{'group_by': 'bank_id'}"/>
                     <filter string="วิธีจ่าย" name="group_method"
-                            context="{'group_by': 'payment_type_id'}"/>
+                            context="{'group_by': 'payment_method_id'}"/>
+                    <filter string="ใบสำคัญ" name="group_journal"
+                            context="{'group_by': 'journal_id'}"/>
                 </group>
             </search>
         </field>
@@ -76,16 +93,25 @@
 
     <record id="action_paying_account" model="ir.actions.act_window">
         <field name="name">หัวจ่าย (Paying Accounts)</field>
-        <field name="res_model">kmitl.paying.account</field>
+        <field name="res_model">account.payment.method.line</field>
         <field name="view_mode">tree,form</field>
+        <field name="domain">[('payment_account_id', '!=', False)]</field>
+        <field name="context">{'search_default_group_bank': 1}</field>
+        <field name="view_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('kmitl_paying_account_view_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('kmitl_paying_account_view_form')}),
+        ]"/>
+        <field name="search_view_id" ref="kmitl_paying_account_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 ยังไม่มีหัวจ่าย
             </p>
             <p>
-                หัวจ่ายคือคู่ของ "บัญชีธนาคารของสถาบัน" กับ "วิธีจ่าย" —
-                บัญชีเดียวกันจ่ายด้วยเงินโอนและด้วยเช็คได้ แต่ลงบัญชีแยกประเภทคนละตัว
-                (เช็คลง "เช็คจ่าย" จนกว่าเช็คจะขึ้นเงิน) จึงต้องสร้างหัวจ่ายหนึ่งรายการต่อหนึ่งวิธีจ่าย
+                หัวจ่ายคือรายการวิธีจ่ายบนใบสำคัญ — บอกทั้งใบสำคัญที่ใช้ วิธีจ่าย
+                บัญชีธนาคารของสถาบันที่เงินออก และบัญชีแยกประเภทที่ลงรายการ
+                บัญชีธนาคารเดียวกันมีได้หลายหัวจ่าย (เช่นกระแสรายวันที่ทั้งโอนและออกเช็คได้)
+                แต่ทุกหัวจ่ายของบัญชีเดียวกันต้องลงบัญชีแยกประเภทตัวเดียวกัน
             </p>
         </field>
     </record>

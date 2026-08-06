@@ -603,30 +603,42 @@ def _bill_dr(dr, wht_tax=None):
 
 
 def _demo_paying_account(env, company, bank):
-    """A paying account (หัวจ่าย) for transfers out of the institute's bank."""
-    PayingAccount = env["kmitl.paying.account"]
+    """A paying account (หัวจ่าย) for transfers out of the institute's bank.
+
+    A paying account is a payment method line on a voucher journal that names
+    the bank account the money leaves from and the GL account it is booked
+    against, so the demo picks the first outbound bank journal as the voucher and
+    completes its เงินโอน line.
+    """
+    MethodLine = env["account.payment.method.line"]
     PartnerBank = env["res.partner.bank"]
-    transfer_type = env.ref(
-        "finance_kmitl.payment_type_normal_outbound", raise_if_not_found=False
+    method = env.ref(
+        "account_kmitl.payment_method_transfer_out", raise_if_not_found=False
     )
-    if not transfer_type:
-        return PayingAccount
-    paying_account = PayingAccount.search(
+    if not method:
+        return MethodLine
+    existing = MethodLine.search(
         [
             ("company_id", "=", company.id),
-            ("payment_type_id", "=", transfer_type.id),
+            ("payment_method_id", "=", method.id),
+            ("payment_account_id", "!=", False),
             ("bank_id", "=", bank.id if bank else False),
         ],
         limit=1,
     )
-    if paying_account:
-        return paying_account
+    if existing:
+        return existing
     gl_account = env["account.account"].search(
         [("company_id", "=", company.id), ("account_type", "=", "asset_cash")],
         limit=1,
     )
-    if not gl_account:
-        return PayingAccount
+    journal = env["account.journal"].search(
+        [("type", "=", "bank"), ("company_id", "=", company.id)],
+        order="sequence, id",
+        limit=1,
+    )
+    if not gl_account or not journal:
+        return MethodLine
     bank_account = PartnerBank.search(
         [
             ("partner_id", "=", company.partner_id.id),
@@ -637,16 +649,24 @@ def _demo_paying_account(env, company, bank):
     if not bank_account:
         bank_account = PartnerBank.create({
             "partner_id": company.partner_id.id,
-            "acc_number": "028-1-03878-3",
+            "acc_number": "028-6-01583-8",
             "bank_id": bank.id if bank else False,
             "acc_holder_name": company.name,
         })
-    return PayingAccount.create({
+    line = journal._get_available_payment_method_lines("outbound").filtered(
+        lambda l: l.payment_method_id == method
+    )[:1]
+    if not line:
+        line = MethodLine.create({
+            "name": "เงินโอน – %s" % bank_account.display_name,
+            "payment_method_id": method.id,
+            "journal_id": journal.id,
+        })
+    line.write({
         "bank_account_id": bank_account.id,
-        "payment_type_id": transfer_type.id,
         "payment_account_id": gl_account.id,
-        "company_id": company.id,
     })
+    return line
 
 
 def _classify_dr(env, dr):

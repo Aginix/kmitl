@@ -70,8 +70,11 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <!-- journal_id is auto-set from kmitl_payment_type_id; not user-editable.
-                 force_save persists the value set by the onchange even though readonly. -->
+            <!-- journal_id is auto-set — from the paying account, which belongs
+                 to exactly one voucher journal (or from the operation type for
+                 payments that have no paying account). Not user-editable;
+                 force_save persists the value the onchange sets even though
+                 readonly. -->
             <xpath expr="//field[@name='journal_id']" position="attributes">
                 <attribute name="attrs">{'readonly': [(1, '=', 1)]}</attribute>
                 <attribute name="force_save">1</attribute>
@@ -93,10 +96,15 @@
             <!-- Add KMITL payment type where payment_type was -->
             <xpath expr="//field[@name='payment_type']" position="after">
                 <field name="kmitl_payment_type_id" domain="[('direction', '=', payment_type)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                <!-- หัวจ่าย: the account the money leaves from. Editable while
-                     the entry is not posted so finance can correct it. -->
-                <field name="paying_account_id"
+                <!-- หัวจ่าย: the payment method line, which names the account
+                     the money leaves from, the way it leaves and the voucher it
+                     is recorded under. Only lines that know their GL account are
+                     paying accounts. Editable while the entry is not posted so
+                     finance can correct it. -->
+                <field name="payment_method_line_id"
+                       string="หัวจ่าย"
                        options="{'no_create': True}"
+                       domain="[('payment_account_id', '!=', False), ('payment_type', '=', payment_type)]"
                        attrs="{'readonly': [('state', 'not in', ('draft', 'submitted'))]}"/>
             </xpath>
 

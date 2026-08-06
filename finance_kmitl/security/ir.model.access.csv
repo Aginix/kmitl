@@ -11,6 +11,3 @@ access_cheque_register_manager,cheque.register.manager,model_cheque_register,gro
 access_cheque_layout_all,cheque.layout.all,model_cheque_layout,base.group_user,1,0,0,0
 access_cheque_layout_manager,cheque.layout.manager,model_cheque_layout,account.group_account_manager,1,1,1,1
 access_res_partner_bank_finance_manager,res.partner.bank.finance.manager,base.model_res_partner_bank,group_finance_kmitl_manager,1,1,1,0
-access_kmitl_paying_account_all,kmitl.paying.account.all,model_kmitl_paying_account,base.group_user,1,0,0,0
-access_kmitl_paying_account_manager,kmitl.paying.account.manager,model_kmitl_paying_account,account.group_account_manager,1,1,1,1
-access_kmitl_paying_account_finance_manager,kmitl.paying.account.finance.manager,model_kmitl_paying_account,group_finance_kmitl_manager,1,1,1,0
