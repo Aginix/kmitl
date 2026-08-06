@@ -462,7 +462,7 @@ msgstr "ราคารวม"
 #. module: stock_request_kmitl
 #: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__price_unit
 msgid "Unit Price"
-msgstr "ราคาต่อหน่วย"
+msgstr "ราคา"
 
 #. module: stock_request_kmitl
 #: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_request_form

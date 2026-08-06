@@ -2169,7 +2169,7 @@ msgstr "ยอดเงินของเอกสารนี้ เกิน�
 #. module: purchase_request_kmitl
 #: model:exception.rule,description:purchase_request_kmitl.pr_line_exception_price_unit_min_0
 msgid "The system does not allow the unit price to be 0 or negative."
-msgstr "ระบบไม่อนุญาตให้ราคาต่อหน่วยเป็น 0 หรือค่าติดลบ"
+msgstr "ระบบไม่อนุญาตให้ราคาเป็น 0 หรือค่าติดลบ"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.pr_exception_2_1
@@ -2204,7 +2204,7 @@ msgstr ""
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.pr_line_exception_price_unit_min_0
 msgid "The unit price must be greater than 0."
-msgstr "ราคาต่อหน่วยต้องมากกว่า 0"
+msgstr "ราคาต้องมากกว่า 0"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
