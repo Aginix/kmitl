@@ -277,7 +277,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__numbering_mode__auto
 msgid "Auto (next available)"
-msgstr ""
+msgstr "อัตโนมัติ"
 
 #. module: agx_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_type_form
@@ -1100,7 +1100,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__numbering_mode
 msgid "Numbering Mode"
-msgstr ""
+msgstr "การกำหนดเลขที่หนังสือ"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__number_ids
@@ -1393,12 +1393,12 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__reserved_number_id
 msgid "Reserved Number"
-msgstr ""
+msgstr "เลขที่หนังสือ"
 
 #. module: agx_sarabun
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__numbering_mode__reserved
 msgid "Reserved number"
-msgstr ""
+msgstr "เลือกจากเลขที่จองไว้"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__reset_period
