@@ -27,6 +27,19 @@ class TestP5Signing(SarabunCommon):
         self.assertTrue(doc.signed_at)
         self.assertTrue(doc.signed_pdf)
 
+    def test_completion_attaches_visible_pdf(self):
+        """At completion the approved PDF is dropped into the record's Attachments as a
+        plain ir.attachment (res_field unset) — the signed_pdf Binary is res_field-backed
+        and hidden from that list — so it shows in the หนังสือ's attachment box (feedback)."""
+        doc = self._make_doc()
+        self._complete_single_sign(doc)
+        atts = self.env["ir.attachment"].search([
+            ("res_model", "=", "sarabun.document"),
+            ("res_id", "=", doc.id),
+            ("res_field", "=", False),
+        ])
+        self.assertIn(doc.signed_pdf_filename, atts.mapped("name"))
+
     def test_signature_block_and_trail_semantics(self):
         """ADR-0008 three axes. _signature_steps = the authoritative sign only
         (is_signature — the originator is no longer is_signature). _signature_block_steps

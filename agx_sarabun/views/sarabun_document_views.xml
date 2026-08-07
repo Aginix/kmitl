@@ -66,8 +66,11 @@
                             </div>
                         </button>
                     </div>
-                    <!-- Document Type — topmost classification (drives register + route). -->
-                    <group>
+                    <!-- Document Type — topmost classification (drives register + route).
+                         The first three groups (classification / ทะเบียน / header) are
+                         hidden once approved (completed) so the inline PDF is the focus. -->
+                    <group name="classification"
+                           attrs="{'invisible': [('state', '=', 'completed')]}">
                       <group>
                         <field name="type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                       </group>
@@ -77,7 +80,8 @@
                          No banner headline: ที่ (name) is '/' until numbered at
                          completion (final ลงนาม/อนุมัติ — ADR-0010), so it lives as a
                          small register field like on the real document. -->
-                    <group>
+                    <group name="registry_block"
+                           attrs="{'invisible': [('state', '=', 'completed')]}">
                         <!-- readonly is set per-field: a `readonly` attrs on the <group>
                              is NOT propagated to child fields by Odoo 16 (each node's
                              modifiers are computed from its own attrs only). -->
@@ -105,7 +109,8 @@
                                    attrs="{'invisible': ['|', '|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned')), ('numbering_mode', '!=', 'reserved')]}"/>
                         </group>
                     </group>
-                    <group name="header">
+                    <group name="header"
+                           attrs="{'invisible': [('state', '=', 'completed')]}">
                         <field name="subject" placeholder="เรื่อง..."
                                attrs="{'readonly': [('is_editable', '=', False)]}"/>
                         <field name="addressee_prefix_id" nolabel="1" widget="selection" required="1"
@@ -229,30 +234,6 @@
                                  still archived (audit / archived_step_ids), just not
                                  shown beside the live Route. -->
                         </page>
-                        <page string="อ้างถึง (References)" name="references">
-                            <separator string="อ้างถึง — ในระบบ (prior หนังสือ)"/>
-                            <field name="reference_document_ids"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}"
-                                   widget="many2many_tags"/>
-                            <separator string="อ้างถึง — นอกระบบ (free text)"/>
-                            <field name="reference_line_ids"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}">
-                                <tree editable="bottom">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="text"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="สิ่งที่ส่งมาด้วย (Enclosures)" name="enclosures">
-                            <field name="enclosure_ids"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}">
-                                <tree editable="bottom">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="description"/>
-                                    <field name="attachment_id"/>
-                                </tree>
-                            </field>
-                        </page>
                         <page string="Origin" name="origin"
                               attrs="{'invisible': [('origin_model', '=', False)]}">
                             <group>
@@ -267,6 +248,28 @@
                                 <field name="company_id" groups="base.group_multi_company"
                                        attrs="{'readonly': [('is_editable', '=', False)]}"/>
                             </group>
+                        </page>
+                        <!-- อ้างถึง / สิ่งที่ส่งมาด้วย are shown last, after the other
+                             notebook pages (feedback). -->
+                        <page string="อ้างถึง (References)" name="references">
+                            <separator string="อ้างถึง — ในระบบ (prior หนังสือ)"/>
+                            <field name="reference_document_ids"
+                                   attrs="{'readonly': [('is_editable', '=', False)]}"
+                                   widget="many2many_tags"/>
+                            <separator string="อ้างถึง — นอกระบบ (free text)"/>
+                            <field name="reference_line_ids"
+                                   attrs="{'readonly': [('is_editable', '=', False)]}">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="text"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <!-- สิ่งที่ส่งมาด้วย — plain attached files via the attachments
+                             widget (no caption / handle — feedback). -->
+                        <page string="สิ่งที่ส่งมาด้วย (Enclosures)" name="enclosures">
+                            <field name="enclosure_attachment_ids" widget="many2many_binary"
+                                   attrs="{'readonly': [('is_editable', '=', False)]}"/>
                         </page>
                     </notebook>
                 </sheet>
