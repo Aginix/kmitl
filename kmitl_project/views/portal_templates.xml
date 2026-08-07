@@ -572,7 +572,7 @@
                                         <tbody>
                                             <t t-if="people['lines']">
                                                 <tr t-foreach="people['lines']" t-as="row">
-                                                    <td t-field="row.name" />
+                                                    <td t-out="row.name" />
                                                     <td
                                                         class="text-end"
                                                         t-out="'{:,.0f}'.format(row.amount)"
