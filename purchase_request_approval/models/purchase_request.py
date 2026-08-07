@@ -99,14 +99,18 @@ class PurchaseRequest(models.Model):
                 # keep-number return parks the PA in ``pending_pr`` — reuse it
                 # (same พจ.1 number) instead of raising "already been created",
                 # and flip it back to draft now that the new PR sarabun has
-                # been approved.
+                # been approved. Re-sync copied fields from the (edited) PR
+                # so the PA reflects the revised data, not the stale snapshot
+                # taken at initial creation.
                 existing = self.env["purchase.request.approval"].search(
                     [("request_id", "=", rec.id), ("state", "!=", "cancelled")],
                     limit=1,
                 )
                 if existing:
                     if existing.state == "pending_pr":
-                        existing.write({"state": "draft"})
+                        vals = rec._prepare_approval_sync_vals()
+                        vals["state"] = "draft"
+                        existing.write(vals)
                 else:
                     rec.button_create_approval()
             else:
@@ -145,6 +149,19 @@ class PurchaseRequest(models.Model):
                 for line in self.line_ids
             ],
         }
+
+    def _prepare_approval_sync_vals(self):
+        """Vals to re-sync an EXISTING PA record from this PR — used when a
+        ตีกลับ/แก้ไข PA (parked in ``pending_pr``) is revived after the PR was
+        edited. Copies the same field set as ``_prepare_approval_vals`` but
+        omits identity/immutable fields (``request_id``, ``date_start``,
+        ``origin``, ``state``, ``validation_status``) and resets the PA's own
+        lines to mirror the PR lines (clear then create)."""
+        vals = self._prepare_approval_vals()
+        for key in ("request_id", "date_start", "origin", "state", "validation_status"):
+            vals.pop(key, None)
+        vals["line_ids"] = [(5, 0, 0)] + vals.get("line_ids", [])
+        return vals
 
     def button_create_approval(self):
         self.ensure_one()
