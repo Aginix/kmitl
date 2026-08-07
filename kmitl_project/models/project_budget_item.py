@@ -115,6 +115,7 @@ class ProjectBudgetItem(models.Model):
         # needed (portal, config column, validation messages).
         return [(item.id, item.name) for item in self]
 
+    @api.model
     def name_search(self, name="", args=None, operator="ilike", limit=100):
         # Label the autocomplete dropdown with the full "ประเภทงบ / รายการ" path so the
         # planner can tell items apart across categories while picking. name_get still
