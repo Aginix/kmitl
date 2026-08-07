@@ -62,3 +62,5 @@ class PurchaseRequest(models.Model):
         for rec in self:
             if rec.state == "to_verify" and can_edit:
                 rec.is_budget_editable = True
+            elif rec.state == "to_submit":
+                rec.is_budget_editable = False
