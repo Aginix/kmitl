@@ -47,16 +47,23 @@ class PurchaseRequest(models.Model):
                 )
             )
 
-    def action_resume_returned_sarabun(self):
-        """Revive the latest cancelled sarabun on this PR back to editable
-        ``draft`` (reuses the same document + register number) so the sender
-        can send it again. Available only when a PA is parked in ``pending_pr``
-        (i.e., we came from the ตีกลับ/แก้ไข flow)."""
+    def action_submit_to_sarabun(self):
+        """Override the Create Sarabun entry point: when this PR came from a
+        ตีกลับ/แก้ไข flow (PA in pending_pr + cancelled sarabun on file),
+        revive the cancelled หนังสือ back to draft (reusing the same document
+        and register number) instead of spawning a new one. Otherwise fall
+        through to the standard mixin behaviour that creates a fresh sarabun."""
         self.ensure_one()
-        if not self.can_resume_returned_sarabun:
-            raise UserError(_(
-                "ไม่พบหนังสือที่ถูกยกเลิกไว้สำหรับใบขอนี้ที่พร้อมกลับมาใช้ใหม่"
-            ))
+        if self.can_resume_returned_sarabun:
+            return self._resume_returned_sarabun()
+        return super().action_submit_to_sarabun()
+
+    def _resume_returned_sarabun(self):
+        """Revive the latest cancelled sarabun on this PR back to editable
+        ``draft`` (same document + register number). Called from
+        :meth:`action_submit_to_sarabun` when the two-step ตีกลับ/แก้ไข resume
+        conditions are met."""
+        self.ensure_one()
         doc = self.env["sarabun.document"].search(
             [
                 ("origin_model", "=", self._name),

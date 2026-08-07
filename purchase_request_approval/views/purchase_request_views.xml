@@ -18,16 +18,6 @@
                     string="PA"
                 />
             </xpath>
-            <xpath expr="//button[@name='action_submit_to_sarabun']" position="after">
-                <field name="can_resume_returned_sarabun" invisible="1" />
-                <button
-                    name="action_resume_returned_sarabun"
-                    string="ส่งเรื่องสารบรรณ"
-                    type="object"
-                    class="oe_highlight"
-                    attrs="{'invisible': [('can_resume_returned_sarabun', '=', False)]}"
-                />
-            </xpath>
         </field>
     </record>
 
