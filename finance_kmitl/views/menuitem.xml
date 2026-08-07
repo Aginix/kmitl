@@ -155,5 +155,19 @@
         action="action_cheque_layout"
         sequence="15"
     />
+    <menuitem
+        id="menu_settings_paying_account"
+        name="Paying Accounts"
+        parent="menu_payment_settings"
+        action="action_kmitl_paying_account"
+        sequence="6"
+    />
+    <menuitem
+        id="menu_settings_payment_subject"
+        name="Payment Subjects"
+        parent="menu_payment_settings"
+        action="action_kmitl_payment_subject"
+        sequence="7"
+    />
 
 </odoo>

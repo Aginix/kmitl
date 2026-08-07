@@ -12,10 +12,11 @@ Four demo stories run in order from ``post_init``:
 The disbursement flow reuses two helpers from ``kmitl_demo`` (the purchase
 end-to-end flow uses them too) instead of duplicating them.
 """
+
 import logging
 from datetime import timedelta
 
-from odoo import SUPERUSER_ID, api, fields
+from odoo import SUPERUSER_ID, _, api, fields
 from odoo.exceptions import UserError
 from odoo.fields import Command
 
@@ -499,9 +500,12 @@ DR_STAGE_TARGETS = [
     "bill",
     "audit",
     "authorize",
-    "payment", "payment",
+    "payment",
+    "payment",
     "paid",
-    "pay", "pay", "pay",
+    "pay",
+    "pay",
+    "pay",
 ]
 WHT_DR_INDEX = 7  # one "pay" (cleared) case carries withholding tax
 
@@ -514,9 +518,7 @@ def _create_bill_payment_demo(env, drs):
     """
     drs = drs.exists()
     if not drs:
-        _logger.warning(
-            "finance_kmitl_demo: no disbursement requests to continue."
-        )
+        _logger.warning("finance_kmitl_demo: no disbursement requests to continue.")
         return
     _logger.info(
         "Creating bill/payment demo from %s disbursement requests...", len(drs)
@@ -528,11 +530,7 @@ def _create_bill_payment_demo(env, drs):
         wht_tax = None
 
     for index, dr in enumerate(drs):
-        target = (
-            DR_STAGE_TARGETS[index]
-            if index < len(DR_STAGE_TARGETS)
-            else "approve"
-        )
+        target = DR_STAGE_TARGETS[index] if index < len(DR_STAGE_TARGETS) else "approve"
         try:
             _approve_dr(dr)
             if target == "approve":
@@ -540,6 +538,7 @@ def _create_bill_payment_demo(env, drs):
             _bill_dr(dr, wht_tax if index == WHT_DR_INDEX else None)
             if target == "bill":
                 continue
+            _set_payment_subject(env, dr)
             dr.action_audit()
             if target == "audit":
                 continue
@@ -558,6 +557,23 @@ def _create_bill_payment_demo(env, drs):
                 error,
             )
     _logger.info("Bill/payment demo created.")
+
+
+def _set_payment_subject(env, dr):
+    """Give the request the เรื่องที่จ่าย the auditor would pick.
+
+    Alternating between a fixed-account subject and one that matches the payee's
+    own bank, so the demo shows both provenances (หัวจ่ายหลัก and
+    ตรงธนาคารผู้รับ / ไม่ตรงกับหัวจ่ายหลัก) on the payment lines.
+    """
+    xmlid = (
+        "finance_kmitl.payment_subject_advance_reimburse"
+        if dr.id % 2
+        else "finance_kmitl.payment_subject_vendor_direct"
+    )
+    subject = env.ref(xmlid, raise_if_not_found=False)
+    if subject:
+        dr.payment_subject_id = subject.id
 
 
 def _dr_commitment(dr):
@@ -614,9 +630,7 @@ def _finalize_payment(env, dr, do_clear):
     payments.action_submit()
     exported = _export_payments(env, payments)
     # Finance confirms the bank result (success) so the request can reach 'paid'.
-    lines = env["bank.payment.export.line"].search(
-        [("payment_id", "in", payments.ids)]
-    )
+    lines = env["bank.payment.export.line"].search([("payment_id", "in", payments.ids)])
     if lines:
         lines._apply_epayment_result("success")
     else:
@@ -632,11 +646,16 @@ def _finalize_payment(env, dr, do_clear):
 
 
 def _export_payments(env, payments):
-    """Best-effort KTB bank export of the given submitted payments.
+    """Best-effort bank export of the given submitted payments.
 
-    The full KTB export depends on company bank configuration (bank journal
-    BIC, export format) that may be absent on a given database. Returns True
-    when the export was confirmed, False otherwise.
+    One file debits one account, so the export is opened on the paying account
+    (หัวจ่าย) the payments were made from and only those are pulled into it. A
+    request whose payees span several paying accounts therefore exports the
+    first group here — the demo shows the shape, not a full run.
+
+    The export also depends on company bank configuration (export format,
+    bank BIC) that may be absent on a given database. Returns True when the
+    export was confirmed, False otherwise.
     """
     try:
         for payment in payments:
@@ -646,12 +665,26 @@ def _export_payments(env, payments):
             if ktb_bank:
                 payment.partner_bank_id = ktb_bank.id
 
+        paying_accounts = payments.mapped("payment_method_line_id")
+        paying_account = (
+            paying_accounts.filtered(lambda account: account.bank_id.bic == "KRTHTHBK")[
+                :1
+            ]
+            or paying_accounts[:1]
+        )
+        if not paying_account:
+            raise UserError(_("The payments name no paying account to debit."))
+
         export = env["bank.payment.export"].create(
-            {"bank": "KRTHTHBK", "company_id": payments[:1].company_id.id}
+            {
+                "bank": paying_account.bank_id.bic or "KRTHTHBK",
+                "paying_account_id": paying_account.id,
+                "company_id": payments[:1].company_id.id,
+            }
         )
         export.action_get_all_payments()
         if not export.export_line_ids:
-            raise UserError("No submitted payments available to export.")
+            raise UserError(_("No submitted payments available to export."))
         for line in export.export_line_ids:
             if not line.payment_partner_bank_id and line.payment_id.partner_bank_id:
                 line.payment_partner_bank_id = line.payment_id.partner_bank_id.id
@@ -685,42 +718,102 @@ def _export_payments(env, payments):
 #   depreciated  -> validated, due depreciation periods posted
 #   closed       -> old asset, all depreciation posted (fully depreciated)
 ASSET_SPECS = [
-    ("เครื่องคอมพิวเตอร์ All-in-One สำนักงานคณบดี",
-     "account_asset_kmitl.asset_profile_014", 45000.0, "2024-10-15",
-     "kmitl_demo.01", "depreciated"),
-    ("เครื่องปรับอากาศ ห้องปฏิบัติการ",
-     "account_asset_kmitl.asset_profile_001", 38000.0, "2024-11-01",
-     "kmitl_demo.01", "depreciated"),
-    ("กล้องจุลทรรศน์ดิจิทัล",
-     "account_asset_kmitl.asset_profile_013", 250000.0, "2024-12-20",
-     "kmitl_demo.01", "depreciated"),
-    ("เครื่องพิมพ์เลเซอร์มัลติฟังก์ชัน",
-     "account_asset_kmitl.asset_profile_001", 22000.0, "2024-10-01",
-     "kmitl_demo.89390", "depreciated"),
-    ("รถตู้โดยสาร 12 ที่นั่ง",
-     "account_asset_kmitl.asset_profile_002", 1350000.0, "2024-10-20",
-     "kmitl_demo.89390", "depreciated"),
-    ("โต๊ะประชุมไม้พร้อมเก้าอี้ 12 ที่นั่ง",
-     "account_asset_kmitl.asset_profile_001", 65000.0, "2025-02-10",
-     "kmitl_demo.01", "open"),
-    ("เครื่องสำรองไฟ UPS 10kVA",
-     "account_asset_kmitl.asset_profile_003", 90000.0, "2025-03-05",
-     "kmitl_demo.01", "open"),
-    ("ชุดเครื่องเสียงห้องเรียนอัจฉริยะ",
-     "account_asset_kmitl.asset_profile_005", 75000.0, "2025-04-01",
-     "kmitl_demo.01", "open"),
-    ("เครื่องวิเคราะห์สเปกตรัม",
-     "account_asset_kmitl.asset_profile_013", 480000.0, "2025-05-15",
-     "kmitl_demo.01", "open"),
-    ("เครื่องคอมพิวเตอร์โน้ตบุ๊ก (ตัดจำหน่าย)",
-     "account_asset_kmitl.asset_profile_014", 36000.0, "2020-01-10",
-     "kmitl_demo.01", "closed"),
-    ("ครุภัณฑ์สำนักงานรอตรวจรับ",
-     "account_asset_kmitl.asset_profile_001", 18000.0, "2026-01-05",
-     "kmitl_demo.01", "draft"),
-    ("เครื่องมือวิทยาศาสตร์รอขึ้นทะเบียน",
-     "account_asset_kmitl.asset_profile_013", 120000.0, "2026-02-01",
-     "kmitl_demo.01", "draft"),
+    (
+        "เครื่องคอมพิวเตอร์ All-in-One สำนักงานคณบดี",
+        "account_asset_kmitl.asset_profile_014",
+        45000.0,
+        "2024-10-15",
+        "kmitl_demo.01",
+        "depreciated",
+    ),
+    (
+        "เครื่องปรับอากาศ ห้องปฏิบัติการ",
+        "account_asset_kmitl.asset_profile_001",
+        38000.0,
+        "2024-11-01",
+        "kmitl_demo.01",
+        "depreciated",
+    ),
+    (
+        "กล้องจุลทรรศน์ดิจิทัล",
+        "account_asset_kmitl.asset_profile_013",
+        250000.0,
+        "2024-12-20",
+        "kmitl_demo.01",
+        "depreciated",
+    ),
+    (
+        "เครื่องพิมพ์เลเซอร์มัลติฟังก์ชัน",
+        "account_asset_kmitl.asset_profile_001",
+        22000.0,
+        "2024-10-01",
+        "kmitl_demo.89390",
+        "depreciated",
+    ),
+    (
+        "รถตู้โดยสาร 12 ที่นั่ง",
+        "account_asset_kmitl.asset_profile_002",
+        1350000.0,
+        "2024-10-20",
+        "kmitl_demo.89390",
+        "depreciated",
+    ),
+    (
+        "โต๊ะประชุมไม้พร้อมเก้าอี้ 12 ที่นั่ง",
+        "account_asset_kmitl.asset_profile_001",
+        65000.0,
+        "2025-02-10",
+        "kmitl_demo.01",
+        "open",
+    ),
+    (
+        "เครื่องสำรองไฟ UPS 10kVA",
+        "account_asset_kmitl.asset_profile_003",
+        90000.0,
+        "2025-03-05",
+        "kmitl_demo.01",
+        "open",
+    ),
+    (
+        "ชุดเครื่องเสียงห้องเรียนอัจฉริยะ",
+        "account_asset_kmitl.asset_profile_005",
+        75000.0,
+        "2025-04-01",
+        "kmitl_demo.01",
+        "open",
+    ),
+    (
+        "เครื่องวิเคราะห์สเปกตรัม",
+        "account_asset_kmitl.asset_profile_013",
+        480000.0,
+        "2025-05-15",
+        "kmitl_demo.01",
+        "open",
+    ),
+    (
+        "เครื่องคอมพิวเตอร์โน้ตบุ๊ก (ตัดจำหน่าย)",
+        "account_asset_kmitl.asset_profile_014",
+        36000.0,
+        "2020-01-10",
+        "kmitl_demo.01",
+        "closed",
+    ),
+    (
+        "ครุภัณฑ์สำนักงานรอตรวจรับ",
+        "account_asset_kmitl.asset_profile_001",
+        18000.0,
+        "2026-01-05",
+        "kmitl_demo.01",
+        "draft",
+    ),
+    (
+        "เครื่องมือวิทยาศาสตร์รอขึ้นทะเบียน",
+        "account_asset_kmitl.asset_profile_013",
+        120000.0,
+        "2026-02-01",
+        "kmitl_demo.01",
+        "draft",
+    ),
 ]
 
 
@@ -764,9 +857,7 @@ def _create_asset_demo(env):
             if target in ("depreciated", "closed"):
                 _post_depreciation(asset, today, all_lines=(target == "closed"))
         except Exception as error:  # noqa: BLE001 - demo must never abort install
-            _logger.warning(
-                "finance_kmitl_demo: asset '%s' skipped (%s)", name, error
-            )
+            _logger.warning("finance_kmitl_demo: asset '%s' skipped (%s)", name, error)
     _logger.info("Fixed-asset demo data created.")
 
 

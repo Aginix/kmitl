@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Payment subjects (เรื่องที่จ่าย) gathered from the treasury office, bound to
+    the paying accounts account_kmitl seeds on ใบสำคัญจ่าย (PV). Those are made in
+    a post-init hook rather than in XML — the journal does not exist until the
+    chart is loaded — so each one publishes an external id keyed on the chart code
+    of the GL account it books against.
+-->
+<odoo noupdate="1">
+
+    <!-- เงินเดือน: บุคลากรบังคับมีบัญชี ธ.กรุงไทย → หัวจ่าย KTB ตายตัว -->
+    <record id="payment_subject_salary" model="kmitl.payment.subject">
+        <field name="name">เงินเดือน</field>
+        <field name="sequence">10</field>
+        <field
+            name="default_payment_method_id"
+            ref="account_kmitl.payment_method_transfer_out"
+        />
+        <field
+            name="default_paying_account_id"
+            ref="account_kmitl.paying_account_1112120002"
+        />
+        <field
+            name="allowed_paying_account_ids"
+            eval="[(6, 0, [ref('account_kmitl.paying_account_1112120002')])]"
+        />
+    </record>
+
+    <!-- เงินยืม/สำรองจ่าย: จ่ายจากหัวจ่ายธนาคารเดียวกับบัญชีผู้รับ ไม่ตรงตกไป SCB -->
+    <record id="payment_subject_advance_reimburse" model="kmitl.payment.subject">
+        <field name="name">เงินยืม/สำรองจ่าย</field>
+        <field name="sequence">20</field>
+        <field
+            name="default_payment_method_id"
+            ref="account_kmitl.payment_method_transfer_out"
+        />
+        <field name="auto_match_payee_bank" eval="True" />
+        <field
+            name="default_paying_account_id"
+            ref="account_kmitl.paying_account_1112210004"
+        />
+        <field
+            name="allowed_paying_account_ids"
+            eval="[(6, 0, [
+                ref('account_kmitl.paying_account_1112210004'),
+                ref('account_kmitl.paying_account_1112110012'),
+                ref('account_kmitl.paying_account_1112120003'),
+                ref('account_kmitl.paying_account_1112120002'),
+                ref('account_kmitl.paying_account_1112120016'),
+                ref('account_kmitl.paying_account_1112120006'),
+            ])]"
+        />
+    </record>
+
+    <!-- จ่ายตรงคู่ค้า: หัวจ่าย SCB ตายตัว (ต่างธนาคารระบบแบงก์ route เอง) -->
+    <record id="payment_subject_vendor_direct" model="kmitl.payment.subject">
+        <field name="name">จ่ายตรงคู่ค้า</field>
+        <field name="sequence">30</field>
+        <field
+            name="default_payment_method_id"
+            ref="account_kmitl.payment_method_transfer_out"
+        />
+        <field
+            name="default_paying_account_id"
+            ref="account_kmitl.paying_account_1112210004"
+        />
+        <field
+            name="allowed_paying_account_ids"
+            eval="[(6, 0, [ref('account_kmitl.paying_account_1112210004')])]"
+        />
+    </record>
+
+    <!-- ค่าน้ำค่าไฟ: ออกเป็นเช็คสั่งจ่ายจากบัญชีกระแส SCB -->
+    <record id="payment_subject_utilities" model="kmitl.payment.subject">
+        <field name="name">ค่าน้ำค่าไฟ</field>
+        <field name="sequence">40</field>
+        <field
+            name="default_payment_method_id"
+            ref="account_kmitl.payment_method_cheque_out"
+        />
+        <field
+            name="default_paying_account_id"
+            ref="account_kmitl.paying_account_1112220015"
+        />
+        <field
+            name="allowed_paying_account_ids"
+            eval="[(6, 0, [ref('account_kmitl.paying_account_1112220015')])]"
+        />
+    </record>
+
+    <!-- จ่ายเงินสด: หัวจ่ายเงินสดเงินรายได้สถาบันฯ -->
+    <record id="payment_subject_cash" model="kmitl.payment.subject">
+        <field name="name">จ่ายเงินสด</field>
+        <field name="sequence">50</field>
+        <field
+            name="default_payment_method_id"
+            ref="account_kmitl.payment_method_cash_out"
+        />
+        <field
+            name="default_paying_account_id"
+            ref="account_kmitl.paying_account_1111000002"
+        />
+        <field
+            name="allowed_paying_account_ids"
+            eval="[(6, 0, [ref('account_kmitl.paying_account_1111000002')])]"
+        />
+    </record>
+
+</odoo>

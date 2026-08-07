@@ -1,29 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <!-- Inherit Form View -->
     <record id="bank_payment_export_view_form_inherit" model="ir.ui.view">
         <field name="name">bank.payment.export.form.inherit.kmitl</field>
         <field name="model">bank.payment.export</field>
-        <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_view_form"/>
+        <field
+            name="inherit_id"
+            ref="l10n_th_bank_payment_export.bank_payment_export_view_form"
+        />
         <field name="arch" type="xml">
 
             <!-- Add fiscal year field to right_header group -->
             <xpath expr="//group[@name='right_header']" position="inside">
-                <field name="account_fiscal_year_id" readonly="1"/>
+                <field name="account_fiscal_year_id" readonly="1" />
+            </xpath>
+
+            <!-- หัวจ่าย is picked before the payments: one file debits one
+                 account, and the selectable payments are narrowed to it. -->
+            <xpath expr="//group[@name='right_header']" position="before">
+                <group name="paying_account">
+                    <field name="paying_account_id" options="{'no_create': True}" />
+                </group>
             </xpath>
 
             <!-- Finance confirms the actual bank result on the whole batch -->
             <xpath expr="//header" position="inside">
-                <button name="action_mark_all_epayment_success"
-                        type="object"
-                        string="ยืนยันผลจ่ายสำเร็จ (ทั้งหมด)"
-                        class="btn-success"
-                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
-                <button name="action_mark_all_epayment_failed"
-                        type="object"
-                        string="ผลจ่ายไม่สำเร็จ (ทั้งหมด)"
-                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
+                <button
+                    name="action_mark_all_epayment_success"
+                    type="object"
+                    string="ยืนยันผลจ่ายสำเร็จ (ทั้งหมด)"
+                    class="btn-success"
+                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                />
+                <button
+                    name="action_mark_all_epayment_failed"
+                    type="object"
+                    string="ผลจ่ายไม่สำเร็จ (ทั้งหมด)"
+                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                />
             </xpath>
 
         </field>
@@ -33,23 +48,30 @@
     <record id="bank_payment_export_line_view_tree_inherit" model="ir.ui.view">
         <field name="name">bank.payment.export.line.tree.inherit.kmitl</field>
         <field name="model">bank.payment.export.line</field>
-        <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_line_view_tree"/>
+        <field
+            name="inherit_id"
+            ref="l10n_th_bank_payment_export.bank_payment_export_line_view_tree"
+        />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="after">
-                <field name="epayment_status" optional="show"/>
-                <field name="epayment_ref" optional="hide"/>
-                <field name="epayment_date" optional="hide"/>
-                <field name="epayment_note" optional="hide"/>
-                <button name="action_mark_epayment_success"
-                        type="object"
-                        icon="fa-check text-success"
-                        title="ยืนยันจ่ายสำเร็จ"
-                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
-                <button name="action_mark_epayment_failed"
-                        type="object"
-                        icon="fa-times text-danger"
-                        title="จ่ายไม่สำเร็จ"
-                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
+                <field name="epayment_status" optional="show" />
+                <field name="epayment_ref" optional="hide" />
+                <field name="epayment_date" optional="hide" />
+                <field name="epayment_note" optional="hide" />
+                <button
+                    name="action_mark_epayment_success"
+                    type="object"
+                    icon="fa-check text-success"
+                    title="ยืนยันจ่ายสำเร็จ"
+                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                />
+                <button
+                    name="action_mark_epayment_failed"
+                    type="object"
+                    icon="fa-times text-danger"
+                    title="จ่ายไม่สำเร็จ"
+                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                />
             </xpath>
         </field>
     </record>
@@ -58,10 +80,13 @@
     <record id="bank_payment_export_view_tree_inherit" model="ir.ui.view">
         <field name="name">bank.payment.export.tree.inherit.kmitl</field>
         <field name="model">bank.payment.export</field>
-        <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_view_tree"/>
+        <field
+            name="inherit_id"
+            ref="l10n_th_bank_payment_export.bank_payment_export_view_tree"
+        />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='total_amount']" position="after">
-                <field name="account_fiscal_year_id" optional="show"/>
+                <field name="account_fiscal_year_id" optional="show" />
             </xpath>
         </field>
     </record>
@@ -70,7 +95,10 @@
     <record id="bank_payment_export_view_search_inherit" model="ir.ui.view">
         <field name="name">bank.payment.export.search.inherit.kmitl</field>
         <field name="model">bank.payment.export</field>
-        <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_view_search"/>
+        <field
+            name="inherit_id"
+            ref="l10n_th_bank_payment_export.bank_payment_export_view_search"
+        />
         <field name="arch" type="xml">
             <xpath expr="//filter[@name='group_by_state']" position="after">
                 <filter

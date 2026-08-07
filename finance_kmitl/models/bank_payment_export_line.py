@@ -13,10 +13,12 @@ class BankPaymentExportLine(models.Model):
     def _domain_payment_id(self):
         """Only KMITL transfer payments awaiting the bank are selectable.
 
-        Overrides the base domain twice over: it accepts ``submitted``
-        payments (KMITL exports before posting) and keys off the KMITL
-        เงินโอน method instead of Odoo's stock Manual one, so cheque and cash
-        payments never end up in an e-payment file.
+        Overrides the base domain three times over: it accepts ``submitted``
+        payments (KMITL exports before posting), keys off the KMITL เงินโอน
+        method instead of Odoo's stock Manual one so cheque and cash payments
+        never end up in an e-payment file, and narrows to the file's own paying
+        account — one file debits one account, so mixing two is prevented while
+        picking rather than rejected afterwards.
         """
         method_transfer_out = self.env.ref(
             "account_kmitl.payment_method_transfer_out",
@@ -28,13 +30,35 @@ class BankPaymentExportLine(models.Model):
             "[('export_status', '=', 'draft'), "
             "('state', '=', 'submitted'), "
             "('payment_method_id', '=', %s), "
-            "('kmitl_payment_type_id.is_cheque', '=', False), "
+            "('payment_method_line_id', '=', parent.paying_account_id), "
             "('journal_id.type', '=', 'bank'), "
             "('company_id', '=', company_id), "
-            "('currency_id', '=', currency_id)]"
-            % (method_transfer_out.id)
+            "('currency_id', '=', currency_id)]" % (method_transfer_out.id)
         )
         return domain
+
+    # Both paths are declared: overriding the compute replaces the base
+    # decorator, so the journal dependency has to be carried over or the
+    # fallback would never recompute.
+    @api.depends(
+        "payment_id.payment_method_line_id.bank_account_id",
+        "payment_id.journal_id.bank_account_id",
+    )
+    def _compute_sending_account(self):
+        """Take the sending account from the paying account (หัวจ่าย).
+
+        The base reads the payment journal's bank account, which is always empty
+        here: a KMITL journal is a voucher type (ใบสำคัญ) and holds no bank, so
+        every generated file went out with a blank "Sending A/C". Falls back to
+        the journal so a payment made outside this flow behaves as before.
+        """
+        res = super()._compute_sending_account()
+        for line in self:
+            bank_account = line.payment_id.payment_method_line_id.bank_account_id
+            if bank_account:
+                line.sending_bank_id = bank_account.bank_id
+                line.sending_acc_number = bank_account.acc_number
+        return res
 
     epayment_status = fields.Selection(
         selection=[

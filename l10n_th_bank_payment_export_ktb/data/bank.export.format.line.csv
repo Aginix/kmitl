@@ -21,8 +21,8 @@ ktb_format_19,l10n_th_bank_payment_export_ktb.ktb_ipay,29,Receiving Branch Code,
 ktb_format_20,l10n_th_bank_payment_export_ktb.ktb_ipay,29,Receiving Branch Code,,4,line,TRUE,,"line.payment_bank_id.bic == ""GSBATHBK""",dynamic,ljust,,line._get_receiver_branch_code_gsb()
 ktb_format_21,l10n_th_bank_payment_export_ktb.ktb_ipay,30,Receiving A/C,,11,line,TRUE,,,dynamic,rjust,0,line._get_acc_number_digit(line.payment_partner_bank_id)
 ktb_format_22,l10n_th_bank_payment_export_ktb.ktb_ipay,31,Sending Bank Code,,3,line,TRUE,,,fixed,rjust,0,6
-ktb_format_23,l10n_th_bank_payment_export_ktb.ktb_ipay,32,Sending Branch Code,,4,line,TRUE,,,dynamic,rjust,0,"line.payment_journal_id.bank_id.bank_branch_code or """""
-ktb_format_24,l10n_th_bank_payment_export_ktb.ktb_ipay,33,Sending A/C,,11,line,TRUE,,,dynamic,rjust,0,line.sanitize_account_number(line.payment_journal_id.bank_account_id.acc_number)
+ktb_format_23,l10n_th_bank_payment_export_ktb.ktb_ipay,32,Sending Branch Code,,4,line,TRUE,,,dynamic,rjust,0,"line.sending_bank_id.bank_branch_code or """""
+ktb_format_24,l10n_th_bank_payment_export_ktb.ktb_ipay,33,Sending A/C,,11,line,TRUE,,,dynamic,rjust,0,line.sanitize_account_number(line.sending_acc_number)
 ktb_format_25,l10n_th_bank_payment_export_ktb.ktb_ipay,34,Effective Date,,8,line,TRUE,,,dynamic,ljust,,"rec.effective_date.strftime(""%d%m%Y"")"
 ktb_format_26,l10n_th_bank_payment_export_ktb.ktb_ipay,35,Service Type,,2,line,TRUE,,,dynamic,ljust,,"rec.ktb_bank_type == ""standard"" and rec.ktb_service_type_standard or rec.ktb_service_type_direct"
 ktb_format_27,l10n_th_bank_payment_export_ktb.ktb_ipay,36,Clearing House Code,,2,line,TRUE,,,fixed,rjust,0,
@@ -47,7 +47,7 @@ ktb_hdt_01,l10n_th_bank_payment_export_ktb.ktb_hdt,10,HEADER,line_section,,,,,,f
 ktb_hdt_02,l10n_th_bank_payment_export_ktb.ktb_hdt,11,Record Type,,1,,,,,fixed,ljust,,H
 ktb_hdt_03,l10n_th_bank_payment_export_ktb.ktb_hdt,12,Running Number,,6,,,,,fixed,rjust,0,1
 ktb_hdt_04,l10n_th_bank_payment_export_ktb.ktb_hdt,13,Sending Bank Code,,3,,,,,fixed,ljust,,006
-ktb_hdt_05,l10n_th_bank_payment_export_ktb.ktb_hdt,14,Sending A/C,,10,,,,,dynamic,rjust,0,rec.export_line_ids[:1].sanitize_account_number(rec.export_line_ids[:1].payment_journal_id.bank_account_id.acc_number)
+ktb_hdt_05,l10n_th_bank_payment_export_ktb.ktb_hdt,14,Sending A/C,,10,,,,,dynamic,rjust,0,rec.export_line_ids[:1].sanitize_account_number(rec.export_line_ids[:1].sending_acc_number)
 ktb_hdt_06,l10n_th_bank_payment_export_ktb.ktb_hdt,15,Company Name,,25,,,,,dynamic,ljust,,rec.ktb_sender_name or rec.company_id.name
 ktb_hdt_07,l10n_th_bank_payment_export_ktb.ktb_hdt,16,Effective Date,,6,,,,,dynamic,ljust,,"rec.effective_date.strftime(""%d%m%y"")"
 ktb_hdt_08,l10n_th_bank_payment_export_ktb.ktb_hdt,17,Reserved,,1,,,,,fixed,ljust,,
@@ -64,7 +64,7 @@ ktb_hdt_18,l10n_th_bank_payment_export_ktb.ktb_hdt,30,TRAILER,line_section,,,,,,
 ktb_hdt_19,l10n_th_bank_payment_export_ktb.ktb_hdt,31,Record Type,,1,,,,,fixed,ljust,,T
 ktb_hdt_20,l10n_th_bank_payment_export_ktb.ktb_hdt,32,Total Record Count,,6,,,,,dynamic,rjust,0,str(len(rec.export_line_ids)+2)
 ktb_hdt_21,l10n_th_bank_payment_export_ktb.ktb_hdt,33,Sending Bank Code,,3,,,,,fixed,ljust,,006
-ktb_hdt_22,l10n_th_bank_payment_export_ktb.ktb_hdt,34,Sending A/C,,10,,,,,dynamic,rjust,0,rec.export_line_ids[:1].sanitize_account_number(rec.export_line_ids[:1].payment_journal_id.bank_account_id.acc_number)
+ktb_hdt_22,l10n_th_bank_payment_export_ktb.ktb_hdt,34,Sending A/C,,10,,,,,dynamic,rjust,0,rec.export_line_ids[:1].sanitize_account_number(rec.export_line_ids[:1].sending_acc_number)
 ktb_hdt_23,l10n_th_bank_payment_export_ktb.ktb_hdt,35,Reserved,,21,,,,,fixed,ljust,0,
 ktb_hdt_24,l10n_th_bank_payment_export_ktb.ktb_hdt,36,Transaction Count,,6,,,,,dynamic,rjust,0,str(len(rec.export_line_ids))
 ktb_hdt_25,l10n_th_bank_payment_export_ktb.ktb_hdt,37,Total Amount,,13,,,,,dynamic,rjust,0,"str(int(round(rec.total_amount * 100, 2)))"

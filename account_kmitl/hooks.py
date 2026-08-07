@@ -11,32 +11,154 @@ _logger = logging.getLogger(__name__)
 # journal has no default account. Bank journals also point their payment method
 # lines at that same default account.
 JOURNALS = [
-    {"xmlid": "journal_jv", "code": "JV", "name": "ใบสำคัญทั่วไป", "type": "general", "sequence": 10, "account": None},
-    {"xmlid": "journal_pv", "code": "PV", "name": "ใบสำคัญจ่าย", "type": "bank", "sequence": 20, "account": "1112210004"},
-    {"xmlid": "journal_pvr", "code": "PVR", "name": "ใบสำคัญส่งคืนลูกหนี้เงินยืม", "type": "bank", "sequence": 30, "account": "1112000006"},
-    {"xmlid": "journal_rv", "code": "RV", "name": "ใบสำคัญรับ", "type": "bank", "sequence": 40, "account": "1112210004"},
-    {"xmlid": "journal_par", "code": "PAR", "name": "ใบสำคัญจ่ายลูกหนี้เงินยืม", "type": "bank", "sequence": 50, "account": "1112110004"},
-    {"xmlid": "journal_car", "code": "CAR", "name": "ใบสำคัญล้างลูกหนี้เงินยืม", "type": "general", "sequence": 60, "account": None},
-    {"xmlid": "journal_ar", "code": "AR", "name": "ใบสำคัญลูกหนี้", "type": "sale", "sequence": 70, "account": "4000000000"},
-    {"xmlid": "journal_ap", "code": "AP", "name": "ใบสำคัญซื้อ", "type": "purchase", "sequence": 80, "account": "5000000000"},
+    {
+        "xmlid": "journal_jv",
+        "code": "JV",
+        "name": "ใบสำคัญทั่วไป",
+        "type": "general",
+        "sequence": 10,
+        "account": None,
+    },
+    {
+        "xmlid": "journal_pv",
+        "code": "PV",
+        "name": "ใบสำคัญจ่าย",
+        "type": "bank",
+        "sequence": 20,
+        "account": "1112210004",
+    },
+    {
+        "xmlid": "journal_pvr",
+        "code": "PVR",
+        "name": "ใบสำคัญส่งคืนลูกหนี้เงินยืม",
+        "type": "bank",
+        "sequence": 30,
+        "account": "1112000006",
+    },
+    {
+        "xmlid": "journal_rv",
+        "code": "RV",
+        "name": "ใบสำคัญรับ",
+        "type": "bank",
+        "sequence": 40,
+        "account": "1112210004",
+    },
+    {
+        "xmlid": "journal_par",
+        "code": "PAR",
+        "name": "ใบสำคัญจ่ายลูกหนี้เงินยืม",
+        "type": "bank",
+        "sequence": 50,
+        "account": "1112110004",
+    },
+    {
+        "xmlid": "journal_car",
+        "code": "CAR",
+        "name": "ใบสำคัญล้างลูกหนี้เงินยืม",
+        "type": "general",
+        "sequence": 60,
+        "account": None,
+    },
+    {
+        "xmlid": "journal_ar",
+        "code": "AR",
+        "name": "ใบสำคัญลูกหนี้",
+        "type": "sale",
+        "sequence": 70,
+        "account": "4000000000",
+    },
+    {
+        "xmlid": "journal_ap",
+        "code": "AP",
+        "name": "ใบสำคัญซื้อ",
+        "type": "purchase",
+        "sequence": 80,
+        "account": "5000000000",
+    },
 ]
 
 # The institute's paying accounts (หัวจ่าย) as given by the treasury office: the
-# bank account money leaves from, identified by the chart code of its GL account,
-# and the way it normally leaves. A current account can be both transferred from
-# and drawn cheques on, so a second method for the same account is added by hand
-# when it is needed rather than assumed here.
+# bank account money leaves from, the chart code of the GL account it is booked
+# against, and the way it normally leaves. A current account can be both
+# transferred from and drawn cheques on, so a second method for the same account
+# is added by hand when it is needed rather than assumed here.
+#
+# The branch each account is held at is noted in the comments only. Odoo keeps a
+# branch on ``res.bank`` (one record per branch, carrying the code the bank files
+# ask for), not on the account, so naming it here would be data nothing reads.
+#
+# The account numbers are restated here rather than read out of the chart, even
+# though the chart's account *names* happen to carry them
+# (``ธ.ไทยพาณิชย์ /ย่อยเทคโนฯ /SA-088-2-11066-5``). Those names are not written to
+# one shape — some separate with ``บ/ช``, some glue a note onto the number, some
+# put a space inside the ``CA-`` prefix — and none carry a BIC, so a parser would
+# need this table anyway and would fail silently into a wrong account number in a
+# file sent to a bank. Stated, it fails loudly.
+#
+# ``acc_number`` empty means cash: there is no bank account, only a GL account.
 #
 # They all hang off ใบสำคัญจ่าย (PV): a paying account is a payment method line,
 # and a method line belongs to a journal.
 PAYING_ACCOUNTS = [
-    {"account": "1112210004", "method": "kmitl_transfer"},
-    {"account": "1112220015", "method": "kmitl_cheque"},
-    {"account": "1112110012", "method": "kmitl_transfer"},
-    {"account": "1112120003", "method": "kmitl_transfer"},
-    {"account": "1112120002", "method": "kmitl_transfer"},
-    {"account": "1112120016", "method": "kmitl_transfer"},
-    {"account": "1112120006", "method": "kmitl_transfer"},
+    # ธ.ไทยพาณิชย์ /ย่อยเทคโนฯ
+    {
+        "account": "1112210004",
+        "method": "kmitl_transfer",
+        "bic": "SICOTHBK",
+        "acc_number": "088-2-11066-5",
+    },
+    # ธ.ไทยพาณิชย์ /ย่อยเทคโนฯ — the account KMITL's cheques are drawn on
+    {
+        "account": "1112220015",
+        "method": "kmitl_cheque",
+        "bic": "SICOTHBK",
+        "acc_number": "088-3-00303-1",
+    },
+    # ธ.ไทยพาณิชย์ /เทคโนฯ
+    {
+        "account": "1112110012",
+        "method": "kmitl_transfer",
+        "bic": "SICOTHBK",
+        "acc_number": "088-2-60881-2",
+    },
+    # ธ.ไทยพาณิชย์ /ย่อยเทคโนฯ
+    {
+        "account": "1112120003",
+        "method": "kmitl_transfer",
+        "bic": "SICOTHBK",
+        "acc_number": "088-3-00005-9",
+    },
+    # ธ.กรุงไทย /หัวตะเข้
+    {
+        "account": "1112120002",
+        "method": "kmitl_transfer",
+        "bic": "KRTHTHBK",
+        "acc_number": "028-6-01583-8",
+    },
+    # ธ.กรุงศรีอยุธยา /ย่อยเทคโนฯ
+    {
+        "account": "1112120016",
+        "method": "kmitl_transfer",
+        "bic": "AYUDTHBK",
+        "acc_number": "507-0-00013-4",
+    },
+    # ธ.กสิกรไทย /ลาดกระบัง
+    {
+        "account": "1112120006",
+        "method": "kmitl_transfer",
+        "bic": "KASITHBK",
+        "acc_number": "036-1-00165-6",
+    },
+    # เงินสด — booked against the institute's cash-on-hand account, not a bank
+    # account. Without this entry the cash method line keeps the GL account
+    # _setup_payment_method_lines hands every line (the journal's own bank
+    # account), so paying cash would credit a bank.
+    {
+        "account": "1111000002",
+        "method": "kmitl_cash",
+        "bic": False,
+        "acc_number": False,
+    },
 ]
 
 # The voucher (ใบสำคัญ) the paying accounts belong to.
@@ -49,16 +171,55 @@ PAYING_ACCOUNT_JOURNAL_CODE = "PV"
 # codes used in the data files listed below.
 REFERENCED_ACCOUNTS = [
     # account_asset_kmitl asset profiles (data/account_asset_profile.xml)
-    "1251000001", "1251000003", "1251100001", "1251100003", "1251200001", "1251200003",
-    "1251300001", "1251300003", "1251400001", "1251400003", "1251500001", "1251500003",
-    "1251700001", "1251700003", "1252000001", "1252000003", "1253000001", "1253000003",
-    "1254000001", "1254000003", "1255000001", "1255000003", "1256000001", "1256000003",
-    "1257000001", "1257000003", "1258000001", "1258000003", "1259000001", "1259000003",
-    "5105010004", "5105010005", "5105010006", "5105010007", "5105010008", "5105010009",
-    "5105010010", "5105010011", "5105010012", "5105010013", "5105010014", "5105010015",
-    "5105010016", "5105010017", "5105010019",
+    "1251000001",
+    "1251000003",
+    "1251100001",
+    "1251100003",
+    "1251200001",
+    "1251200003",
+    "1251300001",
+    "1251300003",
+    "1251400001",
+    "1251400003",
+    "1251500001",
+    "1251500003",
+    "1251700001",
+    "1251700003",
+    "1252000001",
+    "1252000003",
+    "1253000001",
+    "1253000003",
+    "1254000001",
+    "1254000003",
+    "1255000001",
+    "1255000003",
+    "1256000001",
+    "1256000003",
+    "1257000001",
+    "1257000003",
+    "1258000001",
+    "1258000003",
+    "1259000001",
+    "1259000003",
+    "5105010004",
+    "5105010005",
+    "5105010006",
+    "5105010007",
+    "5105010008",
+    "5105010009",
+    "5105010010",
+    "5105010011",
+    "5105010012",
+    "5105010013",
+    "5105010014",
+    "5105010015",
+    "5105010016",
+    "5105010017",
+    "5105010019",
     # kmitl_demo partners (data/res.partner.xml)
-    "1126000001", "2110000001", "2110000099",
+    "1126000001",
+    "2110000001",
+    "2110000099",
 ]
 
 
@@ -182,9 +343,7 @@ def _kmitl_payment_journals(env, company):
     return (
         env["account.journal"]
         .with_context(active_test=False)
-        .search(
-            [("company_id", "=", company.id), ("type", "in", ("bank", "cash"))]
-        )
+        .search([("company_id", "=", company.id), ("type", "in", ("bank", "cash"))])
     )
 
 
@@ -211,9 +370,7 @@ def _setup_payment_method_lines(env, company):
         if method:
             stock_methods |= method
 
-    sequences = {
-        method["code"]: method["sequence"] for method in KMITL_PAYMENT_METHODS
-    }
+    sequences = {method["code"]: method["sequence"] for method in KMITL_PAYMENT_METHODS}
     for journal in _kmitl_payment_journals(env, company):
         wanted = env["account.payment.method"]
         for payment_type in ("inbound", "outbound"):
@@ -239,11 +396,66 @@ def _setup_payment_method_lines(env, company):
         )
         if journal.default_account_id:
             lines.filtered(
-                lambda l: not l.payment_account_id
+                lambda line: not line.payment_account_id
             ).payment_account_id = journal.default_account_id
-        lines.filtered(
-            lambda l: l.payment_method_id in stock_methods
-        ).unlink()
+        lines.filtered(lambda line: line.payment_method_id in stock_methods).unlink()
+
+
+def _seed_bank_accounts(env, company):
+    """Create the institute's own bank accounts, the ones money is paid out of.
+
+    Returned keyed by the chart code of the GL account each is booked against,
+    which is how ``_setup_paying_account_lines`` looks them up again.
+
+    Idempotent and best-effort: an existing account with the same (sanitized)
+    number is reused, and a BIC that no ``res.bank`` carries leaves the bank
+    empty with a warning rather than failing the install — the account number is
+    what the file needs, the bank only names it.
+    """
+    from odoo.addons.base.models.res_bank import sanitize_account_number
+
+    Bank = env["res.bank"]
+    PartnerBank = env["res.partner.bank"]
+    accounts = {}
+    unknown_bics = []
+    for entry in PAYING_ACCOUNTS:
+        if not entry["acc_number"]:
+            continue  # cash: no bank account to seed
+        bank = Bank.search([("bic", "=", entry["bic"])], limit=1)
+        if not bank:
+            unknown_bics.append("%s (%s)" % (entry["bic"], entry["acc_number"]))
+        bank_account = PartnerBank.search(
+            [
+                ("partner_id", "=", company.partner_id.id),
+                (
+                    "sanitized_acc_number",
+                    "=",
+                    sanitize_account_number(entry["acc_number"]),
+                ),
+            ],
+            limit=1,
+        )
+        if not bank_account:
+            bank_account = PartnerBank.create(
+                {
+                    "partner_id": company.partner_id.id,
+                    "acc_number": entry["acc_number"],
+                    "bank_id": bank.id if bank else False,
+                    "acc_holder_name": company.name,
+                }
+            )
+        elif not bank_account.bank_id and bank:
+            bank_account.bank_id = bank.id
+        accounts[entry["account"]] = bank_account
+
+    if unknown_bics:
+        _logger.warning(
+            "account_kmitl: no res.bank found for BIC %s; the paying accounts "
+            "on them carry no bank, so the e-payment file's sending bank code "
+            "will be blank. Create the banks and re-run the setup.",
+            "; ".join(unknown_bics),
+        )
+    return accounts
 
 
 def _setup_paying_account_lines(env, company):
@@ -261,6 +473,11 @@ def _setup_paying_account_lines(env, company):
     payment falls back to, receipts included; the other journals are left alone
     too.
 
+    Each line is also given the institute's own bank account, which is what the
+    e-payment file sends as its sending account and what a payee's bank is
+    auto-matched against. เงินสด has none — it books against the cash-on-hand
+    account and never reaches a bank.
+
     Idempotent: a line already booked against the right account is reused as it
     is, and a generic line of the same method is repointed rather than duplicated.
     Each create runs in its own savepoint so that a chart missing one account, or
@@ -269,6 +486,7 @@ def _setup_paying_account_lines(env, company):
     """
     Account = env["account.account"]
     MethodLine = env["account.payment.method.line"]
+    bank_accounts = _seed_bank_accounts(env, company)
     journal = env["account.journal"].search(
         [
             ("code", "=", PAYING_ACCOUNT_JOURNAL_CODE),
@@ -301,22 +519,25 @@ def _setup_paying_account_lines(env, company):
         if not gl_account or not method:
             failed.append("%s (%s)" % (entry["account"], entry["method"]))
             continue
+        bank_account = bank_accounts.get(entry["account"])
         name = "%s – %s" % (method.name, gl_account.name)
         vals = {
             "name": name,
             "payment_account_id": gl_account.id,
+            "bank_account_id": bank_account.id if bank_account else False,
             "sequence": sequence * 10,
         }
         # Already the right account: leave it exactly as configured.
         line = (existing - claimed).filtered(
-            lambda l: l.payment_method_id == method
-            and l.payment_account_id == gl_account
+            lambda row: (
+                row.payment_method_id == method and row.payment_account_id == gl_account
+            )
         )[:1]
         if not line:
             # A generic line of the same method — repoint it instead of adding a
             # duplicate alongside it.
             line = (existing - claimed).filtered(
-                lambda l: l.payment_method_id == method
+                lambda row: row.payment_method_id == method
             )[:1]
         try:
             with env.cr.savepoint():
@@ -329,6 +550,19 @@ def _setup_paying_account_lines(env, company):
         except Exception as error:  # noqa: BLE001 - never abort the install
             failed.append("%s (%s: %s)" % (entry["account"], entry["method"], error))
             continue
+        # Publish a stable external id per paying account so data files can
+        # ``ref`` one — they are made here rather than in XML (the journal does
+        # not exist until the chart is loaded), and a payment subject has to
+        # name one.
+        env["ir.model.data"]._update_xmlids(
+            [
+                {
+                    "xml_id": "account_kmitl.paying_account_%s" % entry["account"],
+                    "record": line,
+                    "noupdate": True,
+                }
+            ]
+        )
         claimed |= line
 
     if claimed:

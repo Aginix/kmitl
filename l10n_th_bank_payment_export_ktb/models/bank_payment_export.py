@@ -146,6 +146,16 @@ class BankPaymentExport(models.Model):
 
     def _check_constraint_create_bank_payment_export(self, payments):
         res = super()._check_constraint_create_bank_payment_export(payments)
+        self._check_bank_specific_constraint(payments)
+        return res
+
+    def _check_bank_specific_constraint(self, payments):
+        """KTB's own rules on a batch.
+
+        Held in the hook rather than inline above so that a localisation which
+        replaces the generic check outright still runs them.
+        """
+        res = super()._check_bank_specific_constraint(payments)
         payment_bic_bank = list(set(payments.mapped("journal_id.bank_id.bic")))
         payment_bank = len(payment_bic_bank) == 1 and payment_bic_bank[0] or ""
         # Check case KTB must have 1 journal / 1 PE

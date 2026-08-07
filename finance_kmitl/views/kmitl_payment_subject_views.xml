@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="kmitl_payment_subject_view_tree" model="ir.ui.view">
+        <field name="name">kmitl.payment.subject.tree</field>
+        <field name="model">kmitl.payment.subject</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="default_payment_method_id" />
+                <field name="auto_match_payee_bank" />
+                <field name="default_paying_account_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="kmitl_payment_subject_view_form" model="ir.ui.view">
+        <field name="name">kmitl.payment.subject.form</field>
+        <field name="model">kmitl.payment.subject</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1><field
+                                name="name"
+                                placeholder="e.g. Advance / Reimbursement"
+                            /></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="default_payment_method_id" />
+                            <field name="sequence" />
+                            <field name="active" />
+                        </group>
+                        <group name="paying_accounts" string="Paying Accounts">
+                            <field name="auto_match_payee_bank" />
+                            <!-- One field, two roles: the label follows the flag,
+                                 because a subject that matches by bank uses it only
+                                 when nothing matched. -->
+                            <field
+                                name="default_paying_account_id"
+                                string="Main Paying Account"
+                                attrs="{'invisible': [('auto_match_payee_bank', '=', True)]}"
+                            />
+                            <field
+                                name="default_paying_account_id"
+                                string="Fallback Paying Account"
+                                attrs="{'invisible': [('auto_match_payee_bank', '=', False)]}"
+                            />
+                        </group>
+                    </group>
+                    <group string="Allowed Paying Accounts" name="allowed">
+                        <field name="allowed_paying_account_ids" nolabel="1">
+                            <tree>
+                                <field name="name" />
+                                <field name="payment_method_id" />
+                                <field name="bank_id" />
+                                <field name="acc_number" />
+                                <field name="payment_account_id" />
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_kmitl_payment_subject" model="ir.actions.act_window">
+        <field name="name">Payment Subjects</field>
+        <field name="res_model">kmitl.payment.subject</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

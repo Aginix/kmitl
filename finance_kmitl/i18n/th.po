@@ -13,7 +13,33 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
+#, python-format
+msgid ""
+"%s is settled outside the bank file (cheque or cash) and cannot be exported."
+msgstr "%s จ่ายนอกไฟล์ธนาคาร (เช็คหรือเงินสด) จึงส่งออกไม่ได้"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
+#, python-format
+msgid ""
+"%s names no bank account, so the file would carry no sending account. Set it"
+" in Finance ▸ Settings ▸ Paying Accounts."
+msgstr ""
+"%s ยังไม่ได้ระบุบัญชีธนาคาร ไฟล์จึงจะไม่มีบัญชีต้นทาง กรุณาตั้งค่าที่ "
+"การเงิน ▸ ตั้งค่า ▸ หัวจ่าย"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/kmitl_payment_subject.py:0
+#, python-format
+msgid ""
+"'%s' matches the payee's bank but lists no allowed paying account paid that "
+"way, so every payee would fall to the fallback."
+msgstr ""
+"'%s' เปิดจับคู่ตามธนาคารผู้รับ แต่ไม่มีหัวจ่ายที่อนุญาตซึ่งจ่ายด้วยวิธีนั้น "
+"ทุกผู้รับจึงจะตกไปที่หัวจ่ายสำรองทั้งหมด"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
@@ -53,6 +79,12 @@ msgid "All payments must have the same bank payment template."
 msgstr "รายการจ่ายเงินทั้งหมดต้องใช้รูปแบบการส่งออกเดียวกัน"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__allowed_paying_account_ids
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_payment_subject_view_form
+msgid "Allowed Paying Accounts"
+msgstr "หัวจ่ายที่อนุญาต"
+
+#. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__amount
 msgid "Amount"
 msgstr "จำนวนเงิน"
@@ -73,6 +105,11 @@ msgid "Amount Before Withholding"
 msgstr "ยอดก่อนหัก ณ ที่จ่าย"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__auto_match_payee_bank
+msgid "Auto-match by Payee's Bank"
+msgstr "จับคู่หัวจ่ายตามธนาคารผู้รับ"
+
+#. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__bank_id
 msgid "Bank"
 msgstr "ธนาคาร"
@@ -88,20 +125,11 @@ msgid "Bank Export Formats"
 msgstr "รูปแบบไฟล์ส่งออก"
 
 #. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_export_format
-msgid "Bank Export Formats"
-msgstr "รูปแบบส่งออกข้อมูลธนาคาร"
-
-#. module: finance_kmitl
 #: model:ir.actions.report,name:finance_kmitl.action_report_bank_payment_export
 #: model:report.paperformat,name:finance_kmitl.paperformat_bank_payment_export_report
-msgid "Bank Payment Export"
-msgstr "ส่งออกรายการจ่ายเงิน"
-
-#. module: finance_kmitl
 #: model:ir.ui.menu,name:finance_kmitl.menu_bank_payment_export
 msgid "Bank Payment Export"
-msgstr "ส่งออกข้อมูลจ่ายเงินธนาคาร"
+msgstr "ส่งออกรายการจ่ายเงิน"
 
 #. module: finance_kmitl
 #: model:ir.model,name:finance_kmitl.model_bank_payment_export_line
@@ -112,11 +140,6 @@ msgstr "รายการส่งออกการจ่ายเงิน"
 #: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_payment_template
 msgid "Bank Payment Templates"
 msgstr "รูปแบบการจ่ายเงินธนาคาร"
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_payment_template
-msgid "Bank Payment Templates"
-msgstr "เทมเพลตการจ่ายเงินธนาคาร"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__journal_id
@@ -252,6 +275,11 @@ msgid "Configure a Cheque Layout on journal '%s' before printing."
 msgstr "กรุณาตั้งค่ารูปแบบการพิมพ์เช็คให้สมุดรายวัน '%s' ก่อนพิมพ์"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Confirm Paid"
+msgstr "ยืนยันจ่ายสำเร็จ"
+
+#. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__currency_id
 msgid "Currency"
 msgstr "สกุลเงิน"
@@ -270,6 +298,16 @@ msgstr "ระยะห่างตัวเลขวันที่ (มม.)"
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
 msgid "Dates & Status"
 msgstr "วันที่และสถานะ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__default_payment_method_id
+msgid "Default Method"
+msgstr "วิธีจ่ายปกติ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__journal_id
+msgid "Default Voucher"
+msgstr "ใบสำคัญตั้งต้น"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,help:finance_kmitl.field_kmitl_payment_type__journal_id
@@ -326,6 +364,11 @@ msgid "Failed"
 msgstr "ไม่สำเร็จ"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_payment_subject_view_form
+msgid "Fallback Paying Account"
+msgstr "หัวจ่ายสำรอง"
+
+#. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
 msgid "Field Positions (mm from top-left of the cheque)"
 msgstr "ตำแหน่งฟิลด์ (มม. จากมุมซ้ายบนของเช็ค)"
@@ -347,6 +390,11 @@ msgid "Font Size (pt)"
 msgstr "ขนาดตัวอักษร (pt)"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_paying_account_view_form
+msgid "GL Account"
+msgstr "บัญชีแยกประเภท"
+
+#. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
 msgid "Group By"
 msgstr "จัดกลุ่มตาม"
@@ -355,6 +403,11 @@ msgstr "จัดกลุ่มตาม"
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__handover_date
 msgid "Handover/Receipt Date"
 msgstr "วันที่จ่าย/รับเช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__is_cheque_payment
+msgid "Is Cheque Payment"
+msgstr "จ่ายด้วยเช็ค"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
@@ -382,14 +435,14 @@ msgid "Issued Cheques"
 msgstr "เช็คจ่าย"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__journal_id
-msgid "Journal"
-msgstr "สมุดรายวัน"
-
-#. module: finance_kmitl
 #: model:ir.module.category,name:finance_kmitl.module_category_finance_kmitl
 msgid "KMITL Finance"
 msgstr "การเงิน KMITL"
+
+#. module: finance_kmitl
+#: model:ir.model,name:finance_kmitl.model_kmitl_payment_subject
+msgid "KMITL Payment Subject (เรื่องที่จ่าย)"
+msgstr "เรื่องที่จ่าย"
 
 #. module: finance_kmitl
 #: model:ir.model,name:finance_kmitl.model_kmitl_payment_type
@@ -410,6 +463,16 @@ msgstr "ตั้งค่ารูปแบบ"
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__bearer_left
 msgid "Left"
 msgstr "ซ้าย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__default_paying_account_id
+msgid "Main / Fallback Paying Account"
+msgstr "หัวจ่ายหลัก/สำรอง"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_payment_subject_view_form
+msgid "Main Paying Account"
+msgstr "หัวจ่ายหลัก"
 
 #. module: finance_kmitl
 #: model:res.groups,name:finance_kmitl.group_finance_kmitl_manager
@@ -433,9 +496,23 @@ msgid "New"
 msgstr "ใหม่"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_paying_account_view_form
+msgid "No paying account yet"
+msgstr "ยังไม่มีหัวจ่าย"
+
+#. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__note
 msgid "Notes"
 msgstr "หมายเหตุ"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
+#, python-format
+msgid ""
+"One file debits one account, but these payments are paid from %s. Export "
+"them separately, one paying account at a time."
+msgstr ""
+"หนึ่งไฟล์ตัดจากบัญชีเดียว แต่ใบจ่ายเหล่านี้จ่ายจาก %s กรุณาแยกส่งทีละหัวจ่าย"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/cheque_register.py:0
@@ -478,11 +555,6 @@ msgid ""
 msgstr "แทนที่บัญชีปลายทาง เว้นว่างไว้เพื่อใช้ค่าเริ่มต้นของคู่ค้า"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__is_cheque
-msgid "Paid/Received by Cheque"
-msgstr "จ่าย/รับด้วยเช็ค"
-
-#. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
 msgid "Payee"
@@ -509,11 +581,28 @@ msgid "Payer Bank Account"
 msgstr "บัญชีธนาคารผู้ชำระเงิน"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export__paying_account_id
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Paying Account"
+msgstr "หัวจ่าย"
+
+#. module: finance_kmitl
+#: model:ir.actions.act_window,name:finance_kmitl.action_kmitl_paying_account
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_paying_account
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_payment_subject_view_form
+msgid "Paying Accounts"
+msgstr "หัวจ่าย"
+
+#. module: finance_kmitl
 #: model:ir.model,name:finance_kmitl.model_account_payment
-#: model:ir.ui.menu,name:finance_kmitl.menu_payment_root
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__payment_id
 msgid "Payment"
 msgstr "การเบิกจ่ายเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Payment Failed"
+msgstr "จ่ายไม่สำเร็จ"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
@@ -521,17 +610,19 @@ msgid "Payment Information"
 msgstr "ข้อมูลการจ่าย/รับเงิน"
 
 #. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_outbound
-msgid "Payment List"
-msgstr "รายการจ่ายเงิน"
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_paying_account_view_form
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_paying_account_view_search
+msgid "Payment Method"
+msgstr "วิธีจ่าย"
+
+#. module: finance_kmitl
+#: model:ir.actions.act_window,name:finance_kmitl.action_kmitl_payment_subject
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_subject
+msgid "Payment Subjects"
+msgstr "เรื่องที่จ่าย"
 
 #. module: finance_kmitl
 #: model:ir.actions.act_window,name:finance_kmitl.action_kmitl_payment_type
-#: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_types
-msgid "Payment Types (KMITL)"
-msgstr "ประเภทการจ่ายเงิน (KMITL)"
-
-#. module: finance_kmitl
 #: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_types
 msgid "Payment Types (KMITL)"
 msgstr "ประเภทการจ่ายเงิน (KMITL)"
@@ -597,11 +688,6 @@ msgid "Settings"
 msgstr "ตั้งค่า"
 
 #. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_payment_settings
-msgid "Settings"
-msgstr "ตั้งค่า"
-
-#. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__ref
 msgid "Source Document"
 msgstr "เลขที่ฎีกา/เอกสารอ้างอิง"
@@ -628,6 +714,24 @@ msgid "Success"
 msgstr "สำเร็จ"
 
 #. module: finance_kmitl
+#: code:addons/finance_kmitl/models/kmitl_payment_subject.py:0
+#, python-format
+msgid ""
+"The main/fallback paying account of '%(subject)s' is %(account_method)s but "
+"the subject is paid by %(subject_method)s."
+msgstr ""
+"หัวจ่ายหลัก/สำรองของ '%(subject)s' เป็นแบบ %(account_method)s "
+"แต่เรื่องที่จ่ายนี้จ่ายด้วย %(subject_method)s"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/kmitl_payment_subject.py:0
+#, python-format
+msgid ""
+"The main/fallback paying account of '%s' must be one of its allowed paying "
+"accounts."
+msgstr "หัวจ่ายหลัก/สำรองของ '%s' ต้องอยู่ในชุดหัวจ่ายที่อนุญาต"
+
+#. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__date_top
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__payee_top
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__amount_figure_top
@@ -638,6 +742,11 @@ msgid "Top"
 msgstr "บน"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__needs_bank_export
+msgid "Travels in an E-Payment File"
+msgstr "ส่งผ่านไฟล์ e-Payment"
+
+#. module: finance_kmitl
 #: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_out
 msgid "User การเงินจ่าย (Payment Out)"
 msgstr ""
@@ -646,6 +755,12 @@ msgstr ""
 #: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_in
 msgid "User การเงินรับ (Payment In)"
 msgstr ""
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_paying_account_view_form
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_paying_account_view_search
+msgid "Voucher"
+msgstr "ใบสำคัญ"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__amount_wht
@@ -675,26 +790,19 @@ msgid "You can export bank payments with 1 currency only."
 msgstr "สามารถส่งออกรายการจ่ายเงินที่มีสกุลเงินเดียวเท่านั้น"
 
 #. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_bank_payment_export
-msgid "e-Payment List"
-msgstr "รายการ e-Payment"
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
+#, python-format
+msgid "You can export bank payments with the '%s' payment method only."
+msgstr "ส่งออกไฟล์ธนาคารได้เฉพาะใบจ่ายที่ใช้วิธีจ่าย '%s' เท่านั้น"
 
 #. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__outbound
-msgid "จ่ายเงิน"
-msgstr ""
-
-#. module: finance_kmitl
 #: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_outbound
 msgid "จ่ายเงิน"
 msgstr ""
 
 #. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__inbound
-msgid "รับเงิน"
-msgstr ""
-
-#. module: finance_kmitl
 #: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_inbound
 msgid "รับเงิน"
 msgstr ""

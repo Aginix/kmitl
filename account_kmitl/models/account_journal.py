@@ -27,19 +27,6 @@ class AccountJournal(models.Model):
                 methods |= record
         return methods
 
-    def _kmitl_cheque_method_line(self, payment_type):
-        """The journal's เช็ค method line for the given direction, if any.
-
-        Returns an empty recordset when called on no journal (a payment whose
-        journal is left to Odoo to pick), so callers can simply skip.
-        """
-        if not self:
-            return self.env["account.payment.method.line"]
-        self.ensure_one()
-        return self._get_available_payment_method_lines(payment_type).filtered(
-            lambda line: line.payment_method_id.code == "kmitl_cheque"
-        )[:1]
-
     @api.model
     def _default_inbound_payment_methods(self):
         """Offer KMITL's methods instead of Odoo's stock Manual one.

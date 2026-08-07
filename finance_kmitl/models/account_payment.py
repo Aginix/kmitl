@@ -47,7 +47,21 @@ class AccountPayment(models.Model):
         tracking=True,
         help="Result reported by the bank for this outbound e-payment. Set "
         "from the bank payment export line once the bank confirms the "
-        "transfer succeeded or failed.",
+        "transfer succeeded or failed. Cheque and cash payments never enter an "
+        "export, so the finance office confirms those by hand.",
+    )
+    is_cheque_payment = fields.Boolean(
+        compute="_compute_settlement",
+        help="Read from the paying account's own method, so it cannot disagree "
+        "with how the money actually leaves.",
+    )
+    needs_bank_export = fields.Boolean(
+        string="Travels in an E-Payment File",
+        compute="_compute_settlement",
+        help="Only an outbound bank transfer does. Cheques are handed over and "
+        "cash is paid at the counter, so neither can ever gain an export and "
+        "neither may be held back by the export gate — the finance office "
+        "confirms those results by hand instead.",
     )
 
     cheque_register_ids = fields.One2many(
@@ -66,35 +80,58 @@ class AccountPayment(models.Model):
             payment.amount_wht = sum(abs(line.balance) for line in wht_lines)
             payment.amount_before_wht = payment.amount + payment.amount_wht
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        # Payments created programmatically (e.g. from a disbursement request)
-        # never run the onchange. The method line is injected into the values
-        # rather than written afterwards so the journal entry is built with the
-        # right outstanding account straight away.
-        for vals in vals_list:
-            self._kmitl_inject_payment_method_line(vals)
-        return super().create(vals_list)
+    @api.depends("payment_type", "payment_method_line_id.payment_method_id.code")
+    def _compute_settlement(self):
+        """How the money actually leaves, read off the paying account.
 
-    @api.model
-    def _kmitl_inject_payment_method_line(self, vals):
-        """Preset the เช็ค method line for a cheque operation type."""
-        if vals.get("payment_method_line_id") or not vals.get(
-            "kmitl_payment_type_id"
-        ):
-            return
-        payment_type = self.env["kmitl.payment.type"].browse(
-            vals["kmitl_payment_type_id"]
-        )
-        if not payment_type.is_cheque:
-            return
-        journal = self.env["account.journal"].browse(
-            vals.get("journal_id") or payment_type.journal_id.id
-        )
-        direction = vals.get("payment_type") or payment_type.direction
-        line = journal._kmitl_cheque_method_line(direction)
-        if line:
-            vals["payment_method_line_id"] = line.id
+        The paying account is what the officer picked, so it cannot disagree
+        with itself the way a second flag elsewhere could.
+        """
+        for payment in self:
+            code = payment.payment_method_line_id.payment_method_id.code
+            payment.is_cheque_payment = code == "kmitl_cheque"
+            payment.needs_bank_export = (
+                payment.payment_type == "outbound"
+                and code not in ("kmitl_cheque", "kmitl_cash")
+            )
+
+    def write(self, vals):
+        """Repoint the money line when the paying account changes.
+
+        ``payment_method_line_id`` is deliberately not a synchronisation trigger
+        (rebuilding the move recreates the withholding-tax write-off lines from
+        name/account/amount and loses ``wht_tax_id``), so a change of paying
+        account would otherwise leave the entry crediting the previous account.
+        The money line is captured **before** the write: afterwards it still
+        carries the old account and therefore no longer counts as a liquidity
+        line, so looking it up then finds nothing and the correction silently
+        does nothing.
+        """
+        if "payment_method_line_id" not in vals:
+            return super().write(vals)
+        liquidity_lines = {
+            payment.id: payment._seek_for_lines()[0]
+            for payment in self
+            if payment.move_id.state not in ("posted", "cancel")
+        }
+        res = super().write(vals)
+        for payment in self:
+            lines = liquidity_lines.get(payment.id)
+            if lines and payment.outstanding_account_id:
+                lines.write({"account_id": payment.outstanding_account_id.id})
+        return res
+
+    def action_mark_bank_result_success(self):
+        """Finance confirms by hand that a cheque or cash payment was paid.
+
+        Transfers are confirmed from the bank payment export line, which also
+        logs the e-payment result; nothing reports back for the payments that
+        never enter a file.
+        """
+        self.write({"bank_result_status": "success"})
+
+    def action_mark_bank_result_failed(self):
+        self.write({"bank_result_status": "failed"})
 
     @api.depends("cheque_register_ids")
     def _compute_cheque_register_count(self):
@@ -104,14 +141,8 @@ class AccountPayment(models.Model):
     def action_post(self):
         """Validate bank export for outbound, then reconcile after posting."""
         for payment in self:
-            if (
-                payment.payment_type == "outbound"
-                and not payment.kmitl_payment_type_id.is_cheque
-                and payment.export_status == "draft"
-            ):
-                raise UserError(
-                    _("Payment must be exported to bank before posting.")
-                )
+            if payment.needs_bank_export and payment.export_status == "draft":
+                raise UserError(_("Payment must be exported to bank before posting."))
         res = super().action_post()
         self._reconcile_source_invoice_lines()
         self._create_cheque_register_entries()
@@ -124,11 +155,9 @@ class AccountPayment(models.Model):
         entered by the finance officer, who then issues it from the register.
         """
         for payment in self.filtered(
-            lambda p: p.kmitl_payment_type_id.is_cheque and not p.cheque_register_ids
+            lambda p: p.is_cheque_payment and not p.cheque_register_ids
         ):
-            self.env["cheque.register"].create(
-                payment._prepare_cheque_register_vals()
-            )
+            self.env["cheque.register"].create(payment._prepare_cheque_register_vals())
 
     def _prepare_cheque_register_vals(self):
         self.ensure_one()
@@ -198,28 +227,17 @@ class AccountPayment(models.Model):
 
     @api.onchange("kmitl_payment_type_id")
     def _onchange_kmitl_payment_type_id(self):
+        """The operation type only proposes its voucher.
+
+        How the money leaves is the paying account's business
+        (``payment_method_line_id``), so nothing here touches it — a payment
+        made from a disbursement carries the paying account its payee was
+        reviewed with, and one made by hand keeps whatever the officer picked.
+        """
         if self.kmitl_payment_type_id:
             self.payment_type = self.kmitl_payment_type_id.direction
             if self.kmitl_payment_type_id.journal_id:
                 self.journal_id = self.kmitl_payment_type_id.journal_id
-            self._apply_kmitl_payment_method_line()
-
-    def _apply_kmitl_payment_method_line(self):
-        """Point a cheque operation type at the journal's เช็ค method line.
-
-        Without this a cheque payment would keep the journal's default method
-        (เงินโอน, the first line). The bank export also filters cheque
-        operation types out on its own, so a journal missing the เช็ค line
-        cannot leak a cheque into an e-payment file.
-        """
-        for payment in self:
-            if not payment.kmitl_payment_type_id.is_cheque:
-                continue
-            line = payment.journal_id._kmitl_cheque_method_line(
-                payment.payment_type
-            )
-            if line:
-                payment.payment_method_line_id = line
 
     @api.depends("kmitl_payment_type_id")
     def _compute_destination_account_id(self):
@@ -284,4 +302,3 @@ class AccountPayment(models.Model):
             *super()._get_trigger_fields_to_synchronize(),
             "kmitl_payment_type_id",
         )
-

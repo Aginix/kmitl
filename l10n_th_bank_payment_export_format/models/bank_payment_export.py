@@ -1,16 +1,15 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from datetime import datetime
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo import models, fields, _
+from odoo.exceptions import UserError
 from odoo.tools.safe_eval import safe_eval
 
 _logger = logging.getLogger(__name__)
 
 
 class BankPaymentExport(models.Model):
-    _inherit = 'bank.payment.export'
+    _inherit = "bank.payment.export"
 
     bank_export_format_id = fields.Many2one(
         comodel_name="bank.export.format",
@@ -114,10 +113,12 @@ class BankPaymentExport(models.Model):
             # search only lines that match the current group and condition
             # filter in loop because we need to check condition_line
             exp_format_line_group = exp_format_lines.filtered(
-                lambda l: l.match_group == exp_format.match_group
-                and (
-                    not l.condition_line
-                    or safe_eval(l.condition_line, globals_dict=globals_dict_line)
+                lambda l: (
+                    l.match_group == exp_format.match_group
+                    and (
+                        not l.condition_line
+                        or safe_eval(l.condition_line, globals_dict=globals_dict_line)
+                    )
                 )
             )
 
@@ -187,6 +188,16 @@ class BankPaymentExport(models.Model):
         text = self._generate_bank_payment_text()
         prefix = self._get_text_file_prefix(text)
         return "{}{}".format(prefix, text) if prefix else text
+
+    def _check_bank_specific_constraint(self, payments):
+        """Hook for the rules a particular bank puts on a batch of payments.
+
+        Kept apart from ``_check_constraint_create_bank_payment_export`` so that
+        a localisation replacing that method outright — one whose payments are
+        exported before posting, say, which the base check rejects — can still
+        invoke the per-bank rules layered on top instead of silencing them.
+        """
+        return True
 
     def _get_text_file_prefix(self, text):
         """Hook returning a prefix block that a CSV layout cannot express

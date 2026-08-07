@@ -13,17 +13,16 @@ class AccountMove(models.Model):
         Outbound payments must be exported to the bank before posting. The
         guard also lives in account.payment.action_post, but the approval
         workflow posts the move (Approve = post) which can bypass that path,
-        so it is enforced here as well.
+        so it is enforced here as well. Which payments the gate applies to is
+        the payment's own answer (``_needs_bank_export``), so the two paths
+        cannot drift apart.
         """
         for move in self:
             payment = move.payment_id
             if (
                 payment
-                and payment.payment_type == "outbound"
-                and not payment.kmitl_payment_type_id.is_cheque
+                and payment.needs_bank_export
                 and payment.export_status == "draft"
             ):
-                raise UserError(
-                    _("Payment must be exported to bank before posting.")
-                )
+                raise UserError(_("Payment must be exported to bank before posting."))
         return super()._post(soft=soft)
