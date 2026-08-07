@@ -24,6 +24,14 @@ export class BudgetLineItemField extends Component {
         return Boolean(this.props.record.data.is_custom);
     }
 
+    /** Show the budget_item_id picker only for a catalog line that is being edited.
+     * A catalog line that is not in edition (and every custom line) renders the leaf
+     * name instead, so the readonly value stays the compact name even right after an
+     * item is picked (the picker's dropdown label is the full path). */
+    get showItemPicker() {
+        return !this.isCustom && this.props.record.isInEdition;
+    }
+
     get itemFieldInfo() {
         // Render the sibling picker even though its arch node is invisible: strip the
         // (column_)invisible modifiers so this manual <Field/> is not suppressed.

@@ -114,3 +114,14 @@ class ProjectBudgetItem(models.Model):
         # _rec_names_search, and complete_name is used explicitly where the path is
         # needed (portal, config column, validation messages).
         return [(item.id, item.name) for item in self]
+
+    def name_search(self, name="", args=None, operator="ilike", limit=100):
+        # Label the autocomplete dropdown with the full "ประเภทงบ / รายการ" path so the
+        # planner can tell items apart across categories while picking. name_get still
+        # returns the leaf name, so the selected/readonly value stays compact.
+        results = super().name_search(
+            name=name, args=args, operator=operator, limit=limit
+        )
+        items = self.browse([res[0] for res in results])
+        labels = {item.id: item.complete_name for item in items}
+        return [(res[0], labels.get(res[0], res[1])) for res in results]
