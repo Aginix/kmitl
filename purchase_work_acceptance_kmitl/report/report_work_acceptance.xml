@@ -297,7 +297,7 @@
                                 <div class="row mt-5">
                                     <div class="col-9 offset-3 text-center">
                                         <div
-                                            t-if="o.state == 'accept' and line.employee_id.signature"
+                                            t-if="line.status == 'accept' and line.employee_id.signature"
                                         >
                                             <img
                                                 t-att-src="image_data_uri(line.employee_id.signature)"
@@ -318,7 +318,7 @@
                                 <div class="row mt-5">
                                     <div class="col-9 offset-3 text-center">
                                         <div
-                                            t-if="o.state == 'accept' and line.employee_id.signature"
+                                            t-if="line.status == 'accept' and line.employee_id.signature"
                                         >
                                             <img
                                                 t-att-src="image_data_uri(line.employee_id.signature)"
