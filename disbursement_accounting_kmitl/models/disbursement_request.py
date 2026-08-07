@@ -170,7 +170,6 @@ class DisbursementRequest(models.Model):
             bill = self.env["account.move"].create(
                 self._prepare_bill_vals(partner, partner_bank, invoice_lines)
             )
-            self._apply_wht_to_bill(bill, lines)
             bills |= bill
         return bills
 
@@ -190,7 +189,12 @@ class DisbursementRequest(models.Model):
         }
 
     def _prepare_bill_line_vals(self, line):
-        """Prepare values for a single invoice line."""
+        """Prepare values for a single invoice line.
+
+        The request line's withholding tax is stamped directly at create time
+        so it cannot be mis-assigned by a positional match against the created
+        bill lines.
+        """
         return {
             "product_id": line.product_id.id,
             "name": line.name,
@@ -198,16 +202,9 @@ class DisbursementRequest(models.Model):
             "quantity": line.quantity,
             "price_unit": line.price_unit,
             "tax_ids": [Command.set(line.tax_ids.ids)],
+            "wht_tax_id": line.wht_tax_id.id,
             "analytic_distribution": line.analytic_distribution,
         }
-
-    def _apply_wht_to_bill(self, bill, request_lines):
-        """Apply WHT from request lines to the corresponding bill lines."""
-        for request_line, invoice_line in zip(
-            request_lines, bill.invoice_line_ids
-        ):
-            if request_line.wht_tax_id:
-                invoice_line.wht_tax_id = request_line.wht_tax_id
 
     # ------------------------------------------------------------------
     # Tier-gated actions

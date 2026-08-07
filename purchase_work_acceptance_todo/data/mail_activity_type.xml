@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- Todo for a committee reviewer when a Work Acceptance enters tier validation.
+         Execution: cleared by acting on the source (Accept/Reject via tier validation). -->
+    <record id="mail_activity_wa_review_requested" model="mail.activity.type">
+        <field name="name">Work acceptance review requested</field>
+        <field name="summary">Review this work acceptance</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">work.acceptance</field>
+        <field name="icon">fa-clipboard-check</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

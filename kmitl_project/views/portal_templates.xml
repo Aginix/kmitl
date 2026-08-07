@@ -357,6 +357,65 @@
         </div>
 
         <div class="card mb-3">
+            <div class="card-header">รายรับ-รายจ่ายโครงการ</div>
+
+            <div class="card-body">
+                <t t-set="expense_sections" t-value="[
+                    {'label': 'รายรับ', 'lines': kmitl_project.income_line_ids},
+                    {'label': 'รายจ่าย', 'lines': kmitl_project.expense_line_ids},
+                ]" />
+                <t t-set="all_expenses" t-value="kmitl_project.income_line_ids | kmitl_project.expense_line_ids" />
+                <t t-if="all_expenses">
+                    <t t-foreach="expense_sections" t-as="section">
+                        <t t-if="section['lines']">
+                            <h6 class="mt-3" t-out="section['label']" />
+                            <table class="table table-sm table-light table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>รายการ</th>
+                                        <th>คำอธิบาย</th>
+                                        <th class="text-end" style="min-width: 120px">จำนวนเงิน</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="section['lines']" t-as="expense">
+                                        <tr>
+                                            <td>
+                                                <span t-if="expense.category_id" class="text-muted d-block small" t-field="expense.category_id.complete_name" />
+                                                <span t-field="expense.name" />
+                                            </td>
+                                            <td style="white-space: pre-wrap">
+                                                <span t-field="expense.description" />
+                                            </td>
+                                            <td class="text-end">
+                                                <span t-field="expense.amount" />
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <td colspan="2" class="text-end fw-bold">รวม</td>
+                                        <td class="text-end fw-bold">
+                                            <span t-out="'{:,.2f}'.format(sum(section['lines'].mapped('amount')))" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+                    </t>
+                    <t t-set="income_total" t-value="sum(kmitl_project.income_line_ids.mapped('amount'))" />
+                    <t t-set="expense_total" t-value="sum(kmitl_project.expense_line_ids.mapped('amount'))" />
+                    <div class="text-end mt-2">
+                        <div>รวมรายรับ: <span class="fw-bold" t-out="'{:,.2f}'.format(income_total)" /> บาท</div>
+                        <div>รวมรายจ่าย: <span class="fw-bold" t-out="'{:,.2f}'.format(expense_total)" /> บาท</div>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="text-muted">ยังไม่มีรายการรายรับ-รายจ่าย</div>
+                </t>
+            </div>
+        </div>
+
+        <div class="card mb-3">
             <div class="card-header">รายละเอียดโครงการ/กิจกรรม</div>
 
             <div class="card-body">

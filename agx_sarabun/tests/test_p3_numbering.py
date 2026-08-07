@@ -168,21 +168,25 @@ class TestP3Numbering(SarabunCommon):
             self._act(step, "complete", self.user_a)
         self.assertEqual(doc.register_number_id.sequence_id, second)
 
-    def test_fiscal_year_bucket(self):
-        """ปีงบประมาณ runs Oct–Sep; Oct–Dec roll into the next budget year (พ.ศ.)."""
+    def test_calendar_year_bucket(self):
+        """The register resets each calendar year (พ.ศ.); the month is irrelevant."""
         seq = self.sequence
-        self.assertEqual(seq._fiscal_year_for(date(2025, 10, 1)), 2569)   # Oct 2025 → FY2569
-        self.assertEqual(seq._fiscal_year_for(date(2026, 1, 15)), 2569)   # Jan 2026 → FY2569
-        self.assertEqual(seq._fiscal_year_for(date(2026, 9, 30)), 2569)   # Sep 2026 → FY2569
-        self.assertEqual(seq._fiscal_year_for(date(2025, 9, 30)), 2568)   # Sep 2025 → FY2568
+        self.assertEqual(seq._fiscal_year_for(date(2025, 10, 1)), 2568)   # 2025 → 2568
+        self.assertEqual(seq._fiscal_year_for(date(2025, 12, 31)), 2568)  # 2025 → 2568
+        self.assertEqual(seq._fiscal_year_for(date(2026, 1, 15)), 2569)   # 2026 → 2569
+        self.assertEqual(seq._fiscal_year_for(date(2026, 9, 30)), 2569)   # 2026 → 2569
 
     def test_register_number_rendering(self):
-        """register_number is zero-padded to the register's width and carries the FY."""
+        """register_number is zero-padded to the register's width and carries NO ปีงบ
+        (feedback: เลขที่หนังสือต้องไม่มีเลขปี — the running number omits the year)."""
         doc = self._make_doc()
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
         self._complete(doc)
         number = doc.register_number_id
         padded = str(number.counter).zfill(self.sequence.padding)
-        self.assertIn(padded, number.register_number)
-        self.assertIn(str(number.fiscal_year), number.register_number)
+        expected = "%s%s%s" % (
+            self.sequence.prefix or "", padded, self.sequence.suffix or "",
+        )
+        self.assertEqual(number.register_number, expected)
+        self.assertNotIn(str(number.fiscal_year), number.register_number)
         self.assertEqual(doc.name, number.register_number)

@@ -259,6 +259,55 @@ class KmitlProject(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
+    has_income = fields.Boolean(
+        string="โครงการนี้มีรายรับ",
+        help="ติ๊กเมื่อโครงการมีรายรับ (เช่น ค่าลงทะเบียน/เงินบริจาค/เงินรายได้) "
+        "เพื่อแสดงตารางกรอกงบประมาณรายรับ; รายจ่ายจะแสดงเสมอ",
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+
+    income_line_ids = fields.One2many(
+        "project.budget.line",
+        "project_id",
+        string="รายรับ",
+        domain=[("budget_type", "=", "income")],
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+
+    @api.onchange("has_income")
+    def _onchange_has_income(self):
+        """Drop any income lines when the project is marked as having no income."""
+        if not self.has_income:
+            self.income_line_ids = [(5, 0, 0)]
+
+    expense_line_ids = fields.One2many(
+        "project.budget.line",
+        "project_id",
+        string="รายจ่าย",
+        domain=[("budget_type", "=", "expense")],
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+
+    budget_income_total = fields.Float(
+        string="รวมรายรับ",
+        compute="_compute_budget_plan_totals",
+        digits="Product Price",
+    )
+    budget_expense_total = fields.Float(
+        string="รวมรายจ่าย",
+        compute="_compute_budget_plan_totals",
+        digits="Product Price",
+    )
+
+    @api.depends("income_line_ids.amount", "expense_line_ids.amount")
+    def _compute_budget_plan_totals(self):
+        for rec in self:
+            rec.budget_income_total = sum(rec.income_line_ids.mapped("amount"))
+            rec.budget_expense_total = sum(rec.expense_line_ids.mapped("amount"))
+
     expected_outcome_ids = fields.One2many(
         "project.expected.outcome",
         "project_id",
@@ -429,8 +478,29 @@ class KmitlProject(models.Model):
 
     def button_new(self):
         for project in self:
+            project._check_budget_plan_lines()
             project._reserve_project_commitment()
         self.write({"state": "new"})
+
+    def _check_budget_plan_lines(self):
+        """Validate the Project Budget Plan at confirmation. Amounts may be left
+        blank/zero while drafting, but every line must carry a positive amount
+        before the project is confirmed."""
+        self.ensure_one()
+        lines = self.expense_line_ids
+        if self.has_income:
+            lines |= self.income_line_ids
+        bad = lines.filtered(lambda line: line.amount <= 0)
+        if bad:
+            raise UserError(
+                _(
+                    "ไม่สามารถยืนยันโครงการได้ "
+                    "เนื่องจากมีรายการงบประมาณที่ยังไม่ได้ระบุจำนวนเงิน (ต้องมากกว่า 0):\n%s"
+                )
+                % "\n".join(
+                    "- %s" % (line.name or _("(ไม่ระบุรายการ)")) for line in bad
+                )
+            )
 
     def button_in_progress(self):
         self.write({"state": "in_progress"})
@@ -448,6 +518,7 @@ class KmitlProject(models.Model):
                 rec.is_editable = True
             else:
                 rec.is_editable = False
+
 
     def unlink(self):
         for rec in self:

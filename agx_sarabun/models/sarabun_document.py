@@ -41,8 +41,9 @@ class SarabunDocument(models.Model):
         default="/",
         tracking=True,
         index="trigram",
-        help="Official registered number (rendered in พ.ศ.). Assigned only when the "
-        "final approver signs — completion (ADR-0010); stays '/' while draft/circulating.",
+        help="Official registered number (running number only — no ปีงบ in the number; "
+        "the year lives on ลงวันที่). Assigned only when the final approver signs — "
+        "completion (ADR-0010); stays '/' while draft/circulating.",
     )
 
     # === Classification (kind / type) ===
@@ -267,6 +268,12 @@ class SarabunDocument(models.Model):
     routing_progress = fields.Float(
         compute="_compute_routing_progress", string="Routing Progress",
     )
+    next_step_order = fields.Integer(
+        compute="_compute_next_step_order",
+        help="Default ลำดับ (Stage) for the next routing step added on the form — "
+        "max(existing) + 1 so new steps auto-increment instead of always starting at "
+        "1. Fed to routing_step_ids' context as default_order.",
+    )
 
     # === Inbox (per current user — from the step that reached them) ===
     my_received_date = fields.Datetime(
@@ -312,18 +319,11 @@ class SarabunDocument(models.Model):
         selection=[
             ("auto", "Auto (next available)"),
             ("reserved", "Reserved number"),
-            ("gap", "Fill a gap"),
-            ("manual", "Manual"),
         ],
         string="Numbering Mode",
         default="auto",
-        help="from_record always registers automatically; reserved/gap/manual are "
-        "for manual compose (memo/circular).",
-    )
-    manual_counter = fields.Integer(
-        string="Manual Number",
-        help="The counter to use in manual/gap mode (routed through the same "
-        "atomic allocation + unique backstop).",
+        help="from_record always registers automatically; reserved (a pre-reserved "
+        "number) is for manual compose (memo/circular).",
     )
     reserved_number_id = fields.Many2one(
         comodel_name="sarabun.document.number",
@@ -555,6 +555,15 @@ class SarabunDocument(models.Model):
         if recipients:
             recipients.write({"read_date": fields.Datetime.now()})
         return True
+
+    @api.depends("routing_step_ids.order")
+    def _compute_next_step_order(self):
+        """The Stage a freshly-added step should default to: one past the highest
+        existing order (the originator sits at row 1), so the ลำดับ auto-increments
+        instead of every new step landing on 1."""
+        for record in self:
+            orders = record.routing_step_ids.mapped("order")
+            record.next_step_order = (max(orders) + 1) if orders else 1
 
     @api.depends("routing_step_ids.state", "routing_step_ids.gating")
     def _compute_routing_progress(self):
@@ -997,7 +1006,7 @@ class SarabunDocument(models.Model):
             if doc.kind == "from_record" and doc.numbering_mode != "auto":
                 raise ValidationError(_(
                     "from_record documents register automatically; "
-                    "reserved/gap/manual numbering is for manual compose only."
+                    "reserved numbering is for manual compose only."
                 ))
 
     def _resolve_sequence(self):
@@ -1049,10 +1058,6 @@ class SarabunDocument(models.Model):
                 "document_id": self.id,
                 "used_date": fields.Datetime.now(),
             })
-        elif self.numbering_mode in ("manual", "gap"):
-            if not self.manual_counter:
-                raise UserError(_("Enter the number to use."))
-            number = seq.allocate(self, counter=self.manual_counter)
         else:  # auto
             number = seq.allocate(self)
         self.register_number_id = number

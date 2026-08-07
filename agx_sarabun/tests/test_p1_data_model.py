@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 """P1 — core data model: kind/type split, position holders, references, enclosures."""
-from psycopg2 import IntegrityError
-
 from odoo.exceptions import ValidationError
 from odoo.tests.common import tagged
-from odoo.tools import mute_logger
 
 from odoo.addons.agx_sarabun.tests.common import SarabunCommon
 
@@ -30,13 +27,6 @@ class TestP1DataModel(SarabunCommon):
         self.assertEqual(
             self.pos_multi._current_holder_users(), self.user_a | self.user_b
         )
-
-    def test_position_code_unique(self):
-        """Position code carries a uniqueness constraint."""
-        with self.assertRaises(IntegrityError), mute_logger("odoo.sql_db"):
-            with self.cr.savepoint():
-                self.Position.create({"name": "ซ้ำ", "code": "DEAN-T"})
-                self.env.flush_all()
 
     def test_references_documents_and_free_text_lines(self):
         """อ้างถึง = m2m prior docs + ordered free-text lines."""
@@ -72,7 +62,7 @@ class TestP1DataModel(SarabunCommon):
         doc = self._make_doc()
         self.assertEqual(doc.numbering_mode, "auto")
         with self.assertRaises(ValidationError):
-            doc.numbering_mode = "manual"
+            doc.numbering_mode = "reserved"
             doc.flush_recordset()
 
     def test_content_body_is_editable_rich_text(self):

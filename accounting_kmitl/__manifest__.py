@@ -1,6 +1,6 @@
 {
     "name": "KMITL Accounting",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "category": "KMITL/Accounting",
     "summary": "งานบัญชี KMITL: ตั้งหนี้, ล้างหนี้, สมุดรายวัน, รายงานบัญชี",
     "author": "KMITL",

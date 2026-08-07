@@ -17,11 +17,15 @@ class PortalEducationHistory(models.Model):
         string="Education Level",
         required=True,
     )
-    program = fields.Char(required=True)
-    major = fields.Char(required=True)
-    institution = fields.Char(required=True)
-    country_id = fields.Many2one("res.country", required=True)
-    graduation_date = fields.Date(required=True)
+    program = fields.Char()
+    major = fields.Char()
+    institution = fields.Char()
+    country_id = fields.Many2one(
+        "res.country",
+        default=lambda self: self.env.ref("base.th", raise_if_not_found=False),
+    )
+    start_year = fields.Integer()
+    graduate_year = fields.Integer()
     certificate_file = fields.Binary(string="Certificate", attachment=True)
     certificate_filename = fields.Char()
     transcript_file = fields.Binary(string="Transcript", attachment=True)
