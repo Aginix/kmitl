@@ -59,8 +59,14 @@ class KmitlProject(models.Model):
         return super()._on_sarabun_cancelled(document)
 
     def _get_sarabun_report_action(self):
-        # Render the หนังสือ PDF from the project's own report.
-        return self.env.ref("kmitl_project.action_report_kmitl_project")
+        # Do NOT delegate the official หนังสือ PDF to the project's own report yet:
+        # kmitl_project.report_kmitl_project is an unfinished stub (body commented
+        # out) and — unlike a proper delegated report — does not t-call the หนังสือ
+        # endorsement/signature block at its tail, so a signed copy would show no
+        # signatures. Returning False makes the หนังสือ use the complete default
+        # sarabun document report. Re-enable (return the report action) once a real
+        # แบบเสนอโครงการ report is built. See ADR-0002.
+        return False
 
     # -- Discard the stale หนังสือ when abandoning the approval ------------
     def _abandon_stale_sarabun_documents(self):
