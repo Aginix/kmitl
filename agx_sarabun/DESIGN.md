@@ -1020,10 +1020,11 @@ def _check_numbering_mode_scope(self):
 ```
 
 The earlier `gap` / `manual` counter modes (and the `manual_counter` field) were
-dropped: `gap` was code-identical to `manual`, and its intended purpose — refill a
-voided counter — never worked, because a `voided` row keeps its
-`(sequence, counter, fiscal_year)` slot so the unique constraint rejects the
-reissue. Neither was reachable in the `auto`-only `from_record` flow.
+dropped: `gap` was code-identical to `manual`, and the case it was meant to handle
+— filling a genuinely skipped / never-allocated counter — was already excluded in
+the spec (`voided` rows were explicitly gated out, so a voided number can never be
+reissued via any path). Neither mode was reachable in the `auto`-only `from_record`
+flow.
 
 ### 4.7 Voiding — permanent gap, never reissued
 
