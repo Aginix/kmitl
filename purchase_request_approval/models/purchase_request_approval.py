@@ -416,32 +416,29 @@ class PurchaseRequestApproval(models.Model):
             "context": {"default_approval_id": self.id},
         }
 
-    def _reset_request_sarabun(self, reason):
-        """Reset the PR's active sarabun.document back to editable ``draft``,
-        reusing the SAME document (and its register number). Archives the
-        completed routing chain and re-seeds a fresh one via ``_restart_chain``
-        so the sender can send it again.
+    def _cancel_request_sarabun(self, reason):
+        """Cancel the PR's active sarabun.document (state=cancelled) so it
+        stops counting as live. The document, its register number, and the
+        completed routing chain are ALL retained on the record — the user
+        will later click ``action_resume_returned_sarabun`` on the PR to
+        revive it back to draft and re-send.
 
-        Runs sudo because ``_restart_chain`` writes ``active=False`` on all
-        steps including the originator — which the originator write-guard
-        (``sarabun_routing_step.write``) blocks for non-sudo writes; the guard
-        docstring itself flags archive as a SYSTEM operation. Authorization is
-        enforced by the caller (PA-manager-gated ตีกลับ button).
+        This is a soft-void — no ``_restart_chain`` yet (the reset happens on
+        resume). Runs sudo since ``action_recall``'s guard blocks a signed
+        document; this is the origin's escape hatch when พจ.1 rejects the
+        approval downstream.
         """
         self.ensure_one()
         pr = self.request_id
         if not pr:
             return
         doc = pr.active_sarabun_document_id
-        if not doc:
+        if not doc or doc.state in ("cancelled", "rejected"):
             return
-        doc = doc.sudo()
-        doc.routing_step_ids._clear_activities()
-        doc._restart_chain()
-        doc.write({"state": "draft"})
+        doc.sudo().write({"state": "cancelled"})
         doc.message_post(
             body=_(
-                "หนังสือถูกรีเซ็ตกลับเป็น draft เนื่องจาก พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. "
+                "หนังสือถูกยกเลิกเนื่องจาก พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. "
                 "เหตุผล: %(reason)s"
             ) % {"pa": self.name, "reason": reason},
             subtype_xmlid="mail.mt_note",
@@ -454,9 +451,10 @@ class PurchaseRequestApproval(models.Model):
         - PA → ``pending_pr`` (name preserved; ``_transition_after_sarabun_approve``
           flips it back to ``draft`` when the fresh sarabun re-completes).
         - PR → ``to_submit`` (budget commitment stays intact).
-        - PR's active sarabun is reset to ``draft`` (same document + number)
-          so the sender re-sends it via the existing draft, not by creating a
-          new หนังสือ.
+        - PR's active sarabun is CANCELLED (state=cancelled) so it no longer
+          counts as live. The user then explicitly clicks
+          ``action_resume_returned_sarabun`` on the PR to revive it — that
+          two-step ceremony is intentional (no auto-magic revival on close).
         - Redirect the user to the PR form so they can act immediately.
         """
         self.ensure_one()
@@ -468,7 +466,7 @@ class PurchaseRequestApproval(models.Model):
             "พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. เหตุผล: %(reason)s"
         ) % {"pa": self.name, "reason": reason}
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
-        self._reset_request_sarabun(reason)
+        self._cancel_request_sarabun(reason)
         self.request_id.write({"state": "to_submit"})
         self.write({"state": "pending_pr"})
         return self._redirect_to_request()

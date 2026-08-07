@@ -23,6 +23,66 @@ class PurchaseRequest(models.Model):
         "purchase.request.approval", inverse_name="request_id"
     )
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
+    can_resume_returned_sarabun = fields.Boolean(
+        compute="_compute_can_resume_returned_sarabun",
+        help="True when this PR has a PA parked in pending_pr and a cancelled "
+        "sarabun ready to be revived — drives the 'ส่งเรื่องสารบรรณ' button "
+        "visibility for the two-step ตีกลับ/แก้ไข resume flow.",
+    )
+
+    @api.depends(
+        "state",
+        "request_approval_ids.state",
+        "sarabun_document_ids.state",
+    )
+    def _compute_can_resume_returned_sarabun(self):
+        for rec in self:
+            rec.can_resume_returned_sarabun = (
+                rec.state == "to_submit"
+                and any(
+                    pa.state == "pending_pr" for pa in rec.request_approval_ids
+                )
+                and any(
+                    doc.state == "cancelled" for doc in rec.sarabun_document_ids
+                )
+            )
+
+    def action_resume_returned_sarabun(self):
+        """Revive the latest cancelled sarabun on this PR back to editable
+        ``draft`` (reuses the same document + register number) so the sender
+        can send it again. Available only when a PA is parked in ``pending_pr``
+        (i.e., we came from the ตีกลับ/แก้ไข flow)."""
+        self.ensure_one()
+        if not self.can_resume_returned_sarabun:
+            raise UserError(_(
+                "ไม่พบหนังสือที่ถูกยกเลิกไว้สำหรับใบขอนี้ที่พร้อมกลับมาใช้ใหม่"
+            ))
+        doc = self.env["sarabun.document"].search(
+            [
+                ("origin_model", "=", self._name),
+                ("origin_res_id", "=", self.id),
+                ("state", "=", "cancelled"),
+            ],
+            order="id desc",
+            limit=1,
+        )
+        if not doc:
+            raise UserError(_("ไม่พบหนังสือที่ถูกยกเลิกไว้"))
+        doc = doc.sudo()
+        doc.routing_step_ids._clear_activities()
+        doc._restart_chain()
+        doc.write({"state": "draft"})
+        doc.message_post(
+            body=_("หนังสือถูกนำกลับมาใช้ใหม่จากใบเดิมที่ถูกยกเลิก"),
+            subtype_xmlid="mail.mt_note",
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "sarabun.document",
+            "res_id": doc.id,
+            "view_mode": "form",
+            "target": "current",
+        }
 
     def _transition_after_sarabun_approve(self):
         for rec in self:
