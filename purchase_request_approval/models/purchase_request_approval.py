@@ -54,6 +54,7 @@ class PurchaseRequestApproval(models.Model):
             ("rejected", "Rejected"),
             ("cancelled", "Cancelled"),
             ("sarabun_returned", "Sarabun Returned"),
+            ("pending_pr", "Pending PR Revision"),
         ],
         string="Status",
         default="draft",
@@ -441,11 +442,11 @@ class PurchaseRequestApproval(models.Model):
         )
 
     def _action_return_keep_number(self, reason):
-        """ส่งกลับแก้ไข (เก็บเลข พจ.1) — PA stays as-is (name preserved so it
-        will be reused on the next submit), PR is sent back to draft (which
-        also cancels its budget commitment via purchase_request_budget). The
-        PR's active sarabun is voided so a new one can be issued after the
-        user re-runs the flow."""
+        """ส่งกลับแก้ไข (เก็บเลข พจ.1) — PA parks in ``pending_pr`` (name
+        preserved), PR is sent back to draft (which also cancels its budget
+        commitment via purchase_request_budget), PR's active sarabun is voided
+        so a new one can be issued. When the PR's new sarabun re-completes,
+        ``_transition_after_sarabun_approve`` flips this PA back to draft."""
         self.ensure_one()
         pa_body = _(
             "ตีกลับ พจ.1 %(pa)s (เก็บเลข) เหตุผล: %(reason)s"
@@ -456,7 +457,9 @@ class PurchaseRequestApproval(models.Model):
         ) % {"pa": self.name, "reason": reason}
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
         self._void_request_sarabun(reason)
-        return self.request_id.button_draft()
+        self.request_id.button_draft()
+        self.write({"state": "pending_pr"})
+        return self._redirect_to_request()
 
     def _action_return_new_number(self, reason):
         """ส่งกลับแก้ไข (ไม่เก็บเลข พจ.1) — PA is cancelled (a fresh PA with a
@@ -473,7 +476,20 @@ class PurchaseRequestApproval(models.Model):
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
         self._void_request_sarabun(reason)
         self.write({"state": "cancelled"})
-        return self.request_id.button_draft()
+        self.request_id.button_draft()
+        return self._redirect_to_request()
+
+    def _redirect_to_request(self):
+        """Return an action that opens this PA's linked PR (พ.1) so the user
+        lands on the record they need to edit after a return."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "purchase.request",
+            "res_id": self.request_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
 
     def copy(self, default=None):
         default = dict(default or {})

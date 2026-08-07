@@ -1621,3 +1621,8 @@ msgstr "จำนวนเงิน"
 #: model:ir.model,name:purchase_request_approval.model_purchase_request_approval_return_cancel_wizard
 msgid "Purchase Request Approval Return/Cancel Wizard"
 msgstr "Wizard ตีกลับ/ยกเลิก พจ.1"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__pending_pr
+msgid "Pending PR Revision"
+msgstr "รอ พ.1 แก้ไข"

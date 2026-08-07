@@ -29,9 +29,8 @@ class PurchaseRequestApprovalReturnCancelWizard(models.TransientModel):
         if not self.reason:
             raise UserError(_("A reason is required."))
         if self.mode == "keep_number":
-            self.approval_id._action_return_keep_number(self.reason)
-        elif self.mode == "new_number":
-            self.approval_id._action_return_new_number(self.reason)
-        else:
-            self.approval_id._action_do_cancel(self.reason)
+            return self.approval_id._action_return_keep_number(self.reason)
+        if self.mode == "new_number":
+            return self.approval_id._action_return_new_number(self.reason)
+        self.approval_id._action_do_cancel(self.reason)
         return {"type": "ir.actions.act_window_close"}

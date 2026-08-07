@@ -29,14 +29,18 @@ class PurchaseRequest(models.Model):
             if not rec.is_egp:
                 rec._apply_sarabun_approve_metadata()
                 rec.write({"state": "in_approval"})
-                # keep-number return leaves a non-cancelled PA linked to this
-                # PR — reuse it instead of raising "already been created" so
-                # the same พจ.1 number is preserved across the re-run.
+                # keep-number return parks the PA in ``pending_pr`` — reuse it
+                # (same พจ.1 number) instead of raising "already been created",
+                # and flip it back to draft now that the new PR sarabun has
+                # been approved.
                 existing = self.env["purchase.request.approval"].search(
                     [("request_id", "=", rec.id), ("state", "!=", "cancelled")],
                     limit=1,
                 )
-                if not existing:
+                if existing:
+                    if existing.state == "pending_pr":
+                        existing.write({"state": "draft"})
+                else:
                     rec.button_create_approval()
             else:
                 super(PurchaseRequest, rec)._transition_after_sarabun_approve()
