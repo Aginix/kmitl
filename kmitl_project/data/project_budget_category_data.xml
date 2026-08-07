@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ประเภทงบ (expense budget-type classification, up to 3 levels). Each project
+         budget-plan expense line is filed under one of these; the item itself is
+         typed free-text on the line. -->
+
+    <!-- งบบุคลากร -->
+    <record id="category_personnel" model="project.budget.category">
+        <field name="name">งบบุคลากร</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="category_personnel_expense" model="project.budget.category">
+        <field name="name">ค่าใช้จ่ายบุคลากร</field>
+        <field name="parent_id" ref="category_personnel" />
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- งบดำเนินงาน -->
+    <record id="category_operating" model="project.budget.category">
+        <field name="name">งบดำเนินงาน</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="category_operating_remuneration" model="project.budget.category">
+        <field name="name">ค่าตอบแทน</field>
+        <field name="parent_id" ref="category_operating" />
+        <field name="sequence">10</field>
+    </record>
+    <record id="category_operating_supplies" model="project.budget.category">
+        <field name="name">ค่าใช้สอย</field>
+        <field name="parent_id" ref="category_operating" />
+        <field name="sequence">20</field>
+    </record>
+    <record id="category_operating_materials" model="project.budget.category">
+        <field name="name">ค่าวัสดุ</field>
+        <field name="parent_id" ref="category_operating" />
+        <field name="sequence">30</field>
+    </record>
+    <record id="category_operating_utilities" model="project.budget.category">
+        <field name="name">ค่าสาธารณูปโภค</field>
+        <field name="parent_id" ref="category_operating" />
+        <field name="sequence">40</field>
+    </record>
+
+    <!-- งบเงินอุดหนุน -->
+    <record id="category_subsidy" model="project.budget.category">
+        <field name="name">งบเงินอุดหนุน</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="category_subsidy_expense" model="project.budget.category">
+        <field name="name">ค่าใช้จ่ายงบเงินอุดหนุน</field>
+        <field name="parent_id" ref="category_subsidy" />
+        <field name="sequence">10</field>
+    </record>
+
+</odoo>
