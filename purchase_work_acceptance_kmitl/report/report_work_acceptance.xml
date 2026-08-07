@@ -304,6 +304,12 @@
                                                 style="max-height: 60px;"
                                             />
                                         </div>
+                                        <div
+                                            t-elif="line.status != 'accept' and line.note"
+                                            style="height: 60px; line-height: 60px;"
+                                        >
+                                            <span t-field="line.note" />
+                                        </div>
                                         <div t-else="" style="height: 60px;" />
                                         <div>
                                             (<span t-esc="line.name" />)
@@ -324,6 +330,12 @@
                                                 t-att-src="image_data_uri(line.employee_id.signature)"
                                                 style="max-height: 60px;"
                                             />
+                                        </div>
+                                        <div
+                                            t-elif="line.status != 'accept' and line.note"
+                                            style="height: 60px; line-height: 60px;"
+                                        >
+                                            <span t-field="line.note" />
                                         </div>
                                         <div t-else="" style="height: 60px;" />
                                         <div>
