@@ -435,18 +435,14 @@
                     </div>
                     <div class="card-body">
                         <t
-                            t-set="expense_sections"
+                            t-set="budget_sections"
                             t-value="[
-                                {'label': 'รายรับ', 'lines': kmitl_project.income_line_ids},
-                                {'label': 'รายจ่าย', 'lines': kmitl_project.expense_line_ids},
+                                {'label': 'รายรับ', 'type': 'income', 'lines': kmitl_project.income_line_ids, 'total': kmitl_project.budget_income_total},
+                                {'label': 'รายจ่าย', 'type': 'expense', 'lines': kmitl_project.expense_line_ids, 'total': kmitl_project.budget_expense_total},
                             ]"
                         />
-                        <t
-                            t-set="all_expenses"
-                            t-value="kmitl_project.income_line_ids | kmitl_project.expense_line_ids"
-                        />
-                        <t t-if="all_expenses">
-                            <t t-foreach="expense_sections" t-as="section">
+                        <t t-if="kmitl_project.income_line_ids or kmitl_project.expense_line_ids">
+                            <t t-foreach="budget_sections" t-as="section">
                                 <t t-if="section['lines']">
                                     <h6 class="fw-bold mt-2" t-out="section['label']" />
                                     <div class="table-responsive">
@@ -459,32 +455,48 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <t t-foreach="section['lines']" t-as="expense">
-                                                    <tr>
-                                                        <td>
-                                                            <span
-                                                                t-if="expense.category_id"
-                                                                class="text-muted d-block small"
-                                                                t-field="expense.category_id.complete_name"
+                                                <t
+                                                    t-foreach="kmitl_project._portal_budget_tree(section['type'])"
+                                                    t-as="row"
+                                                >
+                                                    <t t-if="row['type'] == 'header'">
+                                                        <tr class="table-light">
+                                                            <td
+                                                                colspan="2"
+                                                                t-attf-style="padding-left: #{0.5 + row['level'] * 1.5}rem"
+                                                            >
+                                                                <i class="fa fa-folder-open-o me-2 text-warning" />
+                                                                <span class="fw-semibold" t-out="row['name']" />
+                                                            </td>
+                                                            <td
+                                                                class="text-end fw-semibold"
+                                                                t-out="'{:,.2f}'.format(row['total'])"
                                                             />
-                                                            <span t-field="expense.name" />
-                                                        </td>
-                                                        <td style="white-space: pre-wrap">
-                                                            <span t-field="expense.description" />
-                                                        </td>
-                                                        <td
-                                                            class="text-end"
-                                                            t-out="'{:,.2f}'.format(expense.amount)"
-                                                        />
-                                                    </tr>
+                                                        </tr>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <tr>
+                                                            <td
+                                                                t-attf-style="padding-left: #{0.5 + row['level'] * 1.5}rem"
+                                                                t-out="row['line'].name"
+                                                            />
+                                                            <td
+                                                                style="white-space: pre-wrap"
+                                                                t-out="(row['line'].description or '').strip()"
+                                                            />
+                                                            <td
+                                                                class="text-end"
+                                                                t-out="'{:,.2f}'.format(row['line'].amount)"
+                                                            />
+                                                        </tr>
+                                                    </t>
                                                 </t>
                                                 <tr class="table-light">
                                                     <td colspan="2" class="text-end fw-bold">รวม</td>
-                                                    <td class="text-end fw-bold">
-                                                        <span
-                                                            t-out="'{:,.2f}'.format(sum(section['lines'].mapped('amount')))"
-                                                        />
-                                                    </td>
+                                                    <td
+                                                        class="text-end fw-bold"
+                                                        t-out="'{:,.2f}'.format(section['total'])"
+                                                    />
                                                 </tr>
                                             </tbody>
                                         </table>
