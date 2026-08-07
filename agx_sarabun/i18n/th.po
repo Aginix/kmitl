@@ -6,167 +6,193 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-20 19:54+0000\n"
-"PO-Revision-Date: 2026-01-21 03:30+0700\n"
+"POT-Creation-Date: 2026-08-05 15:30+0000\n"
+"PO-Revision-Date: 2026-08-05 15:30+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
 
 #. module: agx_sarabun
-#: model:ir.actions.report,print_report_name:agx_sarabun.action_report_sarabun_documents
-msgid "'Sarabun Document - %s' % (object.name)"
-msgstr "‘หนังสือ - %s' % (object.name)"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.portal_sarabun_document_page
-msgid "<i class=\"fa fa-download\"/> Download"
-msgstr "<i class=\"fa fa-download\"/> ดาวน์โหลด"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.portal_sarabun_document_page
-msgid "<i class=\"fa fa-print\"/> Print"
-msgstr "<i class=\"fa fa-print\"/> พิมพ์"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_form
-msgid ""
-"<span class=\"text-muted\" colspan=\"2\">Leave empty to make this role available for all "
-"departments.</span>"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_kanban
-msgid "<span>From: </span>"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_kanban
-msgid "<span>To: </span>"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document_template
-msgid "<strong> ที่: </strong>"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_template_view_form
-msgid ""
-"<strong>Scope:</strong> Leave empty to match all. If set, template only matches documents with "
-"matching criteria.<br/>\n"
-"                                    <strong>Condition Domain:</strong> Python domain expression "
-"evaluated against origin record. Examples:<br/>\n"
-"                                    - <code>[('amount_total', '&gt;=', 100000)]</code> - Amount "
-"&gt;= 100,000<br/>\n"
-"                                    - <code>[('is_urgent', '=', True)]</code> - Urgent flag is "
-"set<br/>\n"
-"                                    - <code>[('state', '=', 'approved')]</code> - State is approved"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document_template
-msgid "<strong>วันที่:</strong>"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document_template
-msgid "<strong>หน่วนงาน:</strong>"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document_template
-msgid "<strong>เรียน:</strong>"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document_template
-msgid "<strong>เรื่อง:</strong>"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_search
-msgid "Academic"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_role__role_category__academic
-msgid "Academic Position"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__access_warning
-msgid "Access warning"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_reference__res_model__account_move
-msgid "Account Move"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_reference__res_model__account_move_request
-msgid "Account Move Request"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_signing_wizard__action_type__acknowledge
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_tree
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Acknowledge"
-msgstr "รับทราบ"
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_recipient__state__acknowledged
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_line__recipient_state__acknowledged
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-msgid "Acknowledged"
-msgstr "รับทราบแล้ว"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__actioned_date
-msgid "Action Date"
-msgstr "วันที่ดำเนินการ"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_needaction
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__message_needaction
-msgid "Action Needed"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__action_type
-msgid "Action Type"
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid "%(label)s • กำลังรอ %(who)s"
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_recipient.py:0
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
-msgid "Action completed"
-msgstr "ดำเนินการแล้ว"
+msgid "%(state)s • ผ่านแล้ว %(done)s/%(total)s"
+msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__actioned_by
-msgid "Actioned By"
-msgstr "ดำเนินการโดย"
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document_sequence.py:0
+#, python-format
+msgid "%s (สำเนา)"
+msgstr ""
 
 #. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid "(ยังไม่มีเรื่อง)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "<span class=\"o_stat_text\">Origin</span>"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_verb_form
+msgid ""
+"<strong>Gating</strong> steps must be completed for a stage to\n"
+"                        pass; <strong>แสดงลายเซ็น (Show signature)</strong> renders a\n"
+"                        signature block on the official document (leave it off for\n"
+"                        ตรวจสอบ / พิจารณา / ส่งต่อ — name in the Route only);\n"
+"                        <strong>ลายเซ็นเชิงอำนาจ (Authoritative sign)</strong> also blocks\n"
+"                        Recall and always shows. The built-in verbs are referenced by the\n"
+"                        engine via their XML id — relabel freely, but don't delete them."
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document
+msgid "<strong>ที่</strong>"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document
+msgid "<strong>วันที่</strong>"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document
+msgid "<strong>สิ่งที่ส่งมาด้วย</strong>"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document
+msgid "<strong>ส่วนราชการ</strong>"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document
+msgid "<strong>อ้างถึง</strong>"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document
+msgid "<strong>เรื่อง</strong>"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_verb__gating
+msgid ""
+"A gating verb must be positively completed for its Stage to pass. Non-gating"
+" verbs (e.g. รับทราบ) never block advancement."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__for_info
+msgid ""
+"A non-gating acknowledge step (CC). Never blocks advancement/completion."
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid "A reason is required to ดึงกลับ (pull back)."
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid "A reason is required to ยกเลิกการส่ง (cancel the send)."
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/wizard/sarabun_recall_wizard.py:0
+#, python-format
+msgid "A reason is required."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.constraint,message:agx_sarabun.constraint_sarabun_step_recipient_step_user_uniq
+msgid "A recipient row must be unique per user per step."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.constraint,message:agx_sarabun.constraint_sarabun_document_number_counter_fy_seq_uniq
+msgid "A register number must be unique per register per fiscal year!"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_number__document_id
+msgid "A used number must keep its document link for audit."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_mixin__sarabun_is_draft
+msgid "A หนังสือ was created from this record but not yet sent (still draft)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__act_token
+msgid "Act Token"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "Act on My Step"
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_step_act_wizard_form
+#, python-format
+msgid "Act on Step"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__acted_by_id
+msgid "Acted By"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_needaction
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_addressee_prefix__active
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__active
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__active
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__active
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__active
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__active
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__active
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__active
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__state__active
 msgid "Active"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_ids
 msgid "Activities"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step_activity__activity_id
+msgid "Activity"
 msgstr ""
 
 #. module: agx_sarabun
@@ -185,9 +211,23 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_document_all
-msgid "All Documents"
-msgstr "เอกสารทั้งหมด"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__actor_user_ids
+msgid "Actors (snapshot)"
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid ""
+"Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_addressee_prefix
+#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_addressee_prefix
+msgid "Addressee Prefixes (คำขึ้นต้น)"
+msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
@@ -197,149 +237,105 @@ msgid "All routing completed. Document is now complete."
 msgstr "เส้นทางเอกสาร"
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_selection_wizard_view_form
-msgid "Apply Route"
-msgstr "ใช้เส้นทางเอกสาร"
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_signing_wizard__action_type__approve
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_tree
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Approve"
-msgstr "ลงนามอนุมัติ"
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_recipient__state__approved
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_line__recipient_state__approved
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-msgid "Approved"
-msgstr "ลงนามอนุมัติแล้ว"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_search
-msgid "Archived"
-msgstr "จัดเก็บ"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__user_ids
-msgid "Assigned Users"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_mixin__sarabun_document_ids
+msgid "All หนังสือ spawned from this record (1:N)."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__attachment_count
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_sequence_form
+msgid "Allocated Numbers"
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document_mixin.py:0
+#, python-format
+msgid "Approved via Sarabun: %s"
+msgstr ""
+
+#. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_attachment_count
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__message_attachment_count
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_attachment_count
 msgid "Attachment Count"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__attachment_ids
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
 msgid "Attachments"
 msgstr "เอกสารแนบ"
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_number_selection_wizard_view_form
-msgid "Available (Gap) Numbers"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__attempt_seq
+msgid "Attempt"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__available_number_ids
-msgid "Available Numbers"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__attempt_seq
+msgid "Attempt Seq"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__available_role_ids
-msgid "Available Roles"
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__numbering_mode__auto
+msgid "Auto (next available)"
+msgstr "อัตโนมัติ"
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_type_form
+msgid "Bindings"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_selection_wizard__available_template_ids
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_selection_wizard_view_form
-msgid "Available Routes"
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "CC"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_template_view_form
-msgid "Basic"
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_sequence__reset_period__yearly
+msgid "Calendar Year"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_reference__res_model__budget_commitment
-msgid "Budget Commitment"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__can_withdraw
+msgid "Can Withdraw"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_reference__res_model__budget_move
-msgid "Budget Move"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_department_lookup_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_number_selection_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_recipient_reject_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_selection_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_forward_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_reject_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_signing_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_step_act_wizard_form
 msgid "Cancel"
-msgstr "ยกเลิก"
+msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_form
-msgid "Cancel Reservation"
-msgstr "ยกเลิกการจอง"
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__state__cancelled
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_number__state__cancelled
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_number__void_reason__cancelled
 msgid "Cancelled"
-msgstr "ยกเลิกแล้ว"
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_sequence.py:0
-#, python-format
-msgid "Cannot release number still linked to document %s."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#: code:addons/agx_sarabun/models/sarabun_document_mixin.py:0
 #, python-format
+msgid "Cancelled via Sarabun (ยกเลิกการส่ง): %s"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__signed_as_position_id
 msgid ""
-"Cannot send document: All approval steps must be at the end of routing. Please reorder your "
-"routing lines."
+"Capacity signed in — validated against the step's target Position "
+"(ADR-0003)."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__role_category
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_search
-msgid "Category"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_enclosure__description
+msgid "Caption shown in the สิ่งที่ส่งมาด้วย list."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_type__code__circular
-#: model:sarabun.document.type,name:agx_sarabun.document_type_circular
-msgid "Circular"
-msgstr "หนังสือเวียน"
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_search
+msgid "Circulating"
+msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__code
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__code
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__code
 msgid "Code"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__comment
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_forward_wizard__comment
-msgid "Comment"
 msgstr ""
 
 #. module: agx_sarabun
@@ -348,19 +344,20 @@ msgid "Company"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__state__completed
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__disposition__complete
+msgid "Complete"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_search
 msgid "Completed"
-msgstr "เสร็จสิ้นแล้ว"
+msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__completed_routing_count
-msgid "Completed Routing Count"
-msgstr "จำนวนเส้นทางที่ดำเนินการแล้ว"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_template_view_form
-msgid "Condition"
+#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document
+msgid ""
+"Compose a document, then route it through the approval chain (routing engine"
+" arrives in P2)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -369,442 +366,253 @@ msgid "Condition Domain"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__secrecy__confidential
-msgid "Confidential"
-msgstr "ลับ"
-
-#. module: agx_sarabun
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_configuration
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
+#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_config
 msgid "Configuration"
 msgstr "ตั้งค่า"
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_number_selection_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_signing_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_step_act_wizard_form
 msgid "Confirm"
 msgstr "ยืนยัน"
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__content
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Content"
-msgstr "เนื้อหา"
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document_sequence.py:0
+#, python-format
+msgid ""
+"Could not allocate a register number (number %s is taken). Please try again."
+msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_type
-msgid "Create a document type"
-msgstr "สร้างประเภทหนังสือ"
-
-#. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_route_template
-msgid "Create a route template"
-msgstr "สร้างแม่แบบเส้นทางเอกสาร"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__counter
+msgid "Counter"
+msgstr ""
 
 #. module: agx_sarabun
 #: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document
-msgid "Create your first document"
+msgid "Create your first หนังสือ"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_sequence
-msgid "Create your first document sequence"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__created_by_disposition
+msgid "Created By Disposition"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_outgoing
-msgid "Create your first outgoing document"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_role
-msgid "Create your first role/position"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_department_lookup_wizard__create_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_addressee_prefix__create_uid
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__create_uid
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__create_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__create_uid
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__create_uid
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__create_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__create_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recipient_reject_wizard__create_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference__create_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__create_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_selection_wizard__create_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_enclosure__create_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__create_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recall_wizard__create_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference_line__create_uid
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__create_uid
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__create_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_forward_wizard__create_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__create_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_reject_wizard__create_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__create_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__create_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step_activity__create_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_send_wizard__create_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__create_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__create_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__create_uid
 msgid "Created by"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_department_lookup_wizard__create_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_addressee_prefix__create_date
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__create_date
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__create_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__create_date
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__create_date
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__create_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__create_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recipient_reject_wizard__create_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference__create_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__create_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_selection_wizard__create_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_enclosure__create_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__create_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recall_wizard__create_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference_line__create_date
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__create_date
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__create_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_forward_wizard__create_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__create_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_reject_wizard__create_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__create_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__create_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step_activity__create_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_send_wizard__create_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__create_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__create_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__create_date
 msgid "Created on"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__current_user_can_acknowledge
-msgid "Current User Can Acknowledge"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_position__holder_ids
+msgid ""
+"Current holder(s) of this post (HR personnel). Multi-holder is resolved "
+"first-to-act. Interim รักษาการ/มอบอำนาจ: add the acting person here "
+"temporarily (the acting-assignment model is phase-2). Only personnel with a "
+"linked user account can actually act."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__current_user_can_approve
-msgid "Current User Can Approve"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__default_route_id
+msgid "Default Route"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__current_year
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_search
-msgid "Current Year"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__next_step_order
+msgid ""
+"Default ลำดับ (Stage) for the next routing step added on the form — "
+"max(existing) + 1 so new steps auto-increment instead of always starting at "
+"1. Fed to routing_step_ids' context as default_order."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__access_url
-msgid "Customer Portal URL"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__next_line_order
+msgid ""
+"Default ลำดับ for the next seed line — max(existing) + 1 so new lines auto-"
+"increment instead of always starting at 1 (fed to line_ids' context)."
 msgstr ""
 
 #. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/controllers/portal.py:0
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.portal_my_sarabun_documents
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
-#, python-format
-msgid "Date"
-msgstr "วันที่"
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__created_by_disposition__delegate
+msgid "Delegate"
+msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__default_route_template_id
-msgid "Default Route Template"
-msgstr "แม่แบบเส้นทางเอกสารเริ่มต้น"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__delegated_to_id
+msgid "Delegated To"
+msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model,name:agx_sarabun.model_hr_department
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_department_lookup_wizard__department_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__department_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__department_id
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__department_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__department_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_forward_wizard__forward_to_department_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__department_text
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_recipient__recipient_type__department
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_route_template_line__recipient_type__department
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_forward_wizard__forward_type__department
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_line__recipient_type__department
 msgid "Department"
-msgstr "หน่วยงาน"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__department_id
-msgid "Department (System)"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
-msgid "Department Access"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_role__dynamic_method__dept_head
-msgid "Department Head"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_department_lookup_wizard
-msgid "Department Lookup Wizard"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_form
-msgid "Department Scope"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__department_text
-msgid "Department Text"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__department_ids
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__department_ids
-msgid "Departments"
-msgstr ""
+msgstr "สังกัด"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__description
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__description
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_enclosure__description
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__description
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_template_view_form
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_type_form
 msgid "Description"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_type_view_form
-msgid "Description of this document type..."
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__destination
+msgid "Destination"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_form
-msgid "Description of this role..."
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__created_by_disposition__direct
+msgid "Direct"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_template_view_form
-msgid "Description..."
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_department_lookup_wizard__display_name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_addressee_prefix__display_name
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__display_name
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__display_name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__display_name
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__display_name
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__display_name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__display_name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recipient_reject_wizard__display_name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference__display_name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__display_name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_selection_wizard__display_name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_enclosure__display_name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__display_name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recall_wizard__display_name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference_line__display_name
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__display_name
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__display_name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_forward_wizard__display_name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__display_name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_reject_wizard__display_name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__display_name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__display_name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step_activity__display_name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_send_wizard__display_name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__display_name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__display_name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__display_name
 msgid "Display Name"
 msgstr ""
 
 #. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__disposition
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__disposition
+msgid "Disposition"
+msgstr ""
+
+#. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__document_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__document_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__document_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference__document_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_selection_wizard__document_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__document_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__document_name
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_line_view_search
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_enclosure__document_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recall_wizard__document_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference_line__document_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__document_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_send_wizard__document_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__document_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__document_id
 msgid "Document"
 msgstr "หนังสือ"
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__date
-msgid "Document Date"
-msgstr "วันที่"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_signing_wizard_view_form
-msgid "Document Information"
-msgstr "ข้อมูลเอกสาร"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Document No."
-msgstr "เลขที่เอกสาร"
-
-#. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__document_name
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_form
 msgid "Document Number"
 msgstr "เลขที่เอกสาร"
 
 #. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_number_selection_wizard
-msgid "Document Number Selection Wizard"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_document_number
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_document_number
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_tree
-msgid "Document Numbers"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Document Preview"
-msgstr "ดูเอกสาร"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_form
-msgid "Document Recipient"
-msgstr "เรียน"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__document_sequence_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__sequence_id
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
-msgid "Document Sequence"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_document_sequence
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_document_sequence
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_tree
-msgid "Document Sequences"
-msgstr "เลขที่เอกสาร"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__document_state
-msgid "Document State"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__document_state
+msgid "Document Status"
 msgstr "สถานะหนังสือ"
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__document_type_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__type_id
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__document_type_id
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_type_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
 msgid "Document Type"
 msgstr "ประเภทหนังสือ"
 
 #. module: agx_sarabun
 #: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_document_type
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__document_type_ids
 #: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_document_type
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_type_view_tree
 msgid "Document Types"
 msgstr "ประเภทหนังสือ"
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_recipient.py:0
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
-msgid "Document acknowledged by %s as %s"
-msgstr "ลงนามรับทราบ โดย %s ตำแหน่ง %s"
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_recipient.py:0
-#, python-format
-msgid "Document approved by %s as %s"
-msgstr "ลงนามอนุมัติ โดย %s ตำแหน่ง %s"
+msgid "Document pulled back (ดึงกลับ). Reason: %s"
+msgstr "หนังสือถูกดึงกลับ. เหตุผล: %s"
 
 #. module: agx_sarabun
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
-msgid "Document cancelled."
-msgstr "หนังสือถูกยกเลิกแล้ว"
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_recipient.py:0
-#, python-format
-msgid "Document is not in sent state."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_recipient.py:0
-#, python-format
-msgid ""
-"Document rejected by %s.\n"
-"Reason: %s"
-msgstr ""
+msgid "Document rejected (ปฏิเสธ)."
+msgstr "หนังสือถูกปิดเรื่อง."
 
 #. module: agx_sarabun
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
-msgid "Document rejected by %s. Reason: %s"
-msgstr ""
+msgid "Document returned for revision (ตีกลับ)."
+msgstr "หนังสือถูกส่งคืนเพื่อแก้ไข."
 
 #. module: agx_sarabun
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
-msgid "Document sent for routing by %s"
-msgstr "ส่งออกหนังสือตามเส้นทางเอกสารแล้ว %s"
-
-#. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_sequence
-msgid ""
-"Document sequences are used to generate document numbers automatically.\n"
-"                You can configure different sequences for different departments."
-msgstr ""
+msgid "Document sent for routing."
+msgstr "หนังสือถูกส่ง"
 
 #. module: agx_sarabun
 #: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_document
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_documents
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_tree
+#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_document
 msgid "Documents"
 msgstr "เอกสาร"
 
 #. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_inbox
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_recipient_inbox
-msgid "Documents requiring your action will appear here."
-msgstr ""
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__state__done
+msgid "Done"
+msgstr "เสร็จสิ้น"
 
 #. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_incoming
-msgid "Documents sent to you will appear here."
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_outgoing
-msgid "Documents you create and send will appear here."
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__condition_domain
-msgid ""
-"Domain to evaluate against origin record. E.g., [('amount_total', '>=', 100000)]. Leave empty to "
-"match all."
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__state__draft
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_search
 msgid "Draft"
-msgstr "แบบร่าง"
+msgstr "ฉบับร่าง"
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_search
-msgid "Dynamic"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_role__role_type__dynamic
-msgid "Dynamic (Based on Document)"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__dynamic_method
-msgid "Dynamic Method"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_form
-msgid "Dynamic Role Settings"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "Duplicate to New Draft"
+msgstr "ทำสำเนาเป็นฉบับร่างใหม่"
 
 #. module: agx_sarabun
 #: model:ir.module.category,description:agx_sarabun.module_category_sarabun
@@ -812,74 +620,54 @@ msgid "Electronic Correspondence Management"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__numbering_mode__manual
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_number_selection_wizard__selection_mode__manual
-msgid "Enter Manually"
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid "Enter the number to use."
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_number_selection_wizard_view_form
+#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_inbox
 msgid ""
-"Enter an available number from gaps in the sequence.\n"
-"                        Numbers before the next auto number that are not used or reserved."
+"Every หนังสือ routed to you appears here once its step reaches you, and "
+"stays after you act."
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Enter document content..."
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Enter recipient name/department..."
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__manual_number
-msgid "Enter specific number when using manual mode"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Enter subject..."
-msgstr "ระบุเรื่อง..."
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_sequence__reset_period__fiscal_year
-msgid "Every Fiscal Year"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_sequence__reset_period__yearly
-msgid "Every Year"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_search
-msgid "Executive"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_role__role_category__executive
-msgid "Executive Position"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_role__role_category
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__reached_user_ids
 msgid ""
-"Executive: Administrative positions (e.g., คณบดี, หัวหน้าภาค). Academic: Academic titles (e.g., "
-"ศาสตราจารย์, รองศาสตราจารย์)."
+"Everyone the หนังสือ has ever reached — the union of sarabun.step.recipient "
+"holders across ACTIVE and ARCHIVED steps. The read-visibility key "
+"(ADR-0013): being involved is a property of the หนังสือ, not of the current "
+"attempt, so read persists after completion and across ตีกลับ / ดึงกลับ / "
+"Reset. It only grows — a recipient row is never removed — matching the "
+"permanent per-person reach ledger of the Incoming box."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_enclosure__attachment_id
+msgid "File"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__numbering_mode__gap
+msgid "Fill a gap"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_number__fiscal_year
+msgid "Fiscal-year bucket; 0 when the register never resets."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_follower_ids
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__message_follower_ids
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_follower_ids
 msgid "Followers"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_partner_ids
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__message_partner_ids
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_partner_ids
 msgid "Followers (Partners)"
 msgstr ""
 
@@ -889,121 +677,90 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_recipient__routing_type__acknowledge
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_route_template_line__routing_type__acknowledge
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_line__routing_type__acknowledge
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_line_view_search
-msgid "For Acknowledgement"
-msgstr "รับทราบ/ถือปฏิบัติ"
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_recipient__routing_type__approve
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_route_template_line__routing_type__approve
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_line__routing_type__approve
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_line_view_search
-msgid "For Approval"
-msgstr "รับทราบ/ลงนาม"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__formatted_number
-msgid "Formatted Number"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__reference_line_ids
+msgid "Free-text references to letters outside the system."
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_forward_wizard_view_form
-msgid "Forward"
-msgstr "ส่งต่อ"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_forward_wizard_view_form
-msgid "Forward Document"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__signed_at
+msgid "Frozen At"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_routing_forward_wizard
-msgid "Forward Document Wizard"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__archived_step_ids
+msgid "Frozen steps of closed attempts (kept for the เกษียน trail)."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_forward_wizard__forward_type
-msgid "Forward To"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__gating
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__gating
+msgid "Gating"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_line__department_text
-msgid "Free text for recipient department. Use lookup button to search from system."
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__attempt_seq
+msgid ""
+"Generation counter bumped on each re-send so prior attempts survive as "
+"history (ADR-0002 §3.4)."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__sender_display
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.portal_sarabun_document_page
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_tree
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_tree_incoming
-msgid "From"
-msgstr "ผู้ส่งเอกสาร"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "From (ต้นทาง)"
-msgstr "หน่วยงานผู้ส่ง"
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_type__code__from_record
-#: model:sarabun.document.type,name:agx_sarabun.document_type_from_record
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "From Record"
-msgstr "เอกสารต้นทาง (ข้อมูลในระบบ)"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_line_view_search
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_search
 msgid "Group By"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__has_delegated_report
-msgid "Has Delegated Report"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_mixin__sarabun_has_live_document
+msgid "Has Live หนังสือ"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__has_message
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__has_message
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__has_message
 msgid "Has Message"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.portal_sarabun_document_page
-msgid "History"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__has_signed
+msgid "Has Signed"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_role__dynamic_method
-msgid "How to determine the user for this role based on document context."
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__strongest_verb_id
+msgid ""
+"Highest-ranked verb positively completed so far. Drives the Recall window "
+"(Recall blocked once a signing step has occurred — ADR-0002)."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_department_lookup_wizard__id
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__processing_duration
+msgid "Hours from วันที่ได้รับ (activated) to max(วันที่ส่ง, วันที่ลงนาม)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_mixin__sarabun_state_label
+msgid ""
+"Human-readable status of the current หนังสือ (state + routing progress)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_addressee_prefix__id
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__id
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__id
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__id
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recipient_reject_wizard__id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference__id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_selection_wizard__id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_enclosure__id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recall_wizard__id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference_line__id
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__id
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_forward_wizard__id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_reject_wizard__id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step_activity__id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_send_wizard__id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__id
 msgid "ID"
 msgstr ""
 
@@ -1019,185 +776,166 @@ msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__message_needaction
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_recipient__message_needaction
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__message_has_error
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__message_has_sms_error
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_recipient__message_has_error
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_recipient__message_has_sms_error
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__message_has_error
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_role__department_ids
-msgid "If set, this role is only available for these departments."
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__signed_pdf
+msgid "Immutable PDF frozen at completion (cover sheet + origin body merged)."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__department_id
-msgid "If set, this template is specific to this department"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__inserted_by_step_id
+msgid "Inserted By Step"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__document_type_id
-msgid "If set, this template is specific to this document type"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__is_cancelled
+msgid "Is Cancelled"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__document_number_id
-msgid "If using a reserved number, link it here"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__is_circulating
+msgid "Is Circulating"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__urgency__immediate
-msgid "Immediate"
-msgstr "ด่วนที่สุด"
-
-#. module: agx_sarabun
-#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_document_inbox
-#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_recipient_inbox
-msgid "Inbox"
-msgstr "เอกสาร"
-
-#. module: agx_sarabun
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_document_inbox
-msgid "Inbox (รอดำเนินการ)"
-msgstr "เอกสาร (รอดำเนินการ)"
-
-#. module: agx_sarabun
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_document_incoming
-msgid "Incoming (ขาเข้า)"
-msgstr "เอกสารขาเข้า"
-
-#. module: agx_sarabun
-#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_document_incoming
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_tree_incoming
-msgid "Incoming Documents"
-msgstr "เอกสารขาเข้า"
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_type__code__memo
-#: model:sarabun.document.type,name:agx_sarabun.document_type_memo
-msgid "Internal Memo"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__is_completed
+msgid "Is Completed"
 msgstr ""
 
 #. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/wizard/sarabun_signing_wizard.py:0
-#, python-format
-msgid "Invalid action type."
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__is_draft
+msgid "Is Draft"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__is_editable
+msgid "Is Editable"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_is_follower
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__message_is_follower
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_is_follower
 msgid "Is Follower"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_department_lookup_wizard____last_update
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__is_frozen
+msgid "Is Frozen"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__is_originator
+msgid "Is Originator"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__is_rejected
+msgid "Is Rejected"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__is_return
+msgid "Is Return"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__is_returned
+msgid "Is Returned"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__is_sign
+msgid "Is Sign"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__is_terminal
+msgid "Is Terminal"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__kind
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__kind
+msgid "Kind"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_addressee_prefix____last_update
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document____last_update
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number____last_update
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient____last_update
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence____last_update
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type____last_update
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard____last_update
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recipient_reject_wizard____last_update
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference____last_update
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role____last_update
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_selection_wizard____last_update
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_enclosure____last_update
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position____last_update
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recall_wizard____last_update
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference_line____last_update
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template____last_update
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line____last_update
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_forward_wizard____last_update
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line____last_update
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_reject_wizard____last_update
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard____last_update
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step____last_update
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step_activity____last_update
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_send_wizard____last_update
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard____last_update
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient____last_update
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_department_lookup_wizard__write_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_addressee_prefix__write_uid
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__write_uid
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__write_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__write_uid
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__write_uid
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__write_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__write_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recipient_reject_wizard__write_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference__write_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__write_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_selection_wizard__write_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_enclosure__write_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__write_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recall_wizard__write_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference_line__write_uid
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__write_uid
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__write_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_forward_wizard__write_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__write_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_reject_wizard__write_uid
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__write_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__write_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step_activity__write_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_send_wizard__write_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__write_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__write_uid
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_department_lookup_wizard__write_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_addressee_prefix__write_date
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__write_date
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__write_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__write_date
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__write_date
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__write_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__write_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recipient_reject_wizard__write_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference__write_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__write_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_selection_wizard__write_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_enclosure__write_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__write_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recall_wizard__write_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference_line__write_date
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__write_date
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__write_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_forward_wizard__write_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__write_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_reject_wizard__write_date
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__write_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__write_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step_activity__write_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_send_wizard__write_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__write_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__write_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__write_date
 msgid "Last Updated on"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__department_ids
-msgid "Leave empty to allow all departments to use this sequence"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
-msgid "Leave empty to allow all departments to use this sequence."
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__document_type_ids
-msgid "Leave empty to allow all document types"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
-msgid "Leave empty to allow all document types."
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_line__department_id
-msgid "Link to department in system for notification routing"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document_template
-msgid "Logo"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Lookup"
-msgstr "ค้นหา"
-
-#. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_main_attachment_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__message_main_attachment_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_main_attachment_id
 msgid "Main Attachment"
 msgstr ""
 
@@ -1207,25 +945,37 @@ msgid "Manager"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_number_selection_wizard_view_form
-msgid "Manual Entry"
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__numbering_mode__manual
+msgid "Manual"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__manual_number
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__manual_number
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__manual_counter
 msgid "Manual Number"
 msgstr ""
 
 #. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_verb__is_signature
+msgid ""
+"Marks ลงนาม-อนุมัติ — the authoritative approval-sign: drives capacity "
+"validation and the Recall guard (a signed document cannot be recalled). "
+"Implies แสดงลายเซ็น (ADR-0008); does not by itself gate the chain."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__sequence
+msgid "Match priority (lower = higher)."
+msgstr ""
+
+#. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_has_error
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__message_has_error
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_has_error
 msgid "Message Delivery error"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_ids
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__message_ids
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_ids
 msgid "Messages"
 msgstr ""
 
@@ -1235,40 +985,31 @@ msgid "My Activity Deadline"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.portal_my_sarabun_documents
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_search
 msgid "My Documents"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__current_user_recipient_id
-msgid "My Pending Action"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__my_active_step_id
+msgid "My Pending Step"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_tree
-msgid "My Pending Documents"
-msgstr ""
-
-#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__name
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__name
 msgid "Name"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__needs_target
+msgid "Needs Target"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_sequence__reset_period__never
 msgid "Never"
 msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_recipient__state__new
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_line__recipient_state__new
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-#, python-format
-msgid "New"
-msgstr "ใหม่"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_calendar_event_id
@@ -1291,240 +1032,171 @@ msgid "Next Activity Type"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__next_auto_number
-msgid "Next Auto Number"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__next_line_order
+msgid "Next Line Order"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__next_number
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__next_counter
 msgid "Next Number"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_number
-msgid "No document numbers yet"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__next_step_order
+msgid "Next Step Order"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_incoming
-msgid "No incoming documents"
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
-#, python-format
-msgid "No origin record linked to this document."
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__new_verb
+msgid "Next Step Verb"
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#: code:addons/agx_sarabun/models/sarabun_document_mixin.py:0
 #, python-format
-msgid "No pending action for you."
+msgid "No reason provided"
 msgstr ""
 
 #. module: agx_sarabun
 #: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_inbox
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_recipient_inbox
-msgid "No pending documents"
+msgid "No หนังสือ has reached you yet"
 msgstr ""
 
 #. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
-#, python-format
-msgid "No reason"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template_line__for_info
+msgid "Non-gating acknowledge (CC)."
 msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
-#, python-format
-msgid "No route templates available for this document."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/wizard/sarabun_signing_wizard.py:0
-#, python-format
-msgid "No routing line or recipient specified."
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__secrecy__normal
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__urgency__normal
-msgid "Normal"
-msgstr "ปกติ"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__note
 msgid "Note"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__notification_date
-msgid "Notification Date"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__is_notified
-msgid "Notified"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__number
-msgid "Number"
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
-#, python-format
-msgid "Number %s has been reserved."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_sequence.py:0
-#, python-format
-msgid "Number %s is already reserved by %s."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
-#, python-format
-msgid "Number %s is already reserved."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_sequence.py:0
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
-#, python-format
-msgid "Number %s is already used."
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_form
-msgid "Number Info"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_number_selection_wizard_view_form
-msgid "Number Information"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__padding
-msgid "Number Padding"
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
-#, python-format
-msgid "Number Reserved"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.constraint,message:agx_sarabun.constraint_sarabun_document_number_number_year_sequence_uniq
-msgid "Number must be unique per sequence per year!"
-msgstr ""
+msgstr "หมายเหตุ"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_needaction_counter
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__message_needaction_counter
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__padding
-msgid "Number of digits (e.g., 4 = 0001)"
-msgstr ""
-
-#. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_has_error_counter
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__message_has_error_counter
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_has_error_counter
 msgid "Number of errors"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__message_needaction_counter
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_recipient__message_needaction_counter
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__message_has_error_counter
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_recipient__message_has_error_counter
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__numbering_mode
 msgid "Numbering Mode"
-msgstr ""
+msgstr "การกำหนดเลขที่หนังสือ"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__number_ids
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
 msgid "Numbers"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_number
-msgid "Numbers are created when documents are sent or when numbers are reserved."
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__name
+msgid ""
+"Official registered number (running number only — no ปีงบ in the number; the"
+" year lives on ลงวันที่). Assigned only when the final approver signs — "
+"completion (ADR-0010); stays '/' while draft/circulating."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
-msgid "Only draft documents can be cancelled. Once sent, documents cannot be cancelled."
+msgid "Only a circulating document can be withdrawn."
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/wizard/sarabun_step_act_wizard.py:0
+#, python-format
+msgid ""
+"Only a gating step (เห็นชอบ / ลงนาม-อนุมัติ) can be ตีกลับ (returned) or "
+"ปฏิเสธ (rejected)."
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#: code:addons/agx_sarabun/wizard/sarabun_send_wizard.py:0
+#, python-format
+msgid "Only draft or returned documents can be sent."
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_routing_step.py:0
+#, python-format
+msgid ""
+"Only the actor of a gating step (เห็นชอบ / ลงนาม-อนุมัติ) may ตีกลับ "
+"(return) or ปฏิเสธ (reject)."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
-msgid "Only draft documents can be sent."
+msgid "Only the sender may withdraw this document."
 msgstr ""
 
 #. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_sequence.py:0
-#, python-format
-msgid "Only reserved numbers can be cancelled."
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_enclosure__attachment_id
+msgid "Optional file for this enclosure."
 msgstr ""
 
 #. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_sequence.py:0
-#, python-format
-msgid "Only used numbers can be released."
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_position__parent_id
+msgid "Optional hierarchy (org display / future acting chains)."
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Open"
-msgstr "ดูข้อมูล"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_forward_wizard_view_form
-msgid "Optional comment..."
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__remark
+msgid "Optional internal note — not part of the letter body."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_selection_wizard__origin_info
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_position__department_id
+msgid "Optional scope — the unit this post belongs to."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__route_template_id
+msgid ""
+"Optional template that seeds the steps at send. Not authoritative once "
+"seeded — the Route lives on the document."
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
 msgid "Origin"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__origin_model
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__origin_model
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__origin_model_id
 msgid "Origin Model"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__origin_model
+msgid "Origin Model (technical)"
 msgstr ""
 
 #. module: agx_sarabun
@@ -1538,162 +1210,69 @@ msgid "Origin Reference"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_recipient__routing_line_id
-msgid "Original routing line this recipient was created from"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__sender_user_id
+msgid ""
+"Owner of the เรื่อง. Never copied — a duplicate belongs to whoever made it "
+"(falls back to the default = current user)."
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Other Information"
-msgstr "ข้อมูลอื่นๆ"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Other References"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__sender_department_id
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_send_wizard__sender_department_id
+msgid "Owning unit — drives register resolution (ส่วนงาน × type) in P3."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_document_outgoing
-msgid "Outgoing (ขาออก)"
-msgstr "เอกสารขาออก"
-
-#. module: agx_sarabun
-#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_document_outgoing
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_tree_outgoing
-msgid "Outgoing Documents"
-msgstr "เอกสารขาออก"
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_role__dynamic_method__parent_dept_head
-msgid "Parent Department Head"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__padding
+msgid "Padding"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
-msgid "Pending Action"
-msgstr "รอดำเนินการ"
-
-#. module: agx_sarabun
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_routing_pending
-msgid "Pending Actions"
-msgstr "รอดำเนินการ"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__pending_routing_count
-msgid "Pending Routing Count"
+#: model:ir.model.fields,help:agx_sarabun.field_hr_department__sarabun_officer_ids
+msgid ""
+"Personnel who act for this unit's document office (ธุรการหน่วยงาน) when a "
+"routing step targets the department (ธุรการหน่วยงาน mode). May be more than "
+"one (first-to-act). Only personnel with a linked user can act."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#: code:addons/agx_sarabun/wizard/sarabun_step_act_wizard.py:0
 #, python-format
-msgid "Please add at least one routing line."
+msgid "Pick the step to resume from."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#: code:addons/agx_sarabun/wizard/sarabun_step_act_wizard.py:0
 #, python-format
-msgid "Please enter a document number."
+msgid "Please provide a reason for returning (ตีกลับ)."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
-#, python-format
-msgid "Please enter a number to reserve."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
-#, python-format
-msgid "Please enter a number."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_routing_line.py:0
-#, python-format
-msgid "Please enter department text or select a department for routing."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_recipient.py:0
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
+#: code:addons/agx_sarabun/wizard/sarabun_step_act_wizard.py:0
 #, python-format
 msgid "Please provide a rejection reason."
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_recipient_reject_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_reject_wizard_view_form
-msgid "Please provide the reason for rejection..."
-msgstr ""
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__position_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__position_id
+msgid "Position"
+msgstr "ตำแหน่ง"
 
 #. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
-#, python-format
-msgid "Please select a department to forward to."
-msgstr ""
+#: model:ir.model.constraint,message:agx_sarabun.constraint_sarabun_position_code_uniq
+msgid "Position code must be unique!"
+msgstr "รหัสตำแหน่งต้องไม่ซ้ำ!"
 
 #. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
-#, python-format
-msgid "Please select a document sequence first."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
-#, python-format
-msgid "Please select a reserved number."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_routing_line.py:0
-#, python-format
-msgid "Please select a role/position for role-type recipient."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/wizard/sarabun_signing_wizard.py:0
-#, python-format
-msgid "Please select a signing position."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_routing_line.py:0
-#, python-format
-msgid "Please select a user for user-type recipient."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
-#, python-format
-msgid "Please select a user to forward to."
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
-#, python-format
-msgid "Please select an available number."
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__access_url
-msgid "Portal Access URL"
-msgstr ""
+#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_position
+#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_position
+msgid "Positions"
+msgstr "ตำแหน่ง"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__prefix
@@ -1701,182 +1280,103 @@ msgid "Prefix"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__prefix
-msgid "Prefix for document numbers (e.g., 'สจล.', 'อว 6801.')"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__reference_document_ids
+msgid "Prior in-system หนังสือ referenced by this one."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__formatted_preview
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_number_selection_wizard_view_form
-msgid "Preview"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__condition_domain
+msgid ""
+"Python domain evaluated against the origin record, e.g. [('amount_total', "
+"'>=', 100000)]. Empty = match all."
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Print"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__rank
+msgid "Rank"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__sequence
-msgid "Priority for matching (lower = higher priority)"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__reached_user_ids
+msgid "Reached Users"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_reference__res_model__purchase_order
-msgid "Purchase Order"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_reference__res_model__purchase_request
-msgid "Purchase Request"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-msgid "Read"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__read_date
-msgid "Read Date"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_number__note
-msgid "Reason for reservation"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__recipient_name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recipient_reject_wizard__recipient_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__recipient_name
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__recipient_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__user_id
 msgid "Recipient"
-msgstr ""
+msgstr "ผู้รับ"
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__recipient_id
-msgid "Recipient Record"
-msgstr ""
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__recipient_ids
+msgid "Recipients (per-person read tracking)"
+msgstr "ผู้รับ (ติดตามการอ่านแต่ละคน)"
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__recipient_type
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__recipient_type
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__recipient_type
-msgid "Recipient Type"
-msgstr "ประเภทผู้รับ"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__recipient
-msgid "Recipient name/department."
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__recipient_ids
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-msgid "Recipients"
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/controllers/portal.py:0
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.portal_my_sarabun_documents
-#, python-format
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference_line__text
 msgid "Reference"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference__res_id
-msgid "Reference ID"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference__res_name
-msgid "Reference Name"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference__res_model
-msgid "Reference Type"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__referenced_document_ids
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Referenced Documents"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__reference_ids
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "References"
 msgstr "อ้างอิง"
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_tree
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_recipient_reject_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_reject_wizard_view_form
-msgid "Reject"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__register_number_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__register_number
+msgid "Register Number"
 msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_type_form
+msgid ""
+"Register sequence (P3), default seed route (P2) and report\n"
+"                            template (P5) bindings are added in their phases."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_sequence
+msgid "Registers"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_sequence
+msgid "Registers (ทะเบียน)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_number__void_reason__rejected
+msgid "Rejected"
+msgstr "ปฏิเสธ"
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_recipient.py:0
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_recipient_reject_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_reject_wizard_view_form
+#: code:addons/agx_sarabun/models/sarabun_document_mixin.py:0
 #, python-format
-msgid "Reject Document"
+msgid "Rejected via Sarabun by %(actor)s. Reason: %(reason)s"
+msgstr "ถูกปฏิเสธ (ปิดเรื่อง) โดย %(actor)s. เหตุผล: %(reason)s"
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_verb__show_signature
+msgid ""
+"Render a signature block (image + name + position + date + note) on the "
+"official document. Independent of gating; non-signing verbs (ตรวจสอบ / "
+"พิจารณา / ส่งต่อ, a non-signing ผู้จัดทำ) leave no mark on the letter. An "
+"authoritative sign (is_signature) always shows — ADR-0008."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_routing_reject_wizard
-msgid "Reject Document Wizard"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__prefix
+msgid "Rendered, not stored on the number (e.g. 'อว 6801.1/')."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_recipient_reject_wizard
-msgid "Reject Document Wizard (Recipient)"
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_sequence_form
+msgid "Rendering"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_recipient__state__rejected
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_line__recipient_state__rejected
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-msgid "Rejected"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recipient_reject_wizard__comment
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_reject_wizard__comment
-msgid "Rejection Reason"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__delegated_report_url
-msgid "Report Preview URL"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__report_preview_url
-msgid "Report Preview Url"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_form
-msgid "Reservation"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_number_selection_wizard_view_form
-msgid "Reserve This Number"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__parent_id
+msgid "Reports To"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_number__state__reserved
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
 msgid "Reserved"
 msgstr ""
 
@@ -1886,42 +1386,19 @@ msgid "Reserved By"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__reserved_count
-msgid "Reserved Count"
-msgstr ""
-
-#. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__reserved_date
 msgid "Reserved Date"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__document_number_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__reserved_number_id
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_number_selection_wizard_view_form
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__reserved_number_id
 msgid "Reserved Number"
-msgstr ""
+msgstr "เลขที่หนังสือ"
 
 #. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_sequence.py:0
-#, python-format
-msgid "Reserved Numbers"
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
-#, python-format
-msgid "Reserved via number selection wizard for document"
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/wizard/sarabun_routing_wizard.py:0
-#, python-format
-msgid "Reserved via wizard"
-msgstr ""
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__numbering_mode__reserved
+msgid "Reserved number"
+msgstr "เลือกจากเลขที่จองไว้"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__reset_period
@@ -1929,115 +1406,64 @@ msgid "Reset Period"
 msgstr ""
 
 #. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__actor_user_ids
+msgid ""
+"Resolved holder-set, written when the step becomes active. Multi-holder = "
+"first-to-act-wins. Never recomputed after activation."
+msgstr ""
+
+#. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_user_id
 msgid "Responsible User"
+msgstr "ผู้รับผิดชอบ"
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__resume_step_id
+msgid "Resume From"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_form
-msgid "Role"
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__created_by_disposition__return
+msgid "Return"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__name
-msgid "Role Name"
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_step_act_wizard_form
+msgid "Return to"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__role_type
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_search
-msgid "Role Type"
-msgstr ""
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document_mixin.py:0
+#, python-format
+msgid "Returned via Sarabun for revision by %(actor)s. Reason: %(reason)s"
+msgstr "ถูกส่งคืนเพื่อแก้ไขโดย %(actor)s. เหตุผล: %(reason)s"
 
 #. module: agx_sarabun
-#: model:ir.model.constraint,message:agx_sarabun.constraint_sarabun_role_code_uniq
-msgid "Role code must be unique!"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__role_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__role_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__role_id
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_recipient__recipient_type__role
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_route_template_line__recipient_type__role
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_line__recipient_type__role
-msgid "Role/Position"
-msgstr "ตำแหน่ง"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_tree
-msgid "Roles"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_role
-msgid ""
-"Roles define organizational positions that can be used in document routing.\n"
-"                Examples: อธิการบดี, รองอธิการบดี, คณบดี, หัวหน้าภาควิชา"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_role
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_role
-msgid "Roles/Positions"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_route_selection_wizard
-msgid "Route Selection Wizard"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__line_ids
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_template_view_form
-msgid "Route Steps"
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_route_template_form
+msgid "Route Steps (seed)"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__route_template_id
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_template_view_form
-msgid "Route Template"
+msgid "Route Template (seed)"
 msgstr "แม่แบบเส้นทางเอกสาร"
 
 #. module: agx_sarabun
 #: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_route_template
 #: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_route_template
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_template_view_tree
 msgid "Route Templates"
 msgstr "แม่แบบเส้นทางเอกสาร"
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_line_view_form
-msgid "Route To (System)"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_route_template
-msgid "Route templates define standard routing paths for documents."
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__routing_line_ids
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__routing_step_ids
 msgid "Routing"
 msgstr "เส้นทาง"
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__routing_line_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_forward_wizard__routing_line_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_reject_wizard__routing_line_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__routing_line_id
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_line_view_form
-msgid "Routing Line"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_line_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_line_view_tree
-msgid "Routing Lines"
-msgstr ""
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__archived_step_ids
+msgid "Routing History"
+msgstr "ประวัติเส้นทาง"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__routing_progress
@@ -2045,23 +1471,40 @@ msgid "Routing Progress"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__routing_type
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__routing_type
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__routing_type
-msgid "Routing Type"
-msgstr "ประเภท"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_number__counter
+msgid "Running integer, scoped per fiscal_year."
+msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_has_sms_error
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__message_has_sms_error
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.actions.report,name:agx_sarabun.action_report_sarabun_documents
-#: model:ir.model,name:agx_sarabun.model_sarabun_document
-msgid "Sarabun Document"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__addressee_prefix_id
+msgid "Salutation opening the เรียน line (เรียน / กราบทูล / เสนอ …)."
 msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model,name:agx_sarabun.model_sarabun_step_act_wizard
+msgid "Sarabun Act-on-Step Wizard"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model,name:agx_sarabun.model_sarabun_addressee_prefix
+msgid "Sarabun Addressee Prefix (คำขึ้นต้น)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model,name:agx_sarabun.model_sarabun_position
+msgid "Sarabun Administrative Position"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model,name:agx_sarabun.model_sarabun_document
+msgid "Sarabun Document (หนังสือ)"
+msgstr "หนังสือ"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_mixin__sarabun_document_count
@@ -2074,26 +1517,6 @@ msgid "Sarabun Document Mixin"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_document_number
-msgid "Sarabun Document Number"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_document_recipient
-msgid "Sarabun Document Recipient"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_reference
-msgid "Sarabun Document Reference"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_document_sequence
-msgid "Sarabun Document Sequence"
-msgstr ""
-
-#. module: agx_sarabun
 #: model:ir.model,name:agx_sarabun.model_sarabun_document_type
 msgid "Sarabun Document Type"
 msgstr ""
@@ -2101,299 +1524,229 @@ msgstr ""
 #. module: agx_sarabun
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_document_mixin.py:0
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_mixin__sarabun_document_ids
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.portal_my_home_sarabun_document
 #, python-format
 msgid "Sarabun Documents"
+msgstr "หนังสือ"
+
+#. module: agx_sarabun
+#. odoo-javascript
+#: code:addons/agx_sarabun/static/src/xml/sarabun_pdf_preview.xml:0
+#: code:addons/agx_sarabun/static/src/xml/sarabun_pdf_preview.xml:0
+#, python-format
+msgid "Sarabun Preview"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_hr_department__sarabun_officer_ids
-msgid "Sarabun Officers"
+#: model:ir.model,name:agx_sarabun.model_sarabun_document_sequence
+msgid "Sarabun Register (เล่มทะเบียนหนังสือ)"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_role
-msgid "Sarabun Role/Position"
+#: model:ir.model,name:agx_sarabun.model_sarabun_document_number
+msgid "Sarabun Register Number (ledger)"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model,name:agx_sarabun.model_sarabun_route_template
-msgid "Sarabun Route Template"
+msgid "Sarabun Route Template (seed)"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model,name:agx_sarabun.model_sarabun_route_template_line
-msgid "Sarabun Route Template Line"
+msgid "Sarabun Route Template Line (seed)"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_routing_line
-msgid "Sarabun Routing Line"
+#: model:ir.model,name:agx_sarabun.model_sarabun_routing_step
+msgid "Sarabun Routing Step"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model,name:agx_sarabun.model_sarabun_signing_wizard
-msgid "Sarabun Signing Position Wizard"
+#: model:ir.model,name:agx_sarabun.model_sarabun_verb
+msgid "Sarabun Routing Verb (การดำเนินการ)"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_template_view_form
-msgid "Scope"
+#: model:ir.model,name:agx_sarabun.model_sarabun_send_wizard
+msgid "Sarabun Send Confirmation Wizard"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_template_view_form
-msgid "Scope & Conditions"
+#: model:ir.model,name:agx_sarabun.model_sarabun_step_recipient
+msgid "Sarabun Step Recipient (per-person read tracking)"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__secrecy
-msgid "Secrecy Level"
-msgstr "ชั้นความลับ"
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__secrecy__secret
-msgid "Secret"
-msgstr "ลับ"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__access_token
-msgid "Security Token"
+#: model:ir.model,name:agx_sarabun.model_sarabun_routing_step_activity
+msgid "Sarabun Step ↔ Activity link"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_department_lookup_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Select"
+#: model:ir.model,name:agx_sarabun.model_sarabun_recall_wizard
+msgid "Sarabun ดึงกลับ / ยกเลิกการส่ง Wizard"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model,name:agx_sarabun.model_sarabun_enclosure
+msgid "Sarabun สิ่งที่ส่งมาด้วย (Enclosure)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model,name:agx_sarabun.model_sarabun_reference_line
+msgid "Sarabun อ้างถึง (free-text reference)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:mail.activity.type,name:agx_sarabun.mail_activity_sarabun_action
+msgid "Sarabun: ต้องดำเนินการ (Action Required)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:mail.activity.type,name:agx_sarabun.mail_activity_sarabun_ack
+msgid "Sarabun: รับทราบ (Acknowledge)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_route_template_form
+msgid "Scope (auto-match for from_record)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__created_by_disposition__seed
+msgid "Seed"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_type__default_route_id
+msgid "Seed template materialised into routing steps at send (ADR-0001)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__seeded_from_template_line_id
+msgid "Seeded From Template Line"
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
-#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_department_lookup
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_department_lookup_wizard_view_form
+#: code:addons/agx_sarabun/wizard/sarabun_step_act_wizard.py:0
 #, python-format
-msgid "Select Department"
+msgid "Select a target Person (บุคลากร)."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
-#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_number_selection
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_number_selection_wizard_view_form
+#: code:addons/agx_sarabun/wizard/sarabun_step_act_wizard.py:0
 #, python-format
-msgid "Select Document Number"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_signing_wizard_view_form
-msgid "Select Position to Sign As"
+msgid "Select a target Position."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
-#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_route_selection
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_selection_wizard_view_form
+#: code:addons/agx_sarabun/wizard/sarabun_step_act_wizard.py:0
 #, python-format
-msgid "Select Route"
-msgstr ""
-
-#. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_recipient.py:0
-#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_signing_wizard
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_signing_wizard_view_form
-#, python-format
-msgid "Select Signing Position"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template_line__role_id
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_line__role_id
-msgid "Select a role/position for routing"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__document_sequence_id
-msgid "Select the numbering sequence to use for this document"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__selected_available_number
-msgid "Selected Available Number"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_selection_wizard__selected_template_id
-msgid "Selected Route"
+msgid "Select a target Unit."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
-msgid "Selected number is not reserved."
+msgid "Select a valid reserved number for this register."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__selection_mode
-msgid "Selection Mode"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
 msgid "Send"
-msgstr "ส่งออก"
+msgstr "ส่งหนังสือ"
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
-msgid "Sender"
-msgstr "ผู้ส่ง"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__sender_department_id
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
-msgid "Sender Department"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__sender_department_name
-msgid "Sender Department Name"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__sender_suffix
-msgid "Sender Suffix"
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid "Send cancelled (ยกเลิกการส่ง). Reason: %s"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__sender_user_id
-msgid "Sender User"
-msgstr ""
+msgid "Sender"
+msgstr "ผู้ส่ง"
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_role__dynamic_method__sender_manager
-msgid "Sender's Manager"
-msgstr ""
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__sender_suffix
+msgid "Sender Suffix"
+msgstr "ต่อท้ายผู้ส่ง"
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__state__sent
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
-msgid "Sent"
-msgstr "ส่งออกแล้ว"
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document_mixin.py:0
+#, python-format
+msgid "Sent for approval via Sarabun: %s"
+msgstr "ส่งหนังสือเพื่อขออนุมัติ: %s"
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_form
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_tree
-msgid "Sent Date"
-msgstr "วันที่ส่งออกเอกสาร"
-
-#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_addressee_prefix__sequence
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__sequence_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__sequence
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__sequence
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_number_selection_wizard__sequence_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_role__sequence
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_enclosure__sequence
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__sequence
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_reference_line__sequence
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__sequence
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__sequence
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__sequence
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_search
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__sequence
 msgid "Sequence"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__name
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
-msgid "Sequence Name"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__signed_as_position_id
+msgid "Sign As (Capacity)"
+msgstr "ลงนามในฐานะ (ตำแหน่ง)"
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_step_act_wizard_form
+msgid "Sign in capacity"
+msgstr "ลงนามในฐานะ"
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__signed_as_position_id
+msgid "Signed As (Capacity)"
+msgstr "ลงนามในฐานะ (ตำแหน่ง)"
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__signed_pdf_filename
+msgid "Signed Pdf Filename"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.constraint,message:agx_sarabun.constraint_sarabun_document_sequence_code_uniq
-msgid "Sequence code must be unique!"
-msgstr ""
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__state__skipped
+msgid "Skipped"
+msgstr "ข้าม"
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_search
-msgid "Shared"
-msgstr ""
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__order
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__order
+msgid "Stage"
+msgstr "ขั้นตอน"
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__is_shared
-msgid "Shared Sequence"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_role__code
-msgid "Short code for the role"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__selected_role_id
-msgid "Sign As"
-msgstr "ลงนามด้วยตำแหน่ง"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__signed_as_role_id
-msgid "Signed As"
-msgstr "ลงนามด้วยตำแหน่ง"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__signed_as_text
-msgid "Signed As (Display)"
-msgstr "ชื่อตำแหน่งที่ลงนาม"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Specify Document No."
-msgstr "กำหนดเลขที่เอกสาร"
-
-#. module: agx_sarabun
-#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document
-msgid "Start by creating an internal memo or circular to send to colleagues."
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__sent_date
+msgid ""
+"Stamped when the step is acted/forwarded (ส่งต่อ). In v1 acting auto-sends, "
+"so it equals วันที่ลงนาม; a future sign-then-manual-send sets it separately."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__state
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__state
 msgid "State"
 msgstr "สถานะ"
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_search
-msgid "Static"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_form
-msgid "Static Role Settings"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_role__role_type__static
-msgid "Static User"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_role__role_type
-msgid ""
-"Static: Always routes to assigned user(s). Dynamic: Determined based on document context (e.g., "
-"sender's manager)."
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
-msgid "Statistics"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_mixin__sarabun_state
+msgid "State of the current live หนังสือ, mirrored onto the origin record."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__state
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__state
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__recipient_state
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.portal_my_sarabun_documents
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_search
 msgid "Status"
 msgstr "สถานะ"
 
@@ -2407,22 +1760,56 @@ msgid ""
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__sender_department_name
-msgid "Stored department name at the time of document creation"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step_activity__step_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__step_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__step_id
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_step_act_wizard_form
+msgid "Step"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__my_reaching_step_id
+msgid "Step That Reached Me"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__line_ids
+msgid "Steps"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__order
+msgid "Steps sharing one order form a Stage and run in parallel."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template_line__order
+msgid "Steps sharing one order run in parallel."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_verb__rank
+msgid ""
+"Strength ordering for the Recall guard (strongest verb done). Higher = "
+"stronger; ลงนาม-อนุมัติ is the strongest."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__strongest_verb_id
+msgid "Strongest Verb Done"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__sender_suffix
-msgid "Sub-department name or extension number (e.g., 'สำนักงานคณบดี' or 'ต่อ 1234')"
+msgid "Sub-unit name or extension (e.g. 'สำนักงานคณบดี', 'ต่อ 1234')."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__subject
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__document_subject
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_signing_wizard__document_subject
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.portal_my_sarabun_documents
-msgid "Subject"
-msgstr "เรื่อง"
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document_mixin.py:0
+#, python-format
+msgid "Submitted to Sarabun for approval: %s"
+msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__suffix
@@ -2430,30 +1817,32 @@ msgid "Suffix"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__suffix
-msgid "Suffix for document numbers"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__target_name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__target_name
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_step_act_wizard_form
+msgid "Target"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_department_lookup_wizard__target_field
-msgid "Target Field"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__target_mode
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__target_mode
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__target_mode
+msgid "Target Mode"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_department_lookup_wizard__target_model
-msgid "Target Model"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__target_employee_id
+msgid "Target Person (บุคลากร)"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_department_lookup_wizard__target_record_id
-msgid "Target Record ID"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__target_position_id
+msgid "Target Position"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__origin_model
-msgid ""
-"Technical model name (e.g., purchase.request). If set, this template only applies to documents "
-"created from this model."
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__target_department_id
+msgid "Target Unit"
 msgstr ""
 
 #. module: agx_sarabun
@@ -2462,62 +1851,148 @@ msgid "Template"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__name
-msgid "Template Name"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__content
+msgid ""
+"The body of the หนังสือ. For a composed memo/circular this IS the letter "
+"body; for a from_record document it is an optional covering note rendered "
+"above the origin's report. Full regulation บันทึกข้อความ layout is phase-2 —"
+" v1 is free rich text."
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.portal_my_sarabun_documents
-msgid "There are no documents."
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__addressee
+msgid ""
+"The ceremonial recipient on the หนังสือ header — its own field, separate "
+"from the routing actors. Manual or origin-set."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__manual_counter
+msgid ""
+"The counter to use in manual/gap mode (routed through the same atomic "
+"allocation + unique backstop)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_mixin__active_sarabun_document_id
+msgid ""
+"The current live Document (most recent non-terminal one); others are "
+"superseded (rejected → duplicated). Replaces per-consumer "
+"main_sarabun_document_id."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__my_active_step_id
+msgid ""
+"The current user's *active* step (drives the 'Act on My Step' button). Empty"
+" once they have acted."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_recipient.py:0
+#: code:addons/agx_sarabun/models/sarabun_routing_step.py:0
 #, python-format
-msgid "This recipient has already been actioned."
+msgid "The document is not circulating."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__kind
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_type__kind
+msgid ""
+"The fixed behaviour axis. v1 emphasis is from_record (origin-driven e-flow)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__routing_step_ids
+msgid "The living Route — current attempt's steps."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__is_originator
+msgid ""
+"The mandatory first step = the ผู้จัดทำ/ผู้ส่ง, auto-signed at send. Cannot "
+"be deleted, and only its verb may be changed; excluded from has_signed / "
+"strongest_verb (an originator signature is not an approval)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_enclosure__sequence
+msgid "The numbered-list index (๑, ๒, ๓ …)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__register_number_id
+msgid ""
+"The register ledger row assigned by ลงทะเบียน at completion (ADR-0010)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__my_reaching_step_id
+msgid ""
+"The step by which this หนังสือ reached the current user — their active step,"
+" or (once they have acted) their most recent completed step. Backs the "
+"incoming-box columns (read status / received / verb) so they stay populated "
+"after the user has acted."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_recipient.py:0
+#: code:addons/agx_sarabun/models/sarabun_routing_step.py:0
 #, python-format
-msgid "This recipient is not for approval."
+msgid "The ผู้จัดทำ/ผู้ส่ง step cannot be removed from the Route."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__recipient
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.portal_sarabun_document_page
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_tree
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_tree_outgoing
-msgid "To"
-msgstr "เรียน"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "To (เรียน)"
-msgstr "เรียน"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
-msgid "To Me"
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_routing_step.py:0
+#, python-format
+msgid ""
+"The ผู้จัดทำ/ผู้ส่ง step is fixed — only its การดำเนินการ (verb) may be "
+"changed."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__secrecy__top_secret
-msgid "Top Secret"
-msgstr "ลับมาก"
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid ""
+"This document has been signed; withdrawal now requires issuing a "
+"cancellation หนังสือ, not ดึงกลับ / ยกเลิกการส่ง."
+msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_routing_line_view_search
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_routing_step.py:0
+#, python-format
+msgid "This step is not active."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__can_withdraw
+msgid ""
+"True only for the sender (or a manager) while the หนังสือ may still be "
+"ดึงกลับ / ยกเลิกการส่ง — mirrors _check_sender_withdraw_allowed so a mere "
+"recipient never sees the withdraw button."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_mixin__sarabun_has_live_document
+msgid ""
+"True while a non-terminal Document exists "
+"(draft/circulating/completed/returned). Gate the 'create หนังสือ' button on "
+"this — NOT on sarabun_document_count — so a fresh one can be issued after a "
+"terminal outcome (rejected/cancelled), while a returned doc is revised in "
+"place."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__is_editable
+msgid "True while the หนังสือ may still be edited (draft or returned)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_search
 msgid "Type"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__document_type_code
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__code
-msgid "Type Code"
 msgstr ""
 
 #. module: agx_sarabun
@@ -2526,58 +2001,28 @@ msgid "Type of the exception activity on record."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__code
-msgid "Unique code for this sequence"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__department_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__department_id
+msgid "Unit"
+msgstr "หน่วยงาน"
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document_mixin.py:0
+#, python-format
+msgid "Unknown"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
-msgid "Unread"
-msgstr "ยังไม่เปิดอ่าน"
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__urgency
-msgid "Urgency Level"
-msgstr "ชั้นความเร็ว"
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__urgency__urgent
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_search
-msgid "Urgent"
-msgstr "ด่วน"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_form
-msgid "Usage"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__numbering_mode__available
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_number_selection_wizard__selection_mode__available
-msgid "Use Available (Gap) Number"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__numbering_mode__auto
-msgid "Use Next Available"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__numbering_mode__reserved
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_number_selection_wizard__selection_mode__reserved
-msgid "Use Reserved Number"
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_routing_step.py:0
+#, python-format
+msgid "Unknown disposition: %s"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_number__state__used
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_search
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
 msgid "Used"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__used_count
-msgid "Used Count"
 msgstr ""
 
 #. module: agx_sarabun
@@ -2586,97 +2031,125 @@ msgid "Used Date"
 msgstr ""
 
 #. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_sequence.py:0
-#, python-format
-msgid "Used Numbers"
-msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__user_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__user_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_forward_wizard__forward_to_user_id
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_line__user_id
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_recipient__recipient_type__user
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_route_template_line__recipient_type__user
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_forward_wizard__forward_type__user
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_line__recipient_type__user
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step_activity__user_id
 #: model:res.groups,name:agx_sarabun.group_sarabun_user
 msgid "User"
 msgstr "ผู้ใช้"
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_hr_department__sarabun_officer_ids
-msgid ""
-"Users who can receive and process sarabun documents for this department. If not set, the "
-"department manager will receive documents."
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__verb
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__verb
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__step_verb
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__name
+msgid "Verb"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_role__user_ids
-msgid "Users who hold this role. Leave empty for dynamic roles."
+#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_verb
+#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_verb
+msgid "Verbs (การดำเนินการ)"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__urgency__very_urgent
-msgid "Very Urgent"
-msgstr "ด่วนมาก"
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "View Reference"
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__void_date
+msgid "Void Date"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_line__recipient_state__waiting
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__void_reason
+msgid "Void Reason"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_number__state__voided
+msgid "Voided (ยกเลิก)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__state__waiting
 msgid "Waiting"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__website_message_ids
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recipient__website_message_ids
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__website_message_ids
 msgid "Website Messages"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__website_message_ids
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_recipient__website_message_ids
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__website_message_ids
 msgid "Website communication history"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_recipient__actioned_date
-msgid "When recipient acknowledged/approved/rejected"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__my_action_verb_id
+msgid ""
+"What the current user was asked to do on the step that reached them (may "
+"already be a completed step)."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_recipient__read_date
-msgid "When recipient first opened the document"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__my_received_date
+msgid ""
+"When the step that reached the current user was received by them (per-"
+"person; may differ from the step's activation under delegation)."
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__year
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_number_view_search
-msgid "Year"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__activated_date
+msgid "When this step became active — the moment its recipients received it."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__read_date
+msgid "When this step was first opened — the earliest recipient read."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__my_read_state
+msgid "Whether the current user has opened this หนังสือ — tracked per person."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__preview_holder_ids
+msgid ""
+"Who would act on this step right now — the position's holder(s) or the "
+"unit's ธุรการหน่วยงาน. May be more than one (first-to-act). This is a live "
+"preview; the actual actors are snapshotted when the step activates."
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_position_form
+msgid ""
+"Whoever holds this post acts/signs in its capacity. Multi-holder = first-to-"
+"act. Interim รักษาการ: add the acting user here temporarily."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_recipient.py:0
+#: code:addons/agx_sarabun/models/sarabun_routing_step.py:0
 #, python-format
-msgid "You are not authorized to perform this action."
+msgid "You are not authorized to act on this step."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document_recipient.py:0
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
-msgid "You don't have any roles assigned. Please contact administrator."
+msgid "You have no pending action on this document."
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_template_view_form
-msgid "[('amount_total', '>=', 100000)]"
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_routing_step.py:0
+#, python-format
+msgid "You must sign in the capacity the step targets (%s)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__padding
+msgid "Zero-pad width of the counter."
 msgstr ""
 
 #. module: agx_sarabun
@@ -2686,53 +2159,962 @@ msgid "e-Sarabun"
 msgstr "ระบบสารบรรณ"
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_type_view_form
-msgid "e.g., Internal Memo"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_reference_line__text
+msgid "e.g. \"หนังสือ อว 6801/123 ลงวันที่ 1 พฤษภาคม 2569\""
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_route_template_view_form
-msgid "e.g., Standard Approval Flow"
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_route_template_form
+msgid "e.g. PR Approval (< 100k)"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_sequence_view_form
-msgid "e.g., สจล./"
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_position_form
+msgid "e.g. คณบดีคณะวิศวกรรมศาสตร์"
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_role_view_form
-msgid "e.g., อธิการบดี"
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_type_form
+msgid "e.g. บันทึกข้อความกองคลัง"
 msgstr ""
 
 #. module: agx_sarabun
-#: model:ir.model.fields,help:agx_sarabun.field_sarabun_role__name
-msgid "e.g., อธิการบดี, รองอธิการบดี, คณบดี"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__reset_period
+msgid "fiscal_year (ต.ค.–ก.ย.) is the regulation default."
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document_template
-msgid "บันทึกข้อความ"
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__numbering_mode
+msgid ""
+"from_record always registers automatically; reserved/gap/manual are for "
+"manual compose (memo/circular)."
 msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "หน่วยงานย่อย/เบอร์ต่อ"
-msgstr ""
-
-#. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "เปิดเอกสาร"
-msgstr "Preview Document"
 
 #. module: agx_sarabun
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
-msgid "Please specify the Recipient before confirming the documents."
+msgid ""
+"from_record documents register automatically; reserved/gap/manual numbering "
+"is for manual compose only."
 msgstr ""
 
 #. module: agx_sarabun
-#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
-msgid "Original Document"
-msgstr "เอกสารต้นทาง"
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_act_wizard__destination__sender_restart
+msgid "กลับผู้ส่ง + เริ่มใหม่ (Sender, restart)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_act_wizard__destination__resume_step
+msgid "กลับไปขั้นที่เลือก (Resume from step)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_inbox
+msgid "กล่องหนังสือเข้า (Inbox)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_document_inbox
+msgid "กล่องหนังสือเข้า (Incoming)"
+msgstr "เอกสาร"
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recall_wizard__mode
+msgid "การดำเนินการ (Action)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_send_wizard__originator_sign_mode
+msgid "การลงนามของผู้จัดทำ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "การเดินเรื่อง (Routing)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__approval_request__sarabun_state__circulating
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__disbursement_request__sarabun_state__circulating
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__purchase_request__sarabun_state__circulating
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__purchase_request_approval__sarabun_state__circulating
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__state__circulating
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_mixin__sarabun_state__circulating
+msgid "กำลังดำเนินการ (Circulating)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_department_officer
+msgid "กำหนดหน่วยงานธุรการ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "ข้อมูลอื่นๆ (Other)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_addressee_prefix__name
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__addressee_prefix_id
+msgid "คำขึ้นต้น (Prefix)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__pending_ack_count
+msgid "ค้างรับทราบ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.verb,name:agx_sarabun.verb_prepare
+msgid "จัดทำ/ร่าง (ไม่ลงนาม)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_type__kind__from_record
+msgid "จากระบบงาน (From Record)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__signed_pdf
+msgid "ฉบับลงนาม (Signed Copy)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__signed_name
+msgid "ชื่อผู้ลงนาม (snapshot)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_act_wizard__disposition__complete
+msgid "ดำเนินการ (Complete)"
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_recall_wizard_form
+#, python-format
+msgid "ดึงกลับ / ยกเลิกการส่ง"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_recall_wizard__mode__pull_back
+msgid "ดึงกลับ — เก็บเลข แก้ไขแล้วส่งใหม่ (Recall, keep number)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "ดูตัวอย่างเอกสาร"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_send_wizard_form
+msgid ""
+"ตรวจสอบการลงนามของผู้จัดทำก่อนส่ง — บางเรื่องผู้จัดทำต้อง <b>ไม่ลงนาม</b>\n"
+"                    (ให้หัวหน้าส่วนงานลงนามส่งออกแทน)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.verb,name:agx_sarabun.verb_forward
+msgid "ตรวจสอบและลงนามกำกับ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.verb,name:agx_sarabun.verb_verify
+msgid "ตรวจเอกสาร"
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid "ตัวอย่างเอกสาร (Preview)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_route_template_line__target_mode__position
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__target_mode__position
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_act_wizard__target_mode__position
+msgid "ตำแหน่ง (Position)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__signed_position_name
+msgid "ตำแหน่งที่ลงนาม (snapshot)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_department_officer
+msgid ""
+"ติ๊ก \"หน่วยงานธุรการ\" ให้หน่วยงานที่รับ-ส่งสารบรรณ "
+"แล้วระบุผู้ที่ทำหน้าที่ธุรการ เพื่อให้เส้นทางเอกสารแบบ \"ธุรการหน่วยงาน\" "
+"ส่งถึงบุคคลเหล่านี้"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_hr_department__is_sarabun_office
+msgid ""
+"ติ๊กหากหน่วยงานนี้ทำหน้าที่ธุรการ (รับ-ส่งสารบรรณ). เฉพาะหน่วยงานที่ติ๊ก "
+"เท่านั้นจึงจะถูกเลือกเป็นเป้าหมาย 'ธุรการหน่วยงาน' ในเส้นทางเอกสารได้ — "
+"หน่วยงานที่ไม่ติ๊กจะไม่แสดงในตัวเลือก routing ธุรการหน่วยงาน."
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_department_officer_form
+msgid ""
+"ติ๊กหากหน่วยงานนี้ทำหน้าที่ธุรการ (รับ-ส่งสารบรรณ). "
+"เฉพาะหน่วยงานที่ติ๊กเท่านั้นจึงจะเลือกเป็นเป้าหมาย 'ธุรการหน่วยงาน' "
+"ในเส้นทางเอกสารได้"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__disposition__return
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_act_wizard__disposition__return
+msgid "ตีกลับ (Return)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__approval_request__sarabun_state__returned
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__disbursement_request__sarabun_state__returned
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__purchase_request__sarabun_state__returned
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__purchase_request_approval__sarabun_state__returned
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__state__returned
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_mixin__sarabun_state__returned
+msgid "ตีกลับ (Returned)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "ต่อท้ายส่วนราชการ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "ทะเบียนหนังสือ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_sequence_form
+msgid "ทะเบียนหนังสือกองคลัง"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_department_officer
+#: model:ir.model.fields,field_description:agx_sarabun.field_hr_department__sarabun_officer_count
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_department_officer_form
+msgid "ธุรการหน่วยงาน"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_route_template_line__target_mode__unit
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__target_mode__unit
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_act_wizard__target_mode__unit
+msgid "ธุรการหน่วยงาน (Unit Clerk)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_hr_department__sarabun_officer_ids
+#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_department_officer
+msgid "ธุรการหน่วยงาน (Unit Clerks)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.document.type,name:agx_sarabun.document_type_memo
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.report_sarabun_document
+msgid "บันทึกข้อความ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_type__kind__memo
+msgid "บันทึกข้อความ (Internal Memo)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__employee_id
+msgid "บุคลากร"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__employee_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__employee_id
+msgid "บุคลากร (Person)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_route_template_line__target_mode__person
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__target_mode__person
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_act_wizard__target_mode__person
+msgid "บุคลากร (Personnel)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__disposition__reject
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_act_wizard__disposition__reject
+msgid "ปฏิเสธ (Reject)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__approval_request__sarabun_state__rejected
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__disbursement_request__sarabun_state__rejected
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__purchase_request__sarabun_state__rejected
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__purchase_request_approval__sarabun_state__rejected
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__state__rejected
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_mixin__sarabun_state__rejected
+msgid "ปฏิเสธ (Rejected)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_sequence__reset_period__fiscal_year
+msgid "ปีงบประมาณ (Fiscal Year, Oct–Sep)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__fiscal_year
+msgid "ปีงบประมาณ (พ.ศ.)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "ผู้จัดทำ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__holder_count
+msgid "ผู้ดำรงตำแหน่ง"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__holder_ids
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_position_form
+msgid "ผู้ดำรงตำแหน่ง (Current Holders)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__preview_holder_ids
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "ผู้ดำเนินการปัจจุบัน (Current Holders)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_department_officer_form
+msgid ""
+"ผู้ที่ทำหน้าที่ธุรการของหน่วยงานนี้ เมื่อเส้นทางเอกสารระบุเป้าหมายเป็น "
+"'ธุรการหน่วยงาน' (อาจมีมากกว่า 1 คน)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "ผู้รับ / ตำแหน่ง..."
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_inbox_tree
+msgid "ผู้ส่งเอกสาร"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.verb,name:agx_sarabun.verb_consider
+msgid "ผ่านเรื่อง/กลั่นกรอง"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_verb_form
+msgid "พฤติกรรม (Behaviour)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.verb,name:agx_sarabun.verb_endorse
+msgid "พิจารณา/ให้ความเห็นและลงนามกำกับ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "พิมพ์ (Print)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid ""
+"พิมพ์ชื่อหน่วยงานหรือเบอร์ต่อ (ถ้ามี) แล้วระบบจะแสดงข้อความต่อท้ายส่วนราชการ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "พิมพ์เนื้อหาหนังสือ..."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_act_wizard__disposition__delegate
+msgid "มอบหมาย (Delegate — reassign this step)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__disposition__delegate
+msgid "มอบหมาย (Delegate)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_send_wizard_form
+msgid "ยกเลิก"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_recall_wizard_form
+msgid "ยกเลิก (Cancel)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__approval_request__sarabun_state__cancelled
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__disbursement_request__sarabun_state__cancelled
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__purchase_request__sarabun_state__cancelled
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__purchase_request_approval__sarabun_state__cancelled
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__state__cancelled
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_mixin__sarabun_state__cancelled
+msgid "ยกเลิก (Cancelled)"
+msgstr "ยกเลิกแล้ว"
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "ยกเลิกการส่ง"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_recall_wizard__mode__cancel_send
+msgid "ยกเลิกการส่ง — ยกเลิกเลข ปิดเรื่อง (Cancel-send, void)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_recall_wizard_form
+msgid "ยืนยัน (Confirm)"
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_send_wizard_form
+#, python-format
+msgid "ยืนยันการส่งเอกสาร"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_send_wizard_form
+msgid "ยืนยันส่ง"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_send_wizard_form
+msgid "ยืนยันส่งเอกสาร?"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__forwarded
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__my_read_state__forwarded
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_recipient__read_state__forwarded
+msgid "รอการส่งต่อ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__my_read_state__unread
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_recipient__read_state__unread
+msgid "รอการเปิดอ่าน"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_recall_wizard_form
+msgid "ระบุเหตุผล / reason..."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__processing_duration
+msgid "ระยะเวลาดำเนินการ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.verb,name:agx_sarabun.verb_acknowledge
+msgid "รับทราบ/ถือปฏิบัติ/จัดเก็บเข้าแฟ้ม (อ่านอย่างเดียว)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.verb,name:agx_sarabun.verb_acknowledge_sign
+msgid "รับทราบและลงนาม"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__approval_request__sarabun_state__draft
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__disbursement_request__sarabun_state__draft
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__purchase_request__sarabun_state__draft
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__purchase_request_approval__sarabun_state__draft
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__state__draft
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_mixin__sarabun_state__draft
+msgid "ร่าง (Draft)"
+msgstr "แบบร่าง"
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_send_wizard__originator_sign_mode__sign
+msgid "ลงนาม — ผู้จัดทำ (เจ้าของเรื่อง) ลงนามในหนังสือ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.verb,name:agx_sarabun.verb_originate
+msgid "ลงนามผู้จัดทำ (เจ้าของเรื่อง)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.verb,name:agx_sarabun.verb_sign_approve
+msgid "ลงนามในใบปะหน้า/เอกสารเพื่อลงนาม"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__date
+msgid ""
+"ลงวันที่ — the หนังสือ's official date, printed beside ที่. It is the date "
+"it is ส่ง (issued into circulation), (re)stamped at action_send (ADR-0010), "
+"NOT the create-draft date — so a draft held over ปีงบประมาณ year-end is "
+"dated in the new year when actually sent. Owner-editable is a later phase; "
+"kept read-only in the form for now."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__signed_signature
+msgid "ลายเซ็น (snapshot)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__is_signature
+msgid "ลายเซ็นเชิงอำนาจ (Authoritative sign)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "ลำดับ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "วันที่"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__date
+msgid "วันที่ (Document Date)"
+msgstr "วันที่"
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__acted_date
+msgid "วันที่ลงนาม/ดำเนินการ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_tree
+msgid "วันที่สร้างเอกสาร"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__sent_date
+msgid "วันที่ส่ง"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__read_date
+msgid "วันที่อ่าน"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__read_date
+msgid "วันที่เปิดอ่าน"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_tree
+msgid "วันที่เอกสาร"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__my_received_date
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__received_date
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_inbox_tree
+msgid "วันที่ได้รับ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__activated_date
+msgid "วันที่ได้รับ (Activated)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_inbox_tree
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_tree
+msgid "สถานะ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__my_read_state
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_recipient__read_state
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_inbox_tree
+msgid "สถานะการอ่าน"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_mixin__sarabun_state_label
+msgid "สถานะการเดินหนังสือ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_mixin__sarabun_state
+msgid "สถานะหนังสือ (Sarabun Status)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template_line__for_info
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__for_info
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__new_for_info
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "สำเนาเรียน (CC)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__enclosure_ids
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "สิ่งที่ส่งมาด้วย (Enclosures)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_search
+msgid "ส่วนงาน"
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid ""
+"ส่วนงาน '%(unit)s' มีหลายเล่มทะเบียน — โปรดเลือกเล่มทะเบียนที่จะใช้ส่ง "
+"(หรือกำหนดเล่มทะเบียนหลักของหน่วยงาน)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_sequence__sender_department_id
+msgid "ส่วนงาน (Issuing Unit)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__sender_department_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_send_wizard__sender_department_id
+msgid "ส่วนงาน (Sender Department)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_mixin__sarabun_document_ids
+msgid "หนังสือ (Documents)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_mixin__active_sarabun_document_id
+msgid "หนังสือฉบับปัจจุบัน (Active Document)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_mixin__sarabun_is_draft
+msgid "หนังสือยังเป็นร่าง (Sarabun Draft)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.actions.report,name:agx_sarabun.action_report_sarabun_document
+msgid "หนังสือสารบรรณ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.document.type,name:agx_sarabun.document_type_circular
+msgid "หนังสือเวียน"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_type__kind__circular
+msgid "หนังสือเวียน (Circular)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_department_officer_search
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_department_officer_tree
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "หน่วยงาน"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_department_officer_search
+msgid "หน่วยงานธุรการ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_hr_department__is_sarabun_office
+msgid "หน่วยงานธุรการ (Document Office)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_sequence_form
+msgid "หน่วยงานเจ้าของเล่ม (หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__sender_department_id
+msgid ""
+"หน่วยงานเจ้าของเล่มทะเบียนนี้ — หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน; "
+"หนังสือจะเลือกว่าจะออกเลขจากเล่มใด (ค่าเริ่มต้น = "
+"เล่มทะเบียนหลักของหน่วยงาน)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__remark
+msgid "หมายเหตุ (Remark)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "หมายเหตุภายใน (ไม่บังคับ)..."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.verb,name:agx_sarabun.verb_approve
+msgid "อนุมัติ/อนุญาต/เห็นชอบและลงนามกำกับ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__reference_document_ids
+msgid "อ้างถึง (Documents)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__reference_line_ids
+msgid "อ้างถึง (External)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "อ้างถึง (References)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "อ้างถึง — นอกระบบ (free text)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "อ้างถึง — ในระบบ (prior หนังสือ)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__note
+msgid "เกษียน (Note)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_step_act_wizard__note
+msgid "เกษียน / Comment"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_step_act_wizard_form
+msgid "เกษียน / comment..."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_act_wizard__disposition__direct
+msgid "เกษียนสั่งการ (Direct — insert next)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__disposition__direct
+msgid "เกษียนสั่งการ (Direct)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_verb_form
+msgid "เช่น เห็นชอบ (Endorse)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__content
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "เนื้อหา (Content)"
+msgstr "เนื้อหา"
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__my_read_state__read
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_recipient__read_state__read
+msgid "เปิดอ่านแล้ว"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "เป้าหมาย"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template_line__department_id
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__department_id
+msgid ""
+"เป้าหมายแบบ ธุรการหน่วยงาน — เลือกได้เฉพาะหน่วยงานที่ตั้งเป็นหน่วยงานธุรการ."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__my_action_verb_id
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_inbox_tree
+msgid "เพื่อดำเนินการ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.addressee.prefix,name:agx_sarabun.addressee_prefix_rian
+msgid "เรียน"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__addressee
+msgid "เรียน (Addressee)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_tree
+msgid "เรียน/ส่งถึง"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_inbox_tree
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_tree
+msgid "เรื่อง"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__subject
+msgid "เรื่อง (Subject)"
+msgstr "เรื่อง"
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "เรื่อง..."
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_inbox_tree
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_tree
+msgid "เลขที่เอกสาร"
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "เล่มทะเบียน"
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid "เล่มทะเบียน '%(book)s' ไม่ใช่ของหน่วยงาน '%(unit)s'."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__sequence_id
+msgid "เล่มทะเบียน (Register Book)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__sequence_id
+msgid ""
+"เล่มทะเบียนที่จะใช้ออกเลขหนังสือฉบับนี้ (ADR-0012) — "
+"ตั้งต้นจากเล่มทะเบียนหลัก ของหน่วยงาน เปลี่ยนได้ก่อนส่ง และถูกตรึงไว้ตอนส่ง."
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_department_officer_form
+msgid ""
+"เล่มทะเบียนที่หนังสือของหน่วยงานนี้ใช้เป็นค่าเริ่มต้น — "
+"ผู้จัดทำเลือกเล่มอื่นได้รายฉบับ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_hr_department__sarabun_sequence_ids
+msgid "เล่มทะเบียนที่หน่วยงานนี้ใช้ออกเลขหนังสือ — มีได้หลายเล่ม."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_hr_department__default_sarabun_sequence_id
+msgid ""
+"เล่มทะเบียนที่ใช้เป็นค่าเริ่มต้นเมื่อสร้างหนังสือของหน่วยงานนี้ "
+"เพื่อไม่ต้องเลือกทุกครั้ง (ผู้จัดทำยังเปลี่ยนเป็นเล่มอื่นได้ก่อนส่ง)."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_hr_department__sarabun_sequence_ids
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_department_officer_form
+msgid "เล่มทะเบียนหนังสือ (Registers)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_hr_department__default_sarabun_sequence_id
+msgid "เล่มทะเบียนหลัก (Default Register)"
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/hr_department.py:0
+#, python-format
+msgid "เล่มทะเบียนหลักต้องเป็นเล่มทะเบียนของหน่วยงาน '%s' เอง."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__approval_request__sarabun_state__completed
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__disbursement_request__sarabun_state__completed
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__purchase_request__sarabun_state__completed
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__purchase_request_approval__sarabun_state__completed
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__state__completed
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_mixin__sarabun_state__completed
+msgid "เสร็จสิ้น (Completed)"
+msgstr "เสร็จสิ้นแล้ว"
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "เส้นทางเอกสาร (Routing Step)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recall_wizard__reason
+msgid "เหตุผล (Reason)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:sarabun.document.type,name:agx_sarabun.document_type_from_record
+msgid "เอกสารจากระบบงาน"
+msgstr "เอกสารต้นทาง (ข้อมูลในระบบ)"
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__show_signature
+msgid "แสดงลายเซ็น (Show signature)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__origin_model_id
+msgid ""
+"แหล่งที่มา — the source record's model this template auto-matches (e.g. "
+"purchase.request). Empty = match any source model."
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
+msgid "ไทม์ไลน์ (Timeline)"
+msgstr ""
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid ""
+"ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%(unit)s'. (No register configured for "
+"unit '%(unit)s'.) Configure a register before sending."
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_send_wizard__originator_sign_mode__no_sign
+msgid "ไม่ลงนาม — ผู้จัดทำร่างเท่านั้น (หัวหน้าลงนามส่งออก)"
+msgstr ""

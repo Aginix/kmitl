@@ -25,6 +25,7 @@ access_sarabun_route_template_user,sarabun.route.template.user,model_sarabun_rou
 access_sarabun_route_template_manager,sarabun.route.template.manager,model_sarabun_route_template,group_sarabun_manager,1,1,1,1
 access_sarabun_route_template_line_user,sarabun.route.template.line.user,model_sarabun_route_template_line,group_sarabun_user,1,0,0,0
 access_sarabun_route_template_line_manager,sarabun.route.template.line.manager,model_sarabun_route_template_line,group_sarabun_manager,1,1,1,1
+access_sarabun_ir_model_manager,ir.model.sarabun.manager,base.model_ir_model,group_sarabun_manager,1,0,0,0
 access_sarabun_step_act_wizard,sarabun.step.act.wizard,model_sarabun_step_act_wizard,group_sarabun_user,1,1,1,1
 access_sarabun_recall_wizard,sarabun.recall.wizard,model_sarabun_recall_wizard,group_sarabun_user,1,1,1,1
 access_sarabun_send_wizard,sarabun.send.wizard,model_sarabun_send_wizard,group_sarabun_user,1,1,1,1
