@@ -91,7 +91,7 @@
                     <button
                         name="action_open_return_cancel_wizard"
                         states="draft"
-                        string="ตีกลับ/ยกเลิก"
+                        string="ตีกลับ/แก้ไข"
                         type="object"
                         groups="purchase_request.group_purchase_request_manager"
                     />

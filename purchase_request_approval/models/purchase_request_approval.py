@@ -404,79 +404,73 @@ class PurchaseRequestApproval(models.Model):
             self.request_id.button_rejected()
 
     def action_open_return_cancel_wizard(self):
-        """Open the ตีกลับ/ยกเลิก wizard from PA draft — 3 modes:
-        keep-number, new-number, cancel-all."""
+        """Open the ตีกลับ/แก้ไข wizard from PA draft — collects the mandatory
+        reason before parking PA in ``pending_pr`` and resetting PR + sarabun."""
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
-            "name": _("ตีกลับ/ยกเลิก พจ.1"),
+            "name": _("ตีกลับ/แก้ไข พจ.1"),
             "res_model": "purchase.request.approval.return.cancel.wizard",
             "view_mode": "form",
             "target": "new",
             "context": {"default_approval_id": self.id},
         }
 
-    def _void_request_sarabun(self, reason):
-        """Force-cancel the PR's active sarabun.document so the PR can Create
-        Sarabun again after being sent back to draft. The audit trail (chatter,
-        routing history) is retained; only the state is flipped to `cancelled`
-        so ``sarabun_has_live_document`` turns False.
+    def _reset_request_sarabun(self, reason):
+        """Reset the PR's active sarabun.document back to editable ``draft``,
+        reusing the SAME document (and its register number). Archives the
+        completed routing chain and re-seeds a fresh one via ``_restart_chain``
+        so the sender can send it again.
 
-        A completed sarabun cannot be cancelled via the regular guarded
-        actions (``action_recall`` blocks after ``has_signed``); this is the
-        origin's escape hatch when the downstream approval (พจ.1) is voided.
+        Runs sudo because ``_restart_chain`` writes ``active=False`` on all
+        steps including the originator — which the originator write-guard
+        (``sarabun_routing_step.write``) blocks for non-sudo writes; the guard
+        docstring itself flags archive as a SYSTEM operation. Authorization is
+        enforced by the caller (PA-manager-gated ตีกลับ button).
         """
         self.ensure_one()
         pr = self.request_id
         if not pr:
             return
         doc = pr.active_sarabun_document_id
-        if not doc or doc.state in ("cancelled", "rejected"):
+        if not doc:
             return
-        doc.sudo().write({"state": "cancelled"})
+        doc = doc.sudo()
+        doc.routing_step_ids._clear_activities()
+        doc._restart_chain()
+        doc.write({"state": "draft"})
         doc.message_post(
             body=_(
-                "หนังสือถูกยกเลิกเนื่องจาก พจ.1 %(pa)s ถูกส่งกลับ. เหตุผล: %(reason)s"
+                "หนังสือถูกรีเซ็ตกลับเป็น draft เนื่องจาก พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. "
+                "เหตุผล: %(reason)s"
             ) % {"pa": self.name, "reason": reason},
             subtype_xmlid="mail.mt_note",
         )
 
-    def _action_return_keep_number(self, reason):
-        """ส่งกลับแก้ไข (เก็บเลข พจ.1) — PA parks in ``pending_pr`` (name
-        preserved), PR is sent back to draft (which also cancels its budget
-        commitment via purchase_request_budget), PR's active sarabun is voided
-        so a new one can be issued. When the PR's new sarabun re-completes,
-        ``_transition_after_sarabun_approve`` flips this PA back to draft."""
+    def _action_return_for_revision(self, reason):
+        """ตีกลับ/แก้ไข — send PA back to พ.1 for revision, keeping the พจ.1
+        number for reuse.
+
+        - PA → ``pending_pr`` (name preserved; ``_transition_after_sarabun_approve``
+          flips it back to ``draft`` when the fresh sarabun re-completes).
+        - PR → ``to_submit`` (budget commitment stays intact).
+        - PR's active sarabun is reset to ``draft`` (same document + number)
+          so the sender re-sends it via the existing draft, not by creating a
+          new หนังสือ.
+        - Redirect the user to the PR form so they can act immediately.
+        """
         self.ensure_one()
         pa_body = _(
             "ตีกลับ พจ.1 %(pa)s (เก็บเลข) เหตุผล: %(reason)s"
         ) % {"pa": self.name, "reason": reason}
         self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
         pr_body = _(
-            "พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข (เก็บเลข). เหตุผล: %(reason)s"
+            "พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. เหตุผล: %(reason)s"
         ) % {"pa": self.name, "reason": reason}
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
-        self._void_request_sarabun(reason)
-        self.request_id.button_draft()
+        self._reset_request_sarabun(reason)
+        self.request_id.write({"state": "to_submit"})
         self.write({"state": "pending_pr"})
-        return self._redirect_to_request()
-
-    def _action_return_new_number(self, reason):
-        """ส่งกลับแก้ไข (ไม่เก็บเลข พจ.1) — PA is cancelled (a fresh PA with a
-        new name will be created on the next submit), PR is sent back to draft,
-        and the PR's active sarabun is voided so a new one can be issued."""
-        self.ensure_one()
-        pa_body = _(
-            "ตีกลับ พจ.1 %(pa)s (ไม่เก็บเลข) เหตุผล: %(reason)s"
-        ) % {"pa": self.name, "reason": reason}
-        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
-        pr_body = _(
-            "พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข (ไม่เก็บเลข). เหตุผล: %(reason)s"
-        ) % {"pa": self.name, "reason": reason}
-        self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
-        self._void_request_sarabun(reason)
-        self.write({"state": "cancelled"})
-        self.request_id.button_draft()
         return self._redirect_to_request()
 
     def _redirect_to_request(self):
