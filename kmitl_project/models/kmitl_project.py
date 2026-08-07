@@ -516,7 +516,7 @@ class KmitlProject(models.Model):
 
     def action_complete(self):
         """``in_progress`` → ``complete`` (manual; leftover reserved budget is
-        returned manually, not auto-released — see ADR-0002)."""
+        returned manually, not auto-released — see ADR-0005)."""
         self.ensure_one()
         if self.state != "in_progress":
             raise UserError(_("ปิดโครงการได้เฉพาะที่กำลังดำเนินการ"))
@@ -800,7 +800,7 @@ class KmitlProject(models.Model):
 
     def _resync_project_commitment(self):
         """Re-align the reservation with the current ``budget_amount`` / dimensions
-        after the project was edited in ``returned`` (ADR-0002 reopens every field
+        after the project was edited in ``returned`` (ADR-0005 reopens every field
         there). Safe only pre-approval — no obligate/consume yet — so cancel the
         stale commitment and reserve afresh, which re-runs the availability check
         against the new figures. No-op when nothing budget-relevant changed."""

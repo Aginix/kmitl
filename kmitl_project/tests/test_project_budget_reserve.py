@@ -7,7 +7,7 @@ from odoo.tests.common import TransactionCase, tagged
 
 @tagged("post_install", "-at_install")
 class TestProjectBudgetReserve(TransactionCase):
-    """The floating-budget reserve flow on kmitl.project (ADR-0002/0007): a project
+    """The floating-budget reserve flow on kmitl.project (ADR-0005/0007): a project
     reserves one shared budget.commitment for its full budget_amount at the
     budget-reservation step (action_reserve_budget, to_verify→to_send), and
     releases it while untouched on reject/cancel/reset-to-draft."""

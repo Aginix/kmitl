@@ -5,7 +5,7 @@ _logger = logging.getLogger(__name__)
 
 
 def migrate(cr, version):
-    """ADR-0002 lifecycle overhaul removed the ``new`` and ``on_hold`` states.
+    """ADR-0005 lifecycle overhaul removed the ``new`` and ``on_hold`` states.
     Remap existing kmitl.project records before the new Selection loads:
 
       new     -> in_progress  (was confirmed + budget reserved + ready to run;
@@ -22,9 +22,9 @@ def migrate(cr, version):
         return
     cr.execute("UPDATE kmitl_project SET state = 'in_progress' WHERE state = 'new'")
     _logger.info(
-        "kmitl_project ADR-0002: remapped %s 'new' -> 'in_progress'", cr.rowcount
+        "kmitl_project ADR-0005: remapped %s 'new' -> 'in_progress'", cr.rowcount
     )
     cr.execute("UPDATE kmitl_project SET state = 'draft' WHERE state = 'on_hold'")
     _logger.info(
-        "kmitl_project ADR-0002: remapped %s 'on_hold' -> 'draft'", cr.rowcount
+        "kmitl_project ADR-0005: remapped %s 'on_hold' -> 'draft'", cr.rowcount
     )

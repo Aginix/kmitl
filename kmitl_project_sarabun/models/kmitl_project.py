@@ -6,7 +6,7 @@ class KmitlProject(models.Model):
     """Route a kmitl.project for approval (ขออนุมัติจัดโครงการและค่าใช้จ่าย) through
     e-Saraban. The project owns the state machine (kmitl_project); this bridge only
     wires the หนังสือ: it creates the Document at ``to_send`` and maps the หนังสือ
-    outcome back onto the project state (ADR-0002, mirroring agx_approval_sarabun).
+    outcome back onto the project state (ADR-0005, mirroring agx_approval_sarabun).
     """
 
     _name = "kmitl.project"
@@ -29,14 +29,14 @@ class KmitlProject(models.Model):
         # หนังสือ that was ตีกลับ/ดึงกลับ (returned → sent).
         if self.state in ("to_send", "returned"):
             # Editing in returned may have changed budget_amount / dimensions —
-            # realign the reservation before the หนังสือ goes back out (ADR-0002).
+            # realign the reservation before the หนังสือ goes back out (ADR-0005).
             if self.state == "returned":
                 self._resync_project_commitment()
             self.state = "sent"
         return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):
-        # หนังสือลงนามครบ → อนุมัติแล้ว = เริ่มดำเนินการทันที (ADR-0002: no idle
+        # หนังสือลงนามครบ → อนุมัติแล้ว = เริ่มดำเนินการทันที (ADR-0005: no idle
         # "approved" state — the project may raise purchase requests / เบิกจ่าย now).
         self.state = "in_progress"
         return super()._on_sarabun_completed(document)
@@ -65,7 +65,7 @@ class KmitlProject(models.Model):
         # endorsement/signature block at its tail, so a signed copy would show no
         # signatures. Returning False makes the หนังสือ use the complete default
         # sarabun document report. Re-enable (return the report action) once a real
-        # แบบเสนอโครงการ report is built. See ADR-0002.
+        # แบบเสนอโครงการ report is built. See ADR-0005.
         return False
 
     # -- Discard the stale หนังสือ when abandoning the approval ------------
