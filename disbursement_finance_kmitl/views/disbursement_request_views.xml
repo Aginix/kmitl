@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- DR action for finance queue (default filter: pipeline_status=bill_posted) -->
+    <!-- DR action for finance queue (requests authorized and awaiting payment) -->
     <record id="action_disbursement_request_finance" model="ir.actions.act_window">
         <field name="name">Disbursement Requests</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{"search_default_bill_posted": 1}</field>
+        <field name="context">{"search_default_payment_authorized": 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 ไม่มีใบขอเบิกที่รอทำการจ่ายเงิน
             </p>
             <p>
-                ใบขอเบิกที่บัญชีตั้งหนี้แล้ว รอเจ้าหน้าที่การเงินสร้างใบจ่าย
+                ใบขอเบิกที่ได้รับอนุมัติเบิกจ่ายแล้ว รอเจ้าหน้าที่การเงินสร้างใบจ่าย/ส่งธนาคาร
             </p>
         </field>
     </record>
@@ -26,20 +26,78 @@
         sequence="5"
     />
 
-    <!-- Form view: add Create Payment button + Payment smart buttons -->
+    <!-- Tree: colour the badge for the new payment-execution states -->
+    <record id="view_disbursement_request_tree_inherit_finance" model="ir.ui.view">
+        <field name="name">disbursement.request.tree.inherit.finance_kmitl</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='display_status']" position="attributes">
+                <attribute name="decoration-warning">display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft', 'bills_posted', 'payment_audited')</attribute>
+                <attribute name="decoration-primary">display_status in ('verified', 'bill_posted', 'payment_authorized')</attribute>
+                <attribute name="decoration-success">display_status in ('approved', 'payment_posted', 'done', 'paid', 'cleared')</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search: add filters for the post-bill payment-execution states -->
+    <record id="view_disbursement_request_search_inherit_finance" model="ir.ui.view">
+        <field name="name">disbursement.request.search.inherit.finance_kmitl</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='done']" position="after">
+                <filter string="Payment Audited" name="payment_audited"
+                        domain="[('state', '=', 'payment_audited')]"/>
+                <filter string="Authorized (to pay)" name="payment_authorized"
+                        domain="[('state', '=', 'payment_authorized')]"/>
+                <filter string="Paid" name="paid"
+                        domain="[('state', '=', 'paid')]"/>
+                <filter string="Cleared" name="cleared"
+                        domain="[('state', '=', 'cleared')]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Form view: statusbar + payment-execution buttons + smart buttons -->
     <record id="view_disbursement_request_form_inherit_finance" model="ir.ui.view">
         <field name="name">disbursement.request.form.inherit.finance_kmitl</field>
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
         <field name="arch" type="xml">
-            <!-- Create Payment button placed before Reset to draft -->
+            <!-- Extend the status bar with the post-bill payment states -->
+            <xpath expr="//field[@name='display_status']" position="attributes">
+                <attribute name="statusbar_visible">draft,submitted,signed,verified,approved,bills_posted,payment_audited,payment_authorized,paid,cleared</attribute>
+            </xpath>
+
+            <!-- Payment-execution buttons, placed before Reset to draft -->
             <xpath expr="//button[@name='action_draft']" position="before">
+                <button name="action_audit"
+                        string="ตรวจสอบการเบิกจ่าย"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'bills_posted')]}"
+                        groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"/>
+                <button name="action_authorize"
+                        string="อนุมัติเบิกจ่าย"
+                        type="object"
+                        class="oe_highlight"
+                        confirm="ยืนยันอนุมัติให้เบิกจ่ายเงินตามใบขอเบิกนี้?"
+                        attrs="{'invisible': [('state', '!=', 'payment_audited')]}"
+                        groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"/>
                 <button name="action_create_payment"
                         string="Create Payment"
                         type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|', ('pipeline_status', '!=', 'bill_posted'), ('payment_count', '>', 0)]}"
-                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
+                        attrs="{'invisible': ['|', ('state', '!=', 'payment_authorized'), ('payment_count', '>', 0)]}"
+                        groups="disbursement_finance_kmitl.group_disbursement_payment_finance"/>
+                <button name="action_confirm_paid"
+                        string="ยืนยันจ่ายสำเร็จ"
+                        type="object"
+                        class="oe_highlight"
+                        confirm="ยืนยันว่าธนาคารจ่ายเงินสำเร็จครบทุกรายการแล้ว?"
+                        attrs="{'invisible': ['|', ('state', '!=', 'payment_authorized'), ('payment_count', '=', 0)]}"
+                        groups="disbursement_finance_kmitl.group_disbursement_payment_finance"/>
             </xpath>
 
             <!-- Payment smart buttons -->

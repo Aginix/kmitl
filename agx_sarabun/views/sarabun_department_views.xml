@@ -42,7 +42,6 @@
                             <tree>
                                 <field name="name"/>
                                 <field name="prefix"/>
-                                <field name="reset_period"/>
                                 <field name="next_counter"/>
                                 <field name="active" widget="boolean_toggle"/>
                             </tree>

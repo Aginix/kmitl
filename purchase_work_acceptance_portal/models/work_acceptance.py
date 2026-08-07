@@ -1,9 +1,23 @@
 # -*- coding: utf-8 -*-
-from odoo import models
+from odoo import api, fields, models
 
 
 class WorkAcceptance(models.Model):
     _inherit = 'work.acceptance'
+
+    is_current_user_committee = fields.Boolean(
+        compute="_compute_is_current_user_committee",
+        help="True when the current user is on this WA's committee. "
+        "Non-stored, re-evaluated per viewer.",
+    )
+
+    @api.depends("work_acceptance_committee_ids.employee_id.user_id")
+    @api.depends_context("uid")
+    def _compute_is_current_user_committee(self):
+        uid = self.env.uid
+        for rec in self:
+            user_ids = rec.work_acceptance_committee_ids.employee_id.user_id.ids
+            rec.is_current_user_committee = uid in user_ids
 
     def get_portal_link(self):
         self.ensure_one()
@@ -11,36 +25,24 @@ class WorkAcceptance(models.Model):
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         return f"{base_url}/wa/view/{self.id}?access_token={self.access_token}"
 
-    def _notify_review_requested(self, tier_reviews):
-        """Suppress tier validation mail notifications — use custom WaSystray inbox instead."""
-        return
+    def action_open_committee_portal(self):
+        self.ensure_one()
+        committee = self.sudo().work_acceptance_committee_ids.filtered(
+            lambda c: c.employee_id.user_id.id == self.env.uid
+        )[:1]
+        committee._portal_ensure_token()
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"{self.get_portal_link()}&committee_token={committee.access_token}",
+            "target": "new",
+        }
 
-    def request_validation(self):
-        res = super().request_validation()
-        for wa in self:
-            if not wa.work_acceptance_committee_ids:
-                continue
-            order_url = wa.purchase_id.get_portal_link() if wa.purchase_id else ""
-            wa_url = wa.get_portal_link()
-            for committee in wa.work_acceptance_committee_ids:
-                committee.get_portal_link()
-                user = committee.employee_id.user_id
-                if not user:
-                    continue
-                wa_link = f"{wa_url}&committee_token={committee.access_token}"
-                order_link = f"{order_url}&wa_token={wa.access_token}" if order_url else ""
-                Inbox = self.env["work.acceptance.inbox"].sudo()
-                existing = Inbox.search(
-                    [("user_id", "=", user.id), ("work_acceptance_id", "=", wa.id)],
-                    limit=1,
-                )
-                if existing:
-                    existing.write({"wa_url": wa_link, "order_url": order_link, "is_read": False})
-                else:
-                    Inbox.create({"user_id": user.id, "work_acceptance_id": wa.id, "wa_url": wa_link, "order_url": order_link})
-                self.env["bus.bus"]._sendone(
-                    user.partner_id,
-                    "work_acceptance/inbox",
-                    {"refresh": True, "wa_name": wa.name, "wa_id": wa.id},
-                )
-        return res
+    def action_open_purchase_portal(self):
+        self.ensure_one()
+        po_url = self.purchase_id.sudo().get_portal_link()
+        self._portal_ensure_token()
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"{po_url}&wa_token={self.access_token}",
+            "target": "new",
+        }

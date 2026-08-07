@@ -103,8 +103,6 @@
                                    attrs="{'invisible': ['|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned'))]}"/>
                             <field name="reserved_number_id"
                                    attrs="{'invisible': ['|', '|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned')), ('numbering_mode', '!=', 'reserved')]}"/>
-                            <field name="manual_counter"
-                                   attrs="{'invisible': ['|', '|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned')), ('numbering_mode', 'not in', ('manual', 'gap'))]}"/>
                         </group>
                     </group>
                     <group name="header">
@@ -138,6 +136,7 @@
                     <field name="has_signed" invisible="1"/>
                     <field name="can_withdraw" invisible="1"/>
                     <field name="my_active_step_id" invisible="1"/>
+                    <field name="next_step_order" invisible="1"/>
                     <notebook>
                         <page string="การเดินเรื่อง (Routing)" name="routing">
                             <group>
@@ -150,8 +149,11 @@
                                     <field name="pending_ack_count"/>
                                 </group>
                             </group>
-                            <!-- Add เส้นทางเอกสาร via a modal form (non-editable tree). -->
+                            <!-- Add เส้นทางเอกสาร via a modal form (non-editable tree).
+                                 default_order auto-increments the ลำดับ of a new step
+                                 (max existing + 1) instead of always starting at 1. -->
                             <field name="routing_step_ids"
+                                   context="{'default_order': next_step_order}"
                                    attrs="{'readonly': [('is_editable', '=', False)]}">
                                 <tree decoration-muted="state == 'skipped'"
                                       decoration-success="state == 'done' and disposition in ('complete','direct')"
@@ -207,7 +209,12 @@
                                         </field>
                                     </group>
 
-                                    <group string="ไทม์ไลน์ (Timeline)" col="2" name="timeline">
+                                    <!-- Timeline is meaningless before the step is sent
+                                         (all its dates are empty at compose time), so it
+                                         shows only once the step has been activated —
+                                         i.e. after the หนังสือ is sent. -->
+                                    <group string="ไทม์ไลน์ (Timeline)" col="2" name="timeline"
+                                           attrs="{'invisible': [('activated_date', '=', False)]}">
                                         <field name="activated_date" readonly="1"/>
                                         <field name="read_date" readonly="1"/>
                                         <field name="sent_date" readonly="1"/>

@@ -103,15 +103,6 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 )
                 d("marital", profile.marital or "")
 
-                # Spouse
-                d(
-                    "spouse_prefix",
-                    profile.spouse_prefix.name if profile.spouse_prefix else "",
-                )
-                d("spouse_first_name", profile.spouse_first_name or "")
-                d("spouse_middle_name", profile.spouse_middle_name or "")
-                d("spouse_last_name", profile.spouse_last_name or "")
-
                 # Registered address
                 d("address_street", profile.address_street or "")
                 d("address_city", profile.address_city or "")
@@ -217,9 +208,8 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                             "program": rec.program or "",
                             "major": rec.major or "",
                             "institution": rec.institution or "",
-                            "graduation_date": str(rec.graduation_date)
-                            if rec.graduation_date
-                            else "",
+                            "start_year": rec.start_year or "",
+                            "graduate_year": rec.graduate_year or "",
                             "country_id": rec.country_id.id if rec.country_id else "",
                         }
                         for rec in edu_sorted

@@ -101,6 +101,36 @@ class HrOnboarding(models.Model):
     def action_submit(self):
         self.write({"state": "submitted", "submitted_date": fields.Datetime.now()})
 
+    def _default_family_member_commands(self):
+        """Default family members: father (บิดา) and mother (มารดา)."""
+        commands = []
+        for xmlid in (
+            "hr_recruitment_kmitl.relation_father",
+            "hr_recruitment_kmitl.relation_mother",
+        ):
+            relation = self.env.ref(xmlid, raise_if_not_found=False)
+            if relation:
+                commands.append((0, 0, {"relation_id": relation.id}))
+        return commands
+
+    @api.model
+    def default_get(self, fields_list):
+        vals = super().default_get(fields_list)
+        if "family_member_ids" in fields_list and not vals.get("family_member_ids"):
+            commands = self._default_family_member_commands()
+            if commands:
+                vals["family_member_ids"] = commands
+        return vals
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get("family_member_ids"):
+                commands = self._default_family_member_commands()
+                if commands:
+                    vals["family_member_ids"] = commands
+        return super().create(vals_list)
+
     @api.depends("applicant_id")
     def _compute_name(self):
         for record in self:

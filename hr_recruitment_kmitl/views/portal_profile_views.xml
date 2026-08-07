@@ -62,22 +62,6 @@
                             <group name="family" string="Family">
                                 <group>
                                     <field name="marital" />
-                                    <field
-                                        name="spouse_prefix"
-                                        attrs="{'invisible': [('marital', '!=', 'married')]}"
-                                    />
-                                    <field
-                                        name="spouse_first_name"
-                                        attrs="{'invisible': [('marital', '!=', 'married')]}"
-                                    />
-                                    <field
-                                        name="spouse_middle_name"
-                                        attrs="{'invisible': [('marital', '!=', 'married')]}"
-                                    />
-                                    <field
-                                        name="spouse_last_name"
-                                        attrs="{'invisible': [('marital', '!=', 'married')]}"
-                                    />
                                 </group>
                             </group>
                         </page>
@@ -137,7 +121,8 @@
                                     <field name="major" />
                                     <field name="institution" />
                                     <field name="country_id" />
-                                    <field name="graduation_date" />
+                                    <field name="start_year" />
+                                    <field name="graduate_year" />
                                     <field
                                         name="certificate_file"
                                         filename="certificate_filename"

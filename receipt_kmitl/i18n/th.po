@@ -389,7 +389,7 @@ msgstr "จำนวน"
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
 msgid "Unit Price"
-msgstr "ราคาต่อหน่วย"
+msgstr "ราคา"
 
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
