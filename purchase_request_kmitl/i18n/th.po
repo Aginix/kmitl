@@ -1022,6 +1022,31 @@ msgid "Price Determine Committees"
 msgstr "คณะกรรมการกำหนดราคากลาง"
 
 #. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Committees"
+msgstr "คณะกรรมการ"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Propose Evaluation Committee"
+msgstr "เสนอรายชื่อคณะกรรมการพิจารณาผล"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Propose Price Determine Committee"
+msgstr "เสนอรายชื่อคณะกรรมการกำหนดราคากลาง"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Propose TOR Committee"
+msgstr "เสนอรายชื่อคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Propose Work Acceptance Committee"
+msgstr "เสนอรายชื่อคณะกรรมการตรวจรับพัสดุ"
+
+#. module: purchase_request_kmitl
 #: model:ir.actions.act_window,name:purchase_request_kmitl.action_procurement_committee
 #: model:ir.model,name:purchase_request_kmitl.model_procurement_committee
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__procurement

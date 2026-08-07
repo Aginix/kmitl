@@ -237,9 +237,9 @@
 
             <!-- === Notebook pages === -->
             <xpath expr="//form/sheet/notebook" position="inside">
-                <page name="committee" string="Committee">
+                <page name="committee" string="Committees">
                     <separator
-                        string="TOR Committee"
+                        string="Propose TOR Committee"
                         attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <field
@@ -249,7 +249,7 @@
                         attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <separator
-                        string="Price Determine Committee"
+                        string="Propose Price Determine Committee"
                         attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <field
@@ -259,7 +259,7 @@
                         attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <separator
-                        string="Evaluation Committee"
+                        string="Propose Evaluation Committee"
                         attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <field
@@ -268,7 +268,7 @@
                         context="{'default_committee_type': 'evaluation'}"
                         attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
-                    <separator string="Work Acceptance Committee" />
+                    <separator string="Propose Work Acceptance Committee" />
                     <field
                         name="work_acceptance_committee_ids"
                         nolabel="1"
