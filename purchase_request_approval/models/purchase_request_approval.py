@@ -415,10 +415,37 @@ class PurchaseRequestApproval(models.Model):
             "context": {"default_approval_id": self.id},
         }
 
+    def _void_request_sarabun(self, reason):
+        """Force-cancel the PR's active sarabun.document so the PR can Create
+        Sarabun again after being sent back to draft. The audit trail (chatter,
+        routing history) is retained; only the state is flipped to `cancelled`
+        so ``sarabun_has_live_document`` turns False.
+
+        A completed sarabun cannot be cancelled via the regular guarded
+        actions (``action_recall`` blocks after ``has_signed``); this is the
+        origin's escape hatch when the downstream approval (พจ.1) is voided.
+        """
+        self.ensure_one()
+        pr = self.request_id
+        if not pr:
+            return
+        doc = pr.active_sarabun_document_id
+        if not doc or doc.state in ("cancelled", "rejected"):
+            return
+        doc.sudo().write({"state": "cancelled"})
+        doc.message_post(
+            body=_(
+                "หนังสือถูกยกเลิกเนื่องจาก พจ.1 %(pa)s ถูกส่งกลับ. เหตุผล: %(reason)s"
+            ) % {"pa": self.name, "reason": reason},
+            subtype_xmlid="mail.mt_note",
+        )
+
     def _action_return_keep_number(self, reason):
         """ส่งกลับแก้ไข (เก็บเลข พจ.1) — PA stays as-is (name preserved so it
         will be reused on the next submit), PR is sent back to draft (which
-        also cancels its budget commitment via purchase_request_budget)."""
+        also cancels its budget commitment via purchase_request_budget). The
+        PR's active sarabun is voided so a new one can be issued after the
+        user re-runs the flow."""
         self.ensure_one()
         pa_body = _(
             "ตีกลับ พจ.1 %(pa)s (เก็บเลข) เหตุผล: %(reason)s"
@@ -428,12 +455,13 @@ class PurchaseRequestApproval(models.Model):
             "พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข (เก็บเลข). เหตุผล: %(reason)s"
         ) % {"pa": self.name, "reason": reason}
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
+        self._void_request_sarabun(reason)
         return self.request_id.button_draft()
 
     def _action_return_new_number(self, reason):
         """ส่งกลับแก้ไข (ไม่เก็บเลข พจ.1) — PA is cancelled (a fresh PA with a
-        new name will be created on the next submit), PR is sent back to
-        draft."""
+        new name will be created on the next submit), PR is sent back to draft,
+        and the PR's active sarabun is voided so a new one can be issued."""
         self.ensure_one()
         pa_body = _(
             "ตีกลับ พจ.1 %(pa)s (ไม่เก็บเลข) เหตุผล: %(reason)s"
@@ -443,6 +471,7 @@ class PurchaseRequestApproval(models.Model):
             "พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข (ไม่เก็บเลข). เหตุผล: %(reason)s"
         ) % {"pa": self.name, "reason": reason}
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
+        self._void_request_sarabun(reason)
         self.write({"state": "cancelled"})
         return self.request_id.button_draft()
 
