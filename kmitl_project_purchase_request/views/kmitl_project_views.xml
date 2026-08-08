@@ -36,13 +36,13 @@
         </field>
     </record>
 
-    <!-- Projects a พ.1 can be created from (reserved: new + in_progress).
+    <!-- Projects a พ.1 can be created from (approved + executing: in_progress).
          Linked from the info alert on the purchase request form. -->
     <record id="action_kmitl_project_for_pr" model="ir.actions.act_window">
         <field name="name">โครงการ/กิจกรรม</field>
         <field name="res_model">kmitl.project</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('state', 'in', ['new', 'in_progress'])]</field>
+        <field name="domain">[('state', '=', 'in_progress')]</field>
     </record>
 
 </odoo>
