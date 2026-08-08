@@ -147,6 +147,58 @@ class TestProjectBudgetReserve(TransactionCase):
         self.assertEqual(project.state, "cancel")
         self.assertEqual(commitment.state, "reserved")
 
+    def test_confirm_runs_exception_gate(self):
+        """ยืนยัน runs detect_exceptions (ADR-0005): a Strategic Project missing a
+        strategic-plan level pops the wizard and stays draft, and goes through once
+        the exception is ignored."""
+        project = self._make_project(project_type="strategic_project")
+        action = project.action_confirm()
+        self.assertEqual(project.state, "draft")
+        self.assertTrue(project.exception_ids)
+        self.assertEqual(action.get("res_model"), "kmitl.project.exception.confirm")
+
+        project.ignore_exception = True
+        project.action_confirm()
+        self.assertEqual(project.state, "to_verify")
+
+    def test_reject_blocked_once_approved(self):
+        """An executing project is past the point of refusal."""
+        project = self._make_project()
+        project.action_confirm()
+        project.action_reserve_budget()
+        project.action_approve()
+        with self.assertRaises(UserError):
+            project.action_reject()
+
+    def test_cancel_blocked_when_complete(self):
+        """A finished project cannot be cancelled."""
+        project = self._make_project()
+        project.action_confirm()
+        project.action_reserve_budget()
+        project.action_approve()
+        project.action_complete()
+        with self.assertRaises(UserError):
+            project.action_cancel()
+
+    def test_returned_edit_resyncs_commitment(self):
+        """`returned` reopens budget_amount, so re-sending re-reserves at the new
+        figure: the stale commitment is cancelled and a fresh one replaces it."""
+        project = self._make_project(amount=100000.0)
+        project.action_confirm()
+        project.action_reserve_budget()
+        stale = project.budget_commitment_ids
+        project.state = "returned"
+        project.budget_amount = 60000.0
+
+        project._resync_project_commitment()
+
+        self.assertEqual(stale.state, "cancel")
+        active = project.budget_commitment_ids.filtered(
+            lambda c: c.state != "cancel"
+        )
+        self.assertEqual(len(active), 1)
+        self.assertEqual(active.amount, 60000.0)
+
     def test_is_project_excludes_procurement_plan(self):
         """A budget code cannot be both a project code and a procurement-plan code."""
         BA = self.env["budget.account"]

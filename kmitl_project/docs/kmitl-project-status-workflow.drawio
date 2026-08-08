@@ -6,7 +6,7 @@
         <mxCell id="1" parent="0" />
 
         <!-- Banner + Title -->
-        <mxCell id="banner" value="⚠ DESIGN TARGET — ยังไม่ build (docs-first, ADR-0005) · โค้ดปัจจุบันยังเป็นเครื่องสถานะเดิม draft→new→in_progress→on_hold→complete" style="text;html=1;strokeColor=none;fillColor=#FDECEA;align=left;verticalAlign=middle;fontSize=12;fontColor=#B03A2E;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="banner" value="✔ BUILT (ADR-0005) — kmitl_project 16.0.2.0.0 + kmitl_project_sarabun · สถานะเดิม new/on_hold ถูก remap ใน migrations/16.0.2.0.0/pre-migration.py" style="text;html=1;strokeColor=none;fillColor=#E8F5E9;align=left;verticalAlign=middle;fontSize=12;fontColor=#1B5E20;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="140" y="16" width="1120" height="24" as="geometry" />
         </mxCell>
         <mxCell id="title" value="โครงการ/กิจกรรม (kmitl.project) — Approval-Gated Status Workflow" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;" vertex="1" parent="1">

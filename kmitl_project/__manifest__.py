@@ -48,6 +48,9 @@
         "views/project_budget_item_views.xml",
         "views/project_strategic_plan_views.xml",
         "views/kmitl_project_report.xml",
+        # The blocking-exception popup raised by ยืนยัน (_get_popup_action refs
+        # action_kmitl_project_exception_confirm from here).
+        "wizard/kmitl_project_exception_confirm_view.xml",
     ],
     "assets": {
         "web.assets_backend": ["kmitl_project/static/src/components/**/*"],

@@ -8,8 +8,10 @@ _logger = logging.getLogger(__name__)
 
 class KmitlProject(models.Model):
     _name = "kmitl.project"
-    _order = "main_exception_id asc, id desc"
     _inherit = ["kmitl.project", "base.exception"]
+    # Deliberately does NOT take the OCA "main_exception_id asc, id desc" _order:
+    # projects stay newest-first as everywhere else in the module — an exception
+    # surfaces on the form and in the blocking wizard, not by reordering lists.
 
     @api.model
     def test_all_draft_orders(self):

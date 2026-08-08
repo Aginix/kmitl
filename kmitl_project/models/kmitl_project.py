@@ -112,7 +112,7 @@ class KmitlProject(models.Model):
         tracking=True,
         readonly=True,
         copy=False,
-        help="เลขที่รันของโครงการ ออกให้ครั้งเดียวเมื่อยืนยันโครงการ (draft→new) "
+        help="เลขที่รันของโครงการ ออกให้ครั้งเดียวเมื่อจองงบประมาณ (to_verify→to_send) "
         "และคงเดิมตลอดอายุโครงการ ใช้เป็นรหัส (code) ของบัญชีวิเคราะห์โครงการ",
     )
     account_fiscal_year_id = fields.Many2one(
@@ -278,7 +278,7 @@ class KmitlProject(models.Model):
         help="ติ๊กเมื่อโครงการมีรายรับ (เช่น ค่าลงทะเบียน/เงินบริจาค/เงินรายได้) "
         "เพื่อแสดงตารางกรอกงบประมาณรายรับ; รายจ่ายจะแสดงเสมอ",
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     income_line_ids = fields.One2many(
@@ -287,7 +287,7 @@ class KmitlProject(models.Model):
         string="รายรับ",
         domain=[("budget_type", "=", "income")],
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     @api.onchange("has_income")
@@ -302,7 +302,7 @@ class KmitlProject(models.Model):
         string="รายจ่าย",
         domain=[("budget_type", "=", "expense")],
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     budget_income_total = fields.Float(
@@ -524,19 +524,28 @@ class KmitlProject(models.Model):
 
     def action_reject(self):
         """→ ``rejected`` and release the reservation. Reached from the หนังสือ
-        ปฏิเสธ outcome (bridge ``_on_sarabun_rejected``) or manually."""
+        ปฏิเสธ outcome (bridge ``_on_sarabun_rejected``) or manually. Only a project
+        still inside the approval band can be rejected — an approved/executing or
+        finished one is past the point of refusal."""
+        if self.filtered(
+            lambda p: p.state not in ("to_verify", "to_send", "sent", "returned")
+        ):
+            raise UserError(_("ปฏิเสธได้เฉพาะโครงการที่อยู่ระหว่างขออนุมัติ"))
         self._release_project_commitment()
         self.write({"state": "rejected"})
 
     def action_cancel(self):
         """→ ``cancel`` and release the reservation (kept once any obligate/
         consume exists). Blocked while a หนังสือ is circulating (``sent``) — the
-        send must be pulled back / voided first so no live document is orphaned."""
+        send must be pulled back / voided first so no live document is orphaned —
+        and from ``complete`` (a finished project is not cancellable)."""
         if self.filtered(lambda p: p.state == "sent"):
             raise UserError(
                 _("ไม่สามารถยกเลิกโครงการขณะหนังสือกำลังเวียนลงนาม "
                   "กรุณาดึงกลับหรือยกเลิกการส่งก่อน")
             )
+        if self.filtered(lambda p: p.state == "complete"):
+            raise UserError(_("ไม่สามารถยกเลิกโครงการที่ปิดแล้ว"))
         self._release_project_commitment()
         self.write({"state": "cancel"})
 
@@ -553,7 +562,8 @@ class KmitlProject(models.Model):
         """Validate the Project Budget Plan before the budget is reserved. Amounts
         may be left blank/zero while drafting, but every line must carry a positive
         amount before the project reserves its budget (called from
-        ``action_reserve_budget``)."""
+        ``action_reserve_budget``, and again from ``_resync_project_commitment``
+        because ``returned`` reopens the plan for editing)."""
         self.ensure_one()
         lines = self.expense_line_ids
         if self.has_income:
@@ -805,6 +815,9 @@ class KmitlProject(models.Model):
         stale commitment and reserve afresh, which re-runs the availability check
         against the new figures. No-op when nothing budget-relevant changed."""
         self.ensure_one()
+        # The plan tables are editable in ``returned`` too, so re-run the same
+        # every-line-positive check the reserve step applied.
+        self._check_budget_plan_lines()
         active = self.budget_commitment_ids.filtered(
             lambda c: c.state != "cancel"
         )[:1]
