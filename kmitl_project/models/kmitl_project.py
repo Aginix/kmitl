@@ -2,7 +2,7 @@
 import logging
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -20,13 +20,24 @@ class KmitlProject(models.Model):
         "budget.commitment.mixin",
     ]
 
+    # Fields carrying the budget code / budget dimensions are editable only while
+    # the project is being authored (draft) or has been sent back for revision
+    # (returned) — readonly once it enters the approval band and thereafter.
     READONLY_STATES = {
-        "draft": [("readonly", False)],
-        "new": [("readonly", True)],
+        "to_verify": [("readonly", True)],
+        "to_send": [("readonly", True)],
+        "sent": [("readonly", True)],
+        "rejected": [("readonly", True)],
         "in_progress": [("readonly", True)],
-        "on_hold": [("readonly", True)],
         "complete": [("readonly", True)],
         "cancel": [("readonly", True)],
+    }
+    # The two states in which the whole form is open for editing: draft authoring
+    # and ตีกลับ/ดึงกลับ revision. Used as the per-field ``states=`` override in
+    # place of the old draft-only rule.
+    EDITABLE_STATES = {
+        "draft": [("readonly", False)],
+        "returned": [("readonly", False)],
     }
 
     name = fields.Char(
@@ -34,14 +45,14 @@ class KmitlProject(models.Model):
         tracking=True,
         required=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
     project_type = fields.Selection(
         [("project", "Project/Activity"), ("strategic_project", "Strategic Project")],
         required=True,
         default="project",
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
     introduction = fields.Text(
         string="หลักการและเหตุผล",
@@ -53,7 +64,7 @@ class KmitlProject(models.Model):
         string="วัตถุประสงค์",
         tracking=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     national_strategy_id = fields.Many2one(
@@ -62,7 +73,7 @@ class KmitlProject(models.Model):
         domain="[('level', '=', 1)]",
         tracking=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     master_plan_id = fields.Many2one(
@@ -71,7 +82,7 @@ class KmitlProject(models.Model):
         domain="[('level', '=', 2)]",
         tracking=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     nesdc_plan_id = fields.Many2one(
@@ -80,7 +91,7 @@ class KmitlProject(models.Model):
         domain=lambda self: [("id", "child_of", self.env.ref("kmitl_project.P13").id)],
         tracking=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     kmitl_plan_id = fields.Many2one(
@@ -89,7 +100,7 @@ class KmitlProject(models.Model):
         domain="[('level', '=', 3)]",
         tracking=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     company_id = fields.Many2one(
@@ -101,7 +112,7 @@ class KmitlProject(models.Model):
         tracking=True,
         readonly=True,
         copy=False,
-        help="เลขที่รันของโครงการ ออกให้ครั้งเดียวเมื่อยืนยันโครงการ (draft→new) "
+        help="เลขที่รันของโครงการ ออกให้ครั้งเดียวเมื่อจองงบประมาณ (to_verify→to_send) "
         "และคงเดิมตลอดอายุโครงการ ใช้เป็นรหัส (code) ของบัญชีวิเคราะห์โครงการ",
     )
     account_fiscal_year_id = fields.Many2one(
@@ -109,21 +120,21 @@ class KmitlProject(models.Model):
         string="Fiscal year",
         required=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
     operating_unit_id = fields.Many2one(
         comodel_name="operating.unit",
         string="Operating Unit",
         default=lambda self: self.env["res.users"].operating_unit_default_get(),
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
     manager_id = fields.Many2one(
         "hr.employee",
         string="หัวหน้าโครงการ",
         tracking=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
         help="พนักงานผู้เป็นหัวหน้า/ผู้จัดการโครงการ; สิทธิ์เข้าถึงของผู้ใช้ผูกผ่าน manager_id.user_id",
     )
     creating_user_id = fields.Many2one(
@@ -136,20 +147,23 @@ class KmitlProject(models.Model):
         string="Start Date",
         required=False,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
     date_end = fields.Date(
         string="End Date",
         required=False,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("new", "Not started yet"),
+            ("to_verify", "รอตรวจสอบ / จองงบประมาณ"),
+            ("to_send", "รอส่งขออนุมัติ"),
+            ("sent", "ส่งขออนุมัติแล้ว"),
+            ("returned", "ถูกตีกลับ"),
+            ("rejected", "ถูกปฏิเสธ"),
             ("in_progress", "In Progress"),
-            ("on_hold", "On Hold"),
             ("complete", "Completed"),
             ("cancel", "Cancelled"),
         ],
@@ -168,7 +182,7 @@ class KmitlProject(models.Model):
         copy=True,
         tracking=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     global_index_id = fields.Many2one(
@@ -177,7 +191,7 @@ class KmitlProject(models.Model):
         copy=True,
         tracking=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     fight_id = fields.Many2one(
@@ -186,7 +200,7 @@ class KmitlProject(models.Model):
         copy=True,
         tracking=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     methodology_ids = fields.Many2many(
@@ -212,7 +226,7 @@ class KmitlProject(models.Model):
         string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
         domain=[("line_type", "=", "target")],
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     participant_ids = fields.One2many(
@@ -221,7 +235,7 @@ class KmitlProject(models.Model):
         string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
         domain=[("line_type", "=", "participant")],
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     organizer_ids = fields.One2many(
@@ -230,7 +244,7 @@ class KmitlProject(models.Model):
         string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
         domain=[("line_type", "=", "organizer")],
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     output_ids = fields.One2many(
@@ -239,7 +253,7 @@ class KmitlProject(models.Model):
         string="ผลผลิต",
         domain=[("line_type", "=", "output")],
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     outcome_ids = fields.One2many(
@@ -248,7 +262,7 @@ class KmitlProject(models.Model):
         string="ผลลัพธ์",
         domain=[("line_type", "=", "outcome")],
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     plan_ids = fields.One2many(
@@ -256,7 +270,7 @@ class KmitlProject(models.Model):
         "project_id",
         string="แผนการดำเนินงานและแผนการใช้จ่ายงบประมาณ",
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     has_income = fields.Boolean(
@@ -264,7 +278,7 @@ class KmitlProject(models.Model):
         help="ติ๊กเมื่อโครงการมีรายรับ (เช่น ค่าลงทะเบียน/เงินบริจาค/เงินรายได้) "
         "เพื่อแสดงตารางกรอกงบประมาณรายรับ; รายจ่ายจะแสดงเสมอ",
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     income_line_ids = fields.One2many(
@@ -273,7 +287,7 @@ class KmitlProject(models.Model):
         string="รายรับ",
         domain=[("budget_type", "=", "income")],
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     @api.onchange("has_income")
@@ -288,7 +302,7 @@ class KmitlProject(models.Model):
         string="รายจ่าย",
         domain=[("budget_type", "=", "expense")],
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     budget_income_total = fields.Float(
@@ -313,7 +327,7 @@ class KmitlProject(models.Model):
         "project_id",
         string="ผลที่คาดว่าจะได้รับ",
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     evaluation_ids = fields.Many2many(
@@ -322,7 +336,7 @@ class KmitlProject(models.Model):
         copy=True,
         tracking=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     evaluation_detail = fields.Text(
@@ -330,7 +344,7 @@ class KmitlProject(models.Model):
         copy=True,
         tracking=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
     )
 
     attachment_ids = fields.One2many(
@@ -368,7 +382,7 @@ class KmitlProject(models.Model):
         digits="Product Price",
         tracking=True,
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        states=EDITABLE_STATES,
         help="งบประมาณที่ได้รับจัดสรร",
     )
 
@@ -468,24 +482,88 @@ class KmitlProject(models.Model):
         for line in self:
             line._update_analytic_distribution("kmitl_project")
 
-    def button_cancel(self):
+    def action_confirm(self):
+        """``draft`` → ``to_verify`` ("ยืนยัน"). The base.exception check runs
+        here (see kmitl_project_exception.py) — the strategic-plan-completeness
+        rule is finally enforced at ยืนยัน (it used to be bypassed)."""
+        self.ensure_one()
+        if self.state != "draft":
+            raise UserError(_("ยืนยันได้เฉพาะโครงการที่เป็นแบบร่าง"))
+        self.write({"state": "to_verify"})
+
+    def action_reserve_budget(self):
+        """``to_verify`` → ``to_send`` ("จองงบประมาณ"). One action: mint the
+        Project Number + analytic account and reserve a single new
+        ``budget.commitment`` for the full ``budget_amount`` from the floating
+        pool, then advance. ``_reserve_project_commitment`` validates the code,
+        amount and availability first (raising, so state does not advance)."""
+        self.ensure_one()
+        if self.state != "to_verify":
+            raise UserError(_("จองงบประมาณได้เฉพาะสถานะรอตรวจสอบ"))
+        self._check_budget_plan_lines()
+        self._reserve_project_commitment()
+        self.write({"state": "to_send"})
+
+    def action_approve(self):
+        """Manual approval fallback for installs WITHOUT ``kmitl_project_sarabun``:
+        ``to_send``/``sent`` → ``in_progress``. When the bridge is installed the
+        project is approved by the หนังสือ outcome instead (the bridge overrides
+        ``_on_sarabun_completed`` to call the same transition)."""
+        self.ensure_one()
+        if self.state not in ("to_send", "sent"):
+            raise UserError(_("อนุมัติได้เฉพาะคำขอที่ส่งขออนุมัติแล้ว"))
+        self.write({"state": "in_progress"})
+
+    def action_complete(self):
+        """``in_progress`` → ``complete`` (manual; leftover reserved budget is
+        returned manually, not auto-released — see ADR-0005)."""
+        self.ensure_one()
+        if self.state != "in_progress":
+            raise UserError(_("ปิดโครงการได้เฉพาะที่กำลังดำเนินการ"))
+        self.write({"state": "complete"})
+
+    def action_reject(self):
+        """→ ``rejected`` and release the reservation. Reached from the หนังสือ
+        ปฏิเสธ outcome (bridge ``_on_sarabun_rejected``) or manually. Only a project
+        still inside the approval band can be rejected — an approved/executing or
+        finished one is past the point of refusal."""
+        if self.filtered(
+            lambda p: p.state not in ("to_verify", "to_send", "sent", "returned")
+        ):
+            raise UserError(_("ปฏิเสธได้เฉพาะโครงการที่อยู่ระหว่างขออนุมัติ"))
+        self._release_project_commitment()
+        self.write({"state": "rejected"})
+
+    def action_cancel(self):
+        """→ ``cancel`` and release the reservation (kept once any obligate/
+        consume exists). Blocked while a หนังสือ is circulating (``sent``) — the
+        send must be pulled back / voided first so no live document is orphaned —
+        and from ``complete`` (a finished project is not cancellable)."""
+        if self.filtered(lambda p: p.state == "sent"):
+            raise UserError(
+                _("ไม่สามารถยกเลิกโครงการขณะหนังสือกำลังเวียนลงนาม "
+                  "กรุณาดึงกลับหรือยกเลิกการส่งก่อน")
+            )
+        if self.filtered(lambda p: p.state == "complete"):
+            raise UserError(_("ไม่สามารถยกเลิกโครงการที่ปิดแล้ว"))
         self._release_project_commitment()
         self.write({"state": "cancel"})
 
-    def button_draft(self):
+    def action_draft(self):
+        """Reset to ``draft`` and release the reservation. Blocked from ``sent``
+        (handle the หนังสือ first), ``in_progress`` and ``complete`` (no
+        un-approving an executing/finished project)."""
+        if self.filtered(lambda p: p.state in ("sent", "in_progress", "complete")):
+            raise UserError(_("ไม่สามารถกลับเป็นแบบร่างจากสถานะนี้"))
         self._release_project_commitment()
         self.write({"state": "draft"})
 
-    def button_new(self):
-        for project in self:
-            project._check_budget_plan_lines()
-            project._reserve_project_commitment()
-        self.write({"state": "new"})
-
     def _check_budget_plan_lines(self):
-        """Validate the Project Budget Plan at confirmation. Amounts may be left
-        blank/zero while drafting, but every line must carry a positive amount
-        before the project is confirmed."""
+        """Validate the Project Budget Plan before the budget is reserved. Amounts
+        may be left blank/zero while drafting, but every line must carry a positive
+        amount before the project reserves its budget (called from
+        ``action_reserve_budget``, and again from ``_resync_project_commitment``
+        because ``returned`` reopens the plan for editing)."""
         self.ensure_one()
         lines = self.expense_line_ids
         if self.has_income:
@@ -502,19 +580,9 @@ class KmitlProject(models.Model):
                 )
             )
 
-    def button_in_progress(self):
-        self.write({"state": "in_progress"})
-
-    def button_on_hold(self):
-        self._release_project_commitment()
-        self.write({"state": "on_hold"})
-
-    def button_complete(self):
-        self.write({"state": "complete"})
-
     def _compute_is_editable(self):
         for rec in self:
-            if rec.state in ('draft', 'cancel'):
+            if rec.state in ('draft', 'returned'):
                 rec.is_editable = True
             else:
                 rec.is_editable = False
@@ -583,7 +651,7 @@ class KmitlProject(models.Model):
 
     def _ensure_project_number(self):
         """Issue the project's running number (``key``) once, when it is first
-        confirmed (``draft→new``). Idempotent — a later reset-to-draft keeps the
+        reserved (``to_verify→to_send``). Idempotent — a later reset-to-draft keeps the
         number, never re-issues it. Stamped with the project's fiscal year (not the
         confirmation calendar date) by drawing the sequence on the fiscal year's
         end date, so the number always reads as its ปีงบประมาณ. Becomes the analytic
@@ -647,7 +715,7 @@ class KmitlProject(models.Model):
 
     def _reserve_project_commitment(self):
         """Reserve one shared budget.commitment for the project's full
-        ``budget_amount`` when it is confirmed (``draft``->``new``), drawing from the
+        ``budget_amount`` when its budget is reserved (``to_verify``->``to_send``), drawing from the
         floating project-code pool (ADR-0007). Idempotent: skips when an active
         (non-cancelled) commitment already exists. Blocks on insufficient budget
         unless ``budget.allow_negative`` is set. The project's purchase requests and
@@ -718,7 +786,7 @@ class KmitlProject(models.Model):
 
     def _release_project_commitment(self):
         """Release the reservation when the project leaves the active band
-        (on hold / cancel / reset to draft). Cancels the commitment only while it is
+        (reject / cancel / reset to draft). Cancels the commitment only while it is
         untouched and no draw-down has started; once the project is in progress or
         any obligate/consume exists, the commitment is kept and a note is posted so
         in-flight spending is never stranded (ADR-0007)."""
@@ -739,3 +807,25 @@ class KmitlProject(models.Model):
                 project.message_post(
                     body=_("ยกเลิกการจองงบประมาณ %s") % commitment.name
                 )
+
+    def _resync_project_commitment(self):
+        """Re-align the reservation with the current ``budget_amount`` / dimensions
+        after the project was edited in ``returned`` (ADR-0005 reopens every field
+        there). Safe only pre-approval — no obligate/consume yet — so cancel the
+        stale commitment and reserve afresh, which re-runs the availability check
+        against the new figures. No-op when nothing budget-relevant changed."""
+        self.ensure_one()
+        # The plan tables are editable in ``returned`` too, so re-run the same
+        # every-line-positive check the reserve step applied.
+        self._check_budget_plan_lines()
+        active = self.budget_commitment_ids.filtered(
+            lambda c: c.state != "cancel"
+        )[:1]
+        if not active:
+            return
+        dist = dict(self.analytic_distribution or {})
+        if active.amount != self.budget_amount or (
+            active.analytic_distribution or {}
+        ) != dist:
+            self._release_project_commitment()
+            self._reserve_project_commitment()
