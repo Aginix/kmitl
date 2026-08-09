@@ -214,6 +214,18 @@ class TestRoleUnit(TransactionCase):
         )
         self.assertEqual(now_seen, act, "officer in the new OU picks it up")
 
+    def test_cleared_source_ou_keeps_routing(self):
+        """Clearing the source's OU must not wipe the activity's: a group Todo
+        with neither assignee nor unit would be routed to nobody."""
+        self.rec.operating_unit_id = self.ou
+        act = self._schedule_group()
+        self.rec.operating_unit_id = False
+        self.assertEqual(act.operating_unit_id, self.ou, "keeps the last known OU")
+        seen = self.Activity.with_user(self.officer).search(
+            [("is_my_todo", "=", True), ("id", "=", act.id)]
+        )
+        self.assertEqual(seen, act, "officer still sees the group Todo")
+
     def test_gc_keeps_shared_group_todo(self):
         """Retention GC must never delete a shared group Todo on one member's
         read (ADR-0003)."""

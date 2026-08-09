@@ -21,7 +21,10 @@ class MailActivityMixin(models.AbstractModel):
                 stale = record.activity_ids.filtered(
                     lambda a: a.operating_unit_id.id != ou_id
                 )
-                if stale:
+                # Only a real OU propagates: clearing the source's OU would
+                # leave a group Todo with neither assignee nor unit — routed to
+                # nobody — so it keeps the last known unit instead.
+                if stale and ou_id:
                     # sudo: whoever moves the source OU need not own the group
                     # activities (their user_id is empty); syncing the OU cache
                     # is a system action, not a per-user edit.
