@@ -174,6 +174,52 @@ class TestRoleUnit(TransactionCase):
         act = self._schedule_group()  # passes operating_unit_id=self.ou
         self.assertEqual(act.operating_unit_id, self.ou)
 
+    def test_normal_user_can_read_role(self):
+        """A regular user must be able to read res.users.role to display it on a
+        group Todo and to pick it in the Schedule Activity popup (ACL grant)."""
+        found = (
+            self.env["res.users.role"]
+            .with_user(self.officer)
+            .name_search(self.role.name)
+        )
+        self.assertIn(self.role.id, [r[0] for r in found])
+
+    def test_popup_pick_role_makes_group_todo(self):
+        """Chatter path: picking a role clears the default assignee and surfaces
+        the source record's OU, so the activity becomes a group Todo — not the
+        personal one the popup would otherwise create."""
+        self.rec.operating_unit_id = self.ou
+        model_id = self.env["ir.model"]._get("test.todo.host.role.unit").id
+        act = self.Activity.new(
+            {
+                "activity_type_id": self.type_ack.id,
+                "res_model_id": model_id,
+                "res_id": self.rec.id,
+                "user_id": self.env.user.id,  # the popup's default assignee
+            }
+        )
+        act.responsible_role_id = self.role
+        act._onchange_responsible_role_id()
+        self.assertFalse(act.user_id, "picking a role clears the single assignee")
+        self.assertEqual(
+            act.operating_unit_id, self.ou, "OU surfaces from the source record"
+        )
+
+    def test_popup_pick_assignee_clears_role(self):
+        """Choosing a person makes it personal again — the group role drops."""
+        model_id = self.env["ir.model"]._get("test.todo.host.role.unit").id
+        act = self.Activity.new(
+            {
+                "activity_type_id": self.type_ack.id,
+                "res_model_id": model_id,
+                "res_id": self.rec.id,
+                "responsible_role_id": self.role.id,
+            }
+        )
+        act.user_id = self.officer
+        act._onchange_user_id_clear_role()
+        self.assertFalse(act.responsible_role_id)
+
     def test_ou_follows_source_change(self):
         """Moving the source record to another OU re-routes its open group Todos
         live: the old OU's holder drops out, the new OU's holder sees it."""

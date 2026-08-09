@@ -57,6 +57,34 @@ class MailActivity(models.Model):
         record = source.sudo().browse(res_id).exists()
         return record.operating_unit_id
 
+    # ------------------------------------------------------------------
+    # Group vs personal are mutually exclusive on the form (chatter "Schedule
+    # Activity" popup + inbox form): a role routes to everyone holding it in the
+    # OU (user_id empty), a single assignee routes to one person. The core popup
+    # defaults user_id to the current user, so without this picking a role would
+    # leave a stray assignee and the Todo would stay personal.
+    # ------------------------------------------------------------------
+    @api.onchange("responsible_role_id")
+    def _onchange_responsible_role_id(self):
+        """Pick a role → make it a group Todo: drop the single assignee and
+        surface the source record's OU (also filled on save via create)."""
+        if self.responsible_role_id:
+            self.user_id = False
+            if not self.operating_unit_id:
+                self.operating_unit_id = self._source_operating_unit(
+                    {
+                        "res_model": self.res_model,
+                        "res_model_id": self.res_model_id.id,
+                        "res_id": self.res_id,
+                    }
+                )
+
+    @api.onchange("user_id")
+    def _onchange_user_id_clear_role(self):
+        """Assign a person → make it personal: drop the group role."""
+        if self.user_id:
+            self.responsible_role_id = False
+
     def _my_todo_domain(self):
         """Extend the personal inbox domain (core) with group Todos for a role
         the user holds in one of their operating units — unclaimed, or claimed
