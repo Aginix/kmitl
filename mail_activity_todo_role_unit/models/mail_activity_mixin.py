@@ -4,6 +4,30 @@ from odoo import fields, models
 class MailActivityMixin(models.AbstractModel):
     _inherit = "mail.activity.mixin"
 
+    def write(self, vals):
+        """Keep the OU cached on open activities in step with the source record.
+
+        The activity's ``operating_unit_id`` is a denormalised copy of the source
+        record's OU (ADR-0002). When the source moves to another operating unit,
+        its open group Todos must follow so visibility re-resolves live (role ∩
+        *new* OU). Writing the OU onto the activities also fires
+        ``mail.activity._todo_notify`` (before + after), so the old and new OU
+        members' badges refresh immediately — not only on reload.
+        """
+        res = super().write(vals)
+        if "operating_unit_id" in vals and "operating_unit_id" in self._fields:
+            for record in self:
+                ou_id = record.operating_unit_id.id
+                stale = record.activity_ids.filtered(
+                    lambda a: a.operating_unit_id.id != ou_id
+                )
+                if stale:
+                    # sudo: whoever moves the source OU need not own the group
+                    # activities (their user_id is empty); syncing the OU cache
+                    # is a system action, not a per-user edit.
+                    stale.sudo().write({"operating_unit_id": ou_id})
+        return res
+
     def activity_schedule(
         self, act_type_xmlid="", date_deadline=None, summary="", note="", **act_values
     ):

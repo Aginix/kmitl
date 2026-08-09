@@ -11,6 +11,7 @@ class TodoHostRoleUnit(models.Model):
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
     name = fields.Char()
+    operating_unit_id = fields.Many2one("operating.unit")
 
 
 @tagged("post_install", "-at_install")
@@ -128,6 +129,90 @@ class TestRoleUnit(TransactionCase):
         self.assertIn(
             self.officer.partner_id, group._todo_recipient_partners()
         )
+
+    def test_autofill_ou_from_source_on_schedule(self):
+        """Scheduling a group Todo without an OU inherits the source record's OU
+        (ADR-0002): callers pass only the role."""
+        self.rec.operating_unit_id = self.ou
+        act = self.rec.activity_schedule(
+            activity_type_id=self.type_ack.id,
+            responsible_role_id=self.role.id,
+        )
+        self.assertEqual(
+            act.operating_unit_id,
+            self.ou,
+            "activity should inherit the source record's OU",
+        )
+        self.assertFalse(act.user_id, "still a group Todo")
+
+    def test_autofill_ou_on_chatter_create(self):
+        """A plain activity created from the chatter (personal, no role) also
+        picks up the source record's OU so history / grouping stay correct."""
+        self.rec.operating_unit_id = self.ou
+        act = self.env["mail.activity"].create(
+            {
+                "activity_type_id": self.type_ack.id,
+                "res_model_id": self.env["ir.model"]
+                ._get("test.todo.host.role.unit")
+                .id,
+                "res_id": self.rec.id,
+                "user_id": self.officer.id,
+            }
+        )
+        self.assertEqual(act.operating_unit_id, self.ou)
+
+    def test_explicit_ou_is_not_overwritten(self):
+        """An OU passed by the caller wins over the source record's OU."""
+        ou2 = self.env["operating.unit"].create(
+            {
+                "name": "Test OU 2",
+                "code": "TST-OU2",
+                "partner_id": self.env.company.partner_id.id,
+            }
+        )
+        self.rec.operating_unit_id = ou2
+        act = self._schedule_group()  # passes operating_unit_id=self.ou
+        self.assertEqual(act.operating_unit_id, self.ou)
+
+    def test_ou_follows_source_change(self):
+        """Moving the source record to another OU re-routes its open group Todos
+        live: the old OU's holder drops out, the new OU's holder sees it."""
+        act = self._schedule_group()
+        seen = self.Activity.with_user(self.officer).search(
+            [("is_my_todo", "=", True), ("id", "=", act.id)]
+        )
+        self.assertEqual(seen, act, "officer (in self.ou) sees it first")
+
+        ou2 = self.env["operating.unit"].create(
+            {
+                "name": "Test OU 2",
+                "code": "TST-OU2",
+                "partner_id": self.env.company.partner_id.id,
+            }
+        )
+        officer2 = self.env["res.users"].create(
+            {
+                "name": "Officer 2",
+                "login": "role_unit_officer_ou2",
+                "groups_id": [(4, self.env.ref("base.group_user").id)],
+                "role_line_ids": [(0, 0, {"role_id": self.role.id})],
+            }
+        )
+        ou2.sudo().write({"user_ids": [(4, officer2.id)]})
+
+        # Source moves OU → the cache on the open activity must follow.
+        self.rec.operating_unit_id = ou2
+        self.assertEqual(
+            act.operating_unit_id, ou2, "activity OU must track the source"
+        )
+        gone = self.Activity.with_user(self.officer).search(
+            [("is_my_todo", "=", True), ("id", "=", act.id)]
+        )
+        self.assertFalse(gone, "officer in the old OU drops out")
+        now_seen = self.Activity.with_user(officer2).search(
+            [("is_my_todo", "=", True), ("id", "=", act.id)]
+        )
+        self.assertEqual(now_seen, act, "officer in the new OU picks it up")
 
     def test_gc_keeps_shared_group_todo(self):
         """Retention GC must never delete a shared group Todo on one member's

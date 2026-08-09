@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class MailActivity(models.Model):
@@ -21,6 +21,41 @@ class MailActivity(models.Model):
     )
     # Group Todos have no single assignee (ADR-0002).
     user_id = fields.Many2one(required=False)
+
+    # ------------------------------------------------------------------
+    # Operating Unit is a cache of the *source record's* OU (ADR-0002).
+    # Denormalised onto the activity so routing / history / group-by stay pure
+    # SQL, and kept live by mail.activity.mixin.write (source OU change → the
+    # open activities follow). Filled here at creation for every path — chatter
+    # "Schedule Activity", the inbox form, and activity_schedule alike.
+    # ------------------------------------------------------------------
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get("operating_unit_id"):
+                ou = self._source_operating_unit(vals)
+                if ou:
+                    vals["operating_unit_id"] = ou.id
+        return super().create(vals_list)
+
+    @api.model
+    def _source_operating_unit(self, vals):
+        """The operating unit of the source record these vals point at, when that
+        model carries one — else an empty recordset. sudo: reading the source's
+        OU is metadata resolution, independent of who schedules the activity."""
+        res_id = vals.get("res_id")
+        if not res_id:
+            return self.env["operating.unit"]
+        model = vals.get("res_model")
+        if not model and vals.get("res_model_id"):
+            model = self.env["ir.model"].sudo().browse(vals["res_model_id"]).model
+        if not model or model not in self.env:
+            return self.env["operating.unit"]
+        source = self.env[model]
+        if "operating_unit_id" not in source._fields:
+            return self.env["operating.unit"]
+        record = source.sudo().browse(res_id).exists()
+        return record.operating_unit_id
 
     def _my_todo_domain(self):
         """Extend the personal inbox domain (core) with group Todos for a role
