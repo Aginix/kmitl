@@ -60,7 +60,10 @@ class PurchaseRequest(models.Model):
 
     def _resume_returned_sarabun(self):
         """Revive the latest cancelled sarabun on this PR back to editable
-        ``draft`` (same document + register number). Called from
+        ``draft`` (same document + register number) and re-sync the
+        origin-driven fields (``subject`` / ``sender_department_id``) from the
+        current PR — so if the user edited PR.title while it was returned to
+        draft, the หนังสือ picks up the new subject on resume. Called from
         :meth:`action_submit_to_sarabun` when the two-step ตีกลับ/แก้ไข resume
         conditions are met."""
         self.ensure_one()
@@ -78,9 +81,16 @@ class PurchaseRequest(models.Model):
         doc = doc.sudo()
         doc.routing_step_ids._clear_activities()
         doc._restart_chain()
-        doc.write({"state": "draft"})
+        resume_vals = {"state": "draft", "subject": self._get_sarabun_subject()}
+        dept = self._get_sarabun_sender_department()
+        if dept:
+            resume_vals["sender_department_id"] = dept.id
+        doc.write(resume_vals)
         doc.message_post(
-            body=_("หนังสือถูกนำกลับมาใช้ใหม่จากใบเดิมที่ถูกยกเลิก"),
+            body=_(
+                "หนังสือถูกนำกลับมาใช้ใหม่จากใบเดิมที่ถูกยกเลิก และ sync "
+                "ค่าจาก พ.1 (subject, sender department)"
+            ),
             subtype_xmlid="mail.mt_note",
         )
         return {
