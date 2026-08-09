@@ -23,9 +23,12 @@
             t-set="_state_labels"
             t-value="{
                 'draft': 'แบบร่าง',
-                'new': 'ยังไม่เริ่มดำเนินการ',
+                'to_verify': 'รอตรวจสอบ/จองงบ',
+                'to_send': 'รอส่งขออนุมัติ',
+                'sent': 'ส่งขออนุมัติแล้ว',
+                'returned': 'ถูกตีกลับ',
+                'rejected': 'ถูกปฏิเสธ',
                 'in_progress': 'กำลังดำเนินการ',
-                'on_hold': 'ชะลอ',
                 'complete': 'แล้วเสร็จ',
                 'cancel': 'ยกเลิก',
             }"
@@ -34,11 +37,14 @@
             t-set="_state_colors"
             t-value="{
                 'draft': 'secondary',
-                'new': 'info',
+                'to_verify': 'info',
+                'to_send': 'info',
+                'sent': 'primary',
+                'returned': 'warning text-dark',
+                'rejected': 'danger',
                 'in_progress': 'primary',
-                'on_hold': 'warning text-dark',
                 'complete': 'success',
-                'cancel': 'danger',
+                'cancel': 'dark',
             }"
         />
         <span
