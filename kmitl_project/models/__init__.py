@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from . import kmitl_project
+# Must follow kmitl_project: it layers base.exception (and the detect_exceptions
+# gate on ยืนยัน) onto the model defined there.
+from . import kmitl_project_exception
 from . import project_strategic_plan
 from . import project_fight
 from . import project_global_index

@@ -1,6 +1,8 @@
 # Project budget floats until its project reserves it
 
-For a *project-type* budget code (`budget.account.is_project`), posting the source `budget.appropriation` does **not** reserve and does **not** auto-create any downstream record. The money sits as **floating budget (เงินลอย)** — appropriated pool carrying the four dimensions but no `kmitl_project` dimension. The reservation (`budget.commitment`, the full `budget_amount`) fires later, when a `kmitl.project` drawing on that pool is confirmed (`action_new`, `draft→new`). From `new` onward the project is spent like a procurement plan: one shared commitment drawn down by its purchase requests and disbursements.
+For a *project-type* budget code (`budget.account.is_project`), posting the source `budget.appropriation` does **not** reserve and does **not** auto-create any downstream record. The money sits as **floating budget (เงินลอย)** — appropriated pool carrying the four dimensions but no `kmitl_project` dimension. The reservation (`budget.commitment`, the full `budget_amount`) fires later, when a `kmitl.project` drawing on that pool reserves it. From the reserve point onward the project is spent like a procurement plan: one shared commitment drawn down by its purchase requests and disbursements.
+
+> **Reserve trigger revised** by [kmitl_project ADR-0005](../../../kmitl_project/docs/adr/0005-approval-gated-lifecycle-esaraban.md): reservation moved from the old `draft→new` Confirm to the `to_verify→to_send` "จองงบประมาณ" step of the project's e-Saraban approval. The floating-budget model in this ADR is otherwise unchanged.
 
 This deliberately diverges from [ADR-0005](./0005-reserve-on-appropriation-posting.md) (which reserves a procurement plan the instant its appropriation posts) and relaxes the one-active-PR rule of [ADR-0006](./0006-plan-driven-pr-created-from-plan.md): a project may hold **many** purchase requests against its single commitment, capped at the commitment amount.
 

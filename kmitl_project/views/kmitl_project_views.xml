@@ -44,19 +44,20 @@
         <field name="arch" type="xml">
             <form string="KMITL Project">
                 <header>
-                    <button string="Confirm" name="button_new" states="draft" type="object" class="oe_highlight" />
-                    <button string="In Progress" name="button_in_progress" states="new" type="object" />
-                    <button string="On hold" name="button_on_hold" states="new" type="object" />
-                    <button string="Complete" name="button_complete" states="in_progress" type="object" class="oe_highlight" />
-                    <button string="Reset to Draft" name="button_draft" groups="project.group_project_manager" states="cancel,in_progress,on_hold" type="object" />
-                    <button string="Reset to Draft" name="button_draft" states="new" type="object" />
-                    <button string="Cancel" name="button_cancel" groups="project.group_project_manager" states="draft,new,in_progress,on_hold" type="object" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,new,in_progress,complete" />
+                    <button string="ยืนยัน" name="action_confirm" states="draft" type="object" class="oe_highlight" />
+                    <button string="จองงบประมาณ" name="action_reserve_budget" states="to_verify" type="object" class="oe_highlight" />
+                    <button string="อนุมัติ" name="action_approve" states="to_send,sent" type="object" class="oe_highlight" />
+                    <button string="ปิดโครงการ" name="action_complete" states="in_progress" type="object" class="oe_highlight" />
+                    <button string="Reset to Draft" name="action_draft" states="to_verify,to_send,returned" type="object" />
+                    <button string="Reset to Draft" name="action_draft" groups="project.group_project_manager" states="rejected,cancel" type="object" />
+                    <button string="Cancel" name="action_cancel" groups="project.group_project_manager" states="draft,to_verify,to_send,returned,rejected,in_progress" type="object" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,to_send,sent,in_progress,complete" />
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
                     <widget name="web_ribbon" title="Cancelled" bg_color="bg-black" attrs="{'invisible': [('state', '!=', 'cancel')]}" />
-                    <widget name="web_ribbon" title="On hold" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'on_hold')]}" />
+                    <widget name="web_ribbon" title="ถูกตีกลับ" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'returned')]}" />
+                    <widget name="web_ribbon" title="ถูกปฏิเสธ" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'rejected')]}" />
                     <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'complete')]}" />
                     <field name="is_editable" invisible="1" />
                     <div class="oe_button_box" name="button_box" groups="base.group_user">
@@ -123,11 +124,11 @@
                             </group>
                             <group name="budget" string="งบประมาณ">
                                 <field name="budget_amount" required="1"/>
-                                <field name="budget_remaining" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                                <field name="budget_remaining" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
                                 <button name="action_open_reservation_picker" type="object"
                                     string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
                                     class="btn btn-primary" icon="fa-sitemap" colspan="2"
-                                    attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                                    attrs="{'invisible': [('state', 'not in', ('draft', 'returned'))]}"/>
                                 <field name="budget_account_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="activity_analytic_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="fund_analytic_id" readonly="1" widget="selection" />

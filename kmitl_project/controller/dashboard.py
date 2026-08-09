@@ -7,6 +7,12 @@ from odoo.http import request
 
 _logger = logging.getLogger(__name__)
 
+# States whose budget_amount must not be counted in the dashboard: the project
+# either has not reserved anything yet (draft, to_verify) or has released what it
+# reserved (rejected, cancel). Everything from to_send onward holds a live
+# reservation and belongs in the totals (kmitl_project ADR-0005).
+UNBUDGETED_STATES = ["draft", "to_verify", "rejected", "cancel"]
+
 
 class KmitlProjectDashboard(http.Controller):
     """Project dashboard grouped by the *department* financial dimension
@@ -141,10 +147,10 @@ class KmitlProjectDashboard(http.Controller):
         }
 
     def _build_project_domain(self, **kw):
-        """Build search domain excluding draft and cancel states"""
+        """Build search domain excluding the states that hold no reserved budget"""
         domain = [
             ("active", "=", True),
-            ("state", "not in", ["draft", "cancel"]),
+            ("state", "not in", UNBUDGETED_STATES),
         ]
 
         if kw.get("fiscal_year_id"):
@@ -361,7 +367,7 @@ class KmitlProjectDashboard(http.Controller):
         """Build search domain for department-dimension filtering using parent_path"""
         domain = [
             ("active", "=", True),
-            ("state", "not in", ["draft", "cancel"]),
+            ("state", "not in", UNBUDGETED_STATES),
         ]
 
         if fiscal_year_id:
