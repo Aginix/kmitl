@@ -422,10 +422,10 @@
                                                     t-as="month"
                                                 >
                                                     <td class="text-center">
-                                                        <i
+                                                        <span
                                                             t-if="month"
-                                                            class="fa fa-check text-success"
-                                                        />
+                                                            class="text-success fw-bold"
+                                                        >&#10003;</span>
                                                     </td>
                                                 </t>
                                             </tr>
@@ -624,7 +624,7 @@
                                     <li t-foreach="kmitl_project.output_ids" t-as="output_id">
                                         <span t-field="output_id.name" />
                                         <span class="text-muted">
-                                            (<t t-out="'{:,.0f}'.format(output_id.amount)" />
+                                            (<span t-field="output_id.target" />
                                             <span t-field="output_id.unit" />)
                                         </span>
                                     </li>
@@ -637,7 +637,7 @@
                                     <li t-foreach="kmitl_project.outcome_ids" t-as="outcome_id">
                                         <span t-field="outcome_id.name" />
                                         <span class="text-muted">
-                                            (<t t-out="'{:,.0f}'.format(outcome_id.amount)" />
+                                            (<span t-field="outcome_id.target" />
                                             <span t-field="outcome_id.unit" />)
                                         </span>
                                     </li>
