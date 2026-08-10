@@ -10,201 +10,364 @@
                             font-family: "THSarabunNew", Arial, sans-serif;
                             --bs-body-font-size: 16pt;
                         }
-                        table.budget tr td:first-child {
-                            width: 30%;
-                        }
                         p,
                         span,
                         div {
                             font-size: 16pt;
                             line-height: 1.2;
+                            margin-bottom: 0;
                         }
+                        .item-title {
+                          font-size: 16pt;
+                          font-weight: bold;
+                        }
+                        .item-content {
+                          padding-left: 16pt;
+                        }
+                        .content .row {
+                          margin-bottom: 16pt;
+                        }
+                        .paragraph {
+                          text-indent: 16pt;
+                          white-space: pre-wrap;
+                        }
+                        /* Plain report tables (not Bootstrap-styled). */
+                        table.report-table {
+                          width: 100%;
+                          border-collapse: collapse;
+                          margin-bottom: 8pt;
+                        }
+                        table.report-table th,
+                        table.report-table td {
+                          border: 1px solid #000;
+                          padding: 2pt 4pt;
+                          font-size: 16pt;
+                          vertical-align: top;
+                        }
+                        table.report-table th {
+                          text-align: center;
+                          font-weight: bold;
+                        }
+                        .num { text-align: right; white-space: nowrap; }
+                        .center { text-align: center; }
+                        .bold { font-weight: bold; }
+                        .cat-total { color: #444; font-size: 13pt; }
+                        .month-cell { text-align: center; width: 22pt; padding: 2pt 1pt; }
                     </style>
 
                     <div class="page">
                         <div style="position: absolute; top: 0px; left: 0px">
-                            <img
-                                t-if="o.company_id.logo"
-                                t-att-src="image_data_uri(o.company_id.logo)"
-                                style="max-height: 110px"
-                                alt="Logo"
-                            />
+                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 110px" alt="Logo"/>
                         </div>
                         <div style="position: absolute; top: 0px; right: 0px">
                             <div>แบบเสนอโครงการ</div>
                         </div>
-                        <div class="oe_structure" />
-                        <div style="height: 1px" />
+                        <div class="oe_structure"/>
+                        <div style="height: 1px"/>
                         <div class="page-header mt-5 mb-5">
-                            <h3
-                                class="text-center fw-bolder"
-                                style="line-height: 1.575"
-                            >
-                                แบบเสนอโครงการ ประจำปีงบประมาณ พ.ศ. <span t-field="o.account_fiscal_year_id" /> <br />
+                            <h3 class="text-center fw-bolder" style="line-height: 1.575">
+                                แบบเสนอโครงการ ประจำปีงบประมาณ พ.ศ. <span t-field="o.account_fiscal_year_id"/> <br/>
                                 <span>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</span>
                             </h3>
                             <h3 class="text-center">
                                 <span t-out="o.source_analytic_id.name" />
                             </h3>
                         </div>
+                        <div class="content">
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">1. ชื่อโครงการ</div>
+                                <p class="paragraph" t-out="o.name"/>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">2. หลักการและเหตุผล</div>
+                                <div class="item-content">
+                                  <p class="paragraph" t-out="o.introduction"/>
+                                </div>
+                              </div>
+                          </div>
+                          <!--<div class="row">-->
+                          <!--    <div class="col-12">-->
+                          <!--      <div class="item-title">3. ความสอดคล้องกับยุทธศาสตร์</div>-->
 
-                        <div class="row">
-                            <div class="col-12">
-                                <b>1. ชื่อโครงการ : </b>
-                            </div>
+                          <!--    </div>-->
+                          <!--</div>-->
+                          <!--<div class="row">-->
+                          <!--    <div class="col-12">-->
+                          <!--      <div class="item-title">4. ความสอดคล้องกับนโยบายสถาบัน</div>-->
+                          <!--    </div>-->
+                          <!--</div>-->
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">3. ความสอดคล้องกับค่านิยม : FIGHT</div>
+                                <div class="item-content">
+                                  <span t-if="o.fight_id" t-field="o.fight_id.name"/>
+                                  <span t-if="o.fight_id.description"> : <t t-out="o.fight_id.description"/></span>
+                                  <span t-if="not o.fight_id">-</span>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">4. ด้าน/แผนงาน/กิจกรรม</div>
+                                <div class="item-content">
+                                  <span t-if="o.activity_analytic_id" t-field="o.activity_analytic_id.display_name"/>
+                                  <span t-if="not o.activity_analytic_id">-</span>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">5. วัตถุประสงค์</div>
+                                <div class="item-content">
+                                  <p t-out="o.objective" style="white-space: pre-wrap;"/>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">6. ผู้รับผิดชอบโครงการ</div>
+                                <div class="item-content">
+                                  <div>หัวหน้าโครงการ : <span t-out="o.manager_id.name or '-'"/></div>
+                                  <div>ส่วนงาน : <span t-out="o.department_analytic_id.name or '-'"/></div>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">7. สถานที่/พื้นที่ดำเนินโครงการ</div>
+                                <p class="paragraph" t-out="o.location"/>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">8. ระยะเวลาดำเนินโครงการ</div>
+                                <div class="item-content">
+                                  ตั้งแต่
+                                  <span t-if="o.date_start" t-out="o.date_start.strftime('%d/%m/') + str(o.date_start.year + 543)"/>
+                                  <span t-if="not o.date_start">-</span>
+                                  ถึง
+                                  <span t-if="o.date_end" t-out="o.date_end.strftime('%d/%m/') + str(o.date_end.year + 543)"/>
+                                  <span t-if="not o.date_end">-</span>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">9. วิธีดำเนินการ</div>
+                                <div class="item-content">
+                                  <div t-foreach="o.methodology_ids" t-as="method" t-out="method.name"/>
+                                  <p class="paragraph" t-out="o.methodology_detail"/>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">10. กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ</div>
+                                <div class="item-content">
+                                  <t t-set="target_sections" t-value="[                                       ('กลุ่มเป้าหมาย', o.target_ids),                                       ('ผู้เข้าร่วม', o.participant_ids),                                       ('ผู้ดำเนินโครงการ', o.organizer_ids),                                   ]"/>
+                                  <table class="report-table">
+                                    <thead>
+                                      <tr>
+                                        <th>รายการ</th>
+                                        <th style="width: 120pt;">จำนวน (คน)</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <t t-foreach="target_sections" t-as="section">
+                                        <tr>
+                                          <td class="bold" colspan="2" t-out="section[0]"/>
+                                        </tr>
+                                        <tr t-foreach="section[1]" t-as="line">
+                                          <td t-out="line.name"/>
+                                          <td class="num" t-out="'{:,.0f}'.format(line.amount)"/>
+                                        </tr>
+                                        <tr t-if="not section[1]">
+                                          <td>-</td>
+                                          <td/>
+                                        </tr>
+                                      </t>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">11. เป้าหมาย ผลผลิต และผลลัพธ์ </div>
+                                <div class="item-content">
+                                  <table class="report-table">
+                                    <thead>
+                                      <tr>
+                                        <th style="width: 55%">ตัวชี้วัด</th>
+                                        <th>หน่วยนับ</th>
+                                        <th style="width: 120pt;">เป้าหมาย</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td class="bold" colspan="3">ผลผลิต (Output)</td>
+                                      </tr>
+                                      <tr t-foreach="o.output_ids" t-as="line">
+                                        <td t-out="line.name"/>
+                                        <td class="center" t-out="line.unit"/>
+                                        <td class="center" t-out="'{:,.0f}'.format(line.amount)"/>
+                                      </tr>
+                                      <tr>
+                                        <td class="bold" colspan="3">ผลลัพธ์ (Outcome)</td>
+                                      </tr>
+                                      <tr t-foreach="o.outcome_ids" t-as="line">
+                                        <td t-out="line.name"/>
+                                        <td class="center" t-out="line.unit"/>
+                                        <td class="center" t-out="'{:,.0f}'.format(line.amount)"/>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">12. แผนการดำเนินงานและแผนการใช้จ่ายงบประมาณ  </div>
+                                <div class="item-content">
+                                  <table class="report-table">
+                                    <thead>
+                                      <tr>
+                                        <th rowspan="3" style="vertical-align: middle;">รายการ</th>
+                                        <th rowspan="3" style="vertical-align: middle; width: 80pt;">งบประมาณ</th>
+                                        <th colspan="12">ระยะเวลาดำเนินการ</th>
+                                      </tr>
+                                      <tr>
+                                        <th colspan="3">ไตรมาส 1</th>
+                                        <th colspan="3">ไตรมาส 2</th>
+                                        <th colspan="3">ไตรมาส 3</th>
+                                        <th colspan="3">ไตรมาส 4</th>
+                                      </tr>
+                                      <tr>
+                                        <th class="month-cell">ต.ค.</th>
+                                        <th class="month-cell">พ.ย.</th>
+                                        <th class="month-cell">ธ.ค.</th>
+                                        <th class="month-cell">ม.ค.</th>
+                                        <th class="month-cell">ก.พ.</th>
+                                        <th class="month-cell">มี.ค.</th>
+                                        <th class="month-cell">เม.ย.</th>
+                                        <th class="month-cell">พ.ค.</th>
+                                        <th class="month-cell">มิ.ย.</th>
+                                        <th class="month-cell">ก.ค.</th>
+                                        <th class="month-cell">ส.ค.</th>
+                                        <th class="month-cell">ก.ย.</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr t-foreach="o.plan_ids" t-as="plan">
+                                        <td t-out="plan.name"/>
+                                        <td class="num" t-out="'{:,.2f}'.format(plan.amount)"/>
+                                        <td class="month-cell"><t t-if="plan.m10">✓</t></td>
+                                        <td class="month-cell"><t t-if="plan.m11">✓</t></td>
+                                        <td class="month-cell"><t t-if="plan.m12">✓</t></td>
+                                        <td class="month-cell"><t t-if="plan.m1">✓</t></td>
+                                        <td class="month-cell"><t t-if="plan.m2">✓</t></td>
+                                        <td class="month-cell"><t t-if="plan.m3">✓</t></td>
+                                        <td class="month-cell"><t t-if="plan.m4">✓</t></td>
+                                        <td class="month-cell"><t t-if="plan.m5">✓</t></td>
+                                        <td class="month-cell"><t t-if="plan.m6">✓</t></td>
+                                        <td class="month-cell"><t t-if="plan.m7">✓</t></td>
+                                        <td class="month-cell"><t t-if="plan.m8">✓</t></td>
+                                        <td class="month-cell"><t t-if="plan.m9">✓</t></td>
+                                      </tr>
+                                      <tr>
+                                        <td class="bold num">รวม</td>
+                                        <td class="bold num" t-out="'{:,.2f}'.format(sum(o.plan_ids.mapped('amount')))"/>
+                                        <td colspan="12"/>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">13. งบประมาณโครงการ</div>
+                                <div class="item-content">
+                                  <t t-set="budget_sections" t-value="[('รายรับ', o.income_line_ids)] if o.has_income else []"/>
+                                  <t t-set="budget_sections" t-value="budget_sections + [('รายจ่าย', o.expense_line_ids)]"/>
+                                  <t t-foreach="budget_sections" t-as="section">
+                                    <div class="bold" t-out="section[0]"/>
+                                    <table class="report-table">
+                                      <thead>
+                                        <tr>
+                                          <th style="width: 45%">รายการ</th>
+                                          <th>คำอธิบาย</th>
+                                          <th style="width: 120pt;">จำนวนเงิน (บาท)</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr t-foreach="o._budget_report_rows(section[1])" t-as="row">
+                                          <t t-if="row['type'] == 'header'">
+                                            <td class="bold" t-attf-style="padding-left: {{ 4 + row['level'] * 18 }}pt;" t-out="row['name']"/>
+                                            <td/>
+                                            <td class="num bold" t-out="'{:,.2f}'.format(row['total'])"/>
+                                          </t>
+                                          <t t-else="">
+                                            <td t-attf-style="padding-left: {{ 4 + row['level'] * 18 }}pt;" t-out="row['name']"/>
+                                            <td style="white-space: pre-wrap;" t-out="row['description']"/>
+                                            <td class="num" t-out="'{:,.2f}'.format(row['amount'])"/>
+                                          </t>
+                                        </tr>
+                                        <tr t-if="not section[1]">
+                                          <td colspan="3">-</td>
+                                        </tr>
+                                        <tr>
+                                          <td class="bold num" colspan="2">รวม<t t-out="section[0]"/></td>
+                                          <td class="bold num" t-out="'{:,.2f}'.format(sum(section[1].mapped('amount')))"/>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </t>
+                                  <div class="text-end bold">
+                                    งบประมาณที่ขอรับการจัดสรร : <span t-out="'{:,.2f}'.format(o.budget_amount)"/> บาท
+                                  </div>
+                                  <div class="text-end" t-if="o.budget_amount">
+                                    (<t t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.budget_amount)"/>)
+                                  </div>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">14. ผลที่คาดว่าจะได้รับ</div>
+                                <div class="item-content">
+                                    <div t-foreach="o.expected_outcome_ids" t-as="line">
+                                      <t t-out="line_index + 1"/>. <t t-out="line.name"/>
+                                    </div>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">15. วิธีการ/เครื่องมือติดตามและประเมินผล</div>
+                                <div class="item-content">
+                                  <div t-foreach="o.evaluation_ids" t-as="line" t-out="line.name"/>
+                                  <div t-if="o.evaluation_detail">
+                                    อื่น ๆ  <span t-out="o.evaluation_detail"/>
+                                  </div>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                <div class="item-title">16. เอกสารประกอบการพิจารณาโครงการ (Check List)</div>
+                                <div class="item-content">
+                                  <ul t-if="o.attachment_ids" style="margin-bottom: 0;">
+                                    <li t-foreach="o.attachment_ids" t-as="attachment" t-out="attachment.name"/>
+                                  </ul>
+                                  <span t-if="not o.attachment_ids">-</span>
+                                </div>
+                              </div>
+                          </div>
                         </div>
-
-                        <!-- <div class="row">
-                            <div class="col-8">
-                                เลขที่
-                                <span class="ms-2 fw-normal" t-out="o.name" />
-                            </div>
-                            <div class="col">
-                                วันที่
-                                <span
-                                    class="ms-2 fw-normal"
-                                    t-esc="o.format_date_thai(o.date_start)"
-                                />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                หน่วยงาน
-                                <span
-                                    class="ms-2"
-                                    t-out="o.department_analytic_id.name"
-                                />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                เรื่อง <span class="ms-2" t-out="o.title" />
-                            </div>
-                        </div>
-
-                        <div class="my-4" />
-                        <p style="text-indent: 6em">
-                            ตาม ใบขอซื้อขอจ้าง,PR ต้องการ<span
-                                ><span t-field="o.procurement_type_id" />
-                                <span t-out="o.product_id.name"
-                            /></span>
-                            ด้วยวิธีการ<span t-field="o.procurement_method_id" /> เลขที่
-                            <span t-field="o.request_id" /> ลงวันที่ 3 กรกฎาคม พ.ศ. 2568
-                            ได้รับอนุมัติหลักการและงบประมาณ <span t-out="o.product_id.name" /> งบประมาณ
-                            <t t-out="'{0:,.2f}'.format(o.amount_total)" /> บาท (<t
-                                t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
-                            />) นั้น
-                        </p>
-
-                        <div class="my-4" />
-
-                        <div class="row">
-                            <div class="col">
-                                เหตุผลความจำเป็น
-                                <span
-                                    class="fw-bolder text-decoration-underline"
-                                    t-out="o.description"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col">
-                                โดยใช้งบประมาณ ประจำปีงบประมาณ พ.ศ.
-                                <span
-                                    class="fw-bolder text-decoration-underline"
-                                    t-field="o.account_fiscal_year_id"
-                                />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                โดยมีการเบิกจ่ายดังนี้
-                                <span
-                                    class="fw-bolder text-decoration-underline"
-                                    t-field="o.payment_type"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="my-4" />
-
-                        <table class="table table-bordered table-sm mb-4">
-                            <thead>
-                                <tr>
-                                    <th class="text-center" style="width: 8%">ลำดับ</th>
-                                    <th class="text-center">รายละเอียด</th>
-                                    <th class="text-center">จำนวน</th>
-                                    <th class="text-end">ราคา</th>
-                                    <th class="text-end">จำนวนเงิน</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-set="row_no" t-value="1" />
-                                <t t-foreach="o.line_ids" t-as="line">
-                                    <tr>
-                                        <td
-                                            class="text-center"
-                                            style="width: 8%"
-                                            t-out="row_no"
-                                        />
-                                        <td t-out="line.name" />
-                                        <td class="text-center">
-                                            <span
-                                                t-out="'{0:,.0f}'.format(line.product_qty)"
-                                            />
-                                            <span t-field="line.product_uom_id" />
-                                        </td>
-                                        <td
-                                            class="text-end"
-                                            t-out="'{0:,.2f}'.format(line.price_unit)"
-                                        />
-                                        <td
-                                            class="text-end"
-                                            t-out="'{0:,.2f}'.format(line.estimated_cost)"
-                                        />
-                                    </tr>
-                                    <t t-set="row_no" t-value="row_no + 1" />
-                                </t>
-                                <tr>
-                                    <td
-                                        colspan="2"
-                                        rowspan="3"
-                                        class="text-center align-middle"
-                                    >
-                                        (
-                                        <t
-                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
-                                        />
-                                        )
-                                    </td>
-                                    <td class="text-center" colspan="2">
-                                        ราคาก่อนรวมภาษีมูลค่าเพิ่ม
-                                    </td>
-                                    <td
-                                        class="text-end"
-                                        t-out="'{0:,.2f}'.format(o.amount_untaxed)"
-                                    />
-                                </tr>
-                                <tr>
-                                    <td class="text-center" colspan="2">
-                                        ภาษีมูลค่าเพิ่ม (VAT 7%)
-                                    </td>
-                                    <td
-                                        class="text-end"
-                                        t-out="'{0:,.2f}'.format(o.amount_tax)"
-                                    />
-                                </tr>
-                                <tr>
-                                    <td class="text-center" colspan="2">ราคาสุทธิ</td>
-                                    <td
-                                        class="text-end"
-                                        t-out="'{0:,.2f}'.format(o.amount_total)"
-                                    />
-                                </tr>
-                            </tbody>
-                        </table> -->
-
                     </div>
                 </t>
             </t>
