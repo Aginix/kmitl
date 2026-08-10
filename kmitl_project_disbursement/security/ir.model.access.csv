@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_kmitl_project_disbursement_user,kmitl.project disbursement read,kmitl_project.model_kmitl_project,disbursement.group_disbursement_user,1,0,0,0

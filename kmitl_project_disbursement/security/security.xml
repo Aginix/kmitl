@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Disbursement staff (every role implies group_disbursement_user) must be
+             able to read a DR's linked project — to display kmitl_project_id and open
+             the "View Project" button throughout the approval workflow. Read only;
+             ANDed with the global company / operating-unit rules, and it lifts the
+             "own projects" narrowing when a disbursement user also holds a
+             kmitl.project user group (mirrors kmitl_project_purchase_request). -->
+        <record id="kmitl_project_disbursement_read_rule" model="ir.rule">
+            <field name="name">KMITL Project: disbursement read (ใบขอเบิก)</field>
+            <field name="model_id" ref="kmitl_project.model_kmitl_project"/>
+            <field name="groups" eval="[(4, ref('disbursement.group_disbursement_user'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+    </data>
+</odoo>

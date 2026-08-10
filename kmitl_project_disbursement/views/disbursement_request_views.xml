@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Disbursement form: back-link to the source project -->
+    <record id="view_disbursement_request_form_kmitl_project" model="ir.ui.view">
+        <field name="name">view.disbursement.request.form.kmitl.project</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='reference_model']" position="after">
+                <field name="kmitl_project_id" invisible="1"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_kmitl_project"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-folder-open-o"
+                        string="โครงการ/กิจกรรม"
+                        attrs="{'invisible': [('reference_model', '!=', 'kmitl.project')]}">
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
