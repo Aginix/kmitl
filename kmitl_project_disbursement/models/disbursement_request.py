@@ -20,6 +20,13 @@ class DisbursementRequest(models.Model):
         tracking=True,
     )
 
+    project_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="โครงการ/กิจกรรม (Analytic)",
+        compute="_compute_project_analytic_id",
+        help="มิติโครงการที่ติดมากับใบขอเบิก ใช้ระบุว่ายอดที่เบิกถูกผูกกลับไปที่โครงการใด",
+    )
+
     @api.depends("reference")
     def _compute_reference_fields(self):
         super()._compute_reference_fields()
@@ -28,6 +35,23 @@ class DisbursementRequest(models.Model):
                 rec.kmitl_project_id = rec.reference.id
             else:
                 rec.kmitl_project_id = False
+
+    @api.depends("analytic_distribution")
+    def _compute_project_analytic_id(self):
+        """Read the kmitl_project dimension back out of the distribution.
+
+        disbursement.request's ``_analytic_keys`` only covers the 4 financial
+        dimensions, so the project dimension _link_to_project copies from the
+        project has no field of its own and stays invisible on the form. Derive it
+        from ``analytic_distribution`` (not from ``kmitl_project_id``) so what is
+        shown is what the request actually carries — the two diverge if the
+        distribution is ever edited away from the project."""
+        for rec in self:
+            account_ids = [int(a) for a in rec.analytic_distribution or {}]
+            accounts = self.env["account.analytic.account"].browse(account_ids)
+            rec.project_analytic_id = accounts.filtered(
+                lambda a: a.plan_id.code == "kmitl_project"
+            )[:1]
 
     @api.model_create_multi
     def create(self, vals_list):

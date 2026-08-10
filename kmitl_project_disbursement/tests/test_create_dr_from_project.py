@@ -116,6 +116,9 @@ class TestCreateDrFromProject(TransactionCase):
         self.assertEqual(dr.budget_commitment_id, commitment)
         self.assertEqual(dr.budget_account_id, self.budget_account)
         self.assertEqual(dr.analytic_distribution, project.analytic_distribution)
+        # The project dimension inside that distribution is surfaced read-only on
+        # the form; disbursement.request has no _analytic_keys entry for it.
+        self.assertEqual(dr.project_analytic_id, project.analytic_account_id)
         # The DR shows up on the project's smart button.
         self.assertIn(dr, project.disbursement_request_ids)
         self.assertEqual(project.disbursement_request_count, 1)
