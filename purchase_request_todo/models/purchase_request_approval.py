@@ -10,6 +10,7 @@ PA_APPROVED_RECORD_CONTRACT_ACTIVITY = (
 PR_ENDORSEMENT_APPROVED_ACTIVITY = (
     "purchase_request_todo.mail_activity_pr_endorsement_approved"
 )
+BUDGET_COMMITMENT_ROLE = "budget_role.role_budget_commitment"
 
 
 class PurchaseRequestApproval(models.Model):
@@ -47,20 +48,6 @@ class PurchaseRequestApproval(models.Model):
             )
 
     # ---------------------------------------------------------------------
-    # Helpers
-    # ---------------------------------------------------------------------
-    def _schedule_personal_todo(self, xmlid, user, summary):
-        """Personal Todo, deduplicated per (activity type, user)."""
-        self.ensure_one()
-        act_type = self.env.ref(xmlid, raise_if_not_found=False)
-        if not act_type or not user:
-            return
-        self.activity_ids.filtered(
-            lambda a: a.activity_type_id == act_type and a.user_id.id == user.id
-        ).unlink()
-        self.activity_schedule(xmlid, summary=summary, user_id=user.id)
-
-    # ---------------------------------------------------------------------
     # Awaiting manager consideration (draft → to_approve)
     # ---------------------------------------------------------------------
     def _awaiting_manager_todo_summary(self):
@@ -79,14 +66,24 @@ class PurchaseRequestApproval(models.Model):
         ) % {"sender": sender_name}
 
     def _schedule_awaiting_manager_todo(self):
+        """Route to the จองงบประมาณ role of the PA's operating unit; fall
+        back to ``assigned_to`` when the unit or role is unknown."""
+        role = self.env.ref(BUDGET_COMMITMENT_ROLE, raise_if_not_found=False)
         for rec in self:
-            if not rec.assigned_to:
-                continue
-            rec._schedule_personal_todo(
-                PA_AWAITING_MANAGER_ACTIVITY,
-                rec.assigned_to,
-                rec._awaiting_manager_todo_summary(),
-            )
+            summary = rec._awaiting_manager_todo_summary()
+            if role and rec.operating_unit_id:
+                rec.activity_schedule(
+                    PA_AWAITING_MANAGER_ACTIVITY,
+                    summary=summary,
+                    responsible_role_id=role.id,
+                    operating_unit_id=rec.operating_unit_id.id,
+                )
+            elif rec.assigned_to:
+                rec.activity_schedule(
+                    PA_AWAITING_MANAGER_ACTIVITY,
+                    summary=summary,
+                    user_id=rec.assigned_to.id,
+                )
 
     # ---------------------------------------------------------------------
     # Record contract data (to_approve → approved)
@@ -100,18 +97,27 @@ class PurchaseRequestApproval(models.Model):
         )
 
     def _schedule_record_contract_todo(self):
-        """The procurement officer (assigned_to on the PR) is the recipient —
-        they will record the contract / PO data after PA approval."""
+        """Route to the จองงบประมาณ role of the PA's operating unit; fall
+        back to ``request_id.assigned_to`` when the unit or role is unknown."""
+        role = self.env.ref(BUDGET_COMMITMENT_ROLE, raise_if_not_found=False)
         for rec in self:
-            pr = rec.request_id
-            recipient = pr.assigned_to if pr else rec.user_id
-            if not recipient:
-                continue
-            rec._schedule_personal_todo(
-                PA_APPROVED_RECORD_CONTRACT_ACTIVITY,
-                recipient,
-                rec._record_contract_todo_summary(),
-            )
+            summary = rec._record_contract_todo_summary()
+            if role and rec.operating_unit_id:
+                rec.activity_schedule(
+                    PA_APPROVED_RECORD_CONTRACT_ACTIVITY,
+                    summary=summary,
+                    responsible_role_id=role.id,
+                    operating_unit_id=rec.operating_unit_id.id,
+                )
+            else:
+                pr = rec.request_id
+                fallback = pr.assigned_to if pr else rec.user_id
+                if fallback:
+                    rec.activity_schedule(
+                        PA_APPROVED_RECORD_CONTRACT_ACTIVITY,
+                        summary=summary,
+                        user_id=fallback.id,
+                    )
 
     # ---------------------------------------------------------------------
     # State-transition hooks

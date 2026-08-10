@@ -87,15 +87,23 @@ class PurchaseRequest(models.Model):
         ) % (self.name or "")
 
     def _schedule_endorsement_letter_todo(self):
-        """Notify the office/admin officer (verified_by), the requester and
-        the procurement officer that the budget has been reserved and the
-        endorsement letter must be drafted next."""
+        """Route to the จองงบประมาณ role of the พ.1's operating unit; fall
+        back to ``requested_by`` when the unit or role is unknown."""
+        role = self.env.ref(BUDGET_COMMITMENT_ROLE, raise_if_not_found=False)
         for rec in self:
             summary = rec._endorsement_letter_todo_summary()
-            recipients = rec.verified_by | rec.requested_by | rec.assigned_to
-            for user in recipients:
-                rec._schedule_personal_todo(
-                    AWAITING_ENDORSEMENT_LETTER_ACTIVITY, user, summary
+            if role and rec.operating_unit_id:
+                rec.activity_schedule(
+                    AWAITING_ENDORSEMENT_LETTER_ACTIVITY,
+                    summary=summary,
+                    responsible_role_id=role.id,
+                    operating_unit_id=rec.operating_unit_id.id,
+                )
+            elif rec.requested_by:
+                rec.activity_schedule(
+                    AWAITING_ENDORSEMENT_LETTER_ACTIVITY,
+                    summary=summary,
+                    user_id=rec.requested_by.id,
                 )
 
     # ---------------------------------------------------------------------
@@ -146,13 +154,24 @@ class PurchaseRequest(models.Model):
         ) % (self.name or "")
 
     def _schedule_endorsement_approved_todo(self):
+        """Route to the จองงบประมาณ role of the พ.1's operating unit; fall
+        back to ``assigned_to`` when the unit or role is unknown."""
+        role = self.env.ref(BUDGET_COMMITMENT_ROLE, raise_if_not_found=False)
         for rec in self:
-            if not rec.assigned_to:
-                continue
             summary = rec._endorsement_approved_todo_summary()
-            rec._schedule_personal_todo(
-                ENDORSEMENT_APPROVED_ACTIVITY, rec.assigned_to, summary
-            )
+            if role and rec.operating_unit_id:
+                rec.activity_schedule(
+                    ENDORSEMENT_APPROVED_ACTIVITY,
+                    summary=summary,
+                    responsible_role_id=role.id,
+                    operating_unit_id=rec.operating_unit_id.id,
+                )
+            elif rec.assigned_to:
+                rec.activity_schedule(
+                    ENDORSEMENT_APPROVED_ACTIVITY,
+                    summary=summary,
+                    user_id=rec.assigned_to.id,
+                )
 
     # ---------------------------------------------------------------------
     # State-transition hooks
