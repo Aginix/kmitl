@@ -89,6 +89,13 @@ class DisbursementPaymentLine(models.Model):
         related="paying_account_id.payment_method_id",
         string="Payment Method",
         readonly=True,
+        # A related field inherits the source field's domain, and core's is a
+        # *string* naming `payment_type` and `available_payment_method_ids` —
+        # fields of the method line, not of this row. Odoo validates string
+        # domains against the view, so leaving it inherited makes any editable
+        # list showing this column refuse to load. There is nothing to filter
+        # here anyway: the value is read off the paying account.
+        domain=[],
         help="วิธีจ่าย — a property of the chosen paying account rather than a "
         "second choice, so the two cannot contradict each other.",
     )
