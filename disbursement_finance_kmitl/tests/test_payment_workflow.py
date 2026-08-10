@@ -50,10 +50,16 @@ class TestPaymentWorkflow(TransactionCase):
         )
 
         # Seeded paying accounts (หัวจ่าย) on ใบสำคัญจ่าย.
-        cls.scb_account = cls.env.ref("account_kmitl.paying_account_1112210004")
-        cls.ktb_account = cls.env.ref("account_kmitl.paying_account_1112120002")
-        cls.cheque_account = cls.env.ref("account_kmitl.paying_account_1112220015")
-        cls.cash_account = cls.env.ref("account_kmitl.paying_account_1111000002")
+        cls.scb_account = cls.env.ref(
+            "account_kmitl.paying_account_1112210004_transfer"
+        )
+        cls.ktb_account = cls.env.ref(
+            "account_kmitl.paying_account_1112120002_transfer"
+        )
+        cls.cheque_account = cls.env.ref(
+            "account_kmitl.paying_account_1112220015_cheque"
+        )
+        cls.cash_account = cls.env.ref("account_kmitl.paying_account_1111000002_cash")
 
         cls.subject_vendor = cls.env.ref("finance_kmitl.payment_subject_vendor_direct")
         cls.subject_advance = cls.env.ref(
@@ -160,6 +166,12 @@ class TestPaymentWorkflow(TransactionCase):
         self.assertEqual(len(paying), 8)
         banked = paying.filtered(lambda a: a.payment_method_id.code != "kmitl_cash")
         self.assertTrue(all(banked.mapped("bank_account_id")))
+        # And each of those bank accounts resolved to a bank: without it
+        # auto-matching a payee's own bank can never match and the e-payment
+        # file names no sending bank.
+        self.assertTrue(all(banked.mapped("bank_id")))
+        self.assertEqual(self.ktb_account.bank_id.bic, "KRTHTHBK")
+        self.assertEqual(self.scb_account.bank_id.bic, "SICOTHBK")
         # Cash books against cash on hand, not against a bank.
         self.assertFalse(self.cash_account.bank_account_id)
         self.assertEqual(self.cash_account.payment_account_id.code, "1111000002")

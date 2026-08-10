@@ -161,6 +161,16 @@ PAYING_ACCOUNTS = [
     },
 ]
 
+# Each paying account publishes an external id keyed on (GL account, method), so
+# the table may not state that pair twice: two such rows would *be* one paying
+# account, and the second would silently take over the first's external id — and
+# with it whatever a payment subject had bound itself to. Listing a second method
+# for a bank account already present (a current account can be transferred from
+# *and* drawn cheques on) is fine, and is why the method is part of the key.
+assert len({(entry["account"], entry["method"]) for entry in PAYING_ACCOUNTS}) == len(
+    PAYING_ACCOUNTS
+), "account_kmitl: PAYING_ACCOUNTS states the same (account, method) pair twice"
+
 # The voucher (ใบสำคัญ) the paying accounts belong to.
 PAYING_ACCOUNT_JOURNAL_CODE = "PV"
 
@@ -407,10 +417,15 @@ def _seed_bank_accounts(env, company):
     Returned keyed by the chart code of the GL account each is booked against,
     which is how ``_setup_paying_account_lines`` looks them up again.
 
+    The bank is matched by BIC against the records ``data/res_bank.xml`` seeds.
+    It matters that it resolves: that bank is what auto-matching compares a
+    payee's own bank against, and what the e-payment file names as the sending
+    bank.
+
     Idempotent and best-effort: an existing account with the same (sanitized)
     number is reused, and a BIC that no ``res.bank`` carries leaves the bank
-    empty with a warning rather than failing the install — the account number is
-    what the file needs, the bank only names it.
+    empty with a warning rather than failing the install — which means the data
+    file and this table have drifted apart.
     """
     from odoo.addons.base.models.res_bank import sanitize_account_number
 
@@ -507,13 +522,13 @@ def _setup_paying_account_lines(env, company):
     claimed = MethodLine.browse()
     failed = []
     for sequence, entry in enumerate(PAYING_ACCOUNTS, start=1):
+        stem = entry["method"].removeprefix("kmitl_")
         gl_account = Account.search(
             [("code", "=", entry["account"]), ("company_id", "=", company.id)],
             limit=1,
         )
         method = env.ref(
-            "account_kmitl.payment_method_%s_out"
-            % entry["method"].removeprefix("kmitl_"),
+            "account_kmitl.payment_method_%s_out" % stem,
             raise_if_not_found=False,
         )
         if not gl_account or not method:
@@ -557,7 +572,8 @@ def _setup_paying_account_lines(env, company):
         env["ir.model.data"]._update_xmlids(
             [
                 {
-                    "xml_id": "account_kmitl.paying_account_%s" % entry["account"],
+                    "xml_id": "account_kmitl.paying_account_%s_%s"
+                    % (entry["account"], stem),
                     "record": line,
                     "noupdate": True,
                 }

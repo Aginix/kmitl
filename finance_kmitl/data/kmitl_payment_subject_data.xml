@@ -18,11 +18,11 @@
         />
         <field
             name="default_paying_account_id"
-            ref="account_kmitl.paying_account_1112120002"
+            ref="account_kmitl.paying_account_1112120002_transfer"
         />
         <field
             name="allowed_paying_account_ids"
-            eval="[(6, 0, [ref('account_kmitl.paying_account_1112120002')])]"
+            eval="[(6, 0, [ref('account_kmitl.paying_account_1112120002_transfer')])]"
         />
     </record>
 
@@ -37,17 +37,17 @@
         <field name="auto_match_payee_bank" eval="True" />
         <field
             name="default_paying_account_id"
-            ref="account_kmitl.paying_account_1112210004"
+            ref="account_kmitl.paying_account_1112210004_transfer"
         />
         <field
             name="allowed_paying_account_ids"
             eval="[(6, 0, [
-                ref('account_kmitl.paying_account_1112210004'),
-                ref('account_kmitl.paying_account_1112110012'),
-                ref('account_kmitl.paying_account_1112120003'),
-                ref('account_kmitl.paying_account_1112120002'),
-                ref('account_kmitl.paying_account_1112120016'),
-                ref('account_kmitl.paying_account_1112120006'),
+                ref('account_kmitl.paying_account_1112210004_transfer'),
+                ref('account_kmitl.paying_account_1112110012_transfer'),
+                ref('account_kmitl.paying_account_1112120003_transfer'),
+                ref('account_kmitl.paying_account_1112120002_transfer'),
+                ref('account_kmitl.paying_account_1112120016_transfer'),
+                ref('account_kmitl.paying_account_1112120006_transfer'),
             ])]"
         />
     </record>
@@ -62,11 +62,11 @@
         />
         <field
             name="default_paying_account_id"
-            ref="account_kmitl.paying_account_1112210004"
+            ref="account_kmitl.paying_account_1112210004_transfer"
         />
         <field
             name="allowed_paying_account_ids"
-            eval="[(6, 0, [ref('account_kmitl.paying_account_1112210004')])]"
+            eval="[(6, 0, [ref('account_kmitl.paying_account_1112210004_transfer')])]"
         />
     </record>
 
@@ -80,11 +80,11 @@
         />
         <field
             name="default_paying_account_id"
-            ref="account_kmitl.paying_account_1112220015"
+            ref="account_kmitl.paying_account_1112220015_cheque"
         />
         <field
             name="allowed_paying_account_ids"
-            eval="[(6, 0, [ref('account_kmitl.paying_account_1112220015')])]"
+            eval="[(6, 0, [ref('account_kmitl.paying_account_1112220015_cheque')])]"
         />
     </record>
 
@@ -98,11 +98,11 @@
         />
         <field
             name="default_paying_account_id"
-            ref="account_kmitl.paying_account_1111000002"
+            ref="account_kmitl.paying_account_1111000002_cash"
         />
         <field
             name="allowed_paying_account_ids"
-            eval="[(6, 0, [ref('account_kmitl.paying_account_1111000002')])]"
+            eval="[(6, 0, [ref('account_kmitl.paying_account_1111000002_cash')])]"
         />
     </record>
 
