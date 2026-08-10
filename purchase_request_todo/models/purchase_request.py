@@ -1,8 +1,6 @@
 from odoo import _, models
 
-RESERVE_BUDGET_ACTIVITY = (
-    "purchase_request_todo_role_unit.mail_activity_pr_reserve_budget"
-)
+RESERVE_BUDGET_ACTIVITY = "purchase_request_todo.mail_activity_pr_reserve_budget"
 BUDGET_COMMITMENT_ROLE = "budget_role.role_budget_commitment"
 
 
