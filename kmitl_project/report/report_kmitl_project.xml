@@ -83,7 +83,9 @@
                           <div class="row">
                               <div class="col-12">
                                 <div class="item-title">2. หลักการและเหตุผล</div>
-                                <p class="paragraph" t-out="o.introduction"/>
+                                <div class="item-content">
+                                  <p class="paragraph" t-out="o.introduction"/>
+                                </div>
                               </div>
                           </div>
                           <!--<div class="row">-->
@@ -119,7 +121,9 @@
                           <div class="row">
                               <div class="col-12">
                                 <div class="item-title">5. วัตถุประสงค์</div>
-                                <p class="paragraph" t-out="o.objective"/>
+                                <div class="item-content">
+                                  <p t-out="o.objective" style="white-space: pre-wrap;"/>
+                                </div>
                               </div>
                           </div>
                           <div class="row">
@@ -163,11 +167,7 @@
                               <div class="col-12">
                                 <div class="item-title">10. กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ</div>
                                 <div class="item-content">
-                                  <t t-set="target_sections" t-value="[
-                                      ('กลุ่มเป้าหมาย', o.target_ids),
-                                      ('ผู้เข้าร่วม', o.participant_ids),
-                                      ('ผู้ดำเนินโครงการ', o.organizer_ids),
-                                  ]"/>
+                                  <t t-set="target_sections" t-value="[                                       ('กลุ่มเป้าหมาย', o.target_ids),                                       ('ผู้เข้าร่วม', o.participant_ids),                                       ('ผู้ดำเนินโครงการ', o.organizer_ids),                                   ]"/>
                                   <table class="report-table">
                                     <thead>
                                       <tr>
