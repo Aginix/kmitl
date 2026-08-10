@@ -706,6 +706,78 @@ class KmitlProject(models.Model):
             "domain": [("kmitl_project_id", "=", self.id)],
         }
 
+    def _budget_report_rows(self, lines):
+        """Flat, ordered render plan for a budget table in the project proposal
+        PDF — the server-side twin of the OWL table's ``renderRows`` (see
+        project_budget_table.esm.js). Groups the given ``project.budget.line``
+        records under their ประเภทงบ (project.budget.category) hierarchy: a
+        ``header`` row opens each category level carrying its roll-up subtotal, and
+        a ``line`` row renders each budget line under its deepest category.
+        Category-less lines (e.g. income) render as flat level-0 lines.
+
+        Returns an ordered list of dicts, each one of:
+          {"type": "header", "level": int, "name": str, "total": float}
+          {"type": "line", "level": int, "name": str,
+           "description": str, "amount": float}
+        """
+        self.ensure_one()
+
+        def chain(line):
+            """Category ancestry root-first, e.g. [งบดำเนินงาน, ค่าตอบแทน]."""
+            nodes = []
+            cat = line.category_id
+            while cat:
+                nodes.append(cat)
+                cat = cat.parent_id
+            return list(reversed(nodes))
+
+        # Order so every category subtree is contiguous (mirrors the line model's
+        # own _order); category-less lines sink to the bottom.
+        ordered = lines.sorted(
+            key=lambda line: (
+                line.category_id.parent_path or "~",
+                line.sequence,
+                line.id,
+            )
+        )
+        # Roll-up total per category id: every line adds to each of its ancestors.
+        totals = {}
+        for line in lines:
+            for cat in chain(line):
+                totals[cat.id] = totals.get(cat.id, 0.0) + line.amount
+        rows = []
+        prev = []
+        for line in ordered:
+            nodes = chain(line)
+            common = 0
+            while (
+                common < len(prev)
+                and common < len(nodes)
+                and prev[common].id == nodes[common].id
+            ):
+                common += 1
+            for level in range(common, len(nodes)):
+                node = nodes[level]
+                rows.append(
+                    {
+                        "type": "header",
+                        "level": level,
+                        "name": node.name,
+                        "total": totals.get(node.id, 0.0),
+                    }
+                )
+            rows.append(
+                {
+                    "type": "line",
+                    "level": len(nodes),
+                    "name": line.name,
+                    "description": line.description or "",
+                    "amount": line.amount,
+                }
+            )
+            prev = nodes
+        return rows
+
     @api.model
     def _create_analytic_account_from_values(self, values):
         return self.env["account.analytic.account"].create(
