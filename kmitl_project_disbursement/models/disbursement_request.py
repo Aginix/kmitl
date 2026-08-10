@@ -38,7 +38,7 @@ class DisbursementRequest(models.Model):
 
     def _link_to_project(self):
         """A project-sourced DR draws the project's already-reserved shared
-        commitment (kmitl_project ADR-0007). Its budget context — the budget
+        commitment (budget ADR-0007). Its budget context — the budget
         account, the full analytic distribution (the 4 financial dimensions plus
         the project's own kmitl_project dimension, so the spend is attributed back
         to the project) and the shared commitment — is written here server-side so
@@ -87,19 +87,15 @@ class DisbursementRequest(models.Model):
             subtype_xmlid="mail.mt_note",
         )
 
-    def _cancel_budget_commitment(self):
-        """A project's shared commitment is never cancelled by cancelling one of
-        its disbursement requests — reverse only THIS request's own obligate/
-        consume lines (the >1-DR shared path) and leave the reservation for the
-        project and its other documents. The core ``action_cancel`` only reaches
-        here for a single-DR commitment; a project one must be treated as shared,
-        just like a procurement-plan one."""
-        self.ensure_one()
-        commitment = self.budget_commitment_id
-        if commitment and commitment.kmitl_project_id:
-            self._reverse_own_commitment_lines(commitment)
-            return True
-        return super()._cancel_budget_commitment()
+    def _is_pooled_commitment(self, commitment):
+        """A project's reservation is drawn by many disbursement requests (budget
+        ADR-0007), just like a procurement plan's. Cancelling one request must
+        therefore reverse only THIS request's obligate/consume lines and leave the
+        reservation open for the project and its other documents — even when this
+        is the only request linked to it so far."""
+        return bool(commitment.kmitl_project_id) or super()._is_pooled_commitment(
+            commitment
+        )
 
     def action_view_kmitl_project(self):
         self.ensure_one()

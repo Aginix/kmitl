@@ -1,0 +1,104 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* kmitl_project_disbursement
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-10 03:52+0000\n"
+"PO-Revision-Date: 2026-08-10 10:54+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.9\n"
+
+#. module: kmitl_project_disbursement
+#: model:ir.model.fields,field_description:kmitl_project_disbursement.field_kmitl_project__can_create_disbursement
+msgid "Can Create Disbursement"
+msgstr ""
+
+#. module: kmitl_project_disbursement
+#. odoo-python
+#: code:addons/kmitl_project_disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Created from Project <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>."
+msgstr ""
+"ถูกสร้างจากโครงการ/กิจกรรม <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
+
+#. module: kmitl_project_disbursement
+#: model:ir.model,name:kmitl_project_disbursement.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: kmitl_project_disbursement
+#. odoo-python
+#: code:addons/kmitl_project_disbursement/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Disbursement Request <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> has "
+"been created from this project."
+msgstr ""
+"ใบขอเบิก <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> ถูกสร้างจากโครงการ/"
+"กิจกรรมนี้"
+
+#. module: kmitl_project_disbursement
+#: model:ir.model.fields,field_description:kmitl_project_disbursement.field_kmitl_project__disbursement_request_count
+msgid "Disbursement Request Count"
+msgstr "จำนวนใบขอเบิก"
+
+#. module: kmitl_project_disbursement
+#: model:ir.model,name:kmitl_project_disbursement.model_kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project_disbursement.selection__disbursement_request__reference__kmitl_project
+msgid "KMITL Project"
+msgstr "โครงการ/กิจกรรม"
+
+#. module: kmitl_project_disbursement
+#: model:ir.model.fields,field_description:kmitl_project_disbursement.field_disbursement_request__reference
+msgid "Reference Document"
+msgstr "รหัสเอกสาร"
+
+#. module: kmitl_project_disbursement
+#. odoo-python
+#: code:addons/kmitl_project_disbursement/models/kmitl_project.py:0
+#, python-format
+msgid "งบประมาณคงเหลือของโครงการไม่เพียงพอสำหรับการเบิกจ่าย"
+msgstr ""
+
+#. module: kmitl_project_disbursement
+#: model_terms:ir.ui.view,arch_db:kmitl_project_disbursement.view_kmitl_project_form_disbursement
+msgid "สร้างใบขอเบิก"
+msgstr ""
+
+#. module: kmitl_project_disbursement
+#. odoo-python
+#: code:addons/kmitl_project_disbursement/models/kmitl_project.py:0
+#, python-format
+msgid "สร้างใบขอเบิกจากโครงการ"
+msgstr ""
+
+#. module: kmitl_project_disbursement
+#. odoo-python
+#: code:addons/kmitl_project_disbursement/models/kmitl_project.py:0
+#, python-format
+msgid "สร้างใบขอเบิกได้เฉพาะโครงการที่ได้รับอนุมัติและกำลังดำเนินการเท่านั้น"
+msgstr ""
+
+#. module: kmitl_project_disbursement
+#: model:ir.model.fields,field_description:kmitl_project_disbursement.field_disbursement_request__kmitl_project_id
+#: model_terms:ir.ui.view,arch_db:kmitl_project_disbursement.view_disbursement_request_form_kmitl_project
+msgid "โครงการ/กิจกรรม"
+msgstr ""
+
+#. module: kmitl_project_disbursement
+#. odoo-python
+#: code:addons/kmitl_project_disbursement/models/kmitl_project.py:0
+#: model:ir.model.fields,field_description:kmitl_project_disbursement.field_kmitl_project__disbursement_request_ids
+#: model_terms:ir.ui.view,arch_db:kmitl_project_disbursement.view_kmitl_project_form_disbursement
+#, python-format
+msgid "ใบขอเบิก"
+msgstr ""

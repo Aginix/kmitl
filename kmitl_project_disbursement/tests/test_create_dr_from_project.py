@@ -9,7 +9,7 @@ from odoo.tests.common import TransactionCase, tagged
 class TestCreateDrFromProject(TransactionCase):
     """The 'สร้างใบขอเบิก' action on kmitl.project raises a disbursement.request
     for a non-purchase expense, pre-filled from the project's reserved-budget
-    context and drawing the project's shared commitment (kmitl_project ADR-0007) —
+    context and drawing the project's shared commitment (budget ADR-0007) —
     no agx_approval in between."""
 
     @classmethod

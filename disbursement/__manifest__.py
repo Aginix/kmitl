@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement",
-    "version": "16.0.6.0.0",
+    "version": "16.0.6.1.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",

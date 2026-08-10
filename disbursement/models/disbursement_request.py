@@ -1166,6 +1166,20 @@ class DisbursementRequest(models.Model):
         own.action_cancel()
         return True
 
+    def _is_pooled_commitment(self, commitment):
+        """Whether the commitment belongs to an upstream document that pools it
+        across many disbursement requests, so cancelling one request may only
+        reverse its own lines and never the reservation itself.
+
+        Core knows the procurement plan; bridge modules extend this for their own
+        source documents (e.g. ``kmitl_project_disbursement`` for a project's
+        shared reservation)."""
+        self.ensure_one()
+        return bool(
+            "procurement_plan_id" in commitment._fields
+            and commitment.procurement_plan_id
+        )
+
     def _has_own_budget_obligation(self):
         """Whether this request already has a posted obligate line on its
         commitment (used to keep _action_approve_budget idempotent across a
@@ -1195,12 +1209,8 @@ class DisbursementRequest(models.Model):
             commitment = record.budget_commitment_id
             if commitment:
                 try:
-                    plan_owned = (
-                        "procurement_plan_id" in commitment._fields
-                        and commitment.procurement_plan_id
-                    )
                     is_shared = (
-                        plan_owned
+                        record._is_pooled_commitment(commitment)
                         or len(commitment.disbursement_request_ids) > 1
                     )
                     if is_shared:
