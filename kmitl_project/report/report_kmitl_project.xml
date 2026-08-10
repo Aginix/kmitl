@@ -264,18 +264,18 @@
                                       <tr t-foreach="o.plan_ids" t-as="plan">
                                         <td t-out="plan.name"/>
                                         <td class="num" t-out="'{:,.2f}'.format(plan.amount)"/>
-                                        <td class="month-cell"><t t-if="plan.m10">✓</t></td>
-                                        <td class="month-cell"><t t-if="plan.m11">✓</t></td>
-                                        <td class="month-cell"><t t-if="plan.m12">✓</t></td>
-                                        <td class="month-cell"><t t-if="plan.m1">✓</t></td>
-                                        <td class="month-cell"><t t-if="plan.m2">✓</t></td>
-                                        <td class="month-cell"><t t-if="plan.m3">✓</t></td>
-                                        <td class="month-cell"><t t-if="plan.m4">✓</t></td>
-                                        <td class="month-cell"><t t-if="plan.m5">✓</t></td>
-                                        <td class="month-cell"><t t-if="plan.m6">✓</t></td>
-                                        <td class="month-cell"><t t-if="plan.m7">✓</t></td>
-                                        <td class="month-cell"><t t-if="plan.m8">✓</t></td>
-                                        <td class="month-cell"><t t-if="plan.m9">✓</t></td>
+                                        <td class="month-cell"><t t-if="plan.m10">/</t></td>
+                                        <td class="month-cell"><t t-if="plan.m11">/</t></td>
+                                        <td class="month-cell"><t t-if="plan.m12">/</t></td>
+                                        <td class="month-cell"><t t-if="plan.m1">/</t></td>
+                                        <td class="month-cell"><t t-if="plan.m2">/</t></td>
+                                        <td class="month-cell"><t t-if="plan.m3">/</t></td>
+                                        <td class="month-cell"><t t-if="plan.m4">/</t></td>
+                                        <td class="month-cell"><t t-if="plan.m5">/</t></td>
+                                        <td class="month-cell"><t t-if="plan.m6">/</t></td>
+                                        <td class="month-cell"><t t-if="plan.m7">/</t></td>
+                                        <td class="month-cell"><t t-if="plan.m8">/</t></td>
+                                        <td class="month-cell"><t t-if="plan.m9">/</t></td>
                                       </tr>
                                       <tr>
                                         <td class="bold num">รวม</td>
