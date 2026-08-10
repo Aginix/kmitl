@@ -350,7 +350,7 @@
                 <field name="name" placeholder="รายการ" />
                 <field name="line_type" invisible="1" />
                 <field name="unit" placeholder="หน่วย" />
-                <field name="amount" />
+                <field name="target" />
             </tree>
         </field>
     </record>
