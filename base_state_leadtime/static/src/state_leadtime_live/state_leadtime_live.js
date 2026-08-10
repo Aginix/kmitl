@@ -45,6 +45,11 @@ export class StateLeadtimeLive extends Component {
         });
     }
 
+    get label() {
+        const activeField = this.props.record.activeFields[this.props.name];
+        return activeField ? activeField.string : "";
+    }
+
     _compute() {
         const value = this.props.value;
         if (!value) {
