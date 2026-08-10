@@ -65,6 +65,7 @@
                         <a
                             href="/web#action=kmitl_project_purchase_request.action_kmitl_project_for_pr"
                             class="btn btn-sm btn-primary"
+                            role="button"
                         >
                             <i class="fa fa-external-link me-1" />ไปที่โครงการ/กิจกรรม
                         </a>
