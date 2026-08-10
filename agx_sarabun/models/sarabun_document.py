@@ -168,11 +168,16 @@ class SarabunDocument(models.Model):
         help="Free-text references to letters outside the system.",
     )
 
-    # === สิ่งที่ส่งมาด้วย (Enclosures) ===
-    enclosure_ids = fields.One2many(
-        comodel_name="sarabun.enclosure",
-        inverse_name="document_id",
+    # === สิ่งที่ส่งมาด้วย (Enclosures) — plain attached files (feedback) ===
+    enclosure_attachment_ids = fields.Many2many(
+        comodel_name="ir.attachment",
+        relation="sarabun_document_enclosure_rel",
+        column1="document_id",
+        column2="attachment_id",
         string="สิ่งที่ส่งมาด้วย (Enclosures)",
+        help="Files enclosed with the หนังสือ, managed through the attachments widget "
+        "(just the files — no caption or ordering). Listed by filename under "
+        "สิ่งที่ส่งมาด้วย on the printed document.",
     )
 
     # === Routing (the living Route — ADR-0001) ===
@@ -1200,15 +1205,32 @@ class SarabunDocument(models.Model):
         return html.encode("utf-8")
 
     def _freeze_signed_copy(self):
-        """Freeze the immutable ฉบับลงนาม at completion (idempotent, one-way)."""
+        """Freeze the immutable ฉบับลงนาม at completion (idempotent, one-way) AND drop
+        a visible copy into the หนังสือ's Attachments (feedback).
+
+        ``signed_pdf`` is a ``res_field``-backed Binary — Odoo hides such attachments
+        from the record's attachment list — so on its own the approved PDF never
+        surfaces in the chatter box. A second plain ``ir.attachment`` (``res_field``
+        unset) is what actually appears in the record's data for download."""
         self.ensure_one()
         if self.is_frozen:
             return
         pdf = self._render_official_pdf()
+        filename = self._get_report_base_filename() + ".pdf"
+        datas = base64.b64encode(pdf)
         self.write({
-            "signed_pdf": base64.b64encode(pdf),
-            "signed_pdf_filename": self._get_report_base_filename() + ".pdf",
+            "signed_pdf": datas,
+            "signed_pdf_filename": filename,
             "signed_at": fields.Datetime.now(),
+        })
+        # sudo: completion runs in the final approver's env and the freeze is a system
+        # act — they may lack ir.attachment create rights for this record.
+        self.env["ir.attachment"].sudo().create({
+            "name": filename,
+            "datas": datas,
+            "res_model": "sarabun.document",
+            "res_id": self.id,
+            "mimetype": "application/pdf",
         })
 
     def action_print_report(self):

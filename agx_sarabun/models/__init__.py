@@ -12,7 +12,6 @@ from . import sarabun_routing_step_activity
 from . import sarabun_step_recipient
 from . import sarabun_document_sequence
 from . import sarabun_reference_line
-from . import sarabun_enclosure
 from . import hr_department
 from . import sarabun_document
 from . import sarabun_document_mixin

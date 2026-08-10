@@ -13,8 +13,6 @@ access_sarabun_hr_department_manager,hr.department.sarabun.manager,hr.model_hr_d
 access_sarabun_hr_employee_user,hr.employee.sarabun.user,hr.model_hr_employee,group_sarabun_user,1,0,0,0
 access_sarabun_reference_line_user,sarabun.reference.line.user,model_sarabun_reference_line,group_sarabun_user,1,1,1,1
 access_sarabun_reference_line_manager,sarabun.reference.line.manager,model_sarabun_reference_line,group_sarabun_manager,1,1,1,1
-access_sarabun_enclosure_user,sarabun.enclosure.user,model_sarabun_enclosure,group_sarabun_user,1,1,1,1
-access_sarabun_enclosure_manager,sarabun.enclosure.manager,model_sarabun_enclosure,group_sarabun_manager,1,1,1,1
 access_sarabun_routing_step_user,sarabun.routing.step.user,model_sarabun_routing_step,group_sarabun_user,1,1,1,1
 access_sarabun_routing_step_manager,sarabun.routing.step.manager,model_sarabun_routing_step,group_sarabun_manager,1,1,1,1
 access_sarabun_routing_step_activity_user,sarabun.routing.step.activity.user,model_sarabun_routing_step_activity,group_sarabun_user,1,0,0,0
