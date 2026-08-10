@@ -24,9 +24,8 @@
                         .item-content {
                           padding-left: 16pt;
                         }
-                        .content {
-                          display: grid;
-                          row-gap: 16pt;
+                        .content .row {
+                          margin-bottom: 16pt;
                         }
                         .paragraph {
                           text-indent: 16pt;
