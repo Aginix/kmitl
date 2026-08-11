@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Finance",
-    "version": "16.0.2.1.0",
+    "version": "16.0.2.1.1",
     "category": "KMITL/Finance",
     "summary": "งานการเงิน KMITL: จ่ายเงิน, bank export, WHT, ทะเบียนคุมเช็ค, รายรับ/ใบเสร็จ",
     "license": "LGPL-3",
@@ -20,7 +20,7 @@
         "thai_date_utils",
         "l10n_th_fonts",
         "l10n_th_amount_to_text",
-        "l10n_th_account_wht_cert_form"
+        "l10n_th_account_wht_cert_form",
     ],
     "data": [
         "security/security.xml",
