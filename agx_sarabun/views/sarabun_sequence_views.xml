@@ -8,7 +8,6 @@
             <tree>
                 <field name="name"/>
                 <field name="sender_department_id"/>
-                <field name="reset_period"/>
                 <field name="next_counter"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
@@ -33,7 +32,6 @@
                             <field name="prefix"/>
                             <field name="suffix"/>
                             <field name="padding"/>
-                            <field name="reset_period"/>
                             <field name="next_counter"/>
                         </group>
                     </group>

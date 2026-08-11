@@ -13,6 +13,19 @@
                 <field name="account_fiscal_year_id" readonly="1"/>
             </xpath>
 
+            <!-- Finance confirms the actual bank result on the whole batch -->
+            <xpath expr="//header" position="inside">
+                <button name="action_mark_all_epayment_success"
+                        type="object"
+                        string="ยืนยันผลจ่ายสำเร็จ (ทั้งหมด)"
+                        class="btn-success"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
+                <button name="action_mark_all_epayment_failed"
+                        type="object"
+                        string="ผลจ่ายไม่สำเร็จ (ทั้งหมด)"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
+            </xpath>
+
         </field>
     </record>
 
@@ -23,10 +36,20 @@
         <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_line_view_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="after">
-                <field name="epayment_status" optional="hide"/>
+                <field name="epayment_status" optional="show"/>
                 <field name="epayment_ref" optional="hide"/>
                 <field name="epayment_date" optional="hide"/>
                 <field name="epayment_note" optional="hide"/>
+                <button name="action_mark_epayment_success"
+                        type="object"
+                        icon="fa-check text-success"
+                        title="ยืนยันจ่ายสำเร็จ"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
+                <button name="action_mark_epayment_failed"
+                        type="object"
+                        icon="fa-times text-danger"
+                        title="จ่ายไม่สำเร็จ"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
             </xpath>
         </field>
     </record>

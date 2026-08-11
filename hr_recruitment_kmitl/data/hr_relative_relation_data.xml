@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="relation_father" model="hr.employee.relative.relation">
+        <field name="name">บิดา</field>
+    </record>
+    <record id="relation_mother" model="hr.employee.relative.relation">
+        <field name="name">มารดา</field>
+    </record>
+</odoo>

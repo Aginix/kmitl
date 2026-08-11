@@ -9,7 +9,7 @@
                 <field name="name"/>
                 <field name="document_type_id"/>
                 <field name="department_id"/>
-                <field name="origin_model"/>
+                <field name="origin_model_id"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
@@ -28,8 +28,18 @@
                         <group string="Scope (auto-match for from_record)">
                             <field name="document_type_id"/>
                             <field name="department_id"/>
-                            <field name="origin_model" placeholder="purchase.request"/>
-                            <field name="condition_domain" placeholder="[('amount_total', '&gt;=', 100000)]"/>
+                            <field name="origin_model_id" options="{'no_create': True}"/>
+                            <!-- invisible origin_model backs the domain widget's model
+                                 option (it resolves the technical name from this field). -->
+                            <field name="origin_model" invisible="1"/>
+                            <!-- show interactive domain builder only when a model is selected;
+                                 fall back to plain text so model-agnostic templates remain editable. -->
+                            <field name="condition_domain" widget="domain"
+                                   options="{'model': 'origin_model'}"
+                                   attrs="{'invisible': [('origin_model', '=', False)]}"/>
+                            <field name="condition_domain"
+                                   placeholder="[('amount_total', '&gt;=', 100000)]"
+                                   attrs="{'invisible': [('origin_model', '!=', False)]}"/>
                         </group>
                         <group>
                             <field name="sequence"/>
@@ -37,7 +47,8 @@
                         </group>
                     </group>
                     <separator string="Route Steps (seed)"/>
-                    <field name="line_ids">
+                    <field name="next_line_order" invisible="1"/>
+                    <field name="line_ids" context="{'default_order': next_line_order}">
                         <tree editable="bottom">
                             <field name="order"/>
                             <field name="verb"/>

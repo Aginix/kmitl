@@ -44,19 +44,20 @@
         <field name="arch" type="xml">
             <form string="KMITL Project">
                 <header>
-                    <button string="Confirm" name="button_new" states="draft" type="object" class="oe_highlight" />
-                    <button string="In Progress" name="button_in_progress" states="new" type="object" />
-                    <button string="On hold" name="button_on_hold" states="new" type="object" />
-                    <button string="Complete" name="button_complete" states="in_progress" type="object" class="oe_highlight" />
-                    <button string="Reset to Draft" name="button_draft" groups="project.group_project_manager" states="cancel,in_progress,on_hold" type="object" />
-                    <button string="Reset to Draft" name="button_draft" states="new" type="object" />
-                    <button string="Cancel" name="button_cancel" groups="project.group_project_manager" states="draft,new,in_progress,on_hold" type="object" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,new,in_progress,complete" />
+                    <button string="ยืนยัน" name="action_confirm" states="draft" type="object" class="oe_highlight" />
+                    <button string="จองงบประมาณ" name="action_reserve_budget" states="to_verify" type="object" class="oe_highlight" />
+                    <button string="อนุมัติ" name="action_approve" states="to_send,sent" type="object" class="oe_highlight" />
+                    <button string="ปิดโครงการ" name="action_complete" states="in_progress" type="object" class="oe_highlight" />
+                    <button string="Reset to Draft" name="action_draft" states="to_verify,to_send,returned" type="object" />
+                    <button string="Reset to Draft" name="action_draft" groups="project.group_project_manager" states="rejected,cancel" type="object" />
+                    <button string="Cancel" name="action_cancel" groups="project.group_project_manager" states="draft,to_verify,to_send,returned,rejected,in_progress" type="object" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,to_send,sent,in_progress,complete" />
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
                     <widget name="web_ribbon" title="Cancelled" bg_color="bg-black" attrs="{'invisible': [('state', '!=', 'cancel')]}" />
-                    <widget name="web_ribbon" title="On hold" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'on_hold')]}" />
+                    <widget name="web_ribbon" title="ถูกตีกลับ" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'returned')]}" />
+                    <widget name="web_ribbon" title="ถูกปฏิเสธ" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'rejected')]}" />
                     <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'complete')]}" />
                     <field name="is_editable" invisible="1" />
                     <div class="oe_button_box" name="button_box" groups="base.group_user">
@@ -123,11 +124,11 @@
                             </group>
                             <group name="budget" string="งบประมาณ">
                                 <field name="budget_amount" required="1"/>
-                                <field name="budget_remaining" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                                <field name="budget_remaining" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
                                 <button name="action_open_reservation_picker" type="object"
                                     string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
                                     class="btn btn-primary" icon="fa-sitemap" colspan="2"
-                                    attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                                    attrs="{'invisible': [('state', 'not in', ('draft', 'returned'))]}"/>
                                 <field name="budget_account_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="activity_analytic_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="fund_analytic_id" readonly="1" widget="selection" />
@@ -168,6 +169,34 @@
                                         <field name="m9" />
                                     </tree>
                                 </field>
+                            </group>
+                        </page>
+                        <page name="project_budget" string="งบประมาณโครงการ">
+                            <div class="alert alert-info" role="alert">
+                                <i>วางแผนงบประมาณของโครงการ ฝั่งรายจ่ายจัดกลุ่มเป็นหมวดตามประเภทงบให้อัตโนมัติ (งบบุคลากร/งบดำเนินงาน/งบอุดหนุน) พร้อมคำอธิบายการแตกตัวคูณและจำนวนเงิน หากโครงการมีรายรับ ให้ติ๊กช่องด้านล่างเพื่อแสดงตารางรายรับ</i>
+                            </div>
+                            <group>
+                                <field name="has_income" />
+                            </group>
+                            <div attrs="{'invisible': [('has_income', '=', False)]}">
+                                <separator string="รายรับ" />
+                                <field name="income_line_ids" nolabel="1" colspan="2" context="{'default_budget_type': 'income'}">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="budget_type" invisible="1" />
+                                        <field name="category_id" invisible="1" />
+                                        <field name="name" placeholder="ชื่อรายการรายรับ (พิมพ์เอง)" />
+                                        <field name="budget_item_id" string="เลือกจากรายการ" options="{'no_create': True, 'no_open': True}" optional="show" />
+                                        <field name="description" placeholder="คำอธิบาย" optional="hide" />
+                                        <field name="amount" sum="รวม" />
+                                    </tree>
+                                </field>
+                            </div>
+                            <separator string="รายจ่าย" />
+                            <field name="expense_line_ids" nolabel="1" colspan="2" widget="project_budget_table" context="{'default_budget_type': 'expense'}" />
+                            <group class="oe_subtotal_footer" colspan="2">
+                                <field name="budget_income_total" attrs="{'invisible': [('has_income', '=', False)]}" />
+                                <field name="budget_expense_total" />
                             </group>
                         </page>
                         <page string="การดำเนินโครงการ">
@@ -291,6 +320,27 @@
         </field>
     </record>
 
+    <record id="view_project_budget_line_tree" model="ir.ui.view">
+        <field name="name">view.project.budget.line.tree</field>
+        <field name="model">project.budget.line</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="budget_type" invisible="1" />
+                <field name="is_custom" invisible="1" />
+                <field name="category_id" invisible="1" />
+                <field name="category_complete_name" invisible="1" />
+                <field name="category_parent_path" invisible="1" />
+                <field name="budget_item_id" invisible="1" options="{'no_create': True, 'no_open': True}" />
+                <field name="name" string="รายการ" widget="budget_line_item" placeholder="ระบุรายการ" />
+                <field name="unit" optional="hide" />
+                <field name="unit_price" optional="hide" />
+                <field name="description" placeholder="คำอธิบาย (แตกตัวคูณ)" />
+                <field name="amount" sum="รวม" />
+            </tree>
+        </field>
+    </record>
+
     <record id="view_project_output_tree" model="ir.ui.view">
         <field name="name">view.project.output.tree</field>
         <field name="model">project.output</field>
@@ -300,7 +350,7 @@
                 <field name="name" placeholder="รายการ" />
                 <field name="line_type" invisible="1" />
                 <field name="unit" placeholder="หน่วย" />
-                <field name="amount" />
+                <field name="target" />
             </tree>
         </field>
     </record>

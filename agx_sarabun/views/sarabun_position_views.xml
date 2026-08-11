@@ -6,7 +6,6 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="sequence" widget="handle"/>
-                <field name="code"/>
                 <field name="name"/>
                 <field name="department_id"/>
                 <field name="holder_count"/>
@@ -27,25 +26,26 @@
                     </div>
                     <group>
                         <group>
-                            <field name="code"/>
                             <field name="department_id"/>
-                            <field name="parent_id"/>
                         </group>
                         <group>
                             <field name="sequence"/>
                             <field name="active" widget="boolean_toggle"/>
                         </group>
                     </group>
-                    <group string="ผู้ดำรงตำแหน่ง (Current Holders)" help="Whoever holds this post acts/signs in its capacity. Multi-holder = first-to-act. Interim รักษาการ: add the acting user here temporarily.">
-                        <field name="holder_ids" nolabel="1">
-                            <tree>
-                                <field name="name"/>
-                                <field name="work_email"/>
-                                <field name="department_id"/>
-                            </tree>
-                        </field>
-                    </group>
+                    <separator string="ผู้ดำรงตำแหน่ง (Current Holders)"/>
+                    <field name="holder_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="work_email"/>
+                            <field name="department_id"/>
+                        </tree>
+                    </field>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>

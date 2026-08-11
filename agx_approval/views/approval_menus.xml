@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Root Menu -->
-    <menuitem id="approval_root_menu" name="Approval" sequence="4" action="action_approval_dashboard" web_icon="agx_approval,static/description/icon.png" groups="agx_approval.group_approval_user"/>
+    <menuitem id="approval_root_menu" name="Approval" sequence="10" action="action_approval_dashboard" web_icon="agx_approval,static/description/icon.png" groups="agx_approval.group_approval_user"/>
     <!-- My Approvals Tab -->
     <menuitem id="approval_approvals_menu" name="My Approvals" sequence="10" parent="approval_root_menu" />
     <menuitem id="approval_new_request_menu" name="New Request" sequence="10" parent="approval_approvals_menu" action="action_approval_dashboard"/>

@@ -10,6 +10,13 @@
                 <div class="mb-2">
                     <p class="fw-bold mb-1">ยืนยันส่งเอกสาร?</p>
                 </div>
+                <group>
+                    <field name="originator_sign_mode" widget="radio"/>
+                </group>
+                <p class="text-muted small mb-0">
+                    ตรวจสอบการลงนามของผู้จัดทำก่อนส่ง — บางเรื่องผู้จัดทำต้อง <b>ไม่ลงนาม</b>
+                    (ให้หัวหน้าส่วนงานลงนามส่งออกแทน).
+                </p>
                 <footer>
                     <button name="action_confirm" type="object" string="ยืนยันส่ง"
                             class="btn-primary"/>

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class SarabunPosition(models.Model):
@@ -18,21 +18,17 @@ class SarabunPosition(models.Model):
     _name = "sarabun.position"
     _description = "Sarabun Administrative Position"
     _order = "sequence, name"
+    _inherit = ["mail.thread"]
 
-    name = fields.Char(string="Position", required=True, translate=True)
-    code = fields.Char(string="Code")
-    active = fields.Boolean(default=True)
+    name = fields.Char(string="Position", required=True, translate=True, tracking=True)
+    active = fields.Boolean(default=True, tracking=True)
     sequence = fields.Integer(default=10)
 
     department_id = fields.Many2one(
         comodel_name="hr.department",
         string="Department",
         help="Optional scope — the unit this post belongs to.",
-    )
-    parent_id = fields.Many2one(
-        comodel_name="sarabun.position",
-        string="Reports To",
-        help="Optional hierarchy (org display / future acting chains).",
+        tracking=True,
     )
     holder_ids = fields.Many2many(
         comodel_name="hr.employee",
@@ -49,19 +45,29 @@ class SarabunPosition(models.Model):
         string="ผู้ดำรงตำแหน่ง",
         compute="_compute_holder_count",
     )
+    # Holder changes are tracked through this stored mirror: mail tracking does
+    # not support many2many, so a computed Char captures the holder set (and each
+    # holder's name) as text and logs the diff to the chatter on every change.
+    holder_names = fields.Char(
+        string="ผู้ดำรงตำแหน่ง",
+        compute="_compute_holder_names",
+        store=True,
+        tracking=True,
+    )
 
     @api.depends("holder_ids")
     def _compute_holder_count(self):
         for record in self:
             record.holder_count = len(record.holder_ids)
 
+    @api.depends("holder_ids.name")
+    def _compute_holder_names(self):
+        for record in self:
+            record.holder_names = ", ".join(record.holder_ids.mapped("name"))
+
     # === Phase-2 seam (designed, not built in v1) ===
     # acting_assignment_ids = fields.One2many("sarabun.position.acting", "position_id")
     #   delegate user + capacity + validity window, feeding holder resolution.
-
-    _sql_constraints = [
-        ("code_uniq", "unique(code)", "Position code must be unique!"),
-    ]
 
     def _current_holder_employees(self, at_datetime=None):
         """The hr.employee holders of this Position (for display/preview).
@@ -77,12 +83,3 @@ class SarabunPosition(models.Model):
         The engine acts by logged-in user, so holders without a user cannot act."""
         self.ensure_one()
         return self._current_holder_employees(at_datetime).mapped("user_id")
-
-    def name_get(self):
-        result = []
-        for record in self:
-            name = record.name
-            if record.code:
-                name = f"[{record.code}] {name}"
-            result.append((record.id, name))
-        return result

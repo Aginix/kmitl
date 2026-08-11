@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="action_report_kmitl_project" model="ir.actions.report">
-        <field name="name">KMITL Project</field>
+        <field name="name">Project Proposal</field>
         <field name="binding_model_id" ref="model_kmitl_project" />
         <field name="model">kmitl.project</field>
         <field name="report_type">qweb-pdf</field>

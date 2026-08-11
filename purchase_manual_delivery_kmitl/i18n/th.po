@@ -245,7 +245,7 @@ msgstr ""
 #. module: purchase_manual_delivery_kmitl
 #: model:ir.model.fields,field_description:purchase_manual_delivery_kmitl.field_create_stock_picking_wizard_line__price_unit
 msgid "Price Unit"
-msgstr "ราคาต่อหน่วย"
+msgstr "ราคา"
 
 #. module: purchase_manual_delivery_kmitl
 #: model:ir.model.fields,field_description:purchase_manual_delivery_kmitl.field_create_stock_picking_wizard_line__product_id

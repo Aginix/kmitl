@@ -2,6 +2,8 @@ import logging
 
 from odoo import SUPERUSER_ID, api
 
+from .models.account_payment_method import KMITL_PAYMENT_METHODS
+
 _logger = logging.getLogger(__name__)
 
 # Journal master data. ``account`` is the account code used as the journal's
@@ -18,6 +20,27 @@ JOURNALS = [
     {"xmlid": "journal_ar", "code": "AR", "name": "ใบสำคัญลูกหนี้", "type": "sale", "sequence": 70, "account": "4000000000"},
     {"xmlid": "journal_ap", "code": "AP", "name": "ใบสำคัญซื้อ", "type": "purchase", "sequence": 80, "account": "5000000000"},
 ]
+
+# The institute's paying accounts (หัวจ่าย) as given by the treasury office: the
+# bank account money leaves from, identified by the chart code of its GL account,
+# and the way it normally leaves. A current account can be both transferred from
+# and drawn cheques on, so a second method for the same account is added by hand
+# when it is needed rather than assumed here.
+#
+# They all hang off ใบสำคัญจ่าย (PV): a paying account is a payment method line,
+# and a method line belongs to a journal.
+PAYING_ACCOUNTS = [
+    {"account": "1112210004", "method": "kmitl_transfer"},
+    {"account": "1112220015", "method": "kmitl_cheque"},
+    {"account": "1112110012", "method": "kmitl_transfer"},
+    {"account": "1112120003", "method": "kmitl_transfer"},
+    {"account": "1112120002", "method": "kmitl_transfer"},
+    {"account": "1112120016", "method": "kmitl_transfer"},
+    {"account": "1112120006", "method": "kmitl_transfer"},
+]
+
+# The voucher (ใบสำคัญ) the paying accounts belong to.
+PAYING_ACCOUNT_JOURNAL_CODE = "PV"
 
 # Account codes other modules reference. The chart loader assigns real accounts a
 # company-prefixed external id (``account_kmitl.1_a_<code>``); we publish a stable,
@@ -37,6 +60,36 @@ REFERENCED_ACCOUNTS = [
     # kmitl_demo partners (data/res.partner.xml)
     "1126000001", "2110000001", "2110000099",
 ]
+
+
+def _drop_dedicated_payment_sequence(journal):
+    """Number a payment PV/… rather than PPV/….
+
+    Core keeps a *dedicated payment sequence* on bank and cash journals so that
+    payments do not share a running number with the invoices in the same journal:
+    ``account.move._get_starting_sequence`` prefixes a "P" onto the journal code
+    for payment moves whenever ``payment_sequence`` is set, and the compute turns
+    it on for every bank/cash journal.
+
+    A KMITL journal code *is* the voucher type (ใบสำคัญ) and its sequence *is* the
+    voucher number, so ใบสำคัญจ่าย has to number PV/2026/08/0001. There is nothing
+    to keep the payments apart from either — a voucher journal carries payments
+    and nothing else.
+
+    Guarded on the field's presence: it belongs to core, not to us, and a rename
+    there should leave the numbering wrong rather than break the install.
+    """
+    if "payment_sequence" not in journal._fields:
+        _logger.warning(
+            "account_kmitl: account.journal has no payment_sequence field; "
+            "payments on %s may be numbered P%s/… instead of %s/….",
+            journal.display_name,
+            journal.code,
+            journal.code,
+        )
+        return
+    if journal.payment_sequence:
+        journal.payment_sequence = False
 
 
 def _create_journals(env, company):
@@ -83,6 +136,7 @@ def _create_journals(env, company):
         elif account and not journal.default_account_id:
             # Backfill a default account added after the journal was created.
             journal.default_account_id = account.id
+        _drop_dedicated_payment_sequence(journal)
         env["ir.model.data"]._update_xmlids(
             [
                 {
@@ -108,6 +162,188 @@ def _create_journals(env, company):
                 + journal.outbound_payment_method_line_ids
             )
             lines.payment_account_id = journal.default_account_id
+
+
+# Odoo's built-in methods, offered on every stock bank journal. KMITL pays
+# only by transfer / cheque / cash, so these are taken off its journals.
+STOCK_METHOD_XMLIDS = [
+    "account.account_payment_method_manual_in",
+    "account.account_payment_method_manual_out",
+]
+
+
+def _kmitl_payment_journals(env, company):
+    """Every journal that can carry a payment method line for the company.
+
+    Archived journals are included: ``_deactivate_default_journals`` archives
+    the journals the chart loader created, and un-archiving one later must not
+    bring Odoo's Manual method back into service.
+    """
+    return (
+        env["account.journal"]
+        .with_context(active_test=False)
+        .search(
+            [("company_id", "=", company.id), ("type", "in", ("bank", "cash"))]
+        )
+    )
+
+
+def _setup_payment_method_lines(env, company):
+    """Offer the KMITL payment methods (เงินโอน / เช็ค / เงินสด) on every
+    bank/cash journal, in both directions, and drop Odoo's stock Manual one.
+
+    ``account.journal._default_*_payment_methods`` (overridden in
+    ``models/account_journal.py``) already gives every journal created from now
+    on the KMITL methods; this pass fixes up the journals that already exist —
+    the ones created before this module was installed, and the KMITL journals
+    ``_create_journals`` creates a few lines above.
+
+    Idempotent: methods already on a journal are left alone. Lines without a
+    payment account are pointed at the journal's default account, the same
+    convention ``_create_journals`` applies. Removing a Manual line that a
+    payment already uses only detaches it from the journal (core
+    ``account.payment.method.line.unlink``), so posted history is preserved.
+    """
+    MethodLine = env["account.payment.method.line"]
+    stock_methods = env["account.payment.method"]
+    for xmlid in STOCK_METHOD_XMLIDS:
+        method = env.ref(xmlid, raise_if_not_found=False)
+        if method:
+            stock_methods |= method
+
+    sequences = {
+        method["code"]: method["sequence"] for method in KMITL_PAYMENT_METHODS
+    }
+    for journal in _kmitl_payment_journals(env, company):
+        wanted = env["account.payment.method"]
+        for payment_type in ("inbound", "outbound"):
+            wanted |= journal._kmitl_default_payment_methods(payment_type)
+        if not wanted:
+            continue
+        lines = (
+            journal.inbound_payment_method_line_ids
+            + journal.outbound_payment_method_line_ids
+        )
+        for method in wanted - lines.payment_method_id:
+            MethodLine.create(
+                {
+                    "journal_id": journal.id,
+                    "payment_method_id": method.id,
+                    "name": method.name,
+                    "sequence": sequences.get(method.code, 10),
+                }
+            )
+        lines = (
+            journal.inbound_payment_method_line_ids
+            + journal.outbound_payment_method_line_ids
+        )
+        if journal.default_account_id:
+            lines.filtered(
+                lambda l: not l.payment_account_id
+            ).payment_account_id = journal.default_account_id
+        lines.filtered(
+            lambda l: l.payment_method_id in stock_methods
+        ).unlink()
+
+
+def _setup_paying_account_lines(env, company):
+    """Give ใบสำคัญจ่าย one outbound payment method line per paying account.
+
+    A paying account (หัวจ่าย) is "out of which bank account the money leaves, by
+    which means, booked against which GL account" — which is what a payment
+    method line already says, so it needs no model of its own. This turns the
+    generic lines ``_setup_payment_method_lines`` puts on the journal into the
+    treasury office's actual list: one line per account, named after it, booked
+    against it.
+
+    Only the outbound side of PV is reshaped. Its inbound lines are left alone
+    because PV is the lowest-sequence bank journal and therefore the journal every
+    payment falls back to, receipts included; the other journals are left alone
+    too.
+
+    Idempotent: a line already booked against the right account is reused as it
+    is, and a generic line of the same method is repointed rather than duplicated.
+    Each create runs in its own savepoint so that a chart missing one account, or
+    a core constraint refusing a second line of the same method on one journal,
+    is reported instead of aborting the install.
+    """
+    Account = env["account.account"]
+    MethodLine = env["account.payment.method.line"]
+    journal = env["account.journal"].search(
+        [
+            ("code", "=", PAYING_ACCOUNT_JOURNAL_CODE),
+            ("company_id", "=", company.id),
+        ],
+        limit=1,
+    )
+    if not journal:
+        _logger.warning(
+            "account_kmitl: journal %s not found for %s; paying accounts must "
+            "be set up by hand.",
+            PAYING_ACCOUNT_JOURNAL_CODE,
+            company.display_name,
+        )
+        return
+
+    existing = journal.outbound_payment_method_line_ids
+    claimed = MethodLine.browse()
+    failed = []
+    for sequence, entry in enumerate(PAYING_ACCOUNTS, start=1):
+        gl_account = Account.search(
+            [("code", "=", entry["account"]), ("company_id", "=", company.id)],
+            limit=1,
+        )
+        method = env.ref(
+            "account_kmitl.payment_method_%s_out"
+            % entry["method"].removeprefix("kmitl_"),
+            raise_if_not_found=False,
+        )
+        if not gl_account or not method:
+            failed.append("%s (%s)" % (entry["account"], entry["method"]))
+            continue
+        name = "%s – %s" % (method.name, gl_account.name)
+        vals = {
+            "name": name,
+            "payment_account_id": gl_account.id,
+            "sequence": sequence * 10,
+        }
+        # Already the right account: leave it exactly as configured.
+        line = (existing - claimed).filtered(
+            lambda l: l.payment_method_id == method
+            and l.payment_account_id == gl_account
+        )[:1]
+        if not line:
+            # A generic line of the same method — repoint it instead of adding a
+            # duplicate alongside it.
+            line = (existing - claimed).filtered(
+                lambda l: l.payment_method_id == method
+            )[:1]
+        try:
+            with env.cr.savepoint():
+                if line:
+                    line.write(vals)
+                else:
+                    line = MethodLine.create(
+                        dict(vals, journal_id=journal.id, payment_method_id=method.id)
+                    )
+        except Exception as error:  # noqa: BLE001 - never abort the install
+            failed.append("%s (%s: %s)" % (entry["account"], entry["method"], error))
+            continue
+        claimed |= line
+
+    if claimed:
+        _logger.info(
+            "account_kmitl: %d paying account(s) (หัวจ่าย) set up on %s.",
+            len(claimed),
+            journal.display_name,
+        )
+    if failed:
+        _logger.warning(
+            "account_kmitl: could not set up paying account(s) on %s: %s — "
+            "add them by hand in the journal's Outgoing Payments.",
+            journal.display_name,
+            "; ".join(failed),
+        )
 
 
 def _register_account_xmlids(env, company):
@@ -244,6 +480,8 @@ def post_init_hook(cr, registry):
     _purge_generic_accounting_demo(env, company)
     env.ref("account_kmitl.chart")._load(company)
     _create_journals(env, company)
+    _setup_payment_method_lines(env, company)
+    _setup_paying_account_lines(env, company)
     _register_account_xmlids(env, company)
     _deactivate_default_journals(env, company)
     _create_withholding_taxes(env, company)

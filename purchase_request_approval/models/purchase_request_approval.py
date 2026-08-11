@@ -147,8 +147,10 @@ class PurchaseRequestApproval(models.Model):
     )
 
     # == Related fields (read-through to purchase.request) ==
-    title = fields.Char(related="request_id.title")
-    description = fields.Text(related="request_id.description")
+    # Note: `title` and `description` are PA-own copied fields (per ADR-0004);
+    # they used to be re-declared as `related=request_id.*` here, which
+    # accidentally shadowed the own declarations above and prevented PA-side
+    # divergence. Removed to restore ADR-0004 intent.
     requested_by = fields.Many2one(related="request_id.requested_by")
     department_id = fields.Many2one(related="request_id.department_id", store=True)
     company_id = fields.Many2one(related="request_id.company_id", store=True)
@@ -462,6 +464,12 @@ class PurchaseRequestApproval(models.Model):
 
     def _get_sarabun_subject(self):
         return self.title or self.name
+
+    def _sarabun_submit_guard(self):
+        self.ensure_one()
+        if not self.partner_id:
+            raise UserError(_("กรุณาระบุผู้ขาย (Vendor) ก่อนส่งเข้าสารบรรณ"))
+        return super()._sarabun_submit_guard()
 
     def _get_sarabun_sender_department(self):
         return self.requesting_department_id or super()._get_sarabun_sender_department()

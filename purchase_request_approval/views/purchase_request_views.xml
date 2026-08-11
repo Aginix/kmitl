@@ -13,7 +13,7 @@
                     name="action_view_request_approval"
                     class="oe_stat_button"
                     attrs="{'invisible':[('request_approval_count', '=', 0)]}"
-                    groups="purchase_request.group_purchase_request_user"
+                    groups="purchase.group_purchase_user"
                     icon="fa-file-contract"
                     string="PA"
                 />

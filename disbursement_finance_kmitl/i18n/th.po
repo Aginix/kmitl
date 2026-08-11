@@ -151,3 +151,109 @@ msgstr "รายการจ่ายเงิน"
 #, python-format
 msgid "Journal Entry"
 msgstr "รายการบันทึกบัญชี"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__display_status__payment_audited
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__state__payment_audited
+msgid "Payment Audited"
+msgstr "ตรวจสอบการเบิกจ่ายแล้ว"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__display_status__payment_authorized
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__state__payment_authorized
+msgid "Authorized for Disbursement"
+msgstr "อนุมัติเบิกจ่ายแล้ว"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__display_status__paid
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__state__paid
+msgid "Paid"
+msgstr "จ่ายเงินแล้ว"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__display_status__cleared
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__state__cleared
+msgid "Cleared"
+msgstr "ล้างหนี้แล้ว"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Only bills-posted requests can be audited."
+msgstr "ตรวจสอบได้เฉพาะใบขอเบิกที่ตั้งหนี้แล้วเท่านั้น"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Only audited requests can be authorized for payment."
+msgstr "อนุมัติเบิกจ่ายได้เฉพาะใบขอเบิกที่ตรวจสอบแล้วเท่านั้น"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Only authorized requests can be confirmed as paid."
+msgstr "ยืนยันจ่ายสำเร็จได้เฉพาะใบขอเบิกที่อนุมัติเบิกจ่ายแล้วเท่านั้น"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"The disbursement must be authorized before creating the payment."
+msgstr "ต้องอนุมัติเบิกจ่ายก่อนจึงจะสร้างใบจ่ายได้"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Create the payment(s) before confirming the payment."
+msgstr "กรุณาสร้างใบจ่ายก่อนยืนยันการจ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Cannot cancel a request that is already paid/cleared."
+msgstr "ไม่สามารถยกเลิกใบขอเบิกที่จ่ายเงิน/ล้างหนี้แล้วได้"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "Audit Disbursements"
+msgstr "ตรวจสอบการเบิกจ่าย"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "Authorize Disbursements"
+msgstr "อนุมัติเบิกจ่าย"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "Audit"
+msgstr "ตรวจสอบ"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "Authorize"
+msgstr "อนุมัติ"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "Audit Selected"
+msgstr "ตรวจสอบที่เลือก"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "Authorize Selected"
+msgstr "อนุมัติที่เลือก"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "No requests in this queue."
+msgstr "ไม่มีใบขอเบิกในคิวนี้"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "Net Amount"
+msgstr "ยอดสุทธิ"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "Bills"
+msgstr "จำนวนใบตั้งหนี้"
