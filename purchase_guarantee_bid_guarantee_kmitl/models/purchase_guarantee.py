@@ -54,15 +54,16 @@ class PurchaseGuarantee(models.Model):
                 rec._check_reference_status()
         return res
 
+    _ALLOWED_PR_STATES_FOR_GUARANTEE = ("approved", "in_progress", "to_submit", "to_approve", "in_egp")
+
     def _check_reference_status(self):
         super()._check_reference_status()
         if self.reference:
             states = []
             if self.reference._name == "purchase.request":
+                states.extend(self._ALLOWED_PR_STATES_FOR_GUARANTEE)
                 if self.id:
-                    states.extend(["approved", "in_progress", "done"])
-                else:
-                    states.extend(["approved", "in_progress"])
+                    states.append("done")
             if states and self.reference.state not in states:
                 raise UserError(
                     _("%(ref)s must be in status: %(state)s")
