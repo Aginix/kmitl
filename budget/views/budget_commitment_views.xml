@@ -14,7 +14,7 @@
                 <field name="source_analytic_id" optional="show" />
                 <field name="department_analytic_id" optional="hide" />
                 <field name="account_id" optional="show" />
-                <field name="amount" string="วงเงิน"/>
+                <field name="amount" string="วงเงิน" />
                 <field name="total_reserved" string="จองเงิน" optional="show" />
                 <field name="available_to_consume" string="ผูกพัน" optional="show" />
                 <field name="total_consumed" string="เบิกจ่าย" optional="show" />
@@ -24,7 +24,7 @@
                     decoration-info="state == 'reserved'"
                     decoration-primary="state == 'partial'"
                     decoration-success="state == 'done'"
-                    decoration-danger="state == 'cancel'"/>
+                    decoration-danger="state == 'cancel'" />
                 <field name="user_id" widget="many2one_avatar_user" optional="show" />
             </tree>
         </field>
@@ -39,34 +39,34 @@
                 <header>
                     <button name="action_open_reservation_picker" string="เลือกงบประมาณ"
                         type="object" class="oe_highlight"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        attrs="{'invisible': [('state', '!=', 'draft')]}" />
                     <button name="action_reserve" string="จองงบประมาณ" type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        attrs="{'invisible': [('state', '!=', 'draft')]}" />
                     <button name="action_obligate" string="ผูกพัน" type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
+                        attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}" />
                     <button name="action_consume" string="เบิกจ่าย" type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
+                        attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}" />
                     <button name="action_return_leftover" string="ส่งคืนเงินเหลือจ่าย"
                         type="object"
-                        attrs="{'invisible': ['|', ('state', 'not in', ['reserved', 'partial']), ('available_to_obligate', '&lt;=', 0)]}"/>
+                        attrs="{'invisible': ['|', ('state', 'not in', ['reserved', 'partial']), ('available_to_obligate', '&lt;=', 0)]}" />
                     <button name="action_done" string="Mark as Done" type="object"
-                        attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
+                        attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}" />
                     <button name="action_cancel" string="Cancel" type="object"
-                        attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"/>
+                        attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}" />
                     <button name="action_reset_to_draft" string="Reset to Draft" type="object"
-                        attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
+                        attrs="{'invisible': [('state', '!=', 'cancel')]}" />
                     <field name="state" widget="statusbar"
-                        statusbar_visible="draft,reserved,partial,done"/>
+                        statusbar_visible="draft,reserved,partial,done" />
                 </header>
 
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object"
                             name="action_view_budget_moves" icon="fa-money">
-                            <field string="Budget Moves" name="budget_move_ids" widget="statinfo"/>
+                            <field string="Budget Moves" name="budget_move_ids" widget="statinfo" />
                         </button>
                     </div>
 
@@ -76,46 +76,54 @@
                         </h1>
                         <h2>
                             <field name="title"
-                                placeholder="ชื่อรายการจอง เช่น จองงบสนับสนุนคณะวิศวกรรมศาสตร์"/>
+                                placeholder="ชื่อรายการจอง เช่น จองงบสนับสนุนคณะวิศวกรรมศาสตร์" />
                         </h2>
                     </div>
 
                     <group>
                         <group name="basic_information" string="Basic Information">
-                            <field name="date" invisible="1" />
-                            <field name="user_id" options="{'no_create': True, 'no_open': True}"/>
-                            <field name="account_fiscal_year_id"
-                                options="{'no_create': True, 'no_open': True}"
-                                attrs="{'readonly': [('id', '!=', False)]}"/>
+                            <field name="date" />
+                            <field name="description" placeholder="Commitment description..." />
+                            <field name="user_id" options="{'no_create': True, 'no_open': True}" required="1" />
+                            <field name="company_id" groups="base.group_multi_company" />
                         </group>
                         <group name="budget_details" string="Budget Details">
-                            <field name="account_id"
+                            <field name="account_fiscal_year_id" widget="selection"
+                                attrs="{'readonly': [('id', '!=', False)]}" />
+                                <field name="source_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
-                            <field name="department_analytic_id" required="1"
+                                <field name="activity_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
-                            <field name="source_analytic_id" required="1"
+                                <field name="fund_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
-                            <field name="activity_analytic_id"
+                                <field name="department_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
-                            <field name="fund_analytic_id"
-                                options="{'no_create': True, 'no_open': True}" />
-                            <field name="amount" widget="monetary"/>
-                            <field name="currency_id" invisible="1"/>
+                                <field name="account_id"
+                                    options="{'no_create': True, 'no_open': True}"
+                                    required="1"/>
+                            <field name="amount" widget="monetary" />
+                            <field name="currency_id" invisible="1" />
                         </group>
                     </group>
 
                     <group string="Budget Summary" name="budget_summary">
                         <group>
-                            <field name="total_reserved" string="จองเงิน" widget="monetary"/>
+                            <field name="total_reserved" string="จองเงิน" widget="monetary" />
                             <field name="available_to_consume" string="ผูกพัน"
                                 widget="monetary"
                                 decoration-danger="available_to_consume &lt; 0"
-                                decoration-success="available_to_consume &gt; 0"/>
-                            <field name="total_consumed" string="เบิกจ่าย" widget="monetary"/>
+                                decoration-success="available_to_consume &gt; 0" />
+                            <field name="total_consumed" string="เบิกจ่าย" widget="monetary" />
                             <field name="available_to_obligate" string="คงเหลือ"
                                 widget="monetary"
                                 decoration-danger="available_to_obligate &lt; 0"
-                                decoration-success="available_to_obligate &gt; 0"/>
+                                decoration-success="available_to_obligate &gt; 0" />
+                        </group>
+                    </group>
+
+                    <group name="other_information" string="Other Information">
+                        <group>
+                            <field name="notes" placeholder="Notes..." />
                         </group>
                     </group>
 
@@ -123,49 +131,37 @@
                         <page name="lines" string="Ledger Lines">
                             <field name="line_ids" readonly="1">
                                 <tree decoration-muted="state == 'cancel'" create="false">
-                                    <field name="date"/>
-                                    <field name="move_type"/>
-                                    <field name="account_id"/>
-                                    <field name="activity_analytic_id"/>
-                                    <field name="fund_analytic_id"/>
-                                    <field name="amount"/>
-                                    <field name="name" optional="show"/>
+                                    <field name="date" />
+                                    <field name="move_type" />
+                                    <field name="account_id" />
+                                    <field name="activity_analytic_id" />
+                                    <field name="fund_analytic_id" />
+                                    <field name="amount" />
+                                    <field name="name" optional="show" />
                                     <button name="action_open_source_document"
                                         type="object" icon="fa-external-link"
                                         title="Open Source Document"
-                                        attrs="{'invisible': [('res_model', '=', False)]}"/>
-                                    <field name="res_name" string="Source" optional="show"/>
-                                    <field name="res_model" invisible="1"/>
-                                    <field name="budget_move_id" optional="hide"/>
+                                        attrs="{'invisible': [('res_model', '=', False)]}" />
+                                    <field name="res_name" string="Source" optional="show" />
+                                    <field name="res_model" invisible="1" />
+                                    <field name="budget_move_id" optional="hide" />
                                     <field name="state" widget="badge"
                                         decoration-success="state == 'posted'"
-                                        decoration-danger="state == 'cancel'"/>
-                                    <field name="currency_id" invisible="1"/>
+                                        decoration-danger="state == 'cancel'" />
+                                    <field name="currency_id" invisible="1" />
                                     <button name="action_cancel" type="object"
                                         icon="fa-times" title="Cancel Line"
-                                        attrs="{'invisible': [('state', '=', 'cancel')]}"/>
+                                        attrs="{'invisible': [('state', '=', 'cancel')]}" />
                                 </tree>
                             </field>
-                        </page>
-                        <page name="description" string="Description">
-                            <group>
-                                <group>
-                                    <field name="description"
-                                        placeholder="Commitment description..."/>
-                                </group>
-                                <group>
-                                    <field name="notes"
-                                        placeholder="Additional notes..."/>
-                                </group>
-                            </group>
                         </page>
                         <page name="extra" string="Extra Info">
                             <group>
                                 <group>
-                                    <field name="ref"/>
+                                    <field name="ref" />
                                 </group>
                                 <group>
-                                    <field name="create_date"/>
+                                    <field name="create_date" />
                                 </group>
                             </group>
                         </page>
@@ -173,9 +169,9 @@
                 </sheet>
 
                 <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
                 </div>
             </form>
         </field>
@@ -188,30 +184,30 @@
         <field name="arch" type="xml">
             <search string="Budget Commitments">
                 <field name="name" string="ใบจองงบประมาณ"
-                    filter_domain="['|', '|', ('name', 'ilike', self), ('title', 'ilike', self), ('ref', 'ilike', self)]"/>
-                <field name="user_id"/>
-                <field name="account_fiscal_year_id"/>
+                    filter_domain="['|', '|', ('name', 'ilike', self), ('title', 'ilike', self), ('ref', 'ilike', self)]" />
+                <field name="user_id" />
+                <field name="account_fiscal_year_id" />
 
-                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
-                <filter string="Reserved" name="reserved" domain="[('state', '=', 'reserved')]"/>
-                <filter string="In Progress" name="partial" domain="[('state', '=', 'partial')]"/>
-                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />
+                <filter string="Reserved" name="reserved" domain="[('state', '=', 'reserved')]" />
+                <filter string="In Progress" name="partial" domain="[('state', '=', 'partial')]" />
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
 
-                <separator/>
+                <separator />
                 <filter name="current_fy" string="ปีงบประมาณปัจจุบัน"
                     domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
-                <separator/>
+                <separator />
                 <filter string="My Commitments" name="my_commitments"
-                    domain="[('user_id', '=', uid)]"/>
-                <separator/>
+                    domain="[('user_id', '=', uid)]" />
+                <separator />
 
                 <group expand="0" name="group_by" string="Group By">
                     <filter string="Status" name="group_state"
-                        context="{'group_by': 'state'}"/>
+                        context="{'group_by': 'state'}" />
                     <filter string="Fiscal Year" name="group_fy"
-                        context="{'group_by': 'account_fiscal_year_id'}"/>
+                        context="{'group_by': 'account_fiscal_year_id'}" />
                     <filter string="Responsible User" name="group_user"
-                        context="{'group_by': 'user_id'}"/>
+                        context="{'group_by': 'user_id'}" />
                 </group>
             </search>
         </field>
@@ -222,7 +218,7 @@
         <field name="name">Budget Commitments</field>
         <field name="res_model">budget.commitment</field>
         <field name="view_mode">tree,form,pivot</field>
-        <field name="search_view_id" ref="budget_commitment_search_view"/>
+        <field name="search_view_id" ref="budget_commitment_search_view" />
         <field name="context">{'search_default_current_fy': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -242,27 +238,27 @@
         <field name="arch" type="xml">
             <tree string="Budget Commitment Lines" create="false" edit="false" delete="false"
                 decoration-muted="state == 'cancel'">
-                <field name="date"/>
-                <field name="commitment_id"/>
-                <field name="move_type"/>
-                <field name="account_fiscal_year_id" optional="hide"/>
-                <field name="account_id"/>
-                <field name="department_analytic_id" optional="show"/>
-                <field name="source_analytic_id" optional="show"/>
-                <field name="activity_analytic_id" optional="show"/>
-                <field name="fund_analytic_id" optional="show"/>
-                <field name="amount" sum="จำนวนเงิน"/>
-                <field name="name" optional="hide"/>
+                <field name="date" />
+                <field name="commitment_id" />
+                <field name="move_type" />
+                <field name="account_fiscal_year_id" optional="hide" />
+                <field name="account_id" />
+                <field name="department_analytic_id" optional="show" />
+                <field name="source_analytic_id" optional="show" />
+                <field name="activity_analytic_id" optional="show" />
+                <field name="fund_analytic_id" optional="show" />
+                <field name="amount" sum="จำนวนเงิน" />
+                <field name="name" optional="hide" />
                 <button name="action_open_source_document" type="object"
                     icon="fa-external-link" title="Open Source Document"
-                    attrs="{'invisible': [('res_model', '=', False)]}"/>
-                <field name="res_name" string="เอกสารต้นทาง" optional="show"/>
-                <field name="res_model" invisible="1"/>
-                <field name="budget_move_id" optional="hide"/>
+                    attrs="{'invisible': [('res_model', '=', False)]}" />
+                <field name="res_name" string="เอกสารต้นทาง" optional="show" />
+                <field name="res_model" invisible="1" />
+                <field name="budget_move_id" optional="hide" />
                 <field name="state" widget="badge"
                     decoration-success="state == 'posted'"
-                    decoration-danger="state == 'cancel'"/>
-                <field name="currency_id" invisible="1"/>
+                    decoration-danger="state == 'cancel'" />
+                <field name="currency_id" invisible="1" />
             </tree>
         </field>
     </record>
@@ -286,33 +282,33 @@
                     </div>
                     <group>
                         <group name="general_info" string="ข้อมูลทั่วไป">
-                            <field name="commitment_id" options="{'no_create': True}"/>
-                            <field name="date"/>
-                            <field name="move_type"/>
-                            <field name="account_fiscal_year_id"/>
-                            <field name="amount"/>
-                            <field name="currency_id" invisible="1"/>
+                            <field name="commitment_id" options="{'no_create': True}" />
+                            <field name="date" />
+                            <field name="move_type" />
+                            <field name="account_fiscal_year_id" />
+                            <field name="amount" />
+                            <field name="currency_id" invisible="1" />
                             <field name="state" widget="badge"
                                 decoration-success="state == 'posted'"
-                                decoration-danger="state == 'cancel'"/>
+                                decoration-danger="state == 'cancel'" />
                         </group>
                         <group name="analytic_dimensions" string="มิติบัญชี">
-                            <field name="account_id" options="{'no_open': True}"/>
-                            <field name="department_analytic_id" options="{'no_open': True}"/>
-                            <field name="source_analytic_id" options="{'no_open': True}"/>
-                            <field name="activity_analytic_id" options="{'no_open': True}"/>
-                            <field name="fund_analytic_id" options="{'no_open': True}"/>
+                            <field name="account_id" options="{'no_open': True}" />
+                            <field name="department_analytic_id" options="{'no_open': True}" />
+                            <field name="source_analytic_id" options="{'no_open': True}" />
+                            <field name="activity_analytic_id" options="{'no_open': True}" />
+                            <field name="fund_analytic_id" options="{'no_open': True}" />
                         </group>
                     </group>
                     <group name="details" string="รายละเอียด">
-                        <field name="name"/>
-                        <field name="res_name" string="เอกสารต้นทาง"/>
-                        <field name="res_model" invisible="1"/>
-                        <field name="budget_move_id"/>
+                        <field name="name" />
+                        <field name="res_name" string="เอกสารต้นทาง" />
+                        <field name="res_model" invisible="1" />
+                        <field name="budget_move_id" />
                     </group>
                 </sheet>
                 <div class="oe_chatter">
-                    <field name="message_ids" widget="mail_thread"/>
+                    <field name="message_ids" widget="mail_thread" />
                 </div>
             </form>
         </field>
@@ -324,28 +320,35 @@
         <field name="model">budget.commitment.line</field>
         <field name="arch" type="xml">
             <search string="Budget Commitment Lines">
-                <field name="commitment_id"/>
-                <field name="account_id"/>
-                <field name="name"/>
-                <field name="department_analytic_id"/>
-                <field name="source_analytic_id"/>
-                <field name="activity_analytic_id"/>
-                <field name="fund_analytic_id"/>
-                <separator/>
-                <filter string="จองงบ" name="reserve" domain="[('move_type', '=', 'reserve')]"/>
-                <filter string="ผูกพัน" name="obligate" domain="[('move_type', '=', 'obligate')]"/>
-                <filter string="ตัดงบ" name="consume" domain="[('move_type', '=', 'consume')]"/>
-                <separator/>
-                <filter string="Posted" name="posted" domain="[('state', '=', 'posted')]"/>
-                <filter string="Cancelled" name="cancel" domain="[('state', '=', 'cancel')]"/>
+                <field name="commitment_id" />
+                <field name="account_id" />
+                <field name="name" />
+                <field name="department_analytic_id" />
+                <field name="source_analytic_id" />
+                <field name="activity_analytic_id" />
+                <field name="fund_analytic_id" />
+                <separator />
+                <filter string="จองงบ" name="reserve" domain="[('move_type', '=', 'reserve')]" />
+                <filter string="ผูกพัน" name="obligate" domain="[('move_type', '=', 'obligate')]" />
+                <filter string="ตัดงบ" name="consume" domain="[('move_type', '=', 'consume')]" />
+                <separator />
+                <filter string="Posted" name="posted" domain="[('state', '=', 'posted')]" />
+                <filter string="Cancelled" name="cancel" domain="[('state', '=', 'cancel')]" />
                 <group expand="0" name="group_by" string="Group By">
-                    <filter string="ประเภท" name="group_move_type" context="{'group_by': 'move_type'}"/>
-                    <filter string="รหัสงบประมาณ" name="group_account" context="{'group_by': 'account_id'}"/>
-                    <filter string="ส่วนงาน" name="group_department" context="{'group_by': 'department_analytic_id'}"/>
-                    <filter string="แหล่งเงิน" name="group_source" context="{'group_by': 'source_analytic_id'}"/>
-                    <filter string="กิจกรรม" name="group_activity" context="{'group_by': 'activity_analytic_id'}"/>
-                    <filter string="กองทุน" name="group_fund" context="{'group_by': 'fund_analytic_id'}"/>
-                    <filter string="ปีงบประมาณ" name="group_fy" context="{'group_by': 'account_fiscal_year_id'}"/>
+                    <filter string="ประเภท" name="group_move_type"
+                        context="{'group_by': 'move_type'}" />
+                    <filter string="รหัสงบประมาณ" name="group_account"
+                        context="{'group_by': 'account_id'}" />
+                    <filter string="ส่วนงาน" name="group_department"
+                        context="{'group_by': 'department_analytic_id'}" />
+                    <filter string="แหล่งเงิน" name="group_source"
+                        context="{'group_by': 'source_analytic_id'}" />
+                    <filter string="กิจกรรม" name="group_activity"
+                        context="{'group_by': 'activity_analytic_id'}" />
+                    <filter string="กองทุน" name="group_fund"
+                        context="{'group_by': 'fund_analytic_id'}" />
+                    <filter string="ปีงบประมาณ" name="group_fy"
+                        context="{'group_by': 'account_fiscal_year_id'}" />
                 </group>
             </search>
         </field>

@@ -45,7 +45,10 @@ class BudgetCommitment(models.Model):
         tracking=True,
         index="trigram",
         readonly=False,
-        states=READONLY_STATES,
+        states={
+            "done": [("readonly", True)],
+            "cancel": [("readonly", True)],
+        },
         help=(
             "ชื่อ/วัตถุประสงค์ของใบจองงบประมาณ แสดงคู่กับเลขที่ใบจองทุกที่ที่ต้องเลือกใบจอง "
             "(เช่น ช่องหยิบใบจองใน พ.1 / ใบขออนุมัติ) — ใบจองที่สร้างจากโครงการหรือ"
@@ -95,7 +98,10 @@ class BudgetCommitment(models.Model):
         string="Description",
         tracking=True,
         readonly=False,
-        states=READONLY_STATES,
+        states={
+            "done": [("readonly", True)],
+            "cancel": [("readonly", True)],
+        },
     )
     user_id = fields.Many2one(
         string="User",
@@ -110,7 +116,7 @@ class BudgetCommitment(models.Model):
 
     # Header amount = user-set cap (วงเงินอนุมัติ)
     amount = fields.Monetary(
-        string="วงเงินอนุมัติ",
+        string="งบประมาณ",
         required=True,
         currency_field="currency_id",
         tracking=True,
