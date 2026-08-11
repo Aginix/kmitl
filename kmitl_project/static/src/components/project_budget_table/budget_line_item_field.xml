@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates xml:space="preserve">
+    <t t-name="kmitl_project.BudgetLineItemField" owl="1">
+        <Field t-if="showItemPicker"
+            name="'budget_item_id'"
+            record="props.record"
+            fieldInfo="itemFieldInfo"
+            setDirty="props.setDirty"
+            readonly="props.readonly" />
+        <CharField t-else="" t-props="props" />
+    </t>
+</templates>

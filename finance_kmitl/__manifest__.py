@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Finance",
-    "version": "16.0.1.3.0",
+    "version": "16.0.2.1.0",
     "category": "KMITL/Finance",
     "summary": "งานการเงิน KMITL: จ่ายเงิน, bank export, WHT, ทะเบียนคุมเช็ค, รายรับ/ใบเสร็จ",
     "license": "LGPL-3",
@@ -10,6 +10,7 @@
     "website": "https://www.kmitl.ac.th",
     "depends": [
         "account",
+        "account_kmitl",
         "accounting_kmitl",
         "accounting_kmitl_workflow",
         "account_fiscal_year_enhance",

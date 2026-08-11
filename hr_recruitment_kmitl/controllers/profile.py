@@ -1,11 +1,50 @@
 import base64
+import os
 
-from odoo import http
+from odoo import _, http
 from odoo.addons.portal.controllers.portal import CustomerPortal
+from odoo.exceptions import UserError
 from odoo.http import request
 
+MAX_UPLOAD_BYTES = 25 * 1024 * 1024
+ALLOWED_DOC_EXTS = {".pdf", ".jpg", ".jpeg", ".png"}
+ALLOWED_IMAGE_EXTS = {".jpg", ".jpeg", ".png"}
 
-EDUCATION_FIELDS = ["program", "major", "institution", "country_id", "graduation_date"]
+
+def assert_upload(file_storage, image_only=False):
+    """Raise UserError if ``file_storage`` exceeds 25 MB or isn't an allowed type."""
+    if not file_storage or not file_storage.filename:
+        return
+    file_storage.stream.seek(0, os.SEEK_END)
+    size = file_storage.stream.tell()
+    file_storage.stream.seek(0)
+    if size > MAX_UPLOAD_BYTES:
+        raise UserError(
+            _(
+                'ไฟล์ "%s" มีขนาดเกิน 25 MB กรุณาเลือกไฟล์ขนาดเล็กกว่า',
+                file_storage.filename,
+            )
+        )
+    allowed = ALLOWED_IMAGE_EXTS if image_only else ALLOWED_DOC_EXTS
+    ext = os.path.splitext(file_storage.filename)[1].lower()
+    if ext not in allowed:
+        raise UserError(
+            _(
+                'ไฟล์ "%(filename)s" มีนามสกุลที่ไม่รองรับ (อนุญาตเฉพาะ %(allowed)s)',
+                filename=file_storage.filename,
+                allowed=", ".join(sorted(allowed)),
+            )
+        )
+
+
+EDUCATION_FIELDS = [
+    "program",
+    "major",
+    "institution",
+    "country_id",
+    "start_year",
+    "graduate_year",
+]
 
 
 def must_set_email():
@@ -28,9 +67,6 @@ class PortalProfile(CustomerPortal):
         "phone",
         "address_street",
         "current_street",
-        "spouse_first_name",
-        "spouse_middle_name",
-        "spouse_last_name",
         "emergency_contact_name",
         "emergency_contact_relation",
         "emergency_contact_phone",
@@ -66,7 +102,6 @@ class PortalProfile(CustomerPortal):
 
     M2O_FIELDS = [
         "title",
-        "spouse_prefix",
         "nationality_id",
         "address_zip_id",
         "current_zip_id",
@@ -91,7 +126,10 @@ class PortalProfile(CustomerPortal):
                 "email_editable": self._is_email_editable(profile),
                 "titles": request.env["res.partner.title"].sudo().search([]),
                 "countries": request.env["res.country"].sudo().search([]),
-                "zips": request.env["res.city.zip"].sudo().search([]),
+                "th_country": request.env.ref("base.th", raise_if_not_found=False),
+                "zips": request.env["res.city.zip"]
+                .sudo()
+                .search([("city_id.country_id.code", "=", "TH")]),
                 "academic_standings": request.env[
                     "hr.employee.academic.standing"
                 ].search([]),
@@ -172,6 +210,7 @@ class PortalProfile(CustomerPortal):
                 else:
                     uploaded = request.httprequest.files.get(doc_name)
                     if uploaded and uploaded.filename:
+                        assert_upload(uploaded, image_only=(doc_name == "doc_photo"))
                         profile.write(
                             {
                                 f"{field_name}_file": base64.b64encode(uploaded.read()),
@@ -196,7 +235,8 @@ class PortalProfile(CustomerPortal):
         "major": "Major",
         "institution": "Institution",
         "country_id": "Country",
-        "graduation_date": "Graduation Date",
+        "start_year": "Start Year",
+        "graduate_year": "Graduate Year",
     }
 
     def _get_main_education_levels(self):
@@ -251,8 +291,17 @@ class PortalProfile(CustomerPortal):
         major = post.get(f"{prefix}major", "").strip()
         institution = post.get(f"{prefix}institution", "").strip()
         country_id = int(post.get(f"{prefix}country_id") or 0) or False
-        graduation_date = post.get(f"{prefix}graduation_date") or False
-        has_data = any([program, major, institution, country_id, graduation_date])
+        try:
+            start_year = int(post.get(f"{prefix}start_year") or 0) or False
+        except (ValueError, TypeError):
+            start_year = False
+        try:
+            graduate_year = int(post.get(f"{prefix}graduate_year") or 0) or False
+        except (ValueError, TypeError):
+            graduate_year = False
+        has_data = any(
+            [program, major, institution, country_id, start_year, graduate_year]
+        )
         rec = existing.get(level_id)
         if has_data:
             vals = {
@@ -261,7 +310,8 @@ class PortalProfile(CustomerPortal):
                 "major": major or False,
                 "institution": institution or False,
                 "country_id": country_id,
-                "graduation_date": graduation_date,
+                "start_year": start_year or False,
+                "graduate_year": graduate_year or False,
             }
             if rec:
                 rec.write(vals)
@@ -282,6 +332,7 @@ class PortalProfile(CustomerPortal):
             else:
                 uploaded = request.httprequest.files.get(file_input)
                 if uploaded and uploaded.filename:
+                    assert_upload(uploaded)
                     rec.write(
                         {
                             f"{doc_type}_file": base64.b64encode(uploaded.read()),

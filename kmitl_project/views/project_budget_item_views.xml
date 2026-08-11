@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View project.budget.item tree -->
+    <record id="view_project_budget_item_tree" model="ir.ui.view">
+        <field name="name">view.project.budget.item.tree</field>
+        <field name="model">project.budget.item</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="not active">
+                <field name="active" invisible="1" />
+                <field name="budget_type" />
+                <field name="category_id" />
+                <field name="name" />
+                <field name="unit" />
+                <field name="unit_price" />
+                <field name="description" optional="hide" />
+                <field name="note" optional="hide" />
+                <field name="complete_name" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View project.budget.item form -->
+    <record id="view_project_budget_item_form" model="ir.ui.view">
+        <field name="name">view.project.budget.item.form</field>
+        <field name="model">project.budget.item</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
+                    <field name="active" invisible="1" />
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1>
+                            <field name="name" placeholder="ชื่อรายการ..." />
+                        </h1>
+                        <field name="complete_name" readonly="1" class="text-muted" />
+                    </div>
+                    <group>
+                        <group string="ประเภท">
+                            <field name="budget_type" />
+                            <field name="category_id" options="{'no_create': True}" attrs="{'invisible': [('budget_type', '=', 'income')], 'required': [('budget_type', '=', 'expense')]}" />
+                            <field name="sequence" />
+                        </group>
+                        <group string="เรตมาตรฐาน (อ้างอิง)">
+                            <field name="unit" />
+                            <field name="unit_price" />
+                        </group>
+                    </group>
+                    <separator string="รายละเอียด" />
+                    <field name="description" nolabel="1" placeholder="คำอธิบายมาตรฐานของรายการ..." />
+                    <separator string="หมายเหตุ" />
+                    <field name="note" nolabel="1" placeholder="หมายเหตุ..." />
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- View project.budget.item search -->
+    <record id="view_project_budget_item_search" model="ir.ui.view">
+        <field name="name">view.project.budget.item.search</field>
+        <field name="model">project.budget.item</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="complete_name" string="รายการ" filter_domain="['|', ('name', 'ilike', self), ('complete_name', 'ilike', self)]" />
+                <field name="category_id" />
+                <filter name="income" string="รายรับ" domain="[('budget_type', '=', 'income')]" />
+                <filter name="expense" string="รายจ่าย" domain="[('budget_type', '=', 'expense')]" />
+                <separator />
+                <filter name="archived" string="เก็บถาวร" domain="[('active', '=', False)]" />
+                <group expand="1" name="group_by" string="Group By">
+                    <filter string="ประเภท" name="group_budget_type" domain="[]" context="{'group_by': 'budget_type'}" />
+                    <filter string="ประเภทงบ" name="group_category" domain="[]" context="{'group_by': 'category_id'}" />
+                </group>
+                <!-- Hierarchical search panel (mirrors budget.account) -->
+                <searchpanel class="project_budget_item">
+                    <field name="budget_type" string="ประเภท" icon="fa-tags" select="multi" />
+                    <field name="category_id" string="ประเภทงบ" icon="fa-sitemap" limit="0" />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action project.budget.item -->
+    <record id="action_project_budget_item" model="ir.actions.act_window">
+        <field name="name">รายการงบประมาณโครงการ</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.budget.item</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                คลิกเพื่อเพิ่มรายการงบประมาณโครงการ (รายรับ/รายจ่าย)
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="project_budget_item_config_menu" name="รายการงบประมาณ" action="action_project_budget_item" parent="menu_project_config" sequence="35" />
+</odoo>

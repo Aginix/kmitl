@@ -143,12 +143,11 @@ class SarabunCommon(TransactionCase):
 
         # Positions: single-holder and multi-holder (employees).
         cls.pos = cls.Position.create(
-            {"name": "คณบดีทดสอบ", "code": "DEAN-T", "holder_ids": [(6, 0, cls.emp_a.ids)]}
+            {"name": "คณบดีทดสอบ", "holder_ids": [(6, 0, cls.emp_a.ids)]}
         )
         cls.pos_multi = cls.Position.create(
             {
                 "name": "คณะกรรมการทดสอบ",
-                "code": "COMM-T",
                 "holder_ids": [(6, 0, (cls.emp_a + cls.emp_b).ids)],
             }
         )

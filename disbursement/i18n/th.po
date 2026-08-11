@@ -802,7 +802,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__price_unit
 msgid "Unit Price"
-msgstr "ราคาต่อหน่วย"
+msgstr "ราคา"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_untaxed
@@ -914,7 +914,7 @@ msgstr ""
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
-msgid "ราคาต่อหน่วย"
+msgid "ราคา"
 msgstr ""
 
 #. module: disbursement

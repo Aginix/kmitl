@@ -236,7 +236,7 @@
     <menuitem
         id="menu_my_todos_root"
         name="Todos"
-        sequence="1"
+        sequence="10"
         web_icon="mail_activity_todo,static/description/icon.png"
     />
     <menuitem

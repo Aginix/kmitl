@@ -7,9 +7,10 @@ from odoo.tests.common import TransactionCase, tagged
 
 @tagged("post_install", "-at_install")
 class TestProjectBudgetReserve(TransactionCase):
-    """The floating-budget reserve flow on kmitl.project (ADR-0007): a project
-    reserves one shared budget.commitment for its full budget_amount when confirmed
-    (button_new), and releases it while untouched on hold/cancel/draft."""
+    """The floating-budget reserve flow on kmitl.project (ADR-0005/0007): a project
+    reserves one shared budget.commitment for its full budget_amount at the
+    budget-reservation step (action_reserve_budget, to_verify→to_send), and
+    releases it while untouched on reject/cancel/reset-to-draft."""
 
     @classmethod
     def setUpClass(cls):
@@ -72,15 +73,17 @@ class TestProjectBudgetReserve(TransactionCase):
         return self.env["kmitl.project"].create(vals)
 
     def test_confirm_reserves_commitment(self):
-        """button_new reserves one commitment for the full budget_amount and the
-        project auto-gets its kmitl_project analytic account."""
+        """action_reserve_budget reserves one commitment for the full
+        budget_amount and the project auto-gets its kmitl_project analytic."""
         project = self._make_project(amount=100000.0)
         self.assertEqual(project.state, "draft")
         self.assertFalse(project.budget_commitment_ids)
 
-        project.button_new()
+        project.action_confirm()
+        self.assertEqual(project.state, "to_verify")
+        project.action_reserve_budget()
 
-        self.assertEqual(project.state, "new")
+        self.assertEqual(project.state, "to_send")
         self.assertEqual(len(project.budget_commitment_ids), 1)
         commitment = project.budget_commitment_ids
         self.assertEqual(commitment.state, "reserved")
@@ -101,13 +104,15 @@ class TestProjectBudgetReserve(TransactionCase):
         """budget_remaining = reserved − consumed; right after confirm nothing is
         consumed, so it equals the full budget_amount."""
         project = self._make_project(amount=100000.0)
-        project.button_new()
+        project.action_confirm()
+        project.action_reserve_budget()
         self.assertEqual(project.budget_remaining, 100000.0)
 
     def test_reserve_is_idempotent(self):
         """Re-running the reservation does not create a second commitment."""
         project = self._make_project()
-        project.button_new()
+        project.action_confirm()
+        project.action_reserve_budget()
         self.assertEqual(len(project.budget_commitment_ids), 1)
         project._reserve_project_commitment()
         self.assertEqual(len(project.budget_commitment_ids), 1)
@@ -115,28 +120,84 @@ class TestProjectBudgetReserve(TransactionCase):
     def test_confirm_requires_positive_amount(self):
         """Confirming with a non-positive budget_amount is blocked."""
         project = self._make_project(amount=0.0)
+        project.action_confirm()
         with self.assertRaises(UserError):
-            project.button_new()
+            project.action_reserve_budget()
 
     def test_cancel_releases_untouched_commitment(self):
         """Cancelling a project that has not yet spent cancels its reservation."""
         project = self._make_project()
-        project.button_new()
+        project.action_confirm()
+        project.action_reserve_budget()
         commitment = project.budget_commitment_ids
-        project.button_cancel()
+        project.action_cancel()
         self.assertEqual(project.state, "cancel")
         self.assertEqual(commitment.state, "cancel")
 
-    def test_hold_keeps_commitment_when_in_progress(self):
-        """Once a project is in progress (a PR has linked the reservation), putting
-        it on hold keeps the commitment so in-flight spend is never stranded."""
+    def test_cancel_keeps_commitment_when_in_progress(self):
+        """Cancelling an in-progress project keeps its commitment so in-flight
+        spend is never stranded (release-before-write sees state in_progress)."""
         project = self._make_project()
-        project.button_new()
-        project.button_in_progress()
+        project.action_confirm()
+        project.action_reserve_budget()
+        project.action_approve()
+        self.assertEqual(project.state, "in_progress")
         commitment = project.budget_commitment_ids
-        project.button_on_hold()
-        self.assertEqual(project.state, "on_hold")
+        project.action_cancel()
+        self.assertEqual(project.state, "cancel")
         self.assertEqual(commitment.state, "reserved")
+
+    def test_confirm_runs_exception_gate(self):
+        """ยืนยัน runs detect_exceptions (ADR-0005): a Strategic Project missing a
+        strategic-plan level pops the wizard and stays draft, and goes through once
+        the exception is ignored."""
+        project = self._make_project(project_type="strategic_project")
+        action = project.action_confirm()
+        self.assertEqual(project.state, "draft")
+        self.assertTrue(project.exception_ids)
+        self.assertEqual(action.get("res_model"), "kmitl.project.exception.confirm")
+
+        project.ignore_exception = True
+        project.action_confirm()
+        self.assertEqual(project.state, "to_verify")
+
+    def test_reject_blocked_once_approved(self):
+        """An executing project is past the point of refusal."""
+        project = self._make_project()
+        project.action_confirm()
+        project.action_reserve_budget()
+        project.action_approve()
+        with self.assertRaises(UserError):
+            project.action_reject()
+
+    def test_cancel_blocked_when_complete(self):
+        """A finished project cannot be cancelled."""
+        project = self._make_project()
+        project.action_confirm()
+        project.action_reserve_budget()
+        project.action_approve()
+        project.action_complete()
+        with self.assertRaises(UserError):
+            project.action_cancel()
+
+    def test_returned_edit_resyncs_commitment(self):
+        """`returned` reopens budget_amount, so re-sending re-reserves at the new
+        figure: the stale commitment is cancelled and a fresh one replaces it."""
+        project = self._make_project(amount=100000.0)
+        project.action_confirm()
+        project.action_reserve_budget()
+        stale = project.budget_commitment_ids
+        project.state = "returned"
+        project.budget_amount = 60000.0
+
+        project._resync_project_commitment()
+
+        self.assertEqual(stale.state, "cancel")
+        active = project.budget_commitment_ids.filtered(
+            lambda c: c.state != "cancel"
+        )
+        self.assertEqual(len(active), 1)
+        self.assertEqual(active.amount, 60000.0)
 
     def test_is_project_excludes_procurement_plan(self):
         """A budget code cannot be both a project code and a procurement-plan code."""

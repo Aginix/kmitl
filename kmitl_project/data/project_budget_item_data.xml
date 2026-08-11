@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ============================================================= -->
+    <!-- รายจ่าย (expense): catalog items, each filed under a ประเภทงบ leaf -->
+    <!-- ============================================================= -->
+
+    <!-- งบบุคลากร / ค่าใช้จ่ายบุคลากร -->
+    <record id="expense_item_salary" model="project.budget.item">
+        <field name="name">เงินเดือน</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_personnel_expense" />
+        <field name="sequence">10</field>
+    </record>
+    <record id="expense_item_permanent_wage" model="project.budget.item">
+        <field name="name">ค่าจ้างประจำ</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_personnel_expense" />
+        <field name="sequence">20</field>
+    </record>
+    <record id="expense_item_temporary_wage" model="project.budget.item">
+        <field name="name">ค่าจ้างชั่วคราว</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_personnel_expense" />
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- งบดำเนินงาน / ค่าตอบแทน -->
+    <record id="expense_item_speaker_internal" model="project.budget.item">
+        <field name="name">วิทยากรภายใน</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_remuneration" />
+        <field name="sequence">10</field>
+    </record>
+    <record id="expense_item_speaker_external" model="project.budget.item">
+        <field name="name">วิทยากรภายนอก</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_remuneration" />
+        <field name="sequence">20</field>
+    </record>
+    <record id="expense_item_speaker_external_transport" model="project.budget.item">
+        <field name="name">ค่าพาหนะวิทยากรภายนอก</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_remuneration" />
+        <field name="sequence">30</field>
+    </record>
+    <record id="expense_item_overtime" model="project.budget.item">
+        <field name="name">ค่าล่วงเวลา</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_remuneration" />
+        <field name="sequence">40</field>
+    </record>
+
+    <!-- งบดำเนินงาน / ค่าใช้สอย -->
+    <record id="expense_item_snack_morning" model="project.budget.item">
+        <field name="name">อาหารว่าง (เช้า)</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_supplies" />
+        <field name="sequence">10</field>
+    </record>
+    <record id="expense_item_snack_afternoon" model="project.budget.item">
+        <field name="name">อาหารว่าง (บ่าย)</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_supplies" />
+        <field name="sequence">20</field>
+    </record>
+    <record id="expense_item_lunch" model="project.budget.item">
+        <field name="name">อาหารกลางวัน</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_supplies" />
+        <field name="sequence">30</field>
+    </record>
+    <record id="expense_item_repair" model="project.budget.item">
+        <field name="name">ค่าซ่อมแซม</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_supplies" />
+        <field name="sequence">40</field>
+    </record>
+    <record id="expense_item_per_diem" model="project.budget.item">
+        <field name="name">ค่าเบี้ยเลี้ยง</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_supplies" />
+        <field name="sequence">50</field>
+    </record>
+    <record id="expense_item_accommodation" model="project.budget.item">
+        <field name="name">ค่าเช่าที่พัก</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_supplies" />
+        <field name="sequence">60</field>
+    </record>
+    <record id="expense_item_meeting_room" model="project.budget.item">
+        <field name="name">ค่าเช่าห้องประชุม</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_supplies" />
+        <field name="sequence">70</field>
+    </record>
+
+    <!-- งบดำเนินงาน / ค่าวัสดุ -->
+    <record id="expense_item_training_documents" model="project.budget.item">
+        <field name="name">ค่าเอกสารประกอบการฝึกอบรม</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_materials" />
+        <field name="sequence">10</field>
+    </record>
+    <record id="expense_item_project_materials" model="project.budget.item">
+        <field name="name">ค่าวัสดุในโครงการ</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_materials" />
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- งบดำเนินงาน / ค่าสาธารณูปโภค -->
+    <record id="expense_item_water" model="project.budget.item">
+        <field name="name">ค่าน้ำ</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_utilities" />
+        <field name="sequence">10</field>
+    </record>
+    <record id="expense_item_electricity" model="project.budget.item">
+        <field name="name">ค่าไฟ</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_utilities" />
+        <field name="sequence">20</field>
+    </record>
+    <record id="expense_item_telephone" model="project.budget.item">
+        <field name="name">ค่าโทรศัพท์</field>
+        <field name="budget_type">expense</field>
+        <field name="category_id" ref="category_operating_utilities" />
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- งบเงินอุดหนุน / ค่าใช้จ่ายงบเงินอุดหนุน — ยังไม่มีรายการ (เพิ่มภายหลัง) -->
+
+    <!-- ============================================================= -->
+    <!-- รายรับ (income): flat catalog items, no ประเภทงบ                -->
+    <!-- ============================================================= -->
+    <record id="income_item_registration_donation" model="project.budget.item">
+        <field name="name">ค่าลงทะเบียน/เงินบริจาค/เงินสนับสนุนจากภายนอก</field>
+        <field name="budget_type">income</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="income_item_department_revenue" model="project.budget.item">
+        <field name="name">เงินรายได้ของส่วนงาน</field>
+        <field name="budget_type">income</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="income_item_institute_revenue" model="project.budget.item">
+        <field name="name">เงินรายได้สถาบัน (ขอรับการสนับสนุน)</field>
+        <field name="budget_type">income</field>
+        <field name="sequence">30</field>
+    </record>
+
+</odoo>

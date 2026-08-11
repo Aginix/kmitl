@@ -1,0 +1,55 @@
+// Stretch the embedded budget lists to the full width of the tab.
+.o_field_widget[name="income_line_ids"],
+.o_field_widget[name="expense_line_ids"] {
+    width: 100%;
+
+    .o_list_renderer,
+    table.o_list_table {
+        width: 100%;
+    }
+}
+
+.o_field_widget[name="expense_line_ids"] {
+    // ประเภทงบ group header — carries the section roll-up subtotal and stays
+    // pinned to the top of the scroll area while its rows are in view.
+    .o_budget_section_header {
+        > td {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            font-weight: 600;
+            color: #374151;
+            background-color: #eef2f6;
+            border-top: 1px solid #d7dde3;
+            letter-spacing: 0.01em;
+
+            .fa {
+                color: #6b7785;
+            }
+        }
+
+        // Deeper levels read as progressively lighter bands.
+        &.o_budget_level_1 > td {
+            background-color: #f1f4f8;
+        }
+
+        &.o_budget_level_2 > td {
+            background-color: #f5f7fa;
+        }
+    }
+
+    .o_budget_section_add {
+        > td {
+            padding: 0.2rem 0.75rem 0.5rem 1.75rem;
+
+            .o_budget_section_add_link {
+                color: #6b7785;
+                font-style: italic;
+
+                &:hover {
+                    color: var(--primary, #714b67);
+                }
+            }
+        }
+    }
+}

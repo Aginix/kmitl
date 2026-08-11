@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- Execution Todos for the post-bill payment-execution phase. They clear
+         only by acting on the source (advancing the request), not by
+         "Mark as Read" — hence todo_category = execution. -->
+
+    <record id="mail_activity_dr_to_audit" model="mail.activity.type">
+        <field name="name">Disbursement to audit</field>
+        <field name="summary">A disbursement request is billed and waiting for your audit</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="icon">fa-search</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <record id="mail_activity_dr_to_authorize" model="mail.activity.type">
+        <field name="name">Disbursement to authorize</field>
+        <field name="summary">A disbursement request was audited and awaits your authorization to pay</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="icon">fa-check-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <record id="mail_activity_dr_to_pay" model="mail.activity.type">
+        <field name="name">Disbursement to pay</field>
+        <field name="summary">A disbursement request was authorized — create the payment and send it to the bank</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="icon">fa-money</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>
