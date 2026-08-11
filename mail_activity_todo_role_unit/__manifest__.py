@@ -1,6 +1,6 @@
 {
     "name": "Mail Activity Todo: Role-in-Unit Routing",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "Productivity",
@@ -14,7 +14,9 @@
     "data": [
         "security/security.xml",
         "views/mail_activity_views.xml",
+        "views/res_users_views.xml",
     ],
+    "post_init_hook": "post_init_hook",
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",

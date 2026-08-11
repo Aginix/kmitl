@@ -87,12 +87,15 @@ class MailActivity(models.Model):
 
     def _my_todo_domain(self):
         """Extend the personal inbox domain (core) with group Todos for a role
-        the user holds in one of their operating units — unclaimed, or claimed
-        by this user. A group Todo claimed by someone else drops out (Claim)."""
+        the user holds in one of their subscribed operating units — unclaimed, or
+        claimed by this user. A group Todo claimed by someone else drops out (Claim).
+        Uses todo_subscribed_operating_unit_ids (opt-in, defaults to assigned OUs)
+        rather than operating_unit_ids (permission-based) so oversight users with
+        wide OU access are not spammed by Todos from OUs they don't work in."""
         domain = super()._my_todo_domain()
         user = self.env.user
         role_ids = user.todo_role_ids.ids
-        ou_ids = user.operating_unit_ids.ids
+        ou_ids = user.todo_subscribed_operating_unit_ids.ids
         if role_ids and ou_ids:
             return (
                 ["|"]
@@ -109,7 +112,9 @@ class MailActivity(models.Model):
 
     def _todo_recipient_partners(self):
         """Add the live role-in-unit members for group Todos (ADR-0002): never a
-        stored list — resolved fresh from role ∩ operating unit."""
+        stored list — resolved fresh from role ∩ operating unit, then filtered
+        to users who have subscribed to that OU so oversight users with wide OU
+        access don't receive inbox notifications for OUs they don't work in."""
         partners = super()._todo_recipient_partners()
         for act in self:
             if (
@@ -121,7 +126,11 @@ class MailActivity(models.Model):
                     act.responsible_role_id.sudo().user_ids
                     & act.operating_unit_id.sudo().user_ids
                 )
-                partners |= users.partner_id
+                subscribed = users.filtered(
+                    lambda u: act.operating_unit_id
+                    in u.todo_subscribed_operating_unit_ids
+                )
+                partners |= subscribed.partner_id
         return partners
 
     def action_claim(self):

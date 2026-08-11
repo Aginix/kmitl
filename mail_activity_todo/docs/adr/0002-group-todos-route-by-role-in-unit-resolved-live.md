@@ -45,3 +45,15 @@ The shared domain (used by the unified page, the custom systray count, and the f
 Originally group Todos were only minted programmatically (e.g. `procurement_plan_todo`), because the core "Schedule Activity" popup defaults `user_id` to the current user and has no role field — so a hand-scheduled activity was always personal. The role-in-unit layer now extends `mail.mail_activity_view_form_popup` with a **Responsible Role** picker (and, for oversight users, the OU). Personal and group are mutually exclusive on the form via two onchanges: picking a role clears the assignee (and surfaces the source OU); assigning a person clears the role. Leaving the role empty keeps the exact personal-Todo behaviour, so no existing flow changes.
 
 - **ACL.** `base_user_role` gates `res.users.role` to ERP managers, but a regular user must read it to *display* the role on a group Todo and to *pick* one in the popup. `mail_activity_todo_role_unit` grants `base.group_user` **read-only** on `res.users.role` (create/write/unlink stay ERP-manager-only). Role names are no more sensitive than `res.groups`, which core already exposes to internal users.
+
+## Update (2026-08-11): OU side is opt-in via Subscribed OU
+
+`res.users.operating_unit_ids` is computed — users in `operating_unit.group_manager_operating_unit` (and equivalent oversight setups) get expanded to every OU. Using that field on the inbox/notification path spammed those users with Todos for OUs they had no operational responsibility for, breaking the "Responsible ≠ Permitted" invariant on the OU axis.
+
+A new M2M `res.users.todo_subscribed_operating_unit_ids` (relation `mail_activity_todo_subscribed_ou_rel`) becomes the OU filter for the two **workflow** layers (inbox domain, notification recipients). The record rule keeps `operating_unit_ids` unchanged — so **permission** (can I see it if I look?) stays broad for oversight, while **workflow** (does it hit my inbox?) is per-user opt-in. Default = `assigned_operating_unit_ids` at user creation and via `post_init_hook` on first upgrade, so normal-user behaviour is unchanged and the change is a strict subtraction of noise for oversight users.
+
+Users manage their own list in **Preferences**; admins can pre-set from the backend user form. An oversight user who **wants** a specific OU's group Todos adds it manually — the system never blocks them, it just defaults to quiet.
+
+- `_my_todo_domain` now uses `user.todo_subscribed_operating_unit_ids.ids` instead of `user.operating_unit_ids.ids`.
+- `_todo_recipient_partners` further filters `role.user_ids & ou.user_ids` to members whose `todo_subscribed_operating_unit_ids` contains the activity's OU.
+- Record rule in `security.xml` is **unchanged** — still uses `operating_unit_ids`.

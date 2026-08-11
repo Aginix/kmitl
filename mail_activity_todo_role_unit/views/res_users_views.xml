@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- ===== User Preferences dialog: let every user manage their own
+         subscribed OUs so group Todos land only in OUs they choose ===== -->
+    <record id="view_users_preferences_todo_subscribed_ou" model="ir.ui.view">
+        <field name="name">res.users.preferences.todo.subscribed.ou</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif" />
+        <field name="arch" type="xml">
+            <field name="lang" position="after">
+                <field
+                    name="todo_subscribed_operating_unit_ids"
+                    widget="many2many_tags"
+                    string="Todo Subscribed Operating Units"
+                />
+            </field>
+        </field>
+    </record>
+
+    <!-- ===== Admin backend user form: same field so admins can pre-set
+         subscriptions during onboarding without touching Preferences ===== -->
+    <record id="view_users_form_todo_subscribed_ou" model="ir.ui.view">
+        <field name="name">res.users.form.todo.subscribed.ou</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form" />
+        <field name="arch" type="xml">
+            <field name="operating_unit_ids" position="after">
+                <field
+                    name="todo_subscribed_operating_unit_ids"
+                    widget="many2many_tags"
+                    string="Todo Subscribed Operating Units"
+                />
+            </field>
+        </field>
+    </record>
+
+</odoo>

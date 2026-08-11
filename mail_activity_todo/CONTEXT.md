@@ -43,7 +43,7 @@ A finished Todo, snapshotted into `todo.log` at completion — the underlying `m
 _Avoid_: archived activity (the activity is gone, not archived)
 
 **Next actor**:
-Who a Todo is for at a given state. Either a single `res.users` (personal Todo), or a *role-in-unit* group — everyone holding a Responsible Role who belongs to the source record's Operating Unit, resolved live (never a stored list). The whole inbox depends on this being determinable from the source record's data.
+Who a Todo is for at a given state. Either a single `res.users` (personal Todo), or a *role-in-unit* group — everyone holding a Responsible Role who belongs to the source record's Operating Unit **and** has that OU in their Subscribed OU list, resolved live (never a stored list). The whole inbox depends on this being determinable from the source record's data.
 _Avoid_: approver (the next actor is not always an approver — see the two Todo types)
 
 **Responsible Role (เจ้าหน้าที่…)**:
@@ -53,3 +53,7 @@ _Avoid_: using a bare `res.groups` to mean "the people responsible"
 **Operating Unit (OU, คณะ/หน่วยงาน)**:
 The organizational unit a source record belongs to, and the second half of a role-in-unit assignment. The only org axis that carries a user mapping (`operating.unit.user_ids`); the analytic `departments` dimension does not.
 _Avoid_: department (the analytic `departments` dimension is a different thing with no users)
+
+**Subscribed OU (หน่วยงานที่รับ Todo กลุ่ม)**:
+The per-user opt-in filter on the OU side of group-Todo routing, stored in `res.users.todo_subscribed_operating_unit_ids`. Group Todos land in a user's inbox only when their OU is in this list. Defaults on creation to `assigned_operating_unit_ids` (the explicitly-assigned OUs) — not the manager-expanded `operating_unit_ids` — so oversight users holding wide OU access do not receive Todos from every OU. Users manage their own list in Preferences; admins can pre-set from the backend user form. The record rule remains permission-based (`operating_unit_ids`), so a user can still audit any OU's group Todos by searching explicitly.
+_Avoid_: conflating with `operating_unit_ids` (that's permission, not responsibility); treating `assigned_operating_unit_ids` as a synonym (it is only the default seed, the user may diverge)
