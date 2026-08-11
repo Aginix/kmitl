@@ -119,8 +119,6 @@ class KmitlProject(models.Model):
         "account.fiscal.year",
         string="Fiscal year",
         required=True,
-        readonly=True,
-        states=EDITABLE_STATES,
     )
     operating_unit_id = fields.Many2one(
         comodel_name="operating.unit",
@@ -568,6 +566,8 @@ class KmitlProject(models.Model):
                 dist = dict(vals["analytic_distribution"] or {})
                 dist.pop(str(acc_id), None)
                 vals["analytic_distribution"] = dist or False
+            if "name" not in (default or {}):
+                vals["name"] = _("%s (copy)") % (record.name or "")
         return vals_list
 
     def action_confirm(self):
