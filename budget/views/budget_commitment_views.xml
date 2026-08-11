@@ -84,23 +84,24 @@
                         <group name="basic_information" string="Basic Information">
                             <field name="date" />
                             <field name="description" placeholder="Commitment description..." />
-                            <field name="user_id" options="{'no_create': True, 'no_open': True}" required="1" />
+                            <field name="user_id" options="{'no_create': True, 'no_open': True}"
+                                required="1" />
                             <field name="company_id" groups="base.group_multi_company" />
                         </group>
                         <group name="budget_details" string="Budget Details">
                             <field name="account_fiscal_year_id" widget="selection"
                                 attrs="{'readonly': [('id', '!=', False)]}" />
-                                <field name="source_analytic_id" required="1"
+                            <field name="source_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
-                                <field name="activity_analytic_id" required="1"
+                            <field name="activity_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
-                                <field name="fund_analytic_id" required="1"
+                            <field name="fund_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
-                                <field name="department_analytic_id" required="1"
+                            <field name="department_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
-                                <field name="account_id"
-                                    options="{'no_create': True, 'no_open': True}"
-                                    required="1"/>
+                            <field name="account_id"
+                                options="{'no_create': True, 'no_open': True}"
+                                required="1" />
                             <field name="amount" widget="monetary" />
                             <field name="currency_id" invisible="1" />
                         </group>
@@ -159,6 +160,9 @@
                             <group>
                                 <group>
                                     <field name="ref" />
+                                    <field name="analytic_distribution"
+                                        widget="analytic_distribution"
+                                        groups="analytic.group_analytic_accounting" />
                                 </group>
                                 <group>
                                     <field name="create_date" />
