@@ -43,18 +43,18 @@ class TestP1DataModel(SarabunCommon):
         self.assertEqual(first.sequence, 10)
         self.assertEqual(first.text, "หนังสือ อว 6801/1 ลว 1 พ.ค.")
 
-    def test_enclosure_ordering(self):
-        """สิ่งที่ส่งมาด้วย entries carry an order + caption."""
+    def test_enclosure_attachments(self):
+        """สิ่งที่ส่งมาด้วย = plain files attached to the หนังสือ (ir.attachment)."""
         doc = self._make_doc()
-        doc.enclosure_ids = [
-            (0, 0, {"sequence": 30, "description": "ภาคผนวก ค"}),
-            (0, 0, {"sequence": 10, "description": "ภาคผนวก ก"}),
-            (0, 0, {"sequence": 20, "description": "ภาคผนวก ข"}),
-        ]
-        ordered = doc.enclosure_ids.sorted("sequence")
+        atts = self.env["ir.attachment"].create([
+            {"name": "ภาคผนวก-ก.pdf", "res_model": "sarabun.document", "res_id": doc.id},
+            {"name": "ภาคผนวก-ข.pdf", "res_model": "sarabun.document", "res_id": doc.id},
+        ])
+        doc.enclosure_attachment_ids = [(6, 0, atts.ids)]
+        self.assertEqual(doc.enclosure_attachment_ids, atts)
         self.assertEqual(
-            ordered.mapped("description"),
-            ["ภาคผนวก ก", "ภาคผนวก ข", "ภาคผนวก ค"],
+            sorted(doc.enclosure_attachment_ids.mapped("name")),
+            ["ภาคผนวก-ก.pdf", "ภาคผนวก-ข.pdf"],
         )
 
     def test_from_record_numbering_must_be_auto(self):

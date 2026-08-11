@@ -17,9 +17,8 @@ class KmitlProjectExceptionConfirm(models.TransientModel):
         self.ensure_one()
         exceptions_blocking = self.exception_ids.filtered("is_blocking")
         if self.ignore and not exceptions_blocking:
-            self.related_model_id.button_draft()
             self.related_model_id.ignore_exception = True
-            self.related_model_id.button_confirm()
+            self.related_model_id.action_confirm()
         else:
             self.related_model_id.ignore_exception = False
         return super().action_confirm()

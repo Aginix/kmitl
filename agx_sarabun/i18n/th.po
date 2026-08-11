@@ -1186,28 +1186,28 @@ msgstr ""
 #. module: agx_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
 msgid "Origin"
-msgstr ""
+msgstr "เอกสารต้นทาง"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__origin_model
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__origin_model_id
 msgid "Origin Model"
-msgstr ""
+msgstr "โมเดลเอกสารต้นทาง"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__origin_model
 msgid "Origin Model (technical)"
-msgstr ""
+msgstr "โมเดลเอกสารต้นทาง (เชิงเทคนิค)"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__origin_res_id
 msgid "Origin Record ID"
-msgstr ""
+msgstr "ID ของเอกสารต้นทาง"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__origin_reference
 msgid "Origin Reference"
-msgstr ""
+msgstr "อ้างอิงเอกสารต้นทาง"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__sender_user_id
@@ -1468,7 +1468,7 @@ msgstr "ประวัติเส้นทาง"
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__routing_progress
 msgid "Routing Progress"
-msgstr ""
+msgstr "การติดตามเส้นทางอนุมัติ"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_number__counter

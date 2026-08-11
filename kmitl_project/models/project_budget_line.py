@@ -82,8 +82,8 @@ class ProjectBudgetLine(models.Model):
         string="คำอธิบาย",
         help="สำหรับอธิบายการแตกตัวคูณ เช่น 50 คน x 200 บาท x 3 วัน",
     )
-    # Free to leave blank/zero while drafting; validated at confirmation on the
-    # project (kmitl.project.button_new).
+    # Free to leave blank/zero while drafting; validated when the project reserves
+    # its budget (kmitl.project._check_budget_plan_lines).
     amount = fields.Float(string="จำนวนเงิน", digits="Product Price")
 
     @api.onchange("budget_item_id")
