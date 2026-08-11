@@ -24,7 +24,12 @@
         <field name="name">view.kmitl.project.tree</field>
         <field name="model">kmitl.project</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree decoration-info="state in ('to_verify', 'to_send', 'sent')"
+                decoration-primary="state == 'in_progress'"
+                decoration-success="state == 'complete'"
+                decoration-warning="state == 'returned'"
+                decoration-danger="state == 'rejected'"
+                decoration-muted="state == 'cancel'">
                 <field name="name"/>
                 <field name="activity_ids" widget="list_activity" optional="show"/>
                 <field name="key" optional="show" />
@@ -38,7 +43,7 @@
                     decoration-success="state == 'complete'"
                     decoration-warning="state == 'returned'"
                     decoration-danger="state == 'rejected'"
-                    decoration-secondary="state == 'cancel'" />
+                    decoration-muted="state == 'cancel'" />
             </tree>
         </field>
     </record>
