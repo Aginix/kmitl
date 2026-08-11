@@ -6,7 +6,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['base_user_role', 'agx_sarabun', 'operating_unit_access_all', 'purchase_request_kmitl', 'account', 'purchase_manual_delivery_security'],
+    'depends': ['base_user_role', 'operating_unit_access_all', 'purchase_request_kmitl', 'account', 'purchase_manual_delivery_security'],
     'data': [
         "data/res_users_role.xml",
     ],

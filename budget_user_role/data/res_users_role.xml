@@ -9,7 +9,6 @@
                 ref('budget.group_budget_user'),
                 ref('disbursement.group_disbursement_user'),
                 ref('procurement_plan.group_procurement_plan_user'),
-                ref('agx_sarabun.group_sarabun_user'),
                 ref('account.group_account_readonly'),
             ])]"
             />

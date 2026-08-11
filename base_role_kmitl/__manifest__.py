@@ -1,16 +1,13 @@
 {
-    "name": "Budget User Role",
+    "name": "Base Role KMITL",
     "version": "16.0.1.0.0",
-    "summary": "Budget user roles for KMITL",
+    "summary": "Base user role required for all KMITL users",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": [
-        "budget",
         "base_user_role",
-        "disbursement",
-        "procurement_plan",
-        "account",
+        "agx_sarabun",
     ],
     "data": [
         "data/res_users_role.xml",
