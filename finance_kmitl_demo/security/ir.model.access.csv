@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_finance_kmitl_demo_regen_wizard,finance.kmitl.demo.regen.wizard admin,model_finance_kmitl_demo_regen_wizard,base.group_system,1,1,1,1

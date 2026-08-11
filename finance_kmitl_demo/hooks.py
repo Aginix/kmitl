@@ -1,6 +1,6 @@
 """Post-init demo data for the KMITL post-budget finance flow.
 
-Three demo stories run in order from ``post_init``:
+Three demo stories run in order from ``seed``:
 
 * the disbursement flow (``PR -> PA -> PO -> Work Acceptance -> DR``), moved here
   from ``kmitl_demo``;
@@ -15,6 +15,7 @@ hand in the UI, and no ``account.payment`` is created here.
 The disbursement flow reuses two helpers from ``kmitl_demo`` (the purchase
 end-to-end flow uses them too) instead of duplicating them.
 """
+
 import logging
 
 from odoo import SUPERUSER_ID, api, fields
@@ -30,17 +31,27 @@ _logger = logging.getLogger(__name__)
 
 def post_init(cr, registry):
     env = api.Environment(cr, SUPERUSER_ID, {})
+    seed(env)
 
-    drs = _create_disbursement_flow_demo(
-        env,
-        admin=env.ref("base.user_admin"),
-        fiscal_year=env.ref("kmitl_demo.account_fiscal_year_y2568"),
-        admin_employee=_admin_employee(env),
-        supervisor_employee=env.ref("kmitl_demo.employee_demo_008"),
-        wa_committee_employees=_wa_committee_employees(env),
-    )
-    _create_bill_demo(env, drs)
-    _create_asset_demo(env)
+
+def seed(env, disbursement=True, assets=True):
+    """Build the demo stories on an existing environment.
+
+    Split out of ``post_init`` so the dev-only regenerate wizard and module
+    installation share one code path. Each story is independent.
+    """
+    if disbursement:
+        drs = _create_disbursement_flow_demo(
+            env,
+            admin=env.ref("base.user_admin"),
+            fiscal_year=env.ref("kmitl_demo.account_fiscal_year_y2568"),
+            admin_employee=_admin_employee(env),
+            supervisor_employee=env.ref("kmitl_demo.employee_demo_008"),
+            wa_committee_employees=_wa_committee_employees(env),
+        )
+        _create_bill_demo(env, drs)
+    if assets:
+        _create_asset_demo(env)
 
 
 def _admin_employee(env):
@@ -496,13 +507,9 @@ def _create_bill_demo(env, drs):
     """
     drs = drs.exists()
     if not drs:
-        _logger.warning(
-            "finance_kmitl_demo: no disbursement requests to continue."
-        )
+        _logger.warning("finance_kmitl_demo: no disbursement requests to continue.")
         return
-    _logger.info(
-        "Creating vendor-bill demo from %s disbursement requests...", len(drs)
-    )
+    _logger.info("Creating vendor-bill demo from %s disbursement requests...", len(drs))
 
     try:
         wht_tax = env["account.withholding.tax"].search([], limit=1)
@@ -511,8 +518,11 @@ def _create_bill_demo(env, drs):
 
     for index, dr in enumerate(drs):
         try:
-            _approve_dr(dr)
-            _bill_dr(dr, wht_tax if index == WHT_DR_INDEX else None)
+            # Savepoint per request: swallowing a database-level error without
+            # one would leave the transaction aborted for every request after it.
+            with env.cr.savepoint():
+                _approve_dr(dr)
+                _bill_dr(dr, wht_tax if index == WHT_DR_INDEX else None)
         except Exception as error:  # noqa: BLE001 - demo must never abort install
             _logger.warning(
                 "finance_kmitl_demo: DR %s stopped before 'bills_posted' (%s)",
@@ -575,42 +585,102 @@ def _bill_dr(dr, wht_tax=None):
 #   depreciated  -> validated, due depreciation periods posted
 #   closed       -> old asset, all depreciation posted (fully depreciated)
 ASSET_SPECS = [
-    ("เครื่องคอมพิวเตอร์ All-in-One สำนักงานคณบดี",
-     "account_asset_kmitl.asset_profile_014", 45000.0, "2024-10-15",
-     "kmitl_demo.01", "depreciated"),
-    ("เครื่องปรับอากาศ ห้องปฏิบัติการ",
-     "account_asset_kmitl.asset_profile_001", 38000.0, "2024-11-01",
-     "kmitl_demo.01", "depreciated"),
-    ("กล้องจุลทรรศน์ดิจิทัล",
-     "account_asset_kmitl.asset_profile_013", 250000.0, "2024-12-20",
-     "kmitl_demo.01", "depreciated"),
-    ("เครื่องพิมพ์เลเซอร์มัลติฟังก์ชัน",
-     "account_asset_kmitl.asset_profile_001", 22000.0, "2024-10-01",
-     "kmitl_demo.89390", "depreciated"),
-    ("รถตู้โดยสาร 12 ที่นั่ง",
-     "account_asset_kmitl.asset_profile_002", 1350000.0, "2024-10-20",
-     "kmitl_demo.89390", "depreciated"),
-    ("โต๊ะประชุมไม้พร้อมเก้าอี้ 12 ที่นั่ง",
-     "account_asset_kmitl.asset_profile_001", 65000.0, "2025-02-10",
-     "kmitl_demo.01", "open"),
-    ("เครื่องสำรองไฟ UPS 10kVA",
-     "account_asset_kmitl.asset_profile_003", 90000.0, "2025-03-05",
-     "kmitl_demo.01", "open"),
-    ("ชุดเครื่องเสียงห้องเรียนอัจฉริยะ",
-     "account_asset_kmitl.asset_profile_005", 75000.0, "2025-04-01",
-     "kmitl_demo.01", "open"),
-    ("เครื่องวิเคราะห์สเปกตรัม",
-     "account_asset_kmitl.asset_profile_013", 480000.0, "2025-05-15",
-     "kmitl_demo.01", "open"),
-    ("เครื่องคอมพิวเตอร์โน้ตบุ๊ก (ตัดจำหน่าย)",
-     "account_asset_kmitl.asset_profile_014", 36000.0, "2020-01-10",
-     "kmitl_demo.01", "closed"),
-    ("ครุภัณฑ์สำนักงานรอตรวจรับ",
-     "account_asset_kmitl.asset_profile_001", 18000.0, "2026-01-05",
-     "kmitl_demo.01", "draft"),
-    ("เครื่องมือวิทยาศาสตร์รอขึ้นทะเบียน",
-     "account_asset_kmitl.asset_profile_013", 120000.0, "2026-02-01",
-     "kmitl_demo.01", "draft"),
+    (
+        "เครื่องคอมพิวเตอร์ All-in-One สำนักงานคณบดี",
+        "account_asset_kmitl.asset_profile_014",
+        45000.0,
+        "2024-10-15",
+        "kmitl_demo.01",
+        "depreciated",
+    ),
+    (
+        "เครื่องปรับอากาศ ห้องปฏิบัติการ",
+        "account_asset_kmitl.asset_profile_001",
+        38000.0,
+        "2024-11-01",
+        "kmitl_demo.01",
+        "depreciated",
+    ),
+    (
+        "กล้องจุลทรรศน์ดิจิทัล",
+        "account_asset_kmitl.asset_profile_013",
+        250000.0,
+        "2024-12-20",
+        "kmitl_demo.01",
+        "depreciated",
+    ),
+    (
+        "เครื่องพิมพ์เลเซอร์มัลติฟังก์ชัน",
+        "account_asset_kmitl.asset_profile_001",
+        22000.0,
+        "2024-10-01",
+        "kmitl_demo.89390",
+        "depreciated",
+    ),
+    (
+        "รถตู้โดยสาร 12 ที่นั่ง",
+        "account_asset_kmitl.asset_profile_002",
+        1350000.0,
+        "2024-10-20",
+        "kmitl_demo.89390",
+        "depreciated",
+    ),
+    (
+        "โต๊ะประชุมไม้พร้อมเก้าอี้ 12 ที่นั่ง",
+        "account_asset_kmitl.asset_profile_001",
+        65000.0,
+        "2025-02-10",
+        "kmitl_demo.01",
+        "open",
+    ),
+    (
+        "เครื่องสำรองไฟ UPS 10kVA",
+        "account_asset_kmitl.asset_profile_003",
+        90000.0,
+        "2025-03-05",
+        "kmitl_demo.01",
+        "open",
+    ),
+    (
+        "ชุดเครื่องเสียงห้องเรียนอัจฉริยะ",
+        "account_asset_kmitl.asset_profile_005",
+        75000.0,
+        "2025-04-01",
+        "kmitl_demo.01",
+        "open",
+    ),
+    (
+        "เครื่องวิเคราะห์สเปกตรัม",
+        "account_asset_kmitl.asset_profile_013",
+        480000.0,
+        "2025-05-15",
+        "kmitl_demo.01",
+        "open",
+    ),
+    (
+        "เครื่องคอมพิวเตอร์โน้ตบุ๊ก (ตัดจำหน่าย)",
+        "account_asset_kmitl.asset_profile_014",
+        36000.0,
+        "2020-01-10",
+        "kmitl_demo.01",
+        "closed",
+    ),
+    (
+        "ครุภัณฑ์สำนักงานรอตรวจรับ",
+        "account_asset_kmitl.asset_profile_001",
+        18000.0,
+        "2026-01-05",
+        "kmitl_demo.01",
+        "draft",
+    ),
+    (
+        "เครื่องมือวิทยาศาสตร์รอขึ้นทะเบียน",
+        "account_asset_kmitl.asset_profile_013",
+        120000.0,
+        "2026-02-01",
+        "kmitl_demo.01",
+        "draft",
+    ),
 ]
 
 
@@ -623,40 +693,45 @@ def _create_asset_demo(env):
 
     for name, profile_ref, value, date_start, dept_ref, target in ASSET_SPECS:
         try:
-            profile = env.ref(profile_ref, raise_if_not_found=False)
-            department = env.ref(dept_ref, raise_if_not_found=False)
-            if not profile:
-                continue
-            start = fields.Date.to_date(date_start)
-            fiscal_year = company.find_daterange_fy(start)
-            asset = env["account.asset"].create(
-                {
-                    "name": name,
-                    "profile_id": profile.id,
-                    "purchase_value": value,
-                    "date_start": date_start,
-                    "company_id": company.id,
-                    "department_id": department.id if department else False,
-                    "account_fiscal_year_id": fiscal_year.id if fiscal_year else False,
-                    "gpsc_id": gpsc.id if gpsc else False,
-                }
-            )
-            # Asset numbering needs department short name + GPSC; best-effort.
-            try:
-                asset.create_asset_number()
-            except Exception as error:  # noqa: BLE001
-                _logger.info("Asset numbering skipped for '%s': %s", name, error)
+            # Savepoint per asset: swallowing a database-level error without one
+            # would leave the transaction aborted for every asset after it.
+            with env.cr.savepoint():
+                profile = env.ref(profile_ref, raise_if_not_found=False)
+                department = env.ref(dept_ref, raise_if_not_found=False)
+                if not profile:
+                    continue
+                start = fields.Date.to_date(date_start)
+                fiscal_year = company.find_daterange_fy(start)
+                asset = env["account.asset"].create(
+                    {
+                        "name": name,
+                        "profile_id": profile.id,
+                        "purchase_value": value,
+                        "date_start": date_start,
+                        "company_id": company.id,
+                        "department_id": department.id if department else False,
+                        "account_fiscal_year_id": (
+                            fiscal_year.id if fiscal_year else False
+                        ),
+                        "gpsc_id": gpsc.id if gpsc else False,
+                    }
+                )
+                # Asset numbering needs department short name + GPSC;
+                # best-effort, in its own savepoint for the same reason.
+                try:
+                    with env.cr.savepoint():
+                        asset.create_asset_number()
+                except Exception as error:  # noqa: BLE001
+                    _logger.info("Asset numbering skipped for '%s': %s", name, error)
 
-            if target == "draft":
-                continue
+                if target == "draft":
+                    continue
 
-            asset.validate()  # -> open + depreciation board computed
-            if target in ("depreciated", "closed"):
-                _post_depreciation(asset, today, all_lines=(target == "closed"))
+                asset.validate()  # -> open + depreciation board computed
+                if target in ("depreciated", "closed"):
+                    _post_depreciation(asset, today, all_lines=(target == "closed"))
         except Exception as error:  # noqa: BLE001 - demo must never abort install
-            _logger.warning(
-                "finance_kmitl_demo: asset '%s' skipped (%s)", name, error
-            )
+            _logger.warning("finance_kmitl_demo: asset '%s' skipped (%s)", name, error)
     _logger.info("Fixed-asset demo data created.")
 
 
