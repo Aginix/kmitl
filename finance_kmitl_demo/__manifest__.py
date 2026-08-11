@@ -7,7 +7,8 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "summary": "Demo data for the post-budget finance flow: disbursement "
-    "requests, vendor bills and fixed assets.",
+    "requests, vendor bills and fixed assets, plus a developer-only menu to "
+    "regenerate it on demand.",
     "depends": [
         "kmitl_demo",
         "disbursement",
@@ -19,7 +20,11 @@
         "account_asset_depreciation_board",
         "l10n_th_gov_gpsc",
     ],
-    "data": [],
+    "data": [
+        "security/ir.model.access.csv",
+        "wizards/demo_regen_wizard_views.xml",
+        "views/menuitem.xml",
+    ],
     "post_init_hook": "post_init",
     "application": False,
     "installable": True,

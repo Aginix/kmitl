@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+      Debug-mode only. ``base.group_no_one`` must stay the ONLY group here: the
+      menu group check is an OR, so a second group would make the menu visible
+      outside debug mode. Privilege is enforced by the wizard's ACL instead,
+      because every internal user already implies ``base.group_no_one``.
+    -->
+    <menuitem
+        id="menu_finance_kmitl_demo_regen"
+        name="Regenerate Demo Data"
+        parent="base.menu_custom"
+        action="action_finance_kmitl_demo_regen_wizard"
+        groups="base.group_no_one"
+        sequence="200"
+    />
+</odoo>
