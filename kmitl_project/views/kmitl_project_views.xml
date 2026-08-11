@@ -32,7 +32,13 @@
                 <field name="project_type"/>
                 <field name="department_analytic_id" optional="show" />
                 <field name="operating_unit_id" optional="hide" groups="operating_unit.group_multi_operating_unit" />
-                <field name="state" widget="badge" />
+                <field name="state" widget="badge"
+                    decoration-info="state in ('to_verify', 'to_send', 'sent')"
+                    decoration-primary="state == 'in_progress'"
+                    decoration-success="state == 'complete'"
+                    decoration-warning="state == 'returned'"
+                    decoration-danger="state == 'rejected'"
+                    decoration-secondary="state == 'cancel'" />
             </tree>
         </field>
     </record>
