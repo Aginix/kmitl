@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    The banks the institute holds its own accounts at.
+
+    Reference data, not demo data. Until now the only Thai banks in the stack
+    came from ``kmitl_demo``, which is not installed on a production database,
+    so nothing there put a bank behind either the institute's own accounts or a
+    payee's — and the e-payment file has to name the bank on both sides.
+
+    The BIC is the key on purpose: it is what the bank export modules themselves
+    switch on (``KRTHTHBK`` for KTB, ``SICOTHBK`` for SCB, …), so a record that
+    carries the right one is a record those modules already recognise. The demo
+    copies carried truncated codes ("KTB", "SCB") that match none of them.
+
+    ``bank_code`` / ``bank_branch_code`` (from OCA partner_bank_code, which the
+    export modules read for the receiving bank and sending branch) are left for
+    the treasury office to fill in Finance ▸ Settings ▸ Banks: a wrong clearing
+    code misroutes a transfer, while an empty one is rejected visibly.
+-->
+<odoo noupdate="1">
+
+    <record id="bank_scb" model="res.bank">
+        <field name="name">ธนาคารไทยพาณิชย์ (Siam Commercial Bank)</field>
+        <field name="bic">SICOTHBK</field>
+        <field name="country" ref="base.th" />
+    </record>
+
+    <record id="bank_ktb" model="res.bank">
+        <field name="name">ธนาคารกรุงไทย (Krung Thai Bank)</field>
+        <field name="bic">KRTHTHBK</field>
+        <field name="country" ref="base.th" />
+    </record>
+
+    <record id="bank_bay" model="res.bank">
+        <field name="name">ธนาคารกรุงศรีอยุธยา (Bank of Ayudhya)</field>
+        <field name="bic">AYUDTHBK</field>
+        <field name="country" ref="base.th" />
+    </record>
+
+    <record id="bank_kbank" model="res.bank">
+        <field name="name">ธนาคารกสิกรไทย (Kasikorn Bank)</field>
+        <field name="bic">KASITHBK</field>
+        <field name="country" ref="base.th" />
+    </record>
+
+</odoo>

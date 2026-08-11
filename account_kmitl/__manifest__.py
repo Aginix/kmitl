@@ -2,12 +2,13 @@
 
 {
     "name": "KMITL - Accounting",
-    "version": "16.0.1.0.7",
+    "version": "16.0.1.0.8",
     "category": "Accounting/Localizations/Account Charts",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": ["account", "l10n_th", "l10n_th_account_tax"],
     "data": [
+        "data/res_bank.xml",
         "data/account_chart.xml",
         "data/account.account.template.csv",
         "data/account_chart_post.xml",
