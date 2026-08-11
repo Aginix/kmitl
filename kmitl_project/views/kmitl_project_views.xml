@@ -311,44 +311,44 @@
         <field name="model">kmitl.project</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name" string="ชื่อ / เลขที่โครงการ" filter_domain="['|', ('name', 'ilike', self), ('key', 'ilike', self)]" />
-                <field name="manager_id" string="หัวหน้าโครงการ" />
-                <field name="creating_user_id" string="ผู้รับผิดชอบ" />
-                <field name="department_analytic_id" string="ส่วนงาน" />
-                <field name="budget_account_id" string="รหัสงบประมาณ" />
-                <field name="account_fiscal_year_id" string="ปีงบประมาณ" />
-                <field name="operating_unit_id" string="Operating Unit" groups="operating_unit.group_multi_operating_unit" />
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('key', 'ilike', self)]" />
+                <field name="manager_id" string="Project Manager" />
+                <field name="creating_user_id" />
+                <field name="department_analytic_id" string="Department" />
+                <field name="budget_account_id" string="Budget Account" />
+                <field name="account_fiscal_year_id" />
+                <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" />
                 <separator />
-                <filter name="my_projects" string="โครงการของฉัน" domain="[('creating_user_id', '=', uid)]" />
+                <filter name="my_projects" string="My Projects" domain="[('creating_user_id', '=', uid)]" />
                 <separator />
-                <filter name="project_type_project" string="โครงการ/กิจกรรม" domain="[('project_type', '=', 'project')]" />
-                <filter name="project_type_strategic" string="โครงการยุทธศาสตร์" domain="[('project_type', '=', 'strategic_project')]" />
+                <filter name="project_type_project" string="Project/Activity" domain="[('project_type', '=', 'project')]" />
+                <filter name="project_type_strategic" string="Strategic Project" domain="[('project_type', '=', 'strategic_project')]" />
                 <separator />
-                <filter name="state_draft" string="แบบร่าง" domain="[('state', '=', 'draft')]" />
-                <filter name="state_to_verify" string="รอตรวจสอบ / จองงบประมาณ" domain="[('state', '=', 'to_verify')]" />
-                <filter name="state_to_send" string="รอส่งขออนุมัติ" domain="[('state', '=', 'to_send')]" />
-                <filter name="state_sent" string="ส่งขออนุมัติแล้ว" domain="[('state', '=', 'sent')]" />
-                <filter name="state_in_progress" string="กำลังดำเนินการ" domain="[('state', '=', 'in_progress')]" />
-                <filter name="state_complete" string="เสร็จสิ้น" domain="[('state', '=', 'complete')]" />
-                <filter name="state_returned" string="ถูกตีกลับ" domain="[('state', '=', 'returned')]" />
-                <filter name="state_rejected" string="ถูกปฏิเสธ" domain="[('state', '=', 'rejected')]" />
-                <filter name="state_cancel" string="ยกเลิก" domain="[('state', '=', 'cancel')]" />
+                <filter name="state_draft" string="Draft" domain="[('state', '=', 'draft')]" />
+                <filter name="state_to_verify" string="To Verify / Reserve Budget" domain="[('state', '=', 'to_verify')]" />
+                <filter name="state_to_send" string="To Submit" domain="[('state', '=', 'to_send')]" />
+                <filter name="state_sent" string="Submitted" domain="[('state', '=', 'sent')]" />
+                <filter name="state_in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]" />
+                <filter name="state_complete" string="Completed" domain="[('state', '=', 'complete')]" />
+                <filter name="state_returned" string="Returned" domain="[('state', '=', 'returned')]" />
+                <filter name="state_rejected" string="Rejected" domain="[('state', '=', 'rejected')]" />
+                <filter name="state_cancel" string="Cancelled" domain="[('state', '=', 'cancel')]" />
                 <separator />
-                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
+                <filter name="current_fy" string="Current Fiscal Year" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator />
                 <filter string="Late Activities" name="activities_overdue" domain="[('my_activity_date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]" help="Show all records which have a next action date before today"/>
                 <filter string="Today Activities" name="activities_today" domain="[('my_activity_date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
                 <filter string="Future Activities" name="activities_upcoming_all" domain="[('my_activity_date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
                 <separator />
-                <filter name="inactive" string="เก็บถาวร (Archived)" domain="[('active', '=', False)]" />
+                <filter name="inactive" string="Archived" domain="[('active', '=', False)]" />
                 <group expand="1" name="group_by" string="Group By">
-                    <filter string="ประเภทโครงการ" name="by_project_type" domain="[]" context="{'group_by':'project_type'}"/>
-                    <filter string="สถานะ" name="by_state" domain="[]" context="{'group_by':'state'}"/>
-                    <filter string="ส่วนงาน" name="by_department" domain="[]" context="{'group_by':'department_analytic_id'}"/>
-                    <filter string="รหัสงบประมาณ" name="by_budget_account" domain="[]" context="{'group_by':'budget_account_id'}"/>
-                    <filter string="หัวหน้าโครงการ" name="by_manager" domain="[]" context="{'group_by':'manager_id'}"/>
-                    <filter string="ผู้รับผิดชอบ" name="by_creating_user" domain="[]" context="{'group_by':'creating_user_id'}"/>
-                    <filter string="ปีงบประมาณ" name="by_account_fiscal_year_id" domain="[]" context="{'group_by':'account_fiscal_year_id'}"/>
+                    <filter string="Project Type" name="by_project_type" domain="[]" context="{'group_by':'project_type'}"/>
+                    <filter string="Status" name="by_state" domain="[]" context="{'group_by':'state'}"/>
+                    <filter string="Department" name="by_department" domain="[]" context="{'group_by':'department_analytic_id'}"/>
+                    <filter string="Budget Account" name="by_budget_account" domain="[]" context="{'group_by':'budget_account_id'}"/>
+                    <filter string="Project Manager" name="by_manager" domain="[]" context="{'group_by':'manager_id'}"/>
+                    <filter string="Responsible" name="by_creating_user" domain="[]" context="{'group_by':'creating_user_id'}"/>
+                    <filter string="Fiscal year" name="by_account_fiscal_year_id" domain="[]" context="{'group_by':'account_fiscal_year_id'}"/>
                     <filter string="Operating Unit" name="by_operating_unit" domain="[]" context="{'group_by':'operating_unit_id'}" groups="operating_unit.group_multi_operating_unit"/>
                 </group>
             </search>
