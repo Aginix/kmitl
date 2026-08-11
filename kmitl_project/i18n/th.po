@@ -257,6 +257,7 @@ msgstr "ใช้กับ"
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form model_terms:ir.ui.view,arch_db:kmitl_project.view_project_budget_category_form
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_budget_item_form model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_form
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_search
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Archived"
 msgstr "จัดเก็บถาวร"
 
@@ -280,6 +281,7 @@ msgstr ""
 
 #. module: kmitl_project
 #: model:ir.model,name:kmitl_project.model_budget_account
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Budget Account"
 msgstr "รหัสงบประมาณ"
 
@@ -300,6 +302,7 @@ msgstr "ยกเลิก"
 
 #. module: kmitl_project
 #: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__cancel model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Cancelled"
 msgstr "ยกเลิกแล้ว"
 
@@ -321,6 +324,7 @@ msgstr ""
 
 #. module: kmitl_project
 #: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__complete model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Completed"
 msgstr "เสร็จสิ้นแล้ว"
 
@@ -398,6 +402,7 @@ msgstr "ชื่อ"
 
 #. module: kmitl_project
 #: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__draft
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Draft"
 msgstr "แบบร่าง"
 
@@ -433,6 +438,7 @@ msgstr ""
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__account_fiscal_year_id
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Fiscal year"
 msgstr "ปีงบประมาณ"
 
@@ -539,6 +545,7 @@ msgstr ""
 
 #. module: kmitl_project
 #: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__in_progress
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "In Progress"
 msgstr "กำลังดำเนินการ"
 
@@ -894,6 +901,7 @@ msgstr "ข้อมูลยุทธศาสตร์ชาติ"
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_budget_account__project_type
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__project_type
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Project Type"
 msgstr "ประเภท"
 
@@ -913,6 +921,7 @@ msgstr "รหัสข้อมูลยุทธศาสตร์ต้อง
 #. module: kmitl_project
 #: model:ir.model.fields.selection,name:kmitl_project.selection__budget_account__project_type__project
 #: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__project_type__project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Project/Activity"
 msgstr "โครงการ/กิจกรรม"
 
@@ -943,6 +952,7 @@ msgstr "รีเซ็ต"
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__creating_user_id
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Responsible"
 msgstr "ผู้รับผิดชอบ"
 
@@ -1007,6 +1017,7 @@ msgstr "วันที่เริ่มโครงการ"
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__state
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Status"
 msgstr "สถานะ"
 
@@ -1022,6 +1033,7 @@ msgstr ""
 #. module: kmitl_project
 #: model:ir.model.fields.selection,name:kmitl_project.selection__budget_account__project_type__strategic_project
 #: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__project_type__strategic_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
 msgid "Strategic Project"
 msgstr "โครงการยุทธศาสตร์"
 
@@ -2349,3 +2361,48 @@ msgstr ""
 #, python-format
 msgid "ไม่สามารถเปลี่ยนปีงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)"
 msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "Project Manager"
+msgstr "หัวหน้าโครงการ"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "My Projects"
+msgstr "โครงการของฉัน"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "To Verify / Reserve Budget"
+msgstr "รอตรวจสอบ / จองงบประมาณ"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "To Submit"
+msgstr "รอส่งขออนุมัติ"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "Submitted"
+msgstr "ส่งขออนุมัติแล้ว"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "Returned"
+msgstr "ถูกตีกลับ"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "Rejected"
+msgstr "ถูกปฏิเสธ"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "Current Fiscal Year"
+msgstr "ปีงบประมาณปัจจุบัน"
