@@ -16,6 +16,27 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "'or bearer' strike"
+msgstr "ขีดฆ่า 'หรือผู้ถือ'"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#, python-format
+msgid "A cheque number is required before the cheque can be issued."
+msgstr "ต้องระบุเลขที่เช็คก่อนออกเช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__crossed
+msgid "A/C Payee Only"
+msgstr "ขีดคร่อม A/C Payee Only"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "A/C Payee Only crossing"
+msgstr "ขีดคร่อม A/C Payee Only"
+
+#. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_payment_type_view_form
 msgid "Account Overrides"
 msgstr "บัญชีที่กำหนดเอง"
@@ -32,9 +53,44 @@ msgid "All payments must have the same bank payment template."
 msgstr "รายการจ่ายเงินทั้งหมดต้องใช้รูปแบบการส่งออกเดียวกัน"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__amount
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Amount (figures)"
+msgstr "จำนวนเงิน (ตัวเลข)"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Amount (words)"
+msgstr "จำนวนเงิน (ตัวอักษร)"
+
+#. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__amount_before_wht
 msgid "Amount Before Withholding"
 msgstr "ยอดก่อนหัก ณ ที่จ่าย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__bank_id
+msgid "Bank"
+msgstr "ธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_res_partner_bank
+msgid "Bank Accounts"
+msgstr "บัญชีธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_export_format
+msgid "Bank Export Formats"
+msgstr "รูปแบบไฟล์ส่งออก"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_export_format
+msgid "Bank Export Formats"
+msgstr "รูปแบบส่งออกข้อมูลธนาคาร"
 
 #. module: finance_kmitl
 #: model:ir.actions.report,name:finance_kmitl.action_report_bank_payment_export
@@ -43,9 +99,9 @@ msgid "Bank Payment Export"
 msgstr "ส่งออกรายการจ่ายเงิน"
 
 #. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_export_format
-msgid "Bank Export Formats"
-msgstr "รูปแบบไฟล์ส่งออก"
+#: model:ir.ui.menu,name:finance_kmitl.menu_bank_payment_export
+msgid "Bank Payment Export"
+msgstr "ส่งออกข้อมูลจ่ายเงินธนาคาร"
 
 #. module: finance_kmitl
 #: model:ir.model,name:finance_kmitl.model_bank_payment_export_line
@@ -58,9 +114,173 @@ msgid "Bank Payment Templates"
 msgstr "รูปแบบการจ่ายเงินธนาคาร"
 
 #. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_payment_template
+msgid "Bank Payment Templates"
+msgstr "เทมเพลตการจ่ายเงินธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__journal_id
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
+msgid "Bank/Cheque Book"
+msgstr "ธนาคาร/สมุดเช็ค"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_res_bank
+msgid "Banks"
+msgstr "รายชื่อธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__bounced
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
+msgid "Bounced"
+msgstr "เช็คเด้ง"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__date_buddhist_year
+msgid "Buddhist Era Date"
+msgstr "ใช้ปี พ.ศ."
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__cancelled
+msgid "Cancelled"
+msgstr "ยกเลิก"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_journal_form_cheque
+msgid "Cheque"
+msgstr "เช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__journal_ids
+msgid "Cheque Books"
+msgstr "สมุดเช็ค"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Cheque Books (assign on the journal)"
+msgstr "สมุดเช็ค (กำหนดที่สมุดรายวัน)"
+
+#. module: finance_kmitl
+#: model:ir.model,name:finance_kmitl.model_cheque_register
+msgid "Cheque Control Register"
+msgstr "ทะเบียนคุมเช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__cheque_date
+msgid "Cheque Date"
+msgstr "วันที่หน้าเช็ค"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+msgid "Cheque Information"
+msgstr "ข้อมูลเช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_journal__cheque_layout_id
+msgid "Cheque Layout"
+msgstr "รูปแบบการพิมพ์เช็ค"
+
+#. module: finance_kmitl
+#: model:ir.actions.act_window,name:finance_kmitl.action_cheque_layout
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_cheque_layout
+msgid "Cheque Layouts"
+msgstr "รูปแบบการพิมพ์เช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__cheque_number
+msgid "Cheque No."
+msgstr "เลขที่เช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model,name:finance_kmitl.model_cheque_layout
+msgid "Cheque Print Layout"
+msgstr "รูปแบบการพิมพ์เช็ค"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment.py:0
+#: model:ir.ui.menu,name:finance_kmitl.menu_cheque_register_root
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_tree
+#, python-format
+msgid "Cheque Register"
+msgstr "ทะเบียนคุมเช็ค"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#, python-format
+msgid "Cheque number %(num)s already exists in this cheque book."
+msgstr "เลขที่เช็ค %(num)s มีอยู่แล้วในสมุดเช็คนี้"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__cheque_register_ids
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Cheques"
+msgstr "เช็ค"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+msgid "Clear (Cashed)"
+msgstr "ขึ้นเงิน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__cleared
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
+msgid "Cleared"
+msgstr "ขึ้นเงินแล้ว"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#, python-format
+msgid "Cleared cheques cannot be cancelled."
+msgstr "เช็คที่ขึ้นเงินแล้วยกเลิกไม่ได้"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__clearing_date
+msgid "Clearing Date"
+msgstr "วันที่ขึ้นเงิน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#, python-format
+msgid "Configure a Cheque Layout on journal '%s' before printing."
+msgstr "กรุณาตั้งค่ารูปแบบการพิมพ์เช็คให้สมุดรายวัน '%s' ก่อนพิมพ์"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__currency_id
+msgid "Currency"
+msgstr "สกุลเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Date (DDMMYYYY boxes)"
+msgstr "วันที่ (ช่อง DDMMYYYY)"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__date_spacing
+msgid "Date Digit Spacing (mm)"
+msgstr "ระยะห่างตัวเลขวันที่ (มม.)"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+msgid "Dates & Status"
+msgstr "วันที่และสถานะ"
+
+#. module: finance_kmitl
 #: model:ir.model.fields,help:finance_kmitl.field_kmitl_payment_type__journal_id
 msgid "Default journal for this payment type. Leave empty to use the default."
-msgstr "สมุดรายวันเริ่มต้นสำหรับประเภทการจ่ายเงินนี้ เว้นว่างไว้เพื่อใช้ค่าเริ่มต้น"
+msgstr ""
+"สมุดรายวันเริ่มต้นสำหรับประเภทการจ่ายเงินนี้ เว้นว่างไว้เพื่อใช้ค่าเริ่มต้น"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__deposit_date
+msgid "Deposit Date"
+msgstr "วันที่ฝากเช็ค"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__direction
@@ -68,6 +288,11 @@ msgstr "สมุดรายวันเริ่มต้นสำหรับ
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
 msgid "Direction"
 msgstr "ทิศทาง"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__draft
+msgid "Draft"
+msgstr "ร่าง"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_line__epayment_date
@@ -90,9 +315,25 @@ msgid "E-Payment Status"
 msgstr "สถานะ E-Payment"
 
 #. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#, python-format
+msgid "Enter the cheque number before printing."
+msgstr "กรุณาระบุเลขที่เช็คก่อนพิมพ์"
+
+#. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__bank_payment_export_line__epayment_status__failed
 msgid "Failed"
 msgstr "ไม่สำเร็จ"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Field Positions (mm from top-left of the cheque)"
+msgstr "ตำแหน่งฟิลด์ (มม. จากมุมซ้ายบนของเช็ค)"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_payment_root
+msgid "Finance"
+msgstr "การเงิน"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export__account_fiscal_year_id
@@ -101,382 +342,9 @@ msgid "Fiscal Year"
 msgstr "ปีงบประมาณ"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__journal_id
-msgid "Journal"
-msgstr "สมุดรายวัน"
-
-#. module: finance_kmitl
-#: model:ir.model,name:finance_kmitl.model_kmitl_payment_type
-msgid "KMITL Payment Type"
-msgstr "ประเภทการจ่ายเงิน (KMITL)"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
-msgid "Net Amount Paid"
-msgstr "ยอดจ่ายจริง"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__override_account_id
-msgid "Override Account"
-msgstr "บัญชีที่กำหนดเอง"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,help:finance_kmitl.field_kmitl_payment_type__override_account_id
-msgid "Override the destination account. Leave empty to use partner's default."
-msgstr "แทนที่บัญชีปลายทาง เว้นว่างไว้เพื่อใช้ค่าเริ่มต้นของคู่ค้า"
-
-#. module: finance_kmitl
-#: model:ir.model,name:finance_kmitl.model_account_payment
-#: model:ir.ui.menu,name:finance_kmitl.menu_payment_root
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__payment_id
-msgid "Payment"
-msgstr "การเบิกจ่ายเงิน"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__kmitl_payment_type_id
-msgid "Operation Type"
-msgstr "ประเภทธุรกรรม"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
-msgid "Payer"
-msgstr "ผู้ชำระเงิน"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
-msgid "Payee"
-msgstr "ผู้รับเงิน"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
-msgid "Payer Bank Account"
-msgstr "บัญชีธนาคารผู้ชำระเงิน"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
-msgid "Payee Bank Account"
-msgstr "บัญชีธนาคารผู้รับเงิน"
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_outbound
-msgid "Payment List"
-msgstr "รายการจ่ายเงิน"
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_bank_payment_export
-msgid "e-Payment List"
-msgstr "รายการ e-Payment"
-
-#. module: finance_kmitl
-#: model:ir.actions.act_window,name:finance_kmitl.action_kmitl_payment_type
-#: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_types
-msgid "Payment Types (KMITL)"
-msgstr "ประเภทการจ่ายเงิน (KMITL)"
-
-#. module: finance_kmitl
-#: code:addons/finance_kmitl/models/bank_payment_export.py:0
-#, python-format
-msgid "Payments have been already exported."
-msgstr "รายการจ่ายเงินถูกส่งออกแล้ว"
-
-#. module: finance_kmitl
-#: model:ir.model.fields.selection,name:finance_kmitl.selection__bank_payment_export_line__epayment_status__pending
-msgid "Pending"
-msgstr "รอดำเนินการ"
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_payment_settings
-msgid "Settings"
-msgstr "ตั้งค่า"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
-msgid "Submit"
-msgstr "ยืนยัน"
-
-#. module: finance_kmitl
-#: model:ir.model.fields.selection,name:finance_kmitl.selection__bank_payment_export_line__epayment_status__success
-msgid "Success"
-msgstr "สำเร็จ"
-
-#. module: finance_kmitl
-#: code:addons/finance_kmitl/models/bank_payment_export.py:0
-#, python-format
-msgid "You can export bank payments state 'submitted' only"
-msgstr "สามารถส่งออกรายการจ่ายเงินที่มีสถานะ 'ส่งอนุมัติ' เท่านั้น"
-
-#. module: finance_kmitl
-#: code:addons/finance_kmitl/models/bank_payment_export.py:0
-#, python-format
-msgid "You can export bank payments with 1 currency only."
-msgstr "สามารถส่งออกรายการจ่ายเงินที่มีสกุลเงินเดียวเท่านั้น"
-
-#. module: finance_kmitl
-#: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__inbound
-msgid "รับเงิน"
-msgstr ""
-
-#. module: finance_kmitl
-#: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__outbound
-msgid "จ่ายเงิน"
-msgstr ""
-
-#. module: finance_kmitl
-#: model:ir.module.category,name:finance_kmitl.module_category_finance_kmitl
-msgid "KMITL Finance"
-msgstr "การเงิน KMITL"
-
-#. module: finance_kmitl
-#: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_in
-msgid "User การเงินรับ (Payment In)"
-msgstr ""
-
-#. module: finance_kmitl
-#: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_out
-msgid "User การเงินจ่าย (Payment Out)"
-msgstr ""
-
-#. module: finance_kmitl
-#: model:res.groups,name:finance_kmitl.group_finance_kmitl_manager
-msgid "Manager"
-msgstr "ผู้จัดการ"
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_payment_root
-msgid "Finance"
-msgstr "การเงิน"
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_outbound
-msgid "จ่ายเงิน"
-msgstr ""
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_inbound
-msgid "รับเงิน"
-msgstr ""
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_bank_payment_export
-msgid "Bank Payment Export"
-msgstr "ส่งออกข้อมูลจ่ายเงินธนาคาร"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__amount_wht
-msgid "Withholding Tax"
-msgstr "หัก ณ ที่จ่าย"
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_withholding_tax_cert
-msgid "Withholding Tax Certificates"
-msgstr "หนังสือรับรองหัก ณ ที่จ่าย (ทวิ 50)"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
-msgid "Withholding Tax Summary"
-msgstr "สรุปภาษีหัก ณ ที่จ่าย"
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_payment_settings
-msgid "Settings"
-msgstr "ตั้งค่า"
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_payment_template
-msgid "Bank Payment Templates"
-msgstr "เทมเพลตการจ่ายเงินธนาคาร"
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_export_format
-msgid "Bank Export Formats"
-msgstr "รูปแบบส่งออกข้อมูลธนาคาร"
-
-#. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_types
-msgid "Payment Types (KMITL)"
-msgstr "ประเภทการจ่ายเงิน (KMITL)"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__is_cheque
-msgid "Paid/Received by Cheque"
-msgstr "จ่าย/รับด้วยเช็ค"
-
-#. module: finance_kmitl
-#: model:ir.model,name:finance_kmitl.model_cheque_register
-msgid "Cheque Control Register"
-msgstr "ทะเบียนคุมเช็ค"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__name
-msgid "Reference"
-msgstr "เลขที่อ้างอิง"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__cheque_number
-msgid "Cheque No."
-msgstr "เลขที่เช็ค"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__cheque_date
-msgid "Cheque Date"
-msgstr "วันที่หน้าเช็ค"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__journal_id
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
-msgid "Bank/Cheque Book"
-msgstr "ธนาคาร/สมุดเช็ค"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__bank_id
-msgid "Bank"
-msgstr "ธนาคาร"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__partner_id
-msgid "Payee/Drawer"
-msgstr "ผู้รับเงิน/ผู้สั่งจ่าย"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__amount
-msgid "Amount"
-msgstr "จำนวนเงิน"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__currency_id
-msgid "Currency"
-msgstr "สกุลเงิน"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__ref
-msgid "Source Document"
-msgstr "เลขที่ฎีกา/เอกสารอ้างอิง"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__handover_date
-msgid "Handover/Receipt Date"
-msgstr "วันที่จ่าย/รับเช็ค"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__deposit_date
-msgid "Deposit Date"
-msgstr "วันที่ฝากเช็ค"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__clearing_date
-msgid "Clearing Date"
-msgstr "วันที่ขึ้นเงิน"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__note
-msgid "Notes"
-msgstr "หมายเหตุ"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__state
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
-msgid "Status"
-msgstr "สถานะ"
-
-#. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__cheque_register_ids
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
-msgid "Cheques"
-msgstr "เช็ค"
-
-#. module: finance_kmitl
-#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__direction__outbound
-msgid "Issued Cheque"
-msgstr "เช็คจ่าย"
-
-#. module: finance_kmitl
-#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__direction__inbound
-msgid "Received Cheque"
-msgstr "เช็ครับ"
-
-#. module: finance_kmitl
-#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__draft
-msgid "Draft"
-msgstr "ร่าง"
-
-#. module: finance_kmitl
-#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__active
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
-msgid "Outstanding"
-msgstr "คงค้าง (รอขึ้นเงิน)"
-
-#. module: finance_kmitl
-#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__cleared
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
-msgid "Cleared"
-msgstr "ขึ้นเงินแล้ว"
-
-#. module: finance_kmitl
-#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__bounced
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
-msgid "Bounced"
-msgstr "เช็คเด้ง"
-
-#. module: finance_kmitl
-#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__cancelled
-msgid "Cancelled"
-msgstr "ยกเลิก"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
-msgid "Issue / Receive"
-msgstr "ออก/รับเช็ค"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
-msgid "Clear (Cashed)"
-msgstr "ขึ้นเงิน"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
-msgid "Cancel"
-msgstr "ยกเลิก"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
-msgid "Reset to Draft"
-msgstr "กลับเป็นร่าง"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
-msgid "Cheque Information"
-msgstr "ข้อมูลเช็ค"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
-msgid "Payment Information"
-msgstr "ข้อมูลการจ่าย/รับเงิน"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
-msgid "Dates & Status"
-msgstr "วันที่และสถานะ"
-
-#. module: finance_kmitl
-#: code:addons/finance_kmitl/models/account_payment.py:0
-#: model:ir.ui.menu,name:finance_kmitl.menu_cheque_register_root
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_tree
-#, python-format
-msgid "Cheque Register"
-msgstr "ทะเบียนคุมเช็ค"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
-msgid "Issued"
-msgstr "เช็คจ่าย"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
-msgid "Received"
-msgstr "เช็ครับ"
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__font_size
+msgid "Font Size (pt)"
+msgstr "ขนาดตัวอักษร (pt)"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
@@ -484,14 +352,29 @@ msgid "Group By"
 msgstr "จัดกลุ่มตาม"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__handover_date
+msgid "Handover/Receipt Date"
+msgstr "วันที่จ่าย/รับเช็ค"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+msgid "Issue / Receive"
+msgstr "ออก/รับเช็ค"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
+msgid "Issued"
+msgstr "เช็คจ่าย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__direction__outbound
+msgid "Issued Cheque"
+msgstr "เช็คจ่าย"
+
+#. module: finance_kmitl
 #: model:ir.actions.act_window,name:finance_kmitl.action_cheque_register_outbound
 msgid "Issued Cheque Register"
 msgstr "ทะเบียนคุมเช็คจ่าย"
-
-#. module: finance_kmitl
-#: model:ir.actions.act_window,name:finance_kmitl.action_cheque_register_inbound
-msgid "Received Cheque Register"
-msgstr "ทะเบียนคุมเช็ครับ"
 
 #. module: finance_kmitl
 #: model:ir.ui.menu,name:finance_kmitl.menu_cheque_register_outbound
@@ -499,9 +382,49 @@ msgid "Issued Cheques"
 msgstr "เช็คจ่าย"
 
 #. module: finance_kmitl
-#: model:ir.ui.menu,name:finance_kmitl.menu_cheque_register_inbound
-msgid "Received Cheques"
-msgstr "เช็ครับ"
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__journal_id
+msgid "Journal"
+msgstr "สมุดรายวัน"
+
+#. module: finance_kmitl
+#: model:ir.module.category,name:finance_kmitl.module_category_finance_kmitl
+msgid "KMITL Finance"
+msgstr "การเงิน KMITL"
+
+#. module: finance_kmitl
+#: model:ir.model,name:finance_kmitl.model_kmitl_payment_type
+msgid "KMITL Payment Type"
+msgstr "ประเภทการจ่ายเงิน (KMITL)"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Layout Settings"
+msgstr "ตั้งค่ารูปแบบ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__date_left
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__payee_left
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__amount_figure_left
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__amount_text_left
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__crossing_left
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__bearer_left
+msgid "Left"
+msgstr "ซ้าย"
+
+#. module: finance_kmitl
+#: model:res.groups,name:finance_kmitl.group_finance_kmitl_manager
+msgid "Manager"
+msgstr "ผู้จัดการ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__name
+msgid "Name"
+msgstr "ชื่อ"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Net Amount Paid"
+msgstr "ยอดจ่ายจริง"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/cheque_register.py:0
@@ -510,16 +433,9 @@ msgid "New"
 msgstr "ใหม่"
 
 #. module: finance_kmitl
-#: code:addons/finance_kmitl/models/cheque_register.py:0
-#, python-format
-msgid "Cheque number %(num)s already exists in this cheque book."
-msgstr "เลขที่เช็ค %(num)s มีอยู่แล้วในสมุดเช็คนี้"
-
-#. module: finance_kmitl
-#: code:addons/finance_kmitl/models/cheque_register.py:0
-#, python-format
-msgid "A cheque number is required before the cheque can be issued."
-msgstr "ต้องระบุเลขที่เช็คก่อนออกเช็ค"
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__note
+msgid "Notes"
+msgstr "หมายเหตุ"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/cheque_register.py:0
@@ -540,40 +456,176 @@ msgid "Only outstanding cheques can bounce."
 msgstr "เช็คเด้งได้เฉพาะเช็คที่คงค้าง"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__kmitl_payment_type_id
+msgid "Operation Type"
+msgstr "ประเภทธุรกรรม"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__active
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
+msgid "Outstanding"
+msgstr "คงค้าง (รอขึ้นเงิน)"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__override_account_id
+msgid "Override Account"
+msgstr "บัญชีที่กำหนดเอง"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_kmitl_payment_type__override_account_id
+msgid ""
+"Override the destination account. Leave empty to use partner's default."
+msgstr "แทนที่บัญชีปลายทาง เว้นว่างไว้เพื่อใช้ค่าเริ่มต้นของคู่ค้า"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__is_cheque
+msgid "Paid/Received by Cheque"
+msgstr "จ่าย/รับด้วยเช็ค"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Payee"
+msgstr "ผู้รับเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Payee Bank Account"
+msgstr "บัญชีธนาคารผู้รับเงิน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__partner_id
+msgid "Payee/Drawer"
+msgstr "ผู้รับเงิน/ผู้สั่งจ่าย"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Payer"
+msgstr "ผู้ชำระเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Payer Bank Account"
+msgstr "บัญชีธนาคารผู้ชำระเงิน"
+
+#. module: finance_kmitl
+#: model:ir.model,name:finance_kmitl.model_account_payment
+#: model:ir.ui.menu,name:finance_kmitl.menu_payment_root
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__payment_id
+msgid "Payment"
+msgstr "การเบิกจ่ายเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+msgid "Payment Information"
+msgstr "ข้อมูลการจ่าย/รับเงิน"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_outbound
+msgid "Payment List"
+msgstr "รายการจ่ายเงิน"
+
+#. module: finance_kmitl
+#: model:ir.actions.act_window,name:finance_kmitl.action_kmitl_payment_type
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_types
+msgid "Payment Types (KMITL)"
+msgstr "ประเภทการจ่ายเงิน (KMITL)"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_types
+msgid "Payment Types (KMITL)"
+msgstr "ประเภทการจ่ายเงิน (KMITL)"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
+#, python-format
+msgid "Payments have been already exported."
+msgstr "รายการจ่ายเงินถูกส่งออกแล้ว"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__bank_payment_export_line__epayment_status__pending
+msgid "Pending"
+msgstr "รอดำเนินการ"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#: model:ir.actions.report,name:finance_kmitl.action_report_cheque_print
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+#, python-format
+msgid "Print Cheque"
+msgstr "พิมพ์เช็ค"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
+msgid "Received"
+msgstr "เช็ครับ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__direction__inbound
+msgid "Received Cheque"
+msgstr "เช็ครับ"
+
+#. module: finance_kmitl
+#: model:ir.actions.act_window,name:finance_kmitl.action_cheque_register_inbound
+msgid "Received Cheque Register"
+msgstr "ทะเบียนคุมเช็ครับ"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_cheque_register_inbound
+msgid "Received Cheques"
+msgstr "เช็ครับ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__name
+msgid "Reference"
+msgstr "เลขที่อ้างอิง"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+msgid "Reset to Draft"
+msgstr "กลับเป็นร่าง"
+
+#. module: finance_kmitl
 #: code:addons/finance_kmitl/models/cheque_register.py:0
 #, python-format
-msgid "Cleared cheques cannot be cancelled."
-msgstr "เช็คที่ขึ้นเงินแล้วยกเลิกไม่ได้"
+msgid "Select the bank/cheque book (journal) before printing."
+msgstr "กรุณาเลือกสมุดเช็ค (สมุดรายวัน) ก่อนพิมพ์"
 
 #. module: finance_kmitl
-#: model:ir.model,name:finance_kmitl.model_cheque_layout
-msgid "Cheque Print Layout"
-msgstr "รูปแบบการพิมพ์เช็ค"
+#: model:ir.ui.menu,name:finance_kmitl.menu_payment_settings
+msgid "Settings"
+msgstr "ตั้งค่า"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__name
-msgid "Name"
-msgstr "ชื่อ"
+#: model:ir.ui.menu,name:finance_kmitl.menu_payment_settings
+msgid "Settings"
+msgstr "ตั้งค่า"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__journal_ids
-msgid "Cheque Books"
-msgstr "สมุดเช็ค"
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__ref
+msgid "Source Document"
+msgstr "เลขที่ฎีกา/เอกสารอ้างอิง"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__font_size
-msgid "Font Size (pt)"
-msgstr "ขนาดตัวอักษร (pt)"
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__state
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
+msgid "Status"
+msgstr "สถานะ"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__date_buddhist_year
-msgid "Buddhist Era Date"
-msgstr "ใช้ปี พ.ศ."
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__strike_bearer
+msgid "Strike 'or Bearer'"
+msgstr "ขีดฆ่า 'หรือผู้ถือ'"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__date_spacing
-msgid "Date Digit Spacing (mm)"
-msgstr "ระยะห่างตัวเลขวันที่ (มม.)"
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Submit"
+msgstr "ยืนยัน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__bank_payment_export_line__epayment_status__success
+msgid "Success"
+msgstr "สำเร็จ"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__date_top
@@ -586,103 +638,63 @@ msgid "Top"
 msgstr "บน"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__date_left
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__payee_left
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__amount_figure_left
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__amount_text_left
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__crossing_left
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__bearer_left
-msgid "Left"
-msgstr "ซ้าย"
+#: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_out
+msgid "User การเงินจ่าย (Payment Out)"
+msgstr ""
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__crossed
-msgid "A/C Payee Only"
-msgstr "ขีดคร่อม A/C Payee Only"
+#: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_in
+msgid "User การเงินรับ (Payment In)"
+msgstr ""
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__strike_bearer
-msgid "Strike 'or Bearer'"
-msgstr "ขีดฆ่า 'หรือผู้ถือ'"
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__amount_wht
+msgid "Withholding Tax"
+msgstr "หัก ณ ที่จ่าย"
 
 #. module: finance_kmitl
-#: model:ir.model.fields,field_description:finance_kmitl.field_account_journal__cheque_layout_id
-msgid "Cheque Layout"
-msgstr "รูปแบบการพิมพ์เช็ค"
+#: model:ir.ui.menu,name:finance_kmitl.menu_withholding_tax_cert
+msgid "Withholding Tax Certificates"
+msgstr "หนังสือรับรองหัก ณ ที่จ่าย (ทวิ 50)"
 
 #. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
-msgid "Layout Settings"
-msgstr "ตั้งค่ารูปแบบ"
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Withholding Tax Summary"
+msgstr "สรุปภาษีหัก ณ ที่จ่าย"
 
 #. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
-msgid "Cheque Books (assign on the journal)"
-msgstr "สมุดเช็ค (กำหนดที่สมุดรายวัน)"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
-msgid "Field Positions (mm from top-left of the cheque)"
-msgstr "ตำแหน่งฟิลด์ (มม. จากมุมซ้ายบนของเช็ค)"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
-msgid "Date (DDMMYYYY boxes)"
-msgstr "วันที่ (ช่อง DDMMYYYY)"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
-msgid "Amount (figures)"
-msgstr "จำนวนเงิน (ตัวเลข)"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
-msgid "Amount (words)"
-msgstr "จำนวนเงิน (ตัวอักษร)"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
-msgid "A/C Payee Only crossing"
-msgstr "ขีดคร่อม A/C Payee Only"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
-msgid "'or bearer' strike"
-msgstr "ขีดฆ่า 'หรือผู้ถือ'"
-
-#. module: finance_kmitl
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_journal_form_cheque
-msgid "Cheque"
-msgstr "เช็ค"
-
-#. module: finance_kmitl
-#: code:addons/finance_kmitl/models/cheque_register.py:0
-#: model:ir.actions.report,name:finance_kmitl.action_report_cheque_print
-#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
 #, python-format
-msgid "Print Cheque"
-msgstr "พิมพ์เช็ค"
+msgid "You can export bank payments state 'submitted' only"
+msgstr "สามารถส่งออกรายการจ่ายเงินที่มีสถานะ 'ส่งอนุมัติ' เท่านั้น"
 
 #. module: finance_kmitl
-#: model:ir.actions.act_window,name:finance_kmitl.action_cheque_layout
-#: model:ir.ui.menu,name:finance_kmitl.menu_settings_cheque_layout
-msgid "Cheque Layouts"
-msgstr "รูปแบบการพิมพ์เช็ค"
-
-#. module: finance_kmitl
-#: code:addons/finance_kmitl/models/cheque_register.py:0
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
 #, python-format
-msgid "Enter the cheque number before printing."
-msgstr "กรุณาระบุเลขที่เช็คก่อนพิมพ์"
+msgid "You can export bank payments with 1 currency only."
+msgstr "สามารถส่งออกรายการจ่ายเงินที่มีสกุลเงินเดียวเท่านั้น"
 
 #. module: finance_kmitl
-#: code:addons/finance_kmitl/models/cheque_register.py:0
-#, python-format
-msgid "Select the bank/cheque book (journal) before printing."
-msgstr "กรุณาเลือกสมุดเช็ค (สมุดรายวัน) ก่อนพิมพ์"
+#: model:ir.ui.menu,name:finance_kmitl.menu_bank_payment_export
+msgid "e-Payment List"
+msgstr "รายการ e-Payment"
 
 #. module: finance_kmitl
-#: code:addons/finance_kmitl/models/cheque_register.py:0
-#, python-format
-msgid "Configure a Cheque Layout on journal '%s' before printing."
-msgstr "กรุณาตั้งค่ารูปแบบการพิมพ์เช็คให้สมุดรายวัน '%s' ก่อนพิมพ์"
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__outbound
+msgid "จ่ายเงิน"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_outbound
+msgid "จ่ายเงิน"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__inbound
+msgid "รับเงิน"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_inbound
+msgid "รับเงิน"
+msgstr ""
