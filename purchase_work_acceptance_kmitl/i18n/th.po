@@ -147,7 +147,7 @@ msgstr "วันที่ตรวจรับ"
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 msgid "Accepted"
-msgstr "ได้รับการตอบรับ"
+msgstr "ตรวจรับเสร็จสิ้น"
 
 #. module: purchase_work_acceptance_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_kmitl
@@ -409,7 +409,7 @@ msgstr "เอกสารแนบ"
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__purchase_invoice_plan__wa_state__draft
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 msgid "Draft"
-msgstr "แบบร่าง"
+msgstr "ร่าง"
 
 #. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__date_due
@@ -542,7 +542,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__purchase_invoice_plan__wa_state__in_review
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance__state__in_review
 msgid "In Review"
-msgstr "อยู่ระหว่างการตรวจรับ"
+msgstr "อยู่ระหว่างการตรวจสอบ"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model,name:purchase_work_acceptance_kmitl.model_purchase_invoice_plan

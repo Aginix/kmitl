@@ -1181,7 +1181,7 @@ msgstr "โดเมน"
 #: model:ir.model.fields.selection,name:purchase_order_kmitl.selection__purchase_order__state__done
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
 msgid "Done"
-msgstr "ปิดสัญญา"
+msgstr "ดำเนินการเสร็จสิ้น"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_company__po_double_validation_amount
@@ -1839,8 +1839,8 @@ msgstr ""
 
 #. module: purchase_order_kmitl
 #: model:ir.model.fields.selection,name:purchase_order_kmitl.selection__purchase_order__state__purchase
-msgid "Open"
-msgstr "ใช้งานอยู่"
+msgid "In Progress"
+msgstr "อยู่ระหว่างดำเนินการ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__order_id
