@@ -142,10 +142,20 @@
                 >
                     <group>
                         <group>
+                            <!-- Required exactly while the auditor holds it: the
+                                 request arrives at bills_posted without one (the
+                                 accounting bridge writes that state), and this is
+                                 the step whose job is to decide where the money
+                                 comes from. The audit action refuses to move on
+                                 without it either — that is what the batch queue
+                                 hits, which never opens this form. -->
                             <field
                                 name="payment_subject_id"
                                 options="{'no_create': True}"
-                                attrs="{'readonly': [('state', '!=', 'bills_posted')]}"
+                                attrs="{
+                                    'readonly': [('state', '!=', 'bills_posted')],
+                                    'required': [('state', '=', 'bills_posted')]
+                                }"
                             />
                             <field name="payment_auto_match" readonly="1" />
                         </group>
