@@ -898,3 +898,163 @@ msgstr "ใบจ่ายรอบันทึกบัญชี"
 #: model:mail.activity.type,summary:finance_kmitl.mail_activity_payment_to_book
 msgid "The finance office paid this voucher — correct the booking and submit it"
 msgstr "ฝ่ายการเงินจ่ายเงินตามใบสำคัญนี้แล้ว — กรุณาตรวจการบันทึกบัญชีแล้วส่งอนุมัติ"
+
+#. module: finance_kmitl
+#: model:ir.actions.client,name:finance_kmitl.action_clearing_queue
+msgid "ใบล้างเจ้าหนี้"
+msgstr ""
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Vendor Clearing Vouchers"
+msgstr "ใบล้างเจ้าหนี้"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "No clearing voucher here."
+msgstr "ไม่มีใบล้างเจ้าหนี้ในมุมมองนี้"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Submit Selected"
+msgstr "ส่งอนุมัติที่เลือก"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Submitted"
+msgstr "ส่งอนุมัติแล้ว"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Accounting Status"
+msgstr "สถานะบัญชี"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Number"
+msgstr "เลขที่"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Date"
+msgstr "วันที่"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Payees"
+msgstr "ผู้รับเงิน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Actions"
+msgstr "การดำเนินการ"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Open"
+msgstr "เปิด"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Submitted By"
+msgstr "ผู้ส่งอนุมัติ"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Account"
+msgstr "บัญชี"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Label"
+msgstr "คำอธิบาย"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Debit"
+msgstr "เดบิต"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Credit"
+msgstr "เครดิต"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Source"
+msgstr "แหล่งเงิน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Fund"
+msgstr "กองทุน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Activity"
+msgstr "กิจกรรม"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Departments"
+msgstr "ส่วนงาน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Sources"
+msgstr "แหล่งเงิน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Funds"
+msgstr "กองทุน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Activities"
+msgstr "กิจกรรม"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Date From"
+msgstr "ตั้งแต่วันที่"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Date To"
+msgstr "ถึงวันที่"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "More filters"
+msgstr "ตัวกรองเพิ่มเติม"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Hide filters"
+msgstr "ซ่อนตัวกรอง"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "All"
+msgstr "ทั้งหมด"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "To book"
+msgstr "รอบันทึกบัญชี"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Awaiting approval"
+msgstr "รออนุมัติ"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Posted"
+msgstr "ลงบัญชีแล้ว"

@@ -55,4 +55,23 @@
         groups="accounting_kmitl.group_accounting_kmitl_user"
     />
 
+    <!-- เจ้าหนี้ ▸ ใบล้างเจ้าหนี้ becomes an OWL screen: the register carries both
+         offices' statuses side by side, expands to the journal items of each
+         voucher, and lets the maker submit the ones that are theirs — none of which
+         a plain list does. The act_window it replaces
+         (accounting_kmitl.action_vendor_payment_moves) is left in place; nothing
+         else points at it, and it is one `ref` for anyone who wants the flat list
+         back. -->
+    <record id="action_clearing_queue" model="ir.actions.client">
+        <field name="name">ใบล้างเจ้าหนี้</field>
+        <field name="tag">finance_kmitl.clearing_queue</field>
+    </record>
+
+    <record id="accounting_kmitl.menu_vendor_payment_moves" model="ir.ui.menu">
+        <field
+            name="action"
+            eval="'ir.actions.client,%d' % ref('finance_kmitl.action_clearing_queue')"
+        />
+    </record>
+
 </odoo>

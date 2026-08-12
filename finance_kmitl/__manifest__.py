@@ -46,6 +46,14 @@
         "report/report_cheque_print.xml",
         "report/report_cheque_print_action.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            # The stylesheet and MultiRecordSelect come from
+            # accounting_kmitl_workflow's approval queue, already in this bundle.
+            "finance_kmitl/static/src/clearing_queue/clearing_queue.js",
+            "finance_kmitl/static/src/clearing_queue/clearing_queue.xml",
+        ],
+    },
     "installable": True,
     "application": True,
 }
