@@ -1,67 +1,34 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <!-- The banks the institute itself pays from are reference data in
+         account_kmitl (Finance ▸ Settings ▸ Banks); these are the extra ones
+         demo vendors bank at. -->
     <!-- Thai Commercial Banks -->
     <record id="bank_bbl" model="res.bank">
         <field name="name">ธนาคารกรุงเทพ (Bangkok Bank)</field>
-        <field name="bic">BBL</field>
+        <field name="bic">BKKBTHBK</field>
         <field name="street">333 ถนนสีลม</field>
         <field name="city">กรุงเทพมหานคร</field>
         <field name="zip">10500</field>
-        <field name="country" ref="base.th"/>
-    </record>
-
-    <record id="bank_kbank" model="res.bank">
-        <field name="name">ธนาคารกสิกรไทย (Kasikorn Bank)</field>
-        <field name="bic">KBANK</field>
-        <field name="street">1 ซอยราษฎร์บูรณะ 27/1 ถนนราษฎร์บูรณะ</field>
-        <field name="city">กรุงเทพมหานคร</field>
-        <field name="zip">10140</field>
-        <field name="country" ref="base.th"/>
-    </record>
-
-    <record id="bank_scb" model="res.bank">
-        <field name="name">ธนาคารไทยพาณิชย์ (Siam Commercial Bank)</field>
-        <field name="bic">SCB</field>
-        <field name="street">9 ถนนรัชดาภิเษก</field>
-        <field name="city">กรุงเทพมหานคร</field>
-        <field name="zip">10900</field>
-        <field name="country" ref="base.th"/>
-    </record>
-
-    <record id="bank_ktb" model="res.bank">
-        <field name="name">ธนาคารกรุงไทย (Krung Thai Bank)</field>
-        <field name="bic">KTB</field>
-        <field name="street">35 ถนนสุขุมวิท</field>
-        <field name="city">กรุงเทพมหานคร</field>
-        <field name="zip">10110</field>
-        <field name="country" ref="base.th"/>
+        <field name="country" ref="base.th" />
     </record>
 
     <record id="bank_tmb" model="res.bank">
         <field name="name">ธนาคารทหารไทยธนชาต (TMBThanachart Bank)</field>
-        <field name="bic">TMBK</field>
+        <field name="bic">TMBKTHBK</field>
         <field name="street">3000 ถนนพหลโยธิน</field>
         <field name="city">กรุงเทพมหานคร</field>
         <field name="zip">10900</field>
-        <field name="country" ref="base.th"/>
-    </record>
-
-    <record id="bank_bay" model="res.bank">
-        <field name="name">ธนาคารกรุงศรีอยุธยา (Bank of Ayudhya)</field>
-        <field name="bic">AYUD</field>
-        <field name="street">1222 ถนนพระรามที่ 3</field>
-        <field name="city">กรุงเทพมหานคร</field>
-        <field name="zip">10120</field>
-        <field name="country" ref="base.th"/>
+        <field name="country" ref="base.th" />
     </record>
 
     <record id="bank_cimb" model="res.bank">
         <field name="name">ธนาคารซีไอเอ็มบีไทย (CIMB Thai Bank)</field>
-        <field name="bic">UBOB</field>
+        <field name="bic">UBOBTHBK</field>
         <field name="street">44 ถนนหลังสวน</field>
         <field name="city">กรุงเทพมหานคร</field>
         <field name="zip">10330</field>
-        <field name="country" ref="base.th"/>
+        <field name="country" ref="base.th" />
     </record>
 
 </odoo>

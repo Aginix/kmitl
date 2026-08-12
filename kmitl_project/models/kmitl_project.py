@@ -119,8 +119,6 @@ class KmitlProject(models.Model):
         "account.fiscal.year",
         string="Fiscal year",
         required=True,
-        readonly=True,
-        states=EDITABLE_STATES,
     )
     operating_unit_id = fields.Many2one(
         comodel_name="operating.unit",
@@ -142,6 +140,7 @@ class KmitlProject(models.Model):
         string="Responsible",
         default=lambda self: self.env.user,
         readonly=True,
+        copy=False,
     )
     date_start = fields.Date(
         string="Start Date",
@@ -552,6 +551,24 @@ class KmitlProject(models.Model):
         """Update distribution when source changes"""
         for line in self:
             line._update_analytic_distribution("kmitl_project")
+
+    def copy_data(self, default=None):
+        """A duplicate is a fresh draft that has not reserved budget yet, so it
+        must not inherit the source project's own analytic account. The scalar
+        ``analytic_account_id`` is already ``copy=False``, but the inherited
+        ``analytic_distribution`` JSON (``copy=True``) still carries the
+        ``kmitl_project`` dimension pointing at the old account — strip that one
+        key while keeping the other dimensions the user filled in."""
+        vals_list = super().copy_data(default=default)
+        for record, vals in zip(self, vals_list):
+            acc_id = record.analytic_account_id.id
+            if acc_id and "analytic_distribution" in vals:
+                dist = dict(vals["analytic_distribution"] or {})
+                dist.pop(str(acc_id), None)
+                vals["analytic_distribution"] = dist or False
+            if "name" not in (default or {}):
+                vals["name"] = _("%s (copy)") % (record.name or "")
+        return vals_list
 
     def action_confirm(self):
         """``draft`` → ``to_verify`` ("ยืนยัน"). The base.exception check runs
