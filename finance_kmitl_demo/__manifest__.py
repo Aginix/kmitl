@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Finance Demo",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -15,6 +15,10 @@
         "purchase_request_approval_work_acceptance",
         "agx_approval_disbursement",
         "disbursement_accounting_kmitl",
+        # The payment-execution phase this demo hands its requests over to: its
+        # payment lines are part of what the demo leaves behind, so it has to be
+        # in the registry before post_init runs.
+        "disbursement_finance_kmitl",
         "accounting_kmitl",
         "account_asset_kmitl",
         "account_asset_depreciation_board",

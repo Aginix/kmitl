@@ -256,7 +256,13 @@ class DisbursementRequest(models.Model):
             if not unposted_bills:
                 raise UserError(_("No bills to post."))
             unposted_bills.action_post()
-            record.state = "bills_posted"
+            # Posting the last bill already moves the request (see the
+            # account.move._post override), and whoever listens for that state
+            # acts on it — writing it a second time would fan the same
+            # notification out twice. Kept as a fallback for the case that
+            # override leaves the request behind.
+            if record.state != "bills_posted":
+                record.state = "bills_posted"
         return True
 
     # ------------------------------------------------------------------

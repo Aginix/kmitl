@@ -10,7 +10,11 @@ Three demo stories run in order from ``seed``:
 
 The demo deliberately stops at ``bills_posted``: the payment tail (audit ->
 authorize -> pay) is left untouched so the finance queue can be exercised by
-hand in the UI, and no ``account.payment`` is created here.
+hand in the UI, and no ``account.payment`` is created here. It does leave one
+payment line per payee behind, so the request arrives at the finance queue with
+its payees, their banks and the net amounts already in place — but with no
+payment subject, which is the auditor's own decision and what derives the paying
+account (หัวจ่าย) of every row.
 
 The disbursement flow reuses two helpers from ``kmitl_demo`` (the purchase
 end-to-end flow uses them too) instead of duplicating them.
@@ -493,8 +497,9 @@ def _create_disbursement_flow_demo(
 # === Step B: vendor bills ===
 #
 # Continue every disbursement request into a posted vendor bill (ตั้งหนี้), which
-# leaves it at ``bills_posted``. The payment tail (audit -> authorize -> pay) is
-# deliberately not run so the finance payment queue can be demoed by hand.
+# leaves it at ``bills_posted`` with one payment line per payee. The payment tail
+# (audit -> authorize -> pay) is deliberately not run so the finance payment
+# queue can be demoed by hand.
 
 WHT_DR_INDEX = 7  # one case carries withholding tax
 
@@ -566,11 +571,18 @@ def _approve_dr(dr):
 
 
 def _bill_dr(dr, wht_tax=None):
-    """Create and post the vendor bill, optionally tagging a WHT tax."""
+    """Create and post the vendor bill, optionally tagging a WHT tax.
+
+    The payment lines are asked for explicitly rather than left to the write()
+    that enters ``bills_posted``: what this demo hands to the finance queue is
+    then stated here, in the one file that says where the demo stops. The call is
+    idempotent, so it costs nothing when that write already made the rows.
+    """
     if wht_tax and dr.line_ids:
         dr.line_ids[:1].wht_tax_id = wht_tax.id
     dr.action_create_bill()
     dr.action_post_bills()
+    dr._ensure_payment_lines()
 
 
 # === Step C: fixed assets and depreciation ===
