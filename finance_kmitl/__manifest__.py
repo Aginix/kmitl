@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Finance",
-    "version": "16.0.3.1.0",
+    "version": "16.0.4.0.0",
     "category": "KMITL/Finance",
     "summary": "งานการเงิน KMITL: จ่ายเงิน, bank export, WHT, ทะเบียนคุมเช็ค, รายรับ/ใบเสร็จ",
     "license": "LGPL-3",
@@ -25,6 +25,7 @@
     "data": [
         "security/security.xml",
         "security/ir.model.access.csv",
+        "data/mail_activity_type.xml",
         "data/kmitl_payment_type_data.xml",
         "data/kmitl_payment_subject_data.xml",
         "data/cheque_register_sequence.xml",
@@ -32,6 +33,8 @@
         "views/kmitl_payment_subject_views.xml",
         "views/kmitl_paying_account_views.xml",
         "views/account_payment_views.xml",
+        "views/account_payment_list_views.xml",
+        "views/account_move_views.xml",
         "views/bank_payment_export_views.xml",
         "views/cheque_register_views.xml",
         "views/cheque_layout_views.xml",
@@ -43,6 +46,14 @@
         "report/report_cheque_print.xml",
         "report/report_cheque_print_action.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            # The stylesheet and MultiRecordSelect come from
+            # accounting_kmitl_workflow's approval queue, already in this bundle.
+            "finance_kmitl/static/src/clearing_queue/clearing_queue.js",
+            "finance_kmitl/static/src/clearing_queue/clearing_queue.xml",
+        ],
+    },
     "installable": True,
     "application": True,
 }

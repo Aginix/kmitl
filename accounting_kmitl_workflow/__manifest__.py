@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Accounting Workflow",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.2.0",
     "category": "KMITL/Accounting",
     "summary": "Workflow อนุมัติ 2 ขั้น (ผู้จัดทำ/ตรวจสอบ → ผู้อนุมัติ) "
     "บน account.move และใบสำคัญรายการบัญชี",

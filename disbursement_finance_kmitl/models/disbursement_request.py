@@ -7,11 +7,14 @@ from odoo.exceptions import UserError, ValidationError
 AUDITOR_GROUP = "disbursement_finance_kmitl.group_disbursement_payment_auditor"
 AUTHORIZER_GROUP = "disbursement_finance_kmitl.group_disbursement_payment_authorizer"
 FINANCE_GROUP = "disbursement_finance_kmitl.group_disbursement_payment_finance"
+# The accounting office's makers, who book the vouchers once the request is paid.
+ACCOUNTING_MAKER_GROUP = "accounting_kmitl.group_accounting_kmitl_user"
 
 # Execution Todos fanned out to the group responsible for the next step.
 TO_AUDIT_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_audit"
 TO_AUTHORIZE_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_authorize"
 TO_PAY_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_pay"
+TO_BOOK_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_book"
 
 
 class DisbursementRequest(models.Model):
@@ -242,16 +245,34 @@ class DisbursementRequest(models.Model):
             "partner_bank_id": bill.partner_bank_id.id or False,
         }
 
+    @api.onchange("payment_subject_id")
+    def _onchange_payment_subject_id(self):
+        """Fill in every payee's หัวจ่าย the moment the subject is picked.
+
+        The same derivation ``write`` runs, one step earlier. The auditor's job
+        in this step is to check which account each payee is served from, and
+        that can only be done while the form is still open: leaving the accounts
+        (and the fallback rows that want re-checking) to appear after the save
+        turns one pass over the payees into two.
+        """
+        self._apply_subject_defaults(self.payment_line_ids)
+
     def _apply_subject_defaults(self, lines):
         """Derive the paying account of every row the subject still owns.
 
         Rows a person picked by hand (``manual``) and rows a payment already
         owns are left alone — both already carry a decision that re-deriving
         would quietly overwrite.
+
+        Written sudo because the rows only *follow* the subject: whoever may
+        choose it may have them follow, exactly as ``_ensure_payment_lines``
+        may make them in the first place. What a row may still be changed at
+        all is a rule about the workflow rather than about who is asking, so
+        the editability guard on the row is untouched by this.
         """
         self.ensure_one()
         subject = self.payment_subject_id
-        for line in lines:
+        for line in lines.sudo():
             if line.payment_id or line.paying_account_match == "manual":
                 continue
             if not subject:
@@ -364,7 +385,21 @@ class DisbursementRequest(models.Model):
         return True
 
     def action_confirm_paid(self):
-        """Finance confirms the bank actually paid every payment of the DR."""
+        """The finance office's one confirmation that every payee has their money.
+
+        It **writes** the outcome it asserts onto every payment rather than
+        demanding that someone set it elsewhere first: the bank's own result file
+        never enters Odoo, so no other record can know it, and asking the officer
+        to tick each payee before ticking the request is a second pass over the
+        same judgement. What is checked instead is a fact the system does hold —
+        that the payments which travel in an e-payment file were actually put in
+        one. Whatever the bank rejected was chased and settled outside the system
+        before this is pressed.
+
+        This is also the **Hand-over**: it is where the request stops being the
+        finance office's and its vouchers enter the accounting office's approval
+        queue. See ADR-0004.
+        """
         for record in self:
             if record.state != "payment_authorized":
                 raise UserError(_("Only authorized requests can be confirmed as paid."))
@@ -373,18 +408,74 @@ class DisbursementRequest(models.Model):
                 raise UserError(
                     _("Create the payment(s) before confirming the payment.")
                 )
-            not_success = active.filtered(lambda p: p.bank_result_status != "success")
-            if not_success:
+            not_exported = active.filtered(
+                lambda p: p.needs_bank_export and p.export_status != "exported"
+            )
+            if not_exported:
                 raise UserError(
                     _(
-                        "The bank has not confirmed success for payment(s): "
-                        "%s. Mark the bank result on the payment export first."
+                        "These payments have not left in an e-payment file yet: "
+                        "%s. Put them in a file and mark it done before "
+                        "confirming the payment."
                     )
-                    % ", ".join(not_success.mapped("name"))
+                    % ", ".join(not_exported.mapped("name"))
                 )
+            # A voucher that travels in a file was confirmed for the bank long
+            # before this; a cheque or cash one may never have been, and confirming
+            # it for a bank it will never reach says nothing this press does not
+            # already imply — so it is done here rather than sent back as an errand.
+            # It is also what gives such a voucher its number.
+            active.filtered(
+                lambda p: p.finance_state == "draft"
+            ).action_confirm_for_bank()
+            active._mark_paid()
             record.state = "paid"
             record.activity_feedback([TO_PAY_ACTIVITY])
+            # Hand the request to the accounting office: one Todo for the request,
+            # because the request is the document KMITL navigates by — not twelve
+            # for twelve payees.
+            record._schedule_payment_todo(TO_BOOK_ACTIVITY, ACCOUNTING_MAKER_GROUP)
         return True
+
+    def action_submit_payments(self):
+        """The accounting maker submits every voucher of a paid request at once.
+
+        Their step is per voucher — correct the booking, then submit — but a request
+        whose vouchers need no correction is the same press repeated, and the request
+        is the document they navigate by. A voucher that does need work is opened
+        from the queue and submitted on its own entry instead.
+
+        Submitting is what asks the approver: ``account.move.action_submit`` puts the
+        Todo in their inbox, so the makers' own Todo on the request is cleared here.
+        """
+        for record in self:
+            if record.state != "paid":
+                raise UserError(
+                    _("Only a request the finance office has paid can be booked.")
+                )
+            active = record.payment_ids.filtered(lambda p: p.state != "cancel")
+            drafts = active.move_id.filtered(lambda move: move.state == "draft")
+            if not drafts:
+                raise UserError(
+                    _("Every voucher of %s is already submitted.") % record.display_name
+                )
+            result = drafts.action_submit()
+            if isinstance(result, dict):
+                # base_exception wants to show a popup, and a queue has nobody to
+                # show it to: report it as the reason this request could not be
+                # booked rather than leaving the vouchers silently in draft.
+                raise UserError(
+                    _(
+                        "%s has vouchers with blocking exceptions. Open the entry "
+                        "and submit it there to see them."
+                    )
+                    % record.display_name
+                )
+            record.activity_feedback([TO_BOOK_ACTIVITY])
+        return True
+
+    def action_submit_payments_batch(self):
+        return self._payment_batch("action_submit_payments", "paid")
 
     def _payment_batch(self, single_method, valid_state):
         """Run a per-record action in isolated savepoints (mirror of

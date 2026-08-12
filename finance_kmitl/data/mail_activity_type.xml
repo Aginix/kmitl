@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+
+    <!-- The Hand-over of a payment voucher that stands on its own (no disbursement
+         request to navigate by): pushed to the accounting office's makers when the
+         finance office confirms it paid. A voucher belonging to a request is
+         announced on the request instead — one Todo for all of its payees. Clears
+         only by acting on the source (submitting the entry), hence
+         todo_category = execution. -->
+    <record id="mail_activity_payment_to_book" model="mail.activity.type">
+        <field name="name">Payment to book</field>
+        <field
+            name="summary"
+        >The finance office paid this voucher — correct the booking and submit it</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">account.move</field>
+        <field name="icon">fa-book</field>
+        <field name="delay_count">0</field>
+    </record>
+
+</odoo>

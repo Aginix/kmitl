@@ -118,10 +118,11 @@ class BankPaymentExport(models.Model):
     def _check_constraint_create_bank_payment_export(self, payments):
         """Replace the base check, which insists on posted Manual payments.
 
-        Deliberately does not call super(): KMITL exports *submitted* payments
-        on the KMITL transfer method, which the base rejects outright. The
-        per-bank rules layered on top would be silenced by that, so they are
-        invoked through their own hook.
+        Deliberately does not call super(): a KMITL file carries vouchers the
+        *finance* office has confirmed for the bank and the accounting office has
+        not booked yet, which the base rejects outright — it expects the entry to
+        be posted first. The per-bank rules layered on top would be silenced by
+        that, so they are invoked through their own hook.
         """
         self._check_bank_specific_constraint(payments)
         self._check_single_paying_account(payments)
@@ -148,9 +149,13 @@ class BankPaymentExport(models.Model):
                 )
             if payment.export_status != "draft":
                 raise UserError(_("Payments have been already exported."))
-            if payment.state != "submitted":
+            if payment.finance_state != "confirmed":
                 raise UserError(
-                    _("You can export bank payments state 'submitted' only")
+                    _(
+                        "%s is not confirmed for the bank, so it may still change "
+                        "and cannot be put in a file."
+                    )
+                    % payment.display_name
                 )
             if previous_currency and payment.currency_id != previous_currency:
                 raise UserError(_("You can export bank payments with 1 currency only."))
@@ -167,14 +172,17 @@ class BankPaymentExport(models.Model):
 
     # -------------------------------------------------------------------------
     def _domain_payment_id(self):
-        """Select submitted KMITL transfer payments (instead of posted Manual
-        ones) when pulling every payment into an export batch."""
+        """Select the KMITL transfer vouchers the finance office has confirmed for
+        the bank (instead of posted Manual ones) when pulling every payment into an
+        export batch. The accounting office has not booked them yet — their own
+        status is still draft, which is why the base's ``state`` leaf is replaced
+        rather than narrowed."""
         domain = super()._domain_payment_id()
         method_transfer_out = self._transfer_payment_method()
         new_domain = []
         for leaf in domain:
             if isinstance(leaf, (list, tuple)) and leaf[0] == "state":
-                new_domain.append(("state", "=", "submitted"))
+                new_domain.append(("finance_state", "=", "confirmed"))
             elif (
                 isinstance(leaf, (list, tuple))
                 and leaf[0] == "payment_method_id"

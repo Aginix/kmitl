@@ -57,7 +57,11 @@
                 <field name="epayment_status" optional="show" />
                 <field name="epayment_ref" optional="hide" />
                 <field name="epayment_date" optional="hide" />
-                <field name="epayment_note" optional="hide" />
+                <!-- Shown by default: this is where the officer writes down how a
+                     payee the bank rejected was actually settled, outside the
+                     system. It stays with the finance office — the accounting
+                     office never opens an e-payment file. -->
+                <field name="epayment_note" optional="show" />
                 <button
                     name="action_mark_epayment_success"
                     type="object"

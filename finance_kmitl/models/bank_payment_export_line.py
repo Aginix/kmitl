@@ -11,14 +11,15 @@ class BankPaymentExportLine(models.Model):
     # -------------------------------------------------------------------------
     @api.model
     def _domain_payment_id(self):
-        """Only KMITL transfer payments awaiting the bank are selectable.
+        """Only KMITL transfer vouchers awaiting the bank are selectable.
 
-        Overrides the base domain three times over: it accepts ``submitted``
-        payments (KMITL exports before posting), keys off the KMITL เงินโอน
-        method instead of Odoo's stock Manual one so cheque and cash payments
-        never end up in an e-payment file, and narrows to the file's own paying
-        account — one file debits one account, so mixing two is prevented while
-        picking rather than rejected afterwards.
+        Overrides the base domain three times over: it keys off the finance
+        office's own status (a KMITL file carries vouchers confirmed for the bank,
+        long before the accounting office posts them), off the KMITL เงินโอน method
+        instead of Odoo's stock Manual one so cheque and cash payments never end up
+        in an e-payment file, and narrows to the file's own paying account — one
+        file debits one account, so mixing two is prevented while picking rather
+        than rejected afterwards.
         """
         method_transfer_out = self.env.ref(
             "account_kmitl.payment_method_transfer_out",
@@ -28,7 +29,7 @@ class BankPaymentExportLine(models.Model):
             return "[('id', '=', 0)]"
         domain = (
             "[('export_status', '=', 'draft'), "
-            "('state', '=', 'submitted'), "
+            "('finance_state', '=', 'confirmed'), "
             "('payment_method_id', '=', %s), "
             "('payment_method_line_id', '=', parent.paying_account_id), "
             "('journal_id.type', '=', 'bank'), "

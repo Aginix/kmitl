@@ -361,6 +361,16 @@ msgstr ""
 "หรือย้ายไปหัวจ่ายแบบเช็คหรือเงินสด"
 
 #. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"These payments have not left in an e-payment file yet: %s. Put them in a file "
+"and mark it done before confirming the payment."
+msgstr ""
+"ใบจ่ายเหล่านี้ยังไม่ได้ส่งออกไปกับไฟล์ e-Payment: %s "
+"กรุณาสร้างไฟล์และปิดงานไฟล์ให้เรียบร้อยก่อนยืนยันจ่ายสำเร็จ"
+
+#. module: disbursement_finance_kmitl
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
 msgid "Total"
 msgstr "รวม"
@@ -392,3 +402,51 @@ msgstr ""
 #: model:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_request_finance
 msgid "ไม่มีใบขอเบิกที่รอทำการจ่ายเงิน"
 msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/account_payment.py:0
+#, python-format
+msgid "These payments are confirmed on their disbursement request, not one by one: %s."
+msgstr "ใบจ่ายเหล่านี้ยืนยันจ่ายสำเร็จที่ใบขอเบิก ไม่ใช่ยืนยันรายใบ: %s"
+
+#. module: disbursement_finance_kmitl
+#: model:mail.activity.type,name:disbursement_finance_kmitl.mail_activity_dr_to_book
+msgid "Disbursement to book"
+msgstr "ใบขอเบิกรอบันทึกบัญชี"
+
+#. module: disbursement_finance_kmitl
+#: model:mail.activity.type,summary:disbursement_finance_kmitl.mail_activity_dr_to_book
+msgid "The finance office paid a disbursement request — book its payment vouchers"
+msgstr "ฝ่ายการเงินจ่ายเงินตามใบขอเบิกนี้ครบแล้ว — กรุณาบันทึกบัญชีใบสำคัญจ่าย"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "Book Disbursement Payments"
+msgstr "ใบขอเบิกรอบันทึกบัญชี"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "Submit"
+msgstr "ส่งอนุมัติ"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "Submit Selected"
+msgstr "ส่งอนุมัติที่เลือก"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+msgid "Only a request the finance office has paid can be booked."
+msgstr "บันทึกบัญชีได้เฉพาะใบขอเบิกที่ฝ่ายการเงินยืนยันจ่ายสำเร็จแล้ว"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Every voucher of %s is already submitted."
+msgstr "ใบสำคัญจ่ายของ %s ส่งอนุมัติไปครบแล้ว"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "%s has vouchers with blocking exceptions. Open the entry and submit it there to see them."
+msgstr "%s มีใบสำคัญที่ติดข้อยกเว้น กรุณาเปิดรายการบันทึกบัญชีแล้วส่งอนุมัติที่นั่นเพื่อดูรายละเอียด"

@@ -792,12 +792,6 @@ msgstr "สรุปภาษีหัก ณ ที่จ่าย"
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/bank_payment_export.py:0
 #, python-format
-msgid "You can export bank payments state 'submitted' only"
-msgstr "สามารถส่งออกรายการจ่ายเงินที่มีสถานะ 'ส่งอนุมัติ' เท่านั้น"
-
-#. module: finance_kmitl
-#: code:addons/finance_kmitl/models/bank_payment_export.py:0
-#, python-format
 msgid "You can export bank payments with 1 currency only."
 msgstr "สามารถส่งออกรายการจ่ายเงินที่มีสกุลเงินเดียวเท่านั้น"
 
@@ -818,3 +812,249 @@ msgstr ""
 #: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_inbound
 msgid "รับเงิน"
 msgstr ""
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__finance_state
+msgid "Finance Status"
+msgstr "สถานะฝั่งการเงิน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__account_payment__finance_state__confirmed
+msgid "Confirmed for the Bank"
+msgstr "พร้อมส่งธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__account_payment__finance_state__paid
+msgid "Paid"
+msgstr "จ่ายสำเร็จ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_account_payment__finance_state
+msgid "สถานะฝั่งการเงิน — where the voucher stands in the finance office's hands, kept apart from the accounting office's own status: a payment voucher stays draft for the accounting office throughout, and only they move it. Confirmed for the Bank freezes the money side, gives the voucher its number and is what an e-payment file may carry; Paid is the finance office's assertion that the money reached the payee, and hands the voucher to the accounting office to book."
+msgstr "สถานะของใบสำคัญจ่ายในมือฝ่ายการเงิน แยกจากสถานะของห้องบัญชี — ใบสำคัญจ่ายเป็นใบร่างของห้องบัญชีตลอดช่วงนี้ และมีแต่ห้องบัญชีที่ขยับได้ พร้อมส่งธนาคาร = ตรึงฝั่งเงิน ออกเลขที่ใบสำคัญ และใส่ในไฟล์ e-Payment ได้ จ่ายสำเร็จ = ฝ่ายการเงินยืนยันว่าเงินถึงมือผู้รับ และส่งมอบใบสำคัญให้ห้องบัญชีบันทึก"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment.py:0
+#, python-format
+msgid "%s is already confirmed for the bank."
+msgstr "%s ยืนยันพร้อมส่งธนาคารไปแล้ว"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment.py:0
+#, python-format
+msgid "Choose the paying account (หัวจ่าย) of %s first."
+msgstr "กรุณาเลือกหัวจ่ายของ %s ก่อน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment.py:0
+msgid "Only a voucher confirmed for the bank can be unconfirmed."
+msgstr "ยกเลิกการยืนยันได้เฉพาะใบสำคัญที่ยืนยันพร้อมส่งธนาคารแล้ว"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment.py:0
+#, python-format
+msgid "%s is already in an e-payment file. Cancel or reject that file first if it has not been sent."
+msgstr "%s อยู่ในไฟล์ e-Payment แล้ว หากยังไม่ได้ส่งธนาคาร กรุณายกเลิกหรือปฏิเสธไฟล์นั้นก่อน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment.py:0
+#, python-format
+msgid "%s has not been confirmed for the bank, so there is nothing to report the outcome of yet."
+msgstr "%s ยังไม่ได้ยืนยันพร้อมส่งธนาคาร จึงยังไม่มีผลการจ่ายให้ยืนยัน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment.py:0
+msgid "%(what)s cannot be changed on %(payment)s: the voucher is already confirmed for the bank, so this is what the bank was told to do. Only the booking (dimensions, operation type, description) may still be corrected."
+msgstr "%(what)s แก้ไขไม่ได้บน %(payment)s: ใบสำคัญนี้ยืนยันพร้อมส่งธนาคารแล้ว ข้อมูลนี้คือสิ่งที่แจ้งธนาคารไป แก้ได้เฉพาะฝั่งบันทึกบัญชี (มิติวิเคราะห์ ประเภทธุรกรรม คำอธิบาย)"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
+#, python-format
+msgid "%s is not confirmed for the bank, so it may still change and cannot be put in a file."
+msgstr "%s ยังไม่ได้ยืนยันพร้อมส่งธนาคาร ยังแก้ไขได้อยู่ จึงยังใส่ในไฟล์ไม่ได้"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_move.py:0
+#, python-format
+msgid "%s cannot be posted: the finance office has not confirmed that the money reached the payee."
+msgstr "%s ลงบัญชีไม่ได้: ฝ่ายการเงินยังไม่ได้ยืนยันว่าเงินถึงมือผู้รับ"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_move_line.py:0
+msgid "Journal items"
+msgstr "รายการบัญชี"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_move_to_book_tree
+msgid "Payment vouchers to book"
+msgstr "ใบจ่ายรอบันทึกบัญชี"
+
+#. module: finance_kmitl
+#: model:mail.activity.type,name:finance_kmitl.mail_activity_payment_to_book
+msgid "Payment to book"
+msgstr "ใบจ่ายรอบันทึกบัญชี"
+
+#. module: finance_kmitl
+#: model:mail.activity.type,summary:finance_kmitl.mail_activity_payment_to_book
+msgid "The finance office paid this voucher — correct the booking and submit it"
+msgstr "ฝ่ายการเงินจ่ายเงินตามใบสำคัญนี้แล้ว — กรุณาตรวจการบันทึกบัญชีแล้วส่งอนุมัติ"
+
+#. module: finance_kmitl
+#: model:ir.actions.client,name:finance_kmitl.action_clearing_queue
+msgid "ใบล้างเจ้าหนี้"
+msgstr ""
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Vendor Clearing Vouchers"
+msgstr "ใบล้างเจ้าหนี้"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "No clearing voucher here."
+msgstr "ไม่มีใบล้างเจ้าหนี้ในมุมมองนี้"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Submit Selected"
+msgstr "ส่งอนุมัติที่เลือก"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Submitted"
+msgstr "ส่งอนุมัติแล้ว"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Accounting Status"
+msgstr "สถานะบัญชี"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Number"
+msgstr "เลขที่"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Date"
+msgstr "วันที่"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Payees"
+msgstr "ผู้รับเงิน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Actions"
+msgstr "การดำเนินการ"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Open"
+msgstr "เปิด"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Submitted By"
+msgstr "ผู้ส่งอนุมัติ"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Account"
+msgstr "บัญชี"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Label"
+msgstr "คำอธิบาย"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Debit"
+msgstr "เดบิต"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Credit"
+msgstr "เครดิต"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Source"
+msgstr "แหล่งเงิน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Fund"
+msgstr "กองทุน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Activity"
+msgstr "กิจกรรม"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Departments"
+msgstr "ส่วนงาน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Sources"
+msgstr "แหล่งเงิน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Funds"
+msgstr "กองทุน"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Activities"
+msgstr "กิจกรรม"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Date From"
+msgstr "ตั้งแต่วันที่"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Date To"
+msgstr "ถึงวันที่"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "More filters"
+msgstr "ตัวกรองเพิ่มเติม"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Hide filters"
+msgstr "ซ่อนตัวกรอง"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "All"
+msgstr "ทั้งหมด"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "To book"
+msgstr "รอบันทึกบัญชี"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Awaiting approval"
+msgstr "รออนุมัติ"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+msgid "Posted"
+msgstr "ลงบัญชีแล้ว"
