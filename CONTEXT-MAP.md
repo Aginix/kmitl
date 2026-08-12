@@ -63,6 +63,11 @@ upfront.
   disbursement keeps it intact (at `signed`) and bounces the approval request to
   `returned`, where the requester corrects a limited set of fields and confirms to push
   them back onto the disbursement.
+- [Disbursement ↔ KMITL Finance](./disbursement_finance_kmitl/CONTEXT.md) — the
+  post-bill payment-execution phase of a disbursement request (audit → authorize → pay →
+  clear); owns the payee-level **รายการจ่ายเงิน** and keeps apart the several records
+  that all sound like "what this payment is" (เรื่องที่จ่าย, ประเภทธุรกรรม,
+  ลักษณะการจ่าย, หัวจ่าย, วิธีจ่าย, ใบสำคัญ).
 - [Advance Payment](./advance_payment/CONTEXT.md) — employee cash-advance loans
   (สัญญายืมเงิน); a single-disbursement loan to one borrower, tracked from request
   through clearing to closure. A borrower may hold only one active agreement at a time,
@@ -83,6 +88,14 @@ upfront.
 - **KMITL Project → Budget**: the project's purchase requests (พ.1) and disbursements
   draw that one shared commitment down (obligate+consume); a project may hold many PRs,
   capped at the commitment (ADR-0007).
+- **Disbursement ↔ Finance (paying account)**: a **หัวจ่าย** is one of Odoo's own
+  `account.payment.method.line` records — bank account × method × voucher × GL — seeded
+  by `account_kmitl` on ใบสำคัญจ่าย (PV) and administered in `finance_kmitl`
+  (`finance_kmitl` ADR-0001). A disbursement picks one **เรื่องที่จ่าย**
+  (`kmitl.payment.subject`), which derives a paying account for every payee, optionally
+  matching each to the account held at their own bank; the auditor overrides individual
+  payees by hand (`disbursement_finance_kmitl` ADR-0002/0003). One e-payment file debits
+  one paying account, and the file's sending account is read from it.
 - **Disbursement / Finance → Accounting Workflow**: disbursement vendor bills and
   payments no longer post directly — their `account.move` enters the approval and is
   posted by Approve. Payment moves additionally keep the finance bank-export gate
@@ -94,8 +107,8 @@ upfront.
   the kept disbursement and moves the AR back to `billed` (`agx_approval_disbursement`
   ADR-0001).
 - **Approval Request ↔ Advance Payment**: once a request is `approved`, each participant
-  who is an internal employee may **pull** their own สัญญายืม and pick the request on the
-  loan form — the request never pushes loans out. A request may back several loans,
+  who is an internal employee may **pull** their own สัญญายืม and pick the request on
+  the loan form — the request never pushes loans out. A request may back several loans,
   capped by its Borrowing Headroom. The loan clears **itself**; an `advance` allocation
   row only _names_ the Funding Loan it was paid from, which need not be the recipient's
   own. No cancellation cascades in either direction (`agx_approval` ADR-0003). Budget

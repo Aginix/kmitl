@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <!-- Inherit account.payment form: add Submit button, update statusbar -->
     <record id="view_account_payment_form_inherit" model="ir.ui.view">
         <field name="name">account.payment.form.inherit.kmitl</field>
         <field name="model">account.payment</field>
-        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="inherit_id" ref="account.view_account_payment_form" />
         <field name="arch" type="xml">
 
             <!-- Hide Confirm (action_post) - posting is done from account.move -->
@@ -15,16 +15,63 @@
 
             <!-- Add Submit button before the hidden Confirm -->
             <xpath expr="//button[@name='action_post']" position="before">
-                <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" data-hotkey="v" />
+                <button
+                    name="action_submit"
+                    string="Submit"
+                    type="object"
+                    class="oe_highlight"
+                    attrs="{'invisible': [('state', '!=', 'draft')]}"
+                    data-hotkey="v"
+                />
+                <!-- A cheque or cash payment never enters an e-payment file, so
+                     nothing reports its result back: finance says so by hand. -->
+                <button
+                    name="action_mark_bank_result_success"
+                    string="Confirm Paid"
+                    type="object"
+                    class="btn-success"
+                    attrs="{'invisible': ['|', '|', ('state', '!=', 'submitted'), ('needs_bank_export', '=', True), ('bank_result_status', '=', 'success')]}"
+                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                />
+                <button
+                    name="action_mark_bank_result_failed"
+                    string="Payment Failed"
+                    type="object"
+                    attrs="{'invisible': ['|', '|', ('state', '!=', 'submitted'), ('needs_bank_export', '=', True), ('bank_result_status', '=', 'failed')]}"
+                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                />
+            </xpath>
+
+            <!-- Paying account (หัวจ่าย) — the money side. Core labels it
+                 "Payment Method"; here it names the bank account, the method and
+                 the voucher all at once, so it is worth its own label. -->
+            <xpath expr="//field[@name='payment_method_line_id']" position="attributes">
+                <attribute name="string">Paying Account</attribute>
+                <attribute
+                    name="options"
+                >{'no_create': True, 'no_open': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='payment_method_line_id']" position="after">
+                <field name="needs_bank_export" invisible="1" />
+                <field
+                    name="bank_result_status"
+                    readonly="1"
+                    attrs="{'invisible': [('bank_result_status', '=', False)]}"
+                />
             </xpath>
 
             <!-- Update Reset to Draft to also work from submitted -->
             <xpath expr="//button[@name='action_draft']" position="attributes">
-                <attribute name="attrs">{'invisible': [('state', 'not in', ('posted', 'cancel', 'submitted'))]}</attribute>
+                <attribute
+                    name="attrs"
+                >{'invisible': [('state', 'not in', ('posted', 'cancel', 'submitted'))]}</attribute>
             </xpath>
 
             <!-- Update statusbar to show submitted -->
-            <xpath expr="//field[@name='state'][@widget='statusbar']" position="attributes">
+            <xpath
+                expr="//field[@name='state'][@widget='statusbar']"
+                position="attributes"
+            >
                 <attribute name="statusbar_visible">draft,submitted,posted</attribute>
             </xpath>
 
@@ -39,7 +86,10 @@
             </xpath>
 
             <!-- Hide bank_payment_template_id (from l10n_th_bank_payment_export) -->
-            <xpath expr="//field[@name='bank_payment_template_id']" position="attributes">
+            <xpath
+                expr="//field[@name='bank_payment_template_id']"
+                position="attributes"
+            >
                 <attribute name="invisible">1</attribute>
             </xpath>
 
@@ -65,49 +115,91 @@
 
             <!-- Lock Memo once the payment leaves draft -->
             <xpath expr="//field[@name='ref']" position="attributes">
-                <attribute name="attrs">{'readonly': [('state', '!=', 'draft')]}</attribute>
+                <attribute
+                    name="attrs"
+                >{'readonly': [('state', '!=', 'draft')]}</attribute>
             </xpath>
 
             <!-- Add KMITL payment type where payment_type was -->
             <xpath expr="//field[@name='payment_type']" position="after">
-                <field name="kmitl_payment_type_id" domain="[('direction', '=', payment_type)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                <field
+                    name="kmitl_payment_type_id"
+                    domain="[('direction', '=', payment_type)]"
+                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                />
             </xpath>
 
             <!-- Rename partner_id labels: Customer -> Payer (inbound), Vendor -> Payee (outbound).
                  Selector cannot use @string (translated attr is forbidden); match via @attrs which
                  contains the discriminating partner_type value. -->
-            <xpath expr="//field[@name='partner_id'][contains(@attrs, 'customer')]" position="attributes">
+            <xpath
+                expr="//field[@name='partner_id'][contains(@attrs, 'customer')]"
+                position="attributes"
+            >
                 <attribute name="string">Payer</attribute>
             </xpath>
-            <xpath expr="//field[@name='partner_id'][contains(@attrs, 'supplier')]" position="attributes">
+            <xpath
+                expr="//field[@name='partner_id'][contains(@attrs, 'supplier')]"
+                position="attributes"
+            >
                 <attribute name="string">Payee</attribute>
             </xpath>
 
             <!-- Rename partner_bank_id labels accordingly -->
-            <xpath expr="//field[@name='partner_bank_id'][contains(@attrs, 'customer')]" position="attributes">
+            <xpath
+                expr="//field[@name='partner_bank_id'][contains(@attrs, 'customer')]"
+                position="attributes"
+            >
                 <attribute name="string">Payer Bank Account</attribute>
-                <attribute name="attrs">{'invisible': ['|', '|', '|', ('show_partner_bank_account', '=', False), ('partner_type', '!=', 'customer'), ('is_internal_transfer', '=', True), ('payment_type', '=', 'inbound')], 'required': [('require_partner_bank_account', '=', True), ('is_internal_transfer', '=', False)], 'readonly': [('state', '!=', 'draft')]}</attribute>
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', '|', '|', ('show_partner_bank_account', '=', False), ('partner_type', '!=', 'customer'), ('is_internal_transfer', '=', True), ('payment_type', '=', 'inbound')], 'required': [('require_partner_bank_account', '=', True), ('is_internal_transfer', '=', False)], 'readonly': [('state', '!=', 'draft')]}</attribute>
             </xpath>
-            <xpath expr="//field[@name='partner_bank_id'][contains(@attrs, 'supplier')]" position="attributes">
+            <xpath
+                expr="//field[@name='partner_bank_id'][contains(@attrs, 'supplier')]"
+                position="attributes"
+            >
                 <attribute name="string">Payee Bank Account</attribute>
-                <attribute name="attrs">{'invisible': ['|', '|', '|', ('show_partner_bank_account', '=', False), ('partner_type', '!=', 'supplier'), ('is_internal_transfer', '=', True), ('payment_type', '=', 'inbound')], 'required': [('require_partner_bank_account', '=', True), ('is_internal_transfer', '=', False)], 'readonly': [('state', '!=', 'draft')]}</attribute>
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', '|', '|', ('show_partner_bank_account', '=', False), ('partner_type', '!=', 'supplier'), ('is_internal_transfer', '=', True), ('payment_type', '=', 'inbound')], 'required': [('require_partner_bank_account', '=', True), ('is_internal_transfer', '=', False)], 'readonly': [('state', '!=', 'draft')]}</attribute>
             </xpath>
 
             <!-- Move partner_bank_id directly under partner_id (per direction) -->
-            <xpath expr="//field[@name='partner_id'][contains(@attrs, 'customer')]" position="after">
-                <xpath expr="//field[@name='partner_bank_id'][contains(@attrs, 'customer')]" position="move"/>
+            <xpath
+                expr="//field[@name='partner_id'][contains(@attrs, 'customer')]"
+                position="after"
+            >
+                <xpath
+                    expr="//field[@name='partner_bank_id'][contains(@attrs, 'customer')]"
+                    position="move"
+                />
             </xpath>
-            <xpath expr="//field[@name='partner_id'][contains(@attrs, 'supplier')]" position="after">
-                <xpath expr="//field[@name='partner_bank_id'][contains(@attrs, 'supplier')]" position="move"/>
+            <xpath
+                expr="//field[@name='partner_id'][contains(@attrs, 'supplier')]"
+                position="after"
+            >
+                <xpath
+                    expr="//field[@name='partner_bank_id'][contains(@attrs, 'supplier')]"
+                    position="move"
+                />
             </xpath>
 
             <!-- Withholding tax breakdown (shown only when the payment has WHT) -->
             <xpath expr="//group[@name='group2']/.." position="after">
-                <group string="Withholding Tax Summary" name="wht_summary"
-                       attrs="{'invisible': [('amount_wht', '=', 0)]}">
-                    <field name="amount_before_wht"/>
-                    <field name="amount_wht"/>
-                    <field name="amount" string="Net Amount Paid" readonly="1" force_save="1"/>
+                <group
+                    string="Withholding Tax Summary"
+                    name="wht_summary"
+                    attrs="{'invisible': [('amount_wht', '=', 0)]}"
+                >
+                    <field name="amount_before_wht" />
+                    <field name="amount_wht" />
+                    <field
+                        name="amount"
+                        string="Net Amount Paid"
+                        readonly="1"
+                        force_save="1"
+                    />
                 </group>
             </xpath>
 
@@ -116,11 +208,39 @@
                 <notebook>
                     <page string="Accounting Dimensions" name="budget">
                         <group string="Accounting Dimensions" name="budget_info">
-                            <field name="analytic_distribution" widget="analytic_distribution" invisible="1"/>
-                            <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="department_analytic_id" domain="[('plan_id.code', '=', 'departments')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field
+                                name="analytic_distribution"
+                                widget="analytic_distribution"
+                                invisible="1"
+                            />
+                            <field
+                                name="activity_analytic_id"
+                                domain="[('plan_id.code', '=', 'activities')]"
+                                options="{'no_create': True}"
+                                required="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="department_analytic_id"
+                                domain="[('plan_id.code', '=', 'departments')]"
+                                options="{'no_create': True}"
+                                required="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="fund_analytic_id"
+                                domain="[('plan_id.code', '=', 'funds')]"
+                                options="{'no_create': True}"
+                                required="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="source_analytic_id"
+                                domain="[('plan_id.code', '=', 'sources')]"
+                                options="{'no_create': True}"
+                                required="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
                         </group>
                     </page>
                 </notebook>
@@ -128,9 +248,18 @@
 
             <!-- Smart button: cheques linked to this payment in the register -->
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_view_cheque_register" type="object" class="oe_stat_button" icon="fa-credit-card"
-                    attrs="{'invisible': [('cheque_register_count', '=', 0)]}">
-                    <field name="cheque_register_count" widget="statinfo" string="Cheques"/>
+                <button
+                    name="action_view_cheque_register"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-credit-card"
+                    attrs="{'invisible': [('cheque_register_count', '=', 0)]}"
+                >
+                    <field
+                        name="cheque_register_count"
+                        widget="statinfo"
+                        string="Cheques"
+                    />
                 </button>
             </xpath>
 
@@ -141,10 +270,10 @@
     <record id="view_account_payment_tree_inherit" model="ir.ui.view">
         <field name="name">account.payment.tree.inherit.kmitl</field>
         <field name="model">account.payment</field>
-        <field name="inherit_id" ref="account.view_account_payment_tree"/>
+        <field name="inherit_id" ref="account.view_account_payment_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="kmitl_payment_type_id" optional="hide"/>
+                <field name="kmitl_payment_type_id" optional="hide" />
             </xpath>
         </field>
     </record>

@@ -5,6 +5,7 @@ from . import account_move
 from . import bank_payment_export
 from . import bank_payment_export_line
 from . import kmitl_payment_type
+from . import kmitl_payment_subject
 from . import cheque_layout
 from . import cheque_register
 from . import account_journal

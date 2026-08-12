@@ -1,10 +1,10 @@
 /** @odoo-module **/
 
-import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
-import { _t } from "@web/core/l10n/translation";
-import { Component, useState, onWillStart } from "@odoo/owl";
-import { MultiRecordSelect } from "@accounting_kmitl_workflow/approval_queue/multi_record_select";
+import {registry} from "@web/core/registry";
+import {useService} from "@web/core/utils/hooks";
+import {_t} from "@web/core/l10n/translation";
+import {Component, useState, onWillStart} from "@odoo/owl";
+import {MultiRecordSelect} from "@accounting_kmitl_workflow/approval_queue/multi_record_select";
 
 const DR_FIELDS = [
     "name",
@@ -17,6 +17,11 @@ const DR_FIELDS = [
     "activity_analytic_id",
     "bill_count",
     "payment_status_display",
+    // Shown so the auditor can see which requests are still missing the
+    // เรื่องที่จ่าย that gives every payee its paying account — auditing one
+    // without it is refused, and a batch would otherwise fail row by row with
+    // no way to tell in advance.
+    "payment_subject_id",
 ];
 
 // Filter buckets backed by the MultiRecordSelect widget -> DR field.
@@ -84,6 +89,7 @@ export class DisbursementPaymentQueue extends Component {
             partner: _t("Partner"),
             amount: _t("Net Amount"),
             bills: _t("Bills"),
+            subject: _t("Payment Subject"),
             payment: _t("Payment"),
             actions: _t("Actions"),
             open: _t("Open"),
@@ -101,7 +107,7 @@ export class DisbursementPaymentQueue extends Component {
                 "account.fiscal.year",
                 [],
                 ["id", "name", "date_from", "date_to"],
-                { order: "date_from desc" }
+                {order: "date_from desc"}
             );
             await this.load();
         });
@@ -130,7 +136,7 @@ export class DisbursementPaymentQueue extends Component {
             "disbursement.request",
             this.domain,
             DR_FIELDS,
-            { order: "date desc, id desc" }
+            {order: "date desc, id desc"}
         );
         const ids = this.state.records.map((record) => record.id);
         this.state.selectedIds = this.state.selectedIds.filter((id) =>
@@ -180,10 +186,8 @@ export class DisbursementPaymentQueue extends Component {
     }
 
     async approve(record) {
-        await this.orm.call("disbursement.request", this.approveMethod, [
-            [record.id],
-        ]);
-        this.notification.add(_t("Done"), { type: "success" });
+        await this.orm.call("disbursement.request", this.approveMethod, [[record.id]]);
+        this.notification.add(_t("Done"), {type: "success"});
         await this.load();
     }
 
@@ -191,11 +195,9 @@ export class DisbursementPaymentQueue extends Component {
         if (!this.state.selectedIds.length) {
             return;
         }
-        const action = await this.orm.call(
-            "disbursement.request",
-            this.batchMethod,
-            [this.state.selectedIds]
-        );
+        const action = await this.orm.call("disbursement.request", this.batchMethod, [
+            this.state.selectedIds,
+        ]);
         if (action) {
             await this.action.doAction(action);
         }
@@ -241,7 +243,7 @@ export class DisbursementPaymentQueue extends Component {
 }
 
 DisbursementPaymentQueue.template = "disbursement_finance_kmitl.PaymentQueue";
-DisbursementPaymentQueue.components = { MultiRecordSelect };
+DisbursementPaymentQueue.components = {MultiRecordSelect};
 DisbursementPaymentQueue.props = ["*"];
 
 registry
