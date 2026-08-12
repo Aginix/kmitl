@@ -95,6 +95,26 @@ class AccountPayment(models.Model):
                 and code not in ("kmitl_cheque", "kmitl_cash")
             )
 
+    @api.model
+    def _get_method_codes_using_bank_account(self):
+        """KMITL settles by its own methods, so core never shows the bank account.
+
+        Core looks for the ``manual`` method to decide whether the recipient
+        bank account is worth displaying; every KMITL payment carries one of its
+        own codes instead, so the account number stayed hidden even though a
+        transfer cannot leave without one.
+        """
+        return super()._get_method_codes_using_bank_account() + ["kmitl_transfer"]
+
+    @api.model
+    def _get_method_codes_needing_bank_account(self):
+        """Only a transfer needs an account number.
+
+        A cheque is handed over and cash is paid at the counter, so neither can
+        be held back for the want of a bank account.
+        """
+        return super()._get_method_codes_needing_bank_account() + ["kmitl_transfer"]
+
     def write(self, vals):
         """Repoint the money line when the paying account changes.
 
@@ -211,11 +231,17 @@ class AccountPayment(models.Model):
         instead of some staying unnamed ("Draft") until they are posted
         (the native name is only assigned for the first move of a period
         while it is unposted).
+
+        The amount is guarded here rather than on save: a monetary field cannot
+        be made required (zero is a value), and an officer filling a payment in
+        must be free to keep the draft before the figure is known.
         """
         for payment in self:
             move = payment.move_id
             if move.state != "draft":
                 raise UserError(_("Only draft payments can be submitted."))
+            if payment.currency_id.is_zero(payment.amount) or payment.amount < 0:
+                raise UserError(_("The amount must be greater than zero."))
             move.state = "submitted"
             # Payment moves do not flow through account.move.action_submit, so
             # enrol them in the approval workflow explicitly (step 1).

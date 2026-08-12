@@ -131,18 +131,28 @@
 
             <!-- Rename partner_id labels: Customer -> Payer (inbound), Vendor -> Payee (outbound).
                  Selector cannot use @string (translated attr is forbidden); match via @attrs which
-                 contains the discriminating partner_type value. -->
+                 contains the discriminating partner_type value — so the rewritten attrs below must
+                 keep that value too, for the xpaths further down to still find these fields.
+                 There is no money to move without someone to move it to, hence required. Both
+                 direction nodes carry it: a duplicated field takes its modifiers from the last
+                 node, so requiring it on only one of them would be undone by the other. -->
             <xpath
                 expr="//field[@name='partner_id'][contains(@attrs, 'customer')]"
                 position="attributes"
             >
                 <attribute name="string">Payer</attribute>
+                <attribute
+                    name="attrs"
+                >{'readonly': [('state', '!=', 'draft')], 'invisible': ['|', ('partner_type', '!=', 'customer'), ('is_internal_transfer', '=', True)], 'required': [('is_internal_transfer', '=', False)]}</attribute>
             </xpath>
             <xpath
                 expr="//field[@name='partner_id'][contains(@attrs, 'supplier')]"
                 position="attributes"
             >
                 <attribute name="string">Payee</attribute>
+                <attribute
+                    name="attrs"
+                >{'readonly': [('state', '!=', 'draft')], 'invisible': ['|', ('partner_type', '!=', 'supplier'), ('is_internal_transfer', '=', True)], 'required': [('is_internal_transfer', '=', False)]}</attribute>
             </xpath>
 
             <!-- Rename partner_bank_id labels accordingly -->
