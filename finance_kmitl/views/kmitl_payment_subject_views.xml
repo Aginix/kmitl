@@ -51,17 +51,20 @@
                             />
                         </group>
                     </group>
-                    <group string="Allowed Paying Accounts" name="allowed">
-                        <field name="allowed_paying_account_ids" nolabel="1">
-                            <tree>
-                                <field name="name" />
-                                <field name="payment_method_id" />
-                                <field name="bank_id" />
-                                <field name="acc_number" />
-                                <field name="payment_account_id" />
-                            </tree>
-                        </field>
-                    </group>
+                    <!-- Straight in the sheet rather than inside a group: a
+                         group lays its children out in label/field cells, which
+                         squeezes a five-column list into a fraction of the width
+                         and cuts the account number and GL account off. -->
+                    <separator string="Allowed Paying Accounts" name="allowed" />
+                    <field name="allowed_paying_account_ids">
+                        <tree>
+                            <field name="name" />
+                            <field name="payment_method_id" />
+                            <field name="bank_id" />
+                            <field name="acc_number" />
+                            <field name="payment_account_id" />
+                        </tree>
+                    </field>
                 </sheet>
             </form>
         </field>

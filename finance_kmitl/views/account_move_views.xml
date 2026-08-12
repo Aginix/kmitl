@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- The accounting maker's worklist: payment vouchers the finance office has
+         finished with and nobody has booked yet. Without it a handed-over voucher
+         is one draft entry among all the other draft entries. Both kinds are here
+         — from a disbursement request and made by hand — so nothing falls between
+         the two ways they are announced. -->
+    <record id="view_account_move_to_book_tree" model="ir.ui.view">
+        <field name="name">account.move.to.book.tree</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <tree
+                string="Payment vouchers to book"
+                create="false"
+                default_order="date asc, name asc"
+            >
+                <field name="name" />
+                <field name="date" />
+                <field name="journal_id" />
+                <field name="partner_id" string="Payee" />
+                <field name="ref" optional="show" />
+                <field name="amount_total" sum="Total" string="Amount" />
+                <field name="payment_id" optional="hide" />
+                <field name="currency_id" invisible="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_account_move_to_book" model="ir.actions.act_window">
+        <field name="name">ใบจ่ายรอบันทึกบัญชี</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_account_move_to_book_tree" />
+        <field
+            name="domain"
+        >[('payment_id', '!=', False), ('payment_id.finance_state', '=', 'paid'), ('state', '=', 'draft')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ไม่มีใบจ่ายที่รอบันทึกบัญชี
+            </p>
+            <p>
+                ใบสำคัญจ่ายที่ฝ่ายการเงินยืนยันจ่ายสำเร็จแล้ว รอผู้จัดทำตรวจมิติ/ประเภทธุรกรรม แล้วส่งอนุมัติ
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_account_move_to_book"
+        name="ใบจ่ายรอบันทึกบัญชี"
+        parent="accounting_kmitl.menu_accounting_root"
+        action="action_account_move_to_book"
+        sequence="22"
+        groups="accounting_kmitl.group_accounting_kmitl_user"
+    />
+
+</odoo>

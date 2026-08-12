@@ -123,17 +123,23 @@ class AccountMove(models.Model):
     # ------------------------------------------------------------------
     # Workflow actions
     # ------------------------------------------------------------------
-    def action_submit(self):
-        """Step 1: lock the entry and request approval (ผู้จัดทำ/ผู้ตรวจสอบ).
+    def _check_submit_allowed(self):
+        """Only the creator may submit an entry; administrators may submit any.
 
-        Only the creator may submit an entry; administrators may submit any.
+        Its own method so that an entry with no accounting author can be exempted
+        without reopening the rule for everything else — a payment voucher handed
+        over by another office is one (``finance_kmitl``).
         """
-        if not self.env.is_admin():
-            for move in self:
-                if move.create_uid.id != self.env.uid:
-                    raise UserError(
-                        _("Only the creator of this entry can submit it.")
-                    )
+        if self.env.is_admin():
+            return True
+        for move in self:
+            if move.create_uid.id != self.env.uid:
+                raise UserError(_("Only the creator of this entry can submit it."))
+        return True
+
+    def action_submit(self):
+        """Step 1: lock the entry and request approval (ผู้จัดทำ/ผู้ตรวจสอบ)."""
+        self._check_submit_allowed()
         res = super().action_submit()
         self.write(
             {

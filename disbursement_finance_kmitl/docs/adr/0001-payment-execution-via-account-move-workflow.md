@@ -56,6 +56,8 @@ The DR lifecycle becomes a single linear chain:
 - Clean segregation of duties: finance executes (create/export/confirm),
   accounting records (post/clear).
 - `finance_kmitl`'s auto-reconcile-on-post is kept unchanged.
-- A DR payment sits in the accounting `account.move` approval queue from the
+- ~~A DR payment sits in the accounting `account.move` approval queue from the
   moment finance submits it (needed for export); the guard prevents it from
-  being posted before finance confirms the bank result.
+  being posted before finance confirms the bank result.~~ **Revised by ADR-0004:**
+  the queue showed the accounting office vouchers it could not post. A payment
+  now enters the queue only at the Hand-over (the request reaching `paid`).

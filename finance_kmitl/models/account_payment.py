@@ -3,6 +3,32 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+# The facts the bank acted on. Frozen the moment the voucher is confirmed for the
+# bank: changing any of them afterwards makes the record disagree with what the
+# bank was told to do, and the accounting entry would then book something that
+# never happened.
+#
+# ``date`` is one of them. There is a single date field and it is both the day the
+# money left and the accounting period, so freezing it is what keeps the
+# withholding-tax certificate and the ภ.ง.ด. filing in the month the payment was
+# actually made — an entry is always booked in the period the money left.
+#
+# What is *not* here is the booking side: the analytic distribution, the reference,
+# the attachments and the operation type (and through it the counterpart account).
+# That side is the accounting maker's to correct, which is the whole reason their
+# office has a maker step. See ``disbursement_finance_kmitl`` ADR-0005.
+MONEY_FIELDS = (
+    "amount",
+    "partner_id",
+    "partner_bank_id",
+    "payment_method_line_id",
+    "currency_id",
+    "payment_type",
+    "partner_type",
+    "journal_id",
+    "date",
+)
+
 
 class AccountPayment(models.Model):
     _inherit = "account.payment"
@@ -36,6 +62,26 @@ class AccountPayment(models.Model):
         "withholding tax).",
     )
 
+    finance_state = fields.Selection(
+        selection=[
+            ("draft", "Draft"),
+            ("confirmed", "Confirmed for the Bank"),
+            ("paid", "Paid"),
+        ],
+        string="Finance Status",
+        default="draft",
+        required=True,
+        copy=False,
+        tracking=True,
+        index=True,
+        help="สถานะฝั่งการเงิน — where the voucher stands in the finance office's "
+        "hands, kept apart from the accounting office's own status: a payment "
+        "voucher stays draft for the accounting office throughout, and only they "
+        "move it. Confirmed for the Bank freezes the money side, gives the voucher "
+        "its number and is what an e-payment file may carry; Paid is the finance "
+        "office's assertion that the money reached the payee, and hands the voucher "
+        "to the accounting office to book.",
+    )
     bank_result_status = fields.Selection(
         selection=[
             ("pending", "Pending"),
@@ -45,10 +91,10 @@ class AccountPayment(models.Model):
         string="Bank Result",
         copy=False,
         tracking=True,
-        help="Result reported by the bank for this outbound e-payment. Set "
-        "from the bank payment export line once the bank confirms the "
-        "transfer succeeded or failed. Cheque and cash payments never enter an "
-        "export, so the finance office confirms those by hand.",
+        help="ผลการจ่าย — the outcome as the finance office noted it for this "
+        "voucher. Nothing gates on it: the bank's own result file is never "
+        "imported into Odoo, so what the system acts on is the finance office's "
+        "assertion in Finance Status, and this is one more note beside it.",
     )
     is_cheque_payment = fields.Boolean(
         compute="_compute_settlement",
@@ -96,7 +142,8 @@ class AccountPayment(models.Model):
             )
 
     def write(self, vals):
-        """Repoint the money line when the paying account changes.
+        """Guard the money side, and repoint the money line when the paying
+        account changes.
 
         ``payment_method_line_id`` is deliberately not a synchronisation trigger
         (rebuilding the move recreates the withholding-tax write-off lines from
@@ -107,19 +154,165 @@ class AccountPayment(models.Model):
         line, so looking it up then finds nothing and the correction silently
         does nothing.
         """
-        if "payment_method_line_id" not in vals:
-            return super().write(vals)
-        liquidity_lines = {
-            payment.id: payment._seek_for_lines()[0]
-            for payment in self
-            if payment.move_id.state not in ("posted", "cancel")
-        }
+        money = [name for name in vals if name in MONEY_FIELDS]
+        if money and not self.env.context.get("skip_account_move_synchronization"):
+            self._check_money_side_open(
+                ", ".join(
+                    description["string"]
+                    for description in self.fields_get(money, ["string"]).values()
+                )
+            )
+        liquidity_lines = {}
+        if "payment_method_line_id" in vals:
+            liquidity_lines = {
+                payment.id: payment._seek_for_lines()[0]
+                for payment in self
+                if payment.move_id.state not in ("posted", "cancel")
+            }
         res = super().write(vals)
         for payment in self:
             lines = liquidity_lines.get(payment.id)
             if lines and payment.outstanding_account_id:
                 lines.write({"account_id": payment.outstanding_account_id.id})
         return res
+
+    def _check_money_side_open(self, what):
+        """Refuse to change what the bank already acted on.
+
+        The money side is open only while the voucher is the finance office's own
+        draft. From the moment it is confirmed for the bank it is either in a file,
+        at the bank, or booked — and in all three the record has to keep saying what
+        was actually instructed. The booking side is untouched by this: the
+        accounting maker corrects that after the money has left, which is what
+        their step exists for.
+
+        ``what`` is the label of whatever is being changed, built by the caller
+        from its own model, so the message names the field the person just edited
+        rather than the guard's own vocabulary.
+        """
+        for payment in self:
+            if payment.finance_state == "draft":
+                continue
+            raise UserError(
+                _(
+                    "%(what)s cannot be changed on %(payment)s: the voucher is "
+                    "already confirmed for the bank, so this is what the bank was "
+                    "told to do. Only the booking (dimensions, operation type, "
+                    "description) may still be corrected.",
+                    what=what,
+                    payment=payment.display_name,
+                )
+            )
+        return True
+
+    # -------------------------------------------------------------------------
+    # The finance office's own lifecycle (ADR-0005)
+    # -------------------------------------------------------------------------
+    def action_confirm_for_bank(self):
+        """ยืนยันพร้อมส่งธนาคาร — the finance office's first press.
+
+        Freezes the money side and gives the voucher its ใบสำคัญจ่าย number, which
+        together are what an e-payment file needs: a file may only carry vouchers
+        that can no longer change underneath it, and a row referring to an
+        unnumbered payment reads as "Draft Payment" in the file.
+
+        It asks the accounting office nothing — their own status is untouched and
+        the voucher stays their draft until the Hand-over.
+        """
+        for payment in self:
+            if payment.finance_state != "draft":
+                raise UserError(
+                    _("%s is already confirmed for the bank.") % payment.display_name
+                )
+            if not payment.payment_method_line_id:
+                raise UserError(
+                    _("Choose the paying account (หัวจ่าย) of %s first.")
+                    % payment.display_name
+                )
+            payment.finance_state = "confirmed"
+            move = payment.move_id
+            if move.date and (not move.name or move.name == "/"):
+                move._set_next_sequence()
+        return True
+
+    def action_unconfirm(self):
+        """Take a voucher back off the bank's desk while nothing has been sent.
+
+        The money side is frozen because the bank was told what to do; until the
+        voucher is actually in a file there is nothing to protect, so a correction
+        is a correction rather than a contradiction. Once it is in a file the way
+        back is closed — and after the Hand-over there is none at all: the phase is
+        forward-only, and a confirmation given by mistake is corrected in the books.
+        """
+        for payment in self:
+            if payment.finance_state != "confirmed":
+                raise UserError(
+                    _("Only a voucher confirmed for the bank can be unconfirmed.")
+                )
+            if payment.export_status != "draft":
+                raise UserError(
+                    _(
+                        "%s is already in an e-payment file. Cancel or reject that "
+                        "file first if it has not been sent."
+                    )
+                    % payment.display_name
+                )
+            payment.finance_state = "draft"
+        return True
+
+    def _mark_paid(self):
+        """Move the vouchers to paid — the Hand-over itself.
+
+        Shared by a payment confirming itself and by a disbursement request
+        confirming all of its at once, so the two cannot mean different things.
+        """
+        for payment in self:
+            if payment.finance_state != "confirmed":
+                raise UserError(
+                    _(
+                        "%s has not been confirmed for the bank, so there is "
+                        "nothing to report the outcome of yet."
+                    )
+                    % payment.display_name
+                )
+        self.write({"finance_state": "paid"})
+        return True
+
+    def action_confirm_paid(self):
+        """ยืนยันจ่ายสำเร็จ — the finance office's assertion that the money reached
+        the payee, for a voucher that stands on its own.
+
+        The bank's result file never enters Odoo, so this press is the only thing
+        that knows. A voucher belonging to a disbursement request is confirmed on
+        the request instead, one press for all of its payees.
+        """
+        self._mark_paid()
+        self._handover_to_accounting()
+        return True
+
+    def _handover_to_accounting(self):
+        """Put the voucher in the accounting office's inbox.
+
+        Only for a voucher that stands on its own. Work on a disbursement request
+        reaches them through the request, which is the document KMITL navigates by
+        — one Todo for the request rather than one per payee.
+        """
+        activity = self.env.ref(
+            "finance_kmitl.mail_activity_payment_to_book", raise_if_not_found=False
+        )
+        makers = self.env.ref(
+            "accounting_kmitl.group_accounting_kmitl_user", raise_if_not_found=False
+        )
+        if not activity or not makers:
+            return False
+        for payment in self:
+            for maker in makers.users:
+                payment.move_id.activity_schedule(
+                    "finance_kmitl.mail_activity_payment_to_book",
+                    user_id=maker.id,
+                    note=payment.display_name,
+                )
+        return True
 
     def action_mark_bank_result_success(self):
         """Finance confirms by hand that a cheque or cash payment was paid.
@@ -203,28 +396,6 @@ class AccountPayment(models.Model):
                 ).reconcile()
             payment.to_reconcile_payment_line_ids = False
 
-    def action_submit(self):
-        """Submit payment without triggering tier validation.
-
-        Validation is triggered after bank export, not on submit. Assign the
-        move sequence on submit so every payment gets a number immediately,
-        instead of some staying unnamed ("Draft") until they are posted
-        (the native name is only assigned for the first move of a period
-        while it is unposted).
-        """
-        for payment in self:
-            move = payment.move_id
-            if move.state != "draft":
-                raise UserError(_("Only draft payments can be submitted."))
-            move.state = "submitted"
-            # Payment moves do not flow through account.move.action_submit, so
-            # enrol them in the approval workflow explicitly (step 1).
-            move.workflow_state = "to_approve"
-            move.submitted_by = self.env.user
-            move.submitted_date = fields.Datetime.now()
-            if move.date and (not move.name or move.name == "/"):
-                move._set_next_sequence()
-
     @api.onchange("kmitl_payment_type_id")
     def _onchange_kmitl_payment_type_id(self):
         """The operation type only proposes its voucher.
@@ -271,6 +442,57 @@ class AccountPayment(models.Model):
             writeoff_lines = new_writeoff
         return liquidity_lines, counterpart_lines, writeoff_lines
 
+    def _write_off_line_vals(self, line):
+        """The full create values of a write-off line.
+
+        Core's rebuild keeps the amount and throws away everything the line
+        *means*; this keeps the withholding-tax identity with it.
+        """
+        return {
+            "name": line.name,
+            "account_id": line.account_id.id,
+            "partner_id": line.partner_id.id,
+            "currency_id": line.currency_id.id,
+            "amount_currency": line.amount_currency,
+            "balance": line.balance,
+            "wht_tax_id": line.wht_tax_id.id,
+            "tax_base_amount": line.tax_base_amount,
+        }
+
+    def _synchronize_to_moves(self, changed_fields):
+        """Rebuild the entry without losing the withholding tax.
+
+        Core preserves only the *amount* of the write-off lines: it merges them
+        into a single dict of name/account/partner/currency taken from the first
+        one, deletes the real lines and re-creates from that. Two WHT deductions
+        therefore come back as one anonymous line, and ``wht_tax_id`` /
+        ``tax_base_amount`` — the fields the WHT certificate and the ภ.ง.ด. report
+        are made of — are gone.
+
+        This matters now that the accounting maker corrects the operation type
+        *after* the money has left (ADR-0005): the rebuild that used to be
+        theoretical is a normal step. Rather than reimplement core's rebuild, the
+        richer per-line values are stashed for ``_prepare_move_line_default_vals``
+        to use in place of the poorer ones core computes — same flow, one
+        substitution, and the counterpart amount is unchanged because the sums are
+        equal either way.
+        """
+        if self.env.context.get("skip_account_move_synchronization") or not any(
+            name in changed_fields for name in self._get_trigger_fields_to_synchronize()
+        ):
+            return super()._synchronize_to_moves(changed_fields)
+        preserved = {}
+        for payment in self:
+            write_off_lines = payment._seek_for_lines()[2].filtered("wht_tax_id")
+            if write_off_lines:
+                preserved[payment.id] = [
+                    payment._write_off_line_vals(line) for line in write_off_lines
+                ]
+        if not preserved:
+            return super()._synchronize_to_moves(changed_fields)
+        records = self.with_context(kmitl_preserved_write_off=preserved)
+        return super(AccountPayment, records)._synchronize_to_moves(changed_fields)
+
     def _prepare_move_line_default_vals(self, write_off_line_vals=None):
         """Propagate analytic_distribution to all generated move lines.
 
@@ -281,7 +503,13 @@ class AccountPayment(models.Model):
         Note: analytic_distribution lives on account.move (via _inherits), so
         writing it on the payment goes directly to the move — it does NOT go
         through _synchronize_to_moves and therefore must be pushed to lines here.
+
+        This is also where the write-off values a rebuild would have flattened are
+        put back (see ``_synchronize_to_moves``).
         """
+        preserved = self.env.context.get("kmitl_preserved_write_off") or {}
+        if preserved.get(self.id):
+            write_off_line_vals = preserved[self.id]
         line_vals_list = super()._prepare_move_line_default_vals(write_off_line_vals)
         if self.analytic_distribution:
             for line_vals in line_vals_list:

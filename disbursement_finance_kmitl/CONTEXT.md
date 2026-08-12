@@ -48,6 +48,14 @@ highlighted so the auditor re-checks exactly those), หัวจ่ายหล
 so changing _either_ re-derives every row except the `manual` ones, which stay frozen
 because a person already decided them.
 
+Both inputs re-derive **in the open form**, not only on save: picking the เรื่องที่จ่าย
+fills in every row's หัวจ่าย on the spot, so the rows that fell to the fallback are
+re-checked in the same pass over the payees rather than in a second one after saving.
+The provenance column is `force_save` for exactly that reason — it is readonly, the web
+client drops readonly fields from a save, and without it the เลือกเอง a row has just
+reported would never reach the database, letting the re-derivation in that same save
+overwrite the account the person just picked.
+
 ## Terms
 
 - **Payment Line / รายการจ่ายเงิน** (`disbursement.payment.line`): **one payee, one
@@ -79,13 +87,38 @@ because a person already decided them.
   (net of WHT), submits it and sends it to the bank via a bank payment export. The
   payment carries the line's paying account, and takes its voucher journal from it. The
   request stays at `payment_authorized` while the payment is in transit.
-- **Bank Result** (`account.payment.bank_result_status`): the actual outcome of an
-  outbound payment (`success` / `failed`). For transfers it is recorded from the bank
-  payment export line; a cheque or cash payment never enters a file, so the finance
-  office confirms those by hand on the payment.
-- **Paid** (`action_confirm_paid`, `payment_authorized → paid`): the finance office
-  confirms every payment of the request succeeded at the bank. The money has left; the
-  accounting entry is **not** posted yet.
+- **Bank Result / ผลการจ่าย** (`account.payment.bank_result_status`): the finance
+  office's **assertion** that the money reached the payee (`success` / `failed`) — not
+  something a bank ever told Odoo. The bank's own result file is never imported (see
+  Rules), so this field carries a person's word, given once per request at **Paid**, and
+  it is the only thing downstream reads. _Avoid_ reading it as "what the bank reported":
+  nothing in the system knows that.
+- **Paid / จ่ายครบ** (`action_confirm_paid`, `payment_authorized → paid`): the finance
+  office's assertion that every payee of the request has their money. It is the
+  **single** human confirmation of the whole payment phase — one press, on the request,
+  standing for every payment it covers — so nothing asks the officer to confirm the same
+  fact twice in two places. What may be checked before it is not "has each payment been
+  confirmed" (Odoo learns that from no one but this press) but whether the e-payment file
+  was actually produced for the payments that travel in one. The money has left; the
+  accounting entry is **not** posted yet. This is the **Hand-over** (below) — the one
+  moment the request stops being the finance office's and becomes the accounting
+  office's. Never call this "เคลียร์": เคลียร์/ล้างหนี้ is the accounting act that comes
+  after it.
+- **Hand-over / ส่งมอบให้บัญชี** (`paid`): the single moment a request's payments stop
+  being the finance office's work and become the accounting office's. Before it, a
+  voucher is numbered and its **money side** is frozen, but it belongs to finance — it is
+  theirs to put in an e-payment file, chase at the bank, and vouch for. After it, the
+  voucher waits in `draft` as **the accounting office's entry to book**: their maker
+  corrects the booking side, submits it, and their approver approves = posts = ล้างหนี้.
+  It is *not* a hand into the approval queue — the accounting office's own maker step
+  runs from the beginning, which is what lets them fix what is wrong in the books
+  _(designed — ADR-0005)_. There is exactly **one** such moment per request, and it is
+  per **request**, not per payment: a payee whose transfer succeeded waits for the payees
+  whose did not, because a request is handed over whole or not at all. It is also what
+  makes the work visible — one Todo per request to the accounting makers, and a queue at
+  `paid` — because the request, not the voucher, is what KMITL navigates by.
+  _Avoid_: "ส่งให้บัญชี / submit ให้บัญชี" (Submit is the accounting maker's action on the
+  voucher, not the hand-over), "เคลียร์".
 - **Cleared / ล้างหนี้** (`paid → cleared`): the accounting office posts the payment
   move through the **same account.move maker-checker as the vendor bill** (Approve =
   post). Posting reconciles the payment against the bill, clearing the payable. Set in
@@ -96,6 +129,24 @@ because a person already decided them.
 
 - The workflow is **forward-only** in round 2: there is no reject/return. A request that
   must be corrected is cancelled (before payment) or the bill is reversed by accounting.
+- **The bank's result file is never imported into Odoo.** A transfer the bank rejects is
+  chased and settled **outside the system** — a corrected transfer made at the bank's own
+  portal, a cheque handed over — and Odoo learns of it only through the finance office's
+  one assertion at **Paid**. Nothing in the payment phase waits for a machine-readable
+  answer from a bank, and no per-payee outcome is imported, matched or reconciled against
+  a file. A payee is therefore never re-paid inside a request: the request has one set of
+  payments, and the exceptions among them are resolved elsewhere. What the finance office
+  writes down about an exception **stays with the finance office** — the note lives on the
+  row of the e-payment file (`bank.payment.export.line.epayment_note`), which the
+  accounting office never opens. The entry they post asserts only that the money left, and
+  that assertion is the finance office's word at **Paid**, nothing finer-grained.
+- **The accounting office sees a payment only at the Hand-over** _(designed — ADR-0005)_.
+  What lets the finance office put a voucher in an e-payment file is a finance-side fact
+  (`finance_state = confirmed`), never `state` — `state` belongs to the accounting office,
+  and a voucher sits in `draft` for the whole of the finance office's stretch. So no list
+  of theirs shows an entry they could not act on, and neither office's field is read by
+  the other. See [`finance_kmitl/CONTEXT.md`](../finance_kmitl/CONTEXT.md) for the
+  money-side / booking-side split that makes a `draft` voucher safe to leave with them.
 - **Budget is untouched** in round 2. It is obligated and consumed exactly once at
   round-1 `approved` and never re-cut here.
 - A DR payment move can be **posted only after the request is `paid`** and the payment's

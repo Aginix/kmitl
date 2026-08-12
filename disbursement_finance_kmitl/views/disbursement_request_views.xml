@@ -73,6 +73,28 @@
         </field>
     </record>
 
+    <!-- A voucher on a request is confirmed paid on the request, one press for all
+         of its payees, so its own button has nothing to do here. The action refuses
+         it too — this only keeps a button that would always error off the form. -->
+    <record id="view_account_payment_form_inherit_disbursement" model="ir.ui.view">
+        <field name="name">account.payment.form.inherit.disbursement_finance_kmitl</field>
+        <field name="model">account.payment</field>
+        <field
+            name="inherit_id"
+            ref="finance_kmitl.view_account_payment_form_inherit"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_confirm_paid']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('finance_state', '!=', 'confirmed'), ('disbursement_request_id', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm_paid']" position="before">
+                <field name="disbursement_request_id" invisible="1" />
+            </xpath>
+        </field>
+    </record>
+
     <!-- Form view: statusbar + payment-execution buttons + smart buttons -->
     <record id="view_disbursement_request_form_inherit_finance" model="ir.ui.view">
         <field name="name">disbursement.request.form.inherit.finance_kmitl</field>
@@ -179,8 +201,16 @@
                                 options="{'no_create': True}"
                             />
                             <field name="payment_method_id" optional="show" />
+                            <!-- force_save because the provenance is a readonly
+                                 field, and readonly fields are dropped from a
+                                 save: without it the "chosen by hand" a row
+                                 reports while the form is open never reaches
+                                 the database, and the re-derivation that runs
+                                 in the same save would overwrite the account
+                                 the person just picked. -->
                             <field
                                 name="paying_account_match"
+                                force_save="1"
                                 widget="badge"
                                 decoration-success="paying_account_match == 'bank'"
                                 decoration-warning="paying_account_match == 'fallback'"

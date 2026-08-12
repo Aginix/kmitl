@@ -63,6 +63,10 @@ upfront.
   disbursement keeps it intact (at `signed`) and bounces the approval request to
   `returned`, where the requester corrects a limited set of fields and confirms to push
   them back onto the disbursement.
+- [KMITL Finance](./finance_kmitl/CONTEXT.md) — the finance office's side of paying money
+  out: the **ใบจ่ายเงิน** (which _is_ an `account.move`), its **money side** / **booking
+  side** split, the finance office's own `finance_state`, and the **ไฟล์ e-Payment** one
+  bank is sent. Ends at the **Hand-over**.
 - [Disbursement ↔ KMITL Finance](./disbursement_finance_kmitl/CONTEXT.md) — the
   post-bill payment-execution phase of a disbursement request (audit → authorize → pay →
   clear); owns the payee-level **รายการจ่ายเงิน** and keeps apart the several records
@@ -98,8 +102,18 @@ upfront.
   one paying account, and the file's sending account is read from it.
 - **Disbursement / Finance → Accounting Workflow**: disbursement vendor bills and
   payments no longer post directly — their `account.move` enters the approval and is
-  posted by Approve. Payment moves additionally keep the finance bank-export gate
-  (Submit → Bank Export → Approve=post).
+  posted by Approve. A payment voucher is held by the **two offices in turn, on two
+  fields of one document** (designed docs-first, **not yet built** —
+  `disbursement_finance_kmitl` ADR-0005, superseding ADR-0004): the finance office works
+  entirely on its own `finance_state` (**ยืนยันพร้อมส่งธนาคาร** → e-payment file →
+  **ยืนยันจ่ายสำเร็จ**) while `account.move.state` stays `draft` and belongs to the
+  accounting office alone; **จ่ายครบ** on the request is the **Hand-over**, after which the
+  voucher waits in `draft` for the accounting **maker** to correct the booking and submit
+  it and the **approver** to approve = post = ล้างหนี้. The lock is per side — the money
+  side (amount, payee, หัวจ่าย, date) freezes when finance confirms; the booking side
+  (dimensions, ประเภทธุรกรรม, description) stays open for the maker. The bank's result
+  file is never imported: exceptions are settled outside the system and vouched for by the
+  single จ่ายครบ confirmation.
 - **Disbursement → Approval (return)**: returning a `disbursement.request` at `signed`
   keeps it untouched (still `signed`, budget unchanged) and bounces the linked
   `approval.request` to `returned`; the requester corrects only the payee bank,

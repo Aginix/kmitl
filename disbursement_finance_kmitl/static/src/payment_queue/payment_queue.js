@@ -62,6 +62,19 @@ export class DisbursementPaymentQueue extends Component {
                 action: _t("Authorize"),
                 batchLabel: _t("Authorize Selected"),
             },
+            // The accounting office's end of the Hand-over. Their step is per
+            // voucher — correct the booking, submit it — but a request whose
+            // vouchers need no correction is a batch of identical presses, and the
+            // request is what they navigate by. One that needs work is opened from
+            // here and submitted on its own entry.
+            book: {
+                state: "paid",
+                approve: "action_submit_payments",
+                batch: "action_submit_payments_batch",
+                title: _t("Book Disbursement Payments"),
+                action: _t("Submit"),
+                batchLabel: _t("Submit Selected"),
+            },
         }[ctx.kind || "audit"];
         this.queueState = config.state;
         this.approveMethod = config.approve;

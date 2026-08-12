@@ -28,8 +28,9 @@ class AccountMove(models.Model):
                 ("disbursement_request_id", "!=", False),
             ]
         )
-        # Guard: a payment linked to a disbursement request may only post once
-        # finance has confirmed the bank actually paid it (state == paid).
+        # Guard: a voucher on a disbursement request may only post once the finance
+        # office has confirmed the whole request paid. That the voucher itself is
+        # paid is checked in finance_kmitl; this is the part only the request knows.
         for payment in dr_payments:
             request = payment.disbursement_request_id
             if request.state not in ("paid", "cleared"):
@@ -39,14 +40,6 @@ class AccountMove(models.Model):
                         "request %(dr)s is not confirmed paid by finance yet.",
                         payment=payment.name or payment.move_id.name,
                         dr=request.name,
-                    )
-                )
-            if payment.bank_result_status != "success":
-                raise UserError(
-                    _(
-                        "Payment %s cannot be posted: the bank has not "
-                        "confirmed it as successful.",
-                        payment.name or payment.move_id.name,
                     )
                 )
 
@@ -64,4 +57,8 @@ class AccountMove(models.Model):
                 )
                 if active and all(p.state == "posted" for p in active):
                     request.state = "cleared"
+                    # The accounting office's work on the request is done.
+                    request.activity_feedback(
+                        ["disbursement_finance_kmitl.mail_activity_dr_to_book"]
+                    )
         return res
