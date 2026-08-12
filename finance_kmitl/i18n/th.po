@@ -521,6 +521,12 @@ msgid "Only draft cheques can be issued/received."
 msgstr "ออก/รับเช็คได้เฉพาะรายการที่เป็นร่าง"
 
 #. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment.py:0
+#, python-format
+msgid "Only draft payments can be submitted."
+msgstr "ส่งอนุมัติได้เฉพาะใบจ่ายเงินที่เป็นร่าง"
+
+#. module: finance_kmitl
 #: code:addons/finance_kmitl/models/cheque_register.py:0
 #, python-format
 msgid "Only outstanding cheques can be cleared."
@@ -712,6 +718,12 @@ msgstr "ยืนยัน"
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__bank_payment_export_line__epayment_status__success
 msgid "Success"
 msgstr "สำเร็จ"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment.py:0
+#, python-format
+msgid "The amount must be greater than zero."
+msgstr "จำนวนเงินต้องมากกว่าศูนย์"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/kmitl_payment_subject.py:0
