@@ -33,6 +33,7 @@
         "views/kmitl_payment_subject_views.xml",
         "views/kmitl_paying_account_views.xml",
         "views/account_payment_views.xml",
+        "views/account_payment_list_views.xml",
         "views/account_move_views.xml",
         "views/bank_payment_export_views.xml",
         "views/cheque_register_views.xml",
