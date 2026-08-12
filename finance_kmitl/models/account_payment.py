@@ -104,6 +104,7 @@ class AccountPayment(models.Model):
     needs_bank_export = fields.Boolean(
         string="Travels in an E-Payment File",
         compute="_compute_settlement",
+        search="_search_needs_bank_export",
         help="Only an outbound bank transfer does. Cheques are handed over and "
         "cash is paid at the counter, so neither can ever gain an export and "
         "neither may be held back by the export gate — the finance office "
@@ -140,6 +141,35 @@ class AccountPayment(models.Model):
                 payment.payment_type == "outbound"
                 and code not in ("kmitl_cheque", "kmitl_cash")
             )
+
+    def _search_needs_bank_export(self, operator, value):
+        """Let the flag be filtered on without restating what it means.
+
+        It is computed and not stored, so a domain cannot reach it — and the
+        alternative, spelling the rule out again in a search filter, would be the
+        second place to change it and the first to drift from
+        ``_compute_settlement``. This mirrors that method leaf for leaf, including
+        a payment with no paying account yet (no method, so nothing says it is
+        settled outside a file).
+        """
+        if operator not in ("=", "!="):
+            raise NotImplementedError(
+                "needs_bank_export can only be searched with = or !="
+            )
+        travels = [
+            "&",
+            ("payment_type", "=", "outbound"),
+            "|",
+            ("payment_method_line_id", "=", False),
+            (
+                "payment_method_line_id.payment_method_id.code",
+                "not in",
+                ("kmitl_cheque", "kmitl_cash"),
+            ),
+        ]
+        if (operator == "=") == bool(value):
+            return travels
+        return ["!"] + travels
 
     @api.model
     def _get_method_codes_using_bank_account(self):
