@@ -57,6 +57,15 @@
             </xpath>
             <xpath expr="//field[@name='payment_method_line_id']" position="after">
                 <field name="needs_bank_export" invisible="1" />
+                <!-- Carried again without the accountant group that
+                     l10n_th_bank_payment_export puts on its own node: the finance
+                     office's buttons read it in their attrs and they are not
+                     accountants (group_finance_kmitl_user_out implies
+                     account.group_account_invoice, not account.group_account_user),
+                     and a field used in a modifier has to be available to everyone
+                     who can see the node using it. Invisible, so nothing is shown to
+                     anyone the base view was hiding it from. -->
+                <field name="export_status" invisible="1" />
                 <field
                     name="bank_result_status"
                     readonly="1"
