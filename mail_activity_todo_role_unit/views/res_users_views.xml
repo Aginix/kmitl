@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!--
+      Preferences UI for Todo Notification Scope (ADR-0007). Added to both
+      surfaces so users can self-serve without needing Settings access:
+
+      - base.view_users_form (admin form): a full notebook page.
+      - base.view_users_form_simple_modif (Preferences dialog, note the missing
+        trailing 'y' — the ID Odoo ships): a group after preference_contact,
+        matching the sibling mail_activity_todo_sound pattern.
+
+      OU picker is domain-limited to the user's own view scope
+      (operating_unit_ids). Empty = fall back to the full view scope
+      (backward-compatible with pre-ADR-0007 behaviour).
+    -->
+    <record id="view_users_form_todo_notify" model="ir.ui.view">
+        <field name="name">res.users.form.todo.notify</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Todo Notifications" name="todo_notify">
+                    <group>
+                        <field name="operating_unit_ids" invisible="1" />
+                        <field
+                            name="todo_notify_operating_unit_ids"
+                            widget="many2many_tags"
+                            domain="[('id', 'in', operating_unit_ids)]"
+                            options="{'no_create': True}"
+                        />
+                    </group>
+                    <field name="todo_notify_rule_ids">
+                        <tree editable="bottom">
+                            <field name="activity_type_id" />
+                            <field name="mode" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_users_form_simple_modif_todo_notify" model="ir.ui.view">
+        <field name="name">res.users.preferences.todo.notify</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='preference_contact']" position="after">
+                <group
+                    name="todo_notify_scope"
+                    string="Todo Notification Scope"
+                >
+                    <field name="operating_unit_ids" invisible="1" />
+                    <field
+                        name="todo_notify_operating_unit_ids"
+                        widget="many2many_tags"
+                        domain="[('id', 'in', operating_unit_ids)]"
+                        options="{'no_create': True}"
+                    />
+                </group>
+                <group
+                    name="todo_notify_rules"
+                    string="Per-type Notification Rules"
+                    colspan="4"
+                >
+                    <field
+                        name="todo_notify_rule_ids"
+                        nolabel="1"
+                        colspan="4"
+                    >
+                        <tree editable="bottom">
+                            <field name="activity_type_id" />
+                            <field name="mode" />
+                        </tree>
+                    </field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

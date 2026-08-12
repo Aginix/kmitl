@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
+    <!-- ADR-0007: narrow the primary inbox to the notification scope. Oversight
+         Todos (view scope minus notification scope) live in a second menu below.
+         The base action is retargeted rather than duplicated so existing links
+         (mail_activity_todo.view_my_todo_tree etc.) keep working. -->
+    <record id="mail_activity_todo.action_my_todos" model="ir.actions.act_window">
+        <field
+            name="domain"
+        >[('is_my_todo', '=', True), ('is_my_primary_todo', '=', True)]</field>
+    </record>
+
+    <!-- Oversight inbox — group Todos I can see but that fall outside my
+         notification scope. Gated by the same "all OUs" group as the OU
+         columns above: without wide OU visibility a user cannot have oversight
+         Todos anyway (view scope = notification scope), so the menu would be
+         empty. Regular users don't see the extra menu at all (Q8-ข). -->
+    <record id="action_my_oversight_todos" model="ir.actions.act_window">
+        <field name="name">Oversight</field>
+        <field name="res_model">mail.activity</field>
+        <field name="view_mode">tree,form</field>
+        <field
+            name="domain"
+        >[('is_my_todo', '=', True), ('is_my_primary_todo', '=', False)]</field>
+        <field name="search_view_id" ref="mail_activity_todo.view_my_todo_search" />
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'sequence': 1, 'view_mode': 'tree', 'view_id': ref('mail_activity_todo.view_my_todo_tree')}),
+                   (0, 0, {'sequence': 2, 'view_mode': 'form', 'view_id': ref('mail_activity_todo.view_my_todo_form')})]"
+        />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">งานอยู่นอกขอบเขตแจ้งเตือนของคุณ ไม่มีอะไรค้าง</p>
+            <p>Group Todos in Operating Units you can see but haven't opted to be notified for.</p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_todo_oversight"
+        name="อื่นๆ ที่เกี่ยวข้อง"
+        parent="mail_activity_todo.menu_my_todos_root"
+        action="action_my_oversight_todos"
+        groups="mail_activity_todo_role_unit.group_all_ou_todo,operating_unit.group_manager_operating_unit"
+        sequence="5"
+    />
+
     <!-- ===== Inbox list: add OU / role columns + Claim/Release ===== -->
     <record id="view_my_todo_tree_role_unit" model="ir.ui.view">
         <field name="name">mail.activity.todo.tree.role.unit</field>

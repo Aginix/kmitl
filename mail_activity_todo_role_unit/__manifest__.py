@@ -12,7 +12,9 @@
         "operating_unit",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "security/security.xml",
+        "views/res_users_views.xml",
         "views/mail_activity_views.xml",
     ],
     "installable": True,
