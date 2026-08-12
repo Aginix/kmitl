@@ -141,6 +141,26 @@ class AccountPayment(models.Model):
                 and code not in ("kmitl_cheque", "kmitl_cash")
             )
 
+    @api.model
+    def _get_method_codes_using_bank_account(self):
+        """KMITL settles by its own methods, so core never shows the bank account.
+
+        Core looks for the ``manual`` method to decide whether the recipient
+        bank account is worth displaying; every KMITL payment carries one of its
+        own codes instead, so the account number stayed hidden even though a
+        transfer cannot leave without one.
+        """
+        return super()._get_method_codes_using_bank_account() + ["kmitl_transfer"]
+
+    @api.model
+    def _get_method_codes_needing_bank_account(self):
+        """Only a transfer needs an account number.
+
+        A cheque is handed over and cash is paid at the counter, so neither can
+        be held back for the want of a bank account.
+        """
+        return super()._get_method_codes_needing_bank_account() + ["kmitl_transfer"]
+
     def write(self, vals):
         """Guard the money side, and repoint the money line when the paying
         account changes.
@@ -218,6 +238,11 @@ class AccountPayment(models.Model):
 
         It asks the accounting office nothing — their own status is untouched and
         the voucher stays their draft until the Hand-over.
+
+        The amount is guarded here rather than on save: a monetary field cannot be
+        made required (zero is a value), and an officer filling a payment in must be
+        free to keep the draft before the figure is known. This is the moment it
+        stops being a draft — from here it can go in a file and reach a bank.
         """
         for payment in self:
             if payment.finance_state != "draft":
@@ -229,6 +254,8 @@ class AccountPayment(models.Model):
                     _("Choose the paying account (หัวจ่าย) of %s first.")
                     % payment.display_name
                 )
+            if payment.currency_id.is_zero(payment.amount) or payment.amount < 0:
+                raise UserError(_("The amount must be greater than zero."))
             payment.finance_state = "confirmed"
             move = payment.move_id
             if move.date and (not move.name or move.name == "/"):
