@@ -1699,3 +1699,8 @@ msgstr "มูลค่า"
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
 msgid "Supporting Documents"
 msgstr "เอกสารประกอบการตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__contract_number
+msgid "Contract No."
+msgstr "อ้างอิงเลขที่สัญญา/ใบสั่งซื้อ/จ้าง"
