@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!--
-        Every partner here holds an account at every bank in account_kmitl's
-        res.bank master data, so that any of the institute's paying accounts can
-        be demonstrated against any payee without first having to open a bank
-        account for them. Suffixes follow the banks: _1 KTB, _2 SCB, _3 BAY,
-        _4 KBANK. Add a bank to the master data and this file needs a fifth.
+        Every partner here holds an account at every bank the demo knows about,
+        so that any of the institute's paying accounts can be demonstrated
+        against any payee without first having to open a bank account for them.
+        Suffixes follow the banks: _1 KTB, _2 SCB, _3 BAY, _4 KBANK (the
+        institute's own banks, reference data in account_kmitl), then _5 BBL,
+        _6 TMB, _7 CIMB (res.bank.xml here — banks the institute holds no
+        account at, so a payee banking outside its set can be demonstrated too).
+        Add a bank to either file and this one needs an eighth.
     -->
     <data noupdate="0">
         <!-- ============================================================ -->
@@ -48,10 +51,37 @@
             >สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="company_bank_account_5" model="res.partner.bank">
+            <field name="acc_number">001-0-00005-0</field>
+            <field name="partner_id" ref="base.main_partner" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field
+                name="acc_holder_name"
+            >สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="company_bank_account_6" model="res.partner.bank">
+            <field name="acc_number">001-0-00006-0</field>
+            <field name="partner_id" ref="base.main_partner" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field
+                name="acc_holder_name"
+            >สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="company_bank_account_7" model="res.partner.bank">
+            <field name="acc_number">001-0-00007-0</field>
+            <field name="partner_id" ref="base.main_partner" />
+            <field name="bank_id" ref="bank_cimb" />
+            <field
+                name="acc_holder_name"
+            >สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- ============================================================ -->
         <!-- Bank Accounts for Company Vendors (vendor_demo_001 to 010)   -->
-        <!-- One account per bank in the master data: KTB / SCB / BAY / KBANK -->
+        <!-- One account per bank: KTB / SCB / BAY / KBANK / BBL / TMB / CIMB -->
         <!-- ============================================================ -->
 
         <!-- vendor_demo_001: บริษัท เทคโนโลยีสมัยใหม่ จำกัด -->
@@ -80,6 +110,27 @@
             <field name="acc_number">123-4-40001-4</field>
             <field name="partner_id" ref="vendor_demo_001" />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">บริษัท เทคโนโลยีสมัยใหม่ จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_001_5" model="res.partner.bank">
+            <field name="acc_number">123-4-50001-5</field>
+            <field name="partner_id" ref="vendor_demo_001" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">บริษัท เทคโนโลยีสมัยใหม่ จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_001_6" model="res.partner.bank">
+            <field name="acc_number">123-4-60001-6</field>
+            <field name="partner_id" ref="vendor_demo_001" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">บริษัท เทคโนโลยีสมัยใหม่ จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_001_7" model="res.partner.bank">
+            <field name="acc_number">123-4-70001-7</field>
+            <field name="partner_id" ref="vendor_demo_001" />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">บริษัท เทคโนโลยีสมัยใหม่ จำกัด</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -113,6 +164,27 @@
             <field name="acc_holder_name">บริษัท คอมพิวเตอร์ ซิสเต็ม จำกัด</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="bank_account_002_5" model="res.partner.bank">
+            <field name="acc_number">234-5-50002-5</field>
+            <field name="partner_id" ref="vendor_demo_002" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">บริษัท คอมพิวเตอร์ ซิสเต็ม จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_002_6" model="res.partner.bank">
+            <field name="acc_number">234-5-60002-6</field>
+            <field name="partner_id" ref="vendor_demo_002" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">บริษัท คอมพิวเตอร์ ซิสเต็ม จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_002_7" model="res.partner.bank">
+            <field name="acc_number">234-5-70002-7</field>
+            <field name="partner_id" ref="vendor_demo_002" />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">บริษัท คอมพิวเตอร์ ซิสเต็ม จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- vendor_demo_003: บริษัท ดิจิทัล โซลูชั่น จำกัด -->
         <record id="bank_account_003_1" model="res.partner.bank">
@@ -140,6 +212,27 @@
             <field name="acc_number">345-6-40003-4</field>
             <field name="partner_id" ref="vendor_demo_003" />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">บริษัท ดิจิทัล โซลูชั่น จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_003_5" model="res.partner.bank">
+            <field name="acc_number">345-6-50003-5</field>
+            <field name="partner_id" ref="vendor_demo_003" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">บริษัท ดิจิทัล โซลูชั่น จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_003_6" model="res.partner.bank">
+            <field name="acc_number">345-6-60003-6</field>
+            <field name="partner_id" ref="vendor_demo_003" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">บริษัท ดิจิทัล โซลูชั่น จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_003_7" model="res.partner.bank">
+            <field name="acc_number">345-6-70003-7</field>
+            <field name="partner_id" ref="vendor_demo_003" />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">บริษัท ดิจิทัล โซลูชั่น จำกัด</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -173,6 +266,27 @@
             <field name="acc_holder_name">บริษัท เครื่องเขียนไทย จำกัด</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="bank_account_004_5" model="res.partner.bank">
+            <field name="acc_number">456-7-50004-5</field>
+            <field name="partner_id" ref="vendor_demo_004" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">บริษัท เครื่องเขียนไทย จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_004_6" model="res.partner.bank">
+            <field name="acc_number">456-7-60004-6</field>
+            <field name="partner_id" ref="vendor_demo_004" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">บริษัท เครื่องเขียนไทย จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_004_7" model="res.partner.bank">
+            <field name="acc_number">456-7-70004-7</field>
+            <field name="partner_id" ref="vendor_demo_004" />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">บริษัท เครื่องเขียนไทย จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- vendor_demo_005: ห้างหุ้นส่วนจำกัด ออฟฟิศ ซัพพลาย -->
         <record id="bank_account_005_1" model="res.partner.bank">
@@ -200,6 +314,27 @@
             <field name="acc_number">567-8-40005-4</field>
             <field name="partner_id" ref="vendor_demo_005" />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">ห้างหุ้นส่วนจำกัด ออฟฟิศ ซัพพลาย</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_005_5" model="res.partner.bank">
+            <field name="acc_number">567-8-50005-5</field>
+            <field name="partner_id" ref="vendor_demo_005" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">ห้างหุ้นส่วนจำกัด ออฟฟิศ ซัพพลาย</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_005_6" model="res.partner.bank">
+            <field name="acc_number">567-8-60005-6</field>
+            <field name="partner_id" ref="vendor_demo_005" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">ห้างหุ้นส่วนจำกัด ออฟฟิศ ซัพพลาย</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_005_7" model="res.partner.bank">
+            <field name="acc_number">567-8-70005-7</field>
+            <field name="partner_id" ref="vendor_demo_005" />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">ห้างหุ้นส่วนจำกัด ออฟฟิศ ซัพพลาย</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -233,6 +368,27 @@
             <field name="acc_holder_name">บริษัท ก่อสร้างและบำรุงรักษา จำกัด</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="bank_account_006_5" model="res.partner.bank">
+            <field name="acc_number">678-9-50006-5</field>
+            <field name="partner_id" ref="vendor_demo_006" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">บริษัท ก่อสร้างและบำรุงรักษา จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_006_6" model="res.partner.bank">
+            <field name="acc_number">678-9-60006-6</field>
+            <field name="partner_id" ref="vendor_demo_006" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">บริษัท ก่อสร้างและบำรุงรักษา จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_006_7" model="res.partner.bank">
+            <field name="acc_number">678-9-70006-7</field>
+            <field name="partner_id" ref="vendor_demo_006" />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">บริษัท ก่อสร้างและบำรุงรักษา จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- vendor_demo_007: บริษัท วิศวกรรมและบริการ จำกัด -->
         <record id="bank_account_007_1" model="res.partner.bank">
@@ -260,6 +416,27 @@
             <field name="acc_number">789-0-40007-4</field>
             <field name="partner_id" ref="vendor_demo_007" />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">บริษัท วิศวกรรมและบริการ จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_007_5" model="res.partner.bank">
+            <field name="acc_number">789-0-50007-5</field>
+            <field name="partner_id" ref="vendor_demo_007" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">บริษัท วิศวกรรมและบริการ จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_007_6" model="res.partner.bank">
+            <field name="acc_number">789-0-60007-6</field>
+            <field name="partner_id" ref="vendor_demo_007" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">บริษัท วิศวกรรมและบริการ จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_007_7" model="res.partner.bank">
+            <field name="acc_number">789-0-70007-7</field>
+            <field name="partner_id" ref="vendor_demo_007" />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">บริษัท วิศวกรรมและบริการ จำกัด</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -293,6 +470,27 @@
             <field name="acc_holder_name">บริษัท วิทยาศาสตร์เครื่องมือ จำกัด</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="bank_account_008_5" model="res.partner.bank">
+            <field name="acc_number">890-1-50008-5</field>
+            <field name="partner_id" ref="vendor_demo_008" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">บริษัท วิทยาศาสตร์เครื่องมือ จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_008_6" model="res.partner.bank">
+            <field name="acc_number">890-1-60008-6</field>
+            <field name="partner_id" ref="vendor_demo_008" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">บริษัท วิทยาศาสตร์เครื่องมือ จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_008_7" model="res.partner.bank">
+            <field name="acc_number">890-1-70008-7</field>
+            <field name="partner_id" ref="vendor_demo_008" />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">บริษัท วิทยาศาสตร์เครื่องมือ จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- vendor_demo_009: บริษัท ห้องปฏิบัติการอุปกรณ์ จำกัด -->
         <record id="bank_account_009_1" model="res.partner.bank">
@@ -320,6 +518,27 @@
             <field name="acc_number">901-2-40009-4</field>
             <field name="partner_id" ref="vendor_demo_009" />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">บริษัท ห้องปฏิบัติการอุปกรณ์ จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_009_5" model="res.partner.bank">
+            <field name="acc_number">901-2-50009-5</field>
+            <field name="partner_id" ref="vendor_demo_009" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">บริษัท ห้องปฏิบัติการอุปกรณ์ จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_009_6" model="res.partner.bank">
+            <field name="acc_number">901-2-60009-6</field>
+            <field name="partner_id" ref="vendor_demo_009" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">บริษัท ห้องปฏิบัติการอุปกรณ์ จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_009_7" model="res.partner.bank">
+            <field name="acc_number">901-2-70009-7</field>
+            <field name="partner_id" ref="vendor_demo_009" />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">บริษัท ห้องปฏิบัติการอุปกรณ์ จำกัด</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -353,10 +572,31 @@
             <field name="acc_holder_name">บริษัท ที่ปรึกษาและฝึกอบรม จำกัด</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="bank_account_010_5" model="res.partner.bank">
+            <field name="acc_number">012-3-50010-5</field>
+            <field name="partner_id" ref="vendor_demo_010" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">บริษัท ที่ปรึกษาและฝึกอบรม จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_010_6" model="res.partner.bank">
+            <field name="acc_number">012-3-60010-6</field>
+            <field name="partner_id" ref="vendor_demo_010" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">บริษัท ที่ปรึกษาและฝึกอบรม จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_010_7" model="res.partner.bank">
+            <field name="acc_number">012-3-70010-7</field>
+            <field name="partner_id" ref="vendor_demo_010" />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">บริษัท ที่ปรึกษาและฝึกอบรม จำกัด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- ============================================================ -->
         <!-- Bank Accounts for Individual Vendors (vendor_demo_011 to 020)-->
-        <!-- One account per bank in the master data: KTB / SCB / BAY / KBANK -->
+        <!-- One account per bank: KTB / SCB / BAY / KBANK / BBL / TMB / CIMB -->
         <!-- ============================================================ -->
 
         <!-- vendor_demo_011: ดร.สมชาย วิชาการ -->
@@ -385,6 +625,27 @@
             <field name="acc_number">111-2-40011-4</field>
             <field name="partner_id" ref="vendor_demo_011" />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">ดร.สมชาย วิชาการ</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_011_5" model="res.partner.bank">
+            <field name="acc_number">111-2-50011-5</field>
+            <field name="partner_id" ref="vendor_demo_011" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">ดร.สมชาย วิชาการ</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_011_6" model="res.partner.bank">
+            <field name="acc_number">111-2-60011-6</field>
+            <field name="partner_id" ref="vendor_demo_011" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">ดร.สมชาย วิชาการ</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_011_7" model="res.partner.bank">
+            <field name="acc_number">111-2-70011-7</field>
+            <field name="partner_id" ref="vendor_demo_011" />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">ดร.สมชาย วิชาการ</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -418,6 +679,27 @@
             <field name="acc_holder_name">นายประสิทธิ์ เทคโนโลยี</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="bank_account_012_5" model="res.partner.bank">
+            <field name="acc_number">222-3-50012-5</field>
+            <field name="partner_id" ref="vendor_demo_012" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">นายประสิทธิ์ เทคโนโลยี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_012_6" model="res.partner.bank">
+            <field name="acc_number">222-3-60012-6</field>
+            <field name="partner_id" ref="vendor_demo_012" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">นายประสิทธิ์ เทคโนโลยี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_012_7" model="res.partner.bank">
+            <field name="acc_number">222-3-70012-7</field>
+            <field name="partner_id" ref="vendor_demo_012" />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">นายประสิทธิ์ เทคโนโลยี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- vendor_demo_013: ผศ.ดร.สมหญิง วิจัย -->
         <record id="bank_account_013_1" model="res.partner.bank">
@@ -445,6 +727,27 @@
             <field name="acc_number">333-4-40013-4</field>
             <field name="partner_id" ref="vendor_demo_013" />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">ผศ.ดร.สมหญิง วิจัย</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_013_5" model="res.partner.bank">
+            <field name="acc_number">333-4-50013-5</field>
+            <field name="partner_id" ref="vendor_demo_013" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">ผศ.ดร.สมหญิง วิจัย</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_013_6" model="res.partner.bank">
+            <field name="acc_number">333-4-60013-6</field>
+            <field name="partner_id" ref="vendor_demo_013" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">ผศ.ดร.สมหญิง วิจัย</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_013_7" model="res.partner.bank">
+            <field name="acc_number">333-4-70013-7</field>
+            <field name="partner_id" ref="vendor_demo_013" />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">ผศ.ดร.สมหญิง วิจัย</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -478,6 +781,27 @@
             <field name="acc_holder_name">นางสาววิภา ที่ปรึกษา</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="bank_account_014_5" model="res.partner.bank">
+            <field name="acc_number">444-5-50014-5</field>
+            <field name="partner_id" ref="vendor_demo_014" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">นางสาววิภา ที่ปรึกษา</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_014_6" model="res.partner.bank">
+            <field name="acc_number">444-5-60014-6</field>
+            <field name="partner_id" ref="vendor_demo_014" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">นางสาววิภา ที่ปรึกษา</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_014_7" model="res.partner.bank">
+            <field name="acc_number">444-5-70014-7</field>
+            <field name="partner_id" ref="vendor_demo_014" />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">นางสาววิภา ที่ปรึกษา</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- vendor_demo_015: นายอนุชา ฝึกอบรม -->
         <record id="bank_account_015_1" model="res.partner.bank">
@@ -505,6 +829,27 @@
             <field name="acc_number">555-6-40015-4</field>
             <field name="partner_id" ref="vendor_demo_015" />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">นายอนุชา ฝึกอบรม</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_015_5" model="res.partner.bank">
+            <field name="acc_number">555-6-50015-5</field>
+            <field name="partner_id" ref="vendor_demo_015" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">นายอนุชา ฝึกอบรม</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_015_6" model="res.partner.bank">
+            <field name="acc_number">555-6-60015-6</field>
+            <field name="partner_id" ref="vendor_demo_015" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">นายอนุชา ฝึกอบรม</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_015_7" model="res.partner.bank">
+            <field name="acc_number">555-6-70015-7</field>
+            <field name="partner_id" ref="vendor_demo_015" />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">นายอนุชา ฝึกอบรม</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -538,6 +883,27 @@
             <field name="acc_holder_name">นางพิมพ์ใจ ออกแบบ</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="bank_account_016_5" model="res.partner.bank">
+            <field name="acc_number">666-7-50016-5</field>
+            <field name="partner_id" ref="vendor_demo_016" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">นางพิมพ์ใจ ออกแบบ</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_016_6" model="res.partner.bank">
+            <field name="acc_number">666-7-60016-6</field>
+            <field name="partner_id" ref="vendor_demo_016" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">นางพิมพ์ใจ ออกแบบ</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_016_7" model="res.partner.bank">
+            <field name="acc_number">666-7-70016-7</field>
+            <field name="partner_id" ref="vendor_demo_016" />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">นางพิมพ์ใจ ออกแบบ</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- vendor_demo_017: ดร.วีระ วิศวกร -->
         <record id="bank_account_017_1" model="res.partner.bank">
@@ -565,6 +931,27 @@
             <field name="acc_number">777-8-40017-4</field>
             <field name="partner_id" ref="vendor_demo_017" />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">ดร.วีระ วิศวกร</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_017_5" model="res.partner.bank">
+            <field name="acc_number">777-8-50017-5</field>
+            <field name="partner_id" ref="vendor_demo_017" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">ดร.วีระ วิศวกร</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_017_6" model="res.partner.bank">
+            <field name="acc_number">777-8-60017-6</field>
+            <field name="partner_id" ref="vendor_demo_017" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">ดร.วีระ วิศวกร</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_017_7" model="res.partner.bank">
+            <field name="acc_number">777-8-70017-7</field>
+            <field name="partner_id" ref="vendor_demo_017" />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">ดร.วีระ วิศวกร</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -598,6 +985,27 @@
             <field name="acc_holder_name">นายสุรชัย ช่างซ่อม</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="bank_account_018_5" model="res.partner.bank">
+            <field name="acc_number">888-9-50018-5</field>
+            <field name="partner_id" ref="vendor_demo_018" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">นายสุรชัย ช่างซ่อม</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_018_6" model="res.partner.bank">
+            <field name="acc_number">888-9-60018-6</field>
+            <field name="partner_id" ref="vendor_demo_018" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">นายสุรชัย ช่างซ่อม</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_018_7" model="res.partner.bank">
+            <field name="acc_number">888-9-70018-7</field>
+            <field name="partner_id" ref="vendor_demo_018" />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">นายสุรชัย ช่างซ่อม</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- vendor_demo_019: นางสาวนภา โปรแกรมเมอร์ -->
         <record id="bank_account_019_1" model="res.partner.bank">
@@ -625,6 +1033,27 @@
             <field name="acc_number">999-0-40019-4</field>
             <field name="partner_id" ref="vendor_demo_019" />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">นางสาวนภา โปรแกรมเมอร์</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_019_5" model="res.partner.bank">
+            <field name="acc_number">999-0-50019-5</field>
+            <field name="partner_id" ref="vendor_demo_019" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">นางสาวนภา โปรแกรมเมอร์</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_019_6" model="res.partner.bank">
+            <field name="acc_number">999-0-60019-6</field>
+            <field name="partner_id" ref="vendor_demo_019" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">นางสาวนภา โปรแกรมเมอร์</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_019_7" model="res.partner.bank">
+            <field name="acc_number">999-0-70019-7</field>
+            <field name="partner_id" ref="vendor_demo_019" />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">นางสาวนภา โปรแกรมเมอร์</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -658,10 +1087,31 @@
             <field name="acc_holder_name">นายธนา นักบัญชี</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="bank_account_020_5" model="res.partner.bank">
+            <field name="acc_number">100-1-50020-5</field>
+            <field name="partner_id" ref="vendor_demo_020" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">นายธนา นักบัญชี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_020_6" model="res.partner.bank">
+            <field name="acc_number">100-1-60020-6</field>
+            <field name="partner_id" ref="vendor_demo_020" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">นายธนา นักบัญชี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="bank_account_020_7" model="res.partner.bank">
+            <field name="acc_number">100-1-70020-7</field>
+            <field name="partner_id" ref="vendor_demo_020" />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">นายธนา นักบัญชี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- ============================================================ -->
         <!-- Bank Accounts for User Partners (user_demo_001 to 020)       -->
-        <!-- One account per bank in the master data: KTB / SCB / BAY / KBANK -->
+        <!-- One account per bank: KTB / SCB / BAY / KBANK / BBL / TMB / CIMB -->
         <!-- ============================================================ -->
 
         <!-- user_demo_001: ศาสตราจารย์ ดร.สมชาย วิศวกรรม -->
@@ -702,6 +1152,36 @@
                 search="[('user_ids', '=', ref('user_demo_001'))]"
             />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">ศาสตราจารย์ ดร.สมชาย วิศวกรรม</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_001_5" model="res.partner.bank">
+            <field name="acc_number">501-1-50001-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_001'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">ศาสตราจารย์ ดร.สมชาย วิศวกรรม</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_001_6" model="res.partner.bank">
+            <field name="acc_number">501-1-60001-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_001'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">ศาสตราจารย์ ดร.สมชาย วิศวกรรม</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_001_7" model="res.partner.bank">
+            <field name="acc_number">501-1-70001-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_001'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">ศาสตราจารย์ ดร.สมชาย วิศวกรรม</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -747,6 +1227,36 @@
             <field name="acc_holder_name">ผู้ช่วยศาสตราจารย์ ดร.สุภาพร ใจดี</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="user_bank_account_002_5" model="res.partner.bank">
+            <field name="acc_number">501-2-50002-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_002'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">ผู้ช่วยศาสตราจารย์ ดร.สุภาพร ใจดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_002_6" model="res.partner.bank">
+            <field name="acc_number">501-2-60002-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_002'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">ผู้ช่วยศาสตราจารย์ ดร.สุภาพร ใจดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_002_7" model="res.partner.bank">
+            <field name="acc_number">501-2-70002-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_002'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">ผู้ช่วยศาสตราจารย์ ดร.สุภาพร ใจดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- user_demo_003: รองศาสตราจารย์ ดร.วิชัย เก่งกาจ -->
         <record id="user_bank_account_003_1" model="res.partner.bank">
@@ -786,6 +1296,36 @@
                 search="[('user_ids', '=', ref('user_demo_003'))]"
             />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">รองศาสตราจารย์ ดร.วิชัย เก่งกาจ</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_003_5" model="res.partner.bank">
+            <field name="acc_number">501-3-50003-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_003'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">รองศาสตราจารย์ ดร.วิชัย เก่งกาจ</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_003_6" model="res.partner.bank">
+            <field name="acc_number">501-3-60003-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_003'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">รองศาสตราจารย์ ดร.วิชัย เก่งกาจ</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_003_7" model="res.partner.bank">
+            <field name="acc_number">501-3-70003-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_003'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">รองศาสตราจารย์ ดร.วิชัย เก่งกาจ</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -831,6 +1371,36 @@
             <field name="acc_holder_name">รองศาสตราจารย์ ดร.ประทีป นักวิจัย</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="user_bank_account_004_5" model="res.partner.bank">
+            <field name="acc_number">501-4-50004-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_004'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">รองศาสตราจารย์ ดร.ประทีป นักวิจัย</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_004_6" model="res.partner.bank">
+            <field name="acc_number">501-4-60004-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_004'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">รองศาสตราจารย์ ดร.ประทีป นักวิจัย</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_004_7" model="res.partner.bank">
+            <field name="acc_number">501-4-70004-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_004'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">รองศาสตราจารย์ ดร.ประทีป นักวิจัย</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- user_demo_005: ศาสตราจารย์ ดร.ธนากร เทคโนโลยี -->
         <record id="user_bank_account_005_1" model="res.partner.bank">
@@ -870,6 +1440,36 @@
                 search="[('user_ids', '=', ref('user_demo_005'))]"
             />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">ศาสตราจารย์ ดร.ธนากร เทคโนโลยี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_005_5" model="res.partner.bank">
+            <field name="acc_number">501-5-50005-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_005'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">ศาสตราจารย์ ดร.ธนากร เทคโนโลยี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_005_6" model="res.partner.bank">
+            <field name="acc_number">501-5-60005-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_005'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">ศาสตราจารย์ ดร.ธนากร เทคโนโลยี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_005_7" model="res.partner.bank">
+            <field name="acc_number">501-5-70005-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_005'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">ศาสตราจารย์ ดร.ธนากร เทคโนโลยี</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -915,6 +1515,36 @@
             <field name="acc_holder_name">ศาสตราจารย์ ดร.มาลี วิทยาศาสตร์</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="user_bank_account_006_5" model="res.partner.bank">
+            <field name="acc_number">501-6-50006-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_006'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">ศาสตราจารย์ ดร.มาลี วิทยาศาสตร์</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_006_6" model="res.partner.bank">
+            <field name="acc_number">501-6-60006-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_006'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">ศาสตราจารย์ ดร.มาลี วิทยาศาสตร์</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_006_7" model="res.partner.bank">
+            <field name="acc_number">501-6-70006-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_006'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">ศาสตราจารย์ ดร.มาลี วิทยาศาสตร์</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- user_demo_007: รองศาสตราจารย์ ดร.สุรชัย นวัตกรรม -->
         <record id="user_bank_account_007_1" model="res.partner.bank">
@@ -954,6 +1584,36 @@
                 search="[('user_ids', '=', ref('user_demo_007'))]"
             />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">รองศาสตราจารย์ ดร.สุรชัย นวัตกรรม</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_007_5" model="res.partner.bank">
+            <field name="acc_number">501-7-50007-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_007'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">รองศาสตราจารย์ ดร.สุรชัย นวัตกรรม</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_007_6" model="res.partner.bank">
+            <field name="acc_number">501-7-60007-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_007'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">รองศาสตราจารย์ ดร.สุรชัย นวัตกรรม</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_007_7" model="res.partner.bank">
+            <field name="acc_number">501-7-70007-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_007'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">รองศาสตราจารย์ ดร.สุรชัย นวัตกรรม</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -999,6 +1659,36 @@
             <field name="acc_holder_name">รองศาสตราจารย์ ดร.วรรณา ปัญญาดี</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="user_bank_account_008_5" model="res.partner.bank">
+            <field name="acc_number">501-8-50008-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_008'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">รองศาสตราจารย์ ดร.วรรณา ปัญญาดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_008_6" model="res.partner.bank">
+            <field name="acc_number">501-8-60008-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_008'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">รองศาสตราจารย์ ดร.วรรณา ปัญญาดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_008_7" model="res.partner.bank">
+            <field name="acc_number">501-8-70008-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_008'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">รองศาสตราจารย์ ดร.วรรณา ปัญญาดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- user_demo_009: ผู้ช่วยศาสตราจารย์ ดร.ชัยวัฒน์ พัฒนา -->
         <record id="user_bank_account_009_1" model="res.partner.bank">
@@ -1038,6 +1728,36 @@
                 search="[('user_ids', '=', ref('user_demo_009'))]"
             />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">ผู้ช่วยศาสตราจารย์ ดร.ชัยวัฒน์ พัฒนา</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_009_5" model="res.partner.bank">
+            <field name="acc_number">501-9-50009-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_009'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">ผู้ช่วยศาสตราจารย์ ดร.ชัยวัฒน์ พัฒนา</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_009_6" model="res.partner.bank">
+            <field name="acc_number">501-9-60009-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_009'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">ผู้ช่วยศาสตราจารย์ ดร.ชัยวัฒน์ พัฒนา</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_009_7" model="res.partner.bank">
+            <field name="acc_number">501-9-70009-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_009'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">ผู้ช่วยศาสตราจารย์ ดร.ชัยวัฒน์ พัฒนา</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -1083,6 +1803,36 @@
             <field name="acc_holder_name">ผู้ช่วยศาสตราจารย์ ดร.นภาพร สร้างสรรค์</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="user_bank_account_010_5" model="res.partner.bank">
+            <field name="acc_number">502-0-50010-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_010'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">ผู้ช่วยศาสตราจารย์ ดร.นภาพร สร้างสรรค์</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_010_6" model="res.partner.bank">
+            <field name="acc_number">502-0-60010-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_010'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">ผู้ช่วยศาสตราจารย์ ดร.นภาพร สร้างสรรค์</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_010_7" model="res.partner.bank">
+            <field name="acc_number">502-0-70010-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_010'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">ผู้ช่วยศาสตราจารย์ ดร.นภาพร สร้างสรรค์</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- user_demo_011: ดร.พิชัย คิดค้น -->
         <record id="user_bank_account_011_1" model="res.partner.bank">
@@ -1122,6 +1872,36 @@
                 search="[('user_ids', '=', ref('user_demo_011'))]"
             />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">ดร.พิชัย คิดค้น</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_011_5" model="res.partner.bank">
+            <field name="acc_number">502-1-50011-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_011'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">ดร.พิชัย คิดค้น</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_011_6" model="res.partner.bank">
+            <field name="acc_number">502-1-60011-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_011'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">ดร.พิชัย คิดค้น</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_011_7" model="res.partner.bank">
+            <field name="acc_number">502-1-70011-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_011'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">ดร.พิชัย คิดค้น</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -1167,6 +1947,36 @@
             <field name="acc_holder_name">ดร.ชนิดา เฉลียวฉลาด</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="user_bank_account_012_5" model="res.partner.bank">
+            <field name="acc_number">502-2-50012-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_012'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">ดร.ชนิดา เฉลียวฉลาด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_012_6" model="res.partner.bank">
+            <field name="acc_number">502-2-60012-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_012'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">ดร.ชนิดา เฉลียวฉลาด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_012_7" model="res.partner.bank">
+            <field name="acc_number">502-2-70012-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_012'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">ดร.ชนิดา เฉลียวฉลาด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- user_demo_013: อาจารย์ กิตติพงษ์ มานะดี -->
         <record id="user_bank_account_013_1" model="res.partner.bank">
@@ -1206,6 +2016,36 @@
                 search="[('user_ids', '=', ref('user_demo_013'))]"
             />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">อาจารย์ กิตติพงษ์ มานะดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_013_5" model="res.partner.bank">
+            <field name="acc_number">502-3-50013-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_013'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">อาจารย์ กิตติพงษ์ มานะดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_013_6" model="res.partner.bank">
+            <field name="acc_number">502-3-60013-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_013'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">อาจารย์ กิตติพงษ์ มานะดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_013_7" model="res.partner.bank">
+            <field name="acc_number">502-3-70013-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_013'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">อาจารย์ กิตติพงษ์ มานะดี</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -1251,6 +2091,36 @@
             <field name="acc_holder_name">อาจารย์ ธัญญา ขยันหมั่นเพียร</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="user_bank_account_014_5" model="res.partner.bank">
+            <field name="acc_number">502-4-50014-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_014'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">อาจารย์ ธัญญา ขยันหมั่นเพียร</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_014_6" model="res.partner.bank">
+            <field name="acc_number">502-4-60014-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_014'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">อาจารย์ ธัญญา ขยันหมั่นเพียร</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_014_7" model="res.partner.bank">
+            <field name="acc_number">502-4-70014-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_014'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">อาจารย์ ธัญญา ขยันหมั่นเพียร</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- user_demo_015: อาจารย์ ศิริพงษ์ ชาญฉลาด -->
         <record id="user_bank_account_015_1" model="res.partner.bank">
@@ -1290,6 +2160,36 @@
                 search="[('user_ids', '=', ref('user_demo_015'))]"
             />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">อาจารย์ ศิริพงษ์ ชาญฉลาด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_015_5" model="res.partner.bank">
+            <field name="acc_number">502-5-50015-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_015'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">อาจารย์ ศิริพงษ์ ชาญฉลาด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_015_6" model="res.partner.bank">
+            <field name="acc_number">502-5-60015-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_015'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">อาจารย์ ศิริพงษ์ ชาญฉลาด</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_015_7" model="res.partner.bank">
+            <field name="acc_number">502-5-70015-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_015'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">อาจารย์ ศิริพงษ์ ชาญฉลาด</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -1335,6 +2235,36 @@
             <field name="acc_holder_name">นางสาว อรุณี บริการดี</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="user_bank_account_016_5" model="res.partner.bank">
+            <field name="acc_number">502-6-50016-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_016'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">นางสาว อรุณี บริการดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_016_6" model="res.partner.bank">
+            <field name="acc_number">502-6-60016-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_016'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">นางสาว อรุณี บริการดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_016_7" model="res.partner.bank">
+            <field name="acc_number">502-6-70016-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_016'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">นางสาว อรุณี บริการดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- user_demo_017: นาย ประสิทธิ์ บัญชีดี -->
         <record id="user_bank_account_017_1" model="res.partner.bank">
@@ -1374,6 +2304,36 @@
                 search="[('user_ids', '=', ref('user_demo_017'))]"
             />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">นาย ประสิทธิ์ บัญชีดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_017_5" model="res.partner.bank">
+            <field name="acc_number">502-7-50017-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_017'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">นาย ประสิทธิ์ บัญชีดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_017_6" model="res.partner.bank">
+            <field name="acc_number">502-7-60017-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_017'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">นาย ประสิทธิ์ บัญชีดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_017_7" model="res.partner.bank">
+            <field name="acc_number">502-7-70017-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_017'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">นาย ประสิทธิ์ บัญชีดี</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -1419,6 +2379,36 @@
             <field name="acc_holder_name">นางสาว สุดารัตน์ ใส่ใจ</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="user_bank_account_018_5" model="res.partner.bank">
+            <field name="acc_number">502-8-50018-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_018'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">นางสาว สุดารัตน์ ใส่ใจ</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_018_6" model="res.partner.bank">
+            <field name="acc_number">502-8-60018-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_018'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">นางสาว สุดารัตน์ ใส่ใจ</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_018_7" model="res.partner.bank">
+            <field name="acc_number">502-8-70018-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_018'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">นางสาว สุดารัตน์ ใส่ใจ</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- user_demo_019: นาย วีระชัย ทำงานดี -->
         <record id="user_bank_account_019_1" model="res.partner.bank">
@@ -1458,6 +2448,36 @@
                 search="[('user_ids', '=', ref('user_demo_019'))]"
             />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">นาย วีระชัย ทำงานดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_019_5" model="res.partner.bank">
+            <field name="acc_number">502-9-50019-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_019'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">นาย วีระชัย ทำงานดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_019_6" model="res.partner.bank">
+            <field name="acc_number">502-9-60019-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_019'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">นาย วีระชัย ทำงานดี</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_019_7" model="res.partner.bank">
+            <field name="acc_number">502-9-70019-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_019'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">นาย วีระชัย ทำงานดี</field>
             <field name="allow_out_payment" eval="True" />
         </record>
@@ -1503,6 +2523,36 @@
             <field name="acc_holder_name">นางสาว ปิยะนุช เทคนิค</field>
             <field name="allow_out_payment" eval="True" />
         </record>
+        <record id="user_bank_account_020_5" model="res.partner.bank">
+            <field name="acc_number">503-0-50020-5</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_020'))]"
+            />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">นางสาว ปิยะนุช เทคนิค</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_020_6" model="res.partner.bank">
+            <field name="acc_number">503-0-60020-6</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_020'))]"
+            />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">นางสาว ปิยะนุช เทคนิค</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="user_bank_account_020_7" model="res.partner.bank">
+            <field name="acc_number">503-0-70020-7</field>
+            <field
+                name="partner_id"
+                search="[('user_ids', '=', ref('user_demo_020'))]"
+            />
+            <field name="bank_id" ref="bank_cimb" />
+            <field name="acc_holder_name">นางสาว ปิยะนุช เทคนิค</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
 
         <!-- ============================================================ -->
         <!-- Bank Accounts for Admin User                                 -->
@@ -1534,6 +2584,27 @@
             <field name="acc_number">900-0-00004-0</field>
             <field name="partner_id" ref="base.partner_admin" />
             <field name="bank_id" ref="account_kmitl.bank_kbank" />
+            <field name="acc_holder_name">Administrator</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="admin_bank_account_5" model="res.partner.bank">
+            <field name="acc_number">900-0-00005-0</field>
+            <field name="partner_id" ref="base.partner_admin" />
+            <field name="bank_id" ref="bank_bbl" />
+            <field name="acc_holder_name">Administrator</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="admin_bank_account_6" model="res.partner.bank">
+            <field name="acc_number">900-0-00006-0</field>
+            <field name="partner_id" ref="base.partner_admin" />
+            <field name="bank_id" ref="bank_tmb" />
+            <field name="acc_holder_name">Administrator</field>
+            <field name="allow_out_payment" eval="True" />
+        </record>
+        <record id="admin_bank_account_7" model="res.partner.bank">
+            <field name="acc_number">900-0-00007-0</field>
+            <field name="partner_id" ref="base.partner_admin" />
+            <field name="bank_id" ref="bank_cimb" />
             <field name="acc_holder_name">Administrator</field>
             <field name="allow_out_payment" eval="True" />
         </record>
