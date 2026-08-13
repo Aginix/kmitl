@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Reuses the o_approval_queue / o_aq_* classes from
+         accounting_kmitl_workflow's stylesheet: same bundle, same screen shape, so
+         a second copy of the same rules would only be a second thing to keep in
+         step. -->
+    <t t-name="finance_kmitl.ClearingQueue" owl="1">
+        <div class="o_approval_queue o_action_manager p-3">
+            <div class="d-flex align-items-center mb-3">
+                <h2 class="me-auto mb-0"><t t-esc="labels.title"/></h2>
+                <button class="btn btn-primary" t-att-disabled="!submittableIds.length"
+                        t-on-click="submitSelected">
+                    <t t-esc="labels.submitSelected"/>
+                    (<t t-esc="submittableIds.length"/>)
+                </button>
+            </div>
+
+            <!-- The stage being looked at. First because it is the question the
+                 register is opened to answer; the rest of the bar narrows it. -->
+            <div class="btn-group mb-3" role="group">
+                <button class="btn" t-att-class="isStage('to_book') ? 'btn-primary' : 'btn-outline-primary'"
+                        t-on-click="() => this.setStage('to_book')">
+                    <t t-esc="labels.stageToBook"/>
+                </button>
+                <button class="btn" t-att-class="isStage('to_approve') ? 'btn-primary' : 'btn-outline-primary'"
+                        t-on-click="() => this.setStage('to_approve')">
+                    <t t-esc="labels.stageToApprove"/>
+                </button>
+                <button class="btn" t-att-class="isStage('posted') ? 'btn-primary' : 'btn-outline-primary'"
+                        t-on-click="() => this.setStage('posted')">
+                    <t t-esc="labels.stagePosted"/>
+                </button>
+                <button class="btn" t-att-class="isStage('all') ? 'btn-primary' : 'btn-outline-primary'"
+                        t-on-click="() => this.setStage('all')">
+                    <t t-esc="labels.stageAll"/>
+                </button>
+            </div>
+
+            <div class="o_aq_filters row g-2 mb-3">
+                <div class="col-md-3">
+                    <label class="o_form_label"><t t-esc="labels.fiscalYear"/></label>
+                    <select class="form-select" t-on-change="onFiscalYearChange">
+                        <option value="">/</option>
+                        <option t-foreach="fiscalYears" t-as="fy" t-key="fy.id"
+                                t-att-value="fy.id"
+                                t-att-selected="isFiscalYearSelected(fy.id)">
+                            <t t-esc="fy.name"/>
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="o_form_label"><t t-esc="labels.dateFrom"/></label>
+                    <input type="date" class="form-control"
+                           t-att-value="state.dateFrom" t-on-change="onDateFromChange"/>
+                </div>
+                <div class="col-md-2">
+                    <label class="o_form_label"><t t-esc="labels.dateTo"/></label>
+                    <input type="date" class="form-control"
+                           t-att-value="state.dateTo" t-on-change="onDateToChange"/>
+                </div>
+                <div class="col-md-5">
+                    <label class="o_form_label"><t t-esc="labels.payingAccounts"/></label>
+                    <MultiRecordSelect resModel="'account.payment.method.line'"
+                        domain="[['payment_type', '=', 'outbound']]"
+                        placeholder="labels.payingAccounts" selected="state.payingAccounts"
+                        onChange="(sel) => this.onSelectionChange('payingAccounts', sel)"/>
+                </div>
+
+                <div class="col-12">
+                    <button class="btn btn-link p-0" t-on-click="toggleAdvanced">
+                        <i t-att-class="state.showAdvanced ? 'fa fa-caret-down me-1' : 'fa fa-caret-right me-1'"/>
+                        <t t-if="state.showAdvanced"><t t-esc="labels.hideFilters"/></t>
+                        <t t-else=""><t t-esc="labels.moreFilters"/></t>
+                    </button>
+                </div>
+                <t t-if="state.showAdvanced">
+                    <div class="col-md-3">
+                        <label class="o_form_label"><t t-esc="labels.partners"/></label>
+                        <MultiRecordSelect resModel="'res.partner'"
+                            placeholder="labels.partners" selected="state.partners"
+                            onChange="(sel) => this.onSelectionChange('partners', sel)"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label"><t t-esc="labels.departments"/></label>
+                        <MultiRecordSelect resModel="'account.analytic.account'"
+                            domain="[['root_plan_id.code', '=', 'departments']]"
+                            placeholder="labels.departments" selected="state.departments"
+                            onChange="(sel) => this.onSelectionChange('departments', sel)"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label"><t t-esc="labels.sources"/></label>
+                        <MultiRecordSelect resModel="'account.analytic.account'"
+                            domain="[['root_plan_id.code', '=', 'sources']]"
+                            placeholder="labels.sources" selected="state.sources"
+                            onChange="(sel) => this.onSelectionChange('sources', sel)"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label"><t t-esc="labels.funds"/></label>
+                        <MultiRecordSelect resModel="'account.analytic.account'"
+                            domain="[['root_plan_id.code', '=', 'funds']]"
+                            placeholder="labels.funds" selected="state.funds"
+                            onChange="(sel) => this.onSelectionChange('funds', sel)"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label"><t t-esc="labels.activities"/></label>
+                        <MultiRecordSelect resModel="'account.analytic.account'"
+                            domain="[['root_plan_id.code', '=', 'activities']]"
+                            placeholder="labels.activities" selected="state.activities"
+                            onChange="(sel) => this.onSelectionChange('activities', sel)"/>
+                    </div>
+                </t>
+            </div>
+
+            <t t-if="state.loading">
+                <div class="text-center p-5">
+                    <span class="spinner-border" role="status"/>
+                </div>
+            </t>
+            <t t-elif="!state.payments.length">
+                <div class="text-center text-muted p-5">
+                    <t t-esc="labels.empty"/>
+                </div>
+            </t>
+            <t t-else="">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 32px;">
+                                <input type="checkbox" t-att-checked="allSelected"
+                                       t-on-click.stop="toggleSelectAll"/>
+                            </th>
+                            <th style="width: 24px;"/>
+                            <th><t t-esc="labels.number"/></th>
+                            <th><t t-esc="labels.date"/></th>
+                            <th><t t-esc="labels.payee"/></th>
+                            <th><t t-esc="labels.payingAccount"/></th>
+                            <th class="text-end"><t t-esc="labels.amount"/></th>
+                            <th><t t-esc="labels.financeState"/></th>
+                            <th><t t-esc="labels.accountingState"/></th>
+                            <th class="text-end"><t t-esc="labels.actions"/></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="state.payments" t-as="payment" t-key="payment.id">
+                            <tr class="o_aq_row" t-on-click="() => this.toggleExpand(payment)">
+                                <td>
+                                    <input type="checkbox" t-att-checked="isSelected(payment.id)"
+                                           t-on-click.stop="() => this.toggleSelect(payment.id)"/>
+                                </td>
+                                <td>
+                                    <i class="fa" t-att-class="state.expandedId === payment.id ? 'fa-caret-down' : 'fa-caret-right'"/>
+                                </td>
+                                <td t-esc="payment.name"/>
+                                <td t-esc="payment.date"/>
+                                <td t-esc="displayName(payment.partner_id)"/>
+                                <td t-esc="displayName(payment.payment_method_line_id)"/>
+                                <td class="text-end" t-esc="formatCurrency(payment.amount)"/>
+                                <td>
+                                    <span class="badge" t-att-class="financeBadge(payment)"
+                                          t-esc="payment.finance_state"/>
+                                </td>
+                                <td>
+                                    <span class="badge" t-att-class="accountingBadge(payment)"
+                                          t-esc="payment.display_state"/>
+                                </td>
+                                <td class="text-end text-nowrap">
+                                    <button class="btn btn-sm btn-outline-secondary me-1"
+                                            t-on-click.stop="() => this.openMove(payment)">
+                                        <i class="fa fa-external-link me-1"/><t t-esc="labels.open"/>
+                                    </button>
+                                    <button t-if="canSubmit(payment)"
+                                            class="btn btn-sm btn-primary"
+                                            t-on-click.stop="() => this.submit(payment)">
+                                        <t t-esc="labels.submit"/>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr t-if="state.expandedId === payment.id" class="o_aq_detail">
+                                <td colspan="10" class="p-0">
+                                    <div class="p-3 bg-light border-top">
+                                        <div class="row mb-2">
+                                            <div class="col-md-6">
+                                                <div><strong><t t-esc="labels.submittedBy"/>:</strong>
+                                                    <t t-esc="displayName(payment.submitted_by)"/></div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div><strong><t t-esc="labels.department"/>:</strong> <t t-esc="displayName(payment.department_analytic_id)"/></div>
+                                                <div><strong><t t-esc="labels.source"/>:</strong> <t t-esc="displayName(payment.source_analytic_id)"/></div>
+                                                <div><strong><t t-esc="labels.fund"/>:</strong> <t t-esc="displayName(payment.fund_analytic_id)"/></div>
+                                                <div><strong><t t-esc="labels.activity"/>:</strong> <t t-esc="displayName(payment.activity_analytic_id)"/></div>
+                                            </div>
+                                        </div>
+                                        <table class="table table-sm table-bordered mb-0 bg-white">
+                                            <thead>
+                                                <tr>
+                                                    <th><t t-esc="labels.account"/></th>
+                                                    <th><t t-esc="labels.label"/></th>
+                                                    <th class="text-end"><t t-esc="labels.debit"/></th>
+                                                    <th class="text-end"><t t-esc="labels.credit"/></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="state.linesByPayment[payment.id] || []" t-as="line" t-key="line.id">
+                                                    <tr>
+                                                        <td t-esc="displayName(line.account_id)"/>
+                                                        <td t-esc="line.name"/>
+                                                        <td class="text-end" t-esc="formatCurrency(line.debit)"/>
+                                                        <td class="text-end" t-esc="formatCurrency(line.credit)"/>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </t>
+        </div>
+    </t>
+
+</templates>

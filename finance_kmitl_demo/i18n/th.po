@@ -1,0 +1,157 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* finance_kmitl_demo
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-11 00:00+0000\n"
+"PO-Revision-Date: 2026-08-11 00:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: finance_kmitl_demo
+#: model:ir.model,name:finance_kmitl_demo.model_finance_kmitl_demo_regen_wizard
+msgid "Regenerate KMITL Demo Data"
+msgstr "สร้างข้อมูลตัวอย่าง KMITL ใหม่"
+
+#. module: finance_kmitl_demo
+#: model:ir.actions.act_window,name:finance_kmitl_demo.action_finance_kmitl_demo_regen_wizard
+#: model:ir.ui.menu,name:finance_kmitl_demo.menu_finance_kmitl_demo_regen
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_demo.finance_kmitl_demo_regen_wizard_form
+#: code:addons/finance_kmitl_demo/wizards/demo_regen_wizard.py:0
+#, python-format
+msgid "Regenerate Demo Data"
+msgstr "สร้างข้อมูลตัวอย่างใหม่"
+
+#. module: finance_kmitl_demo
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_demo.finance_kmitl_demo_regen_wizard_form
+msgid "Regenerate"
+msgstr "สร้างใหม่"
+
+#. module: finance_kmitl_demo
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_demo.finance_kmitl_demo_regen_wizard_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: finance_kmitl_demo
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_demo.finance_kmitl_demo_regen_wizard_form
+msgid "Stories to regenerate"
+msgstr "ชุดข้อมูลที่จะสร้างใหม่"
+
+#. module: finance_kmitl_demo
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_demo.finance_kmitl_demo_regen_wizard_form
+msgid ""
+"This appends a fresh batch of demo records. It deletes nothing and resets "
+"nothing, so previous batches stay in place."
+msgstr ""
+"การทำงานนี้จะเพิ่มข้อมูลตัวอย่างชุดใหม่ต่อท้าย ไม่มีการลบและไม่มีการรีเซ็ต "
+"ข้อมูลชุดเดิมจะยังอยู่ครบ"
+
+#. module: finance_kmitl_demo
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_demo.finance_kmitl_demo_regen_wizard_form
+msgid ""
+"The vendor bills and depreciation entries it posts cannot be undone from the "
+"interface. To get back to a single pristine dataset, recreate the database "
+"instead."
+msgstr ""
+"ใบตั้งหนี้และรายการค่าเสื่อมราคาที่ลงบัญชีแล้วไม่สามารถย้อนกลับจากหน้าจอได้ "
+"หากต้องการข้อมูลตัวอย่างชุดเดียวที่สะอาด ให้สร้างฐานข้อมูลใหม่แทน"
+
+#. module: finance_kmitl_demo
+#: model:ir.model.fields,field_description:finance_kmitl_demo.field_finance_kmitl_demo_regen_wizard__story_sarabun_org
+#: code:addons/finance_kmitl_demo/wizards/demo_regen_wizard.py:0
+#, python-format
+msgid "e-Saraban organisation master data"
+msgstr "ข้อมูลหลักโครงสร้างสารบรรณอิเล็กทรอนิกส์"
+
+#. module: finance_kmitl_demo
+#: model:ir.model.fields,help:finance_kmitl_demo.field_finance_kmitl_demo_regen_wizard__story_sarabun_org
+msgid ""
+"Positions, document offices and registers. This story is idempotent (it "
+"searches before creating), so re-running it is safe."
+msgstr ""
+"ตำแหน่ง หน่วยงานสารบรรณ และทะเบียนหนังสือ "
+"ชุดข้อมูลนี้ทำงานซ้ำได้ (ค้นหาก่อนสร้าง) จึงเรียกซ้ำได้อย่างปลอดภัย"
+
+#. module: finance_kmitl_demo
+#: model:ir.model.fields,field_description:finance_kmitl_demo.field_finance_kmitl_demo_regen_wizard__story_purchase_e2e
+#: code:addons/finance_kmitl_demo/wizards/demo_regen_wizard.py:0
+#, python-format
+msgid "Purchase end-to-end flow"
+msgstr "กระบวนการจัดซื้อตั้งแต่ต้นจนจบ"
+
+#. module: finance_kmitl_demo
+#: model:ir.model.fields,help:finance_kmitl_demo.field_finance_kmitl_demo_regen_wizard__story_purchase_e2e
+msgid "Purchase requests driven through to purchase orders."
+msgstr "ใบขอซื้อที่ดำเนินการต่อเนื่องไปจนถึงใบสั่งซื้อ"
+
+#. module: finance_kmitl_demo
+#: model:ir.model.fields,field_description:finance_kmitl_demo.field_finance_kmitl_demo_regen_wizard__story_disbursement
+#: code:addons/finance_kmitl_demo/wizards/demo_regen_wizard.py:0
+#, python-format
+msgid "Disbursement flow and vendor bills"
+msgstr "กระบวนการขอเบิกและการตั้งหนี้"
+
+#. module: finance_kmitl_demo
+#: model:ir.model.fields,help:finance_kmitl_demo.field_finance_kmitl_demo_regen_wizard__story_disbursement
+msgid ""
+"Purchase request through to disbursement request, then vendor bills created "
+"and posted, leaving each request at 'Bills Posted'."
+msgstr ""
+"ใบขอซื้อต่อเนื่องไปจนถึงใบขอเบิก แล้วสร้างและลงบัญชีใบตั้งหนี้ "
+"โดยทิ้งใบขอเบิกไว้ที่สถานะ 'ตั้งหนี้ครบ'"
+
+#. module: finance_kmitl_demo
+#: model:ir.model.fields,field_description:finance_kmitl_demo.field_finance_kmitl_demo_regen_wizard__story_assets
+#: code:addons/finance_kmitl_demo/wizards/demo_regen_wizard.py:0
+#, python-format
+msgid "Fixed assets and depreciation"
+msgstr "สินทรัพย์ถาวรและค่าเสื่อมราคา"
+
+#. module: finance_kmitl_demo
+#: model:ir.model.fields,help:finance_kmitl_demo.field_finance_kmitl_demo_regen_wizard__story_assets
+msgid ""
+"Assets built against the KMITL asset profiles, validated and depreciated for "
+"the periods that are already due."
+msgstr ""
+"สินทรัพย์ที่สร้างตามรูปแบบสินทรัพย์ของ สจล. ผ่านการตรวจสอบ "
+"และคิดค่าเสื่อมราคาสำหรับงวดที่ถึงกำหนดแล้ว"
+
+#. module: finance_kmitl_demo
+#: model:ir.model.fields,field_description:finance_kmitl_demo.field_finance_kmitl_demo_regen_wizard__run_count
+msgid "Previous manual runs"
+msgstr "จำนวนครั้งที่สร้างใหม่ด้วยตนเอง"
+
+#. module: finance_kmitl_demo
+#: model:ir.model.fields,help:finance_kmitl_demo.field_finance_kmitl_demo_regen_wizard__run_count
+msgid ""
+"How many times demo data has already been regenerated from this wizard on "
+"this database. Batches are told apart by their creation date."
+msgstr ""
+"จำนวนครั้งที่ข้อมูลตัวอย่างถูกสร้างใหม่จากหน้าต่างนี้บนฐานข้อมูลนี้ "
+"แยกแต่ละชุดได้จากวันที่สร้าง"
+
+#. module: finance_kmitl_demo
+#: code:addons/finance_kmitl_demo/wizards/demo_regen_wizard.py:0
+#, python-format
+msgid "Select at least one demo story to regenerate."
+msgstr "กรุณาเลือกชุดข้อมูลตัวอย่างที่ต้องการสร้างใหม่อย่างน้อยหนึ่งชุด"
+
+#. module: finance_kmitl_demo
+#: code:addons/finance_kmitl_demo/wizards/demo_regen_wizard.py:0
+#, python-format
+msgid "%s demo story(ies) regenerated."
+msgstr "สร้างชุดข้อมูลตัวอย่างใหม่แล้ว %s ชุด"
+
+#. module: finance_kmitl_demo
+#: code:addons/finance_kmitl_demo/wizards/demo_regen_wizard.py:0
+#, python-format
+msgid "Could not regenerate:"
+msgstr "ไม่สามารถสร้างใหม่ได้:"

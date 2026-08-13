@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL - Accounting",
-    "version": "16.0.1.0.8",
+    "version": "16.0.1.0.9",
     "category": "Accounting/Localizations/Account Charts",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

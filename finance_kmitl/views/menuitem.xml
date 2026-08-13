@@ -10,11 +10,19 @@
         groups="finance_kmitl.group_finance_kmitl_user_in,finance_kmitl.group_finance_kmitl_user_out"
     />
 
-    <!-- Action: account.payment outbound -->
+    <!-- Action: account.payment outbound.
+         Bound to the finance office's own list and search views (written from
+         scratch, not inherited from core's) — see account_payment_list_views.xml.
+         The other view types fall back to core's. -->
     <record id="action_account_payment_outbound" model="ir.actions.act_window">
         <field name="name">จ่ายเงิน</field>
         <field name="res_model">account.payment</field>
         <field name="view_mode">tree,kanban,form,graph</field>
+        <field name="view_id" ref="finance_kmitl.view_account_payment_tree_kmitl" />
+        <field
+            name="search_view_id"
+            ref="finance_kmitl.view_account_payment_search_kmitl"
+        />
         <field name="domain">[('payment_type', '=', 'outbound')]</field>
         <field name="context">{
             'default_payment_type': 'outbound',
@@ -154,6 +162,20 @@
         parent="menu_payment_settings"
         action="action_cheque_layout"
         sequence="15"
+    />
+    <menuitem
+        id="menu_settings_paying_account"
+        name="Paying Accounts"
+        parent="menu_payment_settings"
+        action="action_kmitl_paying_account"
+        sequence="6"
+    />
+    <menuitem
+        id="menu_settings_payment_subject"
+        name="Payment Subjects"
+        parent="menu_payment_settings"
+        action="action_kmitl_payment_subject"
+        sequence="7"
     />
 
 </odoo>

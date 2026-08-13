@@ -7,6 +7,11 @@
     so nothing there put a bank behind either the institute's own accounts or a
     payee's — and the e-payment file has to name the bank on both sides.
 
+    ``hooks._seed_bank_accounts`` matches its table against these by BIC to
+    attach each paying account to its bank, and that bank is what auto-matching
+    compares a payee's own bank against and what the e-payment file names as the
+    sending bank.
+
     The BIC is the key on purpose: it is what the bank export modules themselves
     switch on (``KRTHTHBK`` for KTB, ``SICOTHBK`` for SCB, …), so a record that
     carries the right one is a record those modules already recognise. The demo

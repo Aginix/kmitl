@@ -2,11 +2,11 @@
 
 {
     "name": "Disbursement ↔ KMITL Finance Bridge",
-    "version": "16.0.2.0.0",
+    "version": "16.0.4.0.0",
     "category": "KMITL/Finance",
     "summary": "DR ↔ Payment: post-bill payment-execution workflow "
-    "(audit → authorize → pay → clear), WHT, e-payment result, and "
-    "pipeline status sync",
+    "(audit → authorize → pay → clear), payee-level paying account, WHT, "
+    "e-payment result, and pipeline status sync",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
     "license": "LGPL-3",
@@ -15,11 +15,13 @@
         "finance_kmitl",
         "disbursement_accounting_kmitl",
         "accounting_kmitl_workflow",
+        "tracking_manager",
     ],
     "data": [
         "security/security.xml",
         "security/ir.model.access.csv",
         "data/mail_activity_type.xml",
+        "data/disbursement_payment_line_tracking.xml",
         "views/disbursement_request_views.xml",
         "views/disbursement_queue_views.xml",
     ],
