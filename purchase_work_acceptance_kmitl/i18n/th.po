@@ -542,7 +542,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__purchase_invoice_plan__wa_state__in_review
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance__state__in_review
 msgid "In Review"
-msgstr "อยู่ระหว่างการตรวจสอบ"
+msgstr "อยู่ระหว่างการตรวจรับ"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model,name:purchase_work_acceptance_kmitl.model_purchase_invoice_plan
