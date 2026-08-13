@@ -12,10 +12,11 @@
     </record>
 
     <!-- Oversight inbox — group Todos I can see but that fall outside my
-         notification scope. Gated by the same "all OUs" group as the OU
-         columns above: without wide OU visibility a user cannot have oversight
-         Todos anyway (view scope = notification scope), so the menu would be
-         empty. Regular users don't see the extra menu at all (Q8-ข). -->
+         notification scope. Open to every internal user: after ADR-0007 even
+         a regular multi-OU member can narrow their notification scope and
+         create oversight Todos, so gating on group_all_ou_todo /
+         group_manager_operating_unit would strand those Todos. Users without
+         any oversight just see the empty-state screen. -->
     <record id="action_my_oversight_todos" model="ir.actions.act_window">
         <field name="name">Oversight</field>
         <field name="res_model">mail.activity</field>
@@ -41,7 +42,6 @@
         name="อื่นๆ ที่เกี่ยวข้อง"
         parent="mail_activity_todo.menu_my_todos_root"
         action="action_my_oversight_todos"
-        groups="mail_activity_todo_role_unit.group_all_ou_todo,operating_unit.group_manager_operating_unit"
         sequence="5"
     />
 
