@@ -61,11 +61,6 @@ msgid "Group"
 msgstr "กลุ่ม"
 
 #. module: mail_activity_todo_role_unit
-#: model_terms:ir.actions.act_window,help:mail_activity_todo_role_unit.action_my_oversight_todos
-msgid "Group Todos in Operating Units you can see but haven't opted to be notified for."
-msgstr "งาน Todo กลุ่มของหน่วยงานที่คุณมองเห็นข้อมูลได้ แต่ไม่ได้เลือกให้แจ้งเตือน"
-
-#. module: mail_activity_todo_role_unit
 #: model:ir.model.fields,field_description:mail_activity_todo_role_unit.field_mail_activity__is_my_primary_todo
 msgid "Is My Primary Todo"
 msgstr "เป็น Todo หลักของฉัน"
@@ -99,12 +94,6 @@ msgstr "หนึ่งกติกาต่อคู่ (ผู้ใช้, �
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo_role_unit.view_todo_log_search_role_unit
 msgid "Operating Unit"
 msgstr "หน่วยปฏิบัติการ"
-
-#. module: mail_activity_todo_role_unit
-#: model:ir.actions.act_window,name:mail_activity_todo_role_unit.action_my_oversight_todos
-#: model:ir.ui.menu,name:mail_activity_todo_role_unit.menu_todo_oversight
-msgid "Oversight"
-msgstr "อื่นๆ ที่เกี่ยวข้อง"
 
 #. module: mail_activity_todo_role_unit
 #: model:ir.model.fields,help:mail_activity_todo_role_unit.field_res_users__todo_notify_rule_ids
@@ -182,11 +171,6 @@ msgstr "เมื่อกำหนดพร้อมกับหน่วยง
 #: model:ir.model.fields,help:mail_activity_todo_role_unit.field_res_users_todo_notify_rule__mode
 msgid "all_ous: widen to every OU the user can see, overriding the OU scope. mute: drop from the primary inbox (still visible under 'Oversight' if the user could see it)."
 msgstr "all_ous: ขยายขอบเขตให้ครอบคลุมทุก OU ที่ผู้ใช้เห็น (เขียนทับขอบเขต OU) mute: ตัดออกจากกล่องจดหมายเข้าหลัก (ยังเห็นได้ในเมนู 'อื่นๆ ที่เกี่ยวข้อง' ถ้าผู้ใช้มีสิทธิ์เห็น)"
-
-#. module: mail_activity_todo_role_unit
-#: model_terms:ir.actions.act_window,help:mail_activity_todo_role_unit.action_my_oversight_todos
-msgid "งานอยู่นอกขอบเขตแจ้งเตือนของคุณ ไม่มีอะไรค้าง"
-msgstr "งานอยู่นอกขอบเขตแจ้งเตือนของคุณ ไม่มีอะไรค้าง"
 
 #. module: mail_activity_todo_role_unit
 #: model:ir.model.fields.selection,name:mail_activity_todo_role_unit.selection__res_users_todo_notify_rule__mode__mute
