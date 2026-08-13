@@ -561,6 +561,33 @@ class TestPaymentWorkflow(TransactionCase):
 class TestPaymentSubject(TransactionCase):
     """The subject's own derivation, away from a disbursement."""
 
+    def test_every_payment_subject_is_seeded_and_bound(self):
+        """The เรื่องที่จ่าย are made by finance_kmitl's post-init hook, which looks
+        its หัวจ่าย up by (chart code, วิธีจ่าย) instead of by external id — a data
+        file that ref'd those ids failed to install on any database whose chart was
+        set up before account_kmitl published them. What has to hold either way is
+        that each subject exists under the external id the rest of the system names
+        it by, and that it actually points at a paying account."""
+        for slug in (
+            "salary",
+            "advance_reimburse",
+            "vendor_direct",
+            "utilities",
+            "cash",
+        ):
+            xml_id = "finance_kmitl.payment_subject_%s" % slug
+            subject = self.env.ref(xml_id, raise_if_not_found=False)
+            self.assertTrue(subject, "%s was not seeded" % xml_id)
+            self.assertTrue(
+                subject.default_paying_account_id,
+                "%s has no main/fallback paying account" % xml_id,
+            )
+            self.assertEqual(
+                subject.default_paying_account_id.payment_method_id,
+                subject.default_payment_method_id,
+                "%s falls back to an account paid another way" % xml_id,
+            )
+
     def test_fallback_is_used_when_no_allowed_account_matches(self):
         subject = self.env.ref("finance_kmitl.payment_subject_advance_reimburse")
         other_bank = self.env["res.bank"].create(

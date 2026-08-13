@@ -27,7 +27,6 @@
         "security/ir.model.access.csv",
         "data/mail_activity_type.xml",
         "data/kmitl_payment_type_data.xml",
-        "data/kmitl_payment_subject_data.xml",
         "data/cheque_register_sequence.xml",
         "views/kmitl_payment_type_views.xml",
         "views/kmitl_payment_subject_views.xml",
@@ -54,6 +53,11 @@
             "finance_kmitl/static/src/clearing_queue/clearing_queue.xml",
         ],
     },
+    # The เรื่องที่จ่าย are seeded here rather than in a data file: they name
+    # หัวจ่าย that account_kmitl publishes external ids for only when *it* is
+    # installed, so a ref would fail to load on any database whose chart predates
+    # that. See hooks.py.
+    "post_init_hook": "post_init_hook",
     "installable": True,
     "application": True,
 }
