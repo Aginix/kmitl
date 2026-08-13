@@ -1840,7 +1840,7 @@ msgstr ""
 #. module: purchase_order_kmitl
 #: model:ir.model.fields.selection,name:purchase_order_kmitl.selection__purchase_order__state__purchase
 msgid "In Progress"
-msgstr "อยู่ระหว่างดำเนินการ"
+msgstr "อยู่ระหว่างดำเนินงาน"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__order_id
