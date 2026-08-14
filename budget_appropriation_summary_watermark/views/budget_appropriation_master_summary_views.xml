@@ -12,22 +12,33 @@
             ref="budget_appropriation_summary.view_budget_appropriation_master_summary_form"
         />
         <field name="arch" type="xml">
-            <button name="action_print_report" position="after">
-                <button
-                    name="action_print_report_watermark"
-                    string="พิมพ์พร้อมลายน้ำ"
-                    type="object"
-                    class="btn-secondary"
-                    attrs="{'invisible': ['|', ('passed_council', '=', False), ('watermark_text', '=', False)]}"
-                />
-            </button>
-            <field name="council_meeting_date" position="after">
-                <field name="passed_council" />
+            <xpath expr="//page[@name='final_document']/group" position="inside">
                 <field
-                    name="watermark_text"
-                    attrs="{'invisible': [('passed_council', '=', False)]}"
+                    name="watermark_pdf"
+                    filename="watermark_pdf_filename"
+                    widget="pdf_viewer"
                 />
-            </field>
+                <field name="watermark_pdf_filename" invisible="1" />
+            </xpath>
+            <xpath expr="//page[@name='final_document']/group" position="after">
+                <button
+                    name="action_generate_watermarked"
+                    type="object"
+                    string="ทำลายน้ำ &amp; เผยแพร่"
+                    class="btn-primary"
+                    attrs="{'invisible': ['|', ('final_document', '=', False), ('watermark_pdf', '=', False)]}"
+                />
+                <group string="ฉบับเผยแพร่พร้อมลายน้ำ">
+                    <field
+                        name="final_document_watermarked"
+                        filename="final_document_watermarked_filename"
+                    />
+                    <field
+                        name="final_document_watermarked_filename"
+                        invisible="1"
+                    />
+                </group>
+            </xpath>
         </field>
     </record>
 
