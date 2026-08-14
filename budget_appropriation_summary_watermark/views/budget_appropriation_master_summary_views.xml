@@ -19,6 +19,10 @@
                     widget="pdf_viewer"
                 />
                 <field name="watermark_pdf_filename" invisible="1" />
+                <field
+                    name="watermark_pages"
+                    placeholder="เช่น 2,3,7,60-90 (เว้นว่าง = ทุกหน้า)"
+                />
             </xpath>
             <xpath expr="//page[@name='final_document']/group" position="after">
                 <button

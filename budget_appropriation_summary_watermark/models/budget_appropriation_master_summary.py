@@ -16,6 +16,11 @@ class BudgetAppropriationMasterSummary(models.Model):
         "ระบบจะซ้อนทับบนทุกหน้าของไฟล์ฉบับสมบูรณ์",
     )
     watermark_pdf_filename = fields.Char(string="ชื่อไฟล์ลายน้ำ")
+    watermark_pages = fields.Char(
+        string="หน้าที่ใส่ลายน้ำ",
+        help='ระบุเลขหน้าที่จะใส่ลายน้ำ เช่น "2,3,7,60-90" '
+        "(เว้นว่าง = ใส่ทุกหน้า) เลขหน้าเริ่มที่ 1",
+    )
     final_document_watermarked = fields.Binary(
         string="ไฟล์ฉบับสมบูรณ์ (พร้อมลายน้ำ)",
         attachment=True,
@@ -27,17 +32,20 @@ class BudgetAppropriationMasterSummary(models.Model):
         string="ชื่อไฟล์ฉบับเผยแพร่",
     )
 
-    @api.onchange("final_document", "watermark_pdf")
+    @api.onchange("final_document", "watermark_pdf", "watermark_pages")
     def _onchange_clear_watermarked(self):
-        """A published copy is stale once either input changes — drop it."""
+        """A published copy is stale once any input changes — drop it."""
         self.final_document_watermarked = False
         self.final_document_watermarked_filename = False
 
     def write(self, vals):
-        # Re-uploading the source or the watermark invalidates the published copy,
-        # unless this very write is the one publishing it.
+        # Re-uploading the source or the watermark, or changing the page
+        # selection, invalidates the published copy — unless this very write is
+        # the one publishing it.
         if (
-            "final_document" in vals or "watermark_pdf" in vals
+            "final_document" in vals
+            or "watermark_pdf" in vals
+            or "watermark_pages" in vals
         ) and "final_document_watermarked" not in vals:
             vals = dict(
                 vals,
@@ -55,6 +63,7 @@ class BudgetAppropriationMasterSummary(models.Model):
         watermarked = self._apply_pdf_watermark(
             base64.b64decode(self.final_document),
             base64.b64decode(self.watermark_pdf),
+            self.watermark_pages,
         )
         self.write(
             {
@@ -69,8 +78,35 @@ class BudgetAppropriationMasterSummary(models.Model):
             base_name = base_name[:-4]
         return f"{base_name}-ลายน้ำ.pdf"
 
-    def _apply_pdf_watermark(self, document_bytes, watermark_bytes):
-        """Overlay the watermark's first page on top of every document page.
+    @api.model
+    def _parse_page_ranges(self, spec):
+        """Parse a print-style page spec ("2,3,7,60-90") into a set of 1-based ints.
+
+        Returns None when the spec is empty (meaning "all pages"). Raises a
+        friendly error on malformed input.
+        """
+        if not spec or not spec.strip():
+            return None
+        pages = set()
+        for token in spec.split(","):
+            token = token.strip()
+            if not token:
+                continue
+            start, sep, end = token.partition("-")
+            start, end = start.strip(), (end.strip() if sep else start.strip())
+            if not start.isdigit() or not end.isdigit():
+                raise UserError(
+                    _('รูปแบบหน้าไม่ถูกต้อง: "%s" (ตัวอย่างที่ถูก: 2,3,7,60-90)')
+                    % token
+                )
+            first, last = int(start), int(end)
+            if first > last:
+                first, last = last, first
+            pages.update(range(first, last + 1))
+        return pages
+
+    def _apply_pdf_watermark(self, document_bytes, watermark_bytes, page_spec=None):
+        """Overlay the watermark's first page on top of the selected document pages.
 
         The watermark is scaled **uniformly** (aspect-preserving) to fit each
         target page — never stretched. Portrait pages anchor it to the
@@ -94,9 +130,15 @@ class BudgetAppropriationMasterSummary(models.Model):
         if not watermark_pages:
             raise UserError(_("ไฟล์ลายน้ำไม่มีหน้าเนื้อหา"))
 
+        selected = self._parse_page_ranges(page_spec)
+
         writer = PdfFileWriter()
         for index in range(document_pages):
             page = reader.getPage(index)
+            # Pages outside the selection are copied through untouched.
+            if selected is not None and (index + 1) not in selected:
+                writer.addPage(page)
+                continue
             if "/Annots" in page:
                 del page["/Annots"]
             # Re-read a clean watermark page per target so PyPDF2 never carries
