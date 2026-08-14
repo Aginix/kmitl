@@ -18,7 +18,7 @@
                     </div>
                 </button>
             </xpath>
-            <xpath expr="//field[@name='account_id']" position="after">
+            <xpath expr="//field[@name='ref']" position="after">
                 <field name="kmitl_project_id" string="KMITL Project"
                     options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" />
             </xpath>

@@ -88,7 +88,7 @@
                                 required="1" />
                             <field name="company_id" groups="base.group_multi_company" />
                         </group>
-                        <group name="budget_details" string="Budget Details">
+                        <group name="analytic_dimensions" string="Analytic Dimensions">
                             <field name="account_fiscal_year_id" widget="selection"
                                 attrs="{'readonly': [('id', '!=', False)]}" />
                             <field name="source_analytic_id" required="1"
@@ -98,6 +98,10 @@
                             <field name="fund_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
                             <field name="department_analytic_id" required="1"
+                                options="{'no_create': True, 'no_open': True}" />
+                            <field name="kmitl_project_analytic_id"
+                                options="{'no_create': True, 'no_open': True}" />
+                            <field name="procurement_plan_analytic_id"
                                 options="{'no_create': True, 'no_open': True}" />
                             <field name="account_id"
                                 options="{'no_create': True, 'no_open': True}"
