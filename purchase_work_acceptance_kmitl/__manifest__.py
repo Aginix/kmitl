@@ -18,6 +18,7 @@
         'l10n_th_amount_to_text',
         'purchase_kmitl',
         'purchase_order_received_qty_percent',
+        'purchase_contract_kmitl',
     ],
     "data": [
         "security/ir.model.access.csv",
