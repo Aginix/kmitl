@@ -131,6 +131,11 @@ msgstr "รายการจ่ายเงิน"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model,name:disbursement_finance_kmitl.model_disbursement_request
+#: code:addons/disbursement_finance_kmitl/models/account_move.py:0
+#: code:addons/disbursement_finance_kmitl/models/account_payment.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_account_move_form_inherit_disbursement_payment
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_account_payment_form_inherit_disbursement
+#, python-format
 msgid "Disbursement Request"
 msgstr "ใบขอเบิก"
 
@@ -298,12 +303,6 @@ msgid "Payment Posted"
 msgstr "จ่าย - ลงบัญชี"
 
 #. module: disbursement_finance_kmitl
-#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
-#, python-format
-msgid "Payment Review"
-msgstr "ตรวจทานก่อนสร้างใบจ่าย"
-
-#. module: disbursement_finance_kmitl
 #: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_status_display
 msgid "Payment Status"
 msgstr "สถานะการจ่ายเงิน"
@@ -326,11 +325,6 @@ msgstr "ใบจ่ายเงิน"
 #: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_payment_line__partner_bank_id
 msgid "Recipient Bank"
 msgstr "บัญชีธนาคารผู้รับ"
-
-#. module: disbursement_finance_kmitl
-#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
-msgid "Review Before Creating Payments"
-msgstr "ตรวจทานก่อนสร้างใบจ่าย"
 
 #. module: disbursement_finance_kmitl
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
@@ -450,3 +444,52 @@ msgstr "ใบสำคัญจ่ายของ %s ส่งอนุมั�
 #, python-format
 msgid "%s has vouchers with blocking exceptions. Open the entry and submit it there to see them."
 msgstr "%s มีใบสำคัญที่ติดข้อยกเว้น กรุณาเปิดรายการบันทึกบัญชีแล้วส่งอนุมัติที่นั่นเพื่อดูรายละเอียด"
+
+#. module: disbursement_finance_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
+msgid ""
+"Authorize this disbursement? The payment vouchers will be raised and "
+"numbered for every payee at once, ready to go to the bank."
+msgstr ""
+"ยืนยันอนุมัติให้เบิกจ่ายเงินตามใบขอเบิกนี้? "
+"ระบบจะออกใบสำคัญจ่ายพร้อมเลขที่ให้ทุกผู้รับเงินทันที และพร้อมส่งธนาคาร"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_account_move__payment_disbursement_request_id
+msgid "Disbursement Request (Payment)"
+msgstr "ใบขอเบิก (ของใบสำคัญจ่าย)"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,help:disbursement_finance_kmitl.field_account_move__payment_disbursement_request_id
+msgid ""
+"Which ใบขอเบิก this payment voucher's entry belongs to. The accounting "
+"office corrects the booking on the entry, not on the payment, so this is "
+"where they can get back to the request the money was paid on."
+msgstr ""
+"ใบสำคัญจ่ายนี้เป็นของใบขอเบิกใด "
+"ห้องบัญชีแก้ไขการบันทึกบัญชีบนรายการบันทึกบัญชี ไม่ใช่บนใบสำคัญจ่าย "
+"จึงต้องตามกลับไปยังใบขอเบิกได้จากที่นี่"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"The payment vouchers could not be raised: %s Correct it, then use Create "
+"Payment."
+msgstr ""
+"ออกใบสำคัญจ่ายไม่สำเร็จ: %s กรุณาแก้ไขแล้วกดปุ่มสร้างใบจ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "error"
+msgstr "ข้อผิดพลาด"
+
+#. module: disbursement_finance_kmitl
+#: model:mail.activity.type,summary:disbursement_finance_kmitl.mail_activity_dr_to_pay
+msgid ""
+"A disbursement request was authorized and its vouchers are ready — put them "
+"in an e-payment file and confirm the payment"
+msgstr ""
+"ใบขอเบิกได้รับอนุมัติเบิกจ่ายและออกใบสำคัญจ่ายเรียบร้อยแล้ว — "
+"กรุณาใส่ไฟล์ e-Payment แล้วยืนยันจ่ายสำเร็จ"

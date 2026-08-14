@@ -133,9 +133,9 @@ class TestFinanceAssignment(TransactionCase):
     def _make_payment_from_distribution(self, department=None, source=None):
         """A voucher created the way a disbursement request creates one.
 
-        ``action_create_payment`` passes ``analytic_distribution`` copied off the
-        bill rather than the individual dimension fields, so the dimensions only
-        exist once the mixin's inverse has run.
+        ``disbursement.request._create_payments`` passes ``analytic_distribution``
+        copied off the bill rather than the individual dimension fields, so the
+        dimensions only exist once the mixin's inverse has run.
         """
         department = department or self.dept_child
         source = source or self.source_gov

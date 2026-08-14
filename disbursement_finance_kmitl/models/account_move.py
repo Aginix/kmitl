@@ -1,11 +1,40 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, models
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 
 class AccountMove(models.Model):
     _inherit = "account.move"
+
+    payment_disbursement_request_id = fields.Many2one(
+        related="payment_id.disbursement_request_id",
+        string="Disbursement Request (Payment)",
+        help="Which ใบขอเบิก this payment voucher's entry belongs to. The "
+        "accounting office corrects the booking on the entry, not on the "
+        "payment, so this is where they can get back to the request the money "
+        "was paid on.",
+    )
+
+    def action_view_payment_disbursement_request(self):
+        """Open the ใบขอเบิก a payment voucher's entry was made for.
+
+        Deliberately a *related* field on the payment's own link rather than a
+        second value stored on the move: ``account.move.disbursement_request_id``
+        is what ``disbursement.request.bill_ids`` reads, and that One2many does
+        not filter by move type — writing a request onto a payment move would put
+        the voucher in the request's bill list and break everything that counts
+        bills there.
+        """
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Disbursement Request"),
+            "res_model": "disbursement.request",
+            "res_id": self.payment_disbursement_request_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
 
     def _post(self, soft=True):
         """Post a disbursement payment only after the bank result is confirmed,

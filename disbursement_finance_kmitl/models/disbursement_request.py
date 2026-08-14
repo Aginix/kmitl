@@ -26,7 +26,9 @@ class DisbursementRequest(models.Model):
 
         bills_posted
           -> payment_audited      (auditor       : action_audit)
-          -> payment_authorized   (rector delegate: action_authorize)
+          -> payment_authorized   (rector delegate: action_authorize, which also
+                                   raises the vouchers, numbered and confirmed
+                                   for the bank -- see ADR-0006)
           -> paid                 (finance        : action_confirm_paid)
           -> cleared              (accounting posts the payment move through the
                                    account.move maker-checker; set in
@@ -373,7 +375,14 @@ class DisbursementRequest(models.Model):
         return True
 
     def action_authorize(self):
-        """Rector delegate authorizes the disbursement (approve to pay)."""
+        """Rector delegate authorizes the disbursement, which raises its vouchers.
+
+        The authorisation is what makes the money payable, so it is also what
+        issues the ใบสำคัญจ่าย: the finance office finds them numbered and
+        confirmed for the bank, ready to go straight into an e-payment file,
+        instead of a request they must first turn into payments one press per
+        payee. See ADR-0006.
+        """
         for record in self:
             if record.state != "payment_audited":
                 raise UserError(
@@ -382,6 +391,42 @@ class DisbursementRequest(models.Model):
             record.state = "payment_authorized"
             record.activity_feedback([TO_AUTHORIZE_ACTIVITY])
             record._schedule_payment_todo(TO_PAY_ACTIVITY, FINANCE_GROUP)
+            record._try_create_payments()
+        return True
+
+    def _try_create_payments(self):
+        """Raise the vouchers without letting a failure undo the authorisation.
+
+        What can go wrong here is a banking coordinate — a payee with no account,
+        a หัวจ่าย naming no bank — and none of it is the authorizer's to fix or to
+        be stopped by. So the request is authorized either way: the reason goes in
+        the chatter, the finance office's Todo stays where it is, and Create
+        Payment is the way back in once the coordinate is corrected.
+
+        The savepoint is what keeps a failed batch from taking the state write
+        with it (same pattern as ``_payment_batch``); the message is posted
+        outside it, or it would be rolled back too.
+
+        Runs sudo because raising the vouchers is a system derivation: the
+        authorizer holds no accounting rights, exactly as the accounting user who
+        posts the last bill holds none on the payment lines ``_ensure_payment_lines``
+        makes for them (ADR-0003). The finance office's own press keeps its own
+        identity — a voucher they create is created by them.
+        """
+        self.ensure_one()
+        try:
+            with self.env.cr.savepoint():
+                self.sudo()._create_payments()
+        except (UserError, ValidationError) as error:
+            self.env.invalidate_all()
+            self.message_post(
+                body=_(
+                    "The payment vouchers could not be raised: %s Correct it, "
+                    "then use Create Payment.",
+                    error.args and error.args[0] or _("error"),
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
         return True
 
     def action_confirm_paid(self):
@@ -420,11 +465,11 @@ class DisbursementRequest(models.Model):
                     )
                     % ", ".join(not_exported.mapped("name"))
                 )
-            # A voucher that travels in a file was confirmed for the bank long
-            # before this; a cheque or cash one may never have been, and confirming
-            # it for a bank it will never reach says nothing this press does not
-            # already imply — so it is done here rather than sent back as an errand.
-            # It is also what gives such a voucher its number.
+            # Every voucher raised by the authorisation was confirmed for the bank
+            # there. One that reached the request another way — added by hand, or
+            # unconfirmed to correct a coordinate and left that way — is confirmed
+            # here instead: it is what gives it its number, and confirming it for a
+            # bank says nothing this press does not already imply.
             active.filtered(
                 lambda p: p.finance_state == "draft"
             ).action_confirm_for_bank()
@@ -559,27 +604,35 @@ class DisbursementRequest(models.Model):
     # ------------------------------------------------------------------
     # Payment creation (finance)
     # ------------------------------------------------------------------
-    def action_open_payment_review(self):
-        """Open the finance office's read-back of every payee before the money
-        leaves — a checkpoint, not an approval: nothing changes state.
+    def action_create_payment(self):
+        """The finance office's way back in when the authorisation raised nothing.
 
-        Finance may correct only the two banking coordinates (out of which
-        account, into which account). Who is paid and how much were settled by
-        the round-1 approval and by the posted bill, and are not theirs to touch.
+        Normally the vouchers already exist by the time the request reaches them —
+        authorising it is what raises them (ADR-0006). This is what is left for
+        the cases where it could not: a banking coordinate that was wrong at the
+        time, a request authorized before this was built, or a batch that was
+        cancelled and is wanted again.
         """
         self.ensure_one()
-        self._ensure_payment_lines()
+        payments = self._create_payments()
         return {
             "type": "ir.actions.act_window",
-            "name": _("Payment Review"),
-            "res_model": "disbursement.payment.line",
-            "domain": [("request_id", "=", self.id)],
-            "view_mode": "tree",
+            "name": _("Payments"),
+            "res_model": "account.payment",
+            "domain": [("id", "in", payments.ids)],
+            "view_mode": "tree,form",
             "target": "current",
         }
 
-    def action_create_payment(self):
-        """Create draft payments from the DR, one per reviewed payee."""
+    def _create_payments(self):
+        """Raise one numbered voucher per payee, confirmed for the bank.
+
+        Confirming is part of raising them rather than a later errand: a file may
+        only carry vouchers that can no longer change underneath it, so the gate
+        the e-payment export reads and the moment the voucher is made are the same
+        moment. It is also what gives each one its ใบสำคัญจ่าย number, which is
+        why the chatter can name them.
+        """
         self.ensure_one()
         if self.state != "payment_authorized":
             raise UserError(
@@ -653,6 +706,10 @@ class DisbursementRequest(models.Model):
             line.payment_id = payment
             payments |= payment
 
+        # Ahead of the chatter, because this is the press that numbers them: a
+        # note naming "Payment (* 42)" would help nobody look the voucher up.
+        payments.action_confirm_for_bank()
+
         for payment in payments:
             pay_link = "/web#id=%d&model=account.payment&view_type=form" % payment.id
             self.message_post(
@@ -666,14 +723,7 @@ class DisbursementRequest(models.Model):
                 subtype_xmlid="mail.mt_note",
             )
 
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Payments"),
-            "res_model": "account.payment",
-            "domain": [("id", "in", payments.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }
+        return payments
 
     def action_view_payments(self):
         """Open related payment(s) in list view."""

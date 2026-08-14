@@ -92,6 +92,64 @@
             <xpath expr="//button[@name='action_confirm_paid']" position="before">
                 <field name="disbursement_request_id" invisible="1" />
             </xpath>
+
+            <!-- Back to the ใบขอเบิก. A voucher is one payee's slice of a
+                 request, and the request is the document KMITL navigates by, so
+                 every question about a voucher that is not about the voucher
+                 itself is answered back there. -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_disbursement_request"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-file-text-o"
+                    attrs="{'invisible': [('disbursement_request_id', '=', False)]}"
+                >
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Disbursement Request</span>
+                        <span class="o_stat_text"><field
+                                name="disbursement_request_id"
+                                nolabel="1"
+                            /></span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- The same trail from the journal entry, because that is where the
+         accounting office actually works: their maker corrects the booking on
+         the entry, not on the payment form. Reads through the payment's own link
+         rather than account.move.disbursement_request_id, which belongs to the
+         bills — see account_move.action_view_payment_disbursement_request. -->
+    <record id="view_account_move_form_inherit_disbursement_payment" model="ir.ui.view">
+        <field name="name">account.move.form.payment.disbursement_finance_kmitl</field>
+        <field name="model">account.move</field>
+        <field
+            name="inherit_id"
+            ref="disbursement_accounting_kmitl.view_account_move_form_inherit_disbursement"
+        />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//button[@name='action_view_disbursement_request']"
+                position="after"
+            >
+                <button
+                    name="action_view_payment_disbursement_request"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-file-text-o"
+                    attrs="{'invisible': [('payment_disbursement_request_id', '=', False)]}"
+                >
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Disbursement Request</span>
+                        <span class="o_stat_text"><field
+                                name="payment_disbursement_request_id"
+                                nolabel="1"
+                            /></span>
+                    </div>
+                </button>
+            </xpath>
         </field>
     </record>
 
@@ -140,17 +198,14 @@
                     string="อนุมัติเบิกจ่าย"
                     type="object"
                     class="oe_highlight"
-                    confirm="ยืนยันอนุมัติให้เบิกจ่ายเงินตามใบขอเบิกนี้?"
+                    confirm="Authorize this disbursement? The payment vouchers will be raised and numbered for every payee at once, ready to go to the bank."
                     attrs="{'invisible': [('state', '!=', 'payment_audited')]}"
                     groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"
                 />
-                <button
-                    name="action_open_payment_review"
-                    string="Review Before Creating Payments"
-                    type="object"
-                    attrs="{'invisible': ['|', ('state', '!=', 'payment_authorized'), ('payment_count', '>', 0)]}"
-                    groups="disbursement_finance_kmitl.group_disbursement_payment_finance"
-                />
+                <!-- The authorisation raises the vouchers, so this is only ever
+                     reached when it could not: a banking coordinate that was
+                     wrong at the time, a request authorized before this was
+                     built, or a batch that was cancelled and is wanted again. -->
                 <button
                     name="action_create_payment"
                     string="Create Payment"

@@ -15,6 +15,23 @@ class AccountPayment(models.Model):
         copy=False,
     )
 
+    def action_view_disbursement_request(self):
+        """Open the ใบขอเบิก this voucher was raised for.
+
+        A payment is one payee's slice of a request, and the request is the
+        document KMITL navigates by — so every question about a voucher that is
+        not about the voucher itself is answered back there.
+        """
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Disbursement Request"),
+            "res_model": "disbursement.request",
+            "res_id": self.disbursement_request_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
     def action_confirm_paid(self):
         """A voucher on a disbursement request is confirmed **on the request**.
 

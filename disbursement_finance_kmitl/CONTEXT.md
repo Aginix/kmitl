@@ -69,24 +69,27 @@ overwrite the account the person just picked.
   apart by document weight: a payment line is a **รายการ**จ่ายเงิน (a row), the
   `account.payment` it becomes is an **ใบ**จ่ายเงิน (a document). Never call a payment
   "รายการจ่ายเงิน".
-- **Payment Review / ตรวจทานก่อนสร้างใบจ่าย** (`action_open_payment_review`): the
-  finance office's read-back of every payment line before the payments are created. It
-  is a checkpoint, not an approval — nothing about the request changes state. Finance
-  may correct only the two **banking coordinates** — the paying account (_from_ where,
-  and thereby _by which means_) and the payee's bank account (_to_ where). Who is paid
-  and how much are not theirs to touch: those were settled by round-1 approval and by
-  the posted bill.
 - **Payment Audit** (`action_audit`, `bills_posted → payment_audited`): the auditor
   checks the disbursement documents after the bills are posted, and sets the
-  เรื่องที่จ่าย that gives every payee its paying account.
+  เรื่องที่จ่าย that gives every payee its paying account. It is the **only**
+  checkpoint on the banking coordinates — the finance office has none of its own, so
+  a coordinate that is wrong after this is corrected on the voucher itself.
 - **Payment Authorization** (`action_authorize`,
-  `payment_audited → payment_authorized`): the rector's delegate authorises the money to
-  be paid.
-- **Payment** (`action_create_payment`, run while `payment_authorized`, after the
-  Payment Review): the finance office creates one `account.payment` per payment line
-  (net of WHT), submits it and sends it to the bank via a bank payment export. The
-  payment carries the line's paying account, and takes its voucher journal from it. The
-  request stays at `payment_authorized` while the payment is in transit.
+  `payment_audited → payment_authorized`): the rector's delegate authorises the money
+  to be paid, and that press is also what **raises the vouchers** — one
+  `account.payment` per payment line (net of WHT), each numbered and confirmed for the
+  bank, so the finance office's first act on the request is the e-payment file rather
+  than turning the request into payments one press per payee. Raising them is not part
+  of the authorisation's transaction: a coordinate that fails leaves the request
+  authorized with the reason in the chatter. See ADR-0006.
+  _Avoid_: reading "authorize" as touching only the request's state.
+- **Payment** (`account.payment`, made by `_create_payments`): one payee's voucher
+  against one posted bill. It carries the line's paying account and takes its voucher
+  journal from it, and it is **dated the day the request was authorised** — that date
+  is its accounting period and what numbers it, and neither may move afterwards. The
+  request stays at `payment_authorized` while the payments are in transit.
+  `action_create_payment` is the same work behind a button, kept only for the requests
+  the authorisation could not raise vouchers for.
 - **Bank Result / ผลการจ่าย** (`account.payment.bank_result_status`): the finance
   office's **assertion** that the money reached the payee (`success` / `failed`) — not
   something a bank ever told Odoo. The bank's own result file is never imported (see
@@ -112,7 +115,7 @@ overwrite the account the person just picked.
   corrects the booking side, submits it, and their approver approves = posts = ล้างหนี้.
   It is *not* a hand into the approval queue — the accounting office's own maker step
   runs from the beginning, which is what lets them fix what is wrong in the books
-  _(designed — ADR-0005)_. There is exactly **one** such moment per request, and it is
+ . There is exactly **one** such moment per request, and it is
   per **request**, not per payment: a payee whose transfer succeeded waits for the payees
   whose did not, because a request is handed over whole or not at all. It is also what
   makes the work visible — one Todo per request to the accounting makers, and a queue at
@@ -140,7 +143,7 @@ overwrite the account the person just picked.
   row of the e-payment file (`bank.payment.export.line.epayment_note`), which the
   accounting office never opens. The entry they post asserts only that the money left, and
   that assertion is the finance office's word at **Paid**, nothing finer-grained.
-- **The accounting office sees a payment only at the Hand-over** _(designed — ADR-0005)_.
+- **The accounting office sees a payment only at the Hand-over**.
   What lets the finance office put a voucher in an e-payment file is a finance-side fact
   (`finance_state = confirmed`), never `state` — `state` belongs to the accounting office,
   and a voucher sits in `draft` for the whole of the finance office's stretch. So no list
@@ -159,10 +162,17 @@ overwrite the account the person just picked.
   rule that cannot be broken, because the payee-level payment line is the only place a
   paying account can be recorded, and it holds one.
 - **A payment line's banking coordinates are editable exactly while no payment
-  contradicts them** — the auditor's during Payment Audit, the finance office's during
-  Payment Review, nobody's once the `account.payment` exists. The rule is phrased
-  against the payment rather than against a list of states, so it stays true if the
-  workflow ever grows another step.
+  contradicts them** — the auditor's during Payment Audit, nobody's once the
+  `account.payment` exists, which since ADR-0006 is from the authorisation onwards.
+  The rule is phrased against the payment rather than against a list of states, so it
+  stays true if the workflow ever grows another step.
+- **The voucher's date and the day the money left are two different facts.** The
+  voucher is dated when it was authorised, because that is what numbers it and what
+  period it books in, and a number that has been issued must not change. The day the
+  money actually left is the e-payment file's **effective date**, and that is what the
+  withholding-tax certificate is dated from — the law dates the withholding by the day
+  the income was paid. They agree except when a file leaves in a later month than the
+  authorisation, and then they are deliberately allowed to differ. See ADR-0006.
 - **One e-payment file debits one account.** The paying account is chosen on the bank
   payment export first, and the payments that can be picked into it are narrowed to the
   ones paid from it — a DR whose payees span four paying accounts produces four files.
