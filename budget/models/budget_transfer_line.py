@@ -6,14 +6,33 @@ class BudgetTransferLine(models.Model):
     """
     Budget Transfer Line - Individual transfer line items.
 
-    Each line represents either a source (from) or destination (to)
-    for the budget transfer with specific budget account and analytics.
+    Each line represents either a source (from) or destination (to) for the
+    budget transfer with a budget account and a full analytic combination.
+
+    Dimensions (ADR-0009): a transfer line is driven by its full
+    ``analytic_distribution`` — all five active dimensions, including
+    ``kmitl_project`` / ``procurement_plan`` — and its availability is read from
+    the unified control-node engine (``budget.controller.get_available``), not
+    the legacy four-dimension wrapper. ``sources`` (แหล่งเงิน) is fixed by the
+    transfer header (FROM and TO share one source); every other dimension is per
+    line.
     """
 
     _name = "budget.transfer.line"
     _description = "Budget Transfer Line"
     _inherit = ["analytic.mixin"]
     _order = "transfer_id, sequence, id"
+
+    # Plan code -> convenience field, mirroring budget.controller._DIM_COLUMNS.
+    # Adding a controlled dimension to a transfer line = one entry here.
+    _DIM_FIELDS = {
+        "activities": "activity_analytic_id",
+        "departments": "department_analytic_id",
+        "funds": "fund_analytic_id",
+        "sources": "source_analytic_id",
+        "kmitl_project": "kmitl_project_analytic_id",
+        "procurement_plan": "procurement_plan_analytic_id",
+    }
 
     # Basic Fields
     transfer_id = fields.Many2one(
@@ -56,16 +75,17 @@ class BudgetTransferLine(models.Model):
         help="Transfer amount for this line"
     )
 
-    # Analytic Distribution (JSON source of truth) is provided by analytic.mixin,
-    # which also adds search support and a GIN index. The convenience fields below
-    # sync with it via _compute_analytic_fields / _inverse_analytic_fields.
+    # Analytic Distribution (JSON source of truth — the engine reads this) is
+    # provided by analytic.mixin, which also adds search support and a GIN index.
+    # The convenience fields below round-trip with it via _compute_analytic_fields
+    # and the per-dimension inverses.
 
-    # Analytic Display Fields (for easier UI handling)
+    # Analytic convenience fields (round-trip with analytic_distribution)
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กิจกรรม",
         compute="_compute_analytic_fields",
-        inverse="_inverse_analytic_fields",
+        inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
         help="Activity analytic account"
     )
@@ -74,7 +94,7 @@ class BudgetTransferLine(models.Model):
         "account.analytic.account",
         string="ส่วนงาน",
         compute="_compute_analytic_fields",
-        inverse="_inverse_analytic_fields",
+        inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
         help="Department analytic account"
     )
@@ -83,7 +103,7 @@ class BudgetTransferLine(models.Model):
         "account.analytic.account",
         string="กองทุน",
         compute="_compute_analytic_fields",
-        inverse="_inverse_analytic_fields",
+        inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
         help="Fund analytic account"
     )
@@ -92,9 +112,30 @@ class BudgetTransferLine(models.Model):
         "account.analytic.account",
         string="แหล่งเงิน",
         compute="_compute_analytic_fields",
-        inverse="_inverse_analytic_fields",
+        inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
-        help="Source analytic account"
+        help="Source analytic account (fixed by the transfer header)"
+    )
+
+    # 5th-dimension columns (ADR-0009): a transfer may move budget out of /
+    # into a procurement-plan or project bucket. These round-trip with
+    # analytic_distribution like the four above.
+    kmitl_project_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="โครงการ/กิจกรรม",
+        compute="_compute_analytic_fields",
+        inverse="_inverse_kmitl_project_analytic",
+        domain=[("root_plan_id.code", "=", "kmitl_project")],
+        help="Project analytic account (the budget bucket this line draws from / into)"
+    )
+
+    procurement_plan_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แผนจัดซื้อจัดจ้าง",
+        compute="_compute_analytic_fields",
+        inverse="_inverse_procurement_plan_analytic",
+        domain=[("root_plan_id.code", "=", "procurement_plan")],
+        help="Procurement-plan analytic account (the budget bucket this line draws from / into)"
     )
 
     # Description
@@ -120,7 +161,7 @@ class BudgetTransferLine(models.Model):
     available_budget = fields.Float(
         string="งบประมาณคงเหลือ",
         compute="_compute_available_budget",
-        help="Available budget for this account and analytics"
+        help="Available budget for this account and analytics (control-node engine)"
     )
 
     budget_sufficient = fields.Boolean(
@@ -129,125 +170,136 @@ class BudgetTransferLine(models.Model):
         help="True if available budget is sufficient for this transfer"
     )
 
-    @api.depends("analytic_distribution", "transfer_id.department_analytic_id", "transfer_id.source_analytic_id", "transfer_direction")
+    @api.depends(
+        "analytic_distribution",
+        "transfer_id.source_analytic_id",
+        "transfer_id.department_analytic_id",
+        "transfer_direction",
+    )
     def _compute_analytic_fields(self):
-        """
-        Compute individual analytic fields with automatic inheritance from transfer level.
+        """Derive the convenience dimension fields from analytic_distribution.
 
-        Analytics Inheritance Logic:
-        - FROM lines: Inherit both department_analytic_id and source_analytic_id from transfer
-        - TO lines: Inherit only source_analytic_id from transfer (same funding source)
-        - Both: Can be overridden by specific analytic_distribution JSON
-
-        This ensures:
-        1. Consistent department/source tracking at transfer level
-        2. Flexibility for line-specific analytics (activity, fund)
-        3. Proper double-entry with matching analytics where needed
+        Inheritance (ADR-0009 dimension policy):
+        - ``sources`` is fixed by the transfer header — both FROM and TO share
+          one source (cross-source transfers are forbidden). It is never taken
+          from the line distribution.
+        - ``departments`` defaults to the header but is overridable per line
+          (cross-department transfers are allowed).
+        - ``activities`` / ``funds`` / ``kmitl_project`` / ``procurement_plan``
+          come purely from the line distribution.
         """
         for line in self:
-            # Initialize all fields
             line.activity_analytic_id = False
             line.department_analytic_id = False
             line.fund_analytic_id = False
-            line.source_analytic_id = False
+            line.kmitl_project_analytic_id = False
+            line.procurement_plan_analytic_id = False
 
-            # First, inherit from transfer level based on direction
-            if line.transfer_id:
-                if line.transfer_direction == "from":
-                    # FROM lines inherit both department and source
-                    line.department_analytic_id = line.transfer_id.department_analytic_id
-                    line.source_analytic_id = line.transfer_id.source_analytic_id
-                elif line.transfer_direction == "to":
-                    # TO lines inherit only source
-                    line.source_analytic_id = line.transfer_id.source_analytic_id
+            # Source is always the header's (fixed for the whole transfer).
+            line.source_analytic_id = line.transfer_id.source_analytic_id
 
-            # Then override with any specific distribution
-            if line.analytic_distribution:
-                # Extract analytic account IDs from distribution
-                # Distribution format: {analytic_account_id: percentage}
-                distribution = line.analytic_distribution or {}
+            # Department defaults to the header, overridable below.
+            line.department_analytic_id = line.transfer_id.department_analytic_id
 
-                # Get all analytic accounts in distribution
-                analytic_ids = [int(aid) for aid in distribution.keys() if aid.isdigit()]
-                analytics = self.env["account.analytic.account"].browse(analytic_ids)
+            distribution = line.analytic_distribution or {}
+            analytic_ids = [int(aid) for aid in distribution if str(aid).isdigit()]
+            if not analytic_ids:
+                continue
+            accounts = self.env["account.analytic.account"].browse(analytic_ids)
+            by_code = {
+                "activities": "activity_analytic_id",
+                "departments": "department_analytic_id",
+                "funds": "fund_analytic_id",
+                "kmitl_project": "kmitl_project_analytic_id",
+                "procurement_plan": "procurement_plan_analytic_id",
+            }
+            for account in accounts:
+                field_name = by_code.get(account.plan_id.code)
+                if field_name:
+                    line[field_name] = account.id
 
-                # Map to appropriate fields based on plan code (override inherited values)
-                activity = analytics.filtered(lambda a: a.root_plan_id.code == "activities")[:1]
-                if activity:
-                    line.activity_analytic_id = activity
+    def _update_analytic_distribution(self):
+        """Rebuild analytic_distribution from the convenience fields.
 
-                department = analytics.filtered(lambda a: a.root_plan_id.code == "departments")[:1]
-                if department:
-                    line.department_analytic_id = department
+        Always stamps the header source so the stored distribution carries the
+        full controlled-dimension set the engine matches on.
+        """
+        self.ensure_one()
+        distribution = {}
+        accounts = [
+            self.activity_analytic_id,
+            self.department_analytic_id,
+            self.fund_analytic_id,
+            self.transfer_id.source_analytic_id,
+            self.kmitl_project_analytic_id,
+            self.procurement_plan_analytic_id,
+        ]
+        for account in accounts:
+            if account:
+                distribution[str(account.id)] = 100.0
+        self.analytic_distribution = distribution if distribution else False
 
-                fund = analytics.filtered(lambda a: a.root_plan_id.code == "funds")[:1]
-                if fund:
-                    line.fund_analytic_id = fund
-
-                source = analytics.filtered(lambda a: a.root_plan_id.code == "sources")[:1]
-                if source:
-                    line.source_analytic_id = source
-
-    def _inverse_analytic_fields(self):
-        """Sync the individual analytic fields back into analytic_distribution."""
+    def _inverse_activity_analytic(self):
         for line in self:
-            accounts = (
-                line.activity_analytic_id
-                | line.department_analytic_id
-                | line.fund_analytic_id
-                | line.source_analytic_id
-            )
-            line.analytic_distribution = (
-                {str(account.id): 100.0 for account in accounts} or False
-            )
+            line._update_analytic_distribution()
+
+    def _inverse_department_analytic(self):
+        for line in self:
+            line._update_analytic_distribution()
+
+    def _inverse_fund_analytic(self):
+        for line in self:
+            line._update_analytic_distribution()
+
+    def _inverse_source_analytic(self):
+        for line in self:
+            line._update_analytic_distribution()
+
+    def _inverse_kmitl_project_analytic(self):
+        for line in self:
+            line._update_analytic_distribution()
+
+    def _inverse_procurement_plan_analytic(self):
+        for line in self:
+            line._update_analytic_distribution()
 
     @api.depends(
         "budget_account_id",
         "analytic_distribution",
         "amount",
         "transfer_direction",
-        "transfer_id.account_fiscal_year_id"
+        "transfer_id.account_fiscal_year_id",
     )
     def _compute_available_budget(self):
-        """Compute available budget for source lines"""
+        """Available budget for FROM lines via the control-node engine (ADR-0005).
+
+        Reads the line's full ``analytic_distribution`` (all active dimensions),
+        so a line drawing from a ``procurement_plan`` / ``kmitl_project`` bucket
+        is evaluated against that exact bucket. The engine is no longer floored
+        at zero, so ``available`` may be negative (over-committed); anything
+        below the line amount is insufficient.
+        """
+        controller = self.env["budget.controller"]
         for line in self:
             if line.transfer_direction != "from" or not line.budget_account_id:
                 line.available_budget = 0.0
                 line.budget_sufficient = True
                 continue
 
-            try:
-                # Use budget controller to get available budget
-                budget_controller = self.env["budget.controller"]
-                fiscal_year_id = line.transfer_id.account_fiscal_year_id.id if line.transfer_id.account_fiscal_year_id else False
-
-                # Build analytic data for budget controller
-                # Note: BudgetController.get_available_budget() expects analytic_data dict
-                analytic_data = {}
-                if line.activity_analytic_id:
-                    analytic_data["activity_analytic_id"] = line.activity_analytic_id.id
-                if line.department_analytic_id:
-                    analytic_data["department_analytic_id"] = line.department_analytic_id.id
-                if line.fund_analytic_id:
-                    analytic_data["fund_analytic_id"] = line.fund_analytic_id.id
-                if line.source_analytic_id:
-                    analytic_data["source_analytic_id"] = line.source_analytic_id.id
-                if line.budget_account_id:
-                    analytic_data["account_id"] = line.budget_account_id.id
-
-                available = budget_controller.get_available_budget(
-                    analytic_data=analytic_data,
-                    fiscal_year_id=fiscal_year_id,
-                    company_id=line.company_id.id
-                )
-
-                line.available_budget = available
-                line.budget_sufficient = available >= line.amount
-
-            except Exception as e:
-                # If budget controller fails, assume no budget available
+            fiscal_year = line.transfer_id.account_fiscal_year_id
+            if not fiscal_year:
                 line.available_budget = 0.0
                 line.budget_sufficient = False
+                continue
+
+            available = controller.get_available(
+                line.budget_account_id,
+                line.analytic_distribution or {},
+                fiscal_year.id,
+                line.company_id.id or line.transfer_id.company_id.id,
+            )
+            line.available_budget = available
+            line.budget_sufficient = available >= line.amount
 
     @api.constrains("amount")
     def _check_amount_positive(self):
@@ -255,6 +307,18 @@ class BudgetTransferLine(models.Model):
         for line in self:
             if line.amount <= 0:
                 raise ValidationError(_("Transfer amount must be greater than zero"))
+
+    @api.constrains("analytic_distribution")
+    def _check_supplementary_dims_exclusive(self):
+        """The two supplementary dimensions — โครงการ/กิจกรรม (kmitl_project) and
+        แผนจัดซื้อจัดจ้าง (procurement_plan) — are mutually exclusive: a line may
+        carry at most one of them, never both."""
+        for line in self:
+            if line.procurement_plan_analytic_id and line.kmitl_project_analytic_id:
+                raise ValidationError(_(
+                    "แต่ละบรรทัดเลือกได้เพียงมิติเดียวจาก โครงการ/กิจกรรม หรือ "
+                    "แผนจัดซื้อจัดจ้าง — เลือกพร้อมกันไม่ได้"
+                ))
 
     @api.constrains("transfer_direction", "budget_account_id", "analytic_distribution")
     def _check_duplicate_lines(self):

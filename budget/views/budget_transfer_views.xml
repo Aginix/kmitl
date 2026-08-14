@@ -19,6 +19,9 @@
                 </header>
 
                 <sheet>
+                    <widget name="web_ribbon" title="ลงรายการแล้ว" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'posted')]}"/>
+                    <widget name="web_ribbon" title="ยกเลิก" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+                    <widget name="web_ribbon" title="ถูกปฏิเสธ" attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="%(action_budget_move)d" type="action" class="oe_stat_button" icon="fa-exchange" attrs="{'invisible': [('budget_move_ids', '=', [])]}" context="{'search_default_transfer_id': id}">
                             <field name="budget_move_ids" widget="statinfo" string="Budget Moves"/>
@@ -50,13 +53,20 @@
                     </group>
 
                     <!-- Budget Validation Alert -->
-                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('has_sufficient_budget', '=', True)]}" style="margin: 10px 0;">
-                        <strong>Budget Validation Warning:</strong>
-                        <field name="budget_validation_message" nolabel="1"/>
+                    <div class="alert alert-warning d-flex align-items-start" role="alert" attrs="{'invisible': ['|', ('has_sufficient_budget', '=', True), ('state', 'in', ['posted', 'cancelled'])]}">
+                        <i class="fa fa-exclamation-triangle fa-fw mt-1 me-2" role="img" aria-label="Warning"/>
+                        <div>
+                            <strong>ตรวจสอบงบประมาณ</strong>
+                            <field name="budget_validation_message" nolabel="1"/>
+                            <div class="text-muted small mt-1">
+                                หากงบถูกจองโดยแผนจัดซื้อจัดจ้าง/โครงการ ต้องยกเลิกหรือปลดการจองก่อนจึงจะโอนได้
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="alert alert-success" role="alert" attrs="{'invisible': [('has_sufficient_budget', '=', False)]}" style="margin: 10px 0;">
-                        <strong>✅ Budget Validation Passed</strong>
+                    <div class="alert alert-success d-flex align-items-center" role="alert" attrs="{'invisible': ['|', ('has_sufficient_budget', '=', False), ('state', 'in', ['posted', 'cancelled'])]}">
+                        <i class="fa fa-check-circle fa-fw me-2" role="img" aria-label="OK"/>
+                        <strong>งบประมาณเพียงพอสำหรับการโอน</strong>
                     </div>
 
                     <group name="transfer_reason" colspan="8">
@@ -69,12 +79,14 @@
                             <group attrs="{'invisible': [('state', 'not in', ['draft'])]}">
                                 <separator string="Transfer FROM (Source)" />
                                 <field name="from_line_ids" nolabel="1" colspan="2" attrs="{'readonly': [('state', 'not in', ['draft'])]}">
-                                    <tree decoration-info="1" create="1" delete="1">
+                                    <tree decoration-danger="not budget_sufficient" create="1" delete="1">
                                         <field name="sequence" widget="handle"/>
                                         <field name="budget_account_id" required="1"/>
-                                        <field name="activity_analytic_id"/>
-                                        <field name="fund_analytic_id"/>
-                                        <field name="department_analytic_id" invisible="1"/>
+                                        <field name="activity_analytic_id" required="1"/>
+                                        <field name="fund_analytic_id" required="1"/>
+                                        <field name="department_analytic_id" required="1"/>
+                                        <field name="procurement_plan_analytic_id" optional="show"/>
+                                        <field name="kmitl_project_analytic_id" optional="show"/>
                                         <field name="source_analytic_id" invisible="1"/>
                                         <field name="amount" widget="monetary" sum="Total Source"/>
                                         <field name="available_budget" widget="monetary"/>
@@ -88,9 +100,11 @@
                                     <tree decoration-success="1" create="1" delete="1">
                                         <field name="sequence" widget="handle"/>
                                         <field name="budget_account_id" required="1"/>
-                                        <field name="activity_analytic_id"/>
-                                        <field name="fund_analytic_id"/>
-                                        <field name="department_analytic_id"/>
+                                        <field name="activity_analytic_id" required="1"/>
+                                        <field name="fund_analytic_id" required="1"/>
+                                        <field name="department_analytic_id" required="1"/>
+                                        <field name="procurement_plan_analytic_id" optional="hide"/>
+                                        <field name="kmitl_project_analytic_id" optional="hide"/>
                                         <field name="source_analytic_id" invisible="1"/>
                                         <field name="amount" widget="monetary" sum="Total Destination"/>
                                         <field name="description" invisible="1" />
@@ -289,7 +303,9 @@
                         <field name="transfer_direction" widget="radio" options="{'horizontal': true}" attrs="{'readonly': [('id', '!=', False)]}"/>
                         <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}" required="1"/>
                         <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}" required="1"/>
-                        <field name="department_analytic_id" attrs="{'invisible': [('transfer_direction', '=', 'from')]}" options="{'no_create': True, 'no_open': True}" required="1"/>
+                        <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" required="1"/>
+                        <field name="procurement_plan_analytic_id" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="kmitl_project_analytic_id" options="{'no_create': True, 'no_open': True}"/>
                         <field name="budget_account_id" required="1"/>
                         <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}" required="1"/>
                     </group>

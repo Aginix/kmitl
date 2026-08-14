@@ -67,8 +67,8 @@ The budget pool after all latest adjustments = initial + supplementary appropria
 _Avoid_: total budget, final budget
 
 **Budget Transfer (การโอนงบ)**:
-A balanced move (`budget.transfer` → `budget.move` of type `entry`) that shifts pool from one budget account to another. Increases Current Budget at the destination, decreases it at the source. Part of "adjustments", so it is reflected in Current Budget (a).
-_Avoid_: reallocation
+A balanced move (`budget.transfer` → `budget.move` of type `entry`) that shifts pool between `(budget.account × dimension combination)` buckets — increasing Current Budget at the destination, decreasing it at the source. Driven by the line's full `analytic_distribution` across all active dimensions, with `sources` (แหล่งเงิน) locked to the transfer header (no cross-source). It is a **pure budget move** at the `(budget.account × analytic_distribution)` level: it does **not** reserve, release, or create any `budget.commitment` — reserving/releasing budget is a separate, manual step (ADR-0009). Part of "adjustments", so it is reflected in Current Budget (a).
+_Avoid_: reallocation, virement (that is cross-charge / ถัวจ่าย — pooling pools in one reservation, which moves nothing)
 
 **Adjustment (ปรับปรุง/ปรับโอน)**:
 The in-year movement on the pool = Current Budget − Initial Appropriation = supplementary appropriations + net transfers. Shown as its own column between (1) and (a).
