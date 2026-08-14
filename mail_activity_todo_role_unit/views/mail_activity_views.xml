@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <!-- ADR-0007: narrow the primary inbox to the notification scope. Oversight
-         Todos (view scope minus notification scope) live in a second menu below.
-         The base action is retargeted rather than duplicated so existing links
-         (mail_activity_todo.view_my_todo_tree etc.) keep working. -->
-    <record id="mail_activity_todo.action_my_todos" model="ir.actions.act_window">
-        <field
-            name="domain"
-        >[('is_my_todo', '=', True), ('is_my_primary_todo', '=', True)]</field>
-    </record>
-
     <!-- ===== Inbox list: add OU / role columns + Claim/Release ===== -->
     <record id="view_my_todo_tree_role_unit" model="ir.ui.view">
         <field name="name">mail.activity.todo.tree.role.unit</field>

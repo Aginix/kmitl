@@ -1,0 +1,98 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* mail_activity_todo_notify_scope
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-14 00:00+0000\n"
+"PO-Revision-Date: 2026-08-14 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model.fields,field_description:mail_activity_todo_notify_scope.field_res_users_todo_notify_rule__activity_type_id
+msgid "Activity Type"
+msgstr "ประเภทกิจกรรม"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model.fields,field_description:mail_activity_todo_notify_scope.field_mail_activity__is_my_primary_todo
+msgid "Is My Primary Todo"
+msgstr "เป็น Todo หลักของฉัน"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model.fields,field_description:mail_activity_todo_notify_scope.field_res_users_todo_notify_rule__mode
+msgid "Mode"
+msgstr "โหมด"
+
+#. module: mail_activity_todo_notify_scope
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo_notify_scope.view_users_form_todo_notify
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo_notify_scope.view_users_form_simple_modif_todo_notify
+msgid "Notification Rules"
+msgstr "กติกาการแจ้งเตือน"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model.fields,field_description:mail_activity_todo_notify_scope.field_res_users__todo_notify_operating_unit_ids
+msgid "Notify Only for These Operating Units"
+msgstr "รับแจ้งเตือนเฉพาะหน่วยงานที่เลือก"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model.constraint,message:mail_activity_todo_notify_scope.constraint_res_users_todo_notify_rule_user_type_uniq
+msgid "One rule per (user, activity type)."
+msgstr "หนึ่งกติกาต่อคู่ (ผู้ใช้, ประเภทกิจกรรม)"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model.fields,help:mail_activity_todo_notify_scope.field_res_users__todo_notify_rule_ids
+msgid "Override the OU scope for specific activity types: widen back to every OU (all_ous), or mute the type entirely."
+msgstr "เขียนทับขอบเขต OU สำหรับประเภทกิจกรรมเฉพาะ: ขยายกลับไปทุก OU (all_ous) หรือปิดแจ้งเตือนของประเภทนั้นทั้งหมด (mute)"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model.fields,field_description:mail_activity_todo_notify_scope.field_res_users__todo_notify_rule_ids
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo_notify_scope.view_users_form_simple_modif_todo_notify
+msgid "Per-type Notification Rules"
+msgstr "ตั้งค่าแจ้งเตือนตามประเภทงาน"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model.fields,help:mail_activity_todo_notify_scope.field_res_users__todo_notify_operating_unit_ids
+msgid "Restrict group-Todo notifications to these OUs (must be a subset of your allowed OUs). Leave empty to receive from every OU you can see — the default that matches the pre-ADR-0007 behaviour."
+msgstr "จำกัดการแจ้งเตือนงาน Todo กลุ่มไว้เฉพาะหน่วยงานเหล่านี้ (ต้องเป็นชุดย่อยของหน่วยงานที่คุณเห็นข้อมูลได้) เว้นว่าง = รับแจ้งเตือนจากทุกหน่วยงานที่คุณเห็น (ค่าเริ่มต้น)"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model.fields,help:mail_activity_todo_notify_scope.field_mail_activity__is_my_primary_todo
+msgid "Technical: matches the notification-scoped inbox (ADR-0007). Personal Todos are always primary; group Todos are primary only when they fall inside the user's notification OU scope (or an all_ous rule)."
+msgstr "เทคนิค: ตรงกับกล่องจดหมายเข้าตามขอบเขตแจ้งเตือน (ADR-0007) งานส่วนบุคคลจะเป็นงานหลักเสมอ ส่วนงานกลุ่มจะเป็นงานหลักเฉพาะเมื่ออยู่ในขอบเขต OU ที่ผู้ใช้ตั้งไว้ (หรือมีกติกา all_ous)"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model,name:mail_activity_todo_notify_scope.model_res_users_todo_notify_rule
+msgid "Todo Notification Rule (per activity type)"
+msgstr "กติกาการแจ้งเตือน Todo (ตามประเภทงาน)"
+
+#. module: mail_activity_todo_notify_scope
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo_notify_scope.view_users_form_simple_modif_todo_notify
+msgid "Todo Notification Scope"
+msgstr "ขอบเขตการแจ้งเตือน Todo"
+
+#. module: mail_activity_todo_notify_scope
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo_notify_scope.view_users_form_todo_notify
+msgid "Todo Notifications"
+msgstr "การแจ้งเตือน Todo"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model.fields,help:mail_activity_todo_notify_scope.field_res_users_todo_notify_rule__mode
+msgid "all_ous: widen to every OU the user can see, overriding the OU scope. mute: drop from the primary inbox (still visible under 'Oversight' if the user could see it)."
+msgstr "all_ous: ขยายขอบเขตให้ครอบคลุมทุก OU ที่ผู้ใช้เห็น (เขียนทับขอบเขต OU) mute: ตัดออกจากกล่องจดหมายเข้าหลัก (ยังเห็นได้ใน Todo ถ้าผู้ใช้มีสิทธิ์เห็น)"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model.fields.selection,name:mail_activity_todo_notify_scope.selection__res_users_todo_notify_rule__mode__mute
+msgid "ไม่รับแจ้งเตือน (ย้ายไปแท็บอื่นๆ)"
+msgstr "ไม่รับแจ้งเตือน (ย้ายไปแท็บอื่นๆ)"
+
+#. module: mail_activity_todo_notify_scope
+#: model:ir.model.fields.selection,name:mail_activity_todo_notify_scope.selection__res_users_todo_notify_rule__mode__all_ous
+msgid "รับจากทุกหน่วยงานที่เห็น"
+msgstr "รับจากทุกหน่วยงานที่เห็น"

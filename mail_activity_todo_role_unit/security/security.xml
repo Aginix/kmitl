@@ -39,23 +39,6 @@
       role/OU ids are read via the sudo-computed todo_role_ids (an ir.rule cannot
       sudo, and role_ids is ERP-manager restricted).
     -->
-    <!--
-      Notification-rule preferences are per-user (ADR-0007) — a user only ever
-      touches their own row. Admins (ERP manager) still see all for support.
-    -->
-    <record id="rule_todo_notify_rule_own" model="ir.rule">
-        <field name="name">Todo notify rule: own</field>
-        <field name="model_id" ref="model_res_users_todo_notify_rule" />
-        <field name="domain_force">[('user_id', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('base.group_user'))]" />
-    </record>
-    <record id="rule_todo_notify_rule_admin" model="ir.rule">
-        <field name="name">Todo notify rule: admin</field>
-        <field name="model_id" ref="model_res_users_todo_notify_rule" />
-        <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('base.group_erp_manager'))]" />
-    </record>
-
     <record id="todo_log_role_unit_rule" model="ir.rule">
         <field name="name">Completed Todos: role-in-unit</field>
         <field name="model_id" ref="mail_activity_todo.model_todo_log" />
