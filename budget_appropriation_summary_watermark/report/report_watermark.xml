@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!--
+        HTML/browser-print watermark.
+
+        report_preview_styles is called once per document by every master summary
+        report wrapper (combined + each F report) and is already gated on the
+        html_preview context, so it renders ONLY for the HTML preview routes and
+        never for the server-side PDF. We inject a CSS watermark (company logo +
+        text) per .page so it shows on screen and repeats on every browser-printed
+        page — same gate as the PDF watermark button (ผ่านสภา + มีข้อความ).
+    -->
+    <template
+        id="report_preview_styles_watermark"
+        inherit_id="budget_appropriation_summary.report_preview_styles"
+    >
+        <xpath expr="//t[@t-if='is_html_preview']" position="inside">
+            <t
+                t-if="'passed_council' in o._fields and o.passed_council and o.watermark_text"
+            >
+                <style>
+                    .page::before {
+                        content: "<t
+                            t-out="(o.watermark_text or '').replace('&quot;', '').replace('\\', '')"
+                        />";
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%) rotate(-30deg);
+                        font-size: 48pt;
+                        font-weight: bold;
+                        color: rgba(0, 0, 0, 0.10);
+                        white-space: nowrap;
+                        pointer-events: none;
+                        z-index: 500;
+                    }
+                    <t t-if="o.company_id.logo">
+                    .page::after {
+                        content: "";
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 120mm;
+                        height: 90mm;
+                        background: url("data:image/png;base64,<t
+                            t-out="o.company_id.logo.decode()"
+                        />") center center / contain no-repeat;
+                        opacity: 0.10;
+                        pointer-events: none;
+                        z-index: 499;
+                    }
+                    </t>
+                </style>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>

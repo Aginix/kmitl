@@ -11,6 +11,7 @@
     ],
     "data": [
         "views/budget_appropriation_master_summary_views.xml",
+        "report/report_watermark.xml",
     ],
     "auto_install": False,
     "application": False,
