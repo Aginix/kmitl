@@ -354,6 +354,29 @@ class WorkAcceptance(models.Model):
         result = super().button_accept(force=force)
         return result
 
+    def action_force_accept(self):
+        """Force-accept a WA stuck in in_review due to missing tier reviewer.
+        Admin ERP only. Clears pending reviews then runs the normal accept path."""
+        for rec in self:
+            if rec.state != "in_review":
+                continue
+            rec.mapped("review_ids").filtered(
+                lambda r: r.status == "pending"
+            ).write({
+                "status": "approved",
+                "done_by": self.env.user.id,
+                "reviewed_date": fields.Datetime.now(),
+            })
+            rec.with_context(skip_committee_wizard=True).button_accept()
+            rec.message_post(
+                body=_(
+                    "Force Accept (admin): accepted by <b>%(user)s</b>."
+                    " Tier validation bypassed.",
+                    user=self.env.user.name,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+
     @api.depends("work_acceptance_committee_ids.status")
     def _compute_completeness(self):
         for rec in self:

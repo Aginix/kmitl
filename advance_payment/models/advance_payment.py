@@ -868,6 +868,30 @@ class AdvancePayment(models.Model):
                 subtype_xmlid="mail.mt_note",
             )
 
+    def action_force_close(self):
+        """Force-close a loan stuck in in_progress because the borrower never
+        submitted an expense report. Sets actual_expense=0 and closes directly.
+        Admin ERP only."""
+        for rec in self:
+            if rec.state != "in_progress":
+                continue
+            rec.write(
+                {
+                    "actual_expense_amount": 0,
+                    "expense_description": "[Force closed by admin — no report submitted]",
+                    "state": "done",
+                    "date_closed": fields.Datetime.now(),
+                }
+            )
+            rec.message_post(
+                body=_(
+                    "Force Close (admin): closed by <b>%(user)s</b>."
+                    " Expense report was not submitted; actual expense set to 0.",
+                    user=self.env.user.name,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+
     def action_reopen(self):
         """Reopen a closed agreement (ERP admin only)."""
         for rec in self:

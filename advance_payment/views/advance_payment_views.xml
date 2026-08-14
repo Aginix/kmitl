@@ -89,6 +89,10 @@
                     <button name="action_open_cancel_wizard" string="ยกเลิกสัญญา" type="object"
                         attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_approve', 'waiting_transfer', 'in_progress', 'to_verify_report', 'to_reconcile'])]}"
                         groups="advance_payment.group_advance_payment_manager" />
+                    <button name="action_force_close" string="Force Close" type="object"
+                        confirm="Force close this loan? Actual expense will be set to 0."
+                        attrs="{'invisible': [('state', '!=', 'in_progress')]}"
+                        groups="base.group_erp_manager" />
                     <button name="action_reopen" string="เปิดสัญญาอีกครั้ง" type="object"
                         confirm="ต้องการเปิดสัญญาอีกครั้งหรือไม่?"
                         attrs="{'invisible': [('state', '!=', 'done')]}"

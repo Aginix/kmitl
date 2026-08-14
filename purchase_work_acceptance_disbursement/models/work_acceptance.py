@@ -79,6 +79,23 @@ class WorkAcceptance(models.Model):
                     ) % (wa.purchase_id.name, blocking[0].name)
                 )
             
+    def action_force_mark_disbursed(self):
+        """Force is_disbursed=True on a WA stuck in accept, unblocking the next
+        WA on the same PO. The actual disbursement.request is untouched.
+        Admin ERP only."""
+        for wa in self:
+            if wa.state != "accept":
+                continue
+            wa.sudo().write({"is_disbursed": True})
+            wa.message_post(
+                body=_(
+                    "Force Mark Disbursed (admin): marked by <b>%(user)s</b>."
+                    " Disbursement request may still be pending — check separately.",
+                    user=self.env.user.name,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+
     def _link_to_disbursement(self, disbursement, analytic_distribution=False, fine_tax_ids=None):
         self.ensure_one()
         self.write({"disbursement_request_id": disbursement.id})

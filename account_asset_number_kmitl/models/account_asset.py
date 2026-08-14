@@ -56,6 +56,26 @@ class AccountAsset(models.Model):
             number = f"{fiscal_year}{short_name}{asset.gpsc_id.code}-{sequence_number}"
             asset.number = number
 
+    def action_force_confirm(self):
+        """Force-confirm (draft → open) an asset whose auto-numbering failed due
+        to missing department/GPSC/FY. Sets a TEMP-<id> placeholder number if
+        needed, then calls validate(). Admin ERP only."""
+        for asset in self:
+            if asset.state != "draft":
+                continue
+            if not asset.has_asset_number:
+                asset.sudo().write({"number": "TEMP-%d" % asset.id})
+            asset.validate()
+            asset.message_post(
+                body=_(
+                    "Force Confirm (admin): confirmed by <b>%(user)s</b>."
+                    " Asset number may be a placeholder — update department/GPSC/FY"
+                    " and re-run Create Asset Number.",
+                    user=self.env.user.name,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+
     @api.constrains('number')
     def _check_number_unique(self):
         for record in self:

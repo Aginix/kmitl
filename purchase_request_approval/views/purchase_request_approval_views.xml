@@ -82,6 +82,13 @@
                         attrs="{'invisible': [('id', '>', 0)]}"
                     />
                     <button
+                        name="action_force_approve"
+                        string="Force Approve"
+                        type="object"
+                        states="to_approve"
+                        groups="base.group_erp_manager"
+                    />
+                    <button
                         name="button_cancel"
                         states="draft,to_approve"
                         string="Cancel"

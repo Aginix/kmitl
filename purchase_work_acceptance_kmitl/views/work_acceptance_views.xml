@@ -61,6 +61,13 @@
                     groups="purchase.group_purchase_manager"
                     confirm="Are you sure you want to Cancel?"
                 />
+                <button
+                    name="action_force_accept"
+                    type="object"
+                    states="in_review"
+                    string="Force Accept"
+                    groups="base.group_erp_manager"
+                />
             </xpath>
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page string="Committee">

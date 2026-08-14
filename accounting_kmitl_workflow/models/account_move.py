@@ -195,6 +195,30 @@ class AccountMove(models.Model):
         self.action_post()
         return True
 
+    def action_force_approve_workflow(self):
+        """Force-approve a move stuck in workflow_state=to_approve because the
+        approver group is empty or unavailable. Admin ERP only."""
+        for move in self:
+            if move.workflow_state != "to_approve":
+                continue
+            move.write(
+                {
+                    "workflow_state": "approved",
+                    "approved_by": self.env.user.id,
+                    "approved_date": fields.Datetime.now(),
+                }
+            )
+            move.activity_feedback([TO_APPROVE_ACTIVITY])
+            move.action_post()
+            move.message_post(
+                body=_(
+                    "Force Approve Workflow (admin): approved by <b>%(user)s</b>."
+                    " Normal approver group bypassed.",
+                    user=self.env.user.name,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+
     def action_approve_batch(self):
         """Approve (and post) many entries at once, isolating failures.
 

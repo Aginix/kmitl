@@ -342,6 +342,25 @@ class PurchaseRequestApproval(models.Model):
             user_id=self.request_id.user_id.id,
         )
 
+    def action_force_approve(self):
+        """Force-approve a PA that is stuck in to_approve due to a frozen
+        Sarabun routing or missing approver. Admin ERP only."""
+        for rec in self:
+            if rec.state != "to_approve":
+                continue
+            rec.write({"state": "approved", "approval_date": fields.Datetime.now()})
+            rec._activity_awaiting_create_purchase_order()
+            if rec.request_id and rec.request_id.state == "in_approval":
+                rec.request_id.write({"state": "in_progress"})
+            rec.message_post(
+                body=_(
+                    "Force Approve (admin): approved by <b>%(user)s</b>."
+                    " Sarabun routing bypassed.",
+                    user=self.env.user.name,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+
     def button_cancel(self):
         self.ensure_one()
         return {

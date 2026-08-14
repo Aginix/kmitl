@@ -14,6 +14,13 @@
               <!-- Return-to-source correction: Confirm button + statusbar + fields -->
               <xpath expr="//header//field[@name='state']" position="before">
                   <button name="action_confirm_correction" type="object" string="Confirm Correction" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'returned')]}"/>
+                  <button
+                      name="action_force_mark_disbursed"
+                      type="object"
+                      string="Force Mark Disbursed"
+                      attrs="{'invisible': ['|', ('state', '!=', 'accept'), ('is_disbursed', '=', True)]}"
+                      groups="base.group_erp_manager"
+                  />
               </xpath>
               <xpath expr="//header//field[@name='state']" position="attributes">
                   <attribute name="statusbar_visible">draft,in_review,accept</attribute>

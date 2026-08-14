@@ -34,6 +34,9 @@
                 <button name="action_open_reject_wizard" string="Reject" type="object"
                         attrs="{'invisible': [('workflow_state', '!=', 'to_approve')]}"
                         groups="accounting_kmitl.group_accounting_kmitl_manager"/>
+                <button name="action_force_approve_workflow" string="Force Approve" type="object"
+                        attrs="{'invisible': [('workflow_state', '!=', 'to_approve')]}"
+                        groups="base.group_erp_manager"/>
             </xpath>
 
             <!-- Approval audit block next to the accounting dimensions. -->
