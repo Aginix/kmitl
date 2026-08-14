@@ -73,10 +73,10 @@ class BudgetAppropriationMasterSummary(models.Model):
         """Overlay the watermark's first page on top of every document page.
 
         The watermark is scaled **uniformly** (aspect-preserving) to fit each
-        target page and centred, so a portrait watermark on a landscape page is
-        not stretched — it just doesn't span the full width. Follows
-        odoo.tools.pdf.add_banner (per-page overlay + stripping /Annots to avoid
-        PyPDF2 errors).
+        target page and **anchored to the bottom-right corner**, so it is never
+        stretched and a corner-placed mark stays flush in the corner regardless
+        of the page's size or orientation. Follows odoo.tools.pdf.add_banner
+        (per-page overlay + stripping /Annots to avoid PyPDF2 errors).
         """
         try:
             reader = PdfFileReader(BytesIO(document_bytes), strict=False)
@@ -107,10 +107,11 @@ class BudgetAppropriationMasterSummary(models.Model):
             page_height = float(abs(page.mediaBox.getHeight()))
             wm_width = float(abs(watermark_page.mediaBox.getWidth())) or page_width
             wm_height = float(abs(watermark_page.mediaBox.getHeight())) or page_height
-            # Uniform (aspect-preserving) scale to fit, then centre — no stretch.
+            # Uniform (aspect-preserving) scale to fit, anchored bottom-right so
+            # a corner-placed mark stays flush in the corner and nothing stretches.
             scale = min(page_width / wm_width, page_height / wm_height)
-            offset_x = (page_width - wm_width * scale) / 2
-            offset_y = (page_height - wm_height * scale) / 2
+            offset_x = page_width - wm_width * scale
+            offset_y = 0
             page.mergeTransformedPage(
                 watermark_page,
                 (scale, 0, 0, scale, offset_x, offset_y),

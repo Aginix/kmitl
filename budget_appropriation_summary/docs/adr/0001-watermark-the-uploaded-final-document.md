@@ -27,9 +27,13 @@ module untouched; only the base-owned `final_document` field stays in base.
   bridge. Uninstalling the bridge leaves the clean Final Document intact.
 - The Watermark PDF **must have a transparent background** (it is overlaid on
   top); an opaque watermark would hide content.
-- The watermark is scaled **uniformly** (aspect-preserving) and centred on each
-  page, so a portrait watermark on a landscape page is undistorted but does not
-  span the full width. If a full-bleed landscape watermark is ever needed,
-  rotating the watermark to the page orientation would be the next step.
+- The watermark is scaled **uniformly** (aspect-preserving) and **anchored to
+  the bottom-right corner** of each page, so it is never stretched and a
+  corner-placed mark (e.g. a council-resolution stamp) stays flush in the corner
+  regardless of page size or orientation. The trade-off: when the watermark and
+  page differ in size/aspect (e.g. a Letter watermark on an A4 page), the gap
+  goes to the top, so any centred element (a seal) sits slightly off-centre. For
+  a pixel-perfect 1:1 overlay, author the Watermark PDF at the same page size as
+  the Final Document.
 - Published Final is a plain downloadable field — no auto-distribution, chatter
   attachment, or e-Saraban flow. It auto-clears when either input changes.
