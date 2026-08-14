@@ -53,15 +53,6 @@
             ref="account_asset_management.account_asset_view_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//header/button[@name='validate']" position="after">
-                <button
-                    name="action_force_confirm"
-                    type="object"
-                    string="Force Confirm"
-                    attrs="{'invisible': [('state', '!=', 'draft')]}"
-                    groups="base.group_erp_manager"
-                />
-            </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button
                     name="action_open_portal_view"

@@ -15,6 +15,7 @@
             <xpath expr="//button[@name='validate']" position="after">
                 <field name="has_asset_number" invisible="1"/>
                 <button name="create_asset_number" string="Get Asset Number" type="object" class="oe_highlight" attrs="{'invisible': [('has_asset_number', '=', True)]}"/>
+                <button name="action_force_confirm" type="object" string="Force Confirm" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="base.group_erp_manager"/>
             </xpath>
         </field>
     </record>
