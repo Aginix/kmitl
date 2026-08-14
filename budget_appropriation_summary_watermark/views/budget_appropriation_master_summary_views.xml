@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record
+        id="view_budget_appropriation_master_summary_form_watermark"
+        model="ir.ui.view"
+    >
+        <field name="name">budget.appropriation.master.summary.form.watermark</field>
+        <field name="model">budget.appropriation.master.summary</field>
+        <field
+            name="inherit_id"
+            ref="budget_appropriation_summary.view_budget_appropriation_master_summary_form"
+        />
+        <field name="arch" type="xml">
+            <button name="action_print_report" position="after">
+                <button
+                    name="action_print_report_watermark"
+                    string="พิมพ์พร้อมลายน้ำ"
+                    type="object"
+                    class="btn-secondary"
+                    attrs="{'invisible': ['|', ('passed_council', '=', False), ('watermark_text', '=', False)]}"
+                />
+            </button>
+            <field name="council_meeting_date" position="after">
+                <field name="passed_council" />
+                <field
+                    name="watermark_text"
+                    attrs="{'invisible': [('passed_council', '=', False)]}"
+                />
+            </field>
+        </field>
+    </record>
+
+</odoo>
