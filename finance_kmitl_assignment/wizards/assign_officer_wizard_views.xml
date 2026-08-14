@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="finance_assign_officer_wizard_form" model="ir.ui.view">
+        <field name="name">finance.assign.officer.wizard.form</field>
+        <field name="model">finance.assign.officer.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Assign Officer">
+                <group>
+                    <field name="payment_id" invisible="1" />
+                    <field name="allowed_user_ids" invisible="1" />
+                    <field name="user_id" options="{'no_create': True}" />
+                </group>
+                <footer>
+                    <button
+                        name="action_assign"
+                        type="object"
+                        string="Assign"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
