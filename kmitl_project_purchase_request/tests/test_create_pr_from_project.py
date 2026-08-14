@@ -50,11 +50,25 @@ class TestCreatePrFromProject(TransactionCase):
             }
         )
 
-    def test_button_hidden_until_reserved(self):
-        """can_create_purchase_request is False in draft, True once reserved."""
+    def _approve_project(self, project):
+        """Walk the approval-gated lifecycle (kmitl_project ADR-0005) up to the
+        executing state a พ.1 may be raised from: ยืนยัน → จองงบประมาณ → อนุมัติ
+        (the manual fallback used when kmitl_project_sarabun is not installed)."""
+        project.action_confirm()
+        project.action_reserve_budget()
+        project.action_approve()
+        return project
+
+    def test_button_hidden_until_approved(self):
+        """can_create_purchase_request is False in draft and while the project is
+        only reserved (to_send); it turns True once the project is approved."""
         project = self._make_project()
         self.assertFalse(project.can_create_purchase_request)
-        project.button_new()
+        project.action_confirm()
+        project.action_reserve_budget()
+        self.assertEqual(project.state, "to_send")
+        self.assertFalse(project.can_create_purchase_request)
+        project.action_approve()
         self.assertTrue(project.can_create_purchase_request)
 
     def test_action_requires_reservation(self):
@@ -63,11 +77,19 @@ class TestCreatePrFromProject(TransactionCase):
         with self.assertRaises(UserError):
             project.action_create_purchase_request()
 
+    def test_action_requires_approval(self):
+        """A reserved but not-yet-approved project (to_send) cannot raise a พ.1 —
+        the ขออนุมัติ หนังสือ must be signed first (ADR-0005)."""
+        project = self._make_project()
+        project.action_confirm()
+        project.action_reserve_budget()
+        with self.assertRaises(UserError):
+            project.action_create_purchase_request()
+
     def test_action_prefill_context(self):
         """The action pre-fills the PR from the project and links its shared
         commitment — and does NOT prefill a procurement method."""
-        project = self._make_project()
-        project.button_new()
+        project = self._approve_project(self._make_project())
         commitment = project.budget_commitment_ids
 
         action = project.action_create_purchase_request()

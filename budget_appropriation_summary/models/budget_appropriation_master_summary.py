@@ -180,6 +180,15 @@ class BudgetAppropriationMasterSummary(models.Model):
         string="หมายเหตุ",
         readonly=False,
     )
+    final_document = fields.Binary(
+        string="ไฟล์ฉบับสมบูรณ์",
+        attachment=True,
+        help="ไฟล์งบประมาณสถาบันฉบับสมบูรณ์ที่ export ออกไปจัดรูปแบบ/แทรกหน้า/"
+        "ใส่ references นอกระบบแล้วนำกลับมาอัปโหลดเข้าระบบ",
+    )
+    final_document_filename = fields.Char(
+        string="ชื่อไฟล์ฉบับสมบูรณ์",
+    )
     f2_revenue_data = fields.Json(
         string="F2 Revenue Data",
         compute="_compute_f2_revenue_data",

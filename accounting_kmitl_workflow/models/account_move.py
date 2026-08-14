@@ -123,17 +123,23 @@ class AccountMove(models.Model):
     # ------------------------------------------------------------------
     # Workflow actions
     # ------------------------------------------------------------------
-    def action_submit(self):
-        """Step 1: lock the entry and request approval (ผู้จัดทำ/ผู้ตรวจสอบ).
+    def _check_submit_allowed(self):
+        """Only the creator may submit an entry; administrators may submit any.
 
-        Only the creator may submit an entry; administrators may submit any.
+        Its own method so that an entry with no accounting author can be exempted
+        without reopening the rule for everything else — a payment voucher handed
+        over by another office is one (``finance_kmitl``).
         """
-        if not self.env.is_admin():
-            for move in self:
-                if move.create_uid.id != self.env.uid:
-                    raise UserError(
-                        _("Only the creator of this entry can submit it.")
-                    )
+        if self.env.is_admin():
+            return True
+        for move in self:
+            if move.create_uid.id != self.env.uid:
+                raise UserError(_("Only the creator of this entry can submit it."))
+        return True
+
+    def action_submit(self):
+        """Step 1: lock the entry and request approval (ผู้จัดทำ/ผู้ตรวจสอบ)."""
+        self._check_submit_allowed()
         res = super().action_submit()
         self.write(
             {
@@ -233,6 +239,63 @@ class AccountMove(models.Model):
             "tag": "display_notification",
             "params": {
                 "title": _("Approval"),
+                "message": message,
+                "type": notification_type,
+                "sticky": bool(failures),
+            },
+        }
+
+    def action_submit_batch(self):
+        """Submit (and request approval for) many entries at once, isolating
+        failures — the maker's counterpart of ``action_approve_batch``.
+
+        A register of entries handed over by another office is worked through in
+        batches, and one entry that cannot be submitted (blocking exceptions, or a
+        colleague's own draft) must not roll back the rest. An entry whose
+        ``action_submit`` returns an action instead of submitting — base_exception
+        asking to show its popup — is reported as a failure here rather than left
+        silently in draft, because a batch has nobody to show a popup to.
+        """
+        candidates = self.filtered(lambda move: move.state == "draft")
+        submitted = self.env["account.move"]
+        failures = []
+        for move in candidates:
+            try:
+                with self.env.cr.savepoint():
+                    if isinstance(move.action_submit(), dict):
+                        raise UserError(
+                            _(
+                                "There are exceptions to review. Open the entry and "
+                                "submit it there."
+                            )
+                        )
+                submitted |= move
+            except (UserError, ValidationError) as error:
+                self.env.invalidate_all()
+                failures.append(
+                    (move.display_name, error.args and error.args[0] or _("error"))
+                )
+            except Exception as error:  # noqa: BLE001 - isolate per-record failures
+                self.env.invalidate_all()
+                failures.append((move.display_name, str(error)))
+
+        message = _("%s entry/entries submitted.") % len(submitted)
+        if failures:
+            message += "\n" + _("Could not submit:") + "\n"
+            message += "\n".join(
+                "• %s — %s" % (name, reason) for name, reason in failures
+            )
+        if failures and not submitted:
+            notification_type = "danger"
+        elif failures:
+            notification_type = "warning"
+        else:
+            notification_type = "success"
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Submit"),
                 "message": message,
                 "type": notification_type,
                 "sticky": bool(failures),

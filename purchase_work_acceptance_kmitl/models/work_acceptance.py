@@ -134,6 +134,11 @@ class WorkAcceptance(models.Model):
         string="PO Work End Original",
         related='purchase_id.work_end_original',
     )
+    contract_number = fields.Char(
+        string="Contract No.",
+        related="purchase_id.contract_number",
+        store=False,
+    )
 
     # Late Fines
     late_days = fields.Integer(

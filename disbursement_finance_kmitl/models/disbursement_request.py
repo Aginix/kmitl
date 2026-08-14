@@ -5,15 +5,16 @@ from odoo.exceptions import UserError, ValidationError
 
 # Groups that gate each post-bill payment-execution step.
 AUDITOR_GROUP = "disbursement_finance_kmitl.group_disbursement_payment_auditor"
-AUTHORIZER_GROUP = (
-    "disbursement_finance_kmitl.group_disbursement_payment_authorizer"
-)
+AUTHORIZER_GROUP = "disbursement_finance_kmitl.group_disbursement_payment_authorizer"
 FINANCE_GROUP = "disbursement_finance_kmitl.group_disbursement_payment_finance"
+# The accounting office's makers, who book the vouchers once the request is paid.
+ACCOUNTING_MAKER_GROUP = "accounting_kmitl.group_accounting_kmitl_user"
 
 # Execution Todos fanned out to the group responsible for the next step.
 TO_AUDIT_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_audit"
 TO_AUTHORIZE_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_authorize"
 TO_PAY_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_pay"
+TO_BOOK_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_book"
 
 
 class DisbursementRequest(models.Model):
@@ -85,6 +86,27 @@ class DisbursementRequest(models.Model):
             "paid": "set default",
             "cleared": "set default",
         },
+    )
+
+    payment_subject_id = fields.Many2one(
+        comodel_name="kmitl.payment.subject",
+        string="Payment Subject",
+        copy=False,
+        tracking=True,
+        help="What this disbursement is for, which is what decides the paying "
+        "account (หัวจ่าย) each payee is served from. Chosen once by the "
+        "auditor; individual payees can still be moved onto another account.",
+    )
+    payment_auto_match = fields.Boolean(
+        related="payment_subject_id.auto_match_payee_bank",
+        string="Auto-match by Payee's Bank",
+        readonly=True,
+    )
+    payment_line_ids = fields.One2many(
+        comodel_name="disbursement.payment.line",
+        inverse_name="request_id",
+        string="Payment Lines",
+        copy=False,
     )
 
     # One2many via the stored back-reference on account.payment, so payment
@@ -168,8 +190,172 @@ class DisbursementRequest(models.Model):
         # Entering bills_posted (set by the accounting bridge when the last
         # bill posts) opens the payment-execution phase: notify the auditors.
         if vals.get("state") == "bills_posted":
+            self._ensure_payment_lines()
             self._schedule_payment_todo(TO_AUDIT_ACTIVITY, AUDITOR_GROUP)
+        # A new subject re-derives every row it is allowed to.
+        if "payment_subject_id" in vals:
+            for record in self:
+                record._apply_subject_defaults(record.payment_line_ids)
         return res
+
+    # ------------------------------------------------------------------
+    # Payment lines (one per payee)
+    # ------------------------------------------------------------------
+    def _ensure_payment_lines(self):
+        """Make a payment line for every posted bill that has none, then bring
+        the amounts of the rows no payment has frozen up to date.
+
+        Idempotent and cheap to call, so it runs at every door into the payment
+        phase rather than only at the ``bills_posted`` transition: a request can
+        then never show an empty payment tab, and a bill accounting reversed and
+        re-issued picks up its own row unaided.
+
+        Runs sudo because it is a system derivation — the accounting user who
+        posts the last bill triggers it without holding rights on these rows.
+
+        See ``docs/adr/0003-ensure-payment-lines-on-access.md``.
+        """
+        PaymentLine = self.env["disbursement.payment.line"].sudo()
+        for record in self.sudo():
+            billed = record.payment_line_ids.mapped("bill_id")
+            missing = record.bill_ids.filtered(
+                lambda bill: bill.state == "posted" and bill not in billed
+            )
+            if missing:
+                PaymentLine.create(
+                    [record._prepare_payment_line_vals(bill) for bill in missing]
+                )
+            record._apply_subject_defaults(record.payment_line_ids)
+            record.payment_line_ids._refresh_amounts()
+        # Read back through the caller's own environment: the rows were made
+        # sudo, and everything downstream reads them as the acting user.
+        self.invalidate_recordset(["payment_line_ids"])
+        return True
+
+    def _prepare_payment_line_vals(self, bill):
+        """Prepare a payment line for ``bill``.
+
+        The payee's bank starts from the bill, which is the recipient the
+        accounting document already states.
+        """
+        self.ensure_one()
+        return {
+            "request_id": self.id,
+            "bill_id": bill.id,
+            "partner_bank_id": bill.partner_bank_id.id or False,
+        }
+
+    @api.onchange("payment_subject_id")
+    def _onchange_payment_subject_id(self):
+        """Fill in every payee's หัวจ่าย the moment the subject is picked.
+
+        The same derivation ``write`` runs, one step earlier. The auditor's job
+        in this step is to check which account each payee is served from, and
+        that can only be done while the form is still open: leaving the accounts
+        (and the fallback rows that want re-checking) to appear after the save
+        turns one pass over the payees into two.
+        """
+        self._apply_subject_defaults(self.payment_line_ids)
+
+    def _apply_subject_defaults(self, lines):
+        """Derive the paying account of every row the subject still owns.
+
+        Rows a person picked by hand (``manual``) and rows a payment already
+        owns are left alone — both already carry a decision that re-deriving
+        would quietly overwrite.
+
+        Written sudo because the rows only *follow* the subject: whoever may
+        choose it may have them follow, exactly as ``_ensure_payment_lines``
+        may make them in the first place. What a row may still be changed at
+        all is a rule about the workflow rather than about who is asking, so
+        the editability guard on the row is untouched by this.
+        """
+        self.ensure_one()
+        subject = self.payment_subject_id
+        for line in lines.sudo():
+            if line.payment_id or line.paying_account_match == "manual":
+                continue
+            if not subject:
+                continue
+            account, match = subject._paying_account_with_match(
+                line.partner_bank_id.bank_id
+            )
+            line.write(
+                {
+                    "paying_account_id": account.id if account else False,
+                    "paying_account_match": match if account else False,
+                }
+            )
+        return True
+
+    def _payable_payment_lines(self):
+        """The payment lines a payment is still to be created for.
+
+        A row whose bill was reversed or already paid stays on the request as a
+        record of what was reviewed, but is not paid again.
+        """
+        self.ensure_one()
+        return self.payment_line_ids.filtered(
+            lambda line: (
+                not line.payment_id
+                and line.bill_id.state == "posted"
+                and line.bill_id.payment_state == "not_paid"
+            )
+        )
+
+    def _check_payment_classification(self):
+        """Refuse to move on while a payee has no usable banking coordinates.
+
+        Phrased against the payees rather than against the configuration, so the
+        error names the rows to fix rather than a field the reader may not even
+        be able to see.
+        """
+        self.ensure_one()
+        if not self.payment_subject_id:
+            raise UserError(
+                _(
+                    "Choose the payment subject before auditing: it is what decides "
+                    "which account each payee is paid from."
+                )
+            )
+        lines = self._payable_payment_lines()
+        if not lines:
+            raise UserError(_("There is no posted unpaid bill to pay on this request."))
+        no_account = lines.filtered(lambda line: not line.paying_account_id)
+        if no_account:
+            raise UserError(
+                _("No paying account for: %s.")
+                % ", ".join(no_account.mapped("partner_id.display_name"))
+            )
+        transfers = lines.filtered(
+            lambda line: line.payment_method_id.code == "kmitl_transfer"
+        )
+        no_bank = transfers.filtered(lambda line: not line.partner_bank_id)
+        if no_bank:
+            raise UserError(
+                _(
+                    "These payees are paid by transfer but have no bank "
+                    "account: %s. Add one, or move them onto a cheque or cash "
+                    "paying account."
+                )
+                % ", ".join(no_bank.mapped("partner_id.display_name"))
+            )
+        blind = lines.filtered(
+            lambda line: (
+                line.payment_method_id.code == "kmitl_transfer"
+                and not line.paying_account_id.bank_account_id
+            )
+        )
+        if blind:
+            raise UserError(
+                _(
+                    "%s names no bank account, so the e-payment file would "
+                    "carry no sending account. Set it in "
+                    "Finance ▸ Settings ▸ Paying Accounts."
+                )
+                % ", ".join(set(blind.mapped("paying_account_id.display_name")))
+            )
+        return True
 
     # ------------------------------------------------------------------
     # Workflow actions (forward-only, no reject in this phase)
@@ -178,9 +364,9 @@ class DisbursementRequest(models.Model):
         """Auditor verifies the disbursement after the bills are posted."""
         for record in self:
             if record.state != "bills_posted":
-                raise UserError(
-                    _("Only bills-posted requests can be audited.")
-                )
+                raise UserError(_("Only bills-posted requests can be audited."))
+            record._ensure_payment_lines()
+            record._check_payment_classification()
             record.state = "payment_audited"
             record.activity_feedback([TO_AUDIT_ACTIVITY])
             record._schedule_payment_todo(TO_AUTHORIZE_ACTIVITY, AUTHORIZER_GROUP)
@@ -199,31 +385,97 @@ class DisbursementRequest(models.Model):
         return True
 
     def action_confirm_paid(self):
-        """Finance confirms the bank actually paid every payment of the DR."""
+        """The finance office's one confirmation that every payee has their money.
+
+        It **writes** the outcome it asserts onto every payment rather than
+        demanding that someone set it elsewhere first: the bank's own result file
+        never enters Odoo, so no other record can know it, and asking the officer
+        to tick each payee before ticking the request is a second pass over the
+        same judgement. What is checked instead is a fact the system does hold —
+        that the payments which travel in an e-payment file were actually put in
+        one. Whatever the bank rejected was chased and settled outside the system
+        before this is pressed.
+
+        This is also the **Hand-over**: it is where the request stops being the
+        finance office's and its vouchers enter the accounting office's approval
+        queue. See ADR-0004.
+        """
         for record in self:
             if record.state != "payment_authorized":
-                raise UserError(
-                    _("Only authorized requests can be confirmed as paid.")
-                )
+                raise UserError(_("Only authorized requests can be confirmed as paid."))
             active = record.payment_ids.filtered(lambda p: p.state != "cancel")
             if not active:
                 raise UserError(
                     _("Create the payment(s) before confirming the payment.")
                 )
-            not_success = active.filtered(
-                lambda p: p.bank_result_status != "success"
+            not_exported = active.filtered(
+                lambda p: p.needs_bank_export and p.export_status != "exported"
             )
-            if not_success:
+            if not_exported:
                 raise UserError(
                     _(
-                        "The bank has not confirmed success for payment(s): "
-                        "%s. Mark the bank result on the payment export first."
+                        "These payments have not left in an e-payment file yet: "
+                        "%s. Put them in a file and mark it done before "
+                        "confirming the payment."
                     )
-                    % ", ".join(not_success.mapped("name"))
+                    % ", ".join(not_exported.mapped("name"))
                 )
+            # A voucher that travels in a file was confirmed for the bank long
+            # before this; a cheque or cash one may never have been, and confirming
+            # it for a bank it will never reach says nothing this press does not
+            # already imply — so it is done here rather than sent back as an errand.
+            # It is also what gives such a voucher its number.
+            active.filtered(
+                lambda p: p.finance_state == "draft"
+            ).action_confirm_for_bank()
+            active._mark_paid()
             record.state = "paid"
             record.activity_feedback([TO_PAY_ACTIVITY])
+            # Hand the request to the accounting office: one Todo for the request,
+            # because the request is the document KMITL navigates by — not twelve
+            # for twelve payees.
+            record._schedule_payment_todo(TO_BOOK_ACTIVITY, ACCOUNTING_MAKER_GROUP)
         return True
+
+    def action_submit_payments(self):
+        """The accounting maker submits every voucher of a paid request at once.
+
+        Their step is per voucher — correct the booking, then submit — but a request
+        whose vouchers need no correction is the same press repeated, and the request
+        is the document they navigate by. A voucher that does need work is opened
+        from the queue and submitted on its own entry instead.
+
+        Submitting is what asks the approver: ``account.move.action_submit`` puts the
+        Todo in their inbox, so the makers' own Todo on the request is cleared here.
+        """
+        for record in self:
+            if record.state != "paid":
+                raise UserError(
+                    _("Only a request the finance office has paid can be booked.")
+                )
+            active = record.payment_ids.filtered(lambda p: p.state != "cancel")
+            drafts = active.move_id.filtered(lambda move: move.state == "draft")
+            if not drafts:
+                raise UserError(
+                    _("Every voucher of %s is already submitted.") % record.display_name
+                )
+            result = drafts.action_submit()
+            if isinstance(result, dict):
+                # base_exception wants to show a popup, and a queue has nobody to
+                # show it to: report it as the reason this request could not be
+                # booked rather than leaving the vouchers silently in draft.
+                raise UserError(
+                    _(
+                        "%s has vouchers with blocking exceptions. Open the entry "
+                        "and submit it there to see them."
+                    )
+                    % record.display_name
+                )
+            record.activity_feedback([TO_BOOK_ACTIVITY])
+        return True
+
+    def action_submit_payments_batch(self):
+        return self._payment_batch("action_submit_payments", "paid")
 
     def _payment_batch(self, single_method, valid_state):
         """Run a per-record action in isolated savepoints (mirror of
@@ -307,17 +559,33 @@ class DisbursementRequest(models.Model):
     # ------------------------------------------------------------------
     # Payment creation (finance)
     # ------------------------------------------------------------------
+    def action_open_payment_review(self):
+        """Open the finance office's read-back of every payee before the money
+        leaves — a checkpoint, not an approval: nothing changes state.
+
+        Finance may correct only the two banking coordinates (out of which
+        account, into which account). Who is paid and how much were settled by
+        the round-1 approval and by the posted bill, and are not theirs to touch.
+        """
+        self.ensure_one()
+        self._ensure_payment_lines()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Payment Review"),
+            "res_model": "disbursement.payment.line",
+            "domain": [("request_id", "=", self.id)],
+            "view_mode": "tree",
+            "target": "current",
+        }
+
     def action_create_payment(self):
-        """Create draft payments from the DR, one per posted unpaid bill."""
+        """Create draft payments from the DR, one per reviewed payee."""
         self.ensure_one()
         if self.state != "payment_authorized":
             raise UserError(
-                _("The disbursement must be authorized before creating "
-                  "the payment.")
+                _("The disbursement must be authorized before creating the payment.")
             )
-        existing_payments = self.payment_ids.filtered(
-            lambda p: p.state != "cancel"
-        )
+        existing_payments = self.payment_ids.filtered(lambda p: p.state != "cancel")
         if existing_payments:
             raise UserError(
                 _(
@@ -327,9 +595,8 @@ class DisbursementRequest(models.Model):
                 )
                 % ", ".join(existing_payments.mapped("name"))
             )
-        posted_bills = self.bill_ids.filtered(lambda b: b.state == "posted")
-        partial_bills = posted_bills.filtered(
-            lambda b: b.payment_state == "partial"
+        partial_bills = self.bill_ids.filtered(
+            lambda b: b.state == "posted" and b.payment_state == "partial"
         )
         if partial_bills:
             raise UserError(
@@ -339,70 +606,34 @@ class DisbursementRequest(models.Model):
                 )
                 % ", ".join(partial_bills.mapped("name"))
             )
-        unpaid_bills = posted_bills.filtered(
-            lambda b: b.payment_state == "not_paid"
-        )
-        if not unpaid_bills:
-            raise UserError(_("No posted unpaid bills to pay."))
+        self._ensure_payment_lines()
+        self._check_payment_classification()
+        lines = self._payable_payment_lines()
 
         payment_type = self.env.ref(
             "finance_kmitl.payment_type_normal_outbound",
             raise_if_not_found=False,
         )
-        journal = payment_type.journal_id if payment_type else False
-        if not journal:
-            journal = self.env["account.journal"].search(
-                [
-                    ("type", "=", "bank"),
-                    ("company_id", "=", self.company_id.id),
-                ],
-                order="sequence, id",
-                limit=1,
-            )
-        if not journal:
-            raise UserError(
-                _("No bank journal configured for the outbound payment type "
-                  "or company %s.")
-                % self.company_id.name
-            )
 
         payments = self.env["account.payment"]
-        for bill in unpaid_bills:
+        for line in lines:
+            bill = line.bill_id
             payable_lines = bill.line_ids.filtered(
-                lambda l: l.account_type == "liability_payable"
-                and not l.reconciled
+                lambda ml: ml.account_type == "liability_payable" and not ml.reconciled
             )
-            amount = abs(bill.amount_residual)
-
-            wht_lines = bill.line_ids.filtered("wht_tax_id")
-            write_off_line_vals = []
-            if wht_lines:
-                deduction_list, amount_wht = (
-                    wht_lines._prepare_deduction_list(
-                        fields.Date.context_today(self),
-                        bill.currency_id,
-                    )
-                )
-                if deduction_list and amount_wht:
-                    amount -= amount_wht
-                    for deduct in deduction_list:
-                        write_off_line_vals.append({
-                            "name": deduct["name"],
-                            "account_id": deduct["account_id"],
-                            "partner_id": bill.partner_id.id,
-                            "currency_id": bill.currency_id.id,
-                            "amount_currency": -deduct["amount"],
-                            "balance": -deduct["amount"],
-                            "wht_tax_id": deduct["wht_tax_id"],
-                            "tax_base_amount": deduct["wht_amount_base"],
-                        })
+            amount, amount_wht, write_off_line_vals = line._payment_amount_vals()
 
             payment_vals = {
                 "disbursement_request_id": self.id,
                 "partner_id": bill.partner_id.id,
-                "amount": amount,
+                "partner_bank_id": line.partner_bank_id.id or False,
+                "amount": amount - amount_wht,
                 "currency_id": bill.currency_id.id,
-                "journal_id": journal.id,
+                # The paying account settles the voucher, not the other way
+                # round: it belongs to exactly one journal, so taking the
+                # journal from it is what keeps the two from disagreeing.
+                "journal_id": line.paying_account_id.journal_id.id,
+                "payment_method_line_id": line.paying_account_id.id,
                 "payment_type": "outbound",
                 "partner_type": "supplier",
                 "ref": _("%s - %s", self.name, bill.name),
@@ -419,12 +650,11 @@ class DisbursementRequest(models.Model):
                 payment.move_id.line_ids.write(
                     {"analytic_distribution": bill.analytic_distribution}
                 )
+            line.payment_id = payment
             payments |= payment
 
         for payment in payments:
-            pay_link = (
-                "/web#id=%d&model=account.payment&view_type=form" % payment.id
-            )
+            pay_link = "/web#id=%d&model=account.payment&view_type=form" % payment.id
             self.message_post(
                 body=_(
                     'Payment <a href="%(link)s" target="_blank">'

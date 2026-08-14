@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="finance_kmitl_demo_regen_wizard_form" model="ir.ui.view">
+        <field name="name">finance.kmitl.demo.regen.wizard.form</field>
+        <field name="model">finance.kmitl.demo.regen.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Regenerate Demo Data">
+                <div class="alert alert-warning" role="alert">
+                    <p>This appends a fresh batch of demo records. It deletes nothing and resets nothing, so previous batches stay in place.</p>
+                    <p>The vendor bills and depreciation entries it posts cannot be undone from the interface. To get back to a single pristine dataset, recreate the database instead.</p>
+                </div>
+                <group>
+                    <field name="run_count" />
+                </group>
+                <group string="Stories to regenerate">
+                    <field name="story_sarabun_org" />
+                    <field name="story_purchase_e2e" />
+                    <field name="story_disbursement" />
+                    <field name="story_assets" />
+                </group>
+                <footer>
+                    <button
+                        name="action_regenerate"
+                        type="object"
+                        string="Regenerate"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_finance_kmitl_demo_regen_wizard" model="ir.actions.act_window">
+        <field name="name">Regenerate Demo Data</field>
+        <field name="res_model">finance.kmitl.demo.regen.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="finance_kmitl_demo_regen_wizard_form" />
+        <field name="target">new</field>
+    </record>
+</odoo>

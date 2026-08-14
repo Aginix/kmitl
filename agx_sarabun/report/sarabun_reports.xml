@@ -102,10 +102,10 @@
                                 <li t-foreach="doc.reference_line_ids" t-as="rl"><span t-out="rl.text"/></li>
                             </ul>
                         </div>
-                        <div t-if="doc.enclosure_ids" style="margin-bottom:6px;">
+                        <div t-if="doc.enclosure_attachment_ids" style="margin-bottom:6px;">
                             <strong>สิ่งที่ส่งมาด้วย</strong>
                             <ol style="margin:0;">
-                                <li t-foreach="doc.enclosure_ids" t-as="e"><span t-out="e.description"/></li>
+                                <li t-foreach="doc.enclosure_attachment_ids" t-as="e"><span t-out="e.name"/></li>
                             </ol>
                         </div>
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- "My Work": the payment vouchers assigned to the current user, on the
+         finance office's own list and search views. -->
+    <record id="action_account_payment_my_work" model="ir.actions.act_window">
+        <field name="name">My Work</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_id" ref="finance_kmitl.view_account_payment_tree_kmitl" />
+        <field
+            name="search_view_id"
+            ref="finance_kmitl.view_account_payment_search_kmitl"
+        />
+        <field name="domain">[('payment_type', '=', 'outbound')]</field>
+        <field name="context">{
+            'search_default_my_payments': 1,
+            'default_payment_type': 'outbound',
+            'default_partner_type': 'supplier',
+            'default_move_journal_types': ('bank', 'cash'),
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ยังไม่มีใบสำคัญจ่ายที่มอบหมายให้คุณ
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_account_payment_my_work"
+        name="My Work"
+        parent="finance_kmitl.menu_payment_root"
+        action="action_account_payment_my_work"
+        sequence="5"
+        groups="finance_kmitl.group_finance_kmitl_user_out"
+    />
+</odoo>

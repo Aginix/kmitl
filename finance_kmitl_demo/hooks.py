@@ -1,22 +1,24 @@
 """Post-init demo data for the KMITL post-budget finance flow.
 
-Four demo stories run in order from ``post_init``:
+Three demo stories run in order from ``seed``:
 
 * the disbursement flow (``PR -> PA -> PO -> Work Acceptance -> DR``), moved here
   from ``kmitl_demo``;
-* vendor bills, payments and a KTB bank payment export built from those DRs;
-* fixed assets with posted depreciation;
-* standalone outbound vendor payments (draft/submitted) to fill the payment
-  list and treasury reports with data.
+* vendor bills created and posted from those DRs, leaving every request at
+  ``bills_posted``;
+* fixed assets with posted depreciation.
+
+The demo deliberately stops at ``bills_posted``: the payment tail (audit ->
+authorize -> pay) is left untouched so the finance queue can be exercised by
+hand in the UI, and no ``account.payment`` is created here.
 
 The disbursement flow reuses two helpers from ``kmitl_demo`` (the purchase
 end-to-end flow uses them too) instead of duplicating them.
 """
+
 import logging
-from datetime import timedelta
 
 from odoo import SUPERUSER_ID, api, fields
-from odoo.exceptions import UserError
 from odoo.fields import Command
 
 from odoo.addons.kmitl_demo.hooks import (
@@ -29,18 +31,27 @@ _logger = logging.getLogger(__name__)
 
 def post_init(cr, registry):
     env = api.Environment(cr, SUPERUSER_ID, {})
+    seed(env)
 
-    drs = _create_disbursement_flow_demo(
-        env,
-        admin=env.ref("base.user_admin"),
-        fiscal_year=env.ref("kmitl_demo.account_fiscal_year_y2568"),
-        admin_employee=_admin_employee(env),
-        supervisor_employee=env.ref("kmitl_demo.employee_demo_008"),
-        wa_committee_employees=_wa_committee_employees(env),
-    )
-    _create_bill_payment_demo(env, drs)
-    _create_asset_demo(env)
-    _create_standalone_payment_demo(env)
+
+def seed(env, disbursement=True, assets=True):
+    """Build the demo stories on an existing environment.
+
+    Split out of ``post_init`` so the dev-only regenerate wizard and module
+    installation share one code path. Each story is independent.
+    """
+    if disbursement:
+        drs = _create_disbursement_flow_demo(
+            env,
+            admin=env.ref("base.user_admin"),
+            fiscal_year=env.ref("kmitl_demo.account_fiscal_year_y2568"),
+            admin_employee=_admin_employee(env),
+            supervisor_employee=env.ref("kmitl_demo.employee_demo_008"),
+            wa_committee_employees=_wa_committee_employees(env),
+        )
+        _create_bill_demo(env, drs)
+    if assets:
+        _create_asset_demo(env)
 
 
 def _admin_employee(env):
@@ -479,48 +490,26 @@ def _create_disbursement_flow_demo(
     return drs
 
 
-# === Step B: bills, payments and bank export ===
+# === Step B: vendor bills ===
 #
-# Continue the disbursement requests into vendor bills (ตั้งหนี้), payments
-# (ล้างหนี้/จ่าย) and a KTB bank payment export. Each DR is advanced to a
-# different stage so the accounting tail shows records in every state.
+# Continue every disbursement request into a posted vendor bill (ตั้งหนี้), which
+# leaves it at ``bills_posted``. The payment tail (audit -> authorize -> pay) is
+# deliberately not run so the finance payment queue can be demoed by hand.
 
-# Target stage per DR (by position), giving a realistic mix across the whole
-# post-bill payment-execution workflow:
-#   approve    -> approved, ready to bill
-#   bill       -> vendor bill posted (bills_posted)
-#   audit      -> audited by the payment auditor (payment_audited)
-#   authorize  -> authorized to pay (payment_authorized)
-#   payment    -> draft payment created, awaiting bank confirmation
-#   paid       -> bank result confirmed success (paid), awaiting accounting
-#   pay        -> accounting posted the payment (cleared / ล้างหนี้)
-DR_STAGE_TARGETS = [
-    "approve",
-    "bill",
-    "audit",
-    "authorize",
-    "payment", "payment",
-    "paid",
-    "pay", "pay", "pay",
-]
-WHT_DR_INDEX = 7  # one "pay" (cleared) case carries withholding tax
+WHT_DR_INDEX = 7  # one case carries withholding tax
 
 
-def _create_bill_payment_demo(env, drs):
-    """Drive the disbursement requests through billing and payment.
+def _create_bill_demo(env, drs):
+    """Drive every disbursement request through approval to a posted bill.
 
     Each DR is advanced inside its own try/except so a failure on one never
     aborts the whole install.
     """
     drs = drs.exists()
     if not drs:
-        _logger.warning(
-            "finance_kmitl_demo: no disbursement requests to continue."
-        )
+        _logger.warning("finance_kmitl_demo: no disbursement requests to continue.")
         return
-    _logger.info(
-        "Creating bill/payment demo from %s disbursement requests...", len(drs)
-    )
+    _logger.info("Creating vendor-bill demo from %s disbursement requests...", len(drs))
 
     try:
         wht_tax = env["account.withholding.tax"].search([], limit=1)
@@ -528,36 +517,19 @@ def _create_bill_payment_demo(env, drs):
         wht_tax = None
 
     for index, dr in enumerate(drs):
-        target = (
-            DR_STAGE_TARGETS[index]
-            if index < len(DR_STAGE_TARGETS)
-            else "approve"
-        )
         try:
-            _approve_dr(dr)
-            if target == "approve":
-                continue
-            _bill_dr(dr, wht_tax if index == WHT_DR_INDEX else None)
-            if target == "bill":
-                continue
-            dr.action_audit()
-            if target == "audit":
-                continue
-            dr.action_authorize()
-            if target == "authorize":
-                continue
-            dr.action_create_payment()
-            if target == "payment":
-                continue
-            _finalize_payment(env, dr, do_clear=(target == "pay"))
+            # Savepoint per request: swallowing a database-level error without
+            # one would leave the transaction aborted for every request after it.
+            with env.cr.savepoint():
+                _approve_dr(dr)
+                _bill_dr(dr, wht_tax if index == WHT_DR_INDEX else None)
         except Exception as error:  # noqa: BLE001 - demo must never abort install
             _logger.warning(
-                "finance_kmitl_demo: DR %s stopped before '%s' (%s)",
+                "finance_kmitl_demo: DR %s stopped before 'bills_posted' (%s)",
                 dr.name,
-                target,
                 error,
             )
-    _logger.info("Bill/payment demo created.")
+    _logger.info("Vendor-bill demo created (requests left at 'bills_posted').")
 
 
 def _dr_commitment(dr):
@@ -601,78 +573,6 @@ def _bill_dr(dr, wht_tax=None):
     dr.action_post_bills()
 
 
-def _finalize_payment(env, dr, do_clear):
-    """Send the payment to the bank, confirm the result (-> paid) and, for a
-    "pay" target, let accounting post the payment move (-> cleared).
-
-    Best-effort: a missing bank configuration leaves the request at 'paid'
-    (bank confirmed) rather than aborting the module installation.
-    """
-    payments = dr.payment_ids.filtered(lambda p: p.state == "draft")
-    if not payments:
-        return
-    payments.action_submit()
-    exported = _export_payments(env, payments)
-    # Finance confirms the bank result (success) so the request can reach 'paid'.
-    lines = env["bank.payment.export.line"].search(
-        [("payment_id", "in", payments.ids)]
-    )
-    if lines:
-        lines._apply_epayment_result("success")
-    else:
-        payments.write({"bank_result_status": "success"})
-    dr.action_confirm_paid()
-    if do_clear and exported:
-        # Accounting posts the payment move (guard passes: paid + success),
-        # which reconciles against the bill and clears the request.
-        to_post = payments.filtered(
-            lambda p: p.state == "submitted" and p.export_status != "draft"
-        )
-        to_post.action_post()
-
-
-def _export_payments(env, payments):
-    """Best-effort KTB bank export of the given submitted payments.
-
-    The full KTB export depends on company bank configuration (bank journal
-    BIC, export format) that may be absent on a given database. Returns True
-    when the export was confirmed, False otherwise.
-    """
-    try:
-        for payment in payments:
-            ktb_bank = payment.partner_id.bank_ids.filtered(
-                lambda bank: bank.bank_id.bic == "KRTHTHBK"
-            )[:1]
-            if ktb_bank:
-                payment.partner_bank_id = ktb_bank.id
-
-        export = env["bank.payment.export"].create(
-            {"bank": "KRTHTHBK", "company_id": payments[:1].company_id.id}
-        )
-        export.action_get_all_payments()
-        if not export.export_line_ids:
-            raise UserError("No submitted payments available to export.")
-        for line in export.export_line_ids:
-            if not line.payment_partner_bank_id and line.payment_id.partner_bank_id:
-                line.payment_partner_bank_id = line.payment_id.partner_bank_id.id
-        export.write(
-            {
-                "ktb_bank_type": "direct",
-                "ktb_service_type_direct": "14",
-                "effective_date": fields.Date.context_today(export),
-            }
-        )
-        export.action_confirm()
-        _logger.info("Bank export %s confirmed.", export.name)
-        return True
-    except Exception as error:  # noqa: BLE001 - best-effort, keep install green
-        _logger.warning(
-            "finance_kmitl_demo: bank export skipped (best-effort): %s",
-            error,
-        )
-        return False
-
-
 # === Step C: fixed assets and depreciation ===
 #
 # Create assets directly against the KMITL asset profiles, validate them
@@ -685,42 +585,102 @@ def _export_payments(env, payments):
 #   depreciated  -> validated, due depreciation periods posted
 #   closed       -> old asset, all depreciation posted (fully depreciated)
 ASSET_SPECS = [
-    ("เครื่องคอมพิวเตอร์ All-in-One สำนักงานคณบดี",
-     "account_asset_kmitl.asset_profile_014", 45000.0, "2024-10-15",
-     "kmitl_demo.01", "depreciated"),
-    ("เครื่องปรับอากาศ ห้องปฏิบัติการ",
-     "account_asset_kmitl.asset_profile_001", 38000.0, "2024-11-01",
-     "kmitl_demo.01", "depreciated"),
-    ("กล้องจุลทรรศน์ดิจิทัล",
-     "account_asset_kmitl.asset_profile_013", 250000.0, "2024-12-20",
-     "kmitl_demo.01", "depreciated"),
-    ("เครื่องพิมพ์เลเซอร์มัลติฟังก์ชัน",
-     "account_asset_kmitl.asset_profile_001", 22000.0, "2024-10-01",
-     "kmitl_demo.89390", "depreciated"),
-    ("รถตู้โดยสาร 12 ที่นั่ง",
-     "account_asset_kmitl.asset_profile_002", 1350000.0, "2024-10-20",
-     "kmitl_demo.89390", "depreciated"),
-    ("โต๊ะประชุมไม้พร้อมเก้าอี้ 12 ที่นั่ง",
-     "account_asset_kmitl.asset_profile_001", 65000.0, "2025-02-10",
-     "kmitl_demo.01", "open"),
-    ("เครื่องสำรองไฟ UPS 10kVA",
-     "account_asset_kmitl.asset_profile_003", 90000.0, "2025-03-05",
-     "kmitl_demo.01", "open"),
-    ("ชุดเครื่องเสียงห้องเรียนอัจฉริยะ",
-     "account_asset_kmitl.asset_profile_005", 75000.0, "2025-04-01",
-     "kmitl_demo.01", "open"),
-    ("เครื่องวิเคราะห์สเปกตรัม",
-     "account_asset_kmitl.asset_profile_013", 480000.0, "2025-05-15",
-     "kmitl_demo.01", "open"),
-    ("เครื่องคอมพิวเตอร์โน้ตบุ๊ก (ตัดจำหน่าย)",
-     "account_asset_kmitl.asset_profile_014", 36000.0, "2020-01-10",
-     "kmitl_demo.01", "closed"),
-    ("ครุภัณฑ์สำนักงานรอตรวจรับ",
-     "account_asset_kmitl.asset_profile_001", 18000.0, "2026-01-05",
-     "kmitl_demo.01", "draft"),
-    ("เครื่องมือวิทยาศาสตร์รอขึ้นทะเบียน",
-     "account_asset_kmitl.asset_profile_013", 120000.0, "2026-02-01",
-     "kmitl_demo.01", "draft"),
+    (
+        "เครื่องคอมพิวเตอร์ All-in-One สำนักงานคณบดี",
+        "account_asset_kmitl.asset_profile_014",
+        45000.0,
+        "2024-10-15",
+        "kmitl_demo.01",
+        "depreciated",
+    ),
+    (
+        "เครื่องปรับอากาศ ห้องปฏิบัติการ",
+        "account_asset_kmitl.asset_profile_001",
+        38000.0,
+        "2024-11-01",
+        "kmitl_demo.01",
+        "depreciated",
+    ),
+    (
+        "กล้องจุลทรรศน์ดิจิทัล",
+        "account_asset_kmitl.asset_profile_013",
+        250000.0,
+        "2024-12-20",
+        "kmitl_demo.01",
+        "depreciated",
+    ),
+    (
+        "เครื่องพิมพ์เลเซอร์มัลติฟังก์ชัน",
+        "account_asset_kmitl.asset_profile_001",
+        22000.0,
+        "2024-10-01",
+        "kmitl_demo.89390",
+        "depreciated",
+    ),
+    (
+        "รถตู้โดยสาร 12 ที่นั่ง",
+        "account_asset_kmitl.asset_profile_002",
+        1350000.0,
+        "2024-10-20",
+        "kmitl_demo.89390",
+        "depreciated",
+    ),
+    (
+        "โต๊ะประชุมไม้พร้อมเก้าอี้ 12 ที่นั่ง",
+        "account_asset_kmitl.asset_profile_001",
+        65000.0,
+        "2025-02-10",
+        "kmitl_demo.01",
+        "open",
+    ),
+    (
+        "เครื่องสำรองไฟ UPS 10kVA",
+        "account_asset_kmitl.asset_profile_003",
+        90000.0,
+        "2025-03-05",
+        "kmitl_demo.01",
+        "open",
+    ),
+    (
+        "ชุดเครื่องเสียงห้องเรียนอัจฉริยะ",
+        "account_asset_kmitl.asset_profile_005",
+        75000.0,
+        "2025-04-01",
+        "kmitl_demo.01",
+        "open",
+    ),
+    (
+        "เครื่องวิเคราะห์สเปกตรัม",
+        "account_asset_kmitl.asset_profile_013",
+        480000.0,
+        "2025-05-15",
+        "kmitl_demo.01",
+        "open",
+    ),
+    (
+        "เครื่องคอมพิวเตอร์โน้ตบุ๊ก (ตัดจำหน่าย)",
+        "account_asset_kmitl.asset_profile_014",
+        36000.0,
+        "2020-01-10",
+        "kmitl_demo.01",
+        "closed",
+    ),
+    (
+        "ครุภัณฑ์สำนักงานรอตรวจรับ",
+        "account_asset_kmitl.asset_profile_001",
+        18000.0,
+        "2026-01-05",
+        "kmitl_demo.01",
+        "draft",
+    ),
+    (
+        "เครื่องมือวิทยาศาสตร์รอขึ้นทะเบียน",
+        "account_asset_kmitl.asset_profile_013",
+        120000.0,
+        "2026-02-01",
+        "kmitl_demo.01",
+        "draft",
+    ),
 ]
 
 
@@ -733,40 +693,45 @@ def _create_asset_demo(env):
 
     for name, profile_ref, value, date_start, dept_ref, target in ASSET_SPECS:
         try:
-            profile = env.ref(profile_ref, raise_if_not_found=False)
-            department = env.ref(dept_ref, raise_if_not_found=False)
-            if not profile:
-                continue
-            start = fields.Date.to_date(date_start)
-            fiscal_year = company.find_daterange_fy(start)
-            asset = env["account.asset"].create(
-                {
-                    "name": name,
-                    "profile_id": profile.id,
-                    "purchase_value": value,
-                    "date_start": date_start,
-                    "company_id": company.id,
-                    "department_id": department.id if department else False,
-                    "account_fiscal_year_id": fiscal_year.id if fiscal_year else False,
-                    "gpsc_id": gpsc.id if gpsc else False,
-                }
-            )
-            # Asset numbering needs department short name + GPSC; best-effort.
-            try:
-                asset.create_asset_number()
-            except Exception as error:  # noqa: BLE001
-                _logger.info("Asset numbering skipped for '%s': %s", name, error)
+            # Savepoint per asset: swallowing a database-level error without one
+            # would leave the transaction aborted for every asset after it.
+            with env.cr.savepoint():
+                profile = env.ref(profile_ref, raise_if_not_found=False)
+                department = env.ref(dept_ref, raise_if_not_found=False)
+                if not profile:
+                    continue
+                start = fields.Date.to_date(date_start)
+                fiscal_year = company.find_daterange_fy(start)
+                asset = env["account.asset"].create(
+                    {
+                        "name": name,
+                        "profile_id": profile.id,
+                        "purchase_value": value,
+                        "date_start": date_start,
+                        "company_id": company.id,
+                        "department_id": department.id if department else False,
+                        "account_fiscal_year_id": (
+                            fiscal_year.id if fiscal_year else False
+                        ),
+                        "gpsc_id": gpsc.id if gpsc else False,
+                    }
+                )
+                # Asset numbering needs department short name + GPSC;
+                # best-effort, in its own savepoint for the same reason.
+                try:
+                    with env.cr.savepoint():
+                        asset.create_asset_number()
+                except Exception as error:  # noqa: BLE001
+                    _logger.info("Asset numbering skipped for '%s': %s", name, error)
 
-            if target == "draft":
-                continue
+                if target == "draft":
+                    continue
 
-            asset.validate()  # -> open + depreciation board computed
-            if target in ("depreciated", "closed"):
-                _post_depreciation(asset, today, all_lines=(target == "closed"))
+                asset.validate()  # -> open + depreciation board computed
+                if target in ("depreciated", "closed"):
+                    _post_depreciation(asset, today, all_lines=(target == "closed"))
         except Exception as error:  # noqa: BLE001 - demo must never abort install
-            _logger.warning(
-                "finance_kmitl_demo: asset '%s' skipped (%s)", name, error
-            )
+            _logger.warning("finance_kmitl_demo: asset '%s' skipped (%s)", name, error)
     _logger.info("Fixed-asset demo data created.")
 
 
@@ -779,112 +744,3 @@ def _post_depreciation(asset, today, all_lines=False):
         lines = lines.filtered(lambda l: l.line_date and l.line_date <= today)
     if lines:
         lines.create_move()
-
-
-# === Step D: standalone vendor payments ===
-#
-# 50 outbound (supplier) payments created directly, cycling through the demo
-# vendors, dimensions, amounts and dates. They are NOT linked to vendor bills so
-# the install stays fast; half are left in ``draft`` and half ``submitted`` so
-# the payment list and treasury reports show data in both states.
-
-STANDALONE_PAYMENT_COUNT = 50
-# (activity, fund, source, dept) — dimension xmlids reused from DR_CASES.
-STANDALONE_PAYMENT_DIMENSIONS = [
-    ("activity_09007", "fund_0600", "source_1", "dept_89390"),
-    ("activity_06", "fund_0200", "source_2", "dept_01"),
-    ("activity_09", "fund_0100", "source_1", "dept_01"),
-    ("activity_00", "fund_0300", "source_2", "dept_01"),
-    ("activity_06", "fund_0500", "source_2", "dept_01"),
-    ("activity_06", "fund_0400", "source_3", "dept_01"),
-]
-STANDALONE_PAYMENT_MEMOS = [
-    "ค่าวัสดุสำนักงาน",
-    "ค่าวัสดุคอมพิวเตอร์",
-    "ค่าวัสดุวิทยาศาสตร์",
-    "ค่าจ้างเหมาบริการทำความสะอาด",
-    "ค่าซ่อมแซมและบำรุงรักษาครุภัณฑ์",
-    "ค่าเช่าอุปกรณ์สำนักงาน",
-    "ค่าที่ปรึกษา/ผู้เชี่ยวชาญ",
-    "ค่าจัดอบรมสัมมนา",
-    "ค่าโปรแกรมคอมพิวเตอร์",
-    "ค่าจ้างเหมาบริการทั่วไป",
-]
-
-
-def _create_standalone_payment_demo(env):
-    """Create standalone outbound vendor payments across draft/submitted.
-
-    Payments are created directly (not from a bill) so the install stays fast,
-    and each one is built inside its own try/except so a failure never aborts
-    the install.
-
-    Must run after the Story B bank export: that export grabs every submitted
-    payment company-wide, so creating these submitted payments earlier would
-    pull them into it unintentionally.
-    """
-    company = env.ref("base.main_company")
-    fiscal_year = env.ref("kmitl_demo.account_fiscal_year_y2568")
-    payment_type = env.ref(
-        "finance_kmitl.payment_type_normal_outbound",
-        raise_if_not_found=False,
-    )
-    journal = env["account.journal"].search(
-        [("type", "=", "bank"), ("company_id", "=", company.id)],
-        limit=1,
-    )
-    if not payment_type or not journal:
-        _logger.warning(
-            "finance_kmitl_demo: standalone payments skipped "
-            "(missing outbound payment type or bank journal)."
-        )
-        return
-
-    _logger.info(
-        "Creating standalone payment demo (%s records)...",
-        STANDALONE_PAYMENT_COUNT,
-    )
-    currency = journal.currency_id or company.currency_id
-    created = 0
-    for index in range(STANDALONE_PAYMENT_COUNT):
-        try:
-            vendor = env.ref(
-                "kmitl_demo.vendor_demo_%03d" % (index % 20 + 1),
-                raise_if_not_found=False,
-            )
-            if not vendor:
-                continue
-            dimensions = STANDALONE_PAYMENT_DIMENSIONS[
-                index % len(STANDALONE_PAYMENT_DIMENSIONS)
-            ]
-            accounts = [
-                env.ref("account_analytic_kmitl.%s" % code, raise_if_not_found=False)
-                for code in dimensions
-            ]
-            analytic = {account.id: 100 for account in accounts if account}
-            memo = STANDALONE_PAYMENT_MEMOS[index % len(STANDALONE_PAYMENT_MEMOS)]
-            payment = env["account.payment"].create(
-                {
-                    "partner_id": vendor.id,
-                    "partner_type": "supplier",
-                    "payment_type": "outbound",
-                    "kmitl_payment_type_id": payment_type.id,
-                    "journal_id": journal.id,
-                    "currency_id": currency.id,
-                    "amount": 5000 + (index % 20) * 1850 + index * 25,
-                    "date": fiscal_year.date_from + timedelta(days=index * 7),
-                    "ref": "[DEMO-PAY] %s #%02d" % (memo, index + 1),
-                    "analytic_distribution": analytic,
-                }
-            )
-            # Leave half draft, half submitted so both states show in the list.
-            if index % 2 == 0:
-                payment.action_submit()
-            created += 1
-        except Exception as error:  # noqa: BLE001 - demo must never abort install
-            _logger.warning(
-                "finance_kmitl_demo: standalone payment #%s skipped (%s)",
-                index + 1,
-                error,
-            )
-    _logger.info("Standalone payment demo created (%s records).", created)

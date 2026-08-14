@@ -31,3 +31,17 @@ The shared domain (used by the unified page, the custom systray count, and the f
 - Native activity email-on-create targets `user_id`, so it does not fire for group Todos; group notification, if wanted later, is a separate explicit step — v1 relies on the inbox + systray.
 - An optional **"รับเรื่อง" (Claim)** action sets `user_id = me`, converting a group Todo into a personal one so colleagues see it is taken.
 - Single-user Todos (e.g. `purchase.request.assigned_to`, the requester FYI) set `user_id` and leave the tags empty — one model, two modes; the same domain surfaces both.
+
+## Update (2026-08-09): OU is the source record's OU, cached and kept live
+
+`operating_unit_id` on the activity is **not** a value the caller tags by hand — it is a denormalised copy of the *source record's* `operating_unit_id`. Recipients (`role ∩ OU`) are still resolved live; the OU itself is the piece that gets cached onto the activity so routing, history (`todo.log`), and the oversight group-by/search-panel stay **pure SQL** (a polymorphic `res_model`/`res_id` join to the source's OU cannot be expressed in a `mail.activity` domain).
+
+- **Filled on every create path.** `mail.activity.create` (role-in-unit layer) copies the source record's OU onto the activity when the caller does not pin one — covering the chatter "Schedule Activity" dialog, the inbox form, and `activity_schedule`. Callers pass only the role. An explicitly-passed OU still wins.
+- **Kept live on source OU change.** `mail.activity.mixin.write` propagates a source record's OU change onto its open activities (`sudo`, since the mover need not own group activities). Because that goes through `mail.activity.write`, the existing `_todo_notify` fires for the old **and** new OU members — visibility re-resolves and badges refresh immediately, not only on reload. Only a *move* propagates: **clearing** the source's OU leaves the activity on its last known unit, because a group Todo with neither assignee nor unit is routed to nobody and would silently leave every inbox.
+- **Consequence — the OU is a snapshot between changes.** It is only as live as the propagation hook: it tracks source OU changes made via ORM `write`, and history logs the OU at completion time. This is intentional (fast, queryable) and matches "recipients live, tag cached".
+
+## Update (2026-08-09): a group Todo can be created from the chatter, not only in code
+
+Originally group Todos were only minted programmatically (e.g. `procurement_plan_todo`), because the core "Schedule Activity" popup defaults `user_id` to the current user and has no role field — so a hand-scheduled activity was always personal. The role-in-unit layer now extends `mail.mail_activity_view_form_popup` with a **Responsible Role** picker (and, for oversight users, the OU). Personal and group are mutually exclusive on the form via two onchanges: picking a role clears the assignee (and surfaces the source OU); assigning a person clears the role. Leaving the role empty keeps the exact personal-Todo behaviour, so no existing flow changes.
+
+- **ACL.** `base_user_role` gates `res.users.role` to ERP managers, but a regular user must read it to *display* the role on a group Todo and to *pick* one in the popup. `mail_activity_todo_role_unit` grants `base.group_user` **read-only** on `res.users.role` (create/write/unlink stay ERP-manager-only). Role names are no more sensitive than `res.groups`, which core already exposes to internal users.

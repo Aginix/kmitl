@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <!-- DR action for finance queue (requests authorized and awaiting payment) -->
@@ -30,12 +30,18 @@
     <record id="view_disbursement_request_tree_inherit_finance" model="ir.ui.view">
         <field name="name">disbursement.request.tree.inherit.finance_kmitl</field>
         <field name="model">disbursement.request</field>
-        <field name="inherit_id" ref="disbursement.view_disbursement_request_tree"/>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='display_status']" position="attributes">
-                <attribute name="decoration-warning">display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft', 'bills_posted', 'payment_audited')</attribute>
-                <attribute name="decoration-primary">display_status in ('verified', 'bill_posted', 'payment_authorized')</attribute>
-                <attribute name="decoration-success">display_status in ('approved', 'payment_posted', 'done', 'paid', 'cleared')</attribute>
+                <attribute
+                    name="decoration-warning"
+                >display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft', 'bills_posted', 'payment_audited')</attribute>
+                <attribute
+                    name="decoration-primary"
+                >display_status in ('verified', 'bill_posted', 'payment_authorized')</attribute>
+                <attribute
+                    name="decoration-success"
+                >display_status in ('approved', 'payment_posted', 'done', 'paid', 'cleared')</attribute>
             </xpath>
         </field>
     </record>
@@ -44,17 +50,64 @@
     <record id="view_disbursement_request_search_inherit_finance" model="ir.ui.view">
         <field name="name">disbursement.request.search.inherit.finance_kmitl</field>
         <field name="model">disbursement.request</field>
-        <field name="inherit_id" ref="disbursement.view_disbursement_request_search"/>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search" />
         <field name="arch" type="xml">
             <xpath expr="//filter[@name='done']" position="after">
-                <filter string="Payment Audited" name="payment_audited"
-                        domain="[('state', '=', 'payment_audited')]"/>
-                <filter string="Authorized (to pay)" name="payment_authorized"
-                        domain="[('state', '=', 'payment_authorized')]"/>
-                <filter string="Paid" name="paid"
-                        domain="[('state', '=', 'paid')]"/>
-                <filter string="Cleared" name="cleared"
-                        domain="[('state', '=', 'cleared')]"/>
+                <filter
+                    string="Payment Audited"
+                    name="payment_audited"
+                    domain="[('state', '=', 'payment_audited')]"
+                />
+                <filter
+                    string="Authorized (to pay)"
+                    name="payment_authorized"
+                    domain="[('state', '=', 'payment_authorized')]"
+                />
+                <filter string="Paid" name="paid" domain="[('state', '=', 'paid')]" />
+                <filter
+                    string="Cleared"
+                    name="cleared"
+                    domain="[('state', '=', 'cleared')]"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- A voucher on a request is confirmed paid on the request, one press for all
+         of its payees, so its own button has nothing to do here. The action refuses
+         it too — this only keeps a button that would always error off the form. -->
+    <record id="view_account_payment_form_inherit_disbursement" model="ir.ui.view">
+        <field name="name">account.payment.form.inherit.disbursement_finance_kmitl</field>
+        <field name="model">account.payment</field>
+        <field
+            name="inherit_id"
+            ref="finance_kmitl.view_account_payment_form_inherit"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_confirm_paid']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('finance_state', '!=', 'confirmed'), ('disbursement_request_id', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm_paid']" position="before">
+                <field name="disbursement_request_id" invisible="1" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Which ใบขอเบิก a voucher belongs to, on the finance office's own list.
+         Their queues are per request, so this is how a row in the list connects
+         back to the document they navigate by. -->
+    <record id="view_account_payment_tree_inherit_disbursement" model="ir.ui.view">
+        <field name="name">account.payment.tree.inherit.disbursement_finance_kmitl</field>
+        <field name="model">account.payment</field>
+        <field
+            name="inherit_id"
+            ref="finance_kmitl.view_account_payment_tree_kmitl"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="disbursement_request_id" optional="show" />
             </xpath>
         </field>
     </record>
@@ -63,62 +116,165 @@
     <record id="view_disbursement_request_form_inherit_finance" model="ir.ui.view">
         <field name="name">disbursement.request.form.inherit.finance_kmitl</field>
         <field name="model">disbursement.request</field>
-        <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
         <field name="arch" type="xml">
             <!-- Extend the status bar with the post-bill payment states -->
             <xpath expr="//field[@name='display_status']" position="attributes">
-                <attribute name="statusbar_visible">draft,submitted,signed,verified,approved,bills_posted,payment_audited,payment_authorized,paid,cleared</attribute>
+                <attribute
+                    name="statusbar_visible"
+                >draft,submitted,signed,verified,approved,bills_posted,payment_audited,payment_authorized,paid,cleared</attribute>
             </xpath>
 
             <!-- Payment-execution buttons, placed before Reset to draft -->
             <xpath expr="//button[@name='action_draft']" position="before">
-                <button name="action_audit"
-                        string="ตรวจสอบการเบิกจ่าย"
-                        type="object"
-                        class="oe_highlight"
-                        attrs="{'invisible': [('state', '!=', 'bills_posted')]}"
-                        groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"/>
-                <button name="action_authorize"
-                        string="อนุมัติเบิกจ่าย"
-                        type="object"
-                        class="oe_highlight"
-                        confirm="ยืนยันอนุมัติให้เบิกจ่ายเงินตามใบขอเบิกนี้?"
-                        attrs="{'invisible': [('state', '!=', 'payment_audited')]}"
-                        groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"/>
-                <button name="action_create_payment"
-                        string="Create Payment"
-                        type="object"
-                        class="oe_highlight"
-                        attrs="{'invisible': ['|', ('state', '!=', 'payment_authorized'), ('payment_count', '>', 0)]}"
-                        groups="disbursement_finance_kmitl.group_disbursement_payment_finance"/>
-                <button name="action_confirm_paid"
-                        string="ยืนยันจ่ายสำเร็จ"
-                        type="object"
-                        class="oe_highlight"
-                        confirm="ยืนยันว่าธนาคารจ่ายเงินสำเร็จครบทุกรายการแล้ว?"
-                        attrs="{'invisible': ['|', ('state', '!=', 'payment_authorized'), ('payment_count', '=', 0)]}"
-                        groups="disbursement_finance_kmitl.group_disbursement_payment_finance"/>
+                <button
+                    name="action_audit"
+                    string="ตรวจสอบการเบิกจ่าย"
+                    type="object"
+                    class="oe_highlight"
+                    attrs="{'invisible': [('state', '!=', 'bills_posted')]}"
+                    groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"
+                />
+                <button
+                    name="action_authorize"
+                    string="อนุมัติเบิกจ่าย"
+                    type="object"
+                    class="oe_highlight"
+                    confirm="ยืนยันอนุมัติให้เบิกจ่ายเงินตามใบขอเบิกนี้?"
+                    attrs="{'invisible': [('state', '!=', 'payment_audited')]}"
+                    groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"
+                />
+                <button
+                    name="action_open_payment_review"
+                    string="Review Before Creating Payments"
+                    type="object"
+                    attrs="{'invisible': ['|', ('state', '!=', 'payment_authorized'), ('payment_count', '>', 0)]}"
+                    groups="disbursement_finance_kmitl.group_disbursement_payment_finance"
+                />
+                <button
+                    name="action_create_payment"
+                    string="Create Payment"
+                    type="object"
+                    class="oe_highlight"
+                    attrs="{'invisible': ['|', ('state', '!=', 'payment_authorized'), ('payment_count', '>', 0)]}"
+                    groups="disbursement_finance_kmitl.group_disbursement_payment_finance"
+                />
+                <button
+                    name="action_confirm_paid"
+                    string="ยืนยันจ่ายสำเร็จ"
+                    type="object"
+                    class="oe_highlight"
+                    confirm="ยืนยันว่าธนาคารจ่ายเงินสำเร็จครบทุกรายการแล้ว?"
+                    attrs="{'invisible': ['|', ('state', '!=', 'payment_authorized'), ('payment_count', '=', 0)]}"
+                    groups="disbursement_finance_kmitl.group_disbursement_payment_finance"
+                />
+            </xpath>
+
+            <!-- การจ่ายเงิน — one row per payee, from bills_posted onwards.
+                 The auditor sets the banking coordinates here; the finance
+                 office corrects them right up until the payment exists. -->
+            <xpath expr="//page[@name='wht']" position="after">
+                <page
+                    string="Payment Execution"
+                    name="payment_execution"
+                    attrs="{'invisible': [('state', 'in', ('draft', 'submitted', 'signed', 'verified', 'approved'))]}"
+                >
+                    <group>
+                        <group>
+                            <!-- Required exactly while the auditor holds it: the
+                                 request arrives at bills_posted without one (the
+                                 accounting bridge writes that state), and this is
+                                 the step whose job is to decide where the money
+                                 comes from. The audit action refuses to move on
+                                 without it either — that is what the batch queue
+                                 hits, which never opens this form. -->
+                            <field
+                                name="payment_subject_id"
+                                options="{'no_create': True}"
+                                attrs="{
+                                    'readonly': [('state', '!=', 'bills_posted')],
+                                    'required': [('state', '=', 'bills_posted')]
+                                }"
+                            />
+                            <field name="payment_auto_match" readonly="1" />
+                        </group>
+                    </group>
+                    <field name="payment_line_ids" nolabel="1">
+                        <tree
+                            editable="bottom"
+                            create="false"
+                            delete="false"
+                            decoration-warning="paying_account_match == 'fallback'"
+                            decoration-muted="payment_id != False"
+                        >
+                            <field name="allowed_paying_account_ids" invisible="1" />
+                            <field name="partner_id" readonly="1" />
+                            <field
+                                name="partner_bank_id"
+                                options="{'no_create': True}"
+                            />
+                            <field
+                                name="paying_account_id"
+                                options="{'no_create': True}"
+                            />
+                            <field name="payment_method_id" optional="show" />
+                            <!-- force_save because the provenance is a readonly
+                                 field, and readonly fields are dropped from a
+                                 save: without it the "chosen by hand" a row
+                                 reports while the form is open never reaches
+                                 the database, and the re-derivation that runs
+                                 in the same save would overwrite the account
+                                 the person just picked. -->
+                            <field
+                                name="paying_account_match"
+                                force_save="1"
+                                widget="badge"
+                                decoration-success="paying_account_match == 'bank'"
+                                decoration-warning="paying_account_match == 'fallback'"
+                                decoration-info="paying_account_match == 'manual'"
+                            />
+                            <field name="amount_bill" optional="hide" />
+                            <field name="amount_wht" optional="show" />
+                            <field name="amount_net" sum="Total" />
+                            <field name="currency_id" invisible="1" />
+                            <field name="payment_id" readonly="1" optional="show" />
+                        </tree>
+                    </field>
+                </page>
             </xpath>
 
             <!-- Payment smart buttons -->
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_view_payments"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-money"
-                        attrs="{'invisible': [('payment_count', '=', 0)]}">
+                <button
+                    name="action_view_payments"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-money"
+                    attrs="{'invisible': [('payment_count', '=', 0)]}"
+                >
                     <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">รายการจ่ายเงิน <field name="payment_count" nolabel="1" /></span>
-                        <span class="o_stat_text text-muted small"><field name="payment_status_display" nolabel="1" /></span>
+                        <span class="o_stat_text">Payments <field
+                                name="payment_count"
+                                nolabel="1"
+                            /></span>
+                        <span class="o_stat_text text-muted small"><field
+                                name="payment_status_display"
+                                nolabel="1"
+                            /></span>
                     </div>
                 </button>
-                <button name="action_view_payment_moves"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-book"
-                        attrs="{'invisible': [('payment_move_count', '=', 0)]}">
+                <button
+                    name="action_view_payment_moves"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-book"
+                    attrs="{'invisible': [('payment_move_count', '=', 0)]}"
+                >
                     <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">รายการล้างหนี้ <field name="payment_move_count" nolabel="1" /></span>
+                        <span class="o_stat_text">รายการล้างหนี้ <field
+                                name="payment_move_count"
+                                nolabel="1"
+                            /></span>
                     </div>
                 </button>
             </xpath>

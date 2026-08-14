@@ -1,78 +1,105 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
 
     <t t-name="disbursement_finance_kmitl.PaymentQueue" owl="1">
         <div class="o_approval_queue o_action_manager p-3">
             <div class="d-flex align-items-center mb-3">
-                <h2 class="me-auto mb-0"><t t-esc="labels.title"/></h2>
-                <button class="btn btn-primary" t-att-disabled="!state.selectedIds.length"
-                        t-on-click="approveSelected">
-                    <t t-esc="labels.approveSelected"/>
-                    (<t t-esc="state.selectedIds.length"/>)
+                <h2 class="me-auto mb-0"><t t-esc="labels.title" /></h2>
+                <button
+                    class="btn btn-primary"
+                    t-att-disabled="!state.selectedIds.length"
+                    t-on-click="approveSelected"
+                >
+                    <t t-esc="labels.approveSelected" />
+                    (<t t-esc="state.selectedIds.length" />)
                 </button>
             </div>
 
             <!-- Filter bar -->
             <div class="row g-2 mb-3">
                 <div class="col-md-3">
-                    <label class="o_form_label"><t t-esc="labels.fiscalYear"/></label>
+                    <label class="o_form_label"><t t-esc="labels.fiscalYear" /></label>
                     <select class="form-select" t-on-change="onFiscalYearChange">
                         <option value="">/</option>
-                        <option t-foreach="fiscalYears" t-as="fy" t-key="fy.id"
-                                t-att-value="fy.id"
-                                t-att-selected="isFiscalYearSelected(fy.id)">
-                            <t t-esc="fy.name"/>
+                        <option
+                            t-foreach="fiscalYears"
+                            t-as="fy"
+                            t-key="fy.id"
+                            t-att-value="fy.id"
+                            t-att-selected="isFiscalYearSelected(fy.id)"
+                        >
+                            <t t-esc="fy.name" />
                         </option>
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label class="o_form_label"><t t-esc="labels.dateFrom"/></label>
-                    <input type="date" class="form-control"
-                           t-att-value="state.dateFrom" t-on-change="onDateFromChange"/>
+                    <label class="o_form_label"><t t-esc="labels.dateFrom" /></label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.dateFrom"
+                        t-on-change="onDateFromChange"
+                    />
                 </div>
                 <div class="col-md-2">
-                    <label class="o_form_label"><t t-esc="labels.dateTo"/></label>
-                    <input type="date" class="form-control"
-                           t-att-value="state.dateTo" t-on-change="onDateToChange"/>
+                    <label class="o_form_label"><t t-esc="labels.dateTo" /></label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.dateTo"
+                        t-on-change="onDateToChange"
+                    />
                 </div>
                 <div class="col-md-3">
-                    <label class="o_form_label"><t t-esc="labels.departments"/></label>
-                    <MultiRecordSelect resModel="'account.analytic.account'"
+                    <label class="o_form_label"><t t-esc="labels.departments" /></label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
                         domain="[['root_plan_id.code', '=', 'departments']]"
-                        placeholder="labels.departments" selected="state.departments"
-                        onChange="(sel) => this.onSelectionChange('departments', sel)"/>
+                        placeholder="labels.departments"
+                        selected="state.departments"
+                        onChange="(sel) => this.onSelectionChange('departments', sel)"
+                    />
                 </div>
                 <div class="col-md-3">
-                    <label class="o_form_label"><t t-esc="labels.sources"/></label>
-                    <MultiRecordSelect resModel="'account.analytic.account'"
+                    <label class="o_form_label"><t t-esc="labels.sources" /></label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
                         domain="[['root_plan_id.code', '=', 'sources']]"
-                        placeholder="labels.sources" selected="state.sources"
-                        onChange="(sel) => this.onSelectionChange('sources', sel)"/>
+                        placeholder="labels.sources"
+                        selected="state.sources"
+                        onChange="(sel) => this.onSelectionChange('sources', sel)"
+                    />
                 </div>
                 <div class="col-md-3">
-                    <label class="o_form_label"><t t-esc="labels.funds"/></label>
-                    <MultiRecordSelect resModel="'account.analytic.account'"
+                    <label class="o_form_label"><t t-esc="labels.funds" /></label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
                         domain="[['root_plan_id.code', '=', 'funds']]"
-                        placeholder="labels.funds" selected="state.funds"
-                        onChange="(sel) => this.onSelectionChange('funds', sel)"/>
+                        placeholder="labels.funds"
+                        selected="state.funds"
+                        onChange="(sel) => this.onSelectionChange('funds', sel)"
+                    />
                 </div>
                 <div class="col-md-3">
-                    <label class="o_form_label"><t t-esc="labels.activities"/></label>
-                    <MultiRecordSelect resModel="'account.analytic.account'"
+                    <label class="o_form_label"><t t-esc="labels.activities" /></label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
                         domain="[['root_plan_id.code', '=', 'activities']]"
-                        placeholder="labels.activities" selected="state.activities"
-                        onChange="(sel) => this.onSelectionChange('activities', sel)"/>
+                        placeholder="labels.activities"
+                        selected="state.activities"
+                        onChange="(sel) => this.onSelectionChange('activities', sel)"
+                    />
                 </div>
             </div>
 
             <t t-if="state.loading">
                 <div class="text-center p-5">
-                    <span class="spinner-border" role="status"/>
+                    <span class="spinner-border" role="status" />
                 </div>
             </t>
             <t t-elif="!state.records.length">
                 <div class="text-center text-muted p-5">
-                    <t t-esc="labels.empty"/>
+                    <t t-esc="labels.empty" />
                 </div>
             </t>
             <t t-else="">
@@ -80,37 +107,54 @@
                     <thead>
                         <tr>
                             <th style="width: 32px;">
-                                <input type="checkbox" t-att-checked="allSelected"
-                                       t-on-click.stop="toggleSelectAll"/>
+                                <input
+                                    type="checkbox"
+                                    t-att-checked="allSelected"
+                                    t-on-click.stop="toggleSelectAll"
+                                />
                             </th>
-                            <th><t t-esc="labels.number"/></th>
-                            <th><t t-esc="labels.date"/></th>
-                            <th><t t-esc="labels.partner"/></th>
-                            <th class="text-end"><t t-esc="labels.amount"/></th>
-                            <th class="text-center"><t t-esc="labels.bills"/></th>
-                            <th class="text-end"><t t-esc="labels.actions"/></th>
+                            <th><t t-esc="labels.number" /></th>
+                            <th><t t-esc="labels.date" /></th>
+                            <th><t t-esc="labels.partner" /></th>
+                            <th class="text-end"><t t-esc="labels.amount" /></th>
+                            <th class="text-center"><t t-esc="labels.bills" /></th>
+                            <th><t t-esc="labels.subject" /></th>
+                            <th class="text-end"><t t-esc="labels.actions" /></th>
                         </tr>
                     </thead>
                     <tbody>
                         <t t-foreach="state.records" t-as="record" t-key="record.id">
                             <tr>
                                 <td>
-                                    <input type="checkbox" t-att-checked="isSelected(record.id)"
-                                           t-on-click.stop="() => this.toggleSelect(record.id)"/>
+                                    <input
+                                        type="checkbox"
+                                        t-att-checked="isSelected(record.id)"
+                                        t-on-click.stop="() => this.toggleSelect(record.id)"
+                                    />
                                 </td>
-                                <td t-esc="record.name"/>
-                                <td t-esc="record.date"/>
-                                <td t-esc="displayName(record.partner_id)"/>
-                                <td class="text-end" t-esc="formatCurrency(record.amount_net)"/>
-                                <td class="text-center" t-esc="record.bill_count"/>
+                                <td t-esc="record.name" />
+                                <td t-esc="record.date" />
+                                <td t-esc="displayName(record.partner_id)" />
+                                <td
+                                    class="text-end"
+                                    t-esc="formatCurrency(record.amount_net)"
+                                />
+                                <td class="text-center" t-esc="record.bill_count" />
+                                <td t-esc="displayName(record.payment_subject_id)" />
                                 <td class="text-end text-nowrap">
-                                    <button class="btn btn-sm btn-outline-secondary me-1"
-                                            t-on-click.stop="() => this.openRecord(record)">
-                                        <i class="fa fa-external-link me-1"/><t t-esc="labels.open"/>
+                                    <button
+                                        class="btn btn-sm btn-outline-secondary me-1"
+                                        t-on-click.stop="() => this.openRecord(record)"
+                                    >
+                                        <i class="fa fa-external-link me-1" /><t
+                                            t-esc="labels.open"
+                                        />
                                     </button>
-                                    <button class="btn btn-sm btn-success"
-                                            t-on-click.stop="() => this.approve(record)">
-                                        <t t-esc="labels.approve"/>
+                                    <button
+                                        class="btn btn-sm btn-success"
+                                        t-on-click.stop="() => this.approve(record)"
+                                    >
+                                        <t t-esc="labels.approve" />
                                     </button>
                                 </td>
                             </tr>

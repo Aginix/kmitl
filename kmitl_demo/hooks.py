@@ -9,6 +9,25 @@ _logger = logging.getLogger(__name__)
 def post_init(cr, registry):
     env = api.Environment(cr, SUPERUSER_ID, {})
 
+    # Switch the whole database to Thai (install-time only, see _setup_language)
+    _setup_language(env)
+
+    # Seed e-Saraban org demo data (positions / document offices / registers)
+    _setup_sarabun_org_demo(env)
+
+    # Create end-to-end purchase request → purchase order demo data
+    _create_e2e_purchase_demo(env)
+
+
+def _setup_language(env):
+    """Make Thai the language of the whole database.
+
+    Database-wide, slow and destructive: it installs a language pack, overwrites
+    a hardcoded ``ir.default`` row (id 1) and rewrites ``lang`` on every single
+    ``res.users`` record — including real users. It is therefore only ever
+    appropriate at module installation, and must never be exposed to a UI action
+    that a developer could fire on a live database.
+    """
     # Install the Thai language pack
     th = (
         env["res.lang"].with_context(active_test=False).search([("code", "=", "th_TH")])
@@ -25,12 +44,6 @@ def post_init(cr, registry):
     # Set the default language for all users to Thai
     users = env["res.users"].search([])
     users.lang = "th_TH"
-
-    # Seed e-Saraban org demo data (positions / document offices / registers)
-    _setup_sarabun_org_demo(env)
-
-    # Create end-to-end purchase request → purchase order demo data
-    _create_e2e_purchase_demo(env)
 
 
 def uninstall_hook(cr, registry):

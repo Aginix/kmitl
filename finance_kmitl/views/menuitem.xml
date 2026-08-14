@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <!-- Root menu — visible to any finance role (manager implies the other three) -->
@@ -10,11 +10,19 @@
         groups="finance_kmitl.group_finance_kmitl_user_in,finance_kmitl.group_finance_kmitl_user_out"
     />
 
-    <!-- Action: account.payment outbound -->
+    <!-- Action: account.payment outbound.
+         Bound to the finance office's own list and search views (written from
+         scratch, not inherited from core's) — see account_payment_list_views.xml.
+         The other view types fall back to core's. -->
     <record id="action_account_payment_outbound" model="ir.actions.act_window">
         <field name="name">จ่ายเงิน</field>
         <field name="res_model">account.payment</field>
         <field name="view_mode">tree,kanban,form,graph</field>
+        <field name="view_id" ref="finance_kmitl.view_account_payment_tree_kmitl" />
+        <field
+            name="search_view_id"
+            ref="finance_kmitl.view_account_payment_search_kmitl"
+        />
         <field name="domain">[('payment_type', '=', 'outbound')]</field>
         <field name="context">{
             'default_payment_type': 'outbound',
@@ -82,21 +90,24 @@
         name="Cheque Register"
         parent="menu_payment_root"
         sequence="30"
-        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_user_in" />
+        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_user_in"
+    />
     <menuitem
         id="menu_cheque_register_outbound"
         name="Issued Cheques"
         parent="menu_cheque_register_root"
         action="action_cheque_register_outbound"
         sequence="10"
-        groups="finance_kmitl.group_finance_kmitl_user_out" />
+        groups="finance_kmitl.group_finance_kmitl_user_out"
+    />
     <menuitem
         id="menu_cheque_register_inbound"
         name="Received Cheques"
         parent="menu_cheque_register_root"
         action="action_cheque_register_inbound"
         sequence="20"
-        groups="finance_kmitl.group_finance_kmitl_user_in" />
+        groups="finance_kmitl.group_finance_kmitl_user_in"
+    />
 
     <!-- Settings submenu (manager only) -->
     <menuitem
@@ -120,6 +131,24 @@
         action="l10n_th_bank_payment_export_format.action_bank_export_format_template"
         sequence="20"
     />
+    <!-- The banking reference data behind every outbound payment, in the order
+         it is set up: a bank, then an account at that bank — the institute's own
+         to pay out of, a payee's to pay into. Both actions are core's; what this
+         module adds is reaching them without leaving the Finance app. -->
+    <menuitem
+        id="menu_settings_res_bank"
+        name="Banks"
+        parent="menu_payment_settings"
+        action="base.action_res_bank_form"
+        sequence="1"
+    />
+    <menuitem
+        id="menu_settings_res_partner_bank"
+        name="Bank Accounts"
+        parent="menu_payment_settings"
+        action="base.action_res_partner_bank_account_form"
+        sequence="2"
+    />
     <menuitem
         id="menu_settings_payment_types"
         name="Payment Types (KMITL)"
@@ -133,6 +162,20 @@
         parent="menu_payment_settings"
         action="action_cheque_layout"
         sequence="15"
+    />
+    <menuitem
+        id="menu_settings_paying_account"
+        name="Paying Accounts"
+        parent="menu_payment_settings"
+        action="action_kmitl_paying_account"
+        sequence="6"
+    />
+    <menuitem
+        id="menu_settings_payment_subject"
+        name="Payment Subjects"
+        parent="menu_payment_settings"
+        action="action_kmitl_payment_subject"
+        sequence="7"
     />
 
 </odoo>

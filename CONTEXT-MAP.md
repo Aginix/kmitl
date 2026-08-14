@@ -19,6 +19,11 @@ upfront.
 - [Budget](./budget/CONTEXT.md) — appropriation, reservation and disbursement tracking;
   appropriated pool (`budget.move`) consumed through a reserve→obligate→consume
   commitment pipeline (`budget.commitment`).
+- [Budget Appropriation Summary](./budget_appropriation_summary/CONTEXT.md) —
+  institution-wide roll-up of unit appropriations for one fiscal year × source
+  (สรุปภาพรวมสถาบัน gathering รวมเล่มหน่วยงาน), rendering the F-series summary
+  reports and ending in one authoritative **Published Final** = the re-uploaded
+  **Final Document** with a transparent **Watermark PDF** overlaid on every page.
 - [Budget Revenue Comparison](./budget_revenue_comparison/CONTEXT.md) — configurable
   report setting **budgeted revenue** (`budget.move`, revenue codes) beside **actual
   revenue** (`account.move.line`, income types) row by row; each row carries two
@@ -63,6 +68,15 @@ upfront.
   disbursement keeps it intact (at `signed`) and bounces the approval request to
   `returned`, where the requester corrects a limited set of fields and confirms to push
   them back onto the disbursement.
+- [KMITL Finance](./finance_kmitl/CONTEXT.md) — the finance office's side of paying money
+  out: the **ใบจ่ายเงิน** (which _is_ an `account.move`), its **money side** / **booking
+  side** split, the finance office's own `finance_state`, and the **ไฟล์ e-Payment** one
+  bank is sent. Ends at the **Hand-over**.
+- [Disbursement ↔ KMITL Finance](./disbursement_finance_kmitl/CONTEXT.md) — the
+  post-bill payment-execution phase of a disbursement request (audit → authorize → pay →
+  clear); owns the payee-level **รายการจ่ายเงิน** and keeps apart the several records
+  that all sound like "what this payment is" (เรื่องที่จ่าย, ประเภทธุรกรรม,
+  ลักษณะการจ่าย, หัวจ่าย, วิธีจ่าย, ใบสำคัญ).
 - [Advance Payment](./advance_payment/CONTEXT.md) — employee cash-advance loans
   (สัญญายืมเงิน); a single-disbursement loan to one borrower, tracked from request
   through clearing to closure. A borrower may hold only one active agreement at a time,
@@ -83,10 +97,28 @@ upfront.
 - **KMITL Project → Budget**: the project's purchase requests (พ.1) and disbursements
   draw that one shared commitment down (obligate+consume); a project may hold many PRs,
   capped at the commitment (ADR-0007).
+- **Disbursement ↔ Finance (paying account)**: a **หัวจ่าย** is one of Odoo's own
+  `account.payment.method.line` records — bank account × method × voucher × GL — seeded
+  by `account_kmitl` on ใบสำคัญจ่าย (PV) and administered in `finance_kmitl`
+  (`finance_kmitl` ADR-0001). A disbursement picks one **เรื่องที่จ่าย**
+  (`kmitl.payment.subject`), which derives a paying account for every payee, optionally
+  matching each to the account held at their own bank; the auditor overrides individual
+  payees by hand (`disbursement_finance_kmitl` ADR-0002/0003). One e-payment file debits
+  one paying account, and the file's sending account is read from it.
 - **Disbursement / Finance → Accounting Workflow**: disbursement vendor bills and
   payments no longer post directly — their `account.move` enters the approval and is
-  posted by Approve. Payment moves additionally keep the finance bank-export gate
-  (Submit → Bank Export → Approve=post).
+  posted by Approve. A payment voucher is held by the **two offices in turn, on two
+  fields of one document** (designed docs-first, **not yet built** —
+  `disbursement_finance_kmitl` ADR-0005, superseding ADR-0004): the finance office works
+  entirely on its own `finance_state` (**ยืนยันพร้อมส่งธนาคาร** → e-payment file →
+  **ยืนยันจ่ายสำเร็จ**) while `account.move.state` stays `draft` and belongs to the
+  accounting office alone; **จ่ายครบ** on the request is the **Hand-over**, after which the
+  voucher waits in `draft` for the accounting **maker** to correct the booking and submit
+  it and the **approver** to approve = post = ล้างหนี้. The lock is per side — the money
+  side (amount, payee, หัวจ่าย, date) freezes when finance confirms; the booking side
+  (dimensions, ประเภทธุรกรรม, description) stays open for the maker. The bank's result
+  file is never imported: exceptions are settled outside the system and vouched for by the
+  single จ่ายครบ confirmation.
 - **Disbursement → Approval (return)**: returning a `disbursement.request` at `signed`
   keeps it untouched (still `signed`, budget unchanged) and bounces the linked
   `approval.request` to `returned`; the requester corrects only the payee bank,
@@ -94,8 +126,8 @@ upfront.
   the kept disbursement and moves the AR back to `billed` (`agx_approval_disbursement`
   ADR-0001).
 - **Approval Request ↔ Advance Payment**: once a request is `approved`, each participant
-  who is an internal employee may **pull** their own สัญญายืม and pick the request on the
-  loan form — the request never pushes loans out. A request may back several loans,
+  who is an internal employee may **pull** their own สัญญายืม and pick the request on
+  the loan form — the request never pushes loans out. A request may back several loans,
   capped by its Borrowing Headroom. The loan clears **itself**; an `advance` allocation
   row only _names_ the Funding Loan it was paid from, which need not be the recipient's
   own. No cancellation cascades in either direction (`agx_approval` ADR-0003). Budget
