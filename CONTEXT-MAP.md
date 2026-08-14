@@ -19,6 +19,11 @@ upfront.
 - [Budget](./budget/CONTEXT.md) — appropriation, reservation and disbursement tracking;
   appropriated pool (`budget.move`) consumed through a reserve→obligate→consume
   commitment pipeline (`budget.commitment`).
+- [Budget Appropriation Summary](./budget_appropriation_summary/CONTEXT.md) —
+  institution-wide roll-up of unit appropriations for one fiscal year × source
+  (สรุปภาพรวมสถาบัน gathering รวมเล่มหน่วยงาน), rendering the F-series summary
+  reports and ending in one authoritative **Published Final** = the re-uploaded
+  **Final Document** with a transparent **Watermark PDF** overlaid on every page.
 - [Budget Revenue Comparison](./budget_revenue_comparison/CONTEXT.md) — configurable
   report setting **budgeted revenue** (`budget.move`, revenue codes) beside **actual
   revenue** (`account.move.line`, income types) row by row; each row carries two
