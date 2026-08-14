@@ -63,7 +63,7 @@ class PurchaseOrder(models.Model):
     )
 
     state = fields.Selection(selection_add=[
-        ("purchase", "Open"),
+        ("purchase", "In Progress"),
         ("done", "Done")
     ])
 

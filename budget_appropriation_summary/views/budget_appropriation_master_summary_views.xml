@@ -204,6 +204,18 @@
                         <page string="หมายเหตุ" name="note">
                             <field name="note" placeholder="หมายเหตุ..." />
                         </page>
+                        <page string="ไฟล์ฉบับสมบูรณ์" name="final_document">
+                            <group>
+                                <field
+                                    name="final_document"
+                                    filename="final_document_filename"
+                                />
+                                <field
+                                    name="final_document_filename"
+                                    invisible="1"
+                                />
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

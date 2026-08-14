@@ -16,7 +16,7 @@
                   <button name="action_confirm_correction" type="object" string="Confirm Correction" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'returned')]}"/>
               </xpath>
               <xpath expr="//header//field[@name='state']" position="attributes">
-                  <attribute name="statusbar_visible">draft,in_review,accept,returned</attribute>
+                  <attribute name="statusbar_visible">draft,in_review,accept</attribute>
               </xpath>
               <xpath expr="//header" position="after">
                   <div class="alert alert-warning" role="alert" attrs="{'invisible': [('state', '!=', 'returned')]}">

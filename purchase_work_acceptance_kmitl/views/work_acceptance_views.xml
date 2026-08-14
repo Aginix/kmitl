@@ -41,6 +41,9 @@
             <xpath expr="//field[@name='partner_id']" position="before">
                 <field name="wa_tier_validation" />
             </xpath>
+            <xpath expr="//field[@name='purchase_id']" position="before">
+                <field name="contract_number" readonly="1" />
+            </xpath>
             <xpath expr="//header/button[@name='button_draft']" position="attributes">
                 <attribute name="groups">purchase.group_purchase_user</attribute>
             </xpath>
