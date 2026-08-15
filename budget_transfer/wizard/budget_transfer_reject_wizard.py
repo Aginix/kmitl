@@ -1,5 +1,4 @@
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo import _, fields, models
 
 
 class BudgetTransferRejectWizard(models.TransientModel):
@@ -35,7 +34,7 @@ class BudgetTransferRejectWizard(models.TransientModel):
         })
         
         # Send rejection email notification
-        template = self.env.ref("budget.email_template_budget_transfer_rejected")
+        template = self.env.ref("budget_transfer.email_template_budget_transfer_rejected")
         if template and self.transfer_id.user_id.email:
             template.with_context(lang=self.transfer_id.user_id.lang).send_mail(
                 self.transfer_id.id,

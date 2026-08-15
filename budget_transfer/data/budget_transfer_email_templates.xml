@@ -271,8 +271,8 @@
                                         <td>{{ object.write_date }}</td>
                                     </tr>
                                     <tr>
-                                        <td style="padding-right: 20px; font-weight: bold;">Budget Moves Created:</td>
-                                        <td>{{ object.budget_move_ids | length }} move(s)</td>
+                                        <td style="padding-right: 20px; font-weight: bold;">Budget Move:</td>
+                                        <td>{{ object.move_id.name }}</td>
                                     </tr>
                                 </table>
                             </td>

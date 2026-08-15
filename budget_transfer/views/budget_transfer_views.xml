@@ -23,8 +23,10 @@
                     <widget name="web_ribbon" title="ยกเลิก" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <widget name="web_ribbon" title="ถูกปฏิเสธ" attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
                     <div class="oe_button_box" name="button_box">
-                        <button name="%(action_budget_move)d" type="action" class="oe_stat_button" icon="fa-exchange" attrs="{'invisible': [('budget_move_ids', '=', [])]}" context="{'search_default_transfer_id': id}">
-                            <field name="budget_move_ids" widget="statinfo" string="Budget Moves"/>
+                        <button name="action_view_budget_move" type="object" class="oe_stat_button" icon="fa-exchange" attrs="{'invisible': [('state', '!=', 'posted')]}">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Budget Move</span>
+                            </div>
                         </button>
                     </div>
 
@@ -38,12 +40,13 @@
                         <group name="transfer_info">
                             <field name="date" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="transfer_type"/>
+                            <field name="budget_type" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="department_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="source_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                         </group>
                         <group name="meta_info">
                             <field name="user_id"/>
-                            <field name="account_fiscal_year_id"/>
+                            <field name="account_fiscal_year_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
@@ -73,15 +76,18 @@
                         <field name="reason" placeholder="Please provide detailed justification for this budget transfer..." attrs="{'readonly': [('state', 'not in', ['draft'])]}" colspan="2"/>
                     </group>
 
-                    <!-- Transfer Lines -->
+                    <!-- Transfer Lines (authored directly as budget.move.line) -->
                     <notebook>
                         <page name="transfer_lines" string="Transfer Details">
                             <group attrs="{'invisible': [('state', 'not in', ['draft'])]}">
-                                <separator string="Transfer FROM (Source)" />
-                                <field name="from_line_ids" nolabel="1" colspan="2" attrs="{'readonly': [('state', 'not in', ['draft'])]}">
-                                    <tree decoration-danger="not budget_sufficient" create="1" delete="1">
-                                        <field name="sequence" widget="handle"/>
-                                        <field name="budget_account_id" required="1"/>
+                                <separator string="Transfer FROM (Source)"/>
+                                <field name="from_line_ids" nolabel="1" colspan="2"
+                                       context="{'default_transfer_direction': 'from', 'default_department_analytic_id': department_analytic_id}"
+                                       attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                                    <tree editable="bottom" decoration-danger="not budget_sufficient" create="1" delete="1">
+                                        <field name="budget_type" column_invisible="1"/>
+                                        <field name="transfer_direction" column_invisible="1"/>
+                                        <field name="account_id" required="1"/>
                                         <field name="activity_analytic_id" required="1"/>
                                         <field name="fund_analytic_id" required="1"/>
                                         <field name="department_analytic_id" required="1"/>
@@ -93,15 +99,18 @@
                                         <field name="amount" widget="monetary" sum="Total Source"/>
                                         <field name="available_budget" widget="monetary"/>
                                         <field name="budget_sufficient" widget="boolean_toggle"/>
-                                        <field name="description" invisible="1" />
+                                        <field name="note" optional="hide"/>
                                         <field name="currency_id" invisible="1"/>
                                     </tree>
                                 </field>
-                                <separator string="Transfer TO (Destination)" />
-                                <field name="to_line_ids" nolabel="1" colspan="2" attrs="{'readonly': [('state', 'not in', ['draft'])]}">
-                                    <tree decoration-success="1" create="1" delete="1">
-                                        <field name="sequence" widget="handle"/>
-                                        <field name="budget_account_id" required="1"/>
+                                <separator string="Transfer TO (Destination)"/>
+                                <field name="to_line_ids" nolabel="1" colspan="2"
+                                       context="{'default_transfer_direction': 'to', 'default_department_analytic_id': department_analytic_id}"
+                                       attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                                    <tree editable="bottom" decoration-success="1" create="1" delete="1">
+                                        <field name="budget_type" column_invisible="1"/>
+                                        <field name="transfer_direction" column_invisible="1"/>
+                                        <field name="account_id" required="1"/>
                                         <field name="activity_analytic_id" required="1"/>
                                         <field name="fund_analytic_id" required="1"/>
                                         <field name="department_analytic_id" required="1"/>
@@ -111,23 +120,23 @@
                                         <field name="procurement_plan_analytic_id" attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
                                         <field name="source_analytic_id" invisible="1"/>
                                         <field name="amount" widget="monetary" sum="Total Destination"/>
-                                        <field name="description" invisible="1" />
+                                        <field name="note" optional="hide"/>
                                         <field name="currency_id" invisible="1"/>
                                     </tree>
                                 </field>
                             </group>
 
-                            <!-- All Lines View (when not in draft) -->
+                            <!-- Read-only summary once submitted -->
                             <separator string="Transfer Lines Summary" attrs="{'invisible': [('state', 'in', ['draft'])]}"/>
                             <field name="line_ids" nolabel="1" readonly="1" attrs="{'invisible': [('state', 'in', ['draft'])]}">
                                 <tree decoration-info="transfer_direction == 'from'" decoration-success="transfer_direction == 'to'">
                                     <field name="transfer_direction"/>
-                                    <field name="budget_account_id"/>
+                                    <field name="account_id"/>
                                     <field name="activity_analytic_id"/>
                                     <field name="fund_analytic_id"/>
                                     <field name="amount" widget="monetary" sum="Total"/>
                                     <field name="available_budget" widget="monetary" attrs="{'column_invisible': [('transfer_direction', '!=', 'from')]}"/>
-                                    <field name="description"/>
+                                    <field name="note"/>
                                     <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
@@ -136,25 +145,6 @@
                         <page name="approval_info" string="Approval Information" attrs="{'invisible': [('state', 'in', ['draft'])]}">
                             <group>
                                 <field name="rejection_reason" attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
-                            </group>
-                        </page>
-
-                        <page name="generated_moves" string="Generated Budget Moves" attrs="{'invisible': [('budget_move_ids', '=', [])]}">
-                            <field name="budget_move_ids" nolabel="1" readonly="1">
-                                <tree>
-                                    <field name="name"/>
-                                    <field name="date"/>
-                                    <field name="move_type"/>
-                                    <field name="total_amount" widget="monetary"/>
-                                    <field name="state"/>
-                                </tree>
-                            </field>
-                        </page>
-
-                        <page name="extra" string="Extra Info">
-                            <group>
-                                <group></group>
-                                <group></group>
                             </group>
                         </page>
                     </notebook>
@@ -223,7 +213,6 @@
                 <group expand="0" name="group_by" string="Group By">
                     <filter name="group_by_state" string="Status" domain="[]" context="{'group_by': 'state'}"/>
                     <filter name="group_by_user" string="Requested by" domain="[]" context="{'group_by': 'user_id'}"/>
-                    <filter name="group_by_type" string="Transfer Type" domain="[]" context="{'group_by': 'transfer_type'}"/>
                     <filter name="group_by_date" string="Date" domain="[]" context="{'group_by': 'date'}"/>
                 </group>
             </search>
@@ -252,11 +241,6 @@
                                     <strong class="o_kanban_record_title">
                                         <field name="name"/>
                                     </strong>
-                                </div>
-                                <div class="o_kanban_manage_button_section">
-                                    <a class="o_kanban_manage_toggle_button" href="#">
-                                        <i class="fa fa-ellipsis-v" role="img" aria-label="Manage" title="Manage"/>
-                                    </a>
                                 </div>
                             </div>
                             <div class="o_kanban_record_body">
@@ -295,56 +279,6 @@
         </field>
     </record>
 
-    <!-- Budget Transfer Line Form View -->
-    <record id="view_budget_transfer_line_form" model="ir.ui.view">
-        <field name="name">budget.transfer.line.form</field>
-        <field name="model">budget.transfer.line</field>
-        <field name="arch" type="xml">
-            <form string="Transfer Line" create="true" edit="true" delete="true">
-                <sheet>
-
-                    <group>
-                        <field name="transfer_direction" widget="radio" options="{'horizontal': true}" attrs="{'readonly': [('id', '!=', False)]}"/>
-                        <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}" required="1"/>
-                        <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}" required="1"/>
-                        <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" required="1"/>
-                        <field name="budget_account_id" required="1"/>
-                        <field name="procurement_plan_analytic_id" options="{'no_create': True, 'no_open': True}"/>
-                        <field name="kmitl_project_analytic_id" options="{'no_create': True, 'no_open': True}"/>
-                        <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}" required="1"/>
-                    </group>
-
-                    <!-- Budget validation info for FROM lines only -->
-                    <div class="alert alert-info" role="alert" attrs="{'invisible': [('transfer_direction', '!=', 'from')]}" style="margin: 10px 0;">
-                        <strong>💰 Budget Availability Check</strong>
-                        <div class="row mt-2">
-                            <div class="col-6">
-                                <strong>Available Budget:</strong>
-                                <field name="available_budget" widget="monetary" nolabel="1" readonly="1"/>
-                            </div>
-                            <div class="col-6">
-                                <strong>Sufficient:</strong>
-                                <field name="budget_sufficient" widget="boolean_toggle" nolabel="1" readonly="1"/>
-                            </div>
-                        </div>
-                    </div>
-
-                    <group name="description" string="Description" colspan="8">
-                        <field name="description" placeholder="Optional description for this transfer line..." nolabel="1" colspan="2" />
-                    </group>
-                </sheet>
-
-                <!-- All other fields explicitly hidden -->
-                <field name="transfer_id" invisible="1"/>
-                <field name="sequence" invisible="1"/>
-                <field name="currency_id" invisible="1"/>
-                <field name="company_id" invisible="1"/>
-                <field name="analytic_distribution" invisible="1"/>
-                <field name="source_analytic_id" invisible="1"/>
-            </form>
-        </field>
-    </record>
-
     <!-- Budget Transfer Actions -->
     <record id="action_budget_transfer" model="ir.actions.act_window">
         <field name="name">Budget Transfers</field>
@@ -357,13 +291,12 @@
                 Create your first budget transfer!
             </p>
             <p>
-                Budget transfers allow you to move allocated budget amounts between accounts
-                with proper approval workflow and budget availability checking.
+                Budget transfers move allocated budget between accounts with an
+                approval workflow and availability checking.
             </p>
         </field>
     </record>
 
-    <!-- My Transfers Action -->
     <record id="action_my_budget_transfers" model="ir.actions.act_window">
         <field name="name">My Budget Transfers</field>
         <field name="res_model">budget.transfer</field>
@@ -372,7 +305,6 @@
         <field name="context">{'search_default_my_transfers': 1}</field>
     </record>
 
-    <!-- Pending Approvals Action -->
     <record id="action_budget_transfers_pending" model="ir.actions.act_window">
         <field name="name">Pending Approvals</field>
         <field name="res_model">budget.transfer</field>
