@@ -308,3 +308,70 @@ class TestBudgetTransfer(TransactionCase):
                     }
                 ],
             )
+
+    # ------------------------------------------------------------------
+    # Pool-Tag persistence — _sync_transfer_distribution (ADR-0013)
+    # ------------------------------------------------------------------
+    def test_line_distribution_carries_five_dimensions(self):
+        """analytic_distribution holds all 4 core dims + a Pool Tag after sync."""
+        transfer = self._transfer(**self._balanced())
+        from_line = transfer.from_line_ids
+        # 4 core dims must appear in the JSON after create.
+        dist = from_line.analytic_distribution or {}
+        for acc in (self.activity, self.dept, self.fund, self.source):
+            self.assertIn(str(acc.id), dist, f"{acc.name} missing from distribution")
+        # Inject a pool tag directly (bypasses the account-type guard on the
+        # ORM field, which requires the kmitl_project module's is_project flag).
+        from_line._sync_transfer_distribution(tags=[self.proj.id, False])
+        dist = from_line.analytic_distribution or {}
+        self.assertIn(str(self.proj.id), dist, "project pool tag missing")
+        for acc in (self.activity, self.dept, self.fund, self.source):
+            self.assertIn(str(acc.id), dist, f"{acc.name} dropped after tag sync")
+        self.assertEqual(len(dist), 5, "expected exactly 5 dimension entries")
+
+    def test_proc_tag_on_proc_account_creates_sub_pool(self):
+        """Procurement Pool Tag is written into analytic_distribution and readable
+        back via the computed procurement_plan_analytic_id mirror."""
+        transfer = self._transfer(**self._balanced())
+        from_line = transfer.from_line_ids
+        from_line._sync_transfer_distribution(tags=[False, self.proc.id])
+        dist = from_line.analytic_distribution or {}
+        self.assertIn(str(self.proc.id), dist, "proc pool tag missing from distribution")
+        for acc in (self.activity, self.dept, self.fund, self.source):
+            self.assertIn(str(acc.id), dist, f"{acc.name} dropped after proc tag sync")
+        self.assertEqual(from_line.procurement_plan_analytic_id, self.proc)
+
+    def test_floating_netting_proc(self):
+        """Pool Tag survives a subsequent write to a core dim (the write() guard
+        in budget_move_line captures pre_tags and re-injects them after the
+        mixin's core-dim rebuild would otherwise wipe the tag)."""
+        transfer = self._transfer(**self._balanced())
+        from_line = transfer.from_line_ids
+        from_line._sync_transfer_distribution(tags=[False, self.proc.id])
+        # Now change a core dim via the normal ORM write path.
+        activity2 = self.env["account.analytic.account"].create(
+            {
+                "name": "Activity Netting",
+                "code": "TR_ACT_NET",
+                "plan_id": self.activity.plan_id.id,
+            }
+        )
+        from_line.write({"activity_analytic_id": activity2.id})
+        dist = from_line.analytic_distribution or {}
+        self.assertIn(
+            str(self.proc.id), dist, "proc pool tag silently dropped on dim write"
+        )
+        self.assertIn(str(activity2.id), dist, "new activity missing from distribution")
+
+    def test_account_type_flags(self):
+        """account_is_project / account_is_procurement are False when the
+        optional budget.account extension fields are absent (base environment)."""
+        transfer = self._transfer(**self._balanced())
+        from_line = transfer.from_line_ids
+        account_fields = self.env["budget.account"]._fields
+        # Flags are False when the extension module (kmitl_project /
+        # procurement_plan) is not installed.
+        if "is_project" not in account_fields:
+            self.assertFalse(from_line.account_is_project)
+        if "procurement_plan" not in account_fields:
+            self.assertFalse(from_line.account_is_procurement)

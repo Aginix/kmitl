@@ -85,8 +85,8 @@
                                        context="{'default_transfer_direction': 'from', 'default_department_analytic_id': department_analytic_id}"
                                        attrs="{'readonly': [('state', 'not in', ['draft'])]}">
                                     <tree editable="bottom" decoration-danger="not budget_sufficient" create="1" delete="1">
-                                        <field name="budget_type" column_invisible="1"/>
-                                        <field name="transfer_direction" column_invisible="1"/>
+                                        <field name="budget_type" invisible="1"/>
+                                        <field name="transfer_direction" invisible="1"/>
                                         <field name="account_id" required="1"/>
                                         <field name="activity_analytic_id" required="1"/>
                                         <field name="fund_analytic_id" required="1"/>
@@ -108,8 +108,8 @@
                                        context="{'default_transfer_direction': 'to', 'default_department_analytic_id': department_analytic_id}"
                                        attrs="{'readonly': [('state', 'not in', ['draft'])]}">
                                     <tree editable="bottom" decoration-success="1" create="1" delete="1">
-                                        <field name="budget_type" column_invisible="1"/>
-                                        <field name="transfer_direction" column_invisible="1"/>
+                                        <field name="budget_type" invisible="1"/>
+                                        <field name="transfer_direction" invisible="1"/>
                                         <field name="account_id" required="1"/>
                                         <field name="activity_analytic_id" required="1"/>
                                         <field name="fund_analytic_id" required="1"/>
@@ -277,6 +277,14 @@
                 </templates>
             </kanban>
         </field>
+    </record>
+
+    <!-- Filter transfer-owned moves out of the general budget move ledger.
+         Draft/submitted/approved transfers carry a zero-amount draft move;
+         without this domain they pollute the ledger list and dashboard feed.
+         Transfer moves are reachable via the transfer form's stat button. -->
+    <record id="budget.action_budget_move" model="ir.actions.act_window">
+        <field name="domain">[('is_transfer', '=', False)]</field>
     </record>
 
     <!-- Budget Transfer Actions -->

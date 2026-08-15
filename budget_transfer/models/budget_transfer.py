@@ -185,9 +185,12 @@ class BudgetTransfer(models.Model):
             if has_name or transfer.state == "draft":
                 continue
             if not has_name and transfer.date:
-                transfer.name = self.env["ir.sequence"].next_by_code(
+                new_name = self.env["ir.sequence"].next_by_code(
                     "budget.transfer"
                 ) or _("New")
+                transfer.name = new_name
+                if new_name != _("New"):
+                    transfer.move_id.ref = f"Transfer: {new_name}"
 
     @api.depends("line_ids.amount", "line_ids.transfer_direction")
     def _compute_amount(self):
