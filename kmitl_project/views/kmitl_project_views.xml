@@ -144,10 +144,6 @@
                                 </div>
                                 <field name="budget_amount" />
                                 <field name="budget_remaining" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
-                                <button name="action_open_reservation_picker" type="object"
-                                    string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
-                                    class="btn btn-primary" icon="fa-sitemap" colspan="2"
-                                    attrs="{'invisible': ['|', ('state', 'not in', ('draft', 'returned')), ('budget_target_locked', '=', True)]}"/>
                                 <field name="budget_account_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="activity_analytic_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="fund_analytic_id" readonly="1" widget="selection" />
