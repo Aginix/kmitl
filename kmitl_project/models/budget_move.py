@@ -10,13 +10,14 @@ class BudgetMove(models.Model):
     _inherit = "budget.move"
 
     def _recompute_project_amounts(self):
-        """After posting or cancelling a budget.move, recompute budget_amount for
-        any kmitl.project whose analytic account appears in the affected lines,
-        then auto-re-sync their commitments if pre-spending."""
+        """After posting, cancelling, or resetting a budget.move, recompute
+        budget_amount for any kmitl.project whose analytic account appears in
+        the affected lines, then auto-re-sync their commitments if pre-spending.
+        Runs sudo because the poster may not hold kmitl.project read/write access."""
         project_analytic_ids = self.mapped("line_ids.kmitl_project_analytic_id").ids
         if not project_analytic_ids:
             return
-        projects = self.env["kmitl.project"].search(
+        projects = self.env["kmitl.project"].sudo().search(
             [("analytic_account_id", "in", project_analytic_ids)]
         )
         if not projects:
@@ -32,5 +33,10 @@ class BudgetMove(models.Model):
 
     def button_cancel(self):
         res = super().button_cancel()
+        self._recompute_project_amounts()
+        return res
+
+    def button_draft(self):
+        res = super().button_draft()
         self._recompute_project_amounts()
         return res
