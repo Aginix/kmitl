@@ -36,7 +36,13 @@
                     />
                     <button
                         name="action_print_report"
-                        string="พิมพ์ PDF"
+                        string="พิมพ์ภาพรวมสถาบัน"
+                        type="object"
+                        class="btn-secondary"
+                    />
+                    <button
+                        name="action_open_print_by_department"
+                        string="พิมพ์แยกหน่วยงาน"
                         type="object"
                         class="btn-secondary"
                     />
@@ -189,6 +195,7 @@
                                     <field name="sequence" widget="handle" />
                                     <field name="name" />
                                     <field name="department_analytic_id" />
+                                    <field name="code_page" />
                                     <field
                                         name="amount_revenue_total"
                                         sum="รวมรายรับ"
