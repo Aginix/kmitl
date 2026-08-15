@@ -112,7 +112,7 @@ class KmitlProject(models.Model):
         tracking=True,
         readonly=True,
         copy=False,
-        help="เลขที่รันของโครงการ ออกให้ครั้งเดียวเมื่อจองงบประมาณ (to_verify→to_send) "
+        help="เลขที่รันของโครงการ ออกให้ครั้งเดียวเมื่อส่งเข้าแผน (draft→to_verify) "
         "และคงเดิมตลอดอายุโครงการ ใช้เป็นรหัส (code) ของบัญชีวิเคราะห์โครงการ",
     )
     account_fiscal_year_id = fields.Many2one(
@@ -157,7 +157,7 @@ class KmitlProject(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("to_verify", "รอตรวจสอบ / จองงบประมาณ"),
+            ("to_verify", "รอจัดสรรงบประมาณ (ปรับเข้าแผน) และจองงบประมาณ"),
             ("to_send", "รอส่งขออนุมัติ"),
             ("sent", "ส่งขออนุมัติแล้ว"),
             ("returned", "ถูกตีกลับ"),
@@ -447,13 +447,19 @@ class KmitlProject(models.Model):
         states=READONLY_STATES
     )
 
+    budget_target_locked = fields.Boolean(
+        compute="_compute_budget_target_locked",
+        store=True,
+    )
+
     budget_amount = fields.Float(
         string="งบประมาณ",
         digits="Product Price",
         tracking=True,
+        compute="_compute_budget_amount",
+        store=True,
         readonly=True,
-        states=EDITABLE_STATES,
-        help="งบประมาณที่ได้รับจัดสรร",
+        help="งบประมาณที่ได้รับจัดสรร คำนวณจากยอดจัดสรร (budget.move.line) ที่ติด kmitl_project dim",
     )
 
     budget_commitment_ids = fields.One2many(
@@ -571,26 +577,37 @@ class KmitlProject(models.Model):
         return vals_list
 
     def action_confirm(self):
-        """``draft`` → ``to_verify`` ("ยืนยัน"). The base.exception check runs
-        here (see kmitl_project_exception.py) — the strategic-plan-completeness
-        rule is finally enforced at ยืนยัน (it used to be bypassed)."""
+        """``draft`` → ``to_verify`` ("ส่งเข้าแผน"). Mints the Project Number,
+        analytic account, and ปีงบ-freeze here — before the exception gate in
+        kmitl_project_exception.py runs super() — so they only fire after the
+        strategic-plan check passes."""
         self.ensure_one()
         if self.state != "draft":
             raise UserError(_("ยืนยันได้เฉพาะโครงการที่เป็นแบบร่าง"))
+        self._ensure_analytic_account()
         self.write({"state": "to_verify"})
 
     def action_reserve_budget(self):
-        """``to_verify`` → ``to_send`` ("จองงบประมาณ"). One action: mint the
-        Project Number + analytic account and reserve a single new
-        ``budget.commitment`` for the full ``budget_amount`` from the floating
-        pool, then advance. ``_reserve_project_commitment`` validates the code,
-        amount and availability first (raising, so state does not advance)."""
+        """``to_verify`` → open the จองงบ confirm wizard. The wizard shows the
+        รหัสงบ, 4 มิติ + มิติโครงการ, and the actual allocated amount; on confirm
+        it reserves the commitment (with the project dimension in the check) and
+        advances to ``to_send``. Gated: raises if no allocation exists yet."""
         self.ensure_one()
         if self.state != "to_verify":
             raise UserError(_("จองงบประมาณได้เฉพาะสถานะรอตรวจสอบ"))
-        self._check_budget_plan_lines()
-        self._reserve_project_commitment()
-        self.write({"state": "to_send"})
+        if self.budget_amount <= 0:
+            raise UserError(
+                _("ยังไม่ได้รับการจัดสรรงบประมาณ "
+                  "กรุณารอให้งานแผนโอนงบเข้าโครงการก่อนจึงจะจองงบประมาณได้")
+            )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("จองงบประมาณ"),
+            "res_model": "kmitl.project.reserve.confirm",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_project_id": self.id},
+        }
 
     def action_approve(self):
         """Manual approval fallback for installs WITHOUT ``kmitl_project_sarabun``:
@@ -811,7 +828,7 @@ class KmitlProject(models.Model):
 
     def _ensure_project_number(self):
         """Issue the project's running number (``key``) once, when it is first
-        reserved (``to_verify→to_send``). Idempotent — a later reset-to-draft keeps the
+        submitted (``draft→to_verify``, i.e. ส่งเข้าแผน). Idempotent — a later reset-to-draft keeps the
         number, never re-issues it. Stamped with the project's fiscal year (not the
         confirmation calendar date) by drawing the sequence on the fiscal year's
         end date, so the number always reads as its ปีงบประมาณ. Becomes the analytic
@@ -825,17 +842,29 @@ class KmitlProject(models.Model):
         )
 
     def write(self, vals):
-        """Freeze the fiscal year once a running number exists: the number, the
-        budget commitment and the analytic are all minted against
-        ``account_fiscal_year_id`` at confirmation, so it must not drift afterwards
-        (e.g. on the reset-to-draft edit path)."""
-        if "account_fiscal_year_id" in vals:
+        """Freeze the budget-target group once a running number exists: the key,
+        analytic, commitment, and allocation are all minted against
+        ``account_fiscal_year_id`` + ``budget_account_id`` at ส่งเข้าแผน — they
+        must not drift afterwards (e.g. on the reset-to-draft edit path)."""
+        _LOCKED = frozenset({"account_fiscal_year_id", "budget_account_id"})
+        if _LOCKED & vals.keys():
             for rec in self:
-                if rec.key and rec.account_fiscal_year_id.id != vals[
-                    "account_fiscal_year_id"
-                ]:
+                if not rec.key:
+                    continue
+                if (
+                    "account_fiscal_year_id" in vals
+                    and rec.account_fiscal_year_id.id != vals["account_fiscal_year_id"]
+                ):
                     raise UserError(
                         _("ไม่สามารถเปลี่ยนปีงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)")
+                        % rec.key
+                    )
+                if (
+                    "budget_account_id" in vals
+                    and rec.budget_account_id.id != vals.get("budget_account_id")
+                ):
+                    raise UserError(
+                        _("ไม่สามารถเปลี่ยนรหัสงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)")
                         % rec.key
                     )
         return super().write(vals)
@@ -887,13 +916,13 @@ class KmitlProject(models.Model):
             raise UserError(_("กรุณาระบุรหัสงบประมาณก่อนจองงบประมาณ"))
         if self.budget_amount <= 0:
             raise UserError(_("กรุณาระบุงบประมาณให้มากกว่า 0 ก่อนจองงบประมาณ"))
-        self._ensure_analytic_account()
         analytic_data = {
             "account_id": self.budget_account_id.id,
             "activity_analytic_id": self.activity_analytic_id.id or False,
             "department_analytic_id": self.department_analytic_id.id or False,
             "fund_analytic_id": self.fund_analytic_id.id or False,
             "source_analytic_id": self.source_analytic_id.id or False,
+            "kmitl_project_analytic_id": self.analytic_account_id.id or False,
         }
         allow_negative = (
             self.env["ir.config_parameter"]
@@ -989,3 +1018,46 @@ class KmitlProject(models.Model):
         ) != dist:
             self._release_project_commitment()
             self._reserve_project_commitment()
+
+    def _auto_resync_commitment(self):
+        """Realign the reservation after the allocated amount changed (budget.move
+        post/cancel hook). Safe only while no obligate or consume exists; once
+        spending has started the commitment is left alone to avoid stranding
+        in-flight draws (ADR-0007)."""
+        self.ensure_one()
+        active = self.budget_commitment_ids.filtered(lambda c: c.state != "cancel")[:1]
+        if not active or active.amount == self.budget_amount:
+            return
+        if active.total_obligated or active.total_consumed:
+            return
+        self._release_project_commitment()
+        if self.budget_amount > 0:
+            self._reserve_project_commitment()
+
+    @api.depends("key")
+    def _compute_budget_target_locked(self):
+        for rec in self:
+            rec.budget_target_locked = bool(rec.key)
+
+    @api.depends("analytic_account_id", "account_fiscal_year_id", "company_id")
+    def _compute_budget_amount(self):
+        """Current Budget (a) at the project's own dimension: Σ posted
+        appropriation/entry balance on budget.move.line where
+        kmitl_project_analytic_id == this project's analytic account.
+        Reads 0 before allocation (no analytic in draft → 0; no tagged money
+        in to_verify before งานแผน transfers → 0)."""
+        BML = self.env["budget.move.line"]
+        _APPROPRIATION_TYPES = ("appropriation", "entry")
+        for rec in self:
+            if not rec.analytic_account_id or not rec.account_fiscal_year_id:
+                rec.budget_amount = 0.0
+                continue
+            domain = [
+                ("parent_state", "=", "posted"),
+                ("move_type", "in", list(_APPROPRIATION_TYPES)),
+                ("account_fiscal_year_id", "=", rec.account_fiscal_year_id.id),
+                ("company_id", "=", rec.company_id.id),
+                ("kmitl_project_analytic_id", "=", rec.analytic_account_id.id),
+            ]
+            groups = BML.read_group(domain, ["balance"], [])
+            rec.budget_amount = (groups[0].get("balance") or 0.0) if groups else 0.0

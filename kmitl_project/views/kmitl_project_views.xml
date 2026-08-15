@@ -55,8 +55,10 @@
         <field name="arch" type="xml">
             <form string="KMITL Project">
                 <header>
-                    <button string="ยืนยัน" name="action_confirm" states="draft" type="object" class="oe_highlight" />
-                    <button string="จองงบประมาณ" name="action_reserve_budget" states="to_verify" type="object" class="oe_highlight" />
+                    <button string="ส่งเข้าแผน / ขอจัดสรรงบประมาณ" name="action_confirm" states="draft" type="object" class="oe_highlight"
+                        confirm="เมื่อส่งเข้าแผน ระบบจะออกเลขที่รันโครงการ + ล็อกปีงบและรหัสงบ (รายละเอียดโครงการยังแก้ได้ตลอด) ต้องการยืนยันหรือไม่?" />
+                    <button string="จองงบประมาณ" name="action_reserve_budget" type="object" class="oe_highlight"
+                        attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('budget_amount', '&lt;=', 0)]}" />
                     <button string="อนุมัติ" name="action_approve" states="to_send,sent" type="object" class="oe_highlight" />
                     <button string="ปิดโครงการ" name="action_complete" states="in_progress" type="object" class="oe_highlight" />
                     <button string="Reset to Draft" name="action_draft" states="to_verify,to_send,returned" type="object" />
@@ -71,6 +73,7 @@
                     <widget name="web_ribbon" title="ถูกปฏิเสธ" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'rejected')]}" />
                     <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'complete')]}" />
                     <field name="is_editable" invisible="1" />
+                    <field name="budget_target_locked" invisible="1" />
                     <div class="oe_button_box" name="button_box" groups="base.group_user">
                         <button
                             string="Portal Preview"
@@ -98,7 +101,7 @@
                     <group>
                         <group>
                             <field name="id" invisible="1"/>
-                            <field name="account_fiscal_year_id" widget="selection" />
+                            <field name="account_fiscal_year_id" widget="selection" attrs="{'readonly': [('budget_target_locked', '=', True)]}" />
                             <field name="manager_id" widget="many2one_avatar_employee" options="{'no_create_edit': True, 'no_open': True}"/>
                             <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit" />
 
@@ -134,12 +137,17 @@
                                 <field name="kmitl_plan_id" />
                             </group>
                             <group name="budget" string="งบประมาณ">
-                                <field name="budget_amount" required="1"/>
+                                <div attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('budget_amount', '>', 0)]}"
+                                     class="alert alert-warning" role="alert" colspan="2">
+                                    <strong>ยังไม่ได้รับการจัดสรรงบประมาณ</strong>
+                                    — โปรดรอให้งานแผนโอนงบเข้าโครงการ (ปรับเข้าแผน) ก่อนจึงจะจองงบประมาณได้
+                                </div>
+                                <field name="budget_amount" />
                                 <field name="budget_remaining" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
                                 <button name="action_open_reservation_picker" type="object"
                                     string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
                                     class="btn btn-primary" icon="fa-sitemap" colspan="2"
-                                    attrs="{'invisible': [('state', 'not in', ('draft', 'returned'))]}"/>
+                                    attrs="{'invisible': ['|', ('state', 'not in', ('draft', 'returned')), ('budget_target_locked', '=', True)]}"/>
                                 <field name="budget_account_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="activity_analytic_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="fund_analytic_id" readonly="1" widget="selection" />
