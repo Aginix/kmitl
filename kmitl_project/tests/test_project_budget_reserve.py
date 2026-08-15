@@ -278,6 +278,49 @@ class TestProjectBudgetReserve(TransactionCase):
         self.assertEqual(project.state, "draft")
         self.assertTrue(project.budget_target_locked)
 
+    def test_department_analytic_locked_after_confirm(self):
+        """Write guard blocks direct department_analytic_id change once key is set."""
+        project = self._make_project()
+        project.action_confirm()
+        other_dept = self.env["account.analytic.account"].create(
+            {
+                "name": "Other Dept",
+                "plan_id": self.env["account.analytic.plan"].search(
+                    [("code", "=", "departments")], limit=1
+                ).id,
+            }
+        )
+        with self.assertRaises(UserError):
+            project.write({"department_analytic_id": other_dept.id})
+
+    def test_analytic_distribution_budget_dims_locked_after_confirm(self):
+        """Write guard blocks analytic_distribution changes to budget-dim keys once key is set."""
+        project = self._make_project()
+        project.action_confirm()
+        other_activity = self.env["account.analytic.account"].create(
+            {
+                "name": "Other Activity",
+                "plan_id": self.env["account.analytic.plan"].search(
+                    [("code", "=", "activities")], limit=1
+                ).id,
+            }
+        )
+        # Attempt to swap the activity key in analytic_distribution directly
+        old_dist = dict(project.analytic_distribution or {})
+        old_dist[str(other_activity.id)] = 100
+        with self.assertRaises(UserError):
+            project.write({"analytic_distribution": old_dist})
+
+    def test_analytic_distribution_project_key_allowed_after_confirm(self):
+        """Adding the kmitl_project dim key to analytic_distribution is allowed even
+        after key is set (this is what _ensure_analytic_account does)."""
+        project = self._make_project()
+        project.action_confirm()
+        # The project now has analytic_account_id from action_confirm.
+        # The kmitl_project key should already be in analytic_distribution.
+        # Simulate writing the same distribution again (no-op change) — should not raise.
+        project.write({"analytic_distribution": dict(project.analytic_distribution or {})})
+
     def test_auto_resync_on_allocation_change(self):
         """After a top-up allocation move, budget_amount rises and if commitment
         exists it is re-synced to the new amount (pre-spending)."""

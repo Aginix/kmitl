@@ -844,9 +844,17 @@ class KmitlProject(models.Model):
     def write(self, vals):
         """Freeze the budget-target group once a running number exists: the key,
         analytic, commitment, and allocation are all minted against
-        ``account_fiscal_year_id`` + ``budget_account_id`` at ส่งเข้าแผน — they
-        must not drift afterwards (e.g. on the reset-to-draft edit path)."""
-        _LOCKED = frozenset({"account_fiscal_year_id", "budget_account_id"})
+        ``account_fiscal_year_id`` + ``budget_account_id`` + the four budget
+        dimensions at ส่งเข้าแผน — they must not drift afterwards (e.g. on the
+        reset-to-draft edit path).
+
+        ``analytic_distribution`` is partially guarded: adding or updating the
+        kmitl_project key is allowed (needed by ``_ensure_analytic_account``),
+        but changes to any other key (activity, department, fund, source) are
+        blocked once the running number exists."""
+        _LOCKED = frozenset(
+            {"account_fiscal_year_id", "budget_account_id", "department_analytic_id"}
+        )
         if _LOCKED & vals.keys():
             for rec in self:
                 if not rec.key:
@@ -867,6 +875,36 @@ class KmitlProject(models.Model):
                         _("ไม่สามารถเปลี่ยนรหัสงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)")
                         % rec.key
                     )
+                if (
+                    "department_analytic_id" in vals
+                    and rec.department_analytic_id.id != vals.get("department_analytic_id")
+                ):
+                    raise UserError(
+                        _("ไม่สามารถเปลี่ยนมิติส่วนงานได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)")
+                        % rec.key
+                    )
+        if "analytic_distribution" in vals:
+            new_dist = vals.get("analytic_distribution") or {}
+            for rec in self:
+                if not rec.key:
+                    continue
+                old_dist = rec.analytic_distribution or {}
+                # Allow the kmitl_project key to be added/updated; block changes
+                # to any other budget-dimension key.
+                proj_key = (
+                    str(rec.analytic_account_id.id) if rec.analytic_account_id else None
+                )
+                for k in set(old_dist.keys()) | set(new_dist.keys()):
+                    if k == proj_key:
+                        continue
+                    if old_dist.get(k) != new_dist.get(k):
+                        raise UserError(
+                            _(
+                                "ไม่สามารถเปลี่ยนมิติงบประมาณได้ "
+                                "เนื่องจากโครงการมีเลขที่รันแล้ว (%s)"
+                            )
+                            % rec.key
+                        )
         return super().write(vals)
 
     def _ensure_analytic_account(self):
