@@ -310,3 +310,241 @@ class TestBudgetTransfer(TransactionCase):
         )
         with self.assertRaises(ValidationError):
             transfer.action_submit()
+
+    # --- ADR-0012: tagged sub-pool (ปรับเข้าแผน) ---
+
+    def _proc_account(self):
+        """Return a budget.account with procurement_plan=True (skip if module absent)."""
+        BA = self.env["budget.account"]
+        if "procurement_plan" not in BA._fields:
+            self.skipTest("procurement_plan module not installed")
+        return BA.create(
+            {
+                "code": "TR_PROC_ACC",
+                "name": "Transfer Proc Account",
+                "budget_type": "expense",
+                "procurement_plan": True,
+            }
+        )
+
+    def _project_account(self):
+        """Return a budget.account with is_project=True (skip if module absent)."""
+        BA = self.env["budget.account"]
+        if "is_project" not in BA._fields:
+            self.skipTest("kmitl_project module not installed")
+        return BA.create(
+            {
+                "code": "TR_PROJ_ACC",
+                "name": "Transfer Project Account",
+                "budget_type": "expense",
+                "is_project": True,
+            }
+        )
+
+    def test_proc_tag_on_proc_account_creates_sub_pool(self):
+        """Transferring from a 4-dim pool TO a proc-tagged 5-dim bucket moves
+        money into the sub-pool; floating budget drops, sub-pool rises, total
+        is conserved (ปรับเข้าแผน — procurement end-to-end)."""
+        proc_acc = self._proc_account()
+        self._appropriate(self.src, 1_000_000)
+        self._appropriate(proc_acc, 1_000_000)
+
+        transfer = self._transfer(
+            from_lines=[
+                {
+                    "budget_account_id": proc_acc.id,
+                    "amount": 200_000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                }
+            ],
+            to_lines=[
+                {
+                    "budget_account_id": proc_acc.id,
+                    "amount": 200_000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                    "procurement_plan_analytic_id": self.proc.id,
+                }
+            ],
+        )
+        transfer.action_submit()
+        transfer.action_approve()
+        transfer.action_post()
+
+        # 4-dim (floating) available falls by 200k
+        floating_dist = {
+            str(self.activity.id): 100,
+            str(self.dept.id): 100,
+            str(self.source.id): 100,
+            str(self.fund.id): 100,
+        }
+        floating_avail = self.controller.get_available(
+            proc_acc, floating_dist, self.fy.id
+        )
+        self.assertAlmostEqual(floating_avail, 800_000, places=2)
+
+        # 5-dim (sub-pool with proc tag) holds the 200k
+        sub_dist = {
+            str(self.activity.id): 100,
+            str(self.dept.id): 100,
+            str(self.source.id): 100,
+            str(self.fund.id): 100,
+            str(self.proc.id): 100,
+        }
+        sub_avail = self.controller.get_available(proc_acc, sub_dist, self.fy.id)
+        self.assertAlmostEqual(sub_avail, 200_000, places=2)
+
+    def test_floating_netting_proc(self):
+        """Floating available = total appropriation − sub-pool; cannot draw past
+        the floating portion (netting guard)."""
+        proc_acc = self._proc_account()
+        self._appropriate(proc_acc, 1_000_000)
+
+        # Allocate 200k into a sub-pool first
+        alloc = self._transfer(
+            from_lines=[
+                {
+                    "budget_account_id": proc_acc.id,
+                    "amount": 200_000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                }
+            ],
+            to_lines=[
+                {
+                    "budget_account_id": proc_acc.id,
+                    "amount": 200_000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                    "procurement_plan_analytic_id": self.proc.id,
+                }
+            ],
+        )
+        alloc.action_submit()
+        alloc.action_approve()
+        alloc.action_post()
+
+        # Floating available should be 800k, not 1M
+        floating_dist = {
+            str(self.activity.id): 100,
+            str(self.dept.id): 100,
+            str(self.source.id): 100,
+            str(self.fund.id): 100,
+        }
+        floating_avail = self.controller.get_available(
+            proc_acc, floating_dist, self.fy.id
+        )
+        self.assertAlmostEqual(floating_avail, 800_000, places=2)
+
+        # A FROM line at 4 dims sees 800k as available
+        t2 = self._transfer(
+            from_lines=[
+                {
+                    "budget_account_id": proc_acc.id,
+                    "amount": 800_000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                }
+            ],
+            to_lines=[
+                {
+                    "budget_account_id": self.dst.id,
+                    "amount": 800_000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                }
+            ],
+        )
+        from_line = t2.line_ids.filtered(lambda l: l.transfer_direction == "from")
+        self.assertAlmostEqual(from_line.available_budget, 800_000, places=2)
+        self.assertTrue(from_line.budget_sufficient)
+
+    def test_validation_project_tag_on_non_project_account_raises(self):
+        """Attaching a kmitl_project tag to a non-project budget account raises."""
+        with self.assertRaises(ValidationError):
+            self._transfer(
+                from_lines=[
+                    {
+                        "budget_account_id": self.src.id,
+                        "amount": 100,
+                        "activity_analytic_id": self.activity.id,
+                        "fund_analytic_id": self.fund.id,
+                        "kmitl_project_analytic_id": self.proj.id,
+                    }
+                ],
+                to_lines=[
+                    {
+                        "budget_account_id": self.dst.id,
+                        "amount": 100,
+                        "activity_analytic_id": self.activity.id,
+                        "fund_analytic_id": self.fund.id,
+                    }
+                ],
+            )
+
+    def test_validation_proc_tag_on_non_proc_account_raises(self):
+        """Attaching a procurement_plan tag to a non-proc budget account raises."""
+        if "procurement_plan" not in self.env["budget.account"]._fields:
+            self.skipTest("procurement_plan module not installed")
+        with self.assertRaises(ValidationError):
+            self._transfer(
+                from_lines=[
+                    {
+                        "budget_account_id": self.src.id,
+                        "amount": 100,
+                        "activity_analytic_id": self.activity.id,
+                        "fund_analytic_id": self.fund.id,
+                        "procurement_plan_analytic_id": self.proc.id,
+                    }
+                ],
+                to_lines=[
+                    {
+                        "budget_account_id": self.dst.id,
+                        "amount": 100,
+                        "activity_analytic_id": self.activity.id,
+                        "fund_analytic_id": self.fund.id,
+                    }
+                ],
+            )
+
+    def test_account_type_flags(self):
+        """account_is_project / account_is_procurement reflect the budget account's
+        type flags so the view can show/hide conditional columns."""
+        proc_acc = self._proc_account()
+        proj_acc = self._project_account()
+
+        transfer = self._transfer(
+            from_lines=[
+                {
+                    "budget_account_id": self.src.id,
+                    "amount": 10,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                }
+            ],
+            to_lines=[
+                {
+                    "budget_account_id": self.dst.id,
+                    "amount": 10,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                }
+            ],
+        )
+        # plain account — neither flag set
+        plain_line = transfer.line_ids[0]
+        self.assertFalse(plain_line.account_is_project)
+        self.assertFalse(plain_line.account_is_procurement)
+
+        # proc account
+        proc_line = transfer.line_ids[0]
+        proc_line.budget_account_id = proc_acc
+        self.assertFalse(proc_line.account_is_project)
+        self.assertTrue(proc_line.account_is_procurement)
+
+        # project account
+        proj_line = transfer.line_ids[0]
+        proj_line.budget_account_id = proj_acc
+        self.assertTrue(proj_line.account_is_project)
+        self.assertFalse(proj_line.account_is_procurement)

@@ -138,6 +138,21 @@ class BudgetTransferLine(models.Model):
         help="Procurement-plan analytic account (the budget bucket this line draws from / into)"
     )
 
+    # Account-type booleans — used for conditional dim visibility in tree views.
+    # Both fields come from optional modules (kmitl_project, procurement_plan);
+    # we guard against missing fields so budget can install standalone.
+    account_is_project = fields.Boolean(
+        string="Is Project Account",
+        compute="_compute_account_type_flags",
+        help="True when the budget account is a project/activity type"
+    )
+
+    account_is_procurement = fields.Boolean(
+        string="Is Procurement Account",
+        compute="_compute_account_type_flags",
+        help="True when the budget account is a procurement-plan type"
+    )
+
     # Description
     description = fields.Char(
         string="Description",
@@ -169,6 +184,17 @@ class BudgetTransferLine(models.Model):
         compute="_compute_available_budget",
         help="True if available budget is sufficient for this transfer"
     )
+
+    @api.depends("budget_account_id")
+    def _compute_account_type_flags(self):
+        has_project = "is_project" in self.env["budget.account"]._fields
+        has_proc = "procurement_plan" in self.env["budget.account"]._fields
+        for line in self:
+            acc = line.budget_account_id
+            line.account_is_project = bool(acc and has_project and acc.is_project)
+            line.account_is_procurement = bool(
+                acc and has_proc and acc.procurement_plan
+            )
 
     @api.depends(
         "analytic_distribution",
@@ -318,6 +344,30 @@ class BudgetTransferLine(models.Model):
                 raise ValidationError(_(
                     "แต่ละบรรทัดเลือกได้เพียงมิติเดียวจาก โครงการ/กิจกรรม หรือ "
                     "แผนจัดซื้อจัดจ้าง — เลือกพร้อมกันไม่ได้"
+                ))
+
+    @api.constrains("analytic_distribution", "budget_account_id")
+    def _check_supplementary_dims_match_account(self):
+        """A project tag may only be set on a project-type account (is_project),
+        and a procurement tag only on a procurement-type account."""
+        has_proc = "procurement_plan" in self.env["budget.account"]._fields
+        for line in self:
+            acc = line.budget_account_id
+            if not acc:
+                continue
+            if line.kmitl_project_analytic_id and not (
+                "is_project" in acc._fields and acc.is_project
+            ):
+                raise ValidationError(_(
+                    "มิติโครงการ/กิจกรรม ใส่ได้เฉพาะรหัสงบประมาณประเภทโครงการ "
+                    "(is_project) เท่านั้น"
+                ))
+            if line.procurement_plan_analytic_id and not (
+                has_proc and acc.procurement_plan
+            ):
+                raise ValidationError(_(
+                    "มิติแผนจัดซื้อจัดจ้าง ใส่ได้เฉพาะรหัสงบประมาณ "
+                    "ประเภทแผนจัดซื้อจัดจ้าง เท่านั้น"
                 ))
 
     @api.constrains("transfer_direction", "budget_account_id", "analytic_distribution")

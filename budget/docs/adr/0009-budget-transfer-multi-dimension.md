@@ -7,7 +7,7 @@ A **budget transfer** (`budget.transfer` → balanced `budget.move` of type `ent
 **Dimension policy:**
 
 - **The four core dimensions are required on every line** — `departments` (ส่วนงาน), `sources` (แหล่งเงิน), `activities` (กิจกรรม), `funds` (กองทุน). Enforced in the line trees (`required="1"`) and re-checked at submit, so availability is always matched on every axis against the appropriation (an under-dimensioned line would read ฿0).
-- **The two supplementary dimensions are optional and mutually exclusive** — a line may carry `kmitl_project` (โครงการ/กิจกรรม) **or** `procurement_plan` (แผนจัดซื้อจัดจ้าง), or neither, but never both (`_check_supplementary_dims_exclusive`).
+- **The two supplementary dimensions are optional and mutually exclusive** — a line may carry `kmitl_project` (โครงการ/กิจกรรม) **or** `procurement_plan` (แผนจัดซื้อจัดจ้าง), or neither, but never both (`_check_supplementary_dims_exclusive`). When present, the supplementary dimension is a **Pool Tag** and the line moves money in/out of a five-dimension **tagged sub-pool** — a tagged destination line *allocates* into it (ปรับเข้าแผน). A tag is valid only when it matches the line's `budget_account_id` type (`kmitl_project` ⇔ `is_project`, `procurement_plan` ⇔ procurement code). See [ADR-0012](./0012-tagged-sub-pool-allocation-via-transfer.md).
 - `sources` **must be equal** on FROM and TO — cross-source mixing (เงินแผ่นดิน ≠ เงินรายได้) is a hard validation error. `budget.account`, `departments`, `activities`, `funds`, and the supplementary dimension may differ freely per line.
 - Availability is evaluated from the line's **full `analytic_distribution`** (every present dimension) via `get_available`. A transfer must be balanced (ΣFROM = ΣTO) and every amount positive.
 
