@@ -36,8 +36,8 @@ upfront.
   plan is created from an appropriation, reserves its budget at that moment, and is
   realised through one purchase request + installment disbursements.
 - [KMITL Project](./kmitl_project/CONTEXT.md) — institutional project/activity planning
-  (โครงการ/กิจกรรม); a project draws from a _floating_ project-type budget pool,
-  reserves its full budget when confirmed, then spends like a procurement plan.
+  (โครงการ/กิจกรรม); งานแผน allocates budget into the project's own dimension (ปรับเข้าแผน),
+  the project reserves that allocation, then spends like a procurement plan (ADR-0006).
 - [Accounting Reports](./accounting_kmitl_reports/CONTEXT.md) — financial-statement
   reports (Trial Balance, P&L, Balance Sheet, Cash Flow) over the GL
   (`account.move.line`), filterable by the KMITL accounting dimensions.
@@ -96,8 +96,10 @@ upfront.
   (ADR-0004, ADR-0006).
 - **Budget → KMITL Project**: posting an appropriation on an `is_project` budget code
   leaves the pool _floating_ — it does **not** auto-create a project or reserve
-  (contrast Procurement Plan). A `kmitl.project` reserves its `budget.commitment` for
-  the full `budget_amount` when confirmed (`draft→new`) (ADR-0007).
+  (contrast Procurement Plan). งานแผน then **allocates** a slice into the project's own
+  dimension (a `budget.transfer`, ปรับเข้าแผน); the `kmitl.project` reserves its
+  `budget.commitment` for that project-dimensioned `budget_amount` at its จองงบ step
+  (kmitl_project ADR-0006, superseding ADR-0007's direct floating-reserve).
 - **KMITL Project → Budget**: the project's purchase requests (พ.1) and disbursements
   draw that one shared commitment down (obligate+consume); a project may hold many PRs,
   capped at the commitment (ADR-0007).
