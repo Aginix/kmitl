@@ -91,6 +91,14 @@
                             attrs="{'invisible': [('budget_commitment_count', '=', 0)]}">
                             <field name="budget_commitment_count" widget="statinfo" string="ผูกพันงบประมาณ" />
                         </button>
+                        <button
+                            name="action_open_budget_move_lines"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-exchange"
+                            attrs="{'invisible': [('budget_move_line_count', '=', 0)]}">
+                            <field name="budget_move_line_count" widget="statinfo" string="เคลื่อนไหวงบ" />
+                        </button>
                     </div>
                     <div class="oe_title">
                         <label for="name"/>
@@ -144,11 +152,11 @@
                                 </div>
                                 <field name="budget_amount" />
                                 <field name="budget_remaining" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
-                                <field name="budget_account_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
-                                <field name="activity_analytic_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
-                                <field name="fund_analytic_id" readonly="1" widget="selection" />
-                                <field name="department_analytic_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
-                                <field name="source_analytic_id" readonly="1" widget="selection" />
+                                <field name="budget_account_id" attrs="{'readonly': [('budget_target_locked', '=', True)]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
+                                <field name="activity_analytic_id" attrs="{'readonly': [('budget_target_locked', '=', True)]}" options="{'no_create_edit': True, 'no_create': True}" />
+                                <field name="fund_analytic_id" attrs="{'readonly': [('budget_target_locked', '=', True)]}" options="{'no_create_edit': True, 'no_create': True}" />
+                                <field name="department_analytic_id" attrs="{'readonly': [('budget_target_locked', '=', True)]}" options="{'no_create_edit': True, 'no_create': True}" />
+                                <field name="source_analytic_id" attrs="{'readonly': [('budget_target_locked', '=', True)]}" options="{'no_create_edit': True, 'no_create': True}" />
                                 <field name="analytic_account_id" invisible="1" />
                                 <field name="analytic_distribution" invisible="1" />
                             </group>

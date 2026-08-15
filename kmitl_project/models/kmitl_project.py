@@ -438,13 +438,12 @@ class KmitlProject(models.Model):
     active = fields.Boolean(default=True)
     is_editable = fields.Boolean(compute="_compute_is_editable")
 
-    budget_account_id = fields.Many2one(comodel_name="budget.account",
+    budget_account_id = fields.Many2one(
+        comodel_name="budget.account",
         string="รหัสงบประมาณ",
         index=True,
         tracking=True,
-        domain="[('budgetable', '=', True), ('budget_type', '=', 'expense'),"
-        " ('is_project', '=', True), ('project_type', '=', project_type)]",
-        states=READONLY_STATES
+        domain="[('budgetable', '=', True), ('budget_type', '=', 'expense'), ('is_project', '=', True)]",
     )
 
     budget_target_locked = fields.Boolean(
@@ -487,7 +486,6 @@ class KmitlProject(models.Model):
         domain=[("root_plan_id.code", "=", "activities")],
         store=False,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     department_analytic_id = fields.Many2one(
@@ -496,11 +494,9 @@ class KmitlProject(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
-        # Stored so the project dashboard can search/group by department dimension
-        # (replaces the removed hr.department department_id).
+        # Stored so the project dashboard can search/group by department dimension.
         store=True,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     fund_analytic_id = fields.Many2one(
@@ -511,7 +507,6 @@ class KmitlProject(models.Model):
         domain=[("root_plan_id.code", "=", "funds")],
         store=False,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     source_analytic_id = fields.Many2one(
@@ -522,7 +517,11 @@ class KmitlProject(models.Model):
         domain=[("root_plan_id.code", "=", "sources")],
         store=False,
         tracking=True,
-        states=READONLY_STATES,
+    )
+
+    budget_move_line_count = fields.Integer(
+        string="รายการเคลื่อนไหวงบ",
+        compute="_compute_budget_move_line_count",
     )
 
     _analytic_keys = {
@@ -712,6 +711,26 @@ class KmitlProject(models.Model):
     def _compute_budget_commitment_count(self):
         for rec in self:
             rec.budget_commitment_count = len(rec.budget_commitment_ids)
+
+    def _compute_budget_move_line_count(self):
+        BML = self.env["budget.move.line"]
+        for rec in self:
+            if not rec.analytic_account_id:
+                rec.budget_move_line_count = 0
+                continue
+            rec.budget_move_line_count = BML.search_count(
+                [("kmitl_project_analytic_id", "=", rec.analytic_account_id.id)]
+            )
+
+    def action_open_budget_move_lines(self):
+        self.ensure_one()
+        return {
+            "name": _("รายการเคลื่อนไหวงบประมาณ"),
+            "type": "ir.actions.act_window",
+            "res_model": "budget.move.line",
+            "view_mode": "tree,form",
+            "domain": [("kmitl_project_analytic_id", "=", self.analytic_account_id.id)],
+        }
 
     @api.depends(
         "budget_amount",
