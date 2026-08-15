@@ -112,8 +112,8 @@ class KmitlProject(models.Model):
         tracking=True,
         readonly=True,
         copy=False,
-        help="เลขที่รันของโครงการ ออกให้ครั้งเดียวเมื่อส่งเข้าแผน (draft→to_verify) "
-        "และคงเดิมตลอดอายุโครงการ ใช้เป็นรหัส (code) ของบัญชีวิเคราะห์โครงการ",
+        help="เลขที่รันของโครงการ ออกให้ครั้งเดียวเมื่อส่งเข้าแผน "
+        "และคงเดิมตลอดอายุโครงการ ใช้เป็นรหัส (code) ของมิติบัญชีโครงการ",
     )
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
