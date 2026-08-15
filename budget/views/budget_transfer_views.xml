@@ -304,9 +304,9 @@
                         <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}" required="1"/>
                         <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}" required="1"/>
                         <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" required="1"/>
+                        <field name="budget_account_id" required="1"/>
                         <field name="procurement_plan_analytic_id" options="{'no_create': True, 'no_open': True}"/>
                         <field name="kmitl_project_analytic_id" options="{'no_create': True, 'no_open': True}"/>
-                        <field name="budget_account_id" required="1"/>
                         <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}" required="1"/>
                     </group>
 
