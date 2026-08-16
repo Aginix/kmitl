@@ -103,12 +103,12 @@
                     type="object"
                     class="oe_stat_button"
                     icon="fa-file-text-o"
-                    attrs="{'invisible': [('disbursement_request_id', '=', False)]}"
+                    attrs="{'invisible': [('disbursement_request_name', '=', False)]}"
                 >
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">Disbursement Request</span>
                         <span class="o_stat_text"><field
-                                name="disbursement_request_id"
+                                name="disbursement_request_name"
                                 nolabel="1"
                             /></span>
                     </div>
@@ -139,12 +139,12 @@
                     type="object"
                     class="oe_stat_button"
                     icon="fa-file-text-o"
-                    attrs="{'invisible': [('payment_disbursement_request_id', '=', False)]}"
+                    attrs="{'invisible': [('payment_disbursement_request_name', '=', False)]}"
                 >
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">Disbursement Request</span>
                         <span class="o_stat_text"><field
-                                name="payment_disbursement_request_id"
+                                name="payment_disbursement_request_name"
                                 nolabel="1"
                             /></span>
                     </div>

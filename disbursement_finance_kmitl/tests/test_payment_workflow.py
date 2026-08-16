@@ -617,6 +617,10 @@ class TestPaymentWorkflow(TransactionCase):
             move.action_view_payment_disbursement_request()["res_id"], request.id
         )
         self.assertNotIn(move, request.bill_ids)
+        # What the two buttons actually display: a Char, because a field that can
+        # be edited is drawn as an input and a button is no place for one.
+        self.assertEqual(payment.disbursement_request_name, request.name)
+        self.assertEqual(move.payment_disbursement_request_name, request.name)
 
     # ------------------------------------------------------------------
     # Withholding tax is dated from the e-payment file (ADR-0006)

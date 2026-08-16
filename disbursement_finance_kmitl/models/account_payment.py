@@ -14,6 +14,16 @@ class AccountPayment(models.Model):
         index=True,
         copy=False,
     )
+    # What the smart button shows. A Char and not the Many2one itself, because
+    # Odoo 16 has no read mode: an editable field is always drawn as an input,
+    # so putting the Many2one in the button gives it a text box to type in. Both
+    # this and the id shadow the same-named fields account.move carries for the
+    # *bills* of a request — a payment's link is its own, and the bill list
+    # (disbursement.request.bill_ids) reads the move's.
+    disbursement_request_name = fields.Char(
+        related="disbursement_request_id.name",
+        string="Disbursement Request Number",
+    )
 
     def action_view_disbursement_request(self):
         """Open the ใบขอเบิก this voucher was raised for.

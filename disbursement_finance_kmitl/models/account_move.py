@@ -15,6 +15,13 @@ class AccountMove(models.Model):
         "payment, so this is where they can get back to the request the money "
         "was paid on.",
     )
+    # Shown on the smart button. A Char for the same reason as on the payment:
+    # a field that can be edited is drawn as an input, and a button is no place
+    # for one.
+    payment_disbursement_request_name = fields.Char(
+        related="payment_id.disbursement_request_id.name",
+        string="Disbursement Request Number (Payment)",
+    )
 
     def action_view_payment_disbursement_request(self):
         """Open the ใบขอเบิก a payment voucher's entry was made for.
