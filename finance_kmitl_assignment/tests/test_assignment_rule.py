@@ -66,6 +66,15 @@ class TestFinanceAssignment(TransactionCase):
                 {"name": "Test Bank", "code": "TBNK", "type": "bank"}
             )
 
+        # Two seeded หัวจ่าย on ใบสำคัญจ่าย (PV). A voucher takes its journal
+        # from the paying account, so the helper below swaps both together.
+        cls.paying_scb = cls.env.ref(
+            "account_kmitl.paying_account_1112210004_transfer"
+        )
+        cls.paying_ktb = cls.env.ref(
+            "account_kmitl.paying_account_1112120002_transfer"
+        )
+
         # -- users -------------------------------------------------------
         users = cls.env["res.users"].with_context(no_reset_password=True)
         g_officer = cls.env.ref("finance_kmitl.group_finance_kmitl_user_out")
@@ -101,8 +110,8 @@ class TestFinanceAssignment(TransactionCase):
         )
 
     # -- helpers ---------------------------------------------------------
-    def _payment_vals(self, department, source, partner):
-        return {
+    def _payment_vals(self, department, source, partner, paying_account=None):
+        vals = {
             "payment_type": "outbound",
             "partner_type": "supplier",
             "partner_id": partner.id,
@@ -115,15 +124,27 @@ class TestFinanceAssignment(TransactionCase):
             "fund_analytic_id": self.fund_a.id,
             "activity_analytic_id": self.activity_a.id,
         }
+        if paying_account:
+            # The paying account belongs to exactly one journal, so taking the
+            # journal from it is what keeps the two from disagreeing.
+            vals["journal_id"] = paying_account.journal_id.id
+            vals["payment_method_line_id"] = paying_account.id
+        return vals
 
     def _make_payment(
-        self, source=None, department=None, partner=None, create_as=None
+        self,
+        source=None,
+        department=None,
+        partner=None,
+        create_as=None,
+        paying_account=None,
     ):
         """A voucher filled in on the form: the dimension fields are written."""
         vals = self._payment_vals(
             department or self.dept_child,
             source or self.source_gov,
             partner or self.partner_a,
+            paying_account=paying_account,
         )
         payments = self.Payment
         if create_as:
@@ -242,6 +263,44 @@ class TestFinanceAssignment(TransactionCase):
         self.assertEqual(payment_a.assigned_to, self.officer_a)
         payment_b = self._make_payment(partner=self.partner_b)
         self.assertEqual(payment_b.assigned_to, self.officer_b)
+
+    def test_paying_account_match_and_mismatch(self):
+        """A rule on a หัวจ่าย routes only the vouchers paid from it."""
+        self.Rule.create(
+            {"user_id": self.officer_a.id, "paying_account_id": self.paying_ktb.id}
+        )
+        self.Rule.create({"user_id": self.officer_b.id})
+        from_ktb = self._make_payment(paying_account=self.paying_ktb)
+        self.assertEqual(from_ktb.assigned_to, self.officer_a)
+        from_scb = self._make_payment(paying_account=self.paying_scb)
+        self.assertEqual(from_scb.assigned_to, self.officer_b)
+
+    def test_empty_paying_account_is_a_wildcard(self):
+        self.Rule.create({"user_id": self.officer_a.id})
+        payment = self._make_payment(paying_account=self.paying_ktb)
+        self.assertEqual(payment.assigned_to, self.officer_a)
+
+    def test_paying_account_ands_with_the_dimensions(self):
+        """หัวจ่าย narrows alongside the other criteria, it does not override them."""
+        self.Rule.create(
+            {
+                "user_id": self.officer_a.id,
+                "department_analytic_id": self.dept_parent.id,
+                "paying_account_id": self.paying_ktb.id,
+            }
+        )
+        matched = self._make_payment(
+            department=self.dept_child, paying_account=self.paying_ktb
+        )
+        self.assertEqual(matched.assigned_to, self.officer_a)
+        # Right account, wrong department.
+        other_faculty = self.env["account.analytic.account"].create(
+            {"name": "Other Faculty", "plan_id": self.dept_parent.plan_id.id}
+        )
+        missed = self._make_payment(
+            department=other_faculty, paying_account=self.paying_ktb
+        )
+        self.assertFalse(missed.assigned_to)
 
     def test_no_rule_leaves_unassigned(self):
         payment = self._make_payment()
