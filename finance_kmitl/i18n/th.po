@@ -589,6 +589,7 @@ msgstr "บัญชีธนาคารผู้ชำระเงิน"
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export__paying_account_id
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
 msgid "Paying Account"
 msgstr "หัวจ่าย"
 
@@ -981,21 +982,25 @@ msgstr "เครดิต"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
 msgid "Department"
 msgstr "ส่วนงาน"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
 msgid "Source"
 msgstr "แหล่งเงิน"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
 msgid "Fund"
 msgstr "กองทุน"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
 msgid "Activity"
 msgstr "กิจกรรม"
 
@@ -1058,3 +1063,24 @@ msgstr "รออนุมัติ"
 #: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
 msgid "Posted"
 msgstr "ลงบัญชีแล้ว"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__payee_type_id
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Payee Type"
+msgstr "ประเภทผู้รับเงิน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_account_payment__payee_type_id
+msgid ""
+"ประเภทผู้รับเงิน — what kind of counterparty the payee is, which is what "
+"carries their default payable account and withholding-tax rate. Stored so "
+"the office can filter and group its own list by it. Not to be confused with "
+"partner_type (customer / supplier), which says which side of the ledger the "
+"voucher is on and nothing about who is paid."
+msgstr ""
+"ประเภทผู้รับเงิน — ผู้รับเงินเป็นคู่ค้าประเภทใด "
+"ซึ่งเป็นตัวกำหนดผังบัญชีเจ้าหนี้และอัตราภาษีหัก ณ ที่จ่ายเริ่มต้นของผู้รับเงินรายนั้น "
+"เก็บค่าไว้เพื่อให้กรองและจัดกลุ่มรายการของห้องการเงินได้ "
+"อย่าสับสนกับ partner_type (customer / supplier) ซึ่งบอกว่าใบสำคัญอยู่ฝั่งใดของบัญชี "
+"ไม่ได้บอกว่าใครเป็นผู้รับเงิน"

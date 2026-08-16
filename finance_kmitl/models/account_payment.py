@@ -38,6 +38,17 @@ class AccountPayment(models.Model):
         string="Operation Type",
         required=True,
     )
+    payee_type_id = fields.Many2one(
+        related="partner_id.partner_type_id",
+        string="Payee Type",
+        store=True,
+        index=True,
+        help="ประเภทผู้รับเงิน — what kind of counterparty the payee is, which is "
+        "what carries their default payable account and withholding-tax rate. "
+        "Stored so the office can filter and group its own list by it. Not to be "
+        "confused with partner_type (customer / supplier), which says which side "
+        "of the ledger the voucher is on and nothing about who is paid.",
+    )
     to_reconcile_payment_line_ids = fields.Many2many(
         comodel_name="account.move.line",
         relation="account_payment_to_reconcile_line_rel",

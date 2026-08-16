@@ -68,6 +68,15 @@ a name — the **Hand-over** — and it is documented with the phase that crosse
   is the only human confirmation in the whole payment stretch — the bank's result file
   never enters Odoo, so nothing else in the system knows.
 
+- **ประเภทผู้รับเงิน / Payee type** (`account.payment.payee_type_id` → `res.partner.type`):
+  what kind of counterparty the payee is — the category that carries their default
+  payable account and their withholding-tax rate. It is **not** core's `partner_type`
+  (`customer` / `supplier`), which says which side of the ledger the voucher is on and
+  nothing about who is being paid. Both live on `account.payment`, which is exactly why
+  this one is not called `partner_type_id` the way it is on `res.partner` and on
+  `finance.assignment.rule` — on those models there is nothing for it to collide with.
+  _Avoid_: "partner type" unqualified, on a payment.
+
 - **ผลการจ่าย** (`account.payment.bank_result_status`): the outcome as the finance
   office recorded it. Historically the gate everything downstream read; `finance_state`
   takes that job, leaving this as one more note the finance office keeps.
@@ -101,6 +110,12 @@ a name — the **Hand-over** — and it is documented with the phase that crosse
   holds no bank account at all.
 - **Nothing here is told by a bank.** No result file is imported; every outcome in this
   context is a person's word, and the exceptions are settled outside the system.
+- **Naming a dimension names everything under it.** A voucher filtered by a faculty,
+  a fund or a programme is any voucher on that account _or on any account beneath it_.
+  This is the same reading the routing rules use to decide who carries a voucher
+  (`finance.assignment.rule`), and it has to stay the same reading: a rule set on a
+  faculty that routes a department's vouchers, beside a list filter on that faculty
+  that finds none of them, would be one word meaning two things.
 - **A ใบสำคัญจ่าย number, once issued, never changes** — and because Odoo binds the
   number to the voucher's date, that pins the date with it. Anything that has to say
   when the money actually left says it with the e-payment file's effective date instead

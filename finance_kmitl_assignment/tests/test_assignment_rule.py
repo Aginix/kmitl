@@ -302,6 +302,21 @@ class TestFinanceAssignment(TransactionCase):
         )
         self.assertFalse(missed.assigned_to)
 
+    def test_the_voucher_carries_the_payee_type_it_is_routed_by(self):
+        """``payee_type_id`` is the list's side of the rule's ``partner_type_id``.
+
+        It belongs to ``finance_kmitl`` — the finance list filters and groups by
+        it — but it is asserted here because this is where the partners that
+        carry a type are set up, and because a rule matching on a type the
+        voucher does not report would route by one thing and be searched by
+        another.
+        """
+        payment = self._make_payment(partner=self.partner_a)
+        self.assertEqual(payment.payee_type_id, self.pt_a)
+        # Stored and related, so it follows the payee rather than freezing.
+        payment.partner_id = self.partner_b
+        self.assertEqual(payment.payee_type_id, self.pt_b)
+
     def test_no_rule_leaves_unassigned(self):
         payment = self._make_payment()
         self.assertFalse(payment.assigned_to)
