@@ -137,15 +137,32 @@ class DisbursementRequest(models.Model):
         string="Payment Move Count",
     )
 
-    @api.depends("payment_ids", "payment_ids.state", "payment_ids.move_id")
+    @api.depends(
+        "payment_ids",
+        "payment_ids.state",
+        "payment_ids.finance_state",
+        "payment_ids.move_id",
+    )
     def _compute_payment_info(self):
+        """Payment progress as the finance office means it.
+
+        "จ่ายแล้ว" counts the vouchers whose money has left — ``finance_state ==
+        'paid'`` — and not the ones the accounting office has posted. Those are
+        two different offices' facts about the same document (ADR-0005): a
+        request can be paid in full with nothing booked yet, and reading `state`
+        here reported it as nothing paid.
+
+        ``state`` still decides which vouchers are counted at all, because
+        cancelling is not one office's opinion — a cancelled voucher is no
+        longer a payment of this request in anybody's ledger.
+        """
         for rec in self:
             active = rec.payment_ids.filtered(lambda p: p.state != "cancel")
             total = len(active)
             rec.payment_count = total
-            posted = len(active.filtered(lambda p: p.state == "posted"))
+            paid = len(active.filtered(lambda p: p.finance_state == "paid"))
             rec.payment_status_display = (
-                _("จ่ายแล้ว %s/%s", posted, total) if total else ""
+                _("จ่ายแล้ว %s/%s", paid, total) if total else ""
             )
             moves = active.mapped("move_id")
             rec.payment_move_ids = moves

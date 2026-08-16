@@ -547,6 +547,22 @@ class TestPaymentWorkflow(TransactionCase):
         request.action_confirm_paid()
         self.assertEqual(payment.finance_state, "paid")
 
+    def test_payment_progress_counts_what_the_finance_office_paid(self):
+        """The smart button reports money out, not entries booked.
+
+        The two are different offices' facts about the same voucher: a request is
+        paid in full at the Hand-over and stays unbooked until the accounting
+        maker gets to it, so counting posted moves showed a fully paid request as
+        nothing paid.
+        """
+        request = self._authorized_with_payments(self.cash_account)
+        self.assertIn("0/1", request.payment_status_display)
+        request.action_confirm_paid()
+        self.assertEqual(request.payment_ids.finance_state, "paid")
+        # Still nobody's entry, and still counted as paid.
+        self.assertEqual(request.payment_ids.state, "draft")
+        self.assertIn("1/1", request.payment_status_display)
+
     def test_the_accounting_office_books_a_paid_request_in_one_press(self):
         request = self._authorized_with_payments(self.cash_account)
         request.action_confirm_paid()
