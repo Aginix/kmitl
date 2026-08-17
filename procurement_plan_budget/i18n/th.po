@@ -1,0 +1,172 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* procurement_plan_budget
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-17 18:36+0000\n"
+"PO-Revision-Date: 2026-08-17 18:36+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: procurement_plan_budget
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget.view_procurement_plan_form_budget
+msgid "<span class=\"o_stat_text\">Budget Commitment</span>"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget.view_budget_commitment_form
+msgid "<span class=\"o_stat_text\">แผนจัดซื้อจัดจ้าง</span>"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_budget_move_line__analytic_distribution
+msgid "Analytic"
+msgstr "บัญชีวิเคราะห์"
+
+#. module: procurement_plan_budget
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_budget_move_line__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_budget_move_line__analytic_precision
+msgid "Analytic Precision"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model,name:procurement_plan_budget.model_budget_account
+msgid "Budget Account"
+msgstr "รหัสงบประมาณ"
+
+#. module: procurement_plan_budget
+#: model:ir.model,name:procurement_plan_budget.model_budget_commitment
+msgid "Budget Commitment"
+msgstr "จองงบประมาณ"
+
+#. module: procurement_plan_budget
+#: model:ir.model,name:procurement_plan_budget.model_budget_dashboard
+msgid "Budget Monitoring Dashboard"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model,name:procurement_plan_budget.model_budget_move_line
+msgid "Budget Move Line"
+msgstr "บรรทัดรายการงบประมาณ"
+
+#. module: procurement_plan_budget
+#. odoo-python
+#: code:addons/procurement_plan_budget/models/procurement_plan.py:0
+#, python-format
+msgid "Initial reservation"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model,name:procurement_plan_budget.model_procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_budget_commitment__procurement_plan_id
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_budget_move_line__procurement_plan_analytic_id
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_budget_move_line__procurement_plan_id
+msgid "Procurement Plan"
+msgstr "แผนจัดซื้อจัดจ้าง"
+
+#. module: procurement_plan_budget
+#. odoo-python
+#: code:addons/procurement_plan_budget/models/procurement_plan.py:0
+#, python-format
+msgid "กรุณาระบุรหัสงบประมาณก่อนจองงบประมาณ"
+msgstr ""
+
+#. module: procurement_plan_budget
+#. odoo-python
+#: code:addons/procurement_plan_budget/models/procurement_plan.py:0
+#, python-format
+msgid "กรุณาระบุวงเงินรวมให้มากกว่า 0 ก่อนจองงบประมาณ"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_budget_move_line__fund_analytic_id
+msgid "กองทุน"
+msgstr ""
+
+#. module: procurement_plan_budget
+#. odoo-python
+#: code:addons/procurement_plan_budget/models/procurement_plan.py:0
+#, python-format
+msgid "งบประมาณที่จองไว้ (%s) มีการใช้งานแล้ว จึงไม่ยกเลิกการจอง"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget.view_procurement_plan_form_budget
+msgid "จองงบประมาณ"
+msgstr ""
+
+#. module: procurement_plan_budget
+#. odoo-python
+#: code:addons/procurement_plan_budget/models/procurement_plan.py:0
+#, python-format
+msgid "จองงบประมาณ %s จำนวน %s"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_procurement_plan__budget_commitment_count
+msgid "จำนวนผูกพันงบประมาณ"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_budget_move_line__activity_analytic_id
+msgid "ด้าน/แผนงาน/กิจกรรม"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model.fields,help:procurement_plan_budget.field_budget_account__procurement_plan
+#: model:ir.model.fields,help:procurement_plan_budget.field_budget_move_line__procurement_plan
+msgid ""
+"ติ๊กถูกเพื่อระบุว่าเป็นประเภทงบลงทุน จะสามารถจัดสรรแผนจัดซื้อจัดจ้างได้"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_budget_account__procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_budget_move_line__procurement_plan
+msgid "ทำแผนจัดซื้อจัดจ้าง"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.actions.act_window,name:procurement_plan_budget.action_budget_commitment_procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_procurement_plan__budget_commitment_ids
+msgid "ผูกพันงบประมาณ"
+msgstr ""
+
+#. module: procurement_plan_budget
+#. odoo-python
+#: code:addons/procurement_plan_budget/models/procurement_plan.py:0
+#, python-format
+msgid "ยกเลิกการจองงบประมาณ %s"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_procurement_plan__budget_account_id
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget.view_procurement_plan_search_budget
+msgid "รหัสงบประมาณ"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_budget_move_line__department_analytic_id
+msgid "ส่วนงาน"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.ui.menu,name:procurement_plan_budget.budget_procurement_plan_inherit_menu
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget.view_budget_commitment_form
+msgid "แผนจัดซื้อจัดจ้าง"
+msgstr ""
+
+#. module: procurement_plan_budget
+#: model:ir.model.fields,field_description:procurement_plan_budget.field_budget_move_line__source_analytic_id
+msgid "แหล่งเงิน"
+msgstr ""

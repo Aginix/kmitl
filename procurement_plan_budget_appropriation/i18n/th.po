@@ -1,114 +1,172 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* procurement_plan_budget
+# 	* procurement_plan_budget_appropriation
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-15 06:10+0000\n"
-"PO-Revision-Date: 2025-10-15 13:12+0700\n"
+"POT-Creation-Date: 2026-08-17 18:37+0000\n"
+"PO-Revision-Date: 2026-08-17 18:37+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.7\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
 #: model:ir.model,name:procurement_plan_budget_appropriation.model_budget_appropriation
 msgid "Budget Appropriation"
 msgstr "จัดสรรงบประมาณ"
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
+#: model:ir.model,name:procurement_plan_budget_appropriation.model_budget_appropriation_compilation
+msgid "Budget Appropriation Compilation"
+msgstr ""
+
+#. module: procurement_plan_budget_appropriation
 #: model:ir.model,name:procurement_plan_budget_appropriation.model_budget_appropriation_line
 msgid "Budget Appropriation Line"
 msgstr "รายการจัดสรรงบประมาณ"
 
-#. module: procurement_plan_budget
-#: model:ir.model.fields,field_description:procurement_plan_budget_appropriation.field_budget_appropriation_line__procurement_method_id
-msgid "Procurement Method"
-msgstr "วิธีจัดซื้อจัดจ้าง"
+#. module: procurement_plan_budget_appropriation
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_form_procurement_plan
+msgid "Name"
+msgstr ""
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
 #: model:ir.model,name:procurement_plan_budget_appropriation.model_procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan_budget_appropriation.field_budget_appropriation__procurement_plan_ids
 #: model:ir.model.fields,field_description:procurement_plan_budget_appropriation.field_budget_appropriation_line__procurement_plan_id
 msgid "Procurement Plan"
 msgstr "แผนจัดซื้อจัดจ้าง"
 
 #. module: procurement_plan_budget_appropriation
-#. odoo-python
-#: code:addons/procurement_plan_budget_appropriation/models/budget_appropriation_line.py:0
-#, python-format
-msgid "The procurement plan has been created from this budget appropriation: <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
+#: model:ir.model.fields,field_description:procurement_plan_budget_appropriation.field_budget_appropriation_compilation__procurement_plan_line_ids
+msgid "Procurement Plan Line"
 msgstr ""
 
 #. module: procurement_plan_budget_appropriation
 #. odoo-python
 #: code:addons/procurement_plan_budget_appropriation/models/budget_appropriation_line.py:0
 #, python-format
-msgid "This record has been created from: <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
+msgid ""
+"The procurement plan has been created from this budget appropriation: <a "
+"href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
 msgstr ""
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
+#. odoo-python
+#: code:addons/procurement_plan_budget_appropriation/models/budget_appropriation_line.py:0
+#, python-format
+msgid ""
+"This record has been created from: <a href=\"%(link)s\" "
+"target=\"_blank\">%(name)s</a>"
+msgstr ""
+
+#. module: procurement_plan_budget_appropriation
 #: model:ir.model.fields,field_description:procurement_plan_budget_appropriation.field_budget_appropriation_line__procurement_plan_unit
 msgid "Unit of Measure"
 msgstr "หน่วยนับ"
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
 #: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_line_form_procurement_plan
 msgid "e.g. ชิ้น, รายการ, ตัว, ชุด"
 msgstr ""
 
-#. module: procurement_plan_budget
-#: model:ir.model.fields,field_description:procurement_plan_budget_appropriation.field_budget_appropriation_line__enable_procurement_plan
+#. module: procurement_plan_budget_appropriation
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_compilation_form_procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_form_procurement_plan
+msgid "กิจกรรม"
+msgstr ""
+
+#. module: procurement_plan_budget_appropriation
 #: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_line_form_procurement_plan
+msgid "จัดสรรงบประมาณงบลงทุน"
+msgstr ""
+
+#. module: procurement_plan_budget_appropriation
+#: model:ir.model.fields,field_description:procurement_plan_budget_appropriation.field_budget_appropriation_line__enable_procurement_plan
 msgid "จัดสรรแผนจัดซื้อจัดจ้าง"
 msgstr ""
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
 #: model:ir.model.fields,field_description:procurement_plan_budget_appropriation.field_budget_appropriation_line__procurement_plan_amount
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_compilation_form_procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_form_procurement_plan
 #: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_line_form_procurement_plan
 msgid "จำนวน"
 msgstr ""
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_compilation_form_procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_form_procurement_plan
+msgid "ชื่อรายการ"
+msgstr ""
+
+#. module: procurement_plan_budget_appropriation
 #: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_line_form_procurement_plan
 msgid ""
 "ตัวอย่างการกรอกข้อมูล                            <br/>\n"
-"                        ตัวอย่าง 1. \"ปรับปรุงห้องเรียนและห้องปฏิบัติการ อาคารปฏิบัติการพิเศษจอมไตร จำนวน 7 ห้อง วงเงินรวม 5,250,000 บาท\" <br/"
-">\n"
-"                        ตัวอย่าง 2. \"เครื่องล้างเครื่องมือด้วยคลื่นเสียงความถี่สูง จำนวน 1 เครื่อง วงเงินรวม 45,000 บาท\" <br/>"
+"                            ตัวอย่าง 1. \"ปรับปรุงห้องเรียนและห้องปฏิบัติการ อาคารปฏิบัติการพิเศษจอมไตร จำนวน 7 ห้อง วงเงินรวม 5,250,000 บาท\" <br/>\n"
+"                            ตัวอย่าง 2. \"เครื่องล้างเครื่องมือด้วยคลื่นเสียงความถี่สูง จำนวน 1 เครื่อง วงเงินรวม 45,000 บาท\" <br/>"
 msgstr ""
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
 #: model:ir.model.fields,help:procurement_plan_budget_appropriation.field_budget_appropriation_line__procurement_plan
-msgid "ติ๊กถูกเพื่อระบุว่าเป็นประเภทงบลงทุน จะสามารถจัดสรรแผนจัดซื้อจัดจ้างได้"
+msgid ""
+"ติ๊กถูกเพื่อระบุว่าเป็นประเภทงบลงทุน จะสามารถจัดสรรแผนจัดซื้อจัดจ้างได้"
 msgstr ""
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
 #: model:ir.model.fields,field_description:procurement_plan_budget_appropriation.field_budget_appropriation_line__procurement_plan
 msgid "ทำแผนจัดซื้อจัดจ้าง"
 msgstr ""
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
 #: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_line_form_procurement_plan
 msgid "บาท"
 msgstr ""
 
-#. module: procurement_plan_budget
-#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_line_form_procurement_plan
-msgid "ระบบจะนำข้อมูลส่วนนี้ไปสร้างเป็นแผนจัดซื้อจัดจ้างหลังจากจัดสรรงบประมาณเสร็จสิ้น"
+#. module: procurement_plan_budget_appropriation
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_compilation_form_procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_form_procurement_plan
+msgid "รวม"
 msgstr ""
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_compilation_form_procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_form_procurement_plan
+msgid "รหัสงบประมาณ"
+msgstr ""
+
+#. module: procurement_plan_budget_appropriation
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_compilation_form_procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_form_procurement_plan
 #: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_line_form_procurement_plan
 msgid "วงเงินรวม"
 msgstr ""
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_compilation_form_procurement_plan
+msgid "สรุปแผนจัดซื้อจัดจ้าง"
+msgstr ""
+
+#. module: procurement_plan_budget_appropriation
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_compilation_form_procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_form_procurement_plan
+msgid "หน่วย"
+msgstr ""
+
+#. module: procurement_plan_budget_appropriation
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_compilation_form_procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_form_procurement_plan
 #: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_line_form_procurement_plan
 msgid "แผนจัดซื้อจัดจ้าง"
+msgstr ""
+
+#. module: procurement_plan_budget_appropriation
+#: model_terms:ir.ui.view,arch_db:procurement_plan_budget_appropriation.view_budget_appropriation_compilation_form_procurement_plan
+msgid "ใบจัดสรรงบประมาณ"
 msgstr ""
