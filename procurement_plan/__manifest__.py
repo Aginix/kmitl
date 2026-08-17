@@ -4,7 +4,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "depends": ["web", "account_analytic_kmitl"],
+    "depends": ["web", "account_analytic_kmitl", "account_fiscal_year", "l10n_th_base_sequence"],
     "data": [
         "data/account.analytic.plan.csv",
         "data/sequence.xml",

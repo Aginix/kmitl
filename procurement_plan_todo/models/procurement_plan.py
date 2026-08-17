@@ -35,7 +35,11 @@ class ProcurementPlan(models.Model):
 
     def action_send_to_verify(self):
         res = super().action_send_to_verify()
-        self._schedule_fill_plan_todo()
+        # Skip when the caller signals the plan will be immediately verified
+        # (appropriation-born path) — the Todo would self-complete before any
+        # officer sees it.
+        if not self.env.context.get("skip_fill_plan_todo"):
+            self._schedule_fill_plan_todo()
         return res
 
     def action_verify(self):

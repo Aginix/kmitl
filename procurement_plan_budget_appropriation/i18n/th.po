@@ -38,16 +38,16 @@ msgstr "วิธีจัดซื้อจัดจ้าง"
 msgid "Procurement Plan"
 msgstr "แผนจัดซื้อจัดจ้าง"
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
 #. odoo-python
-#: code:addons/procurement_plan_budget/models/budget_appropriation_line.py:0
+#: code:addons/procurement_plan_budget_appropriation/models/budget_appropriation_line.py:0
 #, python-format
 msgid "The procurement plan has been created from this budget appropriation: <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
 msgstr ""
 
-#. module: procurement_plan_budget
+#. module: procurement_plan_budget_appropriation
 #. odoo-python
-#: code:addons/procurement_plan_budget/models/budget_appropriation_line.py:0
+#: code:addons/procurement_plan_budget_appropriation/models/budget_appropriation_line.py:0
 #, python-format
 msgid "This record has been created from: <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
 msgstr ""
