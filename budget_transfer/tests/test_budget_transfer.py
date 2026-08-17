@@ -199,7 +199,7 @@ class TestBudgetTransfer(TransactionCase):
     def test_post_drives_the_delegated_move_balanced(self):
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())
-        transfer.action_submit()
+        transfer.action_confirm()
         transfer.action_approve()  # approval auto-posts (ADR-0013)
         self.assertEqual(transfer.state, "posted")
         self.assertEqual(transfer.move_id.state, "posted")
@@ -210,16 +210,16 @@ class TestBudgetTransfer(TransactionCase):
         # Balanced entry move.
         self.assertAlmostEqual(sum(transfer.line_ids.mapped("balance")), 0.0, places=2)
 
-    def test_name_assigned_on_submit(self):
+    def test_name_assigned_on_confirm(self):
         # A fresh transfer keeps the placeholder until it leaves draft; on
-        # submit the BTR sequence must be pulled (regression: a translated
+        # confirm the BTR sequence must be pulled (regression: a translated
         # placeholder such as "ใหม่" was never recognised as unnamed).
         # The year in the number is the fiscal year's Buddhist-Era year
         # (date_to.year + 543), 4 digits.
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())
         self.assertIn(transfer.name, ("New", "ใหม่"))
-        transfer.action_submit()
+        transfer.action_confirm()
         self.assertNotIn(transfer.name, ("New", "ใหม่"))
         expected_be = str(self.fy.date_to.year + 543)
         self.assertTrue(transfer.name.startswith(f"BTR/{expected_be}/"))
@@ -230,7 +230,7 @@ class TestBudgetTransfer(TransactionCase):
         # across years.
         self._appropriate(self.src, 100_000)
         t1 = self._transfer(**self._balanced())
-        t1.action_submit()
+        t1.action_confirm()
         be1 = str(self.fy.date_to.year + 543)
         self.assertTrue(t1.name.startswith(f"BTR/{be1}/"))
 
@@ -244,16 +244,16 @@ class TestBudgetTransfer(TransactionCase):
         )
         self._appropriate(self.src, 100_000, fy=fy2)
         t2 = self._transfer(fy=fy2, **self._balanced())
-        t2.action_submit()
+        t2.action_confirm()
         be2 = str(fy2.date_to.year + 543)
         self.assertTrue(t2.name.startswith(f"BTR/{be2}/"))
         self.assertNotEqual(be1, be2, "distinct fiscal years must not share a year segment")
 
-    def test_fiscal_year_frozen_after_submit(self):
+    def test_fiscal_year_frozen_after_confirm(self):
         # Once confirmed, the fiscal year is frozen (it drives the BTR number).
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())
-        transfer.action_submit()
+        transfer.action_confirm()
         other_fy = self.env["account.fiscal.year"].create(
             {
                 "name": "FY-TR-NEXT",
@@ -271,7 +271,7 @@ class TestBudgetTransfer(TransactionCase):
         # longer match its year.
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())
-        transfer.action_submit()
+        transfer.action_confirm()
         transfer.action_approve()  # posts (admin)
         transfer.action_reset_to_draft()
         self.assertEqual(transfer.state, "draft")
@@ -290,7 +290,7 @@ class TestBudgetTransfer(TransactionCase):
     def test_admin_can_approve_own_transfer(self):
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())
-        transfer.action_submit()
+        transfer.action_confirm()
         transfer.action_approve()  # admin == requestor, but admin bypasses SoD
         # Approval auto-posts — no separate Post step (ADR-0013).
         self.assertEqual(transfer.state, "posted")
@@ -308,7 +308,7 @@ class TestBudgetTransfer(TransactionCase):
         )
         transfer = self._transfer(**self._balanced())
         transfer.user_id = mgr
-        transfer.with_user(mgr).action_submit()
+        transfer.with_user(mgr).action_confirm()
         with self.assertRaises(UserError):
             transfer.with_user(mgr).action_approve()
 
@@ -317,7 +317,7 @@ class TestBudgetTransfer(TransactionCase):
         # transfer, un-posting its delegated budget move.
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())
-        transfer.action_submit()
+        transfer.action_confirm()
         transfer.action_approve()  # auto-posts (admin)
         self.assertEqual(transfer.state, "posted")
         transfer.action_reset_to_draft()
@@ -338,13 +338,81 @@ class TestBudgetTransfer(TransactionCase):
             }
         )
         transfer = self._transfer(**self._balanced())
-        transfer.action_submit()
+        transfer.action_confirm()
         transfer.action_approve()  # auto-posts (admin)
         with self.assertRaises(UserError):
             transfer.with_user(user).action_reset_to_draft()
 
-    def test_core_dims_required_on_submit(self):
-        # A FROM line missing its fund fails the four-dim check at submit.
+    def test_approve_blocked_outside_confirmed(self):
+        # The manual approve fallback only applies from `confirmed` — not a
+        # bare draft (ADR-0014).
+        transfer = self._transfer(**self._balanced())
+        with self.assertRaises(UserError):
+            transfer.action_approve()
+
+    def test_post_blocked_outside_confirmed(self):
+        # action_post (API/admin use) must not double-post a transfer that is
+        # already `sent`/`posted` — that would race with the bridge's
+        # _on_sarabun_completed (ADR-0014).
+        transfer = self._transfer(**self._balanced())
+        with self.assertRaises(UserError):
+            transfer.action_post()
+
+    # ------------------------------------------------------------------
+    # sent / returned / rejected (ADR-0014) — reached via budget_transfer_sarabun
+    # in production; simulated here by writing the state directly, since the
+    # base module must guard these transitions even without the bridge.
+    # ------------------------------------------------------------------
+    def test_cancel_blocked_from_sent(self):
+        self._appropriate(self.src, 100_000)
+        transfer = self._transfer(**self._balanced())
+        transfer.action_confirm()
+        transfer.state = "sent"
+        with self.assertRaises(UserError):
+            transfer.action_cancel()
+
+    def test_reset_to_draft_blocked_from_sent(self):
+        self._appropriate(self.src, 100_000)
+        transfer = self._transfer(**self._balanced())
+        transfer.action_confirm()
+        transfer.state = "sent"
+        with self.assertRaises(UserError):
+            transfer.action_reset_to_draft()
+
+    def test_cancel_allowed_from_returned(self):
+        # A returned (ตีกลับ) transfer is editable and may still be cancelled
+        # outright instead of being re-sent.
+        self._appropriate(self.src, 100_000)
+        transfer = self._transfer(**self._balanced())
+        transfer.action_confirm()
+        transfer.state = "returned"
+        transfer.action_cancel()
+        self.assertEqual(transfer.state, "cancelled")
+        self.assertEqual(transfer.move_id.state, "cancel")
+
+    def test_reset_to_draft_from_rejected_requires_manager(self):
+        # Reviving a rejected (ปฏิเสธ) transfer is manager/admin only.
+        self._appropriate(self.src, 100_000)
+        user = self.env["res.users"].create(
+            {
+                "name": "Budget User Reject",
+                "login": "budget_user_tr_reject",
+                "groups_id": [
+                    Command.link(self.env.ref("budget.group_budget_user").id)
+                ],
+            }
+        )
+        transfer = self._transfer(**self._balanced())
+        transfer.user_id = user
+        transfer.with_user(user).action_confirm()
+        transfer.state = "rejected"
+        with self.assertRaises(UserError):
+            transfer.with_user(user).action_reset_to_draft()
+        transfer.action_reset_to_draft()  # admin can revive
+        self.assertEqual(transfer.state, "draft")
+
+    def test_core_dims_required_on_confirm(self):
+        # A FROM line missing its fund fails the four-dim check at confirm.
         transfer = self._transfer(
             from_lines=[
                 {
@@ -363,7 +431,7 @@ class TestBudgetTransfer(TransactionCase):
             ],
         )
         with self.assertRaises(ValidationError):
-            transfer.action_submit()
+            transfer.action_confirm()
 
     # ------------------------------------------------------------------
     # Pool-Tag policy (ADR-0009 / ADR-0012)

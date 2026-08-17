@@ -8,17 +8,19 @@
         <field name="arch" type="xml">
             <form string="Budget Transfer">
                 <header>
-                    <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" attrs="{'invisible': [('show_submit_button', '=', False)]}"/>
+                    <button name="action_confirm" type="object" string="ยืนยัน" class="btn-primary" attrs="{'invisible': [('show_confirm_button', '=', False)]}"/>
                     <button name="action_approve" type="object" string="Approve &amp; Post" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}" confirm="Approval will automatically post the transfer. Do you want to continue?"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_posted_button', '=', False)]}" confirm="Resetting a posted transfer back to draft will reverse the budget entry that has already been recorded, and may lead to budget inconsistencies. Do you want to continue?"/>
                     <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
 
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,posted"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,sent,posted"/>
                 </header>
 
                 <sheet>
                     <widget name="web_ribbon" title="Posted" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'posted')]}"/>
+                    <widget name="web_ribbon" title="Returned" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'returned')]}"/>
+                    <widget name="web_ribbon" title="Rejected" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
                     <widget name="web_ribbon" title="Cancelled" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <div class="oe_button_box" name="button_box">
                         <!-- Show the move's BM number via the non-required
@@ -42,14 +44,14 @@
 
                     <group>
                         <group name="transfer_info" string="Transfer Information">
-                            <field name="date" attrs="{'readonly': ['|', ('state', 'not in', ['draft']), ('fiscal_year_locked', '=', True)]}"/>
-                            <field name="account_fiscal_year_id" attrs="{'readonly': ['|', ('state', 'not in', ['draft']), ('fiscal_year_locked', '=', True)]}"/>
-                            <field name="budget_type" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                            <field name="date" attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'returned']), ('fiscal_year_locked', '=', True)]}"/>
+                            <field name="account_fiscal_year_id" attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'returned']), ('fiscal_year_locked', '=', True)]}"/>
+                            <field name="budget_type" attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}"/>
                             <field name="user_id" widget="employee_detail_many2one" />
                         </group>
                         <group name="dimension_info" string="Financial Dimensions">
-                            <field name="department_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}" options="{'no_create': True, 'no_open': True}"/>
-                            <field name="source_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}" options="{'no_create': True, 'no_open': True}" />
+                            <field name="department_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="source_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}" options="{'no_create': True, 'no_open': True}" />
                             <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
@@ -77,7 +79,7 @@
                     </div>
 
                     <group name="transfer_reason" colspan="8">
-                        <field name="reason" placeholder="Please provide detailed justification for this budget transfer..." attrs="{'readonly': [('state', 'not in', ['draft'])]}" colspan="2"/>
+                        <field name="reason" placeholder="Please provide detailed justification for this budget transfer..." attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}" colspan="2"/>
                     </group>
 
                     <!-- Transfer Lines (authored directly as budget.move.line) -->
@@ -87,7 +89,7 @@
                                 <separator string="Transfer FROM (Source)"/>
                                 <field name="from_line_ids" nolabel="1" colspan="2"
                                        context="{'default_transfer_direction': 'from', 'default_department_analytic_id': department_analytic_id}"
-                                       attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                                       attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}">
                                     <!-- Non-editable tree: a click opens the line editor dialog. -->
                                     <tree decoration-danger="not budget_sufficient" create="1" delete="1">
                                         <field name="account_id"/>
@@ -143,7 +145,7 @@
                                 <separator string="Transfer TO (Destination)"/>
                                 <field name="to_line_ids" nolabel="1" colspan="2"
                                        context="{'default_transfer_direction': 'to', 'default_department_analytic_id': department_analytic_id}"
-                                       attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                                       attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}">
                                     <!-- Non-editable tree: a click opens the line editor dialog. -->
                                     <tree decoration-success="1" create="1" delete="1">
                                         <field name="account_id"/>
@@ -216,7 +218,12 @@
         <field name="name">budget.transfer.tree</field>
         <field name="model">budget.transfer</field>
         <field name="arch" type="xml">
-            <tree string="Budget Transfers" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state == 'posted'">
+            <tree string="Budget Transfers"
+                  decoration-muted="state in ('returned',)"
+                  decoration-warning="state == 'confirmed'"
+                  decoration-info="state == 'sent'"
+                  decoration-success="state == 'posted'"
+                  decoration-danger="state in ('rejected', 'cancelled')">
                 <field name="name"/>
                 <field name="date"/>
                 <field name="department_analytic_id" optional="show"/>
@@ -224,7 +231,12 @@
                 <field name="user_id"/>
                 <field name="amount" widget="monetary" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
-                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state == 'posted'" decoration-danger="state == 'cancelled'"/>
+                <field name="state" widget="badge"
+                       decoration-muted="state in ('returned',)"
+                       decoration-warning="state == 'confirmed'"
+                       decoration-info="state == 'sent'"
+                       decoration-success="state == 'posted'"
+                       decoration-danger="state in ('rejected', 'cancelled')"/>
                 <field name="company_id" groups="base.group_multi_company" optional="hide"/>
             </tree>
         </field>
@@ -250,8 +262,11 @@
                                 ('account_fiscal_year_id.date_to', '>=', context_today().strftime('%Y-%m-%d'))]"/>
                 <separator/>
                 <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
-                <filter name="pending_approval" string="Pending Approval" domain="[('state', '=', 'submitted')]"/>
+                <filter name="pending_approval" string="Pending Approval" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="sent" string="Sent" domain="[('state', '=', 'sent')]"/>
+                <filter name="returned" string="Returned" domain="[('state', '=', 'returned')]"/>
                 <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <filter name="rejected" string="Rejected" domain="[('state', '=', 'rejected')]"/>
                 <filter name="cancelled" string="Cancelled" domain="[('state', '=', 'cancelled')]"/>
 
                 <separator/>
@@ -372,7 +387,7 @@
         <field name="name">Pending Approvals</field>
         <field name="res_model">budget.transfer</field>
         <field name="view_mode">tree,form,kanban</field>
-        <field name="domain">[('state', '=', 'submitted')]</field>
+        <field name="domain">[('state', '=', 'confirmed')]</field>
         <field name="context">{'search_default_pending_approval': 1}</field>
     </record>
 
