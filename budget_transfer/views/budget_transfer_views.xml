@@ -94,8 +94,8 @@
                                         <field name="kmitl_project_analytic_id" optional="show"/>
                                         <field name="procurement_plan_analytic_id" optional="show"/>
                                         <field name="amount" widget="monetary" sum="Total Source"/>
-                                        <field name="available_budget" widget="monetary"/>
-                                        <field name="budget_sufficient" widget="boolean_toggle"/>
+                                        <field name="available_budget" widget="monetary" attrs="{'column_invisible': [('parent.state', 'in', ['posted', 'cancelled'])]}"/>
+                                        <field name="budget_sufficient" widget="boolean_toggle" attrs="{'column_invisible': [('parent.state', 'in', ['posted', 'cancelled'])]}"/>
                                         <field name="currency_id" invisible="1"/>
                                     </tree>
                                     <form string="Transfer Out (Source)">
@@ -114,11 +114,11 @@
                                                            options="{'no_create': True, 'no_open': True}"
                                                            domain="[('budget_type', '=', parent.budget_type)]"
                                                            placeholder="Select source budget account..."/>
-                                                    <field name="activity_analytic_id" required="1" options="{'no_create': True}"/>
-                                                    <field name="fund_analytic_id" required="1" options="{'no_create': True}"/>
-                                                    <field name="kmitl_project_analytic_id" options="{'no_create': True}"
+                                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="kmitl_project_analytic_id" options="{'no_create': True, 'no_open': True}"
                                                            attrs="{'invisible': [('account_is_project', '=', False)]}"/>
-                                                    <field name="procurement_plan_analytic_id" options="{'no_create': True}"
+                                                    <field name="procurement_plan_analytic_id" options="{'no_create': True, 'no_open': True}"
                                                            attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
                                                 </group>
                                                 <group string="Amount">
@@ -165,12 +165,12 @@
                                                            options="{'no_create': True, 'no_open': True}"
                                                            domain="[('budget_type', '=', parent.budget_type)]"
                                                            placeholder="Select destination budget account..."/>
-                                                    <field name="department_analytic_id" required="1" options="{'no_create': True}"/>
-                                                    <field name="activity_analytic_id" required="1" options="{'no_create': True}"/>
-                                                    <field name="fund_analytic_id" required="1" options="{'no_create': True}"/>
-                                                    <field name="kmitl_project_analytic_id" options="{'no_create': True}"
+                                                    <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="kmitl_project_analytic_id" options="{'no_create': True, 'no_open': True}"
                                                            attrs="{'invisible': [('account_is_project', '=', False)]}"/>
-                                                    <field name="procurement_plan_analytic_id" options="{'no_create': True}"
+                                                    <field name="procurement_plan_analytic_id" options="{'no_create': True, 'no_open': True}"
                                                            attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
                                                 </group>
                                                 <group string="Amount">
