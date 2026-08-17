@@ -84,45 +84,87 @@
                                 <field name="from_line_ids" nolabel="1" colspan="2"
                                        context="{'default_transfer_direction': 'from', 'default_department_analytic_id': department_analytic_id}"
                                        attrs="{'readonly': [('state', 'not in', ['draft'])]}">
-                                    <tree editable="bottom" decoration-danger="not budget_sufficient" create="1" delete="1">
-                                        <field name="budget_type" invisible="1"/>
-                                        <field name="transfer_direction" invisible="1"/>
-                                        <field name="account_id" required="1"/>
-                                        <field name="activity_analytic_id" required="1"/>
-                                        <field name="fund_analytic_id" required="1"/>
-                                        <field name="department_analytic_id" required="1"/>
-                                        <field name="account_is_project" column_invisible="1"/>
-                                        <field name="account_is_procurement" column_invisible="1"/>
-                                        <field name="kmitl_project_analytic_id" attrs="{'invisible': [('account_is_project', '=', False)]}"/>
-                                        <field name="procurement_plan_analytic_id" attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
-                                        <field name="source_analytic_id" invisible="1"/>
+                                    <!-- Non-editable tree: a click opens the line editor dialog. -->
+                                    <tree decoration-danger="not budget_sufficient" create="1" delete="1">
+                                        <field name="account_id"/>
+                                        <field name="activity_analytic_id"/>
+                                        <field name="fund_analytic_id"/>
+                                        <field name="department_analytic_id"/>
+                                        <field name="kmitl_project_analytic_id" optional="hide"/>
+                                        <field name="procurement_plan_analytic_id" optional="hide"/>
                                         <field name="amount" widget="monetary" sum="Total Source"/>
                                         <field name="available_budget" widget="monetary"/>
                                         <field name="budget_sufficient" widget="boolean_toggle"/>
-                                        <field name="note" optional="hide"/>
-                                        <field name="currency_id" invisible="1"/>
+                                        <field name="currency_id" column_invisible="1"/>
                                     </tree>
+                                    <form string="Transfer FROM line">
+                                        <group>
+                                            <group>
+                                                <field name="transfer_direction" invisible="1"/>
+                                                <field name="account_is_project" invisible="1"/>
+                                                <field name="account_is_procurement" invisible="1"/>
+                                                <field name="source_analytic_id" invisible="1"/>
+                                                <field name="currency_id" invisible="1"/>
+                                                <field name="account_id" required="1"
+                                                       options="{'no_create': True, 'no_open': True}"
+                                                       domain="[('budget_type', '=', parent.budget_type)]"/>
+                                                <field name="activity_analytic_id" required="1" options="{'no_create': True}"/>
+                                                <field name="fund_analytic_id" required="1" options="{'no_create': True}"/>
+                                                <field name="department_analytic_id" required="1" options="{'no_create': True}"/>
+                                                <field name="kmitl_project_analytic_id" options="{'no_create': True}"
+                                                       attrs="{'invisible': [('account_is_project', '=', False)]}"/>
+                                                <field name="procurement_plan_analytic_id" options="{'no_create': True}"
+                                                       attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
+                                            </group>
+                                            <group>
+                                                <field name="amount" widget="monetary" required="1"/>
+                                                <field name="available_budget" widget="monetary" readonly="1"/>
+                                                <field name="budget_sufficient" widget="boolean_toggle" readonly="1"/>
+                                                <field name="note"/>
+                                            </group>
+                                        </group>
+                                    </form>
                                 </field>
                                 <separator string="Transfer TO (Destination)"/>
                                 <field name="to_line_ids" nolabel="1" colspan="2"
                                        context="{'default_transfer_direction': 'to', 'default_department_analytic_id': department_analytic_id}"
                                        attrs="{'readonly': [('state', 'not in', ['draft'])]}">
-                                    <tree editable="bottom" decoration-success="1" create="1" delete="1">
-                                        <field name="budget_type" invisible="1"/>
-                                        <field name="transfer_direction" invisible="1"/>
-                                        <field name="account_id" required="1"/>
-                                        <field name="activity_analytic_id" required="1"/>
-                                        <field name="fund_analytic_id" required="1"/>
-                                        <field name="department_analytic_id" required="1"/>
-                                        <field name="account_is_project" column_invisible="1"/>
-                                        <field name="account_is_procurement" column_invisible="1"/>
-                                        <field name="kmitl_project_analytic_id" attrs="{'invisible': [('account_is_project', '=', False)]}"/>
-                                        <field name="procurement_plan_analytic_id" attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
-                                        <field name="source_analytic_id" invisible="1"/>
+                                    <!-- Non-editable tree: a click opens the line editor dialog. -->
+                                    <tree decoration-success="1" create="1" delete="1">
+                                        <field name="account_id"/>
+                                        <field name="activity_analytic_id"/>
+                                        <field name="fund_analytic_id"/>
+                                        <field name="department_analytic_id"/>
+                                        <field name="kmitl_project_analytic_id" optional="hide"/>
+                                        <field name="procurement_plan_analytic_id" optional="hide"/>
                                         <field name="amount" widget="monetary" sum="Total Destination"/>
-                                        <field name="note" optional="hide"/>
-                                        <field name="currency_id" invisible="1"/>
+                                        <field name="currency_id" column_invisible="1"/>
                                     </tree>
+                                    <form string="Transfer TO line">
+                                        <group>
+                                            <group>
+                                                <field name="transfer_direction" invisible="1"/>
+                                                <field name="account_is_project" invisible="1"/>
+                                                <field name="account_is_procurement" invisible="1"/>
+                                                <field name="source_analytic_id" invisible="1"/>
+                                                <field name="currency_id" invisible="1"/>
+                                                <field name="account_id" required="1"
+                                                       options="{'no_create': True, 'no_open': True}"
+                                                       domain="[('budget_type', '=', parent.budget_type)]"/>
+                                                <field name="activity_analytic_id" required="1" options="{'no_create': True}"/>
+                                                <field name="fund_analytic_id" required="1" options="{'no_create': True}"/>
+                                                <field name="department_analytic_id" required="1" options="{'no_create': True}"/>
+                                                <field name="kmitl_project_analytic_id" options="{'no_create': True}"
+                                                       attrs="{'invisible': [('account_is_project', '=', False)]}"/>
+                                                <field name="procurement_plan_analytic_id" options="{'no_create': True}"
+                                                       attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
+                                            </group>
+                                            <group>
+                                                <field name="amount" widget="monetary" required="1"/>
+                                                <field name="note"/>
+                                            </group>
+                                        </group>
+                                    </form>
                                 </field>
                             </group>
 
