@@ -455,14 +455,31 @@ class KmitlProject(models.Model):
         store=True,
     )
 
+    budget_estimate = fields.Float(
+        string="งบประมาณโครงการ",
+        digits="Product Price",
+        tracking=True,
+        readonly=True,
+        states=EDITABLE_STATES,
+        help="งบประมาณโครงการโดยประมาณ ระบุโดยผู้จัดทำโครงการ (เป็นการประมาณการ)",
+    )
+
     budget_amount = fields.Float(
-        string="งบประมาณ",
+        string="งบประมาณที่ได้รับการจัดสรร",
         digits="Product Price",
         tracking=True,
         compute="_compute_budget_amount",
         store=True,
         readonly=True,
-        help="งบประมาณที่ได้รับจัดสรร คำนวณจากยอดจัดสรร (budget.move.line) ที่ติด kmitl_project dim",
+        help="งบประมาณที่ได้รับจัดสรรจริง คำนวณจากยอดโอนเข้า-ออก (budget.move.line) "
+        "ที่ติดมิติโครงการ (kmitl_project)",
+    )
+
+    budget_reserved = fields.Float(
+        string="งบประมาณที่จอง",
+        digits="Product Price",
+        compute="_compute_budget_reserved",
+        help="งบประมาณที่จองไว้จากใบจอง (budget.commitment) ที่ยังไม่ถูกยกเลิก",
     )
 
     budget_commitment_ids = fields.One2many(
@@ -737,7 +754,20 @@ class KmitlProject(models.Model):
         }
 
     @api.depends(
-        "budget_amount",
+        "budget_commitment_ids.amount",
+        "budget_commitment_ids.state",
+    )
+    def _compute_budget_reserved(self):
+        """งบประมาณที่จอง = ยอดรวมของใบจอง (budget.commitment) ที่ยังไม่ถูกยกเลิก."""
+        for rec in self:
+            rec.budget_reserved = sum(
+                rec.budget_commitment_ids.filtered(
+                    lambda c: c.state != "cancel"
+                ).mapped("amount")
+            )
+
+    @api.depends(
+        "budget_reserved",
         "budget_commitment_ids.state",
         "budget_commitment_ids.total_consumed",
     )
@@ -751,7 +781,7 @@ class KmitlProject(models.Model):
                     lambda c: c.state != "cancel"
                 ).mapped("total_consumed")
             )
-            rec.budget_remaining = rec.budget_amount - used
+            rec.budget_remaining = rec.budget_reserved - used
 
     def action_open_budget_commitments(self):
         self.ensure_one()

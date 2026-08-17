@@ -150,7 +150,9 @@
                                     <strong>ยังไม่ได้รับการจัดสรรงบประมาณ</strong>
                                     — โปรดรอให้งานแผนโอนงบเข้าโครงการ (ปรับเข้าแผน) ก่อนจึงจะจองงบประมาณได้
                                 </div>
+                                <field name="budget_estimate" />
                                 <field name="budget_amount" />
+                                <field name="budget_reserved" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
                                 <field name="budget_remaining" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
                                 <field name="budget_account_id" attrs="{'readonly': [('budget_target_locked', '=', True)]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="activity_analytic_id" attrs="{'readonly': [('budget_target_locked', '=', True)]}" options="{'no_create_edit': True, 'no_create': True}" />
