@@ -55,10 +55,10 @@
         <field name="arch" type="xml">
             <form string="KMITL Project">
                 <header>
-                    <button string="ส่งเข้าแผน / ขอจัดสรรงบประมาณ" name="action_confirm" states="draft" type="object" class="oe_highlight"
-                        confirm="เมื่อส่งเข้าแผน ระบบจะออกเลขที่รันโครงการ + ล็อกปีงบและรหัสงบ (รายละเอียดโครงการยังแก้ได้ตลอด) ต้องการยืนยันหรือไม่?" />
+                    <button string="ส่งเข้าแผน / รอจัดสรรงบประมาณ" name="action_confirm" states="draft" type="object" class="oe_highlight"
+                        confirm="เมื่อส่งเข้าแผน ระบบจะออกเลขที่โครงการ + ล็อกเฉพาะปีงบประมาณ (รหัสงบ/มิติงบ และรายละเอียดโครงการยังแก้ได้จนกว่าจะจองงบประมาณ) ต้องการยืนยันหรือไม่?" />
                     <button string="จองงบประมาณ" name="action_reserve_budget" type="object" class="oe_highlight"
-                        attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('budget_amount', '&lt;=', 0)]}" />
+                        attrs="{'invisible': [('state', '!=', 'to_verify')]}" />
                     <button string="อนุมัติ" name="action_approve" states="to_send,sent" type="object" class="oe_highlight" />
                     <button string="ปิดโครงการ" name="action_complete" states="in_progress" type="object" class="oe_highlight" />
                     <button string="Reset to Draft" name="action_draft" states="to_verify,to_send,returned" type="object" />
@@ -130,11 +130,11 @@
                     </group>
                     <group name="institute_policy_alignment" string="ความสอดคล้องกับนโยบายสถาบัน">
                         <group>
-                            <field name="impact_id" widget="selection" />
-                            <field name="global_index_id" widget="selection" />
+                            <field name="impact_id" widget="radio" />
+                            <field name="global_index_id" widget="radio" />
                         </group>
                         <group>
-                            <field name="fight_id" widget="selection" />
+                            <field name="fight_id" widget="radio" />
                         </group>
                     </group>
                     <notebook>
@@ -151,11 +151,11 @@
                                     <strong>ยังไม่ได้รับการจัดสรรงบประมาณ</strong>
                                     — โปรดรอให้งานแผนโอนงบเข้าโครงการ (ปรับเข้าแผน) ก่อนจึงจะจองงบประมาณได้
                                 </div>
-                                <field name="source_analytic_id" attrs="{'readonly': [('budget_target_locked', '=', True)]}" options="{'no_create_edit': True, 'no_create': True}" />
-                                <field name="budget_account_id" attrs="{'readonly': [('budget_target_locked', '=', True)]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
-                                <field name="activity_analytic_id" attrs="{'readonly': [('budget_target_locked', '=', True)]}" options="{'no_create_edit': True, 'no_create': True}" />
-                                <field name="fund_analytic_id" attrs="{'readonly': [('budget_target_locked', '=', True)]}" options="{'no_create_edit': True, 'no_create': True}" />
-                                <field name="department_analytic_id" attrs="{'readonly': [('budget_target_locked', '=', True)]}" options="{'no_create_edit': True, 'no_create': True}" />
+                                <field name="source_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
+                                <field name="budget_account_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
+                                <field name="activity_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
+                                <field name="fund_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
+                                <field name="department_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="budget_estimate" />
                                 <field name="budget_amount" />
                                 <field name="budget_reserved" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>

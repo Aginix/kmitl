@@ -60,13 +60,16 @@ draft ─(ส่งเข้าแผน)→ to_verify ─(งานแผนจ
    only relaxes the *absent*-tag pin for untagged/floating checks; it never drops the positive project
    leaf.) **Load-bearing invariant:** the appropriation (the transfer's TO) and the reserve check must
    *both* carry the project dim — tagging only one side breaks isolation.
-4. **The budget-target is sticky from the first ส่งเข้าแผน.** `budget_account_id` + the four dims
-   + ปีงบ are editable only while `key` is unset (the first draft); they lock thereafter, **even
-   through a later reset-to-draft**, because งานแผน may already have allocated against them and the
-   allocation would otherwise strand at the old dimension (kmitl_project cannot chase it — the
-   transfer is external). Every **narrative** field stays editable throughout — draft, returned,
-   and the whole approval band — which is what keeps the "ส่งเข้าแผน" button from feeling like a
-   point of no return.
+4. **Only ปีงบ is sticky; the rest of the budget-target stays editable until จองงบ.** `ปีงบ`
+   (`account_fiscal_year_id`) freezes for good once `key` is minted, because the running number
+   encodes it. `budget_account_id` + the four dims stay editable through the **pre-reserve
+   authoring band** (`draft` / `to_verify` / `returned`) and pin only once the budget is reserved
+   (`to_verify → to_send`), so the author can still correct a wrong รหัสงบ/มิติ after ส่งเข้าแผน —
+   the realistic window is "waiting in `to_verify` for งานแผน to โอนงบ." **Trade-off:** if the
+   author retargets *after* งานแผน has already allocated against the old coordinate, the allocation
+   strands there and จองงบ fails the availability check (`budget_amount` itself is safe — it keys on
+   the sticky project dim only). This is a soft, recoverable `UserError`, not data loss; งานแผน
+   re-allocates or the author reverts the code. Every **narrative** field stays editable throughout.
 5. **Creator-driven, wizard-gated reserve.** The project responsible (its creator) clicks จองงบ;
    the confirm wizard is the last check before money is committed. Finance/planning-unit roles
    ("เจ้าหน้าที่งานการเงิน/งานแผน : หน่วยงาน") that may *also* reserve are deferred.
@@ -100,11 +103,13 @@ draft ─(ส่งเข้าแผน)→ to_verify ─(งานแผนจ
   capped at `budget_amount`.
 - **Revises the mint trigger of ADR-0001 / ADR-0005.** `key` + analytic move to `draft→to_verify`
   (they were at `to_verify→to_send` per ADR-0005, and `draft→new` originally). ADR-0001's ปีงบ
-  stamping/freeze rides along, and the sticky rule now covers the whole budget-target group, not
-  ปีงบ alone.
+  stamping/freeze rides along; the sticky-for-good rule covers **ปีงบ alone** (the rest of the
+  budget-target pins later, at จองงบ).
 - **Revises the field-lock model of ADR-0005.** The blanket `READONLY_STATES` is replaced by a
-  two-group rule: **narrative** (editable throughout) vs **budget-target** (sticky from the first
-  ส่งเข้าแผน). `budget_amount` leaves the editable set entirely — it is computed.
+  two-group rule: **narrative** (editable throughout) vs **budget-target** (`budget_account_id` +
+  the four dims editable in the pre-reserve band `draft`/`to_verify`/`returned`, pinned once
+  reserved; ปีงบ sticky from the first ส่งเข้าแผน). `budget_amount` leaves the editable set
+  entirely — it is computed.
 - **The commitment auto-re-syncs** to `budget_amount` while no obligate/consume exists (งานแผน tops
   up or cuts before spending); once spending has started, adjustments go through the
   return-unused / manual top-up path so a cut can never fall below what is already ผูกพัน/เบิกจ่าย.

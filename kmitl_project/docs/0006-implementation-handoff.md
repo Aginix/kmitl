@@ -198,8 +198,8 @@ Also confirm the `kmitl_project_analytic_id` column exists on `budget.move.line`
 - [ ] Reserve **fails** if attempted with no tagged allocation (availability raises).
 - [ ] **Isolation:** two projects sharing the four base dims, each allocated separately, do not reduce
       each other's availability.
-- [ ] Budget-target sticky: after ส่งเข้าแผน then reset-to-draft, `budget_account_id`/4 dims/ปีงบ are
-      readonly; narrative still editable.
+- [ ] After ส่งเข้าแผน then reset-to-draft: **ปีงบ** stays readonly (sticky once `key`); `budget_account_id`/4 dims
+      are editable again in `draft`/`to_verify`/`returned` and pin only once reserved; narrative still editable.
 - [ ] Top-up transfer while pre-spending → `budget_amount` rises and the commitment auto-re-syncs;
       after obligate/consume it does not auto-shrink.
 - [ ] Wizard shows correct รหัสงบ/มิติ/จำนวนเงิน; confirm reserves, cancel does nothing.
