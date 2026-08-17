@@ -497,15 +497,6 @@ msgid "Icon to indicate an exception activity."
 msgstr "ไอคอนแสดงกิจกรรมที่มีข้อยกเว้น"
 
 #. module: budget_transfer
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid ""
-"If budget is reserved by a procurement plan or project, it must be cancelled"
-" or unreserved before transfer."
-msgstr ""
-"หากงบถูกจองโดยแผนจัดซื้อจัดจ้าง/โครงการ "
-"ต้องยกเลิกหรือปลดการจองก่อนจึงจะโอนได้"
-
-#. module: budget_transfer
 #: model:ir.model.fields,help:budget_transfer.field_budget_transfer__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr "หากทำเครื่องหมาย ข้อความใหม่ต้องการความสนใจของคุณ"

@@ -68,9 +68,6 @@
                         <div>
                             <strong>Budget Check</strong>
                             <field name="budget_validation_message" nolabel="1"/>
-                            <div class="text-muted small mt-1">
-                                If budget is reserved by a procurement plan or project, it must be cancelled or unreserved before transfer.
-                            </div>
                         </div>
                     </div>
 
@@ -135,7 +132,7 @@
                                             <div class="alert alert-danger d-flex align-items-center" role="alert"
                                                  attrs="{'invisible': [('budget_sufficient', '=', True)]}">
                                                 <i class="fa fa-exclamation-triangle fa-fw me-2" role="img" aria-label="Warning"/>
-                                                <span>Insufficient remaining budget for the requested transfer amount — please adjust or unreserve first.</span>
+                                                <span>Insufficient remaining budget for the requested transfer amount.</span>
                                             </div>
                                             <group string="Note">
                                                 <field name="note" nolabel="1" placeholder="Additional details (if any)..." colspan="2"/>
