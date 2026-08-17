@@ -105,7 +105,7 @@
                                         <field name="amount" widget="monetary" sum="Total Source"/>
                                         <field name="available_budget" widget="monetary"/>
                                         <field name="budget_sufficient" widget="boolean_toggle"/>
-                                        <field name="currency_id" column_invisible="1"/>
+                                        <field name="currency_id" invisible="1"/>
                                     </tree>
                                     <form string="Transfer Out (Source)">
                                         <sheet>
@@ -159,7 +159,7 @@
                                         <field name="kmitl_project_analytic_id" optional="show"/>
                                         <field name="procurement_plan_analytic_id" optional="show"/>
                                         <field name="amount" widget="monetary" sum="Total Destination"/>
-                                        <field name="currency_id" column_invisible="1"/>
+                                        <field name="currency_id" invisible="1"/>
                                     </tree>
                                     <form string="Transfer In (Destination)">
                                         <sheet>
