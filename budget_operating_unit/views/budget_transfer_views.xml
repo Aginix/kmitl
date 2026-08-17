@@ -8,7 +8,15 @@
         <field name="inherit_id" ref="budget_transfer.view_budget_transfer_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='amount']" position="after">
-                <field name="operating_unit_id" options="{'no_create': True}" groups="operating_unit.group_multi_operating_unit" attrs="{'readonly': [('state', 'not in', ['draft'])]}" />
+                <!-- Editable in every state, but only by a Budget Manager: moving a
+                     transfer between operating units changes who can see it, so it
+                     stays correctable after posting while ordinary Budget Users only
+                     read it. The <t> wrapper ANDs multi-OU with the manager check
+                     (a comma-separated groups list would be an OR). -->
+                <t groups="operating_unit.group_multi_operating_unit">
+                    <field name="operating_unit_id" options="{'no_create': True}" groups="budget.group_budget_manager" />
+                    <field name="operating_unit_id" options="{'no_create': True}" readonly="1" groups="!budget.group_budget_manager" />
+                </t>
             </xpath>
         </field>
     </record>
