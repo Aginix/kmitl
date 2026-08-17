@@ -2,6 +2,7 @@
 
 from lxml import etree
 
+from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
@@ -203,9 +204,7 @@ class TestPaymentWorkflow(TransactionCase):
             request.action_authorize()  # still bills_posted
 
     def test_confirm_paid_requires_payment(self):
-        request = self._billed_request()
-        request.action_audit()
-        request.action_authorize()
+        request = self._authorized_without_payments()
         with self.assertRaises(UserError):
             request.action_confirm_paid()
 
@@ -391,7 +390,6 @@ class TestPaymentWorkflow(TransactionCase):
         )
         request.action_audit()
         request.action_authorize()
-        request.action_create_payment()
         by_payee = {p.partner_id: p for p in request.payment_ids}
         self.assertEqual(
             by_payee[self.payee_ktb].payment_method_line_id, self.ktb_account
@@ -405,12 +403,16 @@ class TestPaymentWorkflow(TransactionCase):
         self.assertEqual(
             request.payment_line_ids.mapped("payment_id"), request.payment_ids
         )
+        # And every voucher records why it leaves the account it leaves.
+        self.assertEqual(
+            set(request.payment_ids.mapped("kmitl_payment_subject_id")),
+            {self.subject_auto},
+        )
 
     def test_banking_coordinates_freeze_once_the_payment_exists(self):
         request = self._billed_request([self.payee_ktb], self.subject_fixed)
         request.action_audit()
         request.action_authorize()
-        request.action_create_payment()
         with self.assertRaises(UserError):
             request.payment_line_ids.paying_account_id = self.ktb_account
 
@@ -418,7 +420,11 @@ class TestPaymentWorkflow(TransactionCase):
     # Two lifecycles on one voucher (ADR-0005)
     # ------------------------------------------------------------------
     def _authorized_with_payments(self, paying_account=None):
-        """A request whose payments exist and are still the finance office's."""
+        """A request whose vouchers exist and are still the finance office's.
+
+        Authorising is what raises them (ADR-0006), so there is nothing to press
+        after it: they come back numbered and confirmed for the bank.
+        """
         request = self._billed_request([self.payee_ktb], self.subject_fixed)
         if paying_account:
             request.payment_line_ids.write(
@@ -429,24 +435,62 @@ class TestPaymentWorkflow(TransactionCase):
             )
         request.action_audit()
         request.action_authorize()
-        request.action_create_payment()
         return request
 
-    def test_confirming_for_the_bank_leaves_the_accounting_status_alone(self):
+    def _authorized_without_payments(self):
+        """A request the authorisation could not raise vouchers for.
+
+        The payee's account is removed after the audit passed, which is the shape
+        every real failure has: a banking coordinate that was right when the
+        auditor checked it and is not right now.
+        """
+        request = self._billed_request([self.payee_ktb], self.subject_fixed)
+        request.action_audit()
+        self.payee_ktb.bank_ids.unlink()
+        request.action_authorize()
+        return request
+
+    def test_authorising_raises_the_vouchers_ready_for_the_bank(self):
         request = self._authorized_with_payments()
         payment = request.payment_ids
-        payment.action_confirm_for_bank()
+        self.assertEqual(len(payment), 1)
         # Numbered and frozen, which is what an e-payment file needs...
         self.assertEqual(payment.finance_state, "confirmed")
         self.assertTrue(payment.name and payment.name != "/")
+        # ...dated the day it was authorised, which is the month its number is
+        # in and therefore the period it books in.
+        self.assertTrue(payment.date)
         # ...and still the accounting office's untouched draft.
         self.assertEqual(payment.state, "draft")
         self.assertEqual(payment.workflow_state, "none")
 
+    def test_a_failure_to_raise_the_vouchers_leaves_the_request_authorized(self):
+        request = self._authorized_without_payments()
+        # The authorisation stands: the coordinate is not the authorizer's to fix.
+        self.assertEqual(request.state, "payment_authorized")
+        self.assertFalse(request.payment_ids)
+        self.assertTrue(
+            any(
+                "Create Payment" in (message.body or "")
+                for message in request.message_ids
+            ),
+            "the reason belongs in the chatter, with the way back in",
+        )
+        # And the way back in works once the coordinate is right again.
+        self.env["res.partner.bank"].create(
+            {
+                "partner_id": self.payee_ktb.id,
+                "acc_number": "TEST-restored",
+                "bank_id": self.ktb_account.bank_id.id,
+            }
+        )
+        request.payment_line_ids.partner_bank_id = self.payee_ktb.bank_ids[:1]
+        request.action_create_payment()
+        self.assertEqual(request.payment_ids.finance_state, "confirmed")
+
     def test_the_money_side_freezes_but_the_booking_side_does_not(self):
         request = self._authorized_with_payments()
         payment = request.payment_ids
-        payment.action_confirm_for_bank()
         for value in ({"amount": 999.0}, {"partner_bank_id": False}):
             with self.assertRaises(UserError):
                 payment.write(value)
@@ -458,11 +502,18 @@ class TestPaymentWorkflow(TransactionCase):
         self.assertEqual(payment.ref, "corrected by accounting")
 
     def test_unconfirming_is_possible_only_before_the_file(self):
+        """The finance office's one way to correct a voucher.
+
+        They have no window on the payment line any more — the authorisation
+        raises the voucher and freezes the money side with it — so taking the
+        voucher back off the bank's desk is how a wrong coordinate is fixed, for
+        as long as nothing has been sent.
+        """
         request = self._authorized_with_payments()
         payment = request.payment_ids
-        payment.action_confirm_for_bank()
         payment.action_unconfirm()
         self.assertEqual(payment.finance_state, "draft")
+        payment.partner_bank_id = self.payee_ktb.bank_ids[:1]
         # Once it is in a file the bank has been told what to do.
         payment.action_confirm_for_bank()
         payment.export_status = "exported"
@@ -490,7 +541,6 @@ class TestPaymentWorkflow(TransactionCase):
 
     def test_a_voucher_on_a_request_is_not_confirmed_one_by_one(self):
         request = self._authorized_with_payments(self.cash_account)
-        request.payment_ids.action_confirm_for_bank()
         with self.assertRaises(UserError):
             request.payment_ids.action_confirm_paid()
 
@@ -498,13 +548,28 @@ class TestPaymentWorkflow(TransactionCase):
         request = self._authorized_with_payments()
         payment = request.payment_ids
         self.assertTrue(payment.needs_bank_export)
-        payment.action_confirm_for_bank()
         with self.assertRaises(UserError):
             request.action_confirm_paid()
         # The file was built and sent: the confirmation is the officer's to give.
         payment.export_status = "exported"
         request.action_confirm_paid()
         self.assertEqual(payment.finance_state, "paid")
+
+    def test_payment_progress_counts_what_the_finance_office_paid(self):
+        """The smart button reports money out, not entries booked.
+
+        The two are different offices' facts about the same voucher: a request is
+        paid in full at the Hand-over and stays unbooked until the accounting
+        maker gets to it, so counting posted moves showed a fully paid request as
+        nothing paid.
+        """
+        request = self._authorized_with_payments(self.cash_account)
+        self.assertIn("0/1", request.payment_status_display)
+        request.action_confirm_paid()
+        self.assertEqual(request.payment_ids.finance_state, "paid")
+        # Still nobody's entry, and still counted as paid.
+        self.assertEqual(request.payment_ids.state, "draft")
+        self.assertIn("1/1", request.payment_status_display)
 
     def test_the_accounting_office_books_a_paid_request_in_one_press(self):
         request = self._authorized_with_payments(self.cash_account)
@@ -521,7 +586,6 @@ class TestPaymentWorkflow(TransactionCase):
     def test_posting_waits_for_the_finance_office(self):
         request = self._authorized_with_payments(self.cash_account)
         payment = request.payment_ids
-        payment.action_confirm_for_bank()
         with self.assertRaises(UserError):
             payment.move_id._post()
 
@@ -555,9 +619,61 @@ class TestPaymentWorkflow(TransactionCase):
         )
         request.action_audit()
         request.action_authorize()
-        request.action_create_payment()
         payment = request.payment_ids
         self.assertFalse(payment.needs_bank_export)
+
+    # ------------------------------------------------------------------
+    # The trail back to the request (ADR-0006)
+    # ------------------------------------------------------------------
+    def test_a_voucher_and_its_entry_both_lead_back_to_the_request(self):
+        request = self._authorized_with_payments(self.cash_account)
+        payment = request.payment_ids
+        self.assertEqual(payment.disbursement_request_id, request)
+        self.assertEqual(
+            payment.action_view_disbursement_request()["res_id"], request.id
+        )
+        # The accounting office works on the entry, so the trail has to be there
+        # too — read through the payment, never stored on the move, or the
+        # voucher would land in the request's bill list.
+        move = payment.move_id
+        self.assertEqual(move.payment_disbursement_request_id, request)
+        self.assertEqual(
+            move.action_view_payment_disbursement_request()["res_id"], request.id
+        )
+        self.assertNotIn(move, request.bill_ids)
+        # What the two buttons actually display: a Char, because a field that can
+        # be edited is drawn as an input and a button is no place for one.
+        self.assertEqual(payment.disbursement_request_name, request.name)
+        self.assertEqual(move.payment_disbursement_request_name, request.name)
+
+    # ------------------------------------------------------------------
+    # Withholding tax is dated from the e-payment file (ADR-0006)
+    # ------------------------------------------------------------------
+    def test_the_wht_certificate_is_dated_the_day_the_money_left(self):
+        """The voucher is dated when it was authorised, because that numbers it.
+
+        The withholding is dated by law from the day the income was paid, and the
+        only record of that day is the file's effective date — so the certificate
+        reads it from there, and falls back to the voucher for a payment that
+        never travels in a file.
+        """
+        request = self._authorized_with_payments()
+        payment = request.payment_ids
+        voucher_date = payment.date
+        Cert = self.env["withholding.tax.cert"]
+        # No file: the voucher's own date is all there is to go on.
+        self.assertEqual(Cert.new({"payment_id": payment.id}).date, voucher_date)
+
+        payment.payment_export_id = self.env["bank.payment.export"].create(
+            {"effective_date": "2026-10-03"}
+        )
+        self.assertEqual(
+            Cert.new({"payment_id": payment.id}).date,
+            fields.Date.to_date("2026-10-03"),
+        )
+        # And the voucher itself does not move with it: its number says which
+        # month it is in, and a number that has been issued must not change.
+        self.assertEqual(payment.date, voucher_date)
 
 
 @tagged("post_install", "-at_install")
