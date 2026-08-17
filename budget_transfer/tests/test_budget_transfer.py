@@ -200,8 +200,7 @@ class TestBudgetTransfer(TransactionCase):
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())
         transfer.action_submit()
-        transfer.action_approve()
-        transfer.action_post()
+        transfer.action_approve()  # approval auto-posts (ADR-0013)
         self.assertEqual(transfer.state, "posted")
         self.assertEqual(transfer.move_id.state, "posted")
         from_line = transfer.from_line_ids
@@ -216,7 +215,8 @@ class TestBudgetTransfer(TransactionCase):
         transfer = self._transfer(**self._balanced())
         transfer.action_submit()
         transfer.action_approve()  # admin == requestor, but admin bypasses SoD
-        self.assertEqual(transfer.state, "approved")
+        # Approval auto-posts — no separate Post step (ADR-0013).
+        self.assertEqual(transfer.state, "posted")
 
     def test_non_admin_cannot_approve_own_transfer(self):
         self._appropriate(self.src, 100_000)
@@ -239,8 +239,7 @@ class TestBudgetTransfer(TransactionCase):
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())
         transfer.action_submit()
-        transfer.action_approve()
-        transfer.action_post()
+        transfer.action_approve()  # auto-posts
         with self.assertRaises(UserError):
             transfer.action_reset_to_draft()
 

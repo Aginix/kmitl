@@ -9,13 +9,12 @@
             <form string="Budget Transfer">
                 <header>
                     <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" attrs="{'invisible': [('show_submit_button', '=', False)]}"/>
-                    <button name="action_approve" type="object" string="Approve" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}"/>
+                    <button name="action_approve" type="object" string="อนุมัติและผ่านรายการ" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}" confirm="อนุมัติแล้วจะผ่านรายการ (โพสต์) ให้อัตโนมัติ ต้องการดำเนินการต่อหรือไม่?"/>
                     <button name="action_reject" type="object" string="Reject" class="btn-warning" attrs="{'invisible': [('show_reject_button', '=', False)]}"/>
-                    <button name="action_post" type="object" string="Post Transfer" class="btn-primary" attrs="{'invisible': [('show_post_button', '=', False)]}"/>
                     <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
 
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,posted"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,posted"/>
                 </header>
 
                 <sheet>
@@ -37,20 +36,24 @@
                     </div>
 
                     <group>
-                        <group name="transfer_info">
+                        <group name="transfer_info" string="ข้อมูลการโอน">
                             <field name="date" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                            <field name="budget_type" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                            <field name="department_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                            <field name="source_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                        </group>
-                        <group name="meta_info">
-                            <field name="user_id"/>
                             <field name="account_fiscal_year_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                            <field name="budget_type" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group name="dimension_info" string="มิติหลัก (ใช้ทั้งใบโอน)">
+                            <field name="department_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                            <field name="source_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="approver_id" attrs="{'invisible': [('approver_id', '=', False)]}"/>
-                            <field name="approval_date" attrs="{'invisible': [('approval_date', '=', False)]}"/>
+                        </group>
+                    </group>
+                    <group name="approval_meta" attrs="{'invisible': [('approver_id', '=', False)]}">
+                        <group>
+                            <field name="approver_id"/>
+                            <field name="approval_date"/>
                         </group>
                     </group>
 
@@ -86,7 +89,7 @@
                     <!-- Transfer Lines (authored directly as budget.move.line) -->
                     <notebook>
                         <page name="transfer_lines" string="Transfer Details">
-                            <group attrs="{'invisible': [('state', 'not in', ['draft'])]}">
+                            <group>
                                 <separator string="Transfer FROM (Source)"/>
                                 <field name="from_line_ids" nolabel="1" colspan="2"
                                        context="{'default_transfer_direction': 'from', 'default_department_analytic_id': department_analytic_id}"
@@ -190,21 +193,6 @@
                                     </form>
                                 </field>
                             </group>
-
-                            <!-- Read-only summary once submitted -->
-                            <separator string="Transfer Lines Summary" attrs="{'invisible': [('state', 'in', ['draft'])]}"/>
-                            <field name="line_ids" nolabel="1" readonly="1" attrs="{'invisible': [('state', 'in', ['draft'])]}">
-                                <tree decoration-info="transfer_direction == 'from'" decoration-success="transfer_direction == 'to'">
-                                    <field name="transfer_direction"/>
-                                    <field name="account_id"/>
-                                    <field name="activity_analytic_id"/>
-                                    <field name="fund_analytic_id"/>
-                                    <field name="amount" widget="monetary" sum="Total"/>
-                                    <field name="available_budget" widget="monetary" attrs="{'column_invisible': [('transfer_direction', '!=', 'from')]}"/>
-                                    <field name="note"/>
-                                    <field name="currency_id" invisible="1"/>
-                                </tree>
-                            </field>
                         </page>
                     </notebook>
                 </sheet>
@@ -255,7 +243,7 @@
         <field name="arch" type="xml">
             <search string="Search Budget Transfers">
                 <field name="name" string="Transfer Number"/>
-                <field name="user_id" string="Requested by"/>
+                <field name="user_id" string="ผู้รับผิดชอบ"/>
                 <field name="approver_id" string="Approved by"/>
                 <field name="department_analytic_id" string="ส่วนงาน"/>
                 <field name="source_analytic_id" string="แหล่งเงิน"/>
@@ -274,7 +262,7 @@
 
                 <group expand="0" name="group_by" string="Group By">
                     <filter name="group_by_state" string="Status" domain="[]" context="{'group_by': 'state'}"/>
-                    <filter name="group_by_user" string="Requested by" domain="[]" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_by_user" string="ผู้รับผิดชอบ" domain="[]" context="{'group_by': 'user_id'}"/>
                     <filter name="group_by_department" string="ส่วนงาน" domain="[]" context="{'group_by': 'department_analytic_id'}"/>
                     <filter name="group_by_source" string="แหล่งเงิน" domain="[]" context="{'group_by': 'source_analytic_id'}"/>
                     <filter name="group_by_date" string="Date" domain="[]" context="{'group_by': 'date'}"/>
@@ -320,7 +308,7 @@
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col-12">
-                                        <strong>Requested by:</strong>
+                                        <strong>ผู้รับผิดชอบ:</strong>
                                         <field name="user_id"/>
                                     </div>
                                 </div>

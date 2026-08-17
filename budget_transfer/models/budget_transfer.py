@@ -104,7 +104,7 @@ class BudgetTransfer(models.Model):
 
     # User Management
     user_id = fields.Many2one(
-        string="Requested by",
+        string="ผู้รับผิดชอบ",
         comodel_name="res.users",
         copy=False,
         tracking=True,
@@ -214,7 +214,8 @@ class BudgetTransfer(models.Model):
             )
             transfer.show_approve_button = transfer.state == "submitted"
             transfer.show_reject_button = transfer.state == "submitted"
-            transfer.show_post_button = transfer.state == "approved"
+            # Approval auto-posts (no separate Post step), so this never shows.
+            transfer.show_post_button = False
             transfer.show_cancel_button = transfer.state in ("draft", "submitted")
             transfer.show_reset_button = transfer.state in (
                 "submitted",
@@ -295,6 +296,9 @@ class BudgetTransfer(models.Model):
         return True
 
     def action_approve(self):
+        """Approve and immediately post — approval and posting are one step (no
+        separate Post click). Records the approver, re-checks availability, then
+        posts the delegated move."""
         is_admin = self.env.is_admin()
         if not (
             self.env.user.has_group("budget.group_budget_manager") or is_admin
@@ -306,14 +310,18 @@ class BudgetTransfer(models.Model):
                     raise UserError(
                         _("You cannot approve your own budget transfer.")
                     )
+        self.invalidate_recordset(
+            ["has_sufficient_budget", "budget_validation_message"]
+        )
+        self._validate_transfer_data()
         self._validate_budget_availability()
         self.write(
             {
-                "state": "approved",
                 "approver_id": self.env.user.id,
                 "approval_date": fields.Datetime.now(),
             }
         )
+        self._post_transfer()
         return True
 
     def action_reject(self):
@@ -325,13 +333,8 @@ class BudgetTransfer(models.Model):
         return self._open_rejection_wizard()
 
     def action_post(self):
-        """Post the transfer: re-check availability, then post the balanced move.
-
-        The move already carries the FROM/TO lines (authored through delegation);
-        posting just re-stamps debit/credit/balance from each line's amount +
-        direction and drives the delegated move to posted. A transfer is a pure
-        budget move — no commitment is created or touched (ADR-0009).
-        """
+        """Post the transfer directly (kept for API / admin use — the normal
+        flow posts automatically on approval). Re-checks availability first."""
         if not (
             self.env.user.has_group("budget.group_budget_manager")
             or self.env.is_admin()
@@ -343,14 +346,22 @@ class BudgetTransfer(models.Model):
         )
         self._validate_transfer_data()
         self._validate_budget_availability()
+        self._post_transfer()
+        return True
 
+    def _post_transfer(self):
+        """Stamp the FROM/TO lines onto the delegated move and post it.
+
+        The move already carries the lines (authored through delegation); this
+        re-stamps debit/credit/balance from each line's amount + direction and
+        drives the move to posted. A transfer is a pure budget move — no
+        commitment is created or touched (ADR-0009).
+        """
         for transfer in self:
             transfer.line_ids._apply_direction_amount()
             transfer.move_id.action_review()
             transfer.move_id.action_post()
-
         self.write({"state": "posted"})
-        return True
 
     def action_cancel(self):
         if "posted" in self.mapped("state"):
