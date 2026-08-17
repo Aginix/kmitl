@@ -32,9 +32,87 @@ class ProcurementPlan(models.Model):
         string="จำนวนผูกพันงบประมาณ", compute="_compute_budget_commitment_count"
     )
 
+    budget_amount = fields.Float(
+        string="งบประมาณที่ได้รับการจัดสรร",
+        digits="Product Price",
+        compute="_compute_budget_amount",
+        help="งบประมาณที่ได้รับจัดสรรจริง คำนวณจากยอดโอนเข้า-ออก (budget.move.line) "
+        "ที่ตรงกับรหัสงบและมิติทั้งหมดของแผน (รวมมิติแผนจัดซื้อจัดจ้าง)",
+    )
+
+    budget_move_line_count = fields.Integer(
+        string="รายการเคลื่อนไหวงบ",
+        compute="_compute_budget_move_line_count",
+    )
+
     def _compute_budget_commitment_count(self):
         for rec in self:
             rec.budget_commitment_count = len(rec.budget_commitment_ids)
+
+    @api.depends(
+        "analytic_account_id",
+        "analytic_distribution",
+        "budget_account_id",
+        "account_fiscal_year_id",
+        "company_id",
+    )
+    def _compute_budget_amount(self):
+        """Current Budget at the plan's **full target coordinate**: Σ posted
+        appropriation/entry balance on budget.move.line matching the plan's
+        รหัสงบ (``budget_account_id``) + every budget dimension (the four base
+        dims + the plan's own ``procurement_plan`` dim). Scopes to the same
+        coordinate as the reserve availability check. Reads 0 before งานแผน
+        transfers budget in (ปรับเข้าแผน), which is what gates จองงบ."""
+        BML = self.env["budget.move.line"]
+        _APPROPRIATION_TYPES = ("appropriation", "entry")
+        for rec in self:
+            if (
+                not rec.analytic_account_id
+                or not rec.account_fiscal_year_id
+                or not rec.budget_account_id
+            ):
+                rec.budget_amount = 0.0
+                continue
+            domain = [
+                ("parent_state", "=", "posted"),
+                ("move_type", "in", list(_APPROPRIATION_TYPES)),
+                ("account_fiscal_year_id", "=", rec.account_fiscal_year_id.id),
+                ("company_id", "=", rec.company_id.id),
+                ("account_id", "=", rec.budget_account_id.id),
+                ("procurement_plan_analytic_id", "=", rec.analytic_account_id.id),
+                ("department_analytic_id", "=", rec.department_analytic_id.id),
+                ("fund_analytic_id", "=", rec.fund_analytic_id.id),
+                ("source_analytic_id", "=", rec.source_analytic_id.id),
+                ("activity_analytic_id", "=", rec.activity_analytic_id.id),
+            ]
+            groups = BML.read_group(domain, ["balance"], [])
+            rec.budget_amount = (groups[0].get("balance") or 0.0) if groups else 0.0
+
+    def _compute_budget_move_line_count(self):
+        BML = self.env["budget.move.line"]
+        for rec in self:
+            if not rec.analytic_account_id:
+                rec.budget_move_line_count = 0
+                continue
+            rec.budget_move_line_count = BML.search_count(
+                [
+                    ("procurement_plan_analytic_id", "=", rec.analytic_account_id.id),
+                    ("account_fiscal_year_id", "=", rec.account_fiscal_year_id.id),
+                ]
+            )
+
+    def action_open_budget_move_lines(self):
+        self.ensure_one()
+        return {
+            "name": _("รายการเคลื่อนไหวงบประมาณ"),
+            "type": "ir.actions.act_window",
+            "res_model": "budget.move.line",
+            "view_mode": "tree,form",
+            "domain": [
+                ("procurement_plan_analytic_id", "=", self.analytic_account_id.id),
+                ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
+            ],
+        }
 
     def action_view_budget_commitment(self):
         self.ensure_one()
@@ -81,6 +159,13 @@ class ProcurementPlan(models.Model):
             raise UserError(_("กรุณาระบุรหัสงบประมาณก่อนจองงบประมาณ"))
         if self.total_price <= 0:
             raise UserError(_("กรุณาระบุวงเงินรวมให้มากกว่า 0 ก่อนจองงบประมาณ"))
+        if self.budget_amount <= 0:
+            raise UserError(
+                _(
+                    "ยังไม่ได้รับการจัดสรรงบประมาณ กรุณารอให้งานแผนโอนงบเข้าแผน "
+                    "(ปรับเข้าแผน) ก่อนจึงจะจองงบประมาณได้"
+                )
+            )
         analytic_data = {
             "account_id": self.budget_account_id.id,
             "activity_analytic_id": self.activity_analytic_id.id or False,

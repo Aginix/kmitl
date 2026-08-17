@@ -13,6 +13,12 @@
             </button>
             <field name="fund_analytic_id" position="after">
                 <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                <field name="budget_amount" attrs="{'invisible': [('state', '=', 'draft')]}" />
+                <div attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('budget_amount', '>', 0)]}"
+                     class="alert alert-warning" role="alert" colspan="2">
+                    <strong>ยังไม่ได้รับการจัดสรรงบประมาณ</strong>
+                    — โปรดรอให้งานแผนโอนงบเข้าแผน (ปรับเข้าแผน) ก่อนจึงจะจองงบประมาณได้
+                </div>
             </field>
             <div name="button_box" position="inside">
                 <field name="budget_commitment_count" invisible="1" />
@@ -21,6 +27,9 @@
                         <field name="budget_commitment_count" />
                         <span class="o_stat_text">Budget Commitment</span>
                     </div>
+                </button>
+                <button name="action_open_budget_move_lines" type="object" class="oe_stat_button" icon="fa-exchange">
+                    <field name="budget_move_line_count" widget="statinfo" string="Budget Move" />
                 </button>
             </div>
         </field>
