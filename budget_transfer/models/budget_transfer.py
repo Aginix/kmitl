@@ -161,6 +161,20 @@ class BudgetTransfer(models.Model):
             vals.setdefault("move_type", "entry")
         return super().create(vals_list)
 
+    def unlink(self):
+        """Also delete the delegated move.
+
+        Odoo 16 ``unlink()`` does not cascade to ``_inherits`` parents (only
+        the reverse: the move's ``ondelete="cascade"`` deletes the transfer
+        when the move is deleted). Without this override, deleting a
+        transfer would leave its 1:1 ``budget.move`` (and lines) orphaned in
+        the ledger.
+        """
+        moves = self.move_id
+        res = super().unlink()
+        moves.unlink()
+        return res
+
     # ------------------------------------------------------------------
     # Computes
     # ------------------------------------------------------------------
@@ -270,6 +284,11 @@ class BudgetTransfer(models.Model):
     # Workflow
     # ------------------------------------------------------------------
     def action_submit(self):
+        if not (
+            self.env.user.has_group("budget.group_budget_user")
+            or self.env.is_admin()
+        ):
+            raise UserError(_("Only Budget Users can submit transfers"))
         self._validate_transfer_data()
         self._validate_budget_availability()
         self.write({"state": "submitted"})

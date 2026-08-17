@@ -148,6 +148,12 @@ class TestBudgetTransfer(TransactionCase):
         transfer = self._transfer(**self._balanced())
         self.assertEqual(transfer.amount, 1000)
 
+    def test_unlink_also_deletes_the_delegated_move(self):
+        transfer = self._transfer(**self._balanced())
+        move = transfer.move_id
+        transfer.unlink()
+        self.assertFalse(move.exists(), "the delegated move must not be orphaned")
+
     # ------------------------------------------------------------------
     # dimensions / availability
     # ------------------------------------------------------------------
