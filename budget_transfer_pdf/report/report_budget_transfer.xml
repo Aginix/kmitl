@@ -69,14 +69,14 @@
                             <tr>
                                 <td class="k">แหล่งเงิน</td>
                                 <td>
-                                    <span t-if="o.source_analytic_id" t-out="(o.source_analytic_id.code and o.source_analytic_id.code + ' ' or '') + (o.source_analytic_id.complete_name or o.source_analytic_id.name or '').replace(' / ', ' ')"/>
+                                    <span t-if="o.source_analytic_id" t-out="o.source_analytic_id.complete_name.replace(' / ', ' ')"/>
                                     <span t-if="not o.source_analytic_id">-</span>
                                 </td>
                                 <td class="k">ประเภทงบ</td>
                                 <td><span t-field="o.budget_type"/></td>
                             </tr>
                             <tr>
-                                <td class="k">ผู้ขอโอน</td>
+                                <td class="k">ผู้รับผิดชอบ</td>
                                 <td><span t-out="o.user_id.name"/></td>
                                 <td class="k">จำนวนเงิน</td>
                                 <td><span t-out="'{:,.2f}'.format(o.amount)"/> บาท</td>
@@ -106,21 +106,21 @@
                                     <tr t-foreach="section[1]" t-as="line">
                                         <td class="seq" t-out="line_index + 1"/>
                                         <td>
-                                            <div class="acct">
-                                                รหัสงบประมาณ :
-                                                <t t-out="(line.account_id.code and line.account_id.code + ' ' or '') + (line.account_id.complete_name or line.account_id.name or '').replace(' / ', ' ')"/>
-                                            </div>
                                             <t t-call="budget_transfer_pdf.dim_row">
                                                 <t t-set="label" t-value="'ส่วนงาน'"/>
                                                 <t t-set="acc" t-value="line.department_analytic_id"/>
+                                            </t>
+                                            <t t-call="budget_transfer_pdf.dim_row">
+                                                <t t-set="label" t-value="'กองทุน'"/>
+                                                <t t-set="acc" t-value="line.fund_analytic_id"/>
                                             </t>
                                             <t t-call="budget_transfer_pdf.dim_row">
                                                 <t t-set="label" t-value="'ด้าน/แผนงาน/กิจกรรม'"/>
                                                 <t t-set="acc" t-value="line.activity_analytic_id"/>
                                             </t>
                                             <t t-call="budget_transfer_pdf.dim_row">
-                                                <t t-set="label" t-value="'กองทุน'"/>
-                                                <t t-set="acc" t-value="line.fund_analytic_id"/>
+                                                <t t-set="label" t-value="'รหัสงบประมาณ'"/>
+                                                <t t-set="acc" t-value="(line.account_id.code and line.account_id.code + ' ' or '') + (line.account_id.complete_name or line.account_id.name or '').replace(' / ', ' ')"/>
                                             </t>
                                             <t t-if="line.kmitl_project_analytic_id" t-call="budget_transfer_pdf.dim_row">
                                                 <t t-set="label" t-value="'โครงการ/กิจกรรม'"/>
@@ -154,21 +154,6 @@
                             (<t t-out="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount)"/>)
                         </div>
 
-                        <table class="sign">
-                            <tr>
-                                <td>
-                                    <div>ลงชื่อ ..............................................</div>
-                                    <div>(<span t-out="o.user_id.name"/>)</div>
-                                    <div>ผู้ขอโอน</div>
-                                </td>
-                                <td>
-                                    <div>ลงชื่อ ..............................................</div>
-                                    <div>(<span t-out="o.approver_id.name or '................................'"/>)</div>
-                                    <div>ผู้อนุมัติ</div>
-                                    <div t-if="o.approval_date">วันที่ <span t-out="o.approval_date.strftime('%d/%m/') + str(o.approval_date.year + 543)"/></div>
-                                </td>
-                            </tr>
-                        </table>
                     </div>
                 </t>
             </t>
