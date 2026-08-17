@@ -3118,3 +3118,9 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_send_wizard__originator_sign_mode__no_sign
 msgid "ไม่ลงนาม — ผู้จัดทำร่างเท่านั้น (หัวหน้าลงนามส่งออก)"
 msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__state__returned
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_mixin__sarabun_state__returned
+msgid "รอการแก้ไขเอกสาร (Pending Revision)"
+msgstr "รอการแก้ไขเอกสาร"

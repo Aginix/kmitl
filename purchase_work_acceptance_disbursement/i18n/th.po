@@ -166,3 +166,8 @@ msgstr "หมายเหตุการแก้ไข"
 #: model:ir.model.fields,field_description:purchase_work_acceptance_disbursement.field_work_acceptance__disbursement_return_bank_id
 msgid "Correction Bank Account"
 msgstr "บัญชีธนาคารที่แก้ไข"
+
+#. module: purchase_work_acceptance_disbursement
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_disbursement.selection__work_acceptance__state__returned
+msgid "Returned"
+msgstr "ตีกลับ"

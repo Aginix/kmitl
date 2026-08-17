@@ -321,7 +321,12 @@ msgstr ""
 #. module: purchase_request_sarabun
 #: model_terms:ir.ui.view,arch_db:purchase_request_sarabun.view_purchase_request_form_sarabun
 msgid "Create Sarabun"
-msgstr "สร้างเอกสาร"
+msgstr "สร้างหนังสือ"
+
+#. module: purchase_request_sarabun
+#: model_terms:ir.ui.view,arch_db:purchase_request_sarabun.view_purchase_request_form_sarabun
+msgid "Resend to Sarabun"
+msgstr "ส่งข้อมูล"
 
 #. module: purchase_request_sarabun
 #: model_terms:ir.ui.view,arch_db:purchase_request_sarabun.view_purchase_request_form_sarabun

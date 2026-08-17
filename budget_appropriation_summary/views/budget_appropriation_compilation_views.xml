@@ -93,6 +93,7 @@
                             <field name="department_analytic_id" required="1" />
                             <field name="user_id" readonly="1" />
                             <field name="use_f23" />
+                            <field name="code_page" />
                         </group>
                         <group>
                             <field name="master_summary_id" />

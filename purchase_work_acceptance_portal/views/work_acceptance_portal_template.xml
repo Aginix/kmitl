@@ -20,7 +20,7 @@
                 <!-- Uses backend_url provided in rendering values -->
                 <div class="text-center">
                 ท่านกำลังอยู่ในกระบวนการตรวจรับ ภายใต้ชื่อผู้ใช้ "<t
-                    t-esc="wa_committee.name"
+                    t-out="wa_committee.name or '-'"
                 />"</div>
             </t>
 
@@ -189,7 +189,7 @@
                         >
                             <h3 class="mb-0">
                                 <i class="fa fa-file"></i> Work Acceptance:
-                                <em t-out="work_acceptance.name" />
+                                <em t-out="work_acceptance.name or '-'" />
                             </h3>
                         </div>
 
@@ -213,7 +213,7 @@
                                                 <th class="ps-0 pb-0">ปีงบประมาณ:</th>
                                                 <td class="w-100 pb-0 text-wrap">
                                                     <t
-                                                        t-esc="work_acceptance.purchase_id.account_fiscal_year_id.name"
+                                                        t-out="work_acceptance.purchase_id.account_fiscal_year_id.name or '-'"
                                                     />
                                                 </td>
                                             </tr>
@@ -222,7 +222,7 @@
                                                     เลขที่ใบตรวจรับ:
                                                 </th>
                                                 <td class="w-100 pb-0 text-wrap">
-                                                    <t t-esc="work_acceptance.name" />
+                                                    <t t-out="work_acceptance.name or '-'" />
                                                 </td>
                                             </tr>
                                             <tr t-if="wa_committee and work_acceptance.purchase_id">
@@ -234,7 +234,7 @@
                                                         t-att-href="'%s&amp;committee_token=%s' % (work_acceptance.purchase_id.get_portal_link(), wa_committee.access_token)"
                                                     >
                                                         <t
-                                                            t-esc="work_acceptance.purchase_id.name"
+                                                            t-out="work_acceptance.purchase_id.name or '-'"
                                                         />
                                                     </a>
                                                 </td>
@@ -243,7 +243,7 @@
                                                 <th class="ps-0 pb-0">ชื่อคู่ค้า:</th>
                                                 <td class="w-100 pb-0 text-wrap">
                                                     <t
-                                                        t-esc="work_acceptance.partner_id.display_name"
+                                                        t-out="work_acceptance.partner_id.display_name or '-'"
                                                     />
                                                 </td>
                                             </tr>
@@ -252,13 +252,13 @@
                                                 <td class="w-100 pb-0 text-wrap">
                                                     <t t-if="wa_committee and wa_committee.note == 'leave'">ลา</t>
                                                     <t t-elif="wa_committee and wa_committee.note == 'on_duty'">ติดภารกิจ</t>
-                                                    <t t-else=""><t t-esc="work_acceptance.notes" /></t>
+                                                    <t t-else=""><t t-out="work_acceptance.notes or '-'" /></t>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th class="ps-0 pb-0">สิ่งของที่ต้องส่งมอบ:</th>
                                                 <td class="w-100 pb-0 text-wrap">
-                                                    <t t-esc="work_acceptance.deliverables" />
+                                                    <t t-out="work_acceptance.deliverables or '-'" />
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -279,7 +279,7 @@
                                                 </th>
                                                 <td class="w-100 pb-0 text-wrap">
                                                     <t
-                                                        t-esc="work_acceptance.date_due"
+                                                        t-out="work_acceptance.date_due or '-'"
                                                     />
                                                 </td>
                                             </tr>
@@ -287,7 +287,7 @@
                                                 <th class="ps-0 pb-0">วันครบกำหนด</th>
                                                 <td class="w-100 pb-0 text-wrap">
                                                     <t
-                                                        t-esc="work_acceptance.date_receive"
+                                                        t-out="work_acceptance.date_receive or '-'"
                                                     />
                                                 </td>
                                             </tr>
@@ -315,12 +315,17 @@
                                                 <th
                                                     class="text-end d-none d-sm-table-cell"
                                                 >
+                                                    หน่วยนับ
+                                                </th>
+                                                <th
+                                                    class="text-end d-none d-sm-table-cell"
+                                                >
                                                     ราคา
                                                 </th>
                                                 <th
                                                     class="text-end d-none d-sm-table-cell"
                                                 >
-                                                    รวม
+                                                    จำนวนเงิน
                                                 </th>
                                             </tr>
                                         </thead>
@@ -331,23 +336,28 @@
                                             >
                                                 <tr>
                                                     <td>
-                                                        <t t-esc="line.name" />
+                                                        <t t-out="line.name or '-'" />
                                                     </td>
                                                     <td
                                                         class="text-end d-none d-sm-table-cell"
                                                     >
-                                                        <t t-esc="line.product_qty" />
+                                                        <t t-out="line.product_qty or '-'" />
                                                     </td>
                                                     <td
                                                         class="text-end d-none d-sm-table-cell"
                                                     >
-                                                        <t t-esc="line.price_unit" />
+                                                        <t t-out="line.product_uom.with_context(lang='th_TH').name or '-'" />
+                                                    </td>
+                                                    <td
+                                                        class="text-end d-none d-sm-table-cell"
+                                                    >
+                                                        <t t-out="line.price_unit or '-'" />
                                                     </td>
                                                     <td
                                                         class="text-end d-none d-sm-table-cell font-weight-bold"
                                                     >
                                                         <t
-                                                            t-esc="line.price_subtotal"
+                                                            t-out="line.price_subtotal or '-'"
                                                         />
                                                     </td>
                                                 </tr>
@@ -379,7 +389,7 @@
                                             >
                                                 <tr>
                                                     <td>
-                                                        <t t-esc="doc.name" />
+                                                        <t t-out="doc.name or '-'" />
                                                     </td>
                                                     <td>
                                                         <a
@@ -420,7 +430,7 @@
                                             >
                                                 <tr>
                                                     <td>
-                                                        <t t-esc="committee.name" />
+                                                        <t t-out="committee.name or '-'" />
                                                     </td>
                                                     <td>
                                                         <t
@@ -440,7 +450,7 @@
                                                         </t>
                                                     </td>
                                                     <td>
-                                                        <t t-esc="committee.email" />
+                                                        <t t-out="committee.email or '-'" />
                                                     </td>
                                                     <td>
                                                         <t
@@ -461,7 +471,7 @@
                                                     <td>
                                                         <t t-if="committee.note == 'leave'">ลา</t>
                                                         <t t-elif="committee.note == 'on_duty'">ติดภารกิจ</t>
-                                                        <t t-else=""><t t-esc="committee.note" /></t>
+                                                        <t t-else=""><t t-out="committee.note or '-'" /></t>
                                                     </td>
                                                 </tr>
                                             </t>

@@ -1,6 +1,8 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from odoo.addons.budget_appropriation_summary.pdf_utils import stamp_page_numbers
+
 
 class BudgetAppropriationCompilation(models.Model):
     _name = "budget.appropriation.compilation"
@@ -150,6 +152,12 @@ class BudgetAppropriationCompilation(models.Model):
         help="ถ้าเลือก จะแสดงแบบฟอร์มรายงาน F23 ให้ผู้ใช้กรอกข้อมูลเพิ่มเติม",
         states=READONLY_STATES,
         readonly=False,
+    )
+    code_page = fields.Char(
+        string="รหัสหน้า",
+        default="X",
+        help="รหัสนำหน้าเลขหน้าเมื่อพิมพ์เล่มแยกหน่วยงาน เช่น X-1, X-2 "
+        "(กำหนดจากหน้าสรุปภาพรวมสถาบัน)",
     )
 
     treasury_replenishment_amount = fields.Monetary(
@@ -660,6 +668,50 @@ class BudgetAppropriationCompilation(models.Model):
             "target": "new",
             "context": {"active_id": self.id},
         }
+
+    # --- Per-unit book (พิมพ์แยกหน่วยงาน) ---
+
+    def _get_book_section_templates(self):
+        """Ordered QWeb section-template xml_ids for this unit's book.
+
+        Each section renders one form's body inside the single combined
+        ``report_compilation_book`` document, so the whole unit is one
+        wkhtmltopdf render instead of one per form. Base contributes F23
+        (when enabled), F4-P (when there is revenue) and F5-P. Satellite
+        modules extend this to inject their own forms — e.g.
+        ``budget_appropriation_summary_f3`` inserts F3-P after F23.
+        """
+        self.ensure_one()
+        sections = []
+        if self.use_f23:
+            sections.append(
+                "budget_appropriation_summary.report_compilation_book_f23_section"
+            )
+        if self.revenue_appropriation_ids:
+            sections.append(
+                "budget_appropriation_summary.report_compilation_book_f4_section"
+            )
+        sections.append(
+            "budget_appropriation_summary.report_compilation_book_f5_section"
+        )
+        return sections
+
+    def _build_department_book_pdf(self):
+        """Render this unit's whole book in one pass; stamp ``{code_page}-{n}``.
+
+        Page numbers restart at 1 for each unit's book.
+        """
+        self.ensure_one()
+        report = self.env.ref(
+            "budget_appropriation_summary.action_report_compilation_book"
+        )
+        content, __ = report._render_qweb_pdf(report.id, self.ids)
+        if not content:
+            return b""
+        code = self.code_page or "X"
+        return stamp_page_numbers(
+            content, lambda index: "%s-%s" % (code, index + 1)
+        )
 
     def get_impact_line_hierarchy(self, impact_type=None, min_level=3):
         """Build flattened hierarchy from impact lines for F23W report display.

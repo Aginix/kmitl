@@ -37,8 +37,12 @@ The appropriated money available on a budget account for a fiscal year, before a
 _Avoid_: allocation (reserve "allocation" for the initial act of appropriating)
 
 **Floating Budget (เงินลอย)**:
-The appropriated pool on a *project-type* budget account (`is_project`) that has been posted but not yet reserved by any project. It carries the four dimensions (activities/departments/funds/sources) but **no `kmitl_project` dimension** — projects are authored later and reserve against it. The procurement-plan path has no floating stage (it reserves the instant its appropriation posts); the project path deliberately does (ADR-0007).
+The appropriated pool on a *project-type* budget account (`is_project`) that has been posted but not yet reserved by any project. It carries the four dimensions (activities/departments/funds/sources) but **no `kmitl_project` dimension** — projects are authored later and reserve against it. The procurement-plan path has no floating stage (it reserves the instant its appropriation posts); the project path deliberately does (ADR-0007). Its transferable/reservable remainder **nets out every tagged reserve drawing on it** (see Pool Tag): a 1,000,000 pool with 200,000 reserved by a project reads 800,000 at the four-dimension query.
 _Avoid_: unallocated budget, งบคงเหลือ (that is Remaining (f), a different quantity)
+
+**Pool Tag (ป้ายกำกับเจ้าของ — โครงการ/แผน, `kmitl_project` / `procurement_plan`)**:
+The two supplementary dimensions, treated as *ownership tags* that mark which project or plan owns a reserve drawing on a pool — as opposed to the four core dimensions that define the pool itself. In the availability engine they are pinned absent (`= False`) on the appropriation/**Current** side but left unconstrained on the **Used** side (`budget.controller`), so a four-dimension (untagged) query counts only untagged appropriation as Current yet subtracts *every* reserve on the pool whatever tag it carries. Consequence: money a project/plan has reserved is **not** part of the untagged Floating Budget remainder and **cannot be moved by a plain (four-dimension) Budget Transfer** — to move it, its reservation must first be released back to the pool (ADR-0009). The two tags are **not symmetric**: a `procurement_plan` appropriation *is* itself tagged (a real five-dimension bucket, ADR-0005), whereas a `kmitl_project` appropriation stays untagged/floating and the tag lives only on the reservation (ADR-0007).
+_Avoid_: dimension (the four core dims define a pool; a Pool Tag names an owner, not a pool), reservation
 
 **Budgetable (ระบุงบประมาณได้, `budgetable`)**:
 A budget account where budget may be specified — both reserved against and appropriated to. Reservations are restricted to budgetable accounts; it is the flag that marks a node as a legitimate place to control budget.
@@ -67,8 +71,12 @@ The budget pool after all latest adjustments = initial + supplementary appropria
 _Avoid_: total budget, final budget
 
 **Budget Transfer (การโอนงบ)**:
-A balanced move (`budget.transfer` → `budget.move` of type `entry`) that shifts pool from one budget account to another. Increases Current Budget at the destination, decreases it at the source. Part of "adjustments", so it is reflected in Current Budget (a).
-_Avoid_: reallocation
+A balanced move (`budget.transfer` → `budget.move` of type `entry`) that shifts pool between `(budget.account × dimension combination)` buckets — increasing Current Budget at the destination, decreasing it at the source. Driven by the line's full `analytic_distribution` across all active dimensions **including a Pool Tag when present**, with `sources` (แหล่งเงิน) locked to the transfer header (no cross-source). It is a **pure budget move** at the `(budget.account × analytic_distribution)` level: it does **not** reserve, release, or create any `budget.commitment` — reserving/releasing budget is a separate, manual step (ADR-0009). A tagged line moves money in or out of a five-dimension tagged sub-pool (see Budget Allocation to a plan/project); an untagged line moves the four-dimension floating/base pool. Part of "adjustments", so it is reflected in Current Budget (a).
+_Avoid_: reallocation, virement (that is cross-charge / ถัวจ่าย — pooling pools in one reservation, which moves nothing)
+
+**Budget Allocation to a plan/project (ปรับเข้าแผน, a tagged Budget Transfer)**:
+A Budget Transfer whose destination carries a Pool Tag (`kmitl_project` / `procurement_plan`), moving money out of the four-dimension Floating Budget and into that project's/plan's five-dimension **tagged sub-pool** — committing an abstract floating envelope to a *specific* project or plan once that record exists (its analytic account minted). After allocation the sub-pool is reachable only by naming the same tag: a plain four-dimension transfer/query no longer sees it (that is the Pool Tag netting), so the money "อยู่ในกอง" of the project/plan and can be moved again only tag-in-hand. It moves pool between buckets and **locks nothing** — the project/plan still reserves separately (ADR-0012). The transfer itself never mints the analytic account; the record is expected to exist first (its lifecycle mints it before allocation).
+_Avoid_: reserve/จอง (that locks money in the commitment ledger, a different operation), appropriation (the initial year-start pool build-up), cross-charge
 
 **Adjustment (ปรับปรุง/ปรับโอน)**:
 The in-year movement on the pool = Current Budget − Initial Appropriation = supplementary appropriations + net transfers. Shown as its own column between (1) and (a).

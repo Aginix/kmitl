@@ -6,6 +6,9 @@ from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
+from odoo.addons.account_kmitl.hooks import PAYING_ACCOUNTS
+from odoo.addons.finance_kmitl.hooks import PAYMENT_SUBJECTS
+
 
 @tagged("post_install", "-at_install")
 class TestPaymentWorkflow(TransactionCase):
@@ -64,10 +67,10 @@ class TestPaymentWorkflow(TransactionCase):
         )
         cls.cash_account = cls.env.ref("account_kmitl.paying_account_1111000002_cash")
 
-        cls.subject_vendor = cls.env.ref("finance_kmitl.payment_subject_vendor_direct")
-        cls.subject_advance = cls.env.ref(
-            "finance_kmitl.payment_subject_advance_reimburse"
-        )
+        # A subject paid from one fixed หัวจ่าย, and one that matches the payee's
+        # own bank and falls back to SCB ย่อยเทคโนฯ.
+        cls.subject_fixed = cls.env.ref("finance_kmitl.payment_subject_company_revenue")
+        cls.subject_auto = cls.env.ref("finance_kmitl.payment_subject_person_revenue")
 
         # A payee banking with KTB, and one banking nowhere the institute does.
         cls.payee_ktb = cls._make_payee("Payee KTB", cls.ktb_account.bank_id)
@@ -157,7 +160,7 @@ class TestPaymentWorkflow(TransactionCase):
         payees = payees or [self.payee_ktb]
         request = self._make_request(payees)
         self._post_bills(request, payees)
-        request.payment_subject_id = subject or self.subject_vendor
+        request.payment_subject_id = subject or self.subject_fixed
         return request
 
     # ------------------------------------------------------------------
@@ -166,7 +169,7 @@ class TestPaymentWorkflow(TransactionCase):
     def test_paying_accounts_are_seeded_with_their_bank(self):
         journal = self.env.ref("account_kmitl.journal_pv")
         paying = journal.outbound_payment_method_line_ids.filtered("payment_account_id")
-        self.assertEqual(len(paying), 8)
+        self.assertEqual(len(paying), len(PAYING_ACCOUNTS))
         banked = paying.filtered(lambda a: a.payment_method_id.code != "kmitl_cash")
         self.assertTrue(all(banked.mapped("bank_account_id")))
         # And each of those bank accounts resolved to a bank: without it
@@ -246,7 +249,7 @@ class TestPaymentWorkflow(TransactionCase):
     # ------------------------------------------------------------------
     def test_fixed_subject_pays_everyone_from_the_main_account(self):
         request = self._billed_request(
-            [self.payee_ktb, self.payee_other], self.subject_vendor
+            [self.payee_ktb, self.payee_other], self.subject_fixed
         )
         lines = request.payment_line_ids
         self.assertEqual(
@@ -256,7 +259,7 @@ class TestPaymentWorkflow(TransactionCase):
 
     def test_auto_match_serves_a_payee_from_their_own_bank(self):
         request = self._billed_request(
-            [self.payee_ktb, self.payee_other], self.subject_advance
+            [self.payee_ktb, self.payee_other], self.subject_auto
         )
         by_payee = {line.partner_id: line for line in request.payment_line_ids}
         self.assertEqual(by_payee[self.payee_ktb].paying_account_id, self.ktb_account)
@@ -266,7 +269,7 @@ class TestPaymentWorkflow(TransactionCase):
         self.assertEqual(by_payee[self.payee_other].paying_account_match, "fallback")
 
     def test_a_hand_picked_account_survives_re_derivation(self):
-        request = self._billed_request([self.payee_ktb], self.subject_advance)
+        request = self._billed_request([self.payee_ktb], self.subject_auto)
         line = request.payment_line_ids
         line.write(
             {
@@ -274,12 +277,12 @@ class TestPaymentWorkflow(TransactionCase):
                 "paying_account_match": "manual",
             }
         )
-        request.payment_subject_id = self.subject_vendor
+        request.payment_subject_id = self.subject_fixed
         self.assertEqual(line.paying_account_id, self.cheque_account)
         self.assertEqual(line.paying_account_match, "manual")
 
     def test_method_follows_the_paying_account(self):
-        request = self._billed_request([self.payee_ktb], self.subject_advance)
+        request = self._billed_request([self.payee_ktb], self.subject_auto)
         line = request.payment_line_ids
         line.paying_account_id = self.cheque_account
         self.assertEqual(line.payment_method_id.code, "kmitl_cheque")
@@ -306,7 +309,7 @@ class TestPaymentWorkflow(TransactionCase):
         payees = [self.payee_ktb, self.payee_other]
         request = self._make_request(payees)
         self._post_bills(request, payees)
-        form = self._unsaved_form(request, self.subject_advance)
+        form = self._unsaved_form(request, self.subject_auto)
         form._onchange_payment_subject_id()
         shown = {
             line.partner_id: (line.paying_account_id, line.paying_account_match)
@@ -319,14 +322,14 @@ class TestPaymentWorkflow(TransactionCase):
         self.assertFalse(request.payment_line_ids.mapped("paying_account_id"))
 
     def test_the_form_leaves_a_hand_picked_row_alone(self):
-        request = self._billed_request([self.payee_ktb], self.subject_advance)
+        request = self._billed_request([self.payee_ktb], self.subject_auto)
         request.payment_line_ids.write(
             {
                 "paying_account_id": self.cheque_account.id,
                 "paying_account_match": "manual",
             }
         )
-        form = self._unsaved_form(request, self.subject_vendor)
+        form = self._unsaved_form(request, self.subject_fixed)
         form._onchange_payment_subject_id()
         line = form.payment_line_ids
         self.assertEqual(line.paying_account_id, self.cheque_account)
@@ -365,7 +368,7 @@ class TestPaymentWorkflow(TransactionCase):
         payees = [payee]
         request = self._make_request(payees)
         self._post_bills(request, payees)
-        request.payment_subject_id = self.subject_vendor
+        request.payment_subject_id = self.subject_fixed
         with self.assertRaises(UserError):
             request.action_audit()
         # Moving them onto cash unblocks it — cash needs no bank account.
@@ -383,7 +386,7 @@ class TestPaymentWorkflow(TransactionCase):
     # ------------------------------------------------------------------
     def test_payment_carries_the_paying_account_and_its_voucher(self):
         request = self._billed_request(
-            [self.payee_ktb, self.payee_other], self.subject_advance
+            [self.payee_ktb, self.payee_other], self.subject_auto
         )
         request.action_audit()
         request.action_authorize()
@@ -403,11 +406,11 @@ class TestPaymentWorkflow(TransactionCase):
         # And every voucher records why it leaves the account it leaves.
         self.assertEqual(
             set(request.payment_ids.mapped("kmitl_payment_subject_id")),
-            {self.subject_advance},
+            {self.subject_auto},
         )
 
     def test_banking_coordinates_freeze_once_the_payment_exists(self):
-        request = self._billed_request([self.payee_ktb], self.subject_vendor)
+        request = self._billed_request([self.payee_ktb], self.subject_fixed)
         request.action_audit()
         request.action_authorize()
         with self.assertRaises(UserError):
@@ -422,7 +425,7 @@ class TestPaymentWorkflow(TransactionCase):
         Authorising is what raises them (ADR-0006), so there is nothing to press
         after it: they come back numbered and confirmed for the bank.
         """
-        request = self._billed_request([self.payee_ktb], self.subject_vendor)
+        request = self._billed_request([self.payee_ktb], self.subject_fixed)
         if paying_account:
             request.payment_line_ids.write(
                 {
@@ -441,7 +444,7 @@ class TestPaymentWorkflow(TransactionCase):
         every real failure has: a banking coordinate that was right when the
         auditor checked it and is not right now.
         """
-        request = self._billed_request([self.payee_ktb], self.subject_vendor)
+        request = self._billed_request([self.payee_ktb], self.subject_fixed)
         request.action_audit()
         self.payee_ktb.bank_ids.unlink()
         request.action_authorize()
@@ -607,7 +610,7 @@ class TestPaymentWorkflow(TransactionCase):
         self.assertEqual(prepared[-1]["tax_base_amount"], 1000.0)
 
     def test_cash_payment_skips_the_bank_export_gate(self):
-        request = self._billed_request([self.payee_ktb], self.subject_vendor)
+        request = self._billed_request([self.payee_ktb], self.subject_fixed)
         request.payment_line_ids.write(
             {
                 "paying_account_id": self.cash_account.id,
@@ -684,14 +687,8 @@ class TestPaymentSubject(TransactionCase):
         set up before account_kmitl published them. What has to hold either way is
         that each subject exists under the external id the rest of the system names
         it by, and that it actually points at a paying account."""
-        for slug in (
-            "salary",
-            "advance_reimburse",
-            "vendor_direct",
-            "utilities",
-            "cash",
-        ):
-            xml_id = "finance_kmitl.payment_subject_%s" % slug
+        for entry in PAYMENT_SUBJECTS:
+            xml_id = "finance_kmitl.%s" % entry["xmlid"]
             subject = self.env.ref(xml_id, raise_if_not_found=False)
             self.assertTrue(subject, "%s was not seeded" % xml_id)
             self.assertTrue(
@@ -705,7 +702,7 @@ class TestPaymentSubject(TransactionCase):
             )
 
     def test_fallback_is_used_when_no_allowed_account_matches(self):
-        subject = self.env.ref("finance_kmitl.payment_subject_advance_reimburse")
+        subject = self.env.ref("finance_kmitl.payment_subject_person_revenue")
         other_bank = self.env["res.bank"].create(
             {"name": "Nowhere Bank", "bic": "NWHRTHBK"}
         )
@@ -714,7 +711,7 @@ class TestPaymentSubject(TransactionCase):
         self.assertEqual(match, "fallback")
 
     def test_a_fixed_subject_reports_its_account_as_main(self):
-        subject = self.env.ref("finance_kmitl.payment_subject_vendor_direct")
+        subject = self.env.ref("finance_kmitl.payment_subject_company_revenue")
         account, match = subject._paying_account_with_match(self.env["res.bank"])
         self.assertEqual(account, subject.default_paying_account_id)
         self.assertEqual(match, "main")
