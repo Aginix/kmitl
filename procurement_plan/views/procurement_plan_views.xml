@@ -62,10 +62,10 @@
                         <group>
                             <field name="analytic_distribution" invisible="1" />
                             <field name="account_fiscal_year_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('id', '!=', False)]}" />
-                            <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
-                            <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
-                            <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
-                            <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
                         </group>
                     </group>
                     <notebook>
