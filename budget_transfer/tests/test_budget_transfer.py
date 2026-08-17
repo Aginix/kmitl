@@ -210,6 +210,17 @@ class TestBudgetTransfer(TransactionCase):
         # Balanced entry move.
         self.assertAlmostEqual(sum(transfer.line_ids.mapped("balance")), 0.0, places=2)
 
+    def test_name_assigned_on_submit(self):
+        # A fresh transfer keeps the placeholder until it leaves draft; on
+        # submit the BTR sequence must be pulled (regression: a translated
+        # placeholder such as "ใหม่" was never recognised as unnamed).
+        self._appropriate(self.src, 100_000)
+        transfer = self._transfer(**self._balanced())
+        self.assertIn(transfer.name, ("New", "ใหม่"))
+        transfer.action_submit()
+        self.assertNotIn(transfer.name, ("New", "ใหม่"))
+        self.assertTrue(transfer.name.startswith("BTR/"))
+
     def test_admin_can_approve_own_transfer(self):
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())

@@ -169,10 +169,15 @@ class BudgetTransfer(models.Model):
     @api.depends("state", "date")
     def _compute_name(self):
         """Assign the BTR number once the transfer leaves draft."""
+        # The default name is _("New"), which is translated ("ใหม่" in Thai).
+        # Recognise both the English sentinel and its translation as "unnamed",
+        # otherwise the check thinks the record already has a number and never
+        # pulls the sequence.
+        placeholders = {"New", _("New")}
         for transfer in self:
             if transfer.state == "cancelled":
                 continue
-            has_name = transfer.name and transfer.name != "New"
+            has_name = transfer.name and transfer.name not in placeholders
             if has_name or transfer.state == "draft":
                 continue
             if not has_name and transfer.date:
@@ -180,7 +185,7 @@ class BudgetTransfer(models.Model):
                     "budget.transfer"
                 ) or _("New")
                 transfer.name = new_name
-                if new_name != _("New"):
+                if new_name not in placeholders:
                     transfer.move_id.ref = f"Transfer: {new_name}"
 
     @api.depends("line_ids.amount", "line_ids.transfer_direction")
