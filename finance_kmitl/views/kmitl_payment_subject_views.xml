@@ -56,8 +56,19 @@
                          squeezes a five-column list into a fraction of the width
                          and cuts the account number and GL account off. -->
                     <separator string="Allowed Paying Accounts" name="allowed" />
+                    <!-- The handle decides which account wins when two of them
+                         are held at the same bank: auto-matching takes the
+                         first candidate the ORM hands back, and this list comes
+                         back in the paying accounts' own ``sequence, id`` order.
+                         Dragging therefore writes ``sequence`` on the paying
+                         account itself, which is one number shared by every
+                         subject and by the หัวจ่าย screen — not an order private
+                         to this subject. That is the honest reading: there is
+                         only one sequence, and it is the same one the treasury
+                         office drags on that screen. -->
                     <field name="allowed_paying_account_ids">
                         <tree>
+                            <field name="sequence" widget="handle" />
                             <field name="name" />
                             <field name="payment_method_id" />
                             <field name="bank_id" />
