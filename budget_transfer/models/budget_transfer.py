@@ -62,6 +62,10 @@ class BudgetTransfer(models.Model):
         related="move_id.name",
         readonly=True,
     )
+    # Drives the smart button's visibility (hidden on a new, unsaved record).
+    # A dedicated computed flag keeps the show/hide logic independent of the
+    # displayed reference value.
+    has_budget_move = fields.Boolean(compute="_compute_has_budget_move")
 
     # Basic Information (BTR number — the move keeps its own BM number).
     name = fields.Char(
@@ -249,6 +253,12 @@ class BudgetTransfer(models.Model):
             transfer.fiscal_year_locked = bool(
                 transfer.name and transfer.name not in placeholders
             )
+
+    @api.depends("move_id")
+    def _compute_has_budget_move(self):
+        """True once the delegated move exists (i.e. the record is saved)."""
+        for transfer in self:
+            transfer.has_budget_move = bool(transfer.move_id)
 
     @api.depends("line_ids.amount", "line_ids.transfer_direction")
     def _compute_amount(self):

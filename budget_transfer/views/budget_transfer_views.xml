@@ -26,7 +26,7 @@
                              delegate — rendering move_id here made the web client
                              block a new record's save with "Budget Move required".
                              Hidden until the move exists (i.e. after save). -->
-                        <button name="action_view_budget_move" type="object" class="oe_stat_button" icon="fa-exchange" attrs="{'invisible': [('move_reference', '=', False)]}">
+                        <button name="action_view_budget_move" type="object" class="oe_stat_button" icon="fa-exchange" attrs="{'invisible': [('has_budget_move', '=', False)]}">
                             <div class="o_stat_info">
                                 <span class="o_stat_value"><field name="move_reference" readonly="1" nolabel="1"/></span>
                                 <span class="o_stat_text">Budget Move</span>
@@ -208,6 +208,7 @@
                 <field name="show_reset_button" invisible="1"/>
                 <field name="show_reset_posted_button" invisible="1"/>
                 <field name="fiscal_year_locked" invisible="1"/>
+                <field name="has_budget_move" invisible="1"/>
                 <field name="has_sufficient_budget" invisible="1"/>
             </form>
         </field>
