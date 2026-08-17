@@ -48,6 +48,7 @@
                             <field name="user_id"/>
                             <field name="account_fiscal_year_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="to_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="approver_id" attrs="{'invisible': [('approver_id', '=', False)]}"/>
@@ -81,22 +82,46 @@
                         <page name="transfer_lines" string="Transfer Details">
                             <group attrs="{'invisible': [('state', 'not in', ['draft'])]}">
                                 <separator string="Transfer FROM (Source)"/>
-                                <field name="from_line_ids" nolabel="1" colspan="2"
+                                <field name="from_line_ids" nolabel="1" colspan="2" mode="kanban"
                                        context="{'default_transfer_direction': 'from', 'default_department_analytic_id': department_analytic_id}"
                                        attrs="{'readonly': [('state', 'not in', ['draft'])]}">
-                                    <!-- Non-editable tree: a click opens the line editor dialog. -->
-                                    <tree decoration-danger="not budget_sufficient" create="1" delete="1">
+                                    <!-- Kanban cards: every dimension at a glance; a click opens the editor dialog. -->
+                                    <kanban>
                                         <field name="account_id"/>
                                         <field name="activity_analytic_id"/>
                                         <field name="fund_analytic_id"/>
                                         <field name="department_analytic_id"/>
-                                        <field name="kmitl_project_analytic_id" optional="hide"/>
-                                        <field name="procurement_plan_analytic_id" optional="hide"/>
-                                        <field name="amount" widget="monetary" sum="Total Source"/>
-                                        <field name="available_budget" widget="monetary"/>
-                                        <field name="budget_sufficient" widget="boolean_toggle"/>
-                                        <field name="currency_id" column_invisible="1"/>
-                                    </tree>
+                                        <field name="source_analytic_id"/>
+                                        <field name="kmitl_project_analytic_id"/>
+                                        <field name="procurement_plan_analytic_id"/>
+                                        <field name="amount"/>
+                                        <field name="available_budget"/>
+                                        <field name="budget_sufficient"/>
+                                        <field name="currency_id"/>
+                                        <templates>
+                                            <t t-name="kanban-box">
+                                                <div class="oe_kanban_global_click o_kanban_card p-2">
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <strong><field name="account_id"/></strong>
+                                                        <strong><field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/></strong>
+                                                    </div>
+                                                    <div class="text-muted small">
+                                                        <div>ส่วนงาน: <field name="department_analytic_id"/></div>
+                                                        <div>แหล่งเงิน: <field name="source_analytic_id"/></div>
+                                                        <div>กิจกรรม: <field name="activity_analytic_id"/></div>
+                                                        <div>กองทุน: <field name="fund_analytic_id"/></div>
+                                                        <div t-if="record.kmitl_project_analytic_id.raw_value">โครงการ/กิจกรรม: <field name="kmitl_project_analytic_id"/></div>
+                                                        <div t-if="record.procurement_plan_analytic_id.raw_value">แผนจัดซื้อจัดจ้าง: <field name="procurement_plan_analytic_id"/></div>
+                                                    </div>
+                                                    <div class="mt-1">
+                                                        <span t-attf-class="badge #{record.budget_sufficient.raw_value ? 'text-bg-success' : 'text-bg-danger'}">
+                                                            คงเหลือ <field name="available_budget" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
                                     <form string="Transfer FROM line">
                                         <group>
                                             <group>
@@ -126,20 +151,39 @@
                                     </form>
                                 </field>
                                 <separator string="Transfer TO (Destination)"/>
-                                <field name="to_line_ids" nolabel="1" colspan="2"
+                                <field name="to_line_ids" nolabel="1" colspan="2" mode="kanban"
                                        context="{'default_transfer_direction': 'to', 'default_department_analytic_id': department_analytic_id}"
                                        attrs="{'readonly': [('state', 'not in', ['draft'])]}">
-                                    <!-- Non-editable tree: a click opens the line editor dialog. -->
-                                    <tree decoration-success="1" create="1" delete="1">
+                                    <!-- Kanban cards: every dimension at a glance; a click opens the editor dialog. -->
+                                    <kanban>
                                         <field name="account_id"/>
                                         <field name="activity_analytic_id"/>
                                         <field name="fund_analytic_id"/>
                                         <field name="department_analytic_id"/>
-                                        <field name="kmitl_project_analytic_id" optional="hide"/>
-                                        <field name="procurement_plan_analytic_id" optional="hide"/>
-                                        <field name="amount" widget="monetary" sum="Total Destination"/>
-                                        <field name="currency_id" column_invisible="1"/>
-                                    </tree>
+                                        <field name="source_analytic_id"/>
+                                        <field name="kmitl_project_analytic_id"/>
+                                        <field name="procurement_plan_analytic_id"/>
+                                        <field name="amount"/>
+                                        <field name="currency_id"/>
+                                        <templates>
+                                            <t t-name="kanban-box">
+                                                <div class="oe_kanban_global_click o_kanban_card p-2">
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <strong><field name="account_id"/></strong>
+                                                        <strong><field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/></strong>
+                                                    </div>
+                                                    <div class="text-muted small">
+                                                        <div>ส่วนงาน: <field name="department_analytic_id"/></div>
+                                                        <div>แหล่งเงิน: <field name="source_analytic_id"/></div>
+                                                        <div>กิจกรรม: <field name="activity_analytic_id"/></div>
+                                                        <div>กองทุน: <field name="fund_analytic_id"/></div>
+                                                        <div t-if="record.kmitl_project_analytic_id.raw_value">โครงการ/กิจกรรม: <field name="kmitl_project_analytic_id"/></div>
+                                                        <div t-if="record.procurement_plan_analytic_id.raw_value">แผนจัดซื้อจัดจ้าง: <field name="procurement_plan_analytic_id"/></div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
                                     <form string="Transfer TO line">
                                         <group>
                                             <group>

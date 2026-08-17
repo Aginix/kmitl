@@ -48,3 +48,28 @@ class BudgetMove(models.Model):
     def _compute_is_transfer(self):
         for move in self:
             move.is_transfer = bool(move.transfer_ids)
+
+    def action_open_transfer(self):
+        """Open the budget transfer that owns this move."""
+        self.ensure_one()
+        transfer = self.transfer_ids[:1]
+        if not transfer:
+            return False
+        return {
+            "type": "ir.actions.act_window",
+            "name": transfer.display_name,
+            "res_model": "budget.transfer",
+            "res_id": transfer.id,
+            "view_mode": "form",
+            "views": [(False, "form")],
+            "target": "current",
+        }
+
+    def get_formview_action(self, access_uid=None):
+        """A transfer's ledger move is authored through its ``budget.transfer``
+        (ADR-0013) — redirect the internal-link open to the transfer form so
+        users edit it there, not on the raw move."""
+        self.ensure_one()
+        if self.is_transfer and self.transfer_ids:
+            return self.action_open_transfer()
+        return super().get_formview_action(access_uid=access_uid)

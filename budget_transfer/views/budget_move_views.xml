@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Guide the user from a transfer's ledger move to its budget.transfer.
+         (get_formview_action already redirects internal-link opens; this covers
+         the case where the move is opened directly from the move list.) -->
+    <record id="view_budget_move_form_transfer_redirect" model="ir.ui.view">
+        <field name="name">budget.move.form.transfer.redirect</field>
+        <field name="model">budget.move</field>
+        <field name="inherit_id" ref="budget.view_budget_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <field name="is_transfer" invisible="1"/>
+                <div class="alert alert-info d-flex align-items-center" role="alert"
+                     attrs="{'invisible': [('is_transfer', '=', False)]}">
+                    <i class="fa fa-exchange fa-fw me-2" role="img" aria-label="Transfer"/>
+                    <span>รายการนี้เป็นบัญชีของ<strong>ใบโอนงบประมาณ</strong> — แก้ไขผ่านฟอร์มโอนงบประมาณ</span>
+                    <button name="action_open_transfer" type="object"
+                            class="btn btn-primary btn-sm ms-auto" string="เปิดใบโอนงบประมาณ"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
