@@ -22,10 +22,8 @@
         <field name="paperformat_id" ref="paperformat_compilation_f3" />
         <field name="binding_type">report</field>
     </record>
-    <!-- F3 Document Template -->
-    <template id="report_compilation_f3_document">
-        <t t-call="web.basic_layout">
-            <t t-call="budget_appropriation_summary_f3.report_compilation_f3_styles" />
+    <!-- F3 body (shared by the standalone report and the per-unit book) -->
+    <template id="report_compilation_f3_body">
             <t t-set="f3" t-value="o.get_f3_report_data()" />
             <div class="page budget-compilation-f3-report"
                 t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
@@ -250,8 +248,22 @@
                     </table>
                 </div>
             </div>
+    </template>
+
+    <!-- F3 Document Template -->
+    <template id="report_compilation_f3_document">
+        <t t-call="web.basic_layout">
+            <t t-call="budget_appropriation_summary_f3.report_compilation_f3_styles" />
+            <t t-call="budget_appropriation_summary_f3.report_compilation_f3_body" />
         </t>
     </template>
+
+    <!-- Per-unit book section (F3-P) -->
+    <template id="report_compilation_book_f3_section">
+        <t t-call="budget_appropriation_summary_f3.report_compilation_f3_styles" />
+        <t t-call="budget_appropriation_summary_f3.report_compilation_f3_body" />
+    </template>
+
     <!-- Styles template -->
     <template id="report_compilation_f3_styles">
         <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)" />

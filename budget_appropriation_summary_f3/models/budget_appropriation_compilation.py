@@ -268,3 +268,15 @@ class BudgetAppropriationCompilation(models.Model):
         return self.env.ref(
             "budget_appropriation_summary_f3.action_report_compilation_f3"
         ).report_action(self)
+
+    def _get_book_section_templates(self):
+        """Insert the F3-P section right after F23 in the per-unit book."""
+        sections = super()._get_book_section_templates()
+        f3_section = "budget_appropriation_summary_f3.report_compilation_book_f3_section"
+        index = 0
+        for position, tmpl in enumerate(sections):
+            if tmpl.endswith("report_compilation_book_f23_section"):
+                index = position + 1
+                break
+        sections.insert(index, f3_section)
+        return sections

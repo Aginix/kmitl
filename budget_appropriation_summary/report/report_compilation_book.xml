@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Paper format shared by every form in the per-unit book (all A4 portrait, 8mm). -->
+    <record id="paperformat_compilation_book" model="report.paperformat">
+        <field name="name">Budget Compilation Book Portrait</field>
+        <field name="default" eval="False" />
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">8</field>
+        <field name="margin_bottom">8</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_compilation_book" model="ir.actions.report">
+        <field name="name">เล่มหน่วยงาน</field>
+        <field name="model">budget.appropriation.compilation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_summary.report_compilation_book</field>
+        <field name="report_file">budget_appropriation_summary.report_compilation_book</field>
+        <field name="paperformat_id" ref="paperformat_compilation_book" />
+    </record>
+
+    <!--
+        Combined per-unit book: renders every form of a unit (F23/F3-P/F4-P/F5-P)
+        in ONE document (one wkhtmltopdf call) instead of one call per form.
+        The ordered list of section templates comes from
+        ``compilation._get_book_section_templates()`` so satellite modules can
+        inject their own forms (e.g. F3-P from budget_appropriation_summary_f3).
+    -->
+    <template id="report_compilation_book">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context(lang='th_TH')" />
+                    <t t-call="budget_appropriation_summary.report_compilation_book_styles" />
+                    <t t-foreach="o._get_book_section_templates()" t-as="section_tmpl">
+                        <t t-call="#{section_tmpl}" />
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!--
+        Scoped overrides so the forms keep their own layout when merged into one
+        document. Each form's styles use shared global class names
+        (.report-table, .report-header, *) with different values; these rules
+        re-assert per-form values with higher specificity so source order does
+        not matter.
+    -->
+    <template id="report_compilation_book_styles">
+        <style>
+            /* Anchor the form-code label to each page instead of fixing it to
+               every physical page (avoids the 4 labels stacking on top). */
+            .page { position: relative; }
+            .report-page-label {
+                position: absolute !important;
+                top: 2mm;
+                right: 5mm;
+            }
+            /* line-height: F23-W/F3-P render at 0.975, F4-P/F5-P at default. */
+            .budget-compilation-f23w-report,
+            .budget-compilation-f23w-report * { line-height: 0.975; }
+            .budget-compilation-f3-report,
+            .budget-compilation-f3-report * { line-height: 0.975; }
+            .budget-compilation-f4-report,
+            .budget-compilation-f4-report * { line-height: normal; }
+            .budget-compilation-f5-report,
+            .budget-compilation-f5-report * { line-height: normal; }
+            /* .report-header: F4/F5 want margin-bottom, F23/F3 are relative. */
+            .budget-compilation-f4-report .report-header,
+            .budget-compilation-f5-report .report-header {
+                position: static;
+                margin-bottom: 12pt;
+            }
+            /* Table column widths differ between F4-P and F5-P. */
+            .budget-compilation-f4-report .report-table .code-column { width: 72pt; }
+            .budget-compilation-f4-report .report-table .amount-column { width: 120pt; }
+            .budget-compilation-f5-report .report-table .code-column { width: 84pt; }
+            .budget-compilation-f5-report .report-table .amount-column { width: 84pt; }
+        </style>
+    </template>
+
+    <!-- ===== F23-W section ===== -->
+    <template id="report_compilation_book_f23_section">
+        <t t-call="budget_appropriation_summary.report_compilation_f23w_styles" />
+        <t t-call="budget_appropriation_summary.report_compilation_f23w_body" />
+    </template>
+
+    <!-- ===== F4-P section (overview + one page per appropriation) ===== -->
+    <template id="report_compilation_book_f4_section">
+        <t t-call="budget_appropriation_summary.report_compilation_f4_styles" />
+        <t t-set="all_data" t-value="o.f4_revenue_data" />
+        <t t-if="all_data and not all_data.get('error')">
+            <t t-set="data" t-value="all_data.get('overview', {})" />
+            <t t-if="data and not data.get('error')">
+                <div class="page budget-compilation-f4-report">
+                    <t t-call="budget_appropriation_summary.report_compilation_f4_content" />
+                </div>
+            </t>
+            <t t-foreach="all_data.get('details', [])" t-as="data">
+                <t t-if="data and not data.get('error')">
+                    <div class="page budget-compilation-f4-report">
+                        <t t-call="budget_appropriation_summary.report_compilation_f4_content" />
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- ===== F5-P section (overview + one page per appropriation) ===== -->
+    <template id="report_compilation_book_f5_section">
+        <t t-call="budget_appropriation_summary.report_compilation_f5_styles" />
+        <t t-set="show_note" t-value="True" />
+        <t t-set="show_itemized" t-value="False" />
+        <t t-set="all_data" t-value="o.get_f5_expense_data_with_options({'show_itemized': show_itemized})" />
+        <t t-if="all_data and not all_data.get('error')">
+            <t t-set="data" t-value="all_data.get('overview', {})" />
+            <t t-if="data and not data.get('error')">
+                <div class="page budget-compilation-f5-report">
+                    <t t-call="budget_appropriation_summary.report_compilation_f5_content" />
+                </div>
+            </t>
+            <t t-foreach="all_data.get('details', [])" t-as="data">
+                <t t-if="data and not data.get('error')">
+                    <div class="page budget-compilation-f5-report">
+                        <t t-call="budget_appropriation_summary.report_compilation_f5_content" />
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
