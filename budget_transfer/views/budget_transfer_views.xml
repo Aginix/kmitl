@@ -22,8 +22,9 @@
                     <widget name="web_ribbon" title="Cancelled" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <widget name="web_ribbon" title="Rejected" attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_budget_move" type="object" class="oe_stat_button" icon="fa-exchange" attrs="{'invisible': [('state', '!=', 'posted')]}">
+                        <button name="action_view_budget_move" type="object" class="oe_stat_button" icon="fa-exchange">
                             <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="move_id" readonly="1" nolabel="1"/></span>
                                 <span class="o_stat_text">Budget Move</span>
                             </div>
                         </button>
@@ -40,11 +41,11 @@
                             <field name="date" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="account_fiscal_year_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="budget_type" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                            <field name="user_id"/>
+                            <field name="user_id" widget="employee_detail_many2one" />
                         </group>
-                        <group name="dimension_info" string="Core Dimensions (Transfer-wide)">
-                            <field name="department_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                            <field name="source_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                        <group name="dimension_info" string="Financial Dimensions">
+                            <field name="department_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="source_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}" options="{'no_create': True, 'no_open': True}" />
                             <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
@@ -141,7 +142,7 @@
                                                 <span>Insufficient remaining budget for the requested transfer amount — please adjust or unreserve first.</span>
                                             </div>
                                             <group string="Note">
-                                                <field name="note" nolabel="1" placeholder="Additional details (if any)..."/>
+                                                <field name="note" nolabel="1" placeholder="Additional details (if any)..." colspan="2"/>
                                             </group>
                                         </sheet>
                                     </form>
@@ -187,7 +188,7 @@
                                                 </group>
                                             </group>
                                             <group string="Note">
-                                                <field name="note" nolabel="1" placeholder="Additional details (if any)..."/>
+                                                <field name="note" nolabel="1" placeholder="Additional details (if any)..." colspan="2"/>
                                             </group>
                                         </sheet>
                                     </form>
