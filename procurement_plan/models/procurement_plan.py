@@ -1,7 +1,7 @@
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -164,6 +164,17 @@ class ProcurementPlan(models.Model):
         "Track the costs and revenues of your procurement plan by setting this analytic account on your related documents (e.g. budgetings, purchase requests, purchase orders etc.).",
     )
     analytic_account_balance = fields.Monetary(related="analytic_account_id.balance")
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        # analytic_account_id has copy=False, but analytic_distribution (JSON) is
+        # copied as-is and still contains the old minted account's id.  Strip it so
+        # the duplicate starts clean; a fresh account is minted on action_send_to_verify.
+        if self.analytic_account_id:
+            dist = dict(self.analytic_distribution or {})
+            dist.pop(str(self.analytic_account_id.id), None)
+            default["analytic_distribution"] = dist or False
+        return super().copy(default)
 
     def unlink(self):
         # Delete the empty related analytic account
