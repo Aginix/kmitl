@@ -30,11 +30,9 @@ _XMLIDS = (
     "action_budget_transfer_menu",
     # sequence
     "seq_budget_transfer",
-    # email templates
-    "email_template_budget_transfer_submitted",
-    "email_template_budget_transfer_approved",
-    "email_template_budget_transfer_rejected",
-    "email_template_budget_transfer_posted",
+    # NB: the budget_transfer_* email templates are intentionally NOT re-owned —
+    # the feature dropped its (unused) email notifications, so they stay under
+    # `budget` and are reaped by budget's own process_end on this upgrade.
     # security (the folded line's rows are dropped, not moved)
     "access_budget_transfer_user",
     "access_budget_transfer_viewer",

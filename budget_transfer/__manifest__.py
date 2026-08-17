@@ -11,7 +11,6 @@
     "data": [
         "security/ir.model.access.csv",
         "data/budget_transfer_sequence.xml",
-        "data/budget_transfer_email_templates.xml",
         "views/budget_move_views.xml",
         "views/budget_transfer_views.xml",
         "views/budget_transfer_menus.xml",

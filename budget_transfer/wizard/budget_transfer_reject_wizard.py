@@ -33,15 +33,6 @@ class BudgetTransferRejectWizard(models.TransientModel):
             "approval_date": fields.Datetime.now(),
         })
         
-        # Send rejection email notification
-        template = self.env.ref("budget_transfer.email_template_budget_transfer_rejected")
-        if template and self.transfer_id.user_id.email:
-            template.with_context(lang=self.transfer_id.user_id.lang).send_mail(
-                self.transfer_id.id,
-                email_values={"email_to": self.transfer_id.user_id.email},
-                force_send=True
-            )
-        
         # Send rejection notification in chatter
         self.transfer_id.message_post(
             body=_("Budget transfer rejected by {} with reason: {}").format(
