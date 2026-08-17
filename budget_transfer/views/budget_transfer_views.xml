@@ -54,6 +54,14 @@
                         </group>
                     </group>
 
+                    <div class="alert alert-danger d-flex align-items-start" role="alert" attrs="{'invisible': [('state', '!=', 'rejected')]}">
+                        <i class="fa fa-times-circle fa-fw mt-1 me-2" role="img" aria-label="Rejected"/>
+                        <div>
+                            <strong>เหตุผลที่ปฏิเสธ</strong>
+                            <field name="rejection_reason" nolabel="1"/>
+                        </div>
+                    </div>
+
                     <!-- Budget Validation Alert -->
                     <div class="alert alert-warning d-flex align-items-start" role="alert" attrs="{'invisible': ['|', ('has_sufficient_budget', '=', True), ('state', 'in', ['posted', 'cancelled'])]}">
                         <i class="fa fa-exclamation-triangle fa-fw mt-1 me-2" role="img" aria-label="Warning"/>
@@ -197,12 +205,6 @@
                                     <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
-                        </page>
-
-                        <page name="approval_info" string="Approval Information" attrs="{'invisible': [('state', 'in', ['draft'])]}">
-                            <group>
-                                <field name="rejection_reason" attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
-                            </group>
                         </page>
                     </notebook>
                 </sheet>
