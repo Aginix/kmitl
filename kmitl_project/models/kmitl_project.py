@@ -461,7 +461,8 @@ class KmitlProject(models.Model):
         store=True,
         readonly=True,
         help="งบประมาณที่ได้รับจัดสรรจริง คำนวณจากยอดโอนเข้า-ออก (budget.move.line) "
-        "ที่ติดมิติโครงการ (kmitl_project)",
+        "ที่ตรงกับรหัสงบและมิติทั้งหมดของโครงการ (รวมมิติโครงการ) — "
+        "จะ re-sync อัตโนมัติเมื่อแก้รหัสงบ/มิติ",
     )
 
     budget_reserved = fields.Float(
@@ -732,7 +733,7 @@ class KmitlProject(models.Model):
                 rec.budget_move_line_count = 0
                 continue
             rec.budget_move_line_count = BML.search_count(
-                [("kmitl_project_analytic_id", "=", rec.analytic_account_id.id)]
+                ['&', ("kmitl_project_analytic_id", "=", self.analytic_account_id.id), ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id)]
             )
 
     def action_open_budget_move_lines(self):
@@ -742,7 +743,7 @@ class KmitlProject(models.Model):
             "type": "ir.actions.act_window",
             "res_model": "budget.move.line",
             "view_mode": "tree,form",
-            "domain": [("kmitl_project_analytic_id", "=", self.analytic_account_id.id)],
+            "domain": ['&', ("kmitl_project_analytic_id", "=", self.analytic_account_id.id), ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id)],
         }
 
     @api.depends(
@@ -1128,17 +1129,33 @@ class KmitlProject(models.Model):
         for rec in self:
             rec.budget_target_locked = bool(rec.key)
 
-    @api.depends("analytic_account_id", "account_fiscal_year_id", "company_id")
+    @api.depends(
+        "analytic_account_id",
+        "analytic_distribution",
+        "budget_account_id",
+        "account_fiscal_year_id",
+        "company_id",
+    )
     def _compute_budget_amount(self):
-        """Current Budget (a) at the project's own dimension: Σ posted
-        appropriation/entry balance on budget.move.line where
-        kmitl_project_analytic_id == this project's analytic account.
-        Reads 0 before allocation (no analytic in draft → 0; no tagged money
-        in to_verify before งานแผน transfers → 0)."""
+        """Current Budget (a) at the project's **full target coordinate**: Σ posted
+        appropriation/entry balance on budget.move.line matching the project's
+        รหัสงบ (``account_id``) + every budget dimension (the four base dims +
+        the project's own ``kmitl_project`` dim). Depending on the target means a
+        later edit to the รหัสงบ/มิติ (allowed until จองงบ) re-syncs this figure —
+        and it stays consistent with the reserve availability check, which scopes
+        to the same coordinate. Reads 0 before allocation (no analytic/รหัสงบ in
+        draft → 0; no money tagged at the coordinate in to_verify before งานแผน
+        transfers → 0), and drops back to 0 if the target is retargeted away from
+        where the allocation actually landed (money stranded at the old coordinate
+        → จองงบ correctly blocked until it is re-aligned)."""
         BML = self.env["budget.move.line"]
         _APPROPRIATION_TYPES = ("appropriation", "entry")
         for rec in self:
-            if not rec.analytic_account_id or not rec.account_fiscal_year_id:
+            if (
+                not rec.analytic_account_id
+                or not rec.account_fiscal_year_id
+                or not rec.budget_account_id
+            ):
                 rec.budget_amount = 0.0
                 continue
             domain = [
@@ -1146,7 +1163,12 @@ class KmitlProject(models.Model):
                 ("move_type", "in", list(_APPROPRIATION_TYPES)),
                 ("account_fiscal_year_id", "=", rec.account_fiscal_year_id.id),
                 ("company_id", "=", rec.company_id.id),
+                ("account_id", "=", rec.budget_account_id.id),
                 ("kmitl_project_analytic_id", "=", rec.analytic_account_id.id),
+                ("department_analytic_id", "=", rec.department_analytic_id.id),
+                ("fund_analytic_id", "=", rec.fund_analytic_id.id),
+                ("source_analytic_id", "=", rec.source_analytic_id.id),
+                ("activity_analytic_id", "=", rec.activity_analytic_id.id),
             ]
             groups = BML.read_group(domain, ["balance"], [])
             rec.budget_amount = (groups[0].get("balance") or 0.0) if groups else 0.0

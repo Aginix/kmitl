@@ -89,15 +89,14 @@
                             class="oe_stat_button"
                             icon="fa-thumb-tack"
                             attrs="{'invisible': [('budget_commitment_count', '=', 0)]}">
-                            <field name="budget_commitment_count" widget="statinfo" string="ผูกพันงบประมาณ" />
+                            <field name="budget_commitment_count" widget="statinfo" string="Budget Commitment" />
                         </button>
                         <button
                             name="action_open_budget_move_lines"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-exchange"
-                            attrs="{'invisible': [('budget_move_line_count', '=', 0)]}">
-                            <field name="budget_move_line_count" widget="statinfo" string="เคลื่อนไหวงบ" />
+                            icon="fa-exchange">
+                            <field name="budget_move_line_count" widget="statinfo" string="Budget Move" />
                         </button>
                     </div>
                     <div class="oe_title">

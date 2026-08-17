@@ -87,6 +87,7 @@ class TestProjectBudgetReserve(TransactionCase):
                             },
                             "balance": amount,
                             "activity_analytic_id": self.activity.id,
+                            "department_analytic_id": self.department.id,
                             "fund_analytic_id": self.fund.id,
                             "source_analytic_id": self.source.id,
                         },
@@ -249,13 +250,29 @@ class TestProjectBudgetReserve(TransactionCase):
         with self.assertRaises(UserError):
             project.action_cancel()
 
-    def test_budget_target_sticky_after_confirm(self):
-        """budget_target_locked=True after action_confirm; budget_account_id write is blocked."""
+    def test_fiscal_year_sticky_after_confirm(self):
+        """ปีงบ freezes for good once the running number is minted (only ปีงบ is
+        sticky; the rest of the budget target is not)."""
         project = self._make_project()
         self.assertFalse(project.budget_target_locked)
         project.action_confirm()
         self.assertTrue(project.budget_target_locked)
-        # Write guard prevents changing budget_account_id once key exists
+        other_fy = self.env["account.fiscal.year"].create(
+            {
+                "name": "FY-TEST-2",
+                "date_from": date(2026, 10, 1),
+                "date_to": date(2027, 9, 30),
+                "company_id": self.env.company.id,
+            }
+        )
+        with self.assertRaises(UserError):
+            project.write({"account_fiscal_year_id": other_fy.id})
+
+    def test_budget_code_editable_in_to_verify(self):
+        """รหัสงบ stays editable after ส่งเข้าแผน (to_verify), before the budget is reserved."""
+        project = self._make_project()
+        project.action_confirm()
+        self.assertEqual(project.state, "to_verify")
         other_account = self.env["budget.account"].create(
             {
                 "code": "TESTPRJ002",
@@ -266,8 +283,9 @@ class TestProjectBudgetReserve(TransactionCase):
                 "project_type": "project",
             }
         )
-        with self.assertRaises(UserError):
-            project.write({"budget_account_id": other_account.id})
+        # No raise — the budget target is editable in the pre-reserve band.
+        project.write({"budget_account_id": other_account.id})
+        self.assertEqual(project.budget_account_id, other_account)
 
     def test_budget_target_stays_locked_after_reset(self):
         """After reset-to-draft, budget_target_locked stays True (key survives)."""
@@ -278,10 +296,14 @@ class TestProjectBudgetReserve(TransactionCase):
         self.assertEqual(project.state, "draft")
         self.assertTrue(project.budget_target_locked)
 
-    def test_department_analytic_locked_after_confirm(self):
-        """Write guard blocks direct department_analytic_id change once key is set."""
+    def test_budget_target_locked_after_reserve(self):
+        """Once the budget is reserved (to_send), the budget target pins: a direct
+        department_analytic_id / analytic_distribution budget-dim change raises."""
         project = self._make_project()
         project.action_confirm()
+        self._allocate(project, 100000.0)
+        self._reserve(project)
+        self.assertEqual(project.state, "to_send")
         other_dept = self.env["account.analytic.account"].create(
             {
                 "name": "Other Dept",
@@ -293,8 +315,9 @@ class TestProjectBudgetReserve(TransactionCase):
         with self.assertRaises(UserError):
             project.write({"department_analytic_id": other_dept.id})
 
-    def test_analytic_distribution_budget_dims_locked_after_confirm(self):
-        """Write guard blocks analytic_distribution changes to budget-dim keys once key is set."""
+    def test_analytic_distribution_dims_editable_before_reserve(self):
+        """Swapping a budget-dim key in analytic_distribution is allowed in to_verify
+        (pre-reserve); the locked-once-reserved case is covered by the department test."""
         project = self._make_project()
         project.action_confirm()
         other_activity = self.env["account.analytic.account"].create(
@@ -305,11 +328,11 @@ class TestProjectBudgetReserve(TransactionCase):
                 ).id,
             }
         )
-        # Attempt to swap the activity key in analytic_distribution directly
-        old_dist = dict(project.analytic_distribution or {})
-        old_dist[str(other_activity.id)] = 100
-        with self.assertRaises(UserError):
-            project.write({"analytic_distribution": old_dist})
+        dist = dict(project.analytic_distribution or {})
+        dist.pop(str(self.activity.id), None)
+        dist[str(other_activity.id)] = 100
+        # No raise — editable in the pre-reserve band.
+        project.write({"analytic_distribution": dist})
 
     def test_analytic_distribution_project_key_allowed_after_confirm(self):
         """Adding the kmitl_project dim key to analytic_distribution is allowed even

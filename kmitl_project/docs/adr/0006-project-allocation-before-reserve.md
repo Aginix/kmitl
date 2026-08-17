@@ -41,12 +41,14 @@ draft ─(ส่งเข้าแผน)→ to_verify ─(งานแผนจ
    freeze ปีงบ and litter the dimension list with analytics for abandoned/duplicated drafts;
    later (at จองงบ, as ADR-0005 had it) would leave the planner allocating against an unnumbered,
    same-named analytic (recurring projects share a name) and against an unfrozen ปีงบ.
-2. **`budget_amount` becomes computed-live** = Current Budget (a) at the project's dimension —
-   the sum of every `budget.move.line` whose `analytic_distribution` carries the project's
-   `kmitl_project` dim. The author no longer types it; the project's **ask** lives in the
-   Project Budget Plan (`budget_expense_total`, ADR-0002). Being an (a)-side figure it is stable
-   after reserve/obligate/consume. It reflects reality and re-values automatically as งานแผน
-   transfers in/out.
+2. **`budget_amount` becomes computed-live** = Current Budget (a) at the project's **full target
+   coordinate** — the sum of every `budget.move.line` matching the project's รหัสงบ (`account_id`)
+   *and* every budget dimension (the four base dims + the `kmitl_project` dim). The author no
+   longer types it; the project's **ask** lives in the Project Budget Plan (`budget_expense_total`,
+   ADR-0002). Being an (a)-side figure it is stable after reserve/obligate/consume. It reflects
+   reality and re-values automatically as งานแผน transfers in/out — **and** as the author edits the
+   รหัสงบ/มิติ (still allowed until จองงบ, see #4), so the figure and the reserve availability check
+   always agree on the same coordinate.
 3. **Reserve availability includes the project dimension.** The check's `analytic_data` payload
    gains `kmitl_project_analytic_id` — today it carries only the account + four base dims, while
    the commitment it creates already *records* the project dim, so this simply closes an existing
@@ -65,11 +67,12 @@ draft ─(ส่งเข้าแผน)→ to_verify ─(งานแผนจ
    encodes it. `budget_account_id` + the four dims stay editable through the **pre-reserve
    authoring band** (`draft` / `to_verify` / `returned`) and pin only once the budget is reserved
    (`to_verify → to_send`), so the author can still correct a wrong รหัสงบ/มิติ after ส่งเข้าแผน —
-   the realistic window is "waiting in `to_verify` for งานแผน to โอนงบ." **Trade-off:** if the
-   author retargets *after* งานแผน has already allocated against the old coordinate, the allocation
-   strands there and จองงบ fails the availability check (`budget_amount` itself is safe — it keys on
-   the sticky project dim only). This is a soft, recoverable `UserError`, not data loss; งานแผน
-   re-allocates or the author reverts the code. Every **narrative** field stays editable throughout.
+   the realistic window is "waiting in `to_verify` for งานแผน to โอนงบ." Because `budget_amount` is
+   computed at the **full target coordinate** (#2), retargeting *after* งานแผน has already allocated
+   simply re-syncs it: the figure drops to 0 (the money is stranded at the old coordinate) and the
+   จองงบ gate (`budget_amount > 0`) blocks reservation until the target is re-aligned or งานแผน
+   re-allocates — the displayed figure and the reserve check never disagree. Every **narrative**
+   field stays editable throughout.
 5. **Creator-driven, wizard-gated reserve.** The project responsible (its creator) clicks จองงบ;
    the confirm wizard is the last check before money is committed. Finance/planning-unit roles
    ("เจ้าหน้าที่งานการเงิน/งานแผน : หน่วยงาน") that may *also* reserve are deferred.

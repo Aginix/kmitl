@@ -1904,8 +1904,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__budget_commitment_ids
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
 #, python-format
-msgid "ผูกพันงบประมาณ"
-msgstr ""
+msgid "Budget Commitment"
+msgstr "ใบจองงบประมาณ"
 
 #. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
