@@ -36,8 +36,8 @@
 
                     <group>
                         <group name="transfer_info" string="Transfer Information">
-                            <field name="date" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                            <field name="account_fiscal_year_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                            <field name="date" attrs="{'readonly': ['|', ('state', 'not in', ['draft']), ('fiscal_year_locked', '=', True)]}"/>
+                            <field name="account_fiscal_year_id" attrs="{'readonly': ['|', ('state', 'not in', ['draft']), ('fiscal_year_locked', '=', True)]}"/>
                             <field name="budget_type" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="user_id" widget="employee_detail_many2one" />
                         </group>
@@ -200,6 +200,7 @@
                 <field name="show_approve_button" invisible="1"/>
                 <field name="show_cancel_button" invisible="1"/>
                 <field name="show_reset_button" invisible="1"/>
+                <field name="fiscal_year_locked" invisible="1"/>
                 <field name="has_sufficient_budget" invisible="1"/>
             </form>
         </field>

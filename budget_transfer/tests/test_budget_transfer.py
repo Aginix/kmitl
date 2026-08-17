@@ -265,6 +265,28 @@ class TestBudgetTransfer(TransactionCase):
         with self.assertRaises(UserError):
             transfer.account_fiscal_year_id = other_fy
 
+    def test_fiscal_year_frozen_after_reset_to_draft(self):
+        # A Reset to Draft keeps the minted number, so the fiscal year stays
+        # frozen even back in draft — otherwise the retained number would no
+        # longer match its year.
+        self._appropriate(self.src, 100_000)
+        transfer = self._transfer(**self._balanced())
+        transfer.action_submit()
+        transfer.action_approve()  # posts (admin)
+        transfer.action_reset_to_draft()
+        self.assertEqual(transfer.state, "draft")
+        self.assertTrue(transfer.fiscal_year_locked)
+        other_fy = self.env["account.fiscal.year"].create(
+            {
+                "name": "FY-TR-NEXT2",
+                "date_from": date(2026, 10, 1),
+                "date_to": date(2027, 9, 30),
+                "company_id": self.env.company.id,
+            }
+        )
+        with self.assertRaises(UserError):
+            transfer.account_fiscal_year_id = other_fy
+
     def test_admin_can_approve_own_transfer(self):
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())

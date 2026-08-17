@@ -138,6 +138,10 @@ class BudgetTransfer(models.Model):
         help="Detailed budget validation message",
     )
 
+    # True once the BTR number has been minted — the fiscal year is then frozen
+    # (it drives the number's year), even after a Reset to Draft.
+    fiscal_year_locked = fields.Boolean(compute="_compute_fiscal_year_locked")
+
     # ------------------------------------------------------------------
     # Create — force the delegated move to be a budget entry
     # ------------------------------------------------------------------
@@ -164,20 +168,23 @@ class BudgetTransfer(models.Model):
         return res
 
     def write(self, vals):
-        """Freeze the fiscal year once the transfer is confirmed.
+        """Freeze the fiscal year once the BTR number has been assigned.
 
-        The BTR number's year is derived from the fiscal year, so once the
-        transfer leaves draft the fiscal year must stay put — otherwise the
-        minted number and the budget year could diverge. Reset to Draft first
-        to change it.
+        The number's year is derived from the fiscal year, so once a number is
+        minted (on leaving draft) the fiscal year must stay put — even after a
+        Reset to Draft, since the number is kept. Otherwise the minted number
+        and the budget year would diverge.
         """
         if "account_fiscal_year_id" in vals:
-            frozen = self.filtered(lambda t: t.state != "draft")
-            if frozen:
+            placeholders = {"New", _("New")}
+            numbered = self.filtered(
+                lambda t: t.name and t.name not in placeholders
+            )
+            if numbered:
                 raise UserError(
                     _(
-                        "The fiscal year is frozen once the transfer is "
-                        "confirmed. Reset it to draft to change the fiscal year."
+                        "The fiscal year is frozen once the BTR number has been "
+                        "assigned — changing it would make the number inconsistent."
                     )
                 )
         return super().write(vals)
@@ -216,6 +223,15 @@ class BudgetTransfer(models.Model):
                 transfer.name = new_name
                 if new_name not in placeholders:
                     transfer.move_id.ref = f"Transfer: {new_name}"
+
+    @api.depends("name")
+    def _compute_fiscal_year_locked(self):
+        """Lock the fiscal year once the BTR number has been minted."""
+        placeholders = {"New", _("New")}
+        for transfer in self:
+            transfer.fiscal_year_locked = bool(
+                transfer.name and transfer.name not in placeholders
+            )
 
     @api.depends("line_ids.amount", "line_ids.transfer_direction")
     def _compute_amount(self):
