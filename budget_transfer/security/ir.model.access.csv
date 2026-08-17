@@ -1,4 +1,3 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
 access_budget_transfer_user,budget_transfer_user,model_budget_transfer,budget.group_budget_user,1,1,1,1
 access_budget_transfer_viewer,budget_transfer_viewer,model_budget_transfer,budget.group_budget_viewer,1,0,0,0
-access_budget_transfer_reject_wizard_user,budget_transfer_reject_wizard_user,model_budget_transfer_reject_wizard,budget.group_budget_user,1,1,1,1

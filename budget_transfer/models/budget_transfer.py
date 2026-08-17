@@ -38,9 +38,7 @@ class BudgetTransfer(models.Model):
 
     READONLY_STATES = {
         "submitted": [("readonly", True)],
-        "approved": [("readonly", True)],
         "posted": [("readonly", True)],
-        "rejected": [("readonly", True)],
         "cancelled": [("readonly", True)],
     }
 
@@ -71,9 +69,7 @@ class BudgetTransfer(models.Model):
         selection=[
             ("draft", "Draft"),
             ("submitted", "Submitted"),
-            ("approved", "Approved"),
             ("posted", "Posted"),
-            ("rejected", "Rejected"),
             ("cancelled", "Cancelled"),
         ],
         string="Status",
@@ -126,19 +122,12 @@ class BudgetTransfer(models.Model):
         tracking=True,
         readonly=True,
     )
-    rejection_reason = fields.Text(
-        string="Rejection Reason",
-        readonly=True,
-        tracking=True,
-    )
-
     # Button Visibility
     show_submit_button = fields.Boolean(compute="_compute_button_visibility")
     show_approve_button = fields.Boolean(compute="_compute_button_visibility")
-    show_reject_button = fields.Boolean(compute="_compute_button_visibility")
-    show_post_button = fields.Boolean(compute="_compute_button_visibility")
     show_cancel_button = fields.Boolean(compute="_compute_button_visibility")
     show_reset_button = fields.Boolean(compute="_compute_button_visibility")
+    show_reverse_button = fields.Boolean(compute="_compute_button_visibility")
 
     # Validation Fields
     has_sufficient_budget = fields.Boolean(
@@ -207,21 +196,18 @@ class BudgetTransfer(models.Model):
 
     @api.depends("state", "user_id")
     def _compute_button_visibility(self):
+        is_manager = self.env.user.has_group("budget.group_budget_manager")
+        is_admin = self.env.is_admin()
         for transfer in self:
             user = self.env.user
             transfer.show_submit_button = transfer.state == "draft" and (
-                transfer.user_id == user or self.env.is_admin()
+                transfer.user_id == user or is_admin
             )
             transfer.show_approve_button = transfer.state == "submitted"
-            transfer.show_reject_button = transfer.state == "submitted"
-            # Approval auto-posts (no separate Post step), so this never shows.
-            transfer.show_post_button = False
             transfer.show_cancel_button = transfer.state in ("draft", "submitted")
-            transfer.show_reset_button = transfer.state in (
-                "submitted",
-                "approved",
-                "rejected",
-                "cancelled",
+            transfer.show_reset_button = transfer.state in ("submitted", "cancelled")
+            transfer.show_reverse_button = transfer.state == "posted" and (
+                is_manager or is_admin
             )
 
     @api.depends(
@@ -324,13 +310,20 @@ class BudgetTransfer(models.Model):
         self._post_transfer()
         return True
 
-    def action_reject(self):
+    def action_reverse(self):
+        """Reverse a posted transfer (manager/admin only). Cancels the
+        underlying budget move so the ledger entry is unwound."""
         if not (
             self.env.user.has_group("budget.group_budget_manager")
             or self.env.is_admin()
         ):
-            raise UserError(_("Only Budget Managers can reject transfers"))
-        return self._open_rejection_wizard()
+            raise UserError(_("Only Budget Managers can reverse posted transfers"))
+        for transfer in self:
+            if transfer.state != "posted":
+                raise UserError(_("Only posted transfers can be reversed"))
+            transfer.move_id.button_cancel()
+        self.write({"state": "cancelled"})
+        return True
 
     def action_post(self):
         """Post the transfer directly (kept for API / admin use — the normal
@@ -375,8 +368,7 @@ class BudgetTransfer(models.Model):
         if "posted" in self.mapped("state"):
             raise UserError(
                 _(
-                    "Cannot reset a posted transfer to draft. Its budget move is "
-                    "already in effect."
+                    "Cannot reset a posted transfer to draft. Use Reverse to undo it."
                 )
             )
         for transfer in self:
@@ -387,7 +379,6 @@ class BudgetTransfer(models.Model):
                 "state": "draft",
                 "approver_id": False,
                 "approval_date": False,
-                "rejection_reason": False,
             }
         )
         return True
@@ -486,15 +477,3 @@ class BudgetTransfer(models.Model):
             "target": "current",
         }
 
-    # ------------------------------------------------------------------
-    # Notifications / wizard
-    # ------------------------------------------------------------------
-    def _open_rejection_wizard(self):
-        return {
-            "name": _("Reject Budget Transfer"),
-            "type": "ir.actions.act_window",
-            "res_model": "budget.transfer.reject.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {"default_transfer_id": self.id},
-        }

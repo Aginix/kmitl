@@ -10,7 +10,7 @@
                 <header>
                     <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" attrs="{'invisible': [('show_submit_button', '=', False)]}"/>
                     <button name="action_approve" type="object" string="Approve &amp; Post" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}" confirm="Approval will automatically post the transfer. Do you want to continue?"/>
-                    <button name="action_reject" type="object" string="Reject" class="btn-warning" attrs="{'invisible': [('show_reject_button', '=', False)]}"/>
+                    <button name="action_reverse" type="object" string="Reverse" class="btn-danger" attrs="{'invisible': [('show_reverse_button', '=', False)]}" confirm="Reversing will cancel this posted transfer and unwind its budget move. Are you sure?"/>
                     <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
 
@@ -20,7 +20,6 @@
                 <sheet>
                     <widget name="web_ribbon" title="Posted" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'posted')]}"/>
                     <widget name="web_ribbon" title="Cancelled" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
-                    <widget name="web_ribbon" title="Rejected" attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_budget_move" type="object" class="oe_stat_button" icon="fa-exchange">
                             <div class="o_stat_info">
@@ -57,14 +56,6 @@
                             <field name="approval_date"/>
                         </group>
                     </group>
-
-                    <div class="alert alert-danger d-flex align-items-start" role="alert" attrs="{'invisible': [('state', '!=', 'rejected')]}">
-                        <i class="fa fa-times-circle fa-fw mt-1 me-2" role="img" aria-label="Rejected"/>
-                        <div>
-                            <strong>Rejection Reason</strong>
-                            <field name="rejection_reason" nolabel="1"/>
-                        </div>
-                    </div>
 
                     <!-- Budget Validation Alert -->
                     <div class="alert alert-warning d-flex align-items-start" role="alert" attrs="{'invisible': ['|', ('has_sufficient_budget', '=', True), ('state', 'in', ['posted', 'cancelled'])]}">
@@ -208,10 +199,9 @@
                 <!-- Hidden fields for computations -->
                 <field name="show_submit_button" invisible="1"/>
                 <field name="show_approve_button" invisible="1"/>
-                <field name="show_reject_button" invisible="1"/>
-                <field name="show_post_button" invisible="1"/>
                 <field name="show_cancel_button" invisible="1"/>
                 <field name="show_reset_button" invisible="1"/>
+                <field name="show_reverse_button" invisible="1"/>
                 <field name="has_sufficient_budget" invisible="1"/>
             </form>
         </field>
@@ -231,7 +221,7 @@
                 <field name="amount" widget="monetary" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="approver_id"/>
-                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state in ['approved', 'posted']" decoration-danger="state in ['rejected', 'cancelled']"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state == 'posted'" decoration-danger="state == 'cancelled'"/>
                 <field name="company_id" groups="base.group_multi_company" optional="hide"/>
             </tree>
         </field>
@@ -252,7 +242,6 @@
 
                 <filter name="my_transfers" string="My Transfers" domain="[('user_id', '=', uid)]"/>
                 <filter name="pending_approval" string="Pending Approval" domain="[('state', '=', 'submitted')]"/>
-                <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
                 <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
 
                 <separator/>

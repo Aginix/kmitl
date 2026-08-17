@@ -28,10 +28,10 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
 msgid ""
 "<i class=\"fa fa-exclamation-triangle fa-fw me-2\" role=\"img\" aria-label=\"Warning\"/>\n"
-"                                                <span>Insufficient remaining budget for the requested transfer amount — please adjust or unreserve first.</span>"
+"                                                <span>Insufficient remaining budget for the requested transfer amount.</span>"
 msgstr ""
 "<i class=\"fa fa-exclamation-triangle fa-fw me-2\" role=\"img\" aria-label=\"Warning\"/>\n"
-"                                                <span>งบประมาณคงเหลือไม่พอสำหรับจำนวนที่ต้องการโอน — โปรดปรับจำนวนหรือปลดการจองก่อน</span>"
+"                                                <span>งบประมาณคงเหลือไม่พอสำหรับจำนวนที่ต้องการโอน</span>"
 
 #. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
@@ -340,8 +340,8 @@ msgstr "บริษัท"
 
 #. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "Core Dimensions (Transfer-wide)"
-msgstr "มิติหลัก (ใช้ทั้งใบโอน)"
+msgid "Financial Dimensions"
+msgstr "มิติบัญชี"
 
 #. module: budget_transfer
 #: model_terms:ir.actions.act_window,help:budget_transfer.action_budget_transfer
@@ -798,7 +798,7 @@ msgstr "กลับแบบร่าง"
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__user_id
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_search
 msgid "Responsible"
-msgstr "ผู้ขอโอน"
+msgstr "ผู้รับผิดชอบข้อมูล"
 
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__activity_user_id

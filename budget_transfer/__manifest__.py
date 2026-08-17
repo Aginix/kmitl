@@ -7,6 +7,7 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": [
         "budget",
+        "hr_employee_name_detail_kmitl",
     ],
     "data": [
         "security/ir.model.access.csv",
