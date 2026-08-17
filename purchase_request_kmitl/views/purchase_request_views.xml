@@ -328,6 +328,13 @@
                     </field>
                 </page>
                 <page name="document" string="Attachment">
+                    <div class="alert alert-info" role="alert">
+                        <b>ตัวอย่างเอกสารแนบ</b>
+                        <ul class="mb-0">
+                            <li>รายละเอียดและคุณลักษณะพัสดุ</li>
+                            <li>ใบเสนอราคาพัสดุ</li>
+                        </ul>
+                    </div>
                     <group name="attachment" string="Attachment">
                         <field
                             name="attachment_ids"
