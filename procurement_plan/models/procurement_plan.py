@@ -175,6 +175,21 @@ class ProcurementPlan(models.Model):
         analytic_accounts_to_delete.unlink()
         return result
 
+    def write(self, vals):
+        res = super().write(vals)
+        # Keep the plan's analytic account label in step with its description —
+        # the description is minted onto the analytic at ส่งเข้ารอจัดสรรงบประมาณ
+        # and stays editable in draft/to_verify, so a later rename must follow
+        # through to the dimension.
+        if vals.get("description"):
+            for record in self:
+                if (
+                    record.analytic_account_id
+                    and record.analytic_account_id.name != record.description
+                ):
+                    record.analytic_account_id.name = record.description
+        return res
+
     @api.model
     def _create_analytic_account_from_values(self, values):
         analytic_account = self.env["account.analytic.account"].create(
