@@ -147,7 +147,7 @@ class PurchaseRequest(models.Model):
                     )
                 )
             self.budget_commitment_id = commitment.id
-            if plan.state == "ready":
+            if plan.state == "verified":
                 plan.action_in_progress()
             self.button_to_approve()
             return {
@@ -202,7 +202,7 @@ class PurchaseRequest(models.Model):
             )[:1]
             if commitment:
                 self.budget_commitment_id = commitment.id
-        if plan.state == "ready":
+        if plan.state == "verified":
             plan.action_in_progress()
 
     def button_rejected(self):
@@ -213,7 +213,7 @@ class PurchaseRequest(models.Model):
 
     def _reopen_plan_on_reject(self):
         """When the single plan-driven PR is rejected, return the plan to
-        ``ready`` so a replacement PR can be created — but only while no draw-down
+        ``verified`` so a replacement PR can be created — but only while no draw-down
         has started and no other active PR exists (ADR-0006, decision ข)."""
         self.ensure_one()
         plan = self.procurement_plan_id
@@ -225,7 +225,7 @@ class PurchaseRequest(models.Model):
         consumed = any(c.total_consumed for c in plan.budget_commitment_ids)
         if active_others or consumed:
             return
-        plan.write({"state": "ready"})
+        plan.write({"state": "verified"})
         plan.message_post(
             body=_("ใบขอซื้อ %s ถูกปฏิเสธ แผนกลับสู่สถานะรอดำเนินการ")
             % self.display_name
@@ -241,12 +241,6 @@ class ProcurementPlan(models.Model):
         required=False,
         tracking=True,
     )
-
-    def action_ready(self):
-        for rec in self:
-            if not rec.procurement_method_id:
-                raise UserError(_("กรุณาระบุแผนการดำเนินงานให้เสร็จสิ้นทั้งหมด"))
-        return super().action_ready()
 
     purchase_request_count = fields.Integer(
         string="Purchase Requests Count", compute="_compute_purchase_request_count"
@@ -286,31 +280,23 @@ class ProcurementPlan(models.Model):
 
     @api.depends("state", "purchase_request_ids.state")
     def _compute_can_create_purchase_request(self):
-        """Show the create-PR button while the plan is new/ready and has no
-        active PR. New plans still show it (with an ETA-gate error on click) so
-        officers discover the next step."""
+        """Show the create-PR button while the plan is verified (budget
+        reserved) and has no active PR."""
         for rec in self:
             active = rec.purchase_request_ids.filtered(
                 lambda r: r.state != "rejected"
             )
             rec.can_create_purchase_request = (
-                rec.state in ("new", "ready") and not active
+                rec.state == "verified" and not active
             )
 
     def action_create_purchase_request(self):
         """Create the plan's single purchase request (ADR-0006). Opens a PR form
         pre-filled from the plan via context defaults; the existing onchange
-        builds the budget lines. The plan must be ready (ETA gate) and hold an
+        builds the budget lines. The plan must be verified and hold an
         active reservation."""
         self.ensure_one()
-        if self.state == "new":
-            raise UserError(
-                _(
-                    "กรุณากรอกแผนการดำเนินงาน (ETA) ให้ครบ แล้วกด "
-                    "'รอดำเนินการ' ก่อนสร้างใบขอซื้อ"
-                )
-            )
-        if self.state != "ready":
+        if self.state != "verified":
             raise UserError(
                 _("สร้างใบขอซื้อได้เฉพาะแผนที่อยู่สถานะรอดำเนินการเท่านั้น")
             )

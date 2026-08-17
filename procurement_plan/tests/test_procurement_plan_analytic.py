@@ -48,10 +48,6 @@ class TestProcurementPlanAnalytic(TransactionCase):
                 }
             )
 
-        cls.budget_account = env["budget.account"].search(
-            [("budgetable", "=", True), ("budget_type", "=", "expense")], limit=1
-        )
-
     def _make_plan(self, analytic_distribution):
         """Helper: create a procurement.plan with the given analytic_distribution."""
         return self.env["procurement.plan"].create(
@@ -60,7 +56,6 @@ class TestProcurementPlanAnalytic(TransactionCase):
                 "amount": 1,
                 "unit": "ชุด",
                 "account_fiscal_year_id": self.fiscal_year.id,
-                "budget_account_id": self.budget_account.id,
                 "analytic_distribution": analytic_distribution,
             }
         )

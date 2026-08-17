@@ -23,4 +23,11 @@
             </xpath>
         </field>
     </record>
+
+    <!-- Budget Commitment action, scoped to a single procurement plan -->
+    <record id="action_budget_commitment_procurement_plan" model="ir.actions.act_window">
+        <field name="name">ผูกพันงบประมาณ</field>
+        <field name="res_model">budget.commitment</field>
+        <field name="view_mode">tree,form</field>
+    </record>
   </odoo>

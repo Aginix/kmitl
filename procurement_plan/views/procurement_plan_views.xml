@@ -6,19 +6,18 @@
         <field name="name">view.procurement.plan.tree</field>
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
-            <tree create="false" decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state in ('new', 'on_hold')" decoration-muted="state == 'draft'">
+            <tree create="false" decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state == 'to_verify'" decoration-muted="state == 'draft'">
                 <field name="account_fiscal_year_id" />
                 <field name="name" />
                 <field name="description" />
                 <field name="amount" optional="hide" />
                 <field name="unit" optional="hide" />
                 <field name="total_price" sum="รวมทั้งหมด" widget="monetary" />
-                <field name="budget_account_id" optional="hide" />
                 <field name="department_analytic_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
                 <field name="fund_analytic_id" optional="hide" />
                 <field name="activity_analytic_id" optional="hide" />
-                <field name="state" widget="badge" decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state in ('new', 'on_hold')" decoration-muted="state == 'draft'" />
+                <field name="state" widget="badge" decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state == 'to_verify'" decoration-muted="state == 'draft'" />
             </tree>
         </field>
     </record>
@@ -30,8 +29,13 @@
         <field name="arch" type="xml">
             <form string="Procurement Plan" create="false">
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,new,ready,in_progress,done" />
-                    <button name="action_ready" string="Ready" type="object" class="btn-primary" states="new" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,verified,in_progress,done" />
+                    <button name="action_send_to_verify" string="ส่งเข้ารอจัดสรรงบประมาณ" type="object" class="btn-primary" states="draft" />
+                    <button name="action_verify" string="ยืนยัน" type="object" class="btn-primary" states="to_verify" />
+                    <button name="action_in_progress" string="ดำเนินการ" type="object" class="btn-primary" states="verified" />
+                    <button name="action_done" string="เสร็จสิ้น" type="object" states="in_progress" />
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" states="to_verify,verified" />
+                    <button name="action_cancel" string="ยกเลิก" type="object" states="draft,to_verify,verified,in_progress" />
                 </header>
                 <sheet>
                     <field name="can_edit" invisible="1"/>
@@ -70,18 +74,17 @@
                             <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
                             <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
                             <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
-                            <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
                         </group>
                     </group>
                     <notebook>
                         <page string="การดำเนินงาน">
                             <group>
                                 <group name="plan" string="แผน">
-                                    <field name="purchase_request_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="procurement_announcement_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="approval_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="contract_order_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="acceptance_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
+                                    <field name="purchase_request_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}" />
+                                    <field name="procurement_announcement_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}" />
+                                    <field name="approval_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}" />
+                                    <field name="contract_order_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}" />
+                                    <field name="acceptance_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}" />
                                 </group>
                             </group>
                         </page>
@@ -124,7 +127,6 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name" filter_domain="['|', ('name','ilike',self), ('description','ilike',self)]" />
-                <field name="budget_account_id" />
                 <field name="department_analytic_id" />
                 <field name="source_analytic_id" />
                 <field name="fund_analytic_id" />
@@ -139,7 +141,6 @@
                     <filter string="แหล่งเงิน" name="group_by_source" context="{'group_by': 'source_analytic_id'}" />
                     <filter string="กองทุน" name="group_by_fund" context="{'group_by': 'fund_analytic_id'}" />
                     <filter string="กิจกรรม" name="group_by_activity" context="{'group_by': 'activity_analytic_id'}" />
-                    <filter string="รหัสงบประมาณ" name="group_by_budget_account" context="{'group_by': 'budget_account_id'}" />
                     <filter string="สถานะ" name="group_by_state" context="{'group_by': 'state'}" />
                 </group>
                 <searchpanel>
