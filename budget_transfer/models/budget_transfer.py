@@ -127,7 +127,6 @@ class BudgetTransfer(models.Model):
     show_approve_button = fields.Boolean(compute="_compute_button_visibility")
     show_cancel_button = fields.Boolean(compute="_compute_button_visibility")
     show_reset_button = fields.Boolean(compute="_compute_button_visibility")
-    show_reverse_button = fields.Boolean(compute="_compute_button_visibility")
 
     # Validation Fields
     has_sufficient_budget = fields.Boolean(
@@ -204,10 +203,17 @@ class BudgetTransfer(models.Model):
                 transfer.user_id == user or is_admin
             )
             transfer.show_approve_button = transfer.state == "submitted"
+            # Cancel (draft/submitted → cancelled), account.payment pattern.
             transfer.show_cancel_button = transfer.state in ("draft", "submitted")
-            transfer.show_reset_button = transfer.state in ("submitted", "cancelled")
-            transfer.show_reverse_button = transfer.state == "posted" and (
-                is_manager or is_admin
+            # Reset to Draft (account.payment pattern): pull a pending transfer
+            # back (owner/admin); un-post a posted one or revive a cancelled one
+            # (manager/admin only — it unwinds the delegated budget move).
+            transfer.show_reset_button = (
+                transfer.state == "submitted"
+                and (transfer.user_id == user or is_admin)
+            ) or (
+                transfer.state in ("posted", "cancelled")
+                and (is_manager or is_admin)
             )
 
     @api.depends(
@@ -310,21 +316,6 @@ class BudgetTransfer(models.Model):
         self._post_transfer()
         return True
 
-    def action_reverse(self):
-        """Reverse a posted transfer (manager/admin only). Cancels the
-        underlying budget move so the ledger entry is unwound."""
-        if not (
-            self.env.user.has_group("budget.group_budget_manager")
-            or self.env.is_admin()
-        ):
-            raise UserError(_("Only Budget Managers can reverse posted transfers"))
-        for transfer in self:
-            if transfer.state != "posted":
-                raise UserError(_("Only posted transfers can be reversed"))
-            transfer.move_id.button_cancel()
-        self.write({"state": "cancelled"})
-        return True
-
     def action_post(self):
         """Post the transfer directly (kept for API / admin use — the normal
         flow posts automatically on approval). Re-checks availability first."""
@@ -365,13 +356,22 @@ class BudgetTransfer(models.Model):
         return True
 
     def action_reset_to_draft(self):
-        if "posted" in self.mapped("state"):
-            raise UserError(
-                _(
-                    "Cannot reset a posted transfer to draft. Use Reverse to undo it."
-                )
-            )
+        """Reset to draft (account.payment pattern). Resetting a posted or
+        cancelled transfer un-posts its delegated budget move — so it is
+        restricted to Budget Managers / admins, unwinding the effect on
+        Current Budget."""
+        is_manager = self.env.user.has_group("budget.group_budget_manager")
+        is_admin = self.env.is_admin()
         for transfer in self:
+            if transfer.state in ("posted", "cancelled") and not (
+                is_manager or is_admin
+            ):
+                raise UserError(
+                    _(
+                        "Only Budget Managers can reset a posted or cancelled "
+                        "transfer to draft."
+                    )
+                )
             if transfer.move_id.state != "draft":
                 transfer.move_id.button_draft()
         self.write(

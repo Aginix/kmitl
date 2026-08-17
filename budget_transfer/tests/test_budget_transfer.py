@@ -235,13 +235,36 @@ class TestBudgetTransfer(TransactionCase):
         with self.assertRaises(UserError):
             transfer.with_user(mgr).action_approve()
 
-    def test_reset_blocked_on_posted(self):
+    def test_reset_posted_by_manager_unposts_move(self):
+        # account.payment pattern: a manager/admin can Reset to Draft a posted
+        # transfer, un-posting its delegated budget move.
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())
         transfer.action_submit()
-        transfer.action_approve()  # auto-posts
+        transfer.action_approve()  # auto-posts (admin)
+        self.assertEqual(transfer.state, "posted")
+        transfer.action_reset_to_draft()
+        self.assertEqual(transfer.state, "draft")
+        self.assertEqual(transfer.move_id.state, "draft")
+
+    def test_reset_posted_blocked_for_plain_user(self):
+        # A plain budget user cannot Reset to Draft a posted transfer — the
+        # reset un-posts the budget move, so it is manager/admin only.
+        self._appropriate(self.src, 100_000)
+        user = self.env["res.users"].create(
+            {
+                "name": "Budget User",
+                "login": "budget_user_tr",
+                "groups_id": [
+                    Command.link(self.env.ref("budget.group_budget_user").id)
+                ],
+            }
+        )
+        transfer = self._transfer(**self._balanced())
+        transfer.action_submit()
+        transfer.action_approve()  # auto-posts (admin)
         with self.assertRaises(UserError):
-            transfer.action_reset_to_draft()
+            transfer.with_user(user).action_reset_to_draft()
 
     def test_core_dims_required_on_submit(self):
         # A FROM line missing its fund fails the four-dim check at submit.

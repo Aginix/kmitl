@@ -10,9 +10,8 @@
                 <header>
                     <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" attrs="{'invisible': [('show_submit_button', '=', False)]}"/>
                     <button name="action_approve" type="object" string="Approve &amp; Post" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}" confirm="Approval will automatically post the transfer. Do you want to continue?"/>
-                    <button name="action_reverse" type="object" string="Reverse" class="btn-danger" attrs="{'invisible': [('show_reverse_button', '=', False)]}" confirm="Reversing will cancel this posted transfer and unwind its budget move. Are you sure?"/>
-                    <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
+                    <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
 
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,posted"/>
                 </header>
@@ -201,7 +200,6 @@
                 <field name="show_approve_button" invisible="1"/>
                 <field name="show_cancel_button" invisible="1"/>
                 <field name="show_reset_button" invisible="1"/>
-                <field name="show_reverse_button" invisible="1"/>
                 <field name="has_sufficient_budget" invisible="1"/>
             </form>
         </field>
