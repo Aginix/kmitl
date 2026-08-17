@@ -15,8 +15,8 @@
                         icon="fa-exchange"
                         attrs="{'invisible': [('is_transfer', '=', False)]}">
                     <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">ใบโอน</span>
-                        <span class="o_stat_text">งบประมาณ</span>
+                        <span class="o_stat_text">Budget</span>
+                        <span class="o_stat_text">Transfer</span>
                     </div>
                 </button>
             </xpath>

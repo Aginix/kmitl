@@ -19,7 +19,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
 msgid ""
 "<i class=\"fa fa-check-circle fa-fw me-2\" role=\"img\" aria-label=\"OK\"/>\n"
-"                        <strong>งบประมาณเพียงพอสำหรับการโอน</strong>"
+"                        <strong>Budget Sufficient for Transfer</strong>"
 msgstr ""
 "<i class=\"fa fa-check-circle fa-fw me-2\" role=\"img\" aria-label=\"OK\"/>\n"
 "                        <strong>งบประมาณเพียงพอสำหรับการโอน</strong>"
@@ -28,7 +28,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
 msgid ""
 "<i class=\"fa fa-exclamation-triangle fa-fw me-2\" role=\"img\" aria-label=\"Warning\"/>\n"
-"                                                <span>งบประมาณคงเหลือไม่พอสำหรับจำนวนที่ต้องการโอน — โปรดปรับจำนวนหรือปลดการจองก่อน</span>"
+"                                                <span>Insufficient remaining budget for the requested transfer amount — please adjust or unreserve first.</span>"
 msgstr ""
 "<i class=\"fa fa-exclamation-triangle fa-fw me-2\" role=\"img\" aria-label=\"Warning\"/>\n"
 "                                                <span>งบประมาณคงเหลือไม่พอสำหรับจำนวนที่ต้องการโอน — โปรดปรับจำนวนหรือปลดการจองก่อน</span>"
@@ -59,8 +59,8 @@ msgstr "<span class=\"o_stat_text\">รายการงบประมาณ</
 #. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_move_form_transfer_link
 msgid ""
-"<span class=\"o_stat_text\">ใบโอน</span>\n"
-"                        <span class=\"o_stat_text\">งบประมาณ</span>"
+"<span class=\"o_stat_text\">Budget</span>\n"
+"                        <span class=\"o_stat_text\">Transfer</span>"
 msgstr ""
 "<span class=\"o_stat_text\">ใบโอน</span>\n"
 "                        <span class=\"o_stat_text\">งบประมาณ</span>"
@@ -72,17 +72,17 @@ msgstr "<strong>ผู้อนุมัติ:</strong>"
 
 #. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_kanban
-msgid "<strong>Requested by:</strong>"
-msgstr "<strong>ผู้ขอ:</strong>"
+msgid "<strong>Responsible:</strong>"
+msgstr "<strong>ผู้รับผิดชอบ:</strong>"
 
 #. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "<strong>ตรวจสอบงบประมาณ</strong>"
+msgid "<strong>Budget Check</strong>"
 msgstr "<strong>ตรวจสอบงบประมาณ</strong>"
 
 #. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "<strong>เหตุผลที่ปฏิเสธ</strong>"
+msgid "<strong>Rejection Reason</strong>"
 msgstr "<strong>เหตุผลที่ปฏิเสธ</strong>"
 
 #. module: budget_transfer
@@ -142,11 +142,43 @@ msgstr "ไอคอนประเภทกิจกรรม"
 #: code:addons/budget_transfer/models/budget_transfer.py:0
 #, python-format
 msgid ""
-"All transfer lines must use the transfer's source (แหล่งเงิน). Cross-source "
-"transfers are not allowed."
+"All lines must specify all 4 core dimensions (Department / Source / Activity"
+" / Fund).\n"
+"Line %(account)s (%(direction)s) is missing: %(missing)s"
 msgstr ""
-"ทุกบรรทัดต้องใช้แหล่งเงินเดียวกับส่วนหัวการโอน (แหล่งเงิน) — "
+"ทุกบรรทัดต้องระบุครบ 4 มิติ (ส่วนงาน / แหล่งเงิน / กิจกรรม / กองทุน)\n"
+"บรรทัด %(account)s (%(direction)s) ยังขาด: %(missing)s"
+
+#. module: budget_transfer
+#. odoo-python
+#: code:addons/budget_transfer/models/budget_transfer.py:0
+#, python-format
+msgid ""
+"All transfer lines must use the transfer's source. Cross-source transfers "
+"are not allowed."
+msgstr ""
+"ทุกบรรทัดต้องใช้แหล่งเงินเดียวกับส่วนหัวการโอน — "
 "ไม่อนุญาตให้โอนข้ามแหล่งเงิน"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid "Additional details (if any)..."
+msgstr "รายละเอียดเพิ่มเติม (ถ้ามี)..."
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid "All Transfer Requests"
+msgstr "คำขอโอนงบประมาณทั้งหมด"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid "Approve &amp; Post"
+msgstr "อนุมัติและผ่านรายการ"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid "Approval will automatically post the transfer. Do you want to continue?"
+msgstr "อนุมัติแล้วจะผ่านรายการ (โพสต์) ให้อัตโนมัติ ต้องการดำเนินการต่อหรือไม่?"
 
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__approval_date
@@ -174,6 +206,11 @@ msgstr "อนุมัติโดย"
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__message_attachment_count
 msgid "Attachment Count"
 msgstr "จำนวนไฟล์แนบ"
+
+#. module: budget_transfer
+#: model:ir.model.fields,field_description:budget_transfer.field_budget_move_line__available_budget
+msgid "Available Budget"
+msgstr "งบประมาณคงเหลือ"
 
 #. module: budget_transfer
 #: model:ir.model.fields,help:budget_transfer.field_budget_move_line__available_budget
@@ -264,6 +301,11 @@ msgstr "ผ่านการตรวจสอบงบประมาณ"
 
 #. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid "Budget Account / Dimensions"
+msgstr "รหัสงบประมาณ / มิติ"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -296,6 +338,11 @@ msgid "Company"
 msgstr "บริษัท"
 
 #. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid "Core Dimensions (Transfer-wide)"
+msgstr "มิติหลัก (ใช้ทั้งใบโอน)"
+
+#. module: budget_transfer
 #: model_terms:ir.actions.act_window,help:budget_transfer.action_budget_transfer
 msgid "Create your first budget transfer!"
 msgstr "สร้างรายการโอนงบประมาณแรกของคุณ!"
@@ -322,6 +369,11 @@ msgstr "สกุลเงิน"
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_search
 msgid "Date"
 msgstr "วันที่"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_search
+msgid "Department"
+msgstr "ส่วนงาน"
 
 #. module: budget_transfer
 #: model:ir.model.fields,help:budget_transfer.field_budget_transfer__budget_validation_message
@@ -354,6 +406,17 @@ msgid ""
 msgstr ""
 "พบบรรทัดโอนซ้ำ แต่ละชุดของทิศทาง รหัสงบประมาณ "
 "และการกระจายวิเคราะห์ต้องไม่ซ้ำกัน"
+
+#. module: budget_transfer
+#. odoo-python
+#: code:addons/budget_transfer/models/budget_move_line.py:0
+#, python-format
+msgid ""
+"Each line may carry only one supplementary dimension — KMITL Project or "
+"Procurement Plan, not both."
+msgstr ""
+"แต่ละบรรทัดเลือกได้เพียงมิติเดียวจาก โครงการ/กิจกรรม หรือ "
+"แผนจัดซื้อจัดจ้าง — เลือกพร้อมกันไม่ได้"
 
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__first_account_id
@@ -431,6 +494,15 @@ msgstr "หากทำเครื่องหมาย ข้อความ�
 #: model:ir.model.fields,help:budget_transfer.field_budget_transfer__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "หากทำเครื่องหมาย บางข้อความมีข้อผิดพลาดในการส่ง"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid ""
+"If budget is reserved by a procurement plan or project, it must be cancelled"
+" or unreserved before transfer."
+msgstr ""
+"หากงบถูกจองโดยแผนจัดซื้อจัดจ้าง/โครงการ "
+"ต้องยกเลิกหรือปลดการจองก่อนจึงจะโอนได้"
 
 #. module: budget_transfer
 #: model:ir.model.fields,help:budget_transfer.field_budget_transfer__has_sufficient_budget
@@ -519,6 +591,11 @@ msgid "My Transfers"
 msgstr "การโอนของฉัน"
 
 #. module: budget_transfer
+#: model:ir.ui.menu,name:budget_transfer.action_my_budget_transfers_menu
+msgid "My Transfer Requests"
+msgstr "คำขอโอนงบประมาณของฉัน"
+
+#. module: budget_transfer
 #. odoo-python
 #: code:addons/budget_transfer/models/budget_transfer.py:0
 #: code:addons/budget_transfer/models/budget_transfer.py:0
@@ -544,6 +621,7 @@ msgstr "ประเภทกิจกรรมถัดไป"
 
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__note
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
 msgid "Note"
 msgstr "หมายเหตุ"
 
@@ -606,6 +684,11 @@ msgid "Pending Approvals"
 msgstr "รายการรอการอนุมัติ"
 
 #. module: budget_transfer
+#: model:ir.ui.menu,name:budget_transfer.action_budget_transfers_pending_menu
+msgid "Pending Approval"
+msgstr "รอการอนุมัติ"
+
+#. module: budget_transfer
 #. odoo-python
 #: code:addons/budget_transfer/models/budget_transfer.py:0
 #, python-format
@@ -665,6 +748,28 @@ msgid "Posted"
 msgstr "ลงรายการแล้ว"
 
 #. module: budget_transfer
+#. odoo-python
+#: code:addons/budget_transfer/models/budget_move_line.py:0
+#, python-format
+msgid ""
+"The Procurement Plan dimension may only be used with procurement-plan-type "
+"budget accounts."
+msgstr ""
+"มิติแผนจัดซื้อจัดจ้าง ใส่ได้เฉพาะรหัสงบประมาณ ประเภทแผนจัดซื้อจัดจ้าง "
+"เท่านั้น"
+
+#. module: budget_transfer
+#. odoo-python
+#: code:addons/budget_transfer/models/budget_move_line.py:0
+#, python-format
+msgid ""
+"The Project/Activity dimension may only be used with project-type budget "
+"accounts (is_project)."
+msgstr ""
+"มิติโครงการ/กิจกรรม ใส่ได้เฉพาะรหัสงบประมาณประเภทโครงการ (is_project) "
+"เท่านั้น"
+
+#. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_search
 msgid "Reason"
 msgstr "เหตุผล"
@@ -710,8 +815,8 @@ msgstr "บรรทัดการผูกพันที่เกี่ยว
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__user_id
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_search
-msgid "Requested by"
-msgstr "ผู้ขอโอน"
+msgid "Responsible"
+msgstr "ผู้รับผิดชอบ"
 
 #. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
@@ -732,6 +837,16 @@ msgstr "ข้อผิดพลาดการส่ง SMS"
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_search
 msgid "Search Budget Transfers"
 msgstr "ค้นหาการโอนงบประมาณ"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid "Select destination budget account..."
+msgstr "เลือกรหัสงบประมาณปลายทาง..."
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid "Select source budget account..."
+msgstr "เลือกรหัสงบประมาณต้นทาง..."
 
 #. module: budget_transfer
 #: model:ir.model.fields,help:budget_transfer.field_budget_move_line__transfer_direction
@@ -776,6 +891,11 @@ msgstr "แสดงปุ่มกลับแบบร่าง"
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__show_submit_button
 msgid "Show Submit Button"
 msgstr "แสดงปุ่มส่ง"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_search
+msgid "Source"
+msgstr "แหล่งเงิน"
 
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__appropriation_id
@@ -865,6 +985,16 @@ msgstr "บรรทัดโอนออก"
 
 #. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid "Transfer Information"
+msgstr "ข้อมูลการโอน"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid "Transfer In (Destination)"
+msgstr "โอนเข้า (ปลายทาง)"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
 msgid "Transfer Lines Summary"
 msgstr "สรุปบรรทัดรายการโอน"
 
@@ -873,6 +1003,11 @@ msgstr "สรุปบรรทัดรายการโอน"
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_search
 msgid "Transfer Number"
 msgstr "เลขที่การโอน"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid "Transfer Out (Source)"
+msgstr "โอนออก (ต้นทาง)"
 
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__reason
@@ -904,6 +1039,16 @@ msgstr "จำนวนโอนต้องมากกว่าศูนย์
 #, python-format
 msgid "Transfer must be balanced. From amount: {:,.2f}, To amount: {:,.2f}"
 msgstr "การโอนต้องสมดุล โอนออก: {:,.2f}, โอนเข้า: {:,.2f}"
+
+#. module: budget_transfer
+#: model:ir.model.fields.selection,name:budget_transfer.selection__budget_move_line__transfer_direction__from
+msgid "Transfer Out (Source)"
+msgstr "โอนออก (ต้นทาง)"
+
+#. module: budget_transfer
+#: model:ir.model.fields.selection,name:budget_transfer.selection__budget_move_line__transfer_direction__to
+msgid "Transfer In (Destination)"
+msgstr "โอนเข้า (ปลายทาง)"
 
 #. module: budget_transfer
 #: model:ir.model.fields,help:budget_transfer.field_budget_move_line__account_is_procurement
@@ -949,41 +1094,14 @@ msgid "You cannot approve your own budget transfer."
 msgstr "คุณไม่สามารถอนุมัติการโอนงบประมาณของตัวเองได้"
 
 #. module: budget_transfer
-#: model:ir.ui.menu,name:budget_transfer.action_my_budget_transfers_menu
-msgid "คำขอโอนงบประมาณของฉัน"
-msgstr "คำขอโอนงบประมาณของฉัน"
-
-#. module: budget_transfer
 #: model:ir.ui.menu,name:budget_transfer.action_budget_transfer_menu
-msgid "คำขอโอนงบประมาณทั้งหมด"
+msgid "All Transfer Requests"
 msgstr "คำขอโอนงบประมาณทั้งหมด"
 
 #. module: budget_transfer
-#: model:ir.model.fields,field_description:budget_transfer.field_budget_move_line__available_budget
-msgid "งบประมาณคงเหลือ"
-msgstr "งบประมาณคงเหลือ"
-
-#. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_move_line__amount
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "จำนวนเงิน"
+msgid "Amount"
 msgstr "จำนวนเงิน"
-
-#. module: budget_transfer
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "ถูกปฏิเสธ"
-msgstr "ถูกปฏิเสธ"
-
-#. module: budget_transfer
-#. odoo-python
-#: code:addons/budget_transfer/models/budget_transfer.py:0
-#, python-format
-msgid ""
-"ทุกบรรทัดต้องระบุครบ 4 มิติ (ส่วนงาน / แหล่งเงิน / กิจกรรม / กองทุน).\n"
-"บรรทัด %(account)s (%(direction)s) ยังขาด: %(missing)s"
-msgstr ""
-"ทุกบรรทัดต้องระบุครบ 4 มิติ (ส่วนงาน / แหล่งเงิน / กิจกรรม / กองทุน)\n"
-"บรรทัด %(account)s (%(direction)s) ยังขาด: %(missing)s"
 
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__appropriation_type
@@ -991,101 +1109,14 @@ msgid "ประเภทการจัดสรร"
 msgstr "ประเภทการจัดสรร"
 
 #. module: budget_transfer
-#. odoo-python
-#: code:addons/budget_transfer/models/budget_move_line.py:0
-#, python-format
-msgid ""
-"มิติแผนจัดซื้อจัดจ้าง ใส่ได้เฉพาะรหัสงบประมาณ ประเภทแผนจัดซื้อจัดจ้าง "
-"เท่านั้น"
-msgstr ""
-"มิติแผนจัดซื้อจัดจ้าง ใส่ได้เฉพาะรหัสงบประมาณ ประเภทแผนจัดซื้อจัดจ้าง "
-"เท่านั้น"
-
-#. module: budget_transfer
-#. odoo-python
-#: code:addons/budget_transfer/models/budget_move_line.py:0
-#, python-format
-msgid ""
-"มิติโครงการ/กิจกรรม ใส่ได้เฉพาะรหัสงบประมาณประเภทโครงการ (is_project) "
-"เท่านั้น"
-msgstr ""
-"มิติโครงการ/กิจกรรม ใส่ได้เฉพาะรหัสงบประมาณประเภทโครงการ (is_project) "
-"เท่านั้น"
-
-#. module: budget_transfer
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "ยกเลิก"
-msgstr "ยกเลิก"
-
-#. module: budget_transfer
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "รหัสงบประมาณ / มิติ"
-msgstr "รหัสงบประมาณ / มิติ"
-
-#. module: budget_transfer
-#: model:ir.ui.menu,name:budget_transfer.action_budget_transfers_pending_menu
-msgid "รอการอนุมัติ"
-msgstr "รอการอนุมัติ"
-
-#. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__line_ids
 msgid "รายการงบประมาณ"
 msgstr "รายการงบประมาณ"
 
 #. module: budget_transfer
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "รายละเอียดเพิ่มเติม (ถ้ามี)..."
-msgstr "รายละเอียดเพิ่มเติม (ถ้ามี)..."
-
-#. module: budget_transfer
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "ลงรายการแล้ว"
-msgstr "ลงรายการแล้ว"
-
-#. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__department_analytic_id
 msgid "ส่วนงาน"
 msgstr "ส่วนงาน"
-
-#. module: budget_transfer
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "หมายเหตุ"
-msgstr "หมายเหตุ"
-
-#. module: budget_transfer
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid ""
-"หากงบถูกจองโดยแผนจัดซื้อจัดจ้าง/โครงการ "
-"ต้องยกเลิกหรือปลดการจองก่อนจึงจะโอนได้"
-msgstr ""
-"หากงบถูกจองโดยแผนจัดซื้อจัดจ้าง/โครงการ "
-"ต้องยกเลิกหรือปลดการจองก่อนจึงจะโอนได้"
-
-#. module: budget_transfer
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "เลือกรหัสงบประมาณต้นทาง..."
-msgstr "เลือกรหัสงบประมาณต้นทาง..."
-
-#. module: budget_transfer
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "เลือกรหัสงบประมาณปลายทาง..."
-msgstr "เลือกรหัสงบประมาณปลายทาง..."
-
-#. module: budget_transfer
-#. odoo-python
-#: code:addons/budget_transfer/models/budget_move_line.py:0
-#, python-format
-msgid ""
-"แต่ละบรรทัดเลือกได้เพียงมิติเดียวจาก โครงการ/กิจกรรม หรือ แผนจัดซื้อจัดจ้าง "
-"— เลือกพร้อมกันไม่ได้"
-msgstr ""
-"แต่ละบรรทัดเลือกได้เพียงมิติเดียวจาก โครงการ/กิจกรรม หรือ แผนจัดซื้อจัดจ้าง "
-"— เลือกพร้อมกันไม่ได้"
-
-#. module: budget_transfer
-#: model:ir.model.fields,field_description:budget_transfer.field_budget_move_line__procurement_plan_analytic_id
-msgid "แผนจัดซื้อจัดจ้าง"
-msgstr "แผนจัดซื้อจัดจ้าง"
 
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_move_line__source_analytic_id
@@ -1101,28 +1132,13 @@ msgstr "โครงการ/กิจกรรม"
 #. module: budget_transfer
 #: model:ir.ui.menu,name:budget_transfer.budget_transfer_management
 #: model:ir.ui.menu,name:budget_transfer.budget_transfer_menu
-msgid "โอนงบประมาณ"
+msgid "Budget Transfer"
 msgstr "โอนงบประมาณ"
 
 #. module: budget_transfer
-#: model:ir.model.fields.selection,name:budget_transfer.selection__budget_move_line__transfer_direction__from
-msgid "โอนออก (Source)"
-msgstr "โอนออก (ต้นทาง)"
-
-#. module: budget_transfer
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "โอนออก (ต้นทาง)"
-msgstr "โอนออก (ต้นทาง)"
-
-#. module: budget_transfer
-#: model:ir.model.fields.selection,name:budget_transfer.selection__budget_move_line__transfer_direction__to
-msgid "โอนเข้า (Destination)"
-msgstr "โอนเข้า (ปลายทาง)"
-
-#. module: budget_transfer
-#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
-msgid "โอนเข้า (ปลายทาง)"
-msgstr "โอนเข้า (ปลายทาง)"
+#: model:ir.model.fields,field_description:budget_transfer.field_budget_move_line__procurement_plan_analytic_id
+msgid "แผนจัดซื้อจัดจ้าง"
+msgstr "แผนจัดซื้อจัดจ้าง"
 
 #. module: budget_transfer
 #: model:ir.model.fields,help:budget_transfer.field_budget_transfer__appropriation_type

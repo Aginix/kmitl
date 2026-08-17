@@ -9,7 +9,7 @@
             <form string="Budget Transfer">
                 <header>
                     <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" attrs="{'invisible': [('show_submit_button', '=', False)]}"/>
-                    <button name="action_approve" type="object" string="อนุมัติและผ่านรายการ" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}" confirm="อนุมัติแล้วจะผ่านรายการ (โพสต์) ให้อัตโนมัติ ต้องการดำเนินการต่อหรือไม่?"/>
+                    <button name="action_approve" type="object" string="Approve &amp; Post" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}" confirm="Approval will automatically post the transfer. Do you want to continue?"/>
                     <button name="action_reject" type="object" string="Reject" class="btn-warning" attrs="{'invisible': [('show_reject_button', '=', False)]}"/>
                     <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
@@ -18,9 +18,9 @@
                 </header>
 
                 <sheet>
-                    <widget name="web_ribbon" title="ลงรายการแล้ว" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'posted')]}"/>
-                    <widget name="web_ribbon" title="ยกเลิก" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
-                    <widget name="web_ribbon" title="ถูกปฏิเสธ" attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
+                    <widget name="web_ribbon" title="Posted" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'posted')]}"/>
+                    <widget name="web_ribbon" title="Cancelled" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+                    <widget name="web_ribbon" title="Rejected" attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_budget_move" type="object" class="oe_stat_button" icon="fa-exchange" attrs="{'invisible': [('state', '!=', 'posted')]}">
                             <div class="o_stat_info">
@@ -36,13 +36,13 @@
                     </div>
 
                     <group>
-                        <group name="transfer_info" string="ข้อมูลการโอน">
+                        <group name="transfer_info" string="Transfer Information">
                             <field name="date" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="account_fiscal_year_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="budget_type" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="user_id"/>
                         </group>
-                        <group name="dimension_info" string="มิติหลัก (ใช้ทั้งใบโอน)">
+                        <group name="dimension_info" string="Core Dimensions (Transfer-wide)">
                             <field name="department_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="source_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
@@ -60,7 +60,7 @@
                     <div class="alert alert-danger d-flex align-items-start" role="alert" attrs="{'invisible': [('state', '!=', 'rejected')]}">
                         <i class="fa fa-times-circle fa-fw mt-1 me-2" role="img" aria-label="Rejected"/>
                         <div>
-                            <strong>เหตุผลที่ปฏิเสธ</strong>
+                            <strong>Rejection Reason</strong>
                             <field name="rejection_reason" nolabel="1"/>
                         </div>
                     </div>
@@ -69,17 +69,17 @@
                     <div class="alert alert-warning d-flex align-items-start" role="alert" attrs="{'invisible': ['|', ('has_sufficient_budget', '=', True), ('state', 'in', ['posted', 'cancelled'])]}">
                         <i class="fa fa-exclamation-triangle fa-fw mt-1 me-2" role="img" aria-label="Warning"/>
                         <div>
-                            <strong>ตรวจสอบงบประมาณ</strong>
+                            <strong>Budget Check</strong>
                             <field name="budget_validation_message" nolabel="1"/>
                             <div class="text-muted small mt-1">
-                                หากงบถูกจองโดยแผนจัดซื้อจัดจ้าง/โครงการ ต้องยกเลิกหรือปลดการจองก่อนจึงจะโอนได้
+                                If budget is reserved by a procurement plan or project, it must be cancelled or unreserved before transfer.
                             </div>
                         </div>
                     </div>
 
                     <div class="alert alert-success d-flex align-items-center" role="alert" attrs="{'invisible': ['|', ('has_sufficient_budget', '=', False), ('state', 'in', ['posted', 'cancelled'])]}">
                         <i class="fa fa-check-circle fa-fw me-2" role="img" aria-label="OK"/>
-                        <strong>งบประมาณเพียงพอสำหรับการโอน</strong>
+                        <strong>Budget Sufficient for Transfer</strong>
                     </div>
 
                     <group name="transfer_reason" colspan="8">
@@ -107,9 +107,9 @@
                                         <field name="budget_sufficient" widget="boolean_toggle"/>
                                         <field name="currency_id" column_invisible="1"/>
                                     </tree>
-                                    <form string="โอนออก (ต้นทาง)">
+                                    <form string="Transfer Out (Source)">
                                         <sheet>
-                                            <!-- FROM ส่วนงาน / แหล่งเงิน always equal the header — hidden, defaulted via context. -->
+                                            <!-- FROM Department / Source always equal the header — hidden, defaulted via context. -->
                                             <field name="transfer_direction" invisible="1"/>
                                             <field name="account_is_project" invisible="1"/>
                                             <field name="account_is_procurement" invisible="1"/>
@@ -118,11 +118,11 @@
                                             <field name="currency_id" invisible="1"/>
                                             <field name="budget_sufficient" invisible="1"/>
                                             <group>
-                                                <group string="รหัสงบประมาณ / มิติ">
+                                                <group string="Budget Account / Dimensions">
                                                     <field name="account_id" required="1"
                                                            options="{'no_create': True, 'no_open': True}"
                                                            domain="[('budget_type', '=', parent.budget_type)]"
-                                                           placeholder="เลือกรหัสงบประมาณต้นทาง..."/>
+                                                           placeholder="Select source budget account..."/>
                                                     <field name="activity_analytic_id" required="1" options="{'no_create': True}"/>
                                                     <field name="fund_analytic_id" required="1" options="{'no_create': True}"/>
                                                     <field name="kmitl_project_analytic_id" options="{'no_create': True}"
@@ -130,7 +130,7 @@
                                                     <field name="procurement_plan_analytic_id" options="{'no_create': True}"
                                                            attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
                                                 </group>
-                                                <group string="จำนวนเงิน">
+                                                <group string="Amount">
                                                     <field name="amount" widget="monetary" required="1"/>
                                                     <field name="available_budget" widget="monetary" readonly="1"/>
                                                 </group>
@@ -138,10 +138,10 @@
                                             <div class="alert alert-danger d-flex align-items-center" role="alert"
                                                  attrs="{'invisible': [('budget_sufficient', '=', True)]}">
                                                 <i class="fa fa-exclamation-triangle fa-fw me-2" role="img" aria-label="Warning"/>
-                                                <span>งบประมาณคงเหลือไม่พอสำหรับจำนวนที่ต้องการโอน — โปรดปรับจำนวนหรือปลดการจองก่อน</span>
+                                                <span>Insufficient remaining budget for the requested transfer amount — please adjust or unreserve first.</span>
                                             </div>
-                                            <group string="หมายเหตุ">
-                                                <field name="note" nolabel="1" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)..."/>
+                                            <group string="Note">
+                                                <field name="note" nolabel="1" placeholder="Additional details (if any)..."/>
                                             </group>
                                         </sheet>
                                     </form>
@@ -161,7 +161,7 @@
                                         <field name="amount" widget="monetary" sum="Total Destination"/>
                                         <field name="currency_id" column_invisible="1"/>
                                     </tree>
-                                    <form string="โอนเข้า (ปลายทาง)">
+                                    <form string="Transfer In (Destination)">
                                         <sheet>
                                             <field name="transfer_direction" invisible="1"/>
                                             <field name="account_is_project" invisible="1"/>
@@ -169,11 +169,11 @@
                                             <field name="source_analytic_id" invisible="1"/>
                                             <field name="currency_id" invisible="1"/>
                                             <group>
-                                                <group string="รหัสงบประมาณ / มิติ">
+                                                <group string="Budget Account / Dimensions">
                                                     <field name="account_id" required="1"
                                                            options="{'no_create': True, 'no_open': True}"
                                                            domain="[('budget_type', '=', parent.budget_type)]"
-                                                           placeholder="เลือกรหัสงบประมาณปลายทาง..."/>
+                                                           placeholder="Select destination budget account..."/>
                                                     <field name="department_analytic_id" required="1" options="{'no_create': True}"/>
                                                     <field name="activity_analytic_id" required="1" options="{'no_create': True}"/>
                                                     <field name="fund_analytic_id" required="1" options="{'no_create': True}"/>
@@ -182,12 +182,12 @@
                                                     <field name="procurement_plan_analytic_id" options="{'no_create': True}"
                                                            attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
                                                 </group>
-                                                <group string="จำนวนเงิน">
+                                                <group string="Amount">
                                                     <field name="amount" widget="monetary" required="1"/>
                                                 </group>
                                             </group>
-                                            <group string="หมายเหตุ">
-                                                <field name="note" nolabel="1" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)..."/>
+                                            <group string="Note">
+                                                <field name="note" nolabel="1" placeholder="Additional details (if any)..."/>
                                             </group>
                                         </sheet>
                                     </form>
@@ -243,10 +243,10 @@
         <field name="arch" type="xml">
             <search string="Search Budget Transfers">
                 <field name="name" string="Transfer Number"/>
-                <field name="user_id" string="ผู้รับผิดชอบ"/>
+                <field name="user_id" string="Responsible"/>
                 <field name="approver_id" string="Approved by"/>
-                <field name="department_analytic_id" string="ส่วนงาน"/>
-                <field name="source_analytic_id" string="แหล่งเงิน"/>
+                <field name="department_analytic_id" string="Department"/>
+                <field name="source_analytic_id" string="Source"/>
                 <field name="reason" string="Reason"/>
 
                 <filter name="my_transfers" string="My Transfers" domain="[('user_id', '=', uid)]"/>
@@ -262,9 +262,9 @@
 
                 <group expand="0" name="group_by" string="Group By">
                     <filter name="group_by_state" string="Status" domain="[]" context="{'group_by': 'state'}"/>
-                    <filter name="group_by_user" string="ผู้รับผิดชอบ" domain="[]" context="{'group_by': 'user_id'}"/>
-                    <filter name="group_by_department" string="ส่วนงาน" domain="[]" context="{'group_by': 'department_analytic_id'}"/>
-                    <filter name="group_by_source" string="แหล่งเงิน" domain="[]" context="{'group_by': 'source_analytic_id'}"/>
+                    <filter name="group_by_user" string="Responsible" domain="[]" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_by_department" string="Department" domain="[]" context="{'group_by': 'department_analytic_id'}"/>
+                    <filter name="group_by_source" string="Source" domain="[]" context="{'group_by': 'source_analytic_id'}"/>
                     <filter name="group_by_date" string="Date" domain="[]" context="{'group_by': 'date'}"/>
                 </group>
             </search>
@@ -308,7 +308,7 @@
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col-12">
-                                        <strong>ผู้รับผิดชอบ:</strong>
+                                        <strong>Responsible:</strong>
                                         <field name="user_id"/>
                                     </div>
                                 </div>

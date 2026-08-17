@@ -42,20 +42,20 @@ class BudgetMoveLine(models.Model):
 
     transfer_direction = fields.Selection(
         selection=[
-            ("from", "โอนออก (Source)"),
-            ("to", "โอนเข้า (Destination)"),
+            ("from", "Transfer Out (Source)"),
+            ("to", "Transfer In (Destination)"),
         ],
         string="Direction",
         help="Set on a line that belongs to a budget transfer: FROM credits its "
         "bucket, TO debits its bucket.",
     )
     amount = fields.Float(
-        string="จำนวนเงิน",
+        string="Amount",
         digits="Budget Precision",
         help="Positive transfer amount; mapped to credit (FROM) or debit (TO).",
     )
     available_budget = fields.Float(
-        string="งบประมาณคงเหลือ",
+        string="Available Budget",
         compute="_compute_transfer_availability",
         help="Available budget at this line's dimensions (control-node engine).",
     )
@@ -78,7 +78,7 @@ class BudgetMoveLine(models.Model):
     kmitl_project_analytic_id = fields.Many2one(readonly=False)
     procurement_plan_analytic_id = fields.Many2one(readonly=False)
 
-    # Source (แหล่งเงิน) is the move header's, mirrored read-only onto the line.
+    # Source is the move header's, mirrored read-only onto the line.
     # Keep it read-only: as a *writable* related field a fresh line's empty
     # source would be pushed back onto the header and clear it (ADR-0009 — source
     # is locked to the header).
@@ -298,8 +298,8 @@ class BudgetMoveLine(models.Model):
             if line.kmitl_project_analytic_id and line.procurement_plan_analytic_id:
                 raise ValidationError(
                     _(
-                        "แต่ละบรรทัดเลือกได้เพียงมิติเดียวจาก โครงการ/กิจกรรม หรือ "
-                        "แผนจัดซื้อจัดจ้าง — เลือกพร้อมกันไม่ได้"
+                        "Each line may carry only one supplementary dimension — "
+                        "KMITL Project or Procurement Plan, not both."
                     )
                 )
 
@@ -321,8 +321,8 @@ class BudgetMoveLine(models.Model):
             ):
                 raise ValidationError(
                     _(
-                        "มิติโครงการ/กิจกรรม ใส่ได้เฉพาะรหัสงบประมาณประเภทโครงการ "
-                        "(is_project) เท่านั้น"
+                        "The Project/Activity dimension may only be used with "
+                        "project-type budget accounts (is_project)."
                     )
                 )
             if line.procurement_plan_analytic_id and not (
@@ -330,8 +330,8 @@ class BudgetMoveLine(models.Model):
             ):
                 raise ValidationError(
                     _(
-                        "มิติแผนจัดซื้อจัดจ้าง ใส่ได้เฉพาะรหัสงบประมาณ "
-                        "ประเภทแผนจัดซื้อจัดจ้าง เท่านั้น"
+                        "The Procurement Plan dimension may only be used with "
+                        "procurement-plan-type budget accounts."
                     )
                 )
 

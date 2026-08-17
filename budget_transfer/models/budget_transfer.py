@@ -104,7 +104,7 @@ class BudgetTransfer(models.Model):
 
     # User Management
     user_id = fields.Many2one(
-        string="ผู้รับผิดชอบ",
+        string="Responsible",
         comodel_name="res.users",
         copy=False,
         tracking=True,
@@ -419,36 +419,36 @@ class BudgetTransfer(models.Model):
 
         # Every line must carry the four core dimensions (ADR-0009).
         core_dims = [
-            ("department_analytic_id", "ส่วนงาน"),
-            ("source_analytic_id", "แหล่งเงิน"),
-            ("activity_analytic_id", "กิจกรรม"),
-            ("fund_analytic_id", "กองทุน"),
+            ("department_analytic_id", "Department"),
+            ("source_analytic_id", "Source"),
+            ("activity_analytic_id", "Activity"),
+            ("fund_analytic_id", "Fund"),
         ]
         for line in self.line_ids:
             missing = [label for fname, label in core_dims if not line[fname]]
             if missing:
                 raise ValidationError(
                     _(
-                        "ทุกบรรทัดต้องระบุครบ 4 มิติ (ส่วนงาน / แหล่งเงิน / กิจกรรม / กองทุน).\n"
-                        "บรรทัด %(account)s (%(direction)s) ยังขาด: %(missing)s"
+                        "All lines must specify all 4 core dimensions (Department / Source / Activity / Fund).\n"
+                        "Line %(account)s (%(direction)s) is missing: %(missing)s"
                     )
                     % {
                         "account": line.account_id.display_name or "-",
-                        "direction": "โอนออก"
+                        "direction": "Transfer Out"
                         if line.transfer_direction == "from"
-                        else "โอนเข้า",
+                        else "Transfer In",
                         "missing": ", ".join(missing),
                     }
                 )
 
-        # Source (แหล่งเงิน) is locked to the header — no cross-source (ADR-0009).
+        # Source is locked to the header — no cross-source transfers (ADR-0009).
         cross_source = self.line_ids.filtered(
             lambda line: line.source_analytic_id != self.source_analytic_id
         )
         if cross_source:
             raise ValidationError(
                 _(
-                    "All transfer lines must use the transfer's source (แหล่งเงิน). "
+                    "All transfer lines must use the transfer's source. "
                     "Cross-source transfers are not allowed."
                 )
             )
