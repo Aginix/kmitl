@@ -8,18 +8,40 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Committee" name="committee">
                     <separator string="Work Acceptance Committee" />
-                    <field name="work_acceptance_committee_ids" readonly="1" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" />
+                    <field
+                        name="work_acceptance_committee_ids"
+                        attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}"
+                        nolabel="1"
+                        context="{'default_committee_type': 'work_acceptance'}"
+                    >
+                        <tree editable="bottom">
+                            <field name="committee_type" invisible="1" />
+                            <field
+                                name="employee_id"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field name="name" />
+                            <field name="approve_role" />
+                            <field name="department_id" />
+                            <field name="email" />
+                            <field name="mobile_phone" />
+                            <field name="note" />
+                        </tree>
+                    </field>
                 </page>
                 <page string="Work Supervisors" name="work_supervisor">
                     <field
                         name="work_supervisor_ids"
-                        readonly="1"
+                        attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}"
                         nolabel="1"
                         context="{'default_committee_type': 'work_supervisor'}"
                     >
-                        <tree>
+                        <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
-                            <field name="employee_id" />
+                            <field
+                                name="employee_id"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
                             <field name="name" />
                             <field name="department_id" />
                             <field name="email" />
