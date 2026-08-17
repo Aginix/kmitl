@@ -236,12 +236,14 @@
             <tree string="Budget Transfers" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state == 'posted'">
                 <field name="name"/>
                 <field name="date"/>
+                <field name="department_analytic_id" optional="show"/>
+                <field name="source_analytic_id" optional="show"/>
                 <field name="user_id"/>
                 <field name="amount" widget="monetary" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="approver_id"/>
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state in ['approved', 'posted']" decoration-danger="state in ['rejected', 'cancelled']"/>
-                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
             </tree>
         </field>
     </record>
@@ -255,6 +257,8 @@
                 <field name="name" string="Transfer Number"/>
                 <field name="user_id" string="Requested by"/>
                 <field name="approver_id" string="Approved by"/>
+                <field name="department_analytic_id" string="ส่วนงาน"/>
+                <field name="source_analytic_id" string="แหล่งเงิน"/>
                 <field name="reason" string="Reason"/>
 
                 <filter name="my_transfers" string="My Transfers" domain="[('user_id', '=', uid)]"/>
@@ -271,6 +275,8 @@
                 <group expand="0" name="group_by" string="Group By">
                     <filter name="group_by_state" string="Status" domain="[]" context="{'group_by': 'state'}"/>
                     <filter name="group_by_user" string="Requested by" domain="[]" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_by_department" string="ส่วนงาน" domain="[]" context="{'group_by': 'department_analytic_id'}"/>
+                    <filter name="group_by_source" string="แหล่งเงิน" domain="[]" context="{'group_by': 'source_analytic_id'}"/>
                     <filter name="group_by_date" string="Date" domain="[]" context="{'group_by': 'date'}"/>
                 </group>
             </search>
