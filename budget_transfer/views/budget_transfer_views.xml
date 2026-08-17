@@ -90,8 +90,8 @@
                                         <field name="activity_analytic_id"/>
                                         <field name="fund_analytic_id"/>
                                         <field name="department_analytic_id"/>
-                                        <field name="kmitl_project_analytic_id" optional="hide"/>
-                                        <field name="procurement_plan_analytic_id" optional="hide"/>
+                                        <field name="kmitl_project_analytic_id" optional="show"/>
+                                        <field name="procurement_plan_analytic_id" optional="show"/>
                                         <field name="amount" widget="monetary" sum="Total Source"/>
                                         <field name="available_budget" widget="monetary"/>
                                         <field name="budget_sufficient" widget="boolean_toggle"/>
@@ -105,12 +105,13 @@
                                                 <field name="account_is_procurement" invisible="1"/>
                                                 <field name="source_analytic_id" invisible="1"/>
                                                 <field name="currency_id" invisible="1"/>
+                                                <!-- FROM ส่วนงาน always equals the header — hidden, defaulted via context. -->
+                                                <field name="department_analytic_id" invisible="1"/>
                                                 <field name="account_id" required="1"
                                                        options="{'no_create': True, 'no_open': True}"
                                                        domain="[('budget_type', '=', parent.budget_type)]"/>
                                                 <field name="activity_analytic_id" required="1" options="{'no_create': True}"/>
                                                 <field name="fund_analytic_id" required="1" options="{'no_create': True}"/>
-                                                <field name="department_analytic_id" required="1" options="{'no_create': True}"/>
                                                 <field name="kmitl_project_analytic_id" options="{'no_create': True}"
                                                        attrs="{'invisible': [('account_is_project', '=', False)]}"/>
                                                 <field name="procurement_plan_analytic_id" options="{'no_create': True}"
@@ -135,8 +136,8 @@
                                         <field name="activity_analytic_id"/>
                                         <field name="fund_analytic_id"/>
                                         <field name="department_analytic_id"/>
-                                        <field name="kmitl_project_analytic_id" optional="hide"/>
-                                        <field name="procurement_plan_analytic_id" optional="hide"/>
+                                        <field name="kmitl_project_analytic_id" optional="show"/>
+                                        <field name="procurement_plan_analytic_id" optional="show"/>
                                         <field name="amount" widget="monetary" sum="Total Destination"/>
                                         <field name="currency_id" column_invisible="1"/>
                                     </tree>

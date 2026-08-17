@@ -78,6 +78,20 @@ class BudgetMoveLine(models.Model):
     kmitl_project_analytic_id = fields.Many2one(readonly=False)
     procurement_plan_analytic_id = fields.Many2one(readonly=False)
 
+    # Source (แหล่งเงิน) is the move header's, mirrored read-only onto the line.
+    # Keep it read-only: as a *writable* related field a fresh line's empty
+    # source would be pushed back onto the header and clear it (ADR-0009 — source
+    # is locked to the header).
+    source_analytic_id = fields.Many2one(readonly=True)
+
+    def _analytic_keys(self):
+        # Keep `source` out of the analytic round-trip: it is header-owned
+        # (related, read-only above), so the mixin inverse must never write it
+        # back from the line's analytic_distribution.
+        keys = dict(super()._analytic_keys())
+        keys.pop("sources", None)
+        return keys
+
     # ------------------------------------------------------------------
     # analytic_distribution round-trip (tag-safe)
     # ------------------------------------------------------------------
@@ -127,11 +141,14 @@ class BudgetMoveLine(models.Model):
         """
         self.ensure_one()
         distribution = {}
+        # NB: source is deliberately excluded — it is header-owned and read-only
+        # on the line (see _analytic_keys); writing it into the JSON would make
+        # the inverse push it back onto the header. The availability query
+        # (_transfer_distribution) still includes it from the column.
         for account in (
             self.activity_analytic_id,
             self.department_analytic_id,
             self.fund_analytic_id,
-            self.source_analytic_id,
         ):
             if account:
                 distribution[str(account.id)] = 100.0
