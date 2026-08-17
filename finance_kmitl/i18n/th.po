@@ -329,6 +329,7 @@ msgstr "ทิศทาง"
 
 #. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__draft
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__account_payment__finance_state__draft
 msgid "Draft"
 msgstr "ร่าง"
 

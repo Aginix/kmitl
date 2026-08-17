@@ -49,9 +49,10 @@ a name — the **Hand-over** — and it is documented with the phase that crosse
 - **วันที่บนใบสำคัญจ่าย / Voucher date** (`account.payment.date`): the day the voucher
   was raised — for a disbursement, the day it was authorised. It is money side and it
   never moves, because it is both the accounting period and what numbers the voucher:
-  ใบสำคัญจ่าย runs `PV/2026/08/0001`, month-reset, so a date in another month and a
-  number already issued cannot both be true. It is _not_ a claim about when the money
-  left; that is the effective date below.
+  ใบสำคัญจ่าย runs `PV/2026/00001`, year-reset, so a date in another year and a number
+  already issued cannot both be true — and a date moved even within the year would move
+  an accounting period the finance office does not own. It is _not_ a claim about when
+  the money left; that is the effective date below.
   _Avoid_: reading it as the payment date.
 
 - **วันที่มีผลที่ธนาคาร / Effective date** (`bank.payment.export.effective_date`): the

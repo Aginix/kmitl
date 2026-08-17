@@ -49,11 +49,16 @@ the voucher is not yet in a file.
 
 **4. The voucher's `date` is the day it was authorised, and it never moves.**
 This amends ADR-0005 point 4, which required `date` to be the day the money left.
-`date` is what numbers the voucher — KMITL numbers ใบสำคัญจ่าย `PV/2026/08/0001`,
-month-reset, and Odoo's `sequence.mixin` refuses a date whose month disagrees with
-the number it already carries. A voucher number that could change after it was
-issued was judged worse than a period that can be a month early, so the date is
-pinned where the number is.
+`date` is what numbers the voucher: ใบสำคัญจ่าย numbers `PV/2026/00001` — ใบสำคัญจ่าย
+is a bank journal, and `account.move._get_starting_sequence` gives those a
+year-based format — and `sequence.mixin._constrains_date_sequence` refuses a date
+whose year disagrees with the number the voucher already carries. Pinning the date
+only where the *number* needs it would leave it free to move within a year; it is
+pinned outright instead, because a voucher that is dated one day and re-dated
+another is a voucher whose accounting period moved after the money left, and the
+finance office has no business moving the accounting office's period. A number
+that could change after it was issued was judged worse than a period that can be
+a month early.
 
 **5. The withholding-tax certificate is dated from the e-payment file.**
 `withholding.tax.cert.date` reads `payment_id.payment_export_id.effective_date`,
@@ -76,9 +81,9 @@ request's bills.
 - **Let the e-payment file settle the date, and number the voucher then.** The
   cleanest accounting answer: one date, always the day the money left, so the
   period, the certificate and the ภ.ง.ด. all agree. Rejected because the voucher
-  would carry no ใบสำคัญจ่าย number between authorisation and file — and, in the
-  cross-month case, would be renumbered. A number that has been issued must not
-  change.
+  would carry no ใบสำคัญจ่าย number between authorisation and file — and, when the
+  file left in a later year, would be renumbered. A number that has been issued
+  must not change.
 - **Two dates on the voucher** (an issue date that numbers it, beside the real
   payment date), which is what ADR-0005 rejected for a different reason. Odoo
   binds the number to `date` through `sequence.mixin._sequence_date_field` and
