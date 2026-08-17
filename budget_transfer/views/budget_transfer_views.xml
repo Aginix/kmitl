@@ -96,33 +96,43 @@
                                         <field name="budget_sufficient" widget="boolean_toggle"/>
                                         <field name="currency_id" column_invisible="1"/>
                                     </tree>
-                                    <form string="Transfer FROM line">
-                                        <group>
+                                    <form string="โอนออก (ต้นทาง)">
+                                        <sheet>
+                                            <!-- FROM ส่วนงาน / แหล่งเงิน always equal the header — hidden, defaulted via context. -->
+                                            <field name="transfer_direction" invisible="1"/>
+                                            <field name="account_is_project" invisible="1"/>
+                                            <field name="account_is_procurement" invisible="1"/>
+                                            <field name="source_analytic_id" invisible="1"/>
+                                            <field name="department_analytic_id" invisible="1"/>
+                                            <field name="currency_id" invisible="1"/>
+                                            <field name="budget_sufficient" invisible="1"/>
                                             <group>
-                                                <field name="transfer_direction" invisible="1"/>
-                                                <field name="account_is_project" invisible="1"/>
-                                                <field name="account_is_procurement" invisible="1"/>
-                                                <field name="source_analytic_id" invisible="1"/>
-                                                <field name="currency_id" invisible="1"/>
-                                                <!-- FROM ส่วนงาน always equals the header — hidden, defaulted via context. -->
-                                                <field name="department_analytic_id" invisible="1"/>
-                                                <field name="account_id" required="1"
-                                                       options="{'no_create': True, 'no_open': True}"
-                                                       domain="[('budget_type', '=', parent.budget_type)]"/>
-                                                <field name="activity_analytic_id" required="1" options="{'no_create': True}"/>
-                                                <field name="fund_analytic_id" required="1" options="{'no_create': True}"/>
-                                                <field name="kmitl_project_analytic_id" options="{'no_create': True}"
-                                                       attrs="{'invisible': [('account_is_project', '=', False)]}"/>
-                                                <field name="procurement_plan_analytic_id" options="{'no_create': True}"
-                                                       attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
+                                                <group string="รหัสงบประมาณ / มิติ">
+                                                    <field name="account_id" required="1"
+                                                           options="{'no_create': True, 'no_open': True}"
+                                                           domain="[('budget_type', '=', parent.budget_type)]"
+                                                           placeholder="เลือกรหัสงบประมาณต้นทาง..."/>
+                                                    <field name="activity_analytic_id" required="1" options="{'no_create': True}"/>
+                                                    <field name="fund_analytic_id" required="1" options="{'no_create': True}"/>
+                                                    <field name="kmitl_project_analytic_id" options="{'no_create': True}"
+                                                           attrs="{'invisible': [('account_is_project', '=', False)]}"/>
+                                                    <field name="procurement_plan_analytic_id" options="{'no_create': True}"
+                                                           attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
+                                                </group>
+                                                <group string="จำนวนเงิน">
+                                                    <field name="amount" widget="monetary" required="1"/>
+                                                    <field name="available_budget" widget="monetary" readonly="1"/>
+                                                </group>
                                             </group>
-                                            <group>
-                                                <field name="amount" widget="monetary" required="1"/>
-                                                <field name="available_budget" widget="monetary" readonly="1"/>
-                                                <field name="budget_sufficient" widget="boolean_toggle" readonly="1"/>
-                                                <field name="note"/>
+                                            <div class="alert alert-danger d-flex align-items-center" role="alert"
+                                                 attrs="{'invisible': [('budget_sufficient', '=', True)]}">
+                                                <i class="fa fa-exclamation-triangle fa-fw me-2" role="img" aria-label="Warning"/>
+                                                <span>งบประมาณคงเหลือไม่พอสำหรับจำนวนที่ต้องการโอน — โปรดปรับจำนวนหรือปลดการจองก่อน</span>
+                                            </div>
+                                            <group string="หมายเหตุ">
+                                                <field name="note" nolabel="1" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)..."/>
                                             </group>
-                                        </group>
+                                        </sheet>
                                     </form>
                                 </field>
                                 <separator string="Transfer TO (Destination)"/>
@@ -140,30 +150,35 @@
                                         <field name="amount" widget="monetary" sum="Total Destination"/>
                                         <field name="currency_id" column_invisible="1"/>
                                     </tree>
-                                    <form string="Transfer TO line">
-                                        <group>
+                                    <form string="โอนเข้า (ปลายทาง)">
+                                        <sheet>
+                                            <field name="transfer_direction" invisible="1"/>
+                                            <field name="account_is_project" invisible="1"/>
+                                            <field name="account_is_procurement" invisible="1"/>
+                                            <field name="source_analytic_id" invisible="1"/>
+                                            <field name="currency_id" invisible="1"/>
                                             <group>
-                                                <field name="transfer_direction" invisible="1"/>
-                                                <field name="account_is_project" invisible="1"/>
-                                                <field name="account_is_procurement" invisible="1"/>
-                                                <field name="source_analytic_id" invisible="1"/>
-                                                <field name="currency_id" invisible="1"/>
-                                                <field name="account_id" required="1"
-                                                       options="{'no_create': True, 'no_open': True}"
-                                                       domain="[('budget_type', '=', parent.budget_type)]"/>
-                                                <field name="activity_analytic_id" required="1" options="{'no_create': True}"/>
-                                                <field name="fund_analytic_id" required="1" options="{'no_create': True}"/>
-                                                <field name="department_analytic_id" required="1" options="{'no_create': True}"/>
-                                                <field name="kmitl_project_analytic_id" options="{'no_create': True}"
-                                                       attrs="{'invisible': [('account_is_project', '=', False)]}"/>
-                                                <field name="procurement_plan_analytic_id" options="{'no_create': True}"
-                                                       attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
+                                                <group string="รหัสงบประมาณ / มิติ">
+                                                    <field name="account_id" required="1"
+                                                           options="{'no_create': True, 'no_open': True}"
+                                                           domain="[('budget_type', '=', parent.budget_type)]"
+                                                           placeholder="เลือกรหัสงบประมาณปลายทาง..."/>
+                                                    <field name="department_analytic_id" required="1" options="{'no_create': True}"/>
+                                                    <field name="activity_analytic_id" required="1" options="{'no_create': True}"/>
+                                                    <field name="fund_analytic_id" required="1" options="{'no_create': True}"/>
+                                                    <field name="kmitl_project_analytic_id" options="{'no_create': True}"
+                                                           attrs="{'invisible': [('account_is_project', '=', False)]}"/>
+                                                    <field name="procurement_plan_analytic_id" options="{'no_create': True}"
+                                                           attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
+                                                </group>
+                                                <group string="จำนวนเงิน">
+                                                    <field name="amount" widget="monetary" required="1"/>
+                                                </group>
                                             </group>
-                                            <group>
-                                                <field name="amount" widget="monetary" required="1"/>
-                                                <field name="note"/>
+                                            <group string="หมายเหตุ">
+                                                <field name="note" nolabel="1" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)..."/>
                                             </group>
-                                        </group>
+                                        </sheet>
                                     </form>
                                 </field>
                             </group>
