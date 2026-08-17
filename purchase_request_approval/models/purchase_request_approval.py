@@ -53,6 +53,8 @@ class PurchaseRequestApproval(models.Model):
             ("approved", "Approved"),
             ("rejected", "Rejected"),
             ("cancelled", "Cancelled"),
+            ("sarabun_returned", "Sarabun Returned"),
+            ("pending_pr", "Pending PR Revision"),
         ],
         string="Status",
         default="draft",
@@ -233,6 +235,13 @@ class PurchaseRequestApproval(models.Model):
         related="request_id.evaluation_committee_ids"
     )
 
+    is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        for rec in self:
+            rec.is_editable = rec.state in ("draft", "sarabun_returned")
+
     @api.depends("line_ids.price_total")
     def _amount_all(self):
         for record in self:
@@ -394,6 +403,86 @@ class PurchaseRequestApproval(models.Model):
         if self.request_id:
             self.request_id.button_rejected()
 
+    def action_open_return_cancel_wizard(self):
+        """Open the ตีกลับ/แก้ไข wizard from PA draft — collects the mandatory
+        reason before parking PA in ``pending_pr`` and resetting PR + sarabun."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ตีกลับ/แก้ไข พจ.1"),
+            "res_model": "purchase.request.approval.return.cancel.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_approval_id": self.id},
+        }
+
+    def _cancel_request_sarabun(self, reason):
+        """Cancel the PR's active sarabun.document (state=cancelled) so it
+        stops counting as live. The document, its register number, and the
+        completed routing chain are ALL retained on the record — the user
+        will later click ``action_resume_returned_sarabun`` on the PR to
+        revive it back to draft and re-send.
+
+        This is a soft-void — no ``_restart_chain`` yet (the reset happens on
+        resume). Runs sudo since ``action_recall``'s guard blocks a signed
+        document; this is the origin's escape hatch when พจ.1 rejects the
+        approval downstream.
+        """
+        self.ensure_one()
+        pr = self.request_id
+        if not pr:
+            return
+        doc = pr.active_sarabun_document_id
+        if not doc or doc.state in ("cancelled", "rejected"):
+            return
+        doc.sudo().write({"state": "cancelled"})
+        doc.message_post(
+            body=_(
+                "หนังสือถูกยกเลิกเนื่องจาก พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. "
+                "เหตุผล: %(reason)s"
+            ) % {"pa": self.name, "reason": reason},
+            subtype_xmlid="mail.mt_note",
+        )
+
+    def _action_return_for_revision(self, reason):
+        """ตีกลับ/แก้ไข — send PA back to พ.1 for revision, keeping the พจ.1
+        number for reuse.
+
+        - PA → ``pending_pr`` (name preserved; ``_transition_after_sarabun_approve``
+          flips it back to ``draft`` when the fresh sarabun re-completes).
+        - PR → ``to_submit`` (budget commitment stays intact).
+        - PR's active sarabun is CANCELLED (state=cancelled) so it no longer
+          counts as live. The user then explicitly clicks
+          ``action_resume_returned_sarabun`` on the PR to revive it — that
+          two-step ceremony is intentional (no auto-magic revival on close).
+        - Redirect the user to the PR form so they can act immediately.
+        """
+        self.ensure_one()
+        pa_body = _(
+            "ตีกลับ พจ.1 %(pa)s (เก็บเลข) เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
+        pr_body = _(
+            "พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
+        self._cancel_request_sarabun(reason)
+        self.request_id.write({"state": "to_submit"})
+        self.write({"state": "pending_pr"})
+        return self._redirect_to_request()
+
+    def _redirect_to_request(self):
+        """Return an action that opens this PA's linked PR (พ.1) so the user
+        lands on the record they need to edit after a return."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "purchase.request",
+            "res_id": self.request_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
     def copy(self, default=None):
         default = dict(default or {})
         self.ensure_one()
@@ -491,8 +580,15 @@ class PurchaseRequestApproval(models.Model):
         return super()._on_sarabun_rejected(document, step)
 
     def _on_sarabun_returned(self, document, step):
-        self.write({"state": "draft"})
+        self.write({"state": "sarabun_returned"})
         return super()._on_sarabun_returned(document, step)
+
+    def action_resend_to_sarabun(self):
+        self.ensure_one()
+        document = self.active_sarabun_document_id
+        if not document:
+            raise UserError(_("No active Sarabun document to resend."))
+        return document.action_send()
 
     def _on_sarabun_cancelled(self, document):
         # ยกเลิกการส่ง Sarabun (terminal) → same effect as manual cancel wizard:
