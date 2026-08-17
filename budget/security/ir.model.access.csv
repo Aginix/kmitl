@@ -4,11 +4,11 @@ access_budget_commitment_line_user,budget_commitment_line_user,model_budget_comm
 access_budget_commitment_line_viewer,budget_commitment_line_viewer,model_budget_commitment_line,group_budget_viewer,1,0,0,0
 access_budget_move_user,budget_move_user,model_budget_move,group_budget_user,1,1,1,1
 access_budget_move_line_user,budget_move_line_user,model_budget_move_line,group_budget_user,1,1,1,1
-access_budget_account_user,budget_account_user,model_budget_account,,1,0,0,0
-access_budget_account_manager,budget_account_manager,model_budget_account,,1,1,1,1
-access_budget_journal_manager,budget_journal_manager,model_budget_journal,,1,1,1,1
+access_budget_account_user,budget_account_user,model_budget_account,base.group_user,1,0,0,0
+access_budget_account_manager,budget_account_manager,model_budget_account,group_budget_manager,1,1,1,1
+access_budget_journal_manager,budget_journal_manager,model_budget_journal,group_budget_manager,1,1,1,1
 access_account_move_budget_user,account.move budget user,account.model_account_move,group_budget_user,1,0,0,0
-access_account_move_budget_manager,account.move budget manager,account.model_account_move,group_budget_manager,1,1,1,0
+access_account_move_budget_manager,account.move budget manager,account.model_account_move,group_budget_manager,1,0,0,0
 access_budget_commitment_viewer,budget_commitment_viewer,model_budget_commitment,group_budget_viewer,1,0,0,0
 access_budget_move_viewer,budget_move_viewer,model_budget_move,group_budget_viewer,1,0,0,0
 access_budget_move_line_viewer,budget_move_line_viewer,model_budget_move_line,group_budget_viewer,1,0,0,0
