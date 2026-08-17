@@ -59,13 +59,13 @@ class TestBudgetTransfer(TransactionCase):
     # ------------------------------------------------------------------
     # helpers
     # ------------------------------------------------------------------
-    def _appropriate(self, account, amount, activity=None, fund=None):
+    def _appropriate(self, account, amount, activity=None, fund=None, fy=None):
         move = self.env["budget.move"].create(
             {
                 "move_type": "appropriation",
                 "budget_type": "expense",
                 "appropriation_type": "initial",
-                "account_fiscal_year_id": self.fy.id,
+                "account_fiscal_year_id": (fy or self.fy).id,
                 "department_analytic_id": self.dept.id,
                 "source_analytic_id": self.source.id,
                 "line_ids": [
@@ -84,7 +84,7 @@ class TestBudgetTransfer(TransactionCase):
         move.action_post()
         return move
 
-    def _transfer(self, from_lines, to_lines):
+    def _transfer(self, from_lines, to_lines, fy=None):
         def line(vals, direction):
             vals = dict(vals)
             vals["transfer_direction"] = direction
@@ -96,7 +96,7 @@ class TestBudgetTransfer(TransactionCase):
         return self.env["budget.transfer"].create(
             {
                 "date": date.today(),
-                "account_fiscal_year_id": self.fy.id,
+                "account_fiscal_year_id": (fy or self.fy).id,
                 "department_analytic_id": self.dept.id,
                 "source_analytic_id": self.source.id,
                 "reason": "test transfer",
@@ -223,6 +223,31 @@ class TestBudgetTransfer(TransactionCase):
         self.assertNotIn(transfer.name, ("New", "ใหม่"))
         expected_be = str(self.fy.date_to.year + 543)
         self.assertTrue(transfer.name.startswith(f"BTR/{expected_be}/"))
+
+    def test_separate_sequence_per_fiscal_year(self):
+        # Each fiscal year draws from its own subsequence (use_date_range), so
+        # the year segment tracks the fiscal year and numbering never mixes
+        # across years.
+        self._appropriate(self.src, 100_000)
+        t1 = self._transfer(**self._balanced())
+        t1.action_submit()
+        be1 = str(self.fy.date_to.year + 543)
+        self.assertTrue(t1.name.startswith(f"BTR/{be1}/"))
+
+        fy2 = self.env["account.fiscal.year"].create(
+            {
+                "name": "FY-TR-2",
+                "date_from": date(2026, 10, 1),
+                "date_to": date(2027, 9, 30),
+                "company_id": self.env.company.id,
+            }
+        )
+        self._appropriate(self.src, 100_000, fy=fy2)
+        t2 = self._transfer(fy=fy2, **self._balanced())
+        t2.action_submit()
+        be2 = str(fy2.date_to.year + 543)
+        self.assertTrue(t2.name.startswith(f"BTR/{be2}/"))
+        self.assertNotEqual(be1, be2, "distinct fiscal years must not share a year segment")
 
     def test_fiscal_year_frozen_after_submit(self):
         # Once confirmed, the fiscal year is frozen (it drives the BTR number).
