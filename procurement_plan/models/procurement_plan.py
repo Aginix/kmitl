@@ -46,7 +46,6 @@ class ProcurementPlan(models.Model):
     )
     name = fields.Char(
         string="รหัสเอกสาร",
-        compute="_compute_name",
         readonly=False,
         store=True,
         copy=False,
@@ -217,24 +216,16 @@ class ProcurementPlan(models.Model):
         )
         return analytic_account
 
-    @api.depends("state", "name", "account_fiscal_year_id")
-    def _compute_name(self):
-        self = self.sorted(lambda m: m.id)
-
-        for record in self:
-            if record.state == "cancel":
-                continue
-
-            record_has_name = record.name and record.name != _("New")
-            if not record_has_name:
+    def action_send_to_verify(self):
+        """draft → to_verify: assign the sequence number and mint the plan's
+        analytic account. Sequence is consumed here (not on save) so draft
+        records that are deleted never waste a number."""
+        for record in self.sorted("id"):
+            if not record.name or record.name == _("New"):
                 record.name = self.env["ir.sequence"].next_by_code(
                     "procurement.plan",
                     sequence_date=record.account_fiscal_year_id.date_to,
                 ) or _("New")
-
-    def action_send_to_verify(self):
-        """draft → to_verify: mint the plan's analytic account (idempotent, D1
-        for the standalone plan — pure account.analytic, no budget needed)."""
         self.write({"state": "to_verify"})
         for record in self:
             if not record.analytic_account_id:
