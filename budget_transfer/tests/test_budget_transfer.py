@@ -214,14 +214,15 @@ class TestBudgetTransfer(TransactionCase):
         # A fresh transfer keeps the placeholder until it leaves draft; on
         # submit the BTR sequence must be pulled (regression: a translated
         # placeholder such as "ใหม่" was never recognised as unnamed).
-        # The year in the number comes from the fiscal year's date_to.
+        # The year in the number is the fiscal year's Buddhist-Era year
+        # (date_to.year + 543), 4 digits.
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())
         self.assertIn(transfer.name, ("New", "ใหม่"))
         transfer.action_submit()
         self.assertNotIn(transfer.name, ("New", "ใหม่"))
-        expected_yy = self.fy.date_to.strftime("%y")
-        self.assertTrue(transfer.name.startswith(f"BTR/{expected_yy}/"))
+        expected_be = str(self.fy.date_to.year + 543)
+        self.assertTrue(transfer.name.startswith(f"BTR/{expected_be}/"))
 
     def test_fiscal_year_frozen_after_submit(self):
         # Once confirmed, the fiscal year is frozen (it drives the BTR number).
