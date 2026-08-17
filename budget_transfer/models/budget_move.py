@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class BudgetMove(models.Model):
@@ -22,9 +22,13 @@ class BudgetMove(models.Model):
         inverse_name="move_id",
         string="Budget Transfer",
     )
+    # Stamped True once at creation by ``budget.transfer.create`` (delegated
+    # through ``_inherits``). The move↔transfer link is a write-once immutable
+    # 1:1 (move_id required/readonly/ondelete=cascade, and a transfer mints its
+    # own move), so a value set at creation is deterministic — no need to
+    # recompute it from ``transfer_ids``.
     is_transfer = fields.Boolean(
-        compute="_compute_is_transfer",
-        store=True,
+        default=False,
         help="True when this move is the ledger entry behind a budget transfer.",
     )
 
@@ -43,11 +47,6 @@ class BudgetMove(models.Model):
         string="Transfer TO Lines",
         domain=[("transfer_direction", "=", "to")],
     )
-
-    @api.depends("transfer_ids")
-    def _compute_is_transfer(self):
-        for move in self:
-            move.is_transfer = bool(move.transfer_ids)
 
     def action_open_transfer(self):
         """Open the budget transfer that owns this move."""
@@ -70,6 +69,6 @@ class BudgetMove(models.Model):
         (ADR-0013) — redirect the internal-link open to the transfer form so
         users edit it there, not on the raw move."""
         self.ensure_one()
-        if self.is_transfer and self.transfer_ids:
+        if self.is_transfer:
             return self.action_open_transfer()
         return super().get_formview_action(access_uid=access_uid)

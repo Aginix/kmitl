@@ -154,6 +154,10 @@ class BudgetTransfer(models.Model):
             # A budget transfer is always a balanced entry move; the delegated
             # move_type routes to the auto-created budget.move (_inherits).
             vals.setdefault("move_type", "entry")
+            # Stamp the move as a transfer once, at creation (delegated through
+            # _inherits). The link is a write-once 1:1, so this deterministic
+            # flag never needs recomputing from transfer_ids.
+            vals.setdefault("is_transfer", True)
         return super().create(vals_list)
 
     def unlink(self):
