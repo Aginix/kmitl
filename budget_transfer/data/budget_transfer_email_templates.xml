@@ -43,10 +43,6 @@
                                         <td style="padding-right: 20px; font-weight: bold;">Amount:</td>
                                         <td style="color: #875A7B; font-weight: bold;">{{ object.amount | safe }} {{ object.currency_id.name }}</td>
                                     </tr>
-                                    <tr>
-                                        <td style="padding-right: 20px; font-weight: bold;">Transfer Type:</td>
-                                        <td>{{ dict(object._fields['transfer_type']._description_selection(object.env))[object.transfer_type] }}</td>
-                                    </tr>
                                 </table>
                             </td>
                         </tr>

@@ -39,7 +39,6 @@
                     <group>
                         <group name="transfer_info">
                             <field name="date" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                            <field name="transfer_type"/>
                             <field name="budget_type" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="department_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="source_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
@@ -221,7 +220,6 @@
                 <field name="name"/>
                 <field name="date"/>
                 <field name="user_id"/>
-                <field name="transfer_type"/>
                 <field name="amount" widget="monetary" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="approver_id"/>
@@ -322,12 +320,13 @@
         </field>
     </record>
 
-    <!-- Filter transfer-owned moves out of the general budget move ledger.
-         Draft/submitted/approved transfers carry a zero-amount draft move;
-         without this domain they pollute the ledger list and dashboard feed.
-         Transfer moves are reachable via the transfer form's stat button. -->
+    <!-- Keep only the empty draft moves of not-yet-posted transfers out of the
+         general ledger list (they carry a zero-amount draft move that would
+         pollute it). A POSTED transfer is a real budget entry that moves Current
+         Budget (ADR-0003), so it stays visible in the ledger like any other
+         move; its transfer form is one click away via the move's stat button. -->
     <record id="budget.action_budget_move" model="ir.actions.act_window">
-        <field name="domain">[('is_transfer', '=', False)]</field>
+        <field name="domain">['|', ('is_transfer', '=', False), ('state', '=', 'posted')]</field>
     </record>
 
     <!-- Budget Transfer Actions -->

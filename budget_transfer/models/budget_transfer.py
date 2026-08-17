@@ -84,17 +84,6 @@ class BudgetTransfer(models.Model):
         default="draft",
     )
 
-    transfer_type = fields.Selection(
-        selection=[
-            ("entry", "ทั่วไป"),
-        ],
-        string="Transfer Type",
-        required=True,
-        default="entry",
-        readonly=True,
-        tracking=True,
-    )
-
     amount = fields.Float(
         string="Transfer Amount",
         compute="_compute_amount",
