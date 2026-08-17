@@ -22,6 +22,20 @@ class BudgetCommitment(models.Model):
         states=READONLY_STATES,
     )
 
+    @api.onchange("procurement_plan_analytic_id")
+    def _onchange_procurement_plan_analytic_id(self):
+        """Keep ``procurement_plan_id`` in step with the แผนจัดซื้อจัดจ้าง
+        analytic dimension: when the analytic account changes, point the record
+        link at the plan owning that account (cleared when no plan matches)."""
+        account = self.procurement_plan_analytic_id
+        self.procurement_plan_id = (
+            self.env["procurement.plan"].search(
+                [("analytic_account_id", "=", account.id)], limit=1
+            )
+            if account
+            else False
+        )
+
     def _sync_state(self):
         """When a plan's commitment is fully consumed it reaches ``done``;
         propagate that to the owning procurement plan so it auto-closes once

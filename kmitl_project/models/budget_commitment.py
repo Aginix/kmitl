@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 
 
 class BudgetCommitment(models.Model):
@@ -17,6 +17,20 @@ class BudgetCommitment(models.Model):
         string="โครงการ/กิจกรรม",
         states=READONLY_STATES,
     )
+
+    @api.onchange("kmitl_project_analytic_id")
+    def _onchange_kmitl_project_analytic_id(self):
+        """Keep ``kmitl_project_id`` in step with the โครงการ/กิจกรรม analytic
+        dimension: when the analytic account changes, point the record link at
+        the project owning that account (cleared when no project matches)."""
+        account = self.kmitl_project_analytic_id
+        self.kmitl_project_id = (
+            self.env["kmitl.project"].search(
+                [("analytic_account_id", "=", account.id)], limit=1
+            )
+            if account
+            else False
+        )
 
     def action_view_kmitl_project(self):
         self.ensure_one()

@@ -12,10 +12,15 @@
                     class="oe_stat_button"
                     type="object"
                     name="action_view_disbursement_requests"
-                    string="Disbursement Requests"
                     icon="fa-file-invoice-dollar"
                     attrs="{'invisible': [('disbursement_request_count', '=', 0)]}"
-                />
+                >
+                    <field
+                        name="disbursement_request_count"
+                        widget="statinfo"
+                        string="Disbursement Requests"
+                    />
+                </button>
             </xpath>
         </field>
     </record>

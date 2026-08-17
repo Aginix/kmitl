@@ -37,6 +37,7 @@
         "views/menu_views.xml",
         "views/kmitl_project_views.xml",
         "views/budget_account_views.xml",
+        "views/budget_commitment_views.xml",
         "views/portal_templates.xml",
         "views/portal_dashboard_templates.xml",
         "views/project_evaluation_views.xml",
