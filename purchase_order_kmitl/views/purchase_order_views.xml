@@ -122,7 +122,6 @@
                     <group>
                         <field
                             name="account_fiscal_year_id"
-                            widget="selection"
                             attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}"
                         />
                         <field
