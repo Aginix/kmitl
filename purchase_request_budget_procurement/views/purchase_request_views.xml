@@ -38,8 +38,10 @@
             ref="purchase_request_kmitl.view_purchase_request_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//div[hasclass('oe_edit_only')]" position="before">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="after">
                 <h2>Purchase Request Form</h2>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_edit_only')]" position="before">
                 <!-- Plan-driven PRs are created from the procurement plan only
                      (ADR-0006). The selector is gone; these stay invisible so
                      the prefill onchange still fires from the create context. -->

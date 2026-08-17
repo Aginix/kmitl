@@ -81,4 +81,4 @@ msgstr "เลือกใช้รายการจากแผนจัดซ
 #. module: purchase_request_budget_procurement
 #: model_terms:ir.ui.view,arch_db:purchase_request_budget_procurement.view_purchase_request_form_inherit_account_fiscal_year_procurement_plan
 msgid "Purchase Request Form"
-msgstr "แบบคำขอซื้อ/จ้าง (พ.1)"
+msgstr "แบบขอให้จัดหา (พ.1)"

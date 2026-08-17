@@ -100,7 +100,7 @@
                         states="to_approve,sarabun_returned"
                         string="Cancel"
                         type="object"
-                        groups="purchase_request.group_purchase_request_manager"
+                        groups="purchase.group_purchase_user"
                     />
                     <button
                         name="action_open_material_withdrawal_wizard"
