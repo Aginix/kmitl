@@ -1,7 +1,6 @@
 import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -293,9 +292,10 @@ class BudgetTransfer(models.Model):
         for transfer in self:
             user = self.env.user
 
-            # Submit button - only in draft state for requestor
-            transfer.show_submit_button = (
-                transfer.state == "draft" and transfer.user_id == user
+            # Submit button - draft state, for the requestor or an admin (an
+            # admin may drive the workflow on behalf of others).
+            transfer.show_submit_button = transfer.state == "draft" and (
+                transfer.user_id == user or self.env.is_admin()
             )
 
             # Approve/Reject buttons - available for all users in submitted state
@@ -308,8 +308,15 @@ class BudgetTransfer(models.Model):
             # Cancel button - available in draft/submitted states
             transfer.show_cancel_button = transfer.state in ("draft", "submitted")
 
-            # Reset button - available for all users in non-draft states
-            transfer.show_reset_button = transfer.state != "draft"
+            # Reset button - available in non-draft, non-posted states. A posted
+            # transfer carries live budget.move entries; resetting it would
+            # strand them, so reset is blocked once posted (ADR-0009 F4).
+            transfer.show_reset_button = transfer.state in (
+                "submitted",
+                "approved",
+                "rejected",
+                "cancelled",
+            )
 
     @api.depends("line_ids.amount")
     def _compute_amount(self):
@@ -365,35 +372,20 @@ class BudgetTransfer(models.Model):
                 for line in transfer.line_ids.filtered(
                     lambda l: l.transfer_direction == "from"
                 ):
-                    # Check budget availability using budget controller
                     budget_controller = self.env["budget.controller"]
 
-                    # Build analytic data for budget controller
-                    # Note: BudgetController expects analytic_data dict with specific keys
-                    analytic_data = {}
-                    if line.activity_analytic_id:
-                        analytic_data["activity_analytic_id"] = (
-                            line.activity_analytic_id.id
-                        )
-                    if line.department_analytic_id:
-                        analytic_data["department_analytic_id"] = (
-                            line.department_analytic_id.id
-                        )
-                    if line.fund_analytic_id:
-                        analytic_data["fund_analytic_id"] = line.fund_analytic_id.id
-                    if line.source_analytic_id:
-                        analytic_data["source_analytic_id"] = line.source_analytic_id.id
-                    if line.budget_account_id:
-                        analytic_data["account_id"] = line.budget_account_id.id
-
-                    available_budget = budget_controller.get_available_budget(
-                        analytic_data=analytic_data,
-                        fiscal_year_id=(
-                            transfer.account_fiscal_year_id.id
-                            if transfer.account_fiscal_year_id
-                            else False
-                        ),
-                        company_id=transfer.company_id.id,
+                    # Read availability from the unified control-node engine on
+                    # the line's full analytic_distribution (all five active
+                    # dimensions, incl. kmitl_project / procurement_plan) so a
+                    # line drawing from a plan/project bucket is evaluated against
+                    # that exact bucket — ADR-0009.
+                    available_budget = budget_controller.get_available(
+                        line.budget_account_id,
+                        line.analytic_distribution or {},
+                        transfer.account_fiscal_year_id.id
+                        if transfer.account_fiscal_year_id
+                        else False,
+                        transfer.company_id.id,
                     )
 
                     if available_budget < line.amount:
@@ -440,8 +432,12 @@ class BudgetTransfer(models.Model):
                     transfer.budget_validation_message = "Budget validation passed"
 
             except Exception as e:
+                # Surface the real error (do not silently swallow) — ADR-0009 F4.
+                _logger.exception(
+                    "Budget validation failed for transfer %s", transfer.id
+                )
                 transfer.has_sufficient_budget = False
-                transfer.budget_validation_message = f"Validation error: {str(e)}"
+                transfer.budget_validation_message = _("Validation error: %s") % e
 
     @api.onchange("date")
     def _onchange_date(self):
@@ -500,11 +496,22 @@ class BudgetTransfer(models.Model):
 
     def action_approve(self):
         """Approve the transfer"""
-        # Check permission - only Budget Manager can approve
-        if not self.env.user.has_group("budget.group_budget_manager"):
+        is_admin = self.env.is_admin()
+        # Check permission - Budget Manager, or an admin acting on behalf.
+        if not (self.env.user.has_group("budget.group_budget_manager") or is_admin):
             raise UserError(
                 _("Only Budget Managers can approve transfers")
             )
+
+        # Segregation of duties: the requestor may not approve their own
+        # transfer (ADR-0009 F4) — admins are exempt so they can act on behalf
+        # of others.
+        if not is_admin:
+            for transfer in self:
+                if transfer.user_id == self.env.user:
+                    raise UserError(
+                        _("You cannot approve your own budget transfer.")
+                    )
 
         # Final validation before approval
         self._validate_budget_availability()
@@ -524,8 +531,8 @@ class BudgetTransfer(models.Model):
 
     def action_reject(self):
         """Reject the transfer with reason"""
-        # Check permission - only Budget Manager can reject
-        if not self.env.user.has_group("budget.group_budget_manager"):
+        # Check permission - Budget Manager, or an admin acting on behalf.
+        if not (self.env.user.has_group("budget.group_budget_manager") or self.env.is_admin()):
             raise UserError(
                 _("Only Budget Managers can reject transfers")
             )
@@ -534,17 +541,26 @@ class BudgetTransfer(models.Model):
         return self._open_rejection_wizard()
 
     def action_post(self):
-        """Post the transfer and create budget moves"""
-        # Check permission - only Budget Manager can post
-        if not self.env.user.has_group("budget.group_budget_manager"):
+        """Post the transfer: re-check availability, then create + post the
+        balanced budget move.
+
+        A budget transfer is a pure budget move at the (budget.account ×
+        analytic_distribution) level — it does not reserve, release, or create
+        any budget.commitment. Reservation is handled separately (manually).
+        """
+        # Check permission - Budget Manager, or an admin acting on behalf.
+        if not (self.env.user.has_group("budget.group_budget_manager") or self.env.is_admin()):
             raise UserError(
                 _("Only Budget Managers can post transfers")
             )
 
-        # Final validation before posting
+        # Re-check availability with a fresh figure before posting.
+        self.invalidate_recordset(
+            ["has_sufficient_budget", "budget_validation_message"]
+        )
         self._validate_budget_availability()
 
-        # Create budget moves
+        # Create + post the balanced entry move.
         self._create_budget_moves()
 
         self.write({"state": "posted"})
@@ -565,9 +581,14 @@ class BudgetTransfer(models.Model):
 
     def action_reset_to_draft(self):
         """Reset transfer to draft state"""
-        # Remove any generated budget moves if not posted
-        if self.state != "posted":
-            self.budget_move_ids.unlink()
+        if "posted" in self.mapped("state"):
+            raise UserError(
+                _("Cannot reset a posted transfer to draft. Its budget moves are "
+                  "already in effect.")
+            )
+
+        # Remove any generated (un-posted) budget moves
+        self.budget_move_ids.unlink()
 
         self.write(
             {
@@ -600,6 +621,40 @@ class BudgetTransfer(models.Model):
         if not to_lines:
             raise ValidationError(
                 _("Please add at least one destination line (Transfer TO)")
+            )
+
+        # Every line must carry all four core dimensions (ส่วนงาน / แหล่งเงิน /
+        # กิจกรรม / กองทุน) so availability is matched on every axis against the
+        # appropriation. The two supplementary dimensions (โครงการ/กิจกรรม,
+        # แผนจัดซื้อจัดจ้าง) stay optional and are mutually exclusive per line.
+        core_dims = [
+            ("department_analytic_id", "ส่วนงาน"),
+            ("source_analytic_id", "แหล่งเงิน"),
+            ("activity_analytic_id", "กิจกรรม"),
+            ("fund_analytic_id", "กองทุน"),
+        ]
+        for line in self.line_ids:
+            missing = [label for fname, label in core_dims if not line[fname]]
+            if missing:
+                raise ValidationError(_(
+                    "ทุกบรรทัดต้องระบุครบ 4 มิติ (ส่วนงาน / แหล่งเงิน / กิจกรรม / กองทุน).\n"
+                    "บรรทัด %(account)s (%(direction)s) ยังขาด: %(missing)s"
+                ) % {
+                    "account": line.budget_account_id.display_name or "-",
+                    "direction": "โอนออก" if line.transfer_direction == "from" else "โอนเข้า",
+                    "missing": ", ".join(missing),
+                })
+
+        # Source (แหล่งเงิน) must be uniform across the transfer — no cross-source
+        # mixing (ADR-0009 dimension policy). Lines inherit the header source, so
+        # this also guards against a hand-edited analytic_distribution.
+        cross_source = self.line_ids.filtered(
+            lambda l: l.source_analytic_id != self.source_analytic_id
+        )
+        if cross_source:
+            raise ValidationError(
+                _("All transfer lines must use the transfer's source (แหล่งเงิน). "
+                  "Cross-source transfers are not allowed.")
             )
 
         # Validate balanced transfer

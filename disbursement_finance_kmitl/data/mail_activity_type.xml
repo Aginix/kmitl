@@ -30,4 +30,17 @@
         <field name="icon">fa-money</field>
         <field name="delay_count">0</field>
     </record>
+
+    <!-- The Hand-over: pushed to the accounting office's makers when the finance
+         office confirms the request paid. One Todo for the request, not one per
+         payee — the request is the document KMITL navigates by. Cleared when the
+         request is cleared (every voucher of it posted). -->
+    <record id="mail_activity_dr_to_book" model="mail.activity.type">
+        <field name="name">Disbursement to book</field>
+        <field name="summary">The finance office paid a disbursement request — book its payment vouchers</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="icon">fa-book</field>
+        <field name="delay_count">0</field>
+    </record>
 </odoo>

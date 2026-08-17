@@ -69,7 +69,7 @@
                 <field
                     name="state"
                     widget="statusbar"
-                    statusbar_visible="draft,purchase,done,cancel"
+                    statusbar_visible="draft,purchase,done"
                     readonly="1"
                 />
             </xpath>

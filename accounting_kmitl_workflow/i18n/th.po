@@ -389,3 +389,24 @@ msgstr "รายการรออนุมัติ"
 #: model:mail.activity.type,summary:accounting_kmitl_workflow.mail_activity_move_to_approve
 msgid "An entry was submitted and is waiting for your approval"
 msgstr "มีรายการถูกส่งมารอการอนุมัติของคุณ"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "There are exceptions to review. Open the entry and submit it there."
+msgstr "มีข้อยกเว้นที่ต้องตรวจสอบ กรุณาเปิดรายการแล้วส่งอนุมัติที่นั่น"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+#, python-format
+msgid "%s entry/entries submitted."
+msgstr "ส่งอนุมัติแล้ว %s รายการ"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "Could not submit:"
+msgstr "ส่งอนุมัติไม่สำเร็จ:"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "Submit"
+msgstr "ส่งอนุมัติ"

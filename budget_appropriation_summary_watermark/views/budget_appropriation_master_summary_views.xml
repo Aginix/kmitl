@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record
+        id="view_budget_appropriation_master_summary_form_watermark"
+        model="ir.ui.view"
+    >
+        <field name="name">budget.appropriation.master.summary.form.watermark</field>
+        <field name="model">budget.appropriation.master.summary</field>
+        <field
+            name="inherit_id"
+            ref="budget_appropriation_summary.view_budget_appropriation_master_summary_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='final_document']/group" position="inside">
+                <field
+                    name="watermark_pdf"
+                    filename="watermark_pdf_filename"
+                    widget="pdf_viewer"
+                />
+                <field name="watermark_pdf_filename" invisible="1" />
+                <field
+                    name="watermark_pages"
+                    placeholder="เช่น 2,3,7,60-90 (เว้นว่าง = ทุกหน้า)"
+                />
+            </xpath>
+            <xpath expr="//page[@name='final_document']/group" position="after">
+                <button
+                    name="action_generate_watermarked"
+                    type="object"
+                    string="ทำลายน้ำ &amp; เผยแพร่"
+                    class="btn-primary"
+                    attrs="{'invisible': ['|', ('final_document', '=', False), ('watermark_pdf', '=', False)]}"
+                />
+                <group string="ฉบับเผยแพร่พร้อมลายน้ำ">
+                    <field
+                        name="final_document_watermarked"
+                        filename="final_document_watermarked_filename"
+                    />
+                    <field
+                        name="final_document_watermarked_filename"
+                        invisible="1"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

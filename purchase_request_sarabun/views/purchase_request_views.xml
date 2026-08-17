@@ -15,6 +15,13 @@
                     groups="purchase.group_purchase_user"
                     attrs="{'invisible': ['|', ('state', '!=', 'to_submit'), ('sarabun_has_live_document', '=', True)]}"
                 />
+                <button
+                    name="action_resend_to_sarabun"
+                    string="Resend to Sarabun"
+                    type="object"
+                    class="oe_highlight"
+                    states="returned"
+                />
             </xpath>
 
             <!-- Add Sarabun Documents smart button -->

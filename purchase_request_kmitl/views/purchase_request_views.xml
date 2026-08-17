@@ -82,6 +82,12 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
 
+            <xpath expr="//field[@name='line_ids']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('is_editable', '=', False)]}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='line_ids']" position="before">
                 <group>
                     <group>
@@ -136,8 +142,15 @@
             <xpath expr="//button[@name='button_draft']" position="after">
                 <button
                     name="button_cancel"
-                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress"
+                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress,returned"
                     string="Cancel"
+                    type="object"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
+                />
+                <button
+                    name="button_return"
+                    states="to_verify,to_submit"
+                    string="Return"
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
@@ -165,6 +178,24 @@
                 position="attributes"
             >
                 <attribute name="required">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='product_qty']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
             </xpath>
 
             <xpath expr="//field[@name='line_ids']//tree" position="attributes">
@@ -195,7 +226,7 @@
                             name="department_id"
                             string="Department"
                             options="{'limit': 50, 'search_more': false, 'create': false, 'create_edit': false}"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            attrs="{'readonly': [('is_editable', '=', False)]}"
                         />
                         <field name="user_id" readonly="1" />
                     </group>
