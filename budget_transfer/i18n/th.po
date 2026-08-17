@@ -195,6 +195,16 @@ msgstr ""
 "ต้องการดำเนินการต่อหรือไม่?"
 
 #. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_search
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_search
+msgid "Current Fiscal Year"
+msgstr "ปีงบประมาณปัจจุบัน"
+
+#. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
 msgid "Approve & Post"
 msgstr ""
