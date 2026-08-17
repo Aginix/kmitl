@@ -388,10 +388,9 @@ msgstr ""
 #: code:addons/procurement_plan/models/procurement_plan.py:0
 #: code:addons/procurement_plan/models/procurement_plan.py:0
 #: code:addons/procurement_plan/models/procurement_plan.py:0
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__new
 #, python-format
 msgid "New"
-msgstr "รอทำแผนดำเนินการ"
+msgstr "ใหม่"
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__note
@@ -448,10 +447,6 @@ msgstr ""
 msgid "October"
 msgstr "ตุลาคม"
 
-#. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__on_hold
-msgid "On Hold"
-msgstr "ชะลอโครงการ"
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__payment_ids
@@ -521,18 +516,6 @@ msgstr "Procurement Plan"
 msgid "Purchase Request (ETA)"
 msgstr "จัดทำ พ.1"
 
-#. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__ready
-#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
-msgid "Ready"
-msgstr "รอดำเนินการ"
-
-#. module: procurement_plan
-#. odoo-python
-#: code:addons/procurement_plan/models/procurement_plan.py:0
-#, python-format
-msgid "Record must be in new state to be set to ready."
-msgstr ""
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__message_has_sms_error
