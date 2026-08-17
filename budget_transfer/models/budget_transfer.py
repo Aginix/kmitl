@@ -103,14 +103,6 @@ class BudgetTransfer(models.Model):
         readonly=True,
         tracking=True,
     )
-    to_amount = fields.Float(
-        string="Destination Amount",
-        compute="_compute_amount",
-        store=True,
-        digits="Budget Precision",
-        readonly=True,
-        help="Total of the TO lines; must match the transfer amount.",
-    )
 
     reason = fields.Text(
         string="Transfer Reason",
@@ -207,11 +199,6 @@ class BudgetTransfer(models.Model):
             transfer.amount = sum(
                 transfer.line_ids.filtered(
                     lambda line: line.transfer_direction == "from"
-                ).mapped("amount")
-            )
-            transfer.to_amount = sum(
-                transfer.line_ids.filtered(
-                    lambda line: line.transfer_direction == "to"
                 ).mapped("amount")
             )
 
