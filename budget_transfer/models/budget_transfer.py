@@ -163,12 +163,37 @@ class BudgetTransfer(models.Model):
         moves.unlink()
         return res
 
+    def write(self, vals):
+        """Freeze the fiscal year once the transfer is confirmed.
+
+        The BTR number's year is derived from the fiscal year, so once the
+        transfer leaves draft the fiscal year must stay put — otherwise the
+        minted number and the budget year could diverge. Reset to Draft first
+        to change it.
+        """
+        if "account_fiscal_year_id" in vals:
+            frozen = self.filtered(lambda t: t.state != "draft")
+            if frozen:
+                raise UserError(
+                    _(
+                        "The fiscal year is frozen once the transfer is "
+                        "confirmed. Reset it to draft to change the fiscal year."
+                    )
+                )
+        return super().write(vals)
+
     # ------------------------------------------------------------------
     # Computes
     # ------------------------------------------------------------------
-    @api.depends("state", "date")
+    @api.depends("state", "account_fiscal_year_id")
     def _compute_name(self):
-        """Assign the BTR number once the transfer leaves draft."""
+        """Assign the BTR number once the transfer leaves draft.
+
+        The year in the BTR number comes from the fiscal year's end date
+        (``account_fiscal_year_id.date_to``) — not the calendar date the
+        number happens to be minted on — so it always reflects the budget
+        year the transfer belongs to.
+        """
         # The default name is _("New"), which is translated ("ใหม่" in Thai).
         # Recognise both the English sentinel and its translation as "unnamed",
         # otherwise the check thinks the record already has a number and never
@@ -180,9 +205,13 @@ class BudgetTransfer(models.Model):
             has_name = transfer.name and transfer.name not in placeholders
             if has_name or transfer.state == "draft":
                 continue
-            if not has_name and transfer.date:
-                new_name = self.env["ir.sequence"].next_by_code(
-                    "budget.transfer"
+            if not has_name and transfer.account_fiscal_year_id:
+                new_name = (
+                    self.env["ir.sequence"]
+                    .with_context(
+                        ir_sequence_date=transfer.account_fiscal_year_id.date_to
+                    )
+                    .next_by_code("budget.transfer")
                 ) or _("New")
                 transfer.name = new_name
                 if new_name not in placeholders:
