@@ -21,9 +21,14 @@
                     <widget name="web_ribbon" title="Posted" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'posted')]}"/>
                     <widget name="web_ribbon" title="Cancelled" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_budget_move" type="object" class="oe_stat_button" icon="fa-exchange">
+                        <!-- Hidden on a new, unsaved record: move_id (the _inherits
+                             delegate, auto-required) is only filled on save, and
+                             Odoo 16 does not propagate the button's invisible
+                             modifier to the child field, so the field carries its
+                             own invisible to skip required-validation before save. -->
+                        <button name="action_view_budget_move" type="object" class="oe_stat_button" icon="fa-exchange" attrs="{'invisible': [('move_id', '=', False)]}">
                             <div class="o_stat_info">
-                                <span class="o_stat_value"><field name="move_id" readonly="1" nolabel="1"/></span>
+                                <span class="o_stat_value"><field name="move_id" readonly="1" nolabel="1" attrs="{'invisible': [('move_id', '=', False)]}"/></span>
                                 <span class="o_stat_text">Budget Move</span>
                             </div>
                         </button>
