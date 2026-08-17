@@ -1137,7 +1137,7 @@ msgstr "โอนงบประมาณ"
 
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_move_line__procurement_plan_analytic_id
-msgid "แผนจัดซื้อจัดจ้าง"
+msgid "Procurement Plan"
 msgstr "แผนจัดซื้อจัดจ้าง"
 
 #. module: budget_transfer

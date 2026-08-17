@@ -76,7 +76,7 @@ class BudgetMoveLine(models.Model):
     # a transfer authors them, so make them writable. Their compute-from-JSON
     # stays (round-trip); the create/write sync keeps the JSON carrying them.
     kmitl_project_analytic_id = fields.Many2one(readonly=False)
-    procurement_plan_analytic_id = fields.Many2one(readonly=False)
+    procurement_plan_analytic_id = fields.Many2one(string="Procurement Plan", readonly=False)
 
     # Source is the move header's, mirrored read-only onto the line.
     # Keep it read-only: as a *writable* related field a fresh line's empty
