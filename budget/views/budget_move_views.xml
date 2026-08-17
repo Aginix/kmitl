@@ -98,6 +98,10 @@
                                     />
 <field name="account_id" options='{"no_open": True}'
                                     />
+                                    <field name="account_is_project" column_invisible="1" />
+                                    <field name="account_is_procurement" column_invisible="1" />
+                                    <field name="kmitl_project_analytic_id" options='{"no_open": True}' attrs="{'invisible': [('account_is_project', '=', False)]}" />
+                                    <field name="procurement_plan_analytic_id" options='{"no_open": True}' attrs="{'invisible': [('account_is_procurement', '=', False)]}" />
 <field name="balance" sum="จำนวนเงิน" />
                                     <field name="note" />
                                     <!-- Hidden fields for backend use -->
@@ -171,6 +175,10 @@
                         <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' attrs="{'required': [('budget_type', '=', 'expense')]}" widget="helper_field" />
                         <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                         <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" widget="helper_field" domain="[('budget_type', '=', budget_type), ('budgetable', '=', True), '|', ('fund_analytic_ids', '=', False), ('fund_analytic_ids', 'in', [fund_analytic_id])]" />
+                        <field name="account_is_project" invisible="1" />
+                        <field name="account_is_procurement" invisible="1" />
+                        <field name="kmitl_project_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' attrs="{'invisible': [('account_is_project', '=', False)]}" />
+                        <field name="procurement_plan_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' attrs="{'invisible': [('account_is_procurement', '=', False)]}" />
                         <field name="balance" />
                         <field name="note" />
                         <!-- Hidden fields for backend use -->
