@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Show the project a disbursement is raised under (from its kmitl_project
+         analytic dimension). Read-only lookup, only when the DR carries one. -->
+    <record id="view_disbursement_request_form_kmitl_project" model="ir.ui.view">
+        <field name="name">view.disbursement.request.form.kmitl.project</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='activity_analytic_id']" position="after">
+                <field name="kmitl_project_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" attrs="{'invisible': [('kmitl_project_analytic_id', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
