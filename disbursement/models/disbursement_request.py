@@ -1157,13 +1157,7 @@ class DisbursementRequest(models.Model):
         """Cancel only the obligate/consume lines THIS request created on a
         shared commitment, leaving the reservation open for other requests."""
         self.ensure_one()
-        own = commitment.line_ids.filtered(
-            lambda l: l.state == "posted"
-            and l.move_type in ("obligate", "consume")
-            and l.res_model == "disbursement.request"
-            and l.res_id == self.id
-        )
-        own.action_cancel()
+        commitment.revert_document_lines("disbursement.request", self.id)
         return True
 
     def _has_own_budget_obligation(self):
