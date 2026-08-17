@@ -10,6 +10,16 @@ _logger = logging.getLogger(__name__)
 class ProcurementPlan(models.Model):
     _inherit = "procurement.plan"
 
+    # This layer gives ``to_verify`` its budget meaning — the plan waits here for
+    # งานแผน to allocate budget (ปรับเข้าแผน) and then reserves it (จองงบ) — so
+    # relabel the state to match. ``selection_add`` on an existing key overrides
+    # its label only (no new value, no ondelete needed).
+    state = fields.Selection(
+        selection_add=[
+            ("to_verify", "รอจัดสรรงบประมาณ (ปรับเข้าแผน) และจองงบประมาณ"),
+        ],
+    )
+
     budget_account_id = fields.Many2one(
         comodel_name="budget.account",
         string="รหัสงบประมาณ",
