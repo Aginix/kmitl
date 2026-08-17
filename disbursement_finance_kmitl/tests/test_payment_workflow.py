@@ -400,6 +400,11 @@ class TestPaymentWorkflow(TransactionCase):
         self.assertEqual(
             request.payment_line_ids.mapped("payment_id"), request.payment_ids
         )
+        # And every voucher records why it leaves the account it leaves.
+        self.assertEqual(
+            set(request.payment_ids.mapped("kmitl_payment_subject_id")),
+            {self.subject_advance},
+        )
 
     def test_banking_coordinates_freeze_once_the_payment_exists(self):
         request = self._billed_request([self.payee_ktb], self.subject_vendor)

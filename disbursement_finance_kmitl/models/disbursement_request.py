@@ -706,6 +706,9 @@ class DisbursementRequest(models.Model):
                 "payment_method_line_id": line.paying_account_id.id,
                 "payment_type": "outbound",
                 "partner_type": "supplier",
+                # Why this voucher leaves the account it leaves: the subject is
+                # what chose the payee's หัวจ่าย, so it travels with it.
+                "kmitl_payment_subject_id": self.payment_subject_id.id,
                 "ref": _("%s - %s", self.name, bill.name),
                 "analytic_distribution": bill.analytic_distribution,
             }

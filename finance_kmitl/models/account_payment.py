@@ -38,6 +38,19 @@ class AccountPayment(models.Model):
         string="Operation Type",
         required=True,
     )
+    kmitl_payment_subject_id = fields.Many2one(
+        comodel_name="kmitl.payment.subject",
+        string="Payment Subject",
+        readonly=True,
+        copy=False,
+        index=True,
+        help="เรื่องที่จ่าย — what the disbursement this voucher belongs to was "
+        "for, which is what chose its หัวจ่าย. Carried down from the request so "
+        "the voucher records why the money left the account it left. Read-only "
+        "because the choice was already made and acted on: changing it here "
+        "would move no money and re-derive no paying account. A voucher filled "
+        "in by hand has none — nothing chose its หัวจ่าย but the officer.",
+    )
     payee_type_id = fields.Many2one(
         related="partner_id.partner_type_id",
         string="Payee Type",
