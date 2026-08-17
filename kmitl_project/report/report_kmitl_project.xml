@@ -327,10 +327,10 @@
                                     </table>
                                   </t>
                                   <div class="text-end bold">
-                                    งบประมาณที่ขอรับการจัดสรร : <span t-out="'{:,.2f}'.format(o.budget_amount)"/> บาท
+                                    งบประมาณที่ขอรับการจัดสรร : <span t-out="'{:,.2f}'.format(o.budget_estimate)"/> บาท
                                   </div>
-                                  <div class="text-end" t-if="o.budget_amount">
-                                    (<t t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.budget_amount)"/>)
+                                  <div class="text-end" t-if="o.budget_estimate">
+                                    (<t t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.budget_estimate)"/>)
                                   </div>
                                 </div>
                               </div>

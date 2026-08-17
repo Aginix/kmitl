@@ -173,7 +173,7 @@
     <template id="kmitl_project_portal_content" name="KMITL Project Portal Content">
         <t
             t-set="_type_labels"
-            t-value="{'project': 'โครงการ/กิจกรรม', 'strategic_project': 'โครงการยุทธศาสตร์'}"
+            t-value="{'project': 'โครงการ (งบประจำ)', 'activity': 'กิจกรรม (งบประจำ)', 'strategic_project': 'โครงการยุทธศาสตร์'}"
         />
 
         <!-- Hero header -->
