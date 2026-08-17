@@ -127,6 +127,9 @@ class BudgetTransfer(models.Model):
     show_approve_button = fields.Boolean(compute="_compute_button_visibility")
     show_cancel_button = fields.Boolean(compute="_compute_button_visibility")
     show_reset_button = fields.Boolean(compute="_compute_button_visibility")
+    # Reset from a posted transfer is shown as a separate button so it can
+    # carry a confirmation warning (it unwinds a recorded budget entry).
+    show_reset_posted_button = fields.Boolean(compute="_compute_button_visibility")
 
     # Validation Fields
     has_sufficient_budget = fields.Boolean(
@@ -256,14 +259,19 @@ class BudgetTransfer(models.Model):
             # Cancel (draft/submitted → cancelled), account.payment pattern.
             transfer.show_cancel_button = transfer.state in ("draft", "submitted")
             # Reset to Draft (account.payment pattern): pull a pending transfer
-            # back (owner/admin); un-post a posted one or revive a cancelled one
-            # (manager/admin only — it unwinds the delegated budget move).
+            # back (owner/admin) or revive a cancelled one (manager/admin) —
+            # neither unwinds a live budget entry, so no confirmation needed.
             transfer.show_reset_button = (
                 transfer.state == "submitted"
                 and (transfer.user_id == user or is_admin)
             ) or (
-                transfer.state in ("posted", "cancelled")
+                transfer.state == "cancelled"
                 and (is_manager or is_admin)
+            )
+            # Resetting a *posted* transfer reverses a recorded budget entry —
+            # manager/admin only, and gated behind a confirmation in the view.
+            transfer.show_reset_posted_button = transfer.state == "posted" and (
+                is_manager or is_admin
             )
 
     @api.depends(

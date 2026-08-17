@@ -185,6 +185,17 @@ msgstr ""
 
 #. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
+msgid ""
+"Resetting a posted transfer back to draft will reverse the budget entry that "
+"has already been recorded, and may lead to budget inconsistencies. Do you "
+"want to continue?"
+msgstr ""
+"การกลับรายการที่ลงบัญชีงบประมาณแล้วไปเป็นแบบร่าง "
+"จะย้อนกลับรายการงบประมาณที่ได้บันทึกไว้ และอาจทำให้งบประมาณผิดพลาดได้ "
+"ต้องการดำเนินการต่อหรือไม่?"
+
+#. module: budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
 msgid "Approve & Post"
 msgstr ""
 
