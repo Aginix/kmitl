@@ -52,6 +52,16 @@ class BudgetTransfer(models.Model):
         index=True,
         auto_join=True,
     )
+    # Read-only mirror of the move's BM number for the smart button. The
+    # move_id delegate is required (``_inherits``); rendering it as a field on
+    # the form would make the web client block a *new* record's save with a
+    # "Budget Move required" error (the move only exists after save). This
+    # non-required related char shows the same reference without that trap.
+    move_reference = fields.Char(
+        string="Budget Move",
+        related="move_id.name",
+        readonly=True,
+    )
 
     # Basic Information (BTR number — the move keeps its own BM number).
     name = fields.Char(
