@@ -11,7 +11,7 @@
         <div class="dim">
             <span class="dim-label"><t t-out="label"/> :</span>
             <span t-if="acc">
-                <t t-out="(acc.code and acc.code + ' ' or '') + (acc.complete_name or acc.name or '').replace(' / ', ' ')"/>
+                <t t-out="(acc.code and acc.code + ' ' or '') + (acc.complete_name or acc.name or '')"/>
             </span>
             <span t-if="not acc">-</span>
         </div>
@@ -34,7 +34,7 @@
                         table.meta { width: 100%; border-collapse: collapse; margin-bottom: 8pt; }
                         table.meta td { padding: 1pt 4pt; font-size: 15pt; vertical-align: top; }
                         table.meta td.k { width: 70pt; color: #333; }
-                        .reason { margin: 4pt 0 10pt 0; white-space: pre-wrap; }
+                        .reason { white-space: pre-wrap; }
                         table.detail { width: 100%; border-collapse: collapse; margin-bottom: 8pt; }
                         table.detail th, table.detail td { border: 1px solid #000; padding: 3pt 6pt; font-size: 15pt; vertical-align: top; }
                         table.detail th { text-align: center; font-weight: bold; }
@@ -42,8 +42,8 @@
                         .amt { width: 95pt; text-align: right; white-space: nowrap; }
                         .group td { background: #e9e9e9; font-weight: bold; }
                         .acct { font-weight: bold; }
-                        .dim { padding-left: 14pt; }
-                        .dim-label { color: #333; }
+                        .dim { padding-left: 8pt; }
+                        .dim-label { font-weight: bold; }
                         tr.total td { font-weight: bold; }
                         .in-words { text-align: right; font-style: italic; margin-bottom: 18pt; }
                         table.sign { width: 100%; border-collapse: collapse; margin-top: 24pt; }
@@ -81,18 +81,16 @@
                                 <td class="k">จำนวนเงิน</td>
                                 <td><span t-out="'{:,.2f}'.format(o.amount)"/> บาท</td>
                             </tr>
+                            <tr>
+                              <td class="k">เหตุผล/รายละเอียด</td>
+                              <td colspan="3"><t t-out="o.reason or '-'"/></td>
+                            </tr>
                         </table>
-
-                        <div class="reason">
-                            <span style="font-weight:bold;">เหตุผล/รายละเอียดการขอโอน : </span>
-                            <t t-out="o.reason or '-'"/>
-                        </div>
-
                         <table class="detail">
                             <thead>
                                 <tr>
                                     <th class="seq">ที่</th>
-                                    <th>รายการงบประมาณและมิติ</th>
+                                    <th>รายการ</th>
                                     <th class="amt">ปรับลด (บาท)</th>
                                     <th class="amt">ปรับเพิ่ม (บาท)</th>
                                 </tr>
@@ -120,7 +118,7 @@
                                             </t>
                                             <t t-call="budget_transfer_pdf.dim_row">
                                                 <t t-set="label" t-value="'รหัสงบประมาณ'"/>
-                                                <t t-set="acc" t-value="(line.account_id.code and line.account_id.code + ' ' or '') + (line.account_id.complete_name or line.account_id.name or '').replace(' / ', ' ')"/>
+                                                <t t-set="acc" t-value="line.account_id"/>
                                             </t>
                                             <t t-if="line.kmitl_project_analytic_id" t-call="budget_transfer_pdf.dim_row">
                                                 <t t-set="label" t-value="'โครงการ/กิจกรรม'"/>
