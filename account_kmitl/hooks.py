@@ -107,7 +107,7 @@ PAYING_ACCOUNTS = [
         "bic": "SICOTHBK",
         "acc_number": "088-2-11066-5",
     },
-    # ธ.ไทยพาณิชย์ /ย่อยเทคโนฯ — the account KMITL's cheques are drawn on
+    # ธ.ไทยพาณิชย์ /ย่อยเทคโนฯ
     {
         "account": "1112220015",
         "method": "kmitl_cheque",
@@ -121,12 +121,26 @@ PAYING_ACCOUNTS = [
         "bic": "SICOTHBK",
         "acc_number": "088-2-60881-2",
     },
+    # ธ.ไทยพาณิชย์ /เทคโนฯ — the same account, also drawn cheques on
+    {
+        "account": "1112110012",
+        "method": "kmitl_cheque",
+        "bic": "SICOTHBK",
+        "acc_number": "088-2-60881-2",
+    },
     # ธ.ไทยพาณิชย์ /ย่อยเทคโนฯ
     {
         "account": "1112120003",
         "method": "kmitl_transfer",
         "bic": "SICOTHBK",
         "acc_number": "088-3-00005-9",
+    },
+    # ธ.ไทยพาณิชย์ /ย่อยเทคโนฯ
+    {
+        "account": "1112120025",
+        "method": "kmitl_cheque",
+        "bic": "SICOTHBK",
+        "acc_number": "088-3-00581-3",
     },
     # ธ.กรุงไทย /หัวตะเข้
     {

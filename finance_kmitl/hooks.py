@@ -10,7 +10,10 @@ from .models.kmitl_payment_subject import _paying_account_domain
 
 _logger = logging.getLogger(__name__)
 
-# The treasury office's เรื่องที่จ่าย, as they gave them.
+# The treasury office's เรื่องที่จ่าย, as they gave them. They come in pairs: the
+# same kind of payment made out of เงินรายได้ (the institute's own revenue, held at
+# SCB ย่อยเทคโนฯ) and out of เงินงบประมาณ (the government appropriation, held at SCB
+# เทคโนฯ) is one subject each, because the หัวจ่าย differs and nothing else does.
 #
 # Each names its หัวจ่าย by the pair that *identifies* one — the chart code of the GL
 # account the money is booked against, and the way it leaves — rather than by
@@ -20,28 +23,61 @@ _logger = logging.getLogger(__name__)
 # learned to make them, and the failure was a hard stop in the middle of installing
 # an app. Looked up here instead, a หัวจ่าย nobody set up costs one warning and one
 # subject — never the install.
+#
+# ``allowed`` empty restricts nothing: the auditor may move one payee of the subject
+# onto any หัวจ่าย by hand (``disbursement.payment.line`` widens the choice to all of
+# them when the subject lists none). It is stated only where auto-matching needs to
+# be told what to match a payee's own bank against.
 PAYMENT_SUBJECTS = [
     {
-        # บุคลากรบังคับมีบัญชี ธ.กรุงไทย → หัวจ่าย KTB ตายตัว
-        "xmlid": "payment_subject_salary",
-        "name": "เงินเดือน",
+        # หัวจ่าย SCB ย่อยเทคโนฯ ตายตัว
+        "xmlid": "payment_subject_transfer_revenue",
+        "name": "การจ่ายแบบโอน [เงินรายได้]",
         "sequence": 10,
         "method": "transfer",
         "auto_match": False,
-        "default": "1112120002",
-        "allowed": ["1112120002"],
+        "default": "1112210004",
+        "allowed": [],
     },
     {
-        # จ่ายจากหัวจ่ายธนาคารเดียวกับบัญชีผู้รับ ไม่ตรงตกไป SCB
-        "xmlid": "payment_subject_advance_reimburse",
-        "name": "เงินยืม/สำรองจ่าย",
-        "sequence": 20,
+        # หัวจ่าย SCB เทคโนฯ ตายตัว
+        "xmlid": "payment_subject_transfer_budget",
+        "name": "การจ่ายแบบโอน [เงินงบประมาณ]",
+        "sequence": 10,
+        "method": "transfer",
+        "auto_match": False,
+        "default": "1112110012",
+        "allowed": [],
+    },
+    {
+        # คู่ค้าเป็นนิติบุคคล ต่างธนาคารระบบแบงก์ route เอง จึงไม่จับคู่
+        "xmlid": "payment_subject_company_revenue",
+        "name": "จ่ายเงินบริษัท [เงินรายได้]",
+        "sequence": 11,
+        "method": "transfer",
+        "auto_match": False,
+        "default": "1112210004",
+        "allowed": [],
+    },
+    {
+        "xmlid": "payment_subject_company_budget",
+        "name": "จ่ายเงินบริษัท [เงินงบประมาณ]",
+        "sequence": 12,
+        "method": "transfer",
+        "auto_match": False,
+        "default": "1112110012",
+        "allowed": [],
+    },
+    {
+        # จ่ายรายบุคคล: จ่ายจากหัวจ่ายธนาคารเดียวกับผู้รับ ไม่ตรงตกไป SCB ย่อยเทคโนฯ
+        "xmlid": "payment_subject_person_revenue",
+        "name": "จ่ายบุคคล [ภายใน/ภายนอก ] เงินรายได้",
+        "sequence": 13,
         "method": "transfer",
         "auto_match": True,
         "default": "1112210004",
         "allowed": [
             "1112210004",
-            "1112110012",
             "1112120003",
             "1112120002",
             "1112120016",
@@ -49,34 +85,57 @@ PAYMENT_SUBJECTS = [
         ],
     },
     {
-        # หัวจ่าย SCB ตายตัว (ต่างธนาคารระบบแบงก์ route เอง)
-        "xmlid": "payment_subject_vendor_direct",
-        "name": "จ่ายตรงคู่ค้า",
-        "sequence": 30,
+        "xmlid": "payment_subject_person_budget",
+        "name": "จ่ายบุคคล [ภายใน/ภายนอก ] เงินงบประมาณ",
+        "sequence": 14,
         "method": "transfer",
-        "auto_match": False,
+        "auto_match": True,
         "default": "1112210004",
-        "allowed": ["1112210004"],
+        "allowed": [
+            "1112210004",
+            "1112120003",
+            "1112120002",
+            "1112120016",
+            "1112120006",
+        ],
     },
     {
-        # ออกเป็นเช็คสั่งจ่ายจากบัญชีกระแส SCB
-        "xmlid": "payment_subject_utilities",
-        "name": "ค่าน้ำค่าไฟ",
-        "sequence": 40,
+        # นำส่งสรรพากรเป็นเช็ค สั่งจ่ายจากบัญชีกระแส SCB ย่อยเทคโนฯ
+        "xmlid": "payment_subject_wht_revenue",
+        "name": "จ่ายภาษี หัก ณ ที่จ่าย [เงินรายได้]",
+        "sequence": 15,
         "method": "cheque",
         "auto_match": False,
         "default": "1112220015",
-        "allowed": ["1112220015"],
+        "allowed": [],
     },
     {
-        # หัวจ่ายเงินสดเงินรายได้สถาบันฯ
-        "xmlid": "payment_subject_cash",
-        "name": "จ่ายเงินสด",
-        "sequence": 50,
-        "method": "cash",
+        "xmlid": "payment_subject_wht_budget",
+        "name": "จ่ายภาษี หัก ณ ที่จ่าย [เงินงบประมาณ]",
+        "sequence": 16,
+        "method": "cheque",
         "auto_match": False,
-        "default": "1111000002",
-        "allowed": ["1111000002"],
+        "default": "1112110012",
+        "allowed": [],
+    },
+    {
+        # ค่าน้ำค่าไฟออกเป็นเช็ค
+        "xmlid": "payment_subject_utilities_revenue",
+        "name": "จ่ายค่าสาธารณูปโภค [เงินรายได้]",
+        "sequence": 17,
+        "method": "cheque",
+        "auto_match": False,
+        "default": "1112220015",
+        "allowed": [],
+    },
+    {
+        "xmlid": "payment_subject_utilities_budget",
+        "name": "จ่ายค่าสาธารณูปโภค [เงินงบประมาณ]",
+        "sequence": 18,
+        "method": "cheque",
+        "auto_match": False,
+        "default": "1112120025",
+        "allowed": [],
     },
 ]
 
@@ -140,6 +199,15 @@ def _seed_payment_subjects(env):
             continue
         allowed = [accounts[code] for code in entry["allowed"] if code in accounts]
         missing = [code for code in entry["allowed"] if code not in accounts]
+        if entry["auto_match"] and not allowed:
+            # A subject that matches the payee's bank against nothing is refused
+            # by the model, and rightly: every payee would fall to the fallback
+            # while the screen read as though their bank had matched.
+            skipped.append(
+                "%s (none of its allowed paying accounts %s exist)"
+                % (entry["name"], ", ".join(missing))
+            )
+            continue
         subject = Subject.create(
             {
                 "name": entry["name"],
@@ -147,9 +215,7 @@ def _seed_payment_subjects(env):
                 "default_payment_method_id": method.id,
                 "auto_match_payee_bank": entry["auto_match"],
                 "default_paying_account_id": default.id,
-                "allowed_paying_account_ids": [
-                    (6, 0, [line.id for line in allowed] or [default.id])
-                ],
+                "allowed_paying_account_ids": [(6, 0, [line.id for line in allowed])],
             }
         )
         env["ir.model.data"]._update_xmlids(
