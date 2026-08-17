@@ -123,16 +123,16 @@
                         <field
                             name="account_fiscal_year_id"
                             widget="selection"
-                            readonly="1"
+                            attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}"
                         />
                         <field
                             name="partner_id"
-                            readonly="1"
+                            attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}"
                             widget="res_partner_many2one"
                             context="{'res_partner_search_mode': 'supplier', 'show_vat': True}"
                         />
-                        <field name="department_id" readonly="1" />
-                        <field name="payment_type" readonly="1" />
+                        <field name="department_id" attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}" />
+                        <field name="payment_type" attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}" />
                     </group>
                 </group>
 
