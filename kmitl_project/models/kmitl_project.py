@@ -958,7 +958,18 @@ class KmitlProject(models.Model):
                             )
                             % rec.key
                         )
-        return super().write(vals)
+        res = super().write(vals)
+        # Keep the project's analytic account label in step with its name — the
+        # name is minted onto the analytic at ส่งเข้าแผน and stays editable in
+        # draft/returned, so a later rename must follow through to the dimension.
+        if vals.get("name"):
+            for rec in self:
+                if (
+                    rec.analytic_account_id
+                    and rec.analytic_account_id.name != rec.name
+                ):
+                    rec.analytic_account_id.name = rec.name
+        return res
 
     def _ensure_analytic_account(self):
         """A confirmed project tracks its own ``kmitl_project`` analytic dimension so
