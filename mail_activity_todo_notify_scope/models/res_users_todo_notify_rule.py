@@ -4,10 +4,12 @@ from odoo import fields, models
 class ResUsersTodoNotifyRule(models.Model):
     """Per-user override for group-Todo notification per activity type.
 
-    Default behaviour without any rule = the user's notification OU scope
-    (``res.users.todo_notify_operating_unit_ids``). A rule flips one activity
-    type out of that default: ``all_ous`` widens it back to every OU the user
-    can see, ``mute`` drops it from the primary inbox entirely.
+    Default behaviour without any rule = the user's global notification OU
+    scope (``res.users.todo_notify_operating_unit_ids``). A rule overrides
+    that for one activity type: the rule's own ``operating_unit_ids``
+    determines which OUs trigger a notification for that type.
+
+    Empty OU list on a rule = mute (no notifications for that type).
     """
 
     _name = "res.users.todo.notify.rule"
@@ -22,16 +24,14 @@ class ResUsersTodoNotifyRule(models.Model):
         ondelete="cascade",
         string="Activity Type",
     )
-    mode = fields.Selection(
-        [
-            ("all_ous", "รับจากทุกหน่วยงานที่เห็น"),
-            ("mute", "ไม่รับแจ้งเตือน (ย้ายไปแท็บอื่นๆ)"),
-        ],
-        required=True,
-        default="all_ous",
-        help="all_ous: widen to every OU the user can see, overriding the OU "
-        "scope. mute: drop from the primary inbox (still visible under "
-        "'Oversight' if the user could see it).",
+    operating_unit_ids = fields.Many2many(
+        "operating.unit",
+        "res_users_todo_notify_rule_ou_rel",
+        "rule_id",
+        "operating_unit_id",
+        string="Operating Units",
+        help="Receive notifications for this activity type only from these "
+        "OUs. Leave empty to mute this type entirely.",
     )
 
     _sql_constraints = [

@@ -31,18 +31,12 @@
                         />
                     </group>
                     <field name="todo_notify_rule_ids">
-                        <tree
-                            editable="bottom"
-                            string="Notification Rules"
-                            decoration-muted="mode == 'mute'"
-                            decoration-info="mode == 'all_ous'"
-                        >
+                        <tree editable="bottom" string="Notification Rules">
                             <field name="activity_type_id" />
                             <field
-                                name="mode"
-                                widget="badge"
-                                decoration-success="mode == 'all_ous'"
-                                decoration-warning="mode == 'mute'"
+                                name="operating_unit_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True}"
                             />
                         </tree>
                     </field>
@@ -79,18 +73,12 @@
                         nolabel="1"
                         colspan="4"
                     >
-                        <tree
-                            editable="bottom"
-                            string="Notification Rules"
-                            decoration-muted="mode == 'mute'"
-                            decoration-info="mode == 'all_ous'"
-                        >
+                        <tree editable="bottom" string="Notification Rules">
                             <field name="activity_type_id" />
                             <field
-                                name="mode"
-                                widget="badge"
-                                decoration-success="mode == 'all_ous'"
-                                decoration-warning="mode == 'mute'"
+                                name="operating_unit_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True}"
                             />
                         </tree>
                     </field>

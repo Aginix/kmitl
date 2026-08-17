@@ -17,7 +17,7 @@ class TodoHostScope(models.Model):
 @tagged("post_install", "-at_install")
 class TestNotificationScope(TransactionCase):
     """ADR-0007 — view scope stays wide, notification scope narrows the primary
-    inbox and lets Oversight surface the delta.
+    inbox.
 
     We stress a *manager* whose operating_unit_ids is auto-expanded to every OU
     by group_manager_operating_unit — the concrete flooding scenario the ADR
@@ -64,8 +64,6 @@ class TestNotificationScope(TransactionCase):
             {"name": "OU C", "code": "OU-C", "partner_id": partner}
         )
 
-        # Manager: holds group_manager_operating_unit → operating_unit_ids
-        # expands to every OU (the flooding scenario).
         cls.manager = cls.env["res.users"].create(
             {
                 "name": "Manager",
@@ -108,7 +106,7 @@ class TestNotificationScope(TransactionCase):
     # Backward compatibility
     # ------------------------------------------------------------------
     def test_default_scope_matches_view_scope(self):
-        """Empty notification scope + no rules = every group Todo the manager
+        """Empty global scope + no rules = every group Todo the manager
         can see lands in primary (the pre-ADR-0007 behaviour)."""
         a = self._schedule(self.rec_a, self.type_a)
         b = self._schedule(self.rec_b, self.type_a)
@@ -120,10 +118,10 @@ class TestNotificationScope(TransactionCase):
         self.assertFalse(self._mine_oversight(), "no delta → Oversight is empty")
 
     # ------------------------------------------------------------------
-    # OU-level notification scope
+    # Global OU-level notification scope
     # ------------------------------------------------------------------
     def test_notify_ou_subset_moves_outsiders_to_oversight(self):
-        """Setting notify_operating_unit_ids = [A, B] pushes OU C to Oversight."""
+        """Setting global notify OUs = [A, B] pushes OU C to Oversight."""
         a = self._schedule(self.rec_a, self.type_a)
         b = self._schedule(self.rec_b, self.type_a)
         c = self._schedule(self.rec_c, self.type_a)
@@ -136,40 +134,40 @@ class TestNotificationScope(TransactionCase):
         self.assertIn(c, oversight)
 
     # ------------------------------------------------------------------
-    # Per-type rules
+    # Per-type rules with OU selection
     # ------------------------------------------------------------------
-    def test_all_ous_rule_widens_a_muted_scope(self):
-        """A user with a narrow OU scope still receives an 'all_ous' type from
-        every view-scope OU (sarabun confirmations across the org)."""
-        a = self._schedule(self.rec_a, self.type_b)  # sarabun in OU A
-        c = self._schedule(self.rec_c, self.type_b)  # sarabun in OU C
-        self.manager.todo_notify_operating_unit_ids = self.ou_a  # narrow
+    def test_per_type_rule_overrides_global_scope(self):
+        """A per-type rule with specific OUs overrides the global scope for
+        that type — even when global is narrow."""
+        a_sarabun = self._schedule(self.rec_a, self.type_b)
+        c_sarabun = self._schedule(self.rec_c, self.type_b)
+        self.manager.todo_notify_operating_unit_ids = self.ou_a  # global = A only
         self.env["res.users.todo.notify.rule"].create(
             {
                 "user_id": self.manager.id,
                 "activity_type_id": self.type_b.id,
-                "mode": "all_ous",
+                "operating_unit_ids": [(6, 0, (self.ou_a + self.ou_c).ids)],
             }
         )
         primary = self._mine_primary()
-        self.assertIn(a, primary)
-        self.assertIn(c, primary, "all_ous rule widens sarabun back to every OU")
+        self.assertIn(a_sarabun, primary)
+        self.assertIn(c_sarabun, primary, "per-type rule widens sarabun to A+C")
 
-    def test_mute_rule_drops_type_from_primary(self):
-        """A mute rule removes the type from primary regardless of OU."""
+    def test_empty_rule_mutes_type(self):
+        """A rule with no OUs mutes the type entirely — drops from primary."""
         a_plan = self._schedule(self.rec_a, self.type_a)
         a_sarabun = self._schedule(self.rec_a, self.type_b)
         self.env["res.users.todo.notify.rule"].create(
             {
                 "user_id": self.manager.id,
                 "activity_type_id": self.type_a.id,
-                "mode": "mute",
+                # no operating_unit_ids → mute
             }
         )
         primary = self._mine_primary()
         oversight = self._mine_oversight()
-        self.assertNotIn(a_plan, primary, "muted type drops out of primary")
-        self.assertIn(a_plan, oversight, "muted type still visible under Oversight")
+        self.assertNotIn(a_plan, primary, "empty-OU rule mutes type from primary")
+        self.assertIn(a_plan, oversight, "muted type still visible in oversight")
         self.assertIn(a_sarabun, primary, "other types unaffected")
 
     # ------------------------------------------------------------------
@@ -177,18 +175,15 @@ class TestNotificationScope(TransactionCase):
     # ------------------------------------------------------------------
     def test_personal_todo_bypasses_scope(self):
         """Personal Todos are explicit routing decisions — the scope filter
-        must not silence them (Q6.1)."""
-        # Narrow scope AND mute the type — a personal Todo of that type must
-        # still hit primary.
-        self.manager.todo_notify_operating_unit_ids = self.ou_a  # narrow
+        must not silence them."""
+        self.manager.todo_notify_operating_unit_ids = self.ou_a
         self.env["res.users.todo.notify.rule"].create(
             {
                 "user_id": self.manager.id,
                 "activity_type_id": self.type_a.id,
-                "mode": "mute",
+                # empty = mute
             }
         )
-        # Personal Todo in OU C (outside notify scope) of a muted type.
         personal = self.rec_c.activity_schedule(
             activity_type_id=self.type_a.id, user_id=self.manager.id
         )
@@ -201,7 +196,7 @@ class TestNotificationScope(TransactionCase):
         )
 
     # ------------------------------------------------------------------
-    # Systray badge follows primary (Q6.2)
+    # Systray badge follows primary
     # ------------------------------------------------------------------
     def test_systray_count_uses_primary_domain(self):
         """The badge counts primary Todos only — a manager narrowing scope
@@ -213,7 +208,7 @@ class TestNotificationScope(TransactionCase):
         self.assertEqual(
             wide["total_count"], 3, "no config → all three count in badge"
         )
-        self.manager.todo_notify_operating_unit_ids = self.ou_a  # keep only A
+        self.manager.todo_notify_operating_unit_ids = self.ou_a
         narrow = self.manager.with_user(self.manager).get_my_todo_count()
         self.assertEqual(
             narrow["total_count"],
