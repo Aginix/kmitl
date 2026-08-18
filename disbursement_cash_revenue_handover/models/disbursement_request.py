@@ -78,9 +78,11 @@ class DisbursementRequest(models.Model):
         if self.company_id.currency_id.compare_amounts(amount, 0.0) <= 0:
             return no_move
 
+        line_specs = self._cash_revenue_handover_line_specs(funding, amount)
         move = self.env["account.move"].create(
-            self._prepare_cash_revenue_handover_vals(funding, amount)
+            self._prepare_cash_revenue_handover_vals(funding, line_specs)
         )
+        self._apply_handover_line_distribution(move, line_specs)
         self.message_post(
             body=_(
                 'Cash &amp; revenue handover of %(amount)s '
@@ -113,19 +115,12 @@ class DisbursementRequest(models.Model):
             self.amount_total, company_currency, self.company_id, self.date
         )
 
-    def _prepare_cash_revenue_handover_vals(self, funding, amount):
-        """The four-line entry: undo central's recognition, redo it at the unit.
-
-        ``analytic_distribution`` is written per line and deliberately left off
-        the header — ``accounting_kmitl`` pushes a header distribution down onto
-        every line, which would collapse both sides onto one set of dimensions
-        and leave an entry that moves nothing.
-        """
+    def _cash_revenue_handover_line_specs(self, funding, amount):
+        """``(account, debit, credit, distribution)`` for the four lines, in order."""
         self.ensure_one()
-        label = _("Cash & revenue handover: %s") % self.name
         central = self._central_analytic_distribution(funding)
         unit = self.analytic_distribution
-        lines = [
+        return [
             # central gives up the cash and the revenue it recognised
             (funding.bank_account_id, 0.0, amount, central),
             (funding.revenue_account_id, amount, 0.0, central),
@@ -133,6 +128,18 @@ class DisbursementRequest(models.Model):
             (funding.revenue_account_id, 0.0, amount, unit),
             (funding.bank_account_id, amount, 0.0, unit),
         ]
+
+    def _prepare_cash_revenue_handover_vals(self, funding, line_specs):
+        """The four-line entry: undo central's recognition, redo it at the unit.
+
+        The header carries the request's **own** dimensions, so the entry reads as
+        "this funds that request" and the four dimension fields the move form
+        marks required are filled — an entry with them blank cannot be saved from
+        the form at all. Its lines are then put right by
+        ``_apply_handover_line_distribution``.
+        """
+        self.ensure_one()
+        label = _("Cash & revenue handover: %s") % self.name
         return {
             "move_type": "entry",
             "journal_id": funding.journal_id.id,
@@ -140,6 +147,7 @@ class DisbursementRequest(models.Model):
             "ref": label,
             "company_id": self.company_id.id,
             "cash_revenue_handover_request_id": self.id,
+            "analytic_distribution": self.analytic_distribution,
             "line_ids": [
                 Command.create(
                     {
@@ -150,9 +158,25 @@ class DisbursementRequest(models.Model):
                         "analytic_distribution": distribution,
                     }
                 )
-                for account, debit, credit, distribution in lines
+                for account, debit, credit, distribution in line_specs
             ],
         }
+
+    def _apply_handover_line_distribution(self, move, line_specs):
+        """Write each side's dimensions back onto the lines, after create.
+
+        Odoo calls a field's ``inverse`` for any value handed to ``create``,
+        whether or not the field is computed (``models.py`` ``create``), and it
+        does so once the rows exist — so ``accounting_kmitl``'s inverse has by
+        then copied the header distribution onto all four lines, collapsing both
+        sides of the handover onto one set of dimensions and leaving an entry
+        that moves nothing. The two sides are therefore re-asserted here.
+
+        Lines come back in creation order, which is the order of ``line_specs``.
+        """
+        self.ensure_one()
+        for line, spec in zip(move.line_ids.sorted("id"), line_specs):
+            line.analytic_distribution = spec[3]
 
     def _central_analytic_distribution(self, funding):
         """Central's side of the entry.

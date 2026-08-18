@@ -15,7 +15,10 @@ The `account.move` (ใบสำคัญทั่วไป / JV) that moves **c
 from central's dimensions to those of the unit that is spending, using the **same
 GL account on both sides** — the money does not go anywhere, only its dimensions
 change. Four lines: central gives up the cash and reverses its revenue, the unit
-recognises both again.
+recognises both again. Its **header** dimensions are the funded request's, shown
+read-only and carried for identification only — the truth of the entry is on the
+lines, whose two sides differ, so the usual header-onto-lines propagation is
+suppressed here.
 _Avoid_: **การโอนงบ** (`budget.transfer` — moves the budget *pool*, touches no GL;
 see [budget](../budget/CONTEXT.md)), **ปรับเข้าแผน** (a tagged budget transfer into
 a project/plan sub-pool), **จัดสรรงบประมาณ** (`budget.appropriation` — the

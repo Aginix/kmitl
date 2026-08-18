@@ -228,12 +228,64 @@ class TestCashRevenueHandover(TransactionCase):
         self.assertIn(str(self.source_gov.id), central)
         self.assertIn(str(self.source_gov.id), unit)
 
-    def test_header_distribution_stays_empty(self):
-        """A header distribution is propagated onto every line by
-        ``accounting_kmitl``, which would collapse the two sides into one."""
+    def test_header_carries_the_request_dimensions(self):
+        """The move form marks all four dimensions required, so an entry with a
+        blank header cannot be saved from it at all."""
         request = self._request()
         request.action_create_bill()
-        self.assertFalse(request.cash_revenue_handover_move_ids.analytic_distribution)
+        handover = request.cash_revenue_handover_move_ids
+        self.assertEqual(handover.analytic_distribution, request.analytic_distribution)
+        self.assertEqual(handover.department_analytic_id, self.dept_faculty)
+        self.assertEqual(handover.fund_analytic_id, self.fund_faculty)
+        self.assertEqual(handover.activity_analytic_id, self.act_sub)
+        self.assertEqual(handover.source_analytic_id, self.source_gov)
+
+    def test_header_dimensions_do_not_reach_the_lines(self):
+        """``accounting_kmitl`` copies a header distribution onto every line; on a
+        handover that would collapse both sides onto one set of dimensions and
+        leave an entry that moves nothing."""
+        request = self._request()
+        request.action_create_bill()
+        handover = request.cash_revenue_handover_move_ids
+        central = self._distribution(
+            self.dept_central, self.fund_central, self.act_main
+        )
+        # Straight after create, i.e. after the inverse Odoo fires for a value
+        # handed to create.
+        self.assertEqual(
+            self._dims(self._central_line(request)),
+            set(central),
+            "central's side was flattened onto the header's dimensions",
+        )
+        # And again after the header is written a second time, with dimensions
+        # that match neither side — the lines still do not follow.
+        other = self._distribution(
+            self.dept_central, self.fund_faculty, self.act_program
+        )
+        handover.analytic_distribution = other
+        self.assertEqual(self._dims(self._central_line(request)), set(central))
+        self.assertEqual(handover.analytic_distribution, other)
+
+    def test_a_plain_entry_still_propagates_its_header(self):
+        """The guard is scoped to handovers — every other move keeps the shared
+        header-onto-lines behaviour."""
+        distribution = self._distribution(
+            self.dept_faculty, self.fund_faculty, self.act_sub
+        )
+        entry = self.Move.create(
+            {
+                "move_type": "entry",
+                "journal_id": self.jv_journal.id,
+                "date": "2026-01-15",
+                "analytic_distribution": distribution,
+                "line_ids": [
+                    (0, 0, {"account_id": self.bank_account.id, "debit": 10.0}),
+                    (0, 0, {"account_id": self.revenue_account.id, "credit": 10.0}),
+                ],
+            }
+        )
+        for line in entry.line_ids:
+            self.assertEqual(self._dims(line), set(distribution))
 
     def test_amount_is_the_gross_request_total(self):
         request = self._request(price=1234.56, payees=[self.payee, self.payee_two])

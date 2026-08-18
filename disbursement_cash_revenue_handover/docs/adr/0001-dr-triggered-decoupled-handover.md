@@ -38,10 +38,19 @@ afterwards.
   reusing it would make the handover *be* a vendor bill — blocking bill creation and
   advancing the request to `bills_posted` the moment the handover posted. Hence
   `cash_revenue_handover_request_id`.
-- **`analytic_distribution` is written per line, never on the header.**
-  `accounting_kmitl` propagates a header distribution onto every line, which would
-  collapse the two sides of the entry onto one set of dimensions and leave an entry
-  that moves nothing.
+- **The header carries the funded request's dimensions, and is stopped from reaching
+  the lines.** `accounting_kmitl` copies a header `analytic_distribution` onto every
+  line, and Odoo calls a field's `inverse` for any value handed to `create` whether or
+  not the field is computed — so left alone, both sides of the handover collapse onto
+  one set of dimensions and the entry moves nothing. Leaving the header blank avoids
+  that but is worse: the move form marks all four dimension fields `required="1"` and
+  editable in `draft`, so a handover with a blank header **cannot be saved from the
+  form at all**, which blocks the very Submit → Approve this design depends on. So the
+  header is filled from the request and the propagation is suppressed for handover
+  moves only (`_inverse_analytic_distribution`, `_onchange_analytic_distribution`),
+  with the two sides re-asserted on the lines right after `create`. The header
+  dimensions are shown read-only on a handover, since editing them now changes
+  nothing on the lines.
 - **No source of funds is named in code.** Eligibility is "a Central Funding Profile
   exists for this source", so widening scope — another government source, or
   institute revenue — is configuration. The repo's only other government-budget
