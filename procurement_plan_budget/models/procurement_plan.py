@@ -36,7 +36,13 @@ class ProcurementPlan(models.Model):
     )
 
     budget_commitment_ids = fields.One2many(
-        "budget.commitment", "procurement_plan_id", string="ผูกพันงบประมาณ", readonly=True
+        "budget.commitment",
+        "procurement_plan_id",
+        string="ผูกพันงบประมาณ",
+        readonly=True,
+        # Duplicating a plan copies its dimensions (มิติบัญชี) but must start with
+        # a clean reservation — the ใบจอง belongs to the original plan only.
+        copy=False,
     )
     budget_commitment_count = fields.Integer(
         string="จำนวนผูกพันงบประมาณ", compute="_compute_budget_commitment_count"

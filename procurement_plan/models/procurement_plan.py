@@ -258,6 +258,11 @@ class ProcurementPlan(models.Model):
     def action_reset_to_draft(self):
         self._on_reset()
         self.write({"state": "draft"})
+        # Revive the plan's analytic dimension that action_cancel archived, so a
+        # cancelled plan brought back to draft carries its account with it.
+        self.analytic_account_id.filtered(lambda a: not a.active).write(
+            {"active": True}
+        )
 
     def _on_reset(self):
         """No-op hook. Budget layer releases an untouched reservation here."""
@@ -266,6 +271,11 @@ class ProcurementPlan(models.Model):
     def action_cancel(self):
         self._on_cancel()
         self.write({"state": "cancel"})
+        # Archive the plan's analytic dimension so a cancelled plan's account
+        # stops showing up as a selectable มิติ; action_reset_to_draft revives it.
+        self.analytic_account_id.filtered(lambda a: a.active).write(
+            {"active": False}
+        )
 
     def _on_cancel(self):
         """No-op hook. Budget layer releases an untouched reservation here."""
