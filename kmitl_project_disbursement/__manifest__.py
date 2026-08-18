@@ -8,6 +8,7 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": ["kmitl_project", "disbursement"],
     "data": [
+        "data/exception_rule_data.xml",
         "views/kmitl_project_views.xml",
         "views/disbursement_request_views.xml",
         "report/report_disbursement_request.xml",
