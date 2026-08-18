@@ -54,4 +54,21 @@ if project and project.state != 'in_progress':
         <field name="is_blocking" eval="True" />
         <field name="active" eval="True" />
     </record>
+
+    <!-- Keep a project's disbursements within its reserved Project Budget: the
+         total claimed by all its non-cancelled DRs must not exceed budget_amount
+         (the disbursement analog of the พ.1 headroom cap, ADR-0007). Blocking. -->
+    <record id="excep_disbursement_project_over_budget" model="exception.rule">
+        <field name="name">ยอดเบิกจ่ายรวมเกินงบประมาณที่โครงการได้รับจัดสรร</field>
+        <field name="description">ยอดรวมของใบขอเบิกทั้งหมดภายใต้โครงการ/กิจกรรมนี้เกินงบประมาณที่จัดสรรให้โครงการ (budget_amount)</field>
+        <field name="sequence">63</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self._exceeds_project_budget():
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
 </odoo>

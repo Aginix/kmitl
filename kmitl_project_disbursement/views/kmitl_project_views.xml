@@ -11,6 +11,9 @@
                 <button name="action_open_disbursements" type="object" class="oe_stat_button" icon="fa-money" attrs="{'invisible': [('disbursement_count', '=', 0)]}">
                     <field name="disbursement_count" widget="statinfo" string="การเบิกจ่าย"/>
                 </button>
+                <button name="action_open_cancelled_disbursements" type="object" class="oe_stat_button" icon="fa-ban" attrs="{'invisible': [('disbursement_cancelled_count', '=', 0)]}">
+                    <field name="disbursement_cancelled_count" widget="statinfo" string="เบิกจ่ายที่ยกเลิก"/>
+                </button>
             </xpath>
         </field>
     </record>

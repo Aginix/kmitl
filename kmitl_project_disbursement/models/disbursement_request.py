@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
+from odoo.tools import float_compare
 
 
 class DisbursementRequest(models.Model):
@@ -61,6 +62,41 @@ class DisbursementRequest(models.Model):
         related="budget_account_id.is_project",
         string="Is Project Expense",
     )
+
+    def _project_disbursement_claimed_total(self):
+        """Total amount claimed by this project's non-cancelled disbursements
+        (this DR included) — the disbursement analog of the พ.1 headroom cap that
+        keeps a project's spend within its reserved Project Budget (ADR-0007).
+        sudo: sibling DRs may belong to other requesters."""
+        self.ensure_one()
+        project = self.kmitl_project_id
+        if not project:
+            return 0.0
+        siblings = self.env["disbursement.request"].sudo().search(
+            [
+                ("kmitl_project_id", "=", project.id),
+                ("state", "!=", "cancel"),
+            ]
+        )
+        return sum((siblings | self).mapped("amount_total"))
+
+    def _exceeds_project_budget(self):
+        """True when this project's disbursement claims overrun its Project Budget
+        (the reserved ``budget_amount``). sudo the project read — budget_amount is
+        gated to the project groups, but any requester may raise a DR."""
+        self.ensure_one()
+        project = self.kmitl_project_id.sudo()
+        if not project:
+            return False
+        rounding = (self.currency_id or self.company_id.currency_id).rounding
+        return (
+            float_compare(
+                self._project_disbursement_claimed_total(),
+                project.budget_amount,
+                precision_rounding=rounding,
+            )
+            > 0
+        )
 
     def action_open_kmitl_project(self):
         self.ensure_one()
