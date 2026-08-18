@@ -14,8 +14,8 @@ class BudgetTransfer(models.Model):
     company, currency, fiscal year, budget_type, department/source, move_type,
     and the *lines*) is the move's — accessed by the same field names through
     delegation, so no columns are duplicated. This model adds only what a
-    transfer needs on top of a budget move: its own BTR number, a seven-state
-    approval workflow, a reason, and the requestor/approver trail.
+    transfer needs on top of a budget move: its own BTR number, an approval
+    workflow, a reason, and the requestor/approver trail.
 
     Business rules (unchanged, ADR-0009): a transfer is a **pure move** — it
     reserves/releases nothing; a FROM line credits its bucket, a balanced TO line
@@ -24,12 +24,15 @@ class BudgetTransfer(models.Model):
     mutually exclusive. The lines are authored directly as ``budget.move.line``
     (folded, ADR-0013).
 
-    State lifecycle (ADR-0014): draft → submitted → sent → posted, plus
-    returned / rejected / cancelled. The base declares all seven states so the
-    module stays installable without ``budget_transfer_sarabun``; ``sent``/
-    ``returned``/``rejected`` are only reached once that bridge is installed
-    and an e-Saraban letter drives them. ``submitted → posted`` also stays
-    reachable directly via the manual approve fallback.
+    State lifecycle: draft → submitted → approved → posted, with rejected /
+    cancelled and reset-to-draft. ``move_id.state`` follows: draft while the
+    transfer is draft/submitted/approved, posted on post, cancel on cancel.
+    ``sent``/``returned``/``rejected`` are declared here (a Selection must list
+    every value a bridge module may write) but are only ever reached once
+    ``budget_transfer_sarabun`` is installed and an e-Saraban letter drives
+    them — see ADR-0014. That bridge owns all the behaviour specific to those
+    states (button visibility, extra action guards); this base model stays a
+    plain 4-state workflow otherwise.
     """
 
     _name = "budget.transfer"
@@ -40,8 +43,11 @@ class BudgetTransfer(models.Model):
     _rec_names_search = ["name", "ref"]
 
     READONLY_STATES = {
-        state: [("readonly", True)]
-        for state in ("submitted", "sent", "posted", "rejected", "cancelled")
+        "submitted": [("readonly", True)],
+        "sent": [("readonly", True)],
+        "posted": [("readonly", True)],
+        "rejected": [("readonly", True)],
+        "cancelled": [("readonly", True)],
     }
 
     # The delegated budget move (created up front, ADR-0013).
@@ -84,7 +90,10 @@ class BudgetTransfer(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
-            ("submitted", "ยืนยันแล้ว (รอสร้างหนังสือ)"),
+            ("submitted", "Submitted"),
+            # sent/returned/rejected: only reached with budget_transfer_sarabun
+            # installed (ADR-0014) — declared here because a Selection must
+            # list every value a bridge module may write.
             ("sent", "กำลังเวียนสารบรรณ"),
             ("posted", "Posted"),
             ("returned", "ตีกลับเพื่อแก้ไข"),
@@ -142,7 +151,7 @@ class BudgetTransfer(models.Model):
         readonly=True,
     )
     # Button Visibility
-    show_confirm_button = fields.Boolean(compute="_compute_button_visibility")
+    show_submit_button = fields.Boolean(compute="_compute_button_visibility")
     show_approve_button = fields.Boolean(compute="_compute_button_visibility")
     show_cancel_button = fields.Boolean(compute="_compute_button_visibility")
     show_reset_button = fields.Boolean(compute="_compute_button_visibility")
@@ -281,32 +290,20 @@ class BudgetTransfer(models.Model):
         is_admin = self.env.is_admin()
         for transfer in self:
             user = self.env.user
-            transfer.show_confirm_button = transfer.state == "draft" and (
+            transfer.show_submit_button = transfer.state == "draft" and (
                 transfer.user_id == user or is_admin
             )
-            # Manual approve-and-post fallback (ADR-0014): manager/admin, not
-            # self — kept visible alongside the e-Saraban letter when the
-            # bridge is installed (KMITL has only two Budget Managers).
-            transfer.show_approve_button = (
-                transfer.state == "submitted"
-                and (is_manager or is_admin)
-                and (is_admin or transfer.user_id != user)
-            )
-            # Cancel (draft/submitted/returned → cancelled). Blocked from
-            # `sent` — a live letter must be pulled back or voided first.
-            transfer.show_cancel_button = transfer.state in (
-                "draft",
-                "submitted",
-                "returned",
-            )
-            # Reset to Draft: pull a pending/returned transfer back (owner/
-            # admin) or revive a rejected/cancelled one (manager/admin) —
-            # none of these unwind a live budget entry, so no confirmation.
+            transfer.show_approve_button = transfer.state == "submitted"
+            # Cancel (draft/submitted → cancelled), account.payment pattern.
+            transfer.show_cancel_button = transfer.state in ("draft", "submitted")
+            # Reset to Draft (account.payment pattern): pull a pending transfer
+            # back (owner/admin) or revive a cancelled one (manager/admin) —
+            # neither unwinds a live budget entry, so no confirmation needed.
             transfer.show_reset_button = (
-                transfer.state in ("submitted", "returned")
+                transfer.state == "submitted"
                 and (transfer.user_id == user or is_admin)
             ) or (
-                transfer.state in ("rejected", "cancelled")
+                transfer.state == "cancelled"
                 and (is_manager or is_admin)
             )
             # Resetting a *posted* transfer reverses a recorded budget entry —
@@ -375,27 +372,21 @@ class BudgetTransfer(models.Model):
     # ------------------------------------------------------------------
     # Workflow
     # ------------------------------------------------------------------
-    def action_confirm(self):
-        """Validate data + availability and lock the transfer. The single
-        validation checkpoint (ADR-0014); the BTR number and fiscal-year
-        freeze are minted on leaving draft via the existing computes."""
+    def action_submit(self):
         if not (
             self.env.user.has_group("budget.group_budget_user")
             or self.env.is_admin()
         ):
-            raise UserError(_("Only Budget Users can confirm transfers"))
+            raise UserError(_("Only Budget Users can submit transfers"))
         self._validate_transfer_data()
         self._validate_budget_availability()
         self.write({"state": "submitted"})
         return True
 
     def action_approve(self):
-        """Manual approve-and-post fallback (ADR-0014): approval and posting
-        are one step, kept alongside the e-Saraban letter as a sanctioned
-        escape valve. Records the approver, re-checks availability, then
+        """Approve and immediately post — approval and posting are one step (no
+        separate Post click). Records the approver, re-checks availability, then
         posts the delegated move."""
-        if any(transfer.state != "submitted" for transfer in self):
-            raise UserError(_("Only submitted transfers can be approved."))
         is_admin = self.env.is_admin()
         if not (
             self.env.user.has_group("budget.group_budget_manager") or is_admin
@@ -423,12 +414,7 @@ class BudgetTransfer(models.Model):
 
     def action_post(self):
         """Post the transfer directly (kept for API / admin use — the normal
-        flow posts automatically on approval). Re-checks availability first.
-        Restricted to `submitted` — from `sent` a letter is already circulating
-        (posting here would race with `_on_sarabun_completed`); from `posted`
-        it would double-post the delegated move."""
-        if any(transfer.state != "submitted" for transfer in self):
-            raise UserError(_("Only submitted transfers can be posted."))
+        flow posts automatically on approval). Re-checks availability first."""
         if not (
             self.env.user.has_group("budget.group_budget_manager")
             or self.env.is_admin()
@@ -458,54 +444,29 @@ class BudgetTransfer(models.Model):
         self.write({"state": "posted"})
 
     def action_cancel(self):
-        """Cancel from draft/submitted/returned only (ADR-0014) — a `sent`
-        transfer has a live letter that must be pulled back or voided first,
-        and a posted transfer must go through Reset to Draft instead."""
-        allowed = {"draft", "submitted", "returned"}
-        if any(transfer.state not in allowed for transfer in self):
-            raise UserError(
-                _(
-                    "Only draft, submitted or returned transfers can be "
-                    "cancelled directly. Recall or void a transfer that is "
-                    "out for signature first; reset a posted transfer to "
-                    "draft instead."
-                )
-            )
+        if "posted" in self.mapped("state"):
+            raise UserError(_("Cannot cancel a posted transfer"))
         for transfer in self:
             transfer.move_id.button_cancel()
         self.write({"state": "cancelled"})
         return True
 
     def action_reset_to_draft(self):
-        """Reset to draft (account.payment pattern). A submitted/returned
-        transfer is pulled back by its own owner/admin; a rejected/cancelled
-        one is revived by a manager/admin; a posted transfer un-posts its
-        delegated budget move and is manager/admin only. Blocked from `sent`
-        — deal with the live letter first (ADR-0014)."""
+        """Reset to draft (account.payment pattern). Resetting a posted or
+        cancelled transfer un-posts its delegated budget move — so it is
+        restricted to Budget Managers / admins, unwinding the effect on
+        Current Budget."""
         is_manager = self.env.user.has_group("budget.group_budget_manager")
         is_admin = self.env.is_admin()
         for transfer in self:
-            if transfer.state == "sent":
-                raise UserError(
-                    _(
-                        "This transfer has a letter out for signature. "
-                        "Recall or void it before resetting to draft."
-                    )
-                )
-            if transfer.state in ("posted", "rejected", "cancelled") and not (
+            if transfer.state in ("posted", "cancelled") and not (
                 is_manager or is_admin
             ):
                 raise UserError(
                     _(
-                        "Only Budget Managers can reset a posted, rejected "
-                        "or cancelled transfer to draft."
+                        "Only Budget Managers can reset a posted or cancelled "
+                        "transfer to draft."
                     )
-                )
-            if transfer.state in ("submitted", "returned") and not (
-                transfer.user_id == self.env.user or is_admin
-            ):
-                raise UserError(
-                    _("Only the requestor can reset their own transfer to draft.")
                 )
             if transfer.move_id.state != "draft":
                 transfer.move_id.button_draft()

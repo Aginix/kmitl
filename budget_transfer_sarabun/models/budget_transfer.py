@@ -1,14 +1,18 @@
 import base64
 
 from odoo import _, models
+from odoo.exceptions import UserError
 
 
 class BudgetTransfer(models.Model):
     """Route a budget.transfer for approval (ขออนุมัติโอนงบประมาณ) through
-    e-Saraban (ADR-0014). The transfer owns its own 7-state lifecycle
-    (budget_transfer); this bridge only wires the หนังสือ: it creates the
-    Document at ``submitted``, encloses the printed แบบ งปม.303 as สิ่งที่ส่ง
-    มาด้วย, and maps the หนังสือ outcome back onto the transfer state.
+    e-Saraban (ADR-0014). The base `budget_transfer` only declares the extra
+    ``sent``/``returned``/``rejected`` states (a Selection must list every
+    value a bridge may write) — this module owns everything specific to
+    them: creating the หนังสือ, mapping its outcome back onto the transfer,
+    the button visibility for those states, and the extra action guards
+    (``sent`` has a live letter out for signature, so cancel/reset/approve/
+    post must not race with it).
     """
 
     _name = "budget.transfer"
@@ -119,3 +123,70 @@ class BudgetTransfer(models.Model):
 
     def _get_sarabun_report_action(self):
         return False  # default e-Saraban body; งปม.303 rides as enclosure
+
+    # --- button visibility for the bridge-owned states ------------------
+    def _compute_button_visibility(self):
+        """Extend the base compute for `returned`/`rejected` — states the
+        base itself never reaches, so its own compute leaves every button
+        hidden for them. `sent` intentionally stays all-hidden here too:
+        deal with the live letter (ดึงกลับ/ยกเลิกการส่ง), not the transfer
+        form's own buttons."""
+        super()._compute_button_visibility()
+        is_manager = self.env.user.has_group("budget.group_budget_manager")
+        is_admin = self.env.is_admin()
+        for transfer in self:
+            if transfer.state == "returned":
+                transfer.show_cancel_button = True
+                transfer.show_reset_button = (
+                    transfer.user_id == self.env.user or is_admin
+                )
+            elif transfer.state == "rejected":
+                transfer.show_reset_button = is_manager or is_admin
+
+    # --- extra guards for the states this bridge introduces -------------
+    def action_cancel(self):
+        """Block from `sent` — a live letter must be pulled back or voided
+        first, or the transfer and the letter states would diverge."""
+        if self.filtered(lambda t: t.state == "sent"):
+            raise UserError(
+                _(
+                    "This transfer has a letter out for signature. Recall "
+                    "or void it before cancelling."
+                )
+            )
+        return super().action_cancel()
+
+    def action_reset_to_draft(self):
+        """Block from `sent` (as above); a `rejected` transfer is revived
+        by a manager/admin only, mirroring the base's `cancelled` gate."""
+        if self.filtered(lambda t: t.state == "sent"):
+            raise UserError(
+                _(
+                    "This transfer has a letter out for signature. Recall "
+                    "or void it before resetting to draft."
+                )
+            )
+        is_manager = self.env.user.has_group("budget.group_budget_manager")
+        is_admin = self.env.is_admin()
+        if self.filtered(lambda t: t.state == "rejected") and not (
+            is_manager or is_admin
+        ):
+            raise UserError(
+                _("Only Budget Managers can reset a rejected transfer to draft.")
+            )
+        return super().action_reset_to_draft()
+
+    def action_approve(self):
+        """Restricted to `submitted` — from `sent` a letter is already
+        circulating (approving here would race with `_on_sarabun_completed`);
+        from `posted`/`rejected`/`cancelled` it would double-post or revive
+        a decided transfer through the back door."""
+        if self.filtered(lambda t: t.state != "submitted"):
+            raise UserError(_("Only submitted transfers can be approved."))
+        return super().action_approve()
+
+    def action_post(self):
+        """Same restriction as `action_approve` — see there."""
+        if self.filtered(lambda t: t.state != "submitted"):
+            raise UserError(_("Only submitted transfers can be posted."))
+        return super().action_post()

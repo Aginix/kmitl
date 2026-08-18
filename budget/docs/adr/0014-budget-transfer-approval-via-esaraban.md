@@ -32,33 +32,57 @@ and never re-implements `action_submit_to_sarabun` or `_prepare_sarabun_document
 
 ## Decision
 
-### Base `budget_transfer` — a 7-state lifecycle owned by the base
+### Base `budget_transfer` — declares the states, changes nothing else
 
-`draft → submitted → sent → posted`, plus `returned`, `rejected`, `cancelled`.
-The base declares **all** states (mirroring `kmitl_project`), so the module still
-works with no bridge; the bridge only *drives* the sarabun-specific ones.
+`budget_transfer` stays a **thin, mostly-untouched base**: this branch's job is the
+bridge, not a base rewrite. Odoo requires a `Selection` field to list every value
+it may ever hold, so the base gains three new keys — `sent`, `returned`,
+`rejected` — plus `sent`/`rejected` in `READONLY_STATES` (field-level lock, which
+can't be done from a child module without redeclaring the fields) and `returned`
+added alongside `draft` in the view's existing `attrs` (so a returned letter
+reopens the whole transfer for revision, matching draft). That is the **entire**
+base diff. Nothing else changes: `action_submit`, `action_approve`,
+`action_cancel`, `action_reset_to_draft` and `_compute_button_visibility` keep
+their original names, bodies and behaviour — the base has no idea `sent`/
+`returned`/`rejected` mean anything beyond a locked/unlocked flag; it never
+writes them itself, `budget_transfer_sarabun` does.
 
-- `submitted` **keeps its original key** — only the action/button changes name
-  (`action_submit` → `action_confirm`, ยืนยัน); the stored state value stays
-  `submitted` so existing filters/reports keyed on it keep working unchanged.
-  The BTR number is still minted on leaving `draft`, and the fiscal year freezes
-  then (unchanged).
-- `draft → submitted` (**ยืนยัน**, `action_confirm`, Budget User): runs
-  `_validate_transfer_data` + availability — the single validation checkpoint.
-  Lines/dims lock here.
+- `submitted` keeps its name and meaning — ยืนยัน (`action_submit`), the single
+  validation checkpoint (`_validate_transfer_data` + availability). The BTR
+  number is still minted on leaving `draft`, unchanged.
 - `submitted → posted` (**manual approve fallback**, Budget Manager, not self):
-  the old `action_approve`, retargeted. Standalone-usable when no bridge is present.
-- Negative/terminal states `sent`, `returned`, `rejected` are declared by the base
-  but only reached via the bridge.
-- **Editability:** readonly in `submitted/sent/posted/rejected/cancelled`; editable
-  in `draft` **and `returned`** (a returned letter reopens the whole transfer for
-  revision, then re-send).
-- **`sent` locks cancel/reset:** you cannot Cancel or Reset-to-Draft directly from
-  `sent` — deal with the live letter first (ดึงกลับ → `returned`, or ยกเลิกการส่ง →
-  `submitted`). This keeps the transfer state and the letter state from diverging.
+  the existing `action_approve`, unchanged. Standalone-usable when no bridge is
+  present — draft/submitted/posted/cancelled are the only states a base-only
+  install ever reaches.
+- `sent`, `returned`, `rejected` are declared but dead weight without the bridge:
+  nothing in the base ever writes them, so a base-only environment behaves
+  exactly as before.
 
-### New bridge `budget_transfer_sarabun`
+### New bridge `budget_transfer_sarabun` — owns everything state-specific
 
+`budget_transfer_sarabun` **overrides** (`_inherit` + `super()`) rather than
+patches the base — every rule below about `sent`/`returned`/`rejected` lives
+here, not in `budget_transfer`:
+
+- `_compute_button_visibility`: calls `super()`, then adds visibility for
+  `returned` (Cancel; Reset to Draft for the owner/admin) and `rejected` (Reset
+  to Draft for manager/admin, mirroring the base's own `cancelled` gate). `sent`
+  is left all-hidden — deal with the live letter (ดึงกลับ/ยกเลิกการส่ง), not the
+  transfer form's own buttons.
+- `action_cancel` / `action_reset_to_draft`: block outright from `sent` — a live
+  letter must be pulled back or voided first, or the transfer and the letter
+  states would diverge. `action_reset_to_draft` also gates `rejected` to
+  manager/admin before delegating to `super()`.
+- `action_approve` / `action_post`: restricted to `submitted` — from `sent` a
+  letter is already circulating (approving/posting here would race with
+  `_on_sarabun_completed`); from `posted`/`rejected`/`cancelled` it would
+  double-post or revive a decided transfer through the back door.
+- Its own view (`inherit_id=budget_transfer.view_budget_transfer_form`) adds the
+  Returned/Rejected ribbons, extends `statusbar_visible` to include `sent`, and
+  hides the `date` field (now synced from the letter's ลงวันที่, see below) —
+  none of this touches the base view beyond the `returned`-in-`attrs` change
+  above. Separate tree/search view inherits add decorations and filters for the
+  three new states.
 - `_inherit = ["budget.transfer", "sarabun.document.mixin"]`; depends
   `[budget_transfer, agx_sarabun, budget_transfer_pdf]`; **`auto_install=True`** —
   wherever both `budget_transfer` and `agx_sarabun` are present the integration is
@@ -153,10 +177,13 @@ bridge is a fresh install.
   reservation/*ใบจอง* the way commitments are — is parked as a follow-up; it would
   close the window and make the completion re-check moot. Until then, treat a
   submitted-but-unsigned transfer as *not yet holding* its source budget.
-- **Dead code to reconcile.** The base now has a real `rejected` state, reached via
-  the letter's ปฏิเสธ. The pre-split standalone reject wizard (which wrote a
-  non-existent `state="rejected"` + `rejection_reason`) should be removed or
-  repurposed to the sarabun path during implementation.
+- **Dead code left as-is (out of scope for this branch).** The base now has a
+  real `rejected` state, reached via the letter's ปฏิเสธ — but only when the
+  bridge is installed. The pre-split standalone reject wizard (which already
+  wrote a non-existent `state="rejected"` + `rejection_reason` before this ADR,
+  and is not imported by the module) stays untouched; this branch's job is the
+  bridge, not a `budget_transfer` cleanup. Removing or repurposing it is a
+  separate, dedicated change.
 - **agx_sarabun unchanged.** The bridge lives entirely within the current mixin
   contract; the `origin_model` auto-matcher stays dormant (out of scope to wire).
 - **budget_transfer version stays 16.0.1.0.0** (pre-production). When the module goes

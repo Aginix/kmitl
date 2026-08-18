@@ -16,10 +16,26 @@
                         string="หนังสือ"/>
             </xpath>
 
-            <xpath expr="//button[@name='action_confirm']" position="after">
+            <xpath expr="//button[@name='action_submit']" position="after">
                 <button name="action_submit_to_sarabun" type="object"
                         string="สร้างหนังสือ" class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('sarabun_has_live_document', '=', True)]}"/>
+            </xpath>
+
+            <!-- Show `sent` in the happy-path statusbar; ribbons for the
+                 two extra terminal/side states this bridge introduces. -->
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="attributes">
+                <attribute name="statusbar_visible">draft,submitted,sent,posted</attribute>
+            </xpath>
+            <xpath expr="//widget[@title='Posted']" position="before">
+                <widget name="web_ribbon" title="Returned" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'returned')]}"/>
+                <widget name="web_ribbon" title="Rejected" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
+            </xpath>
+
+            <!-- The transfer's own date now tracks the letter's ลงวันที่
+                 (synced in _on_sarabun_circulating) — no longer user-set. -->
+            <xpath expr="//field[@name='date']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <!-- Sarabun status notification — rendered between the statusbar
@@ -40,6 +56,39 @@
                 </div>
             </xpath>
 
+        </field>
+    </record>
+
+    <record id="view_budget_transfer_tree_sarabun" model="ir.ui.view">
+        <field name="name">budget.transfer.tree.sarabun</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget_transfer.view_budget_transfer_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-info">state == 'sent'</attribute>
+                <attribute name="decoration-muted">state == 'returned'</attribute>
+                <attribute name="decoration-danger">state in ('rejected', 'cancelled')</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="decoration-info">state == 'sent'</attribute>
+                <attribute name="decoration-muted">state == 'returned'</attribute>
+                <attribute name="decoration-danger">state in ('rejected', 'cancelled')</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_budget_transfer_search_sarabun" model="ir.ui.view">
+        <field name="name">budget.transfer.search.sarabun</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget_transfer.view_budget_transfer_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='pending_approval']" position="after">
+                <filter name="sent" string="Sent" domain="[('state', '=', 'sent')]"/>
+                <filter name="returned" string="Returned" domain="[('state', '=', 'returned')]"/>
+            </xpath>
+            <xpath expr="//filter[@name='cancelled']" position="before">
+                <filter name="rejected" string="Rejected" domain="[('state', '=', 'rejected')]"/>
+            </xpath>
         </field>
     </record>
 

@@ -8,19 +8,17 @@
         <field name="arch" type="xml">
             <form string="Budget Transfer">
                 <header>
-                    <button name="action_confirm" type="object" string="ยืนยัน" class="btn-primary" attrs="{'invisible': [('show_confirm_button', '=', False)]}"/>
+                    <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" attrs="{'invisible': [('show_submit_button', '=', False)]}"/>
                     <button name="action_approve" type="object" string="Approve &amp; Post" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}" confirm="Approval will automatically post the transfer. Do you want to continue?"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_posted_button', '=', False)]}" confirm="Resetting a posted transfer back to draft will reverse the budget entry that has already been recorded, and may lead to budget inconsistencies. Do you want to continue?"/>
                     <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
 
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,sent,posted"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,posted"/>
                 </header>
 
                 <sheet>
                     <widget name="web_ribbon" title="Posted" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'posted')]}"/>
-                    <widget name="web_ribbon" title="Returned" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'returned')]}"/>
-                    <widget name="web_ribbon" title="Rejected" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
                     <widget name="web_ribbon" title="Cancelled" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <div class="oe_button_box" name="button_box">
                         <!-- Show the move's BM number via the non-required
@@ -44,7 +42,7 @@
 
                     <group>
                         <group name="transfer_info" string="Transfer Information">
-                            <field name="date" invisible="1"/>
+                            <field name="date" attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'returned']), ('fiscal_year_locked', '=', True)]}"/>
                             <field name="account_fiscal_year_id" attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'returned']), ('fiscal_year_locked', '=', True)]}"/>
                             <field name="budget_type" attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}"/>
                             <field name="user_id" widget="employee_detail_many2one" />
@@ -201,7 +199,7 @@
                 </div>
 
                 <!-- Hidden fields for computations -->
-                <field name="show_confirm_button" invisible="1"/>
+                <field name="show_submit_button" invisible="1"/>
                 <field name="show_approve_button" invisible="1"/>
                 <field name="show_cancel_button" invisible="1"/>
                 <field name="show_reset_button" invisible="1"/>
@@ -218,12 +216,7 @@
         <field name="name">budget.transfer.tree</field>
         <field name="model">budget.transfer</field>
         <field name="arch" type="xml">
-            <tree string="Budget Transfers"
-                  decoration-muted="state in ('returned',)"
-                  decoration-warning="state == 'submitted'"
-                  decoration-info="state == 'sent'"
-                  decoration-success="state == 'posted'"
-                  decoration-danger="state in ('rejected', 'cancelled')">
+            <tree string="Budget Transfers" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state == 'posted'">
                 <field name="name"/>
                 <field name="date"/>
                 <field name="department_analytic_id" optional="show"/>
@@ -231,12 +224,7 @@
                 <field name="user_id"/>
                 <field name="amount" widget="monetary" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
-                <field name="state" widget="badge"
-                       decoration-muted="state in ('returned',)"
-                       decoration-warning="state == 'submitted'"
-                       decoration-info="state == 'sent'"
-                       decoration-success="state == 'posted'"
-                       decoration-danger="state in ('rejected', 'cancelled')"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state == 'posted'" decoration-danger="state == 'cancelled'"/>
                 <field name="company_id" groups="base.group_multi_company" optional="hide"/>
             </tree>
         </field>
@@ -263,10 +251,7 @@
                 <separator/>
                 <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
                 <filter name="pending_approval" string="Pending Approval" domain="[('state', '=', 'submitted')]"/>
-                <filter name="sent" string="Sent" domain="[('state', '=', 'sent')]"/>
-                <filter name="returned" string="Returned" domain="[('state', '=', 'returned')]"/>
                 <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
-                <filter name="rejected" string="Rejected" domain="[('state', '=', 'rejected')]"/>
                 <filter name="cancelled" string="Cancelled" domain="[('state', '=', 'cancelled')]"/>
 
                 <separator/>

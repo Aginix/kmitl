@@ -1,6 +1,7 @@
 from datetime import date
 
 from odoo import Command
+from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 
 
@@ -149,7 +150,7 @@ class TestBudgetTransferSarabun(TransactionCase):
 
     def _submitted_transfer(self):
         transfer = self._transfer()
-        transfer.with_user(self.requestor).action_confirm()
+        transfer.with_user(self.requestor).action_submit()
         return transfer
 
     def _submit(self, transfer):
@@ -246,3 +247,68 @@ class TestBudgetTransferSarabun(TransactionCase):
         transfer = self._submitted_transfer()
         transfer.with_user(manager).action_approve()
         self.assertEqual(transfer.state, "posted")
+
+    # ------------------------------------------------------------------
+    # extra guards this bridge adds on top of the base's action methods
+    # (the base has no notion of `sent`/`returned`/`rejected` at all)
+    # ------------------------------------------------------------------
+    def test_cancel_blocked_from_sent(self):
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        self.assertEqual(transfer.state, "sent")
+        with self.assertRaises(UserError):
+            transfer.action_cancel()
+
+    def test_reset_to_draft_blocked_from_sent(self):
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        with self.assertRaises(UserError):
+            transfer.action_reset_to_draft()
+
+    def test_reset_to_draft_from_rejected_requires_manager(self):
+        manager = new_test_user(
+            self.env,
+            login="btr_sb_manager2",
+            name="ผจก โอนงบ 2",
+            groups="base.group_user,budget.group_budget_manager",
+        )
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        step = self._gating_step(document)
+        step.act_on_step("reject", {"note": "งบไม่เพียงพอ"}, actor=self.approver_user)
+        transfer.invalidate_recordset()
+        self.assertEqual(transfer.state, "rejected")
+        with self.assertRaises(UserError):
+            transfer.with_user(self.requestor).action_reset_to_draft()
+        transfer.with_user(manager).action_reset_to_draft()
+        self.assertEqual(transfer.state, "draft")
+
+    def test_approve_and_post_blocked_outside_submitted(self):
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        self.assertEqual(transfer.state, "sent")
+        with self.assertRaises(UserError):
+            transfer.action_approve()
+        with self.assertRaises(UserError):
+            transfer.action_post()
+
+    def test_button_visibility_for_returned_and_rejected(self):
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        step = self._gating_step(document)
+        step.act_on_step(
+            "return", {"note": "ขอข้อมูลเพิ่ม", "destination": "sender_restart"},
+            actor=self.approver_user,
+        )
+        transfer.invalidate_recordset()
+        self.assertEqual(transfer.state, "returned")
+        self.assertTrue(transfer.show_cancel_button)
+        self.assertTrue(
+            transfer.with_user(self.requestor).show_reset_button,
+            "the requestor may pull their own returned transfer back to draft",
+        )
