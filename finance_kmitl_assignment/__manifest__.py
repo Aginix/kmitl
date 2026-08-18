@@ -2,7 +2,7 @@
 
 {
     "name": "Finance Assignment KMITL",
-    "version": "16.0.1.2.0",
+    "version": "16.0.1.3.0",
     "category": "KMITL/Finance",
     "summary": "Auto-assign a responsible finance officer to payment vouchers by rules",
     "author": "KMITL",
@@ -11,6 +11,9 @@
     "depends": [
         "finance_kmitl",
         "partner_type_aginix",
+        # Owns both halves of the payment-subject criterion: the link from the
+        # voucher back to its request, and the subject chosen on that request.
+        "disbursement_finance_kmitl",
     ],
     "data": [
         "security/ir.model.access.csv",
