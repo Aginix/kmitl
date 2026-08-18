@@ -1,5 +1,5 @@
 from odoo import Command, _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare
 
 from odoo.addons.budget.models.budget_commitment import BudgetCommitment as Core
@@ -37,6 +37,95 @@ class BudgetCommitment(models.Model):
             "ใบจองปกติใช้รหัสเดียวจากหัวเอกสาร"
         ),
     )
+
+    # Cross-charge slips derive account_id from their first reserve line —
+    # relaxing required here drops the DB NOT NULL so the INSERT succeeds even
+    # when the readonly header field is omitted from the save RPC.
+    account_id = fields.Many2one(
+        comodel_name="budget.account",
+        string="รหัสงบประมาณ",
+        required=False,
+        index=True,
+        domain="[('budgetable', '=', True), ('budget_type', '=', 'expense')]",
+        tracking=True,
+        states=Core.READONLY_STATES,
+    )
+
+    @api.constrains("account_id", "is_cross_charge")
+    def _check_account_required_for_non_cross_charge(self):
+        for record in self:
+            if not record.is_cross_charge and not record.account_id:
+                raise ValidationError(_("รหัสงบประมาณ is required."))
+
+    def _check_positive_amount(self):
+        """Skip the cap-must-be-positive guard for cross-charge slips.
+
+        In cross-charge mode amount is derived from lines at create/write time;
+        an empty draft (no lines yet) is a valid staging state.
+        """
+        for record in self:
+            if record.is_cross_charge:
+                continue
+            if record.amount <= 0:
+                raise UserError(_("Commitment cap amount must be positive."))
+
+    # --- ORM sync: derive header from line commands (create/write) ---
+    # The header account_id/amount fields are readonly in cross-charge mode, so
+    # the web client never includes them in the save payload — only the line
+    # grid is editable. We fill them from the line commands before super() runs
+    # so every DB constraint and Python @api.constrains sees the correct values.
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("is_cross_charge"):
+                self._fill_cross_charge_header(vals)
+        return super().create(vals_list)
+
+    def write(self, vals):
+        result = super().write(vals)
+        if "line_ids" in vals:
+            for record in self.filtered("is_cross_charge"):
+                record._sync_cross_charge_header_stored()
+        return result
+
+    def _fill_cross_charge_header(self, vals):
+        """Populate account_id and amount from line commands (create path)."""
+        first_account = False
+        total = 0.0
+        for cmd in vals.get("line_ids", []):
+            if cmd[0] not in (0, 1):
+                continue
+            lv = cmd[2]
+            if lv.get("move_type", "reserve") != "reserve":
+                continue
+            if lv.get("state", "posted") != "posted":
+                continue
+            if not first_account and lv.get("account_id"):
+                first_account = lv["account_id"]
+            total += lv.get("amount", 0.0)
+        if first_account and not vals.get("account_id"):
+            vals["account_id"] = first_account
+        if total and not vals.get("amount"):
+            vals["amount"] = total
+
+    def _sync_cross_charge_header_stored(self):
+        """Re-sync header account_id and amount from saved reserve lines."""
+        for record in self:
+            reserve = record.line_ids.filtered(
+                lambda l: l.move_type == "reserve" and l.state == "posted"
+            )
+            if not reserve:
+                continue
+            new_account = reserve[0].account_id
+            new_amount = sum(reserve.mapped("amount"))
+            to_write = {}
+            if record.account_id != new_account:
+                to_write["account_id"] = new_account.id
+            if record.amount != new_amount:
+                to_write["amount"] = new_amount
+            if to_write:
+                record.write(to_write)
 
     @api.onchange("is_cross_charge")
     def _onchange_is_cross_charge(self):
