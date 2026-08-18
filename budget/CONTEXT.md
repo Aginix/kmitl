@@ -49,7 +49,7 @@ A budget account where budget may be specified — both reserved against and app
 _Avoid_: leaf, allocatable
 
 **Cross-charge (ถัวจ่าย, `cross_chargeable`)**:
-Pooling more than one budget code inside a *single* reservation. A reservation normally carries one budget code; it may carry several reserve lines only when every line's budget account is flagged `cross_chargeable`. The flag alone governs eligibility — flagged codes may be pooled together regardless of category.
+Pooling more than one budget code inside a *single* reservation. A reservation normally carries one budget code; it may carry several reserve lines only when every line's budget account is flagged `cross_chargeable`. The flag alone governs eligibility — flagged codes may be pooled together regardless of category. Lives in the **`budget_cross_charge`** extension module (ADR-0014): core `budget` blocks >1 code outright; the extension carries the flag, the `is_cross_charge` manual line grid on the slip, and the picker as a browse/edit tool.
 _Avoid_: transfer (that is `budget.transfer`, a balanced move *between* accounts; cross-charge moves nothing — it spends several pools in one reservation), virement
 
 **Control Node (โหนดคุมงบ)**:

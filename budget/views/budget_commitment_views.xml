@@ -37,9 +37,6 @@
         <field name="arch" type="xml">
             <form string="Budget Commitment">
                 <header>
-                    <button name="action_open_reservation_picker" string="เลือกงบประมาณ"
-                        type="object" class="oe_highlight"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_reserve" string="จองงบประมาณ" type="object"
                         class="oe_highlight"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"/>
@@ -95,9 +92,13 @@
                                 options="{'no_create': True, 'no_open': True}" />
                             <field name="source_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
-                            <field name="activity_analytic_id"
+                            <!-- Required for parity with the picker's full-tuple rule:
+                                 the availability engine pins a missing dimension to
+                                 False, so an absent กิจกรรม/กองทุน silently checks the
+                                 wrong pool and fails as "insufficient budget". -->
+                            <field name="activity_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
-                            <field name="fund_analytic_id"
+                            <field name="fund_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
                             <field name="amount" widget="monetary"/>
                             <field name="currency_id" invisible="1"/>

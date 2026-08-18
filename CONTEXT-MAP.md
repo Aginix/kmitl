@@ -23,6 +23,10 @@ upfront.
     budget-transfer feature (การโอนงบ) split out of core `budget`. `budget.transfer` is a
     1:1 delegated `budget.move` (the `account.payment` ↔ `account.move` pattern) with its
     lines folded into `budget.move.line`; see budget ADR-0013.
+  - **`budget_cross_charge`** (no own glossary — part of the Budget context): houses
+    cross-charge (ถัวจ่าย) — multi-code reservations — split out of core `budget`:
+    the `cross_chargeable` flag, the `is_cross_charge` manual line grid on the slip,
+    and the reservation picker as a browse/edit tool; see budget ADR-0014.
 - [Budget Appropriation Summary](./budget_appropriation_summary/CONTEXT.md) —
   institution-wide roll-up of unit appropriations for one fiscal year × source
   (สรุปภาพรวมสถาบัน gathering รวมเล่มหน่วยงาน), rendering the F-series summary

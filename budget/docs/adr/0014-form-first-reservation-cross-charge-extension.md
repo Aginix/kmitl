@@ -1,0 +1,21 @@
+# Form-first single-code reservation; ถัวจ่าย extracted to budget_cross_charge
+
+A standalone ใบจอง (`budget.commitment`) is filled in **once, on the form**: budget code, the four dimensions and วงเงินอนุมัติ live on the header, and **"จองงบประมาณ" synthesizes the single reserve line from the header** when none exists (`_create_reserve_line_from_header`). The picker button is gone from the core slip — the previous journey forced every header field (all required) to be re-entered in a deliberately blank picker whose confirm then overwrote that same header, a full second entry of code, dimensions and money. Programmatic creators (project / plan / mixin hosts) pass `line_ids` themselves and never hit the synthesis path. กิจกรรม/กองทุน become required on the form for parity with the picker's full-tuple rule — the engine pins a missing dimension to `False` (ADR 0005), so leaving one blank silently checks the wrong pool.
+
+Cross-charge (ถัวจ่าย, ADR 0006's minority case) moves to a new **`budget_cross_charge`** extension, since every in-repo reservation flow is single-code; core's `_check_cross_charge` now blocks >1 distinct budget account outright and the extension overrides it with the `cross_chargeable`-flag rule (the flag field moves with it). On the slip the extension adds **`is_cross_charge`** — a **UI affordance only** (the `budget_selection_mode` pattern, ADR 0010): the reserve lines stay the single source of truth, the switch seeds/clears the now-active side, and in cross-charge mode the user **types reserve lines directly in the ledger grid** while draft (header account/amount become a mirror of the lines — first line's code, sum of amounts). To make the grid possible, line immutability now starts when the commitment turns active: a *draft* commitment is a staging area (ADR 0006) whose posted reserve lines are freely editable/deletable.
+
+The reservation picker survives on cross-charge slips as a browse/edit tool, and gains **edit mode**: reopening it on a slip that already has reserve lines passes them as `edit_selections`, so the filter bar opens on the slip's own dimension tuple (labels resolved by the dashboard base) and the current amounts are seeded ready to correct — the blank-filter feedback stands for *fresh* picks only. The edit window is **draft, or reserved with nothing obligated yet**; on an active slip the replacement is availability-re-checked with `available >= 0` (its own replacement lines are already posted and counted as used, unlike the draft-time `available >= amount` check), atomically via the surrounding transaction.
+
+## Considered options
+
+- **Prefill the picker from the header and keep it mandatory** — rejected: the money is still entered twice (header cap + per-row amount), and it reverses the no-default-filters feedback for fresh picks.
+- **`is_cross_charge` as a server-side discriminator** — rejected: ADR 0006 already refused dual-mode write ambiguity; the flag only chooses which input the form shows, `_check_cross_charge` and the lines decide the truth.
+- **Keeping ถัวจ่าย in core behind the flag** — rejected: no in-repo flow uses it yet (the 2026-07-31 consumer-doc ถัวงบ requirement is parked), and the extraction lets the future consumer-doc bridge depend on exactly the machinery it needs.
+- **Editing a reserved slip by forcing it back to draft** — rejected: a draft slip does not lock budget, so the round-trip opens a window where the pool can be reserved away underneath the edit.
+
+## Consequences
+
+- `action_open_reservation_picker` / `apply_reservation_selection` on `budget.commitment` now live in `budget_cross_charge`; the mixin's select-only picker flow (PR / AR) and the picker JS component stay in core.
+- `budget` is deployed but `budget.commitment` holds no production rows: no data migration. `budget_cross_charge` must be installed **together with** the core upgrade so the (unused) `cross_chargeable` column definition is re-adopted rather than orphaned.
+- Once a downstream document obligates against a slip, the figures freeze — คืนจอง (ADR 0009) or cancel are the remaining moves, same as before.
+- The dashboard picker feed reports `cross_chargeable` via `getattr`, so the "ถัว" badge simply never shows when the extension is absent.

@@ -256,42 +256,46 @@ class BudgetCommitmentLine(models.Model):
 
     @api.constrains("account_id", "move_type", "state")
     def _check_cross_charge(self):
-        """A reservation may span >1 budget code only if all are cross-chargeable.
+        """A core reservation carries exactly one budget code.
 
-        ถัวจ่าย (ADR 0006): a single reserve line is always allowed; multiple
-        reserve lines with *different* budget accounts require every one of
-        those accounts to be flagged ``cross_chargeable``.
+        Cross-charge — ถัวจ่าย, pooling several codes in one reservation
+        (ADR 0006) — is the ``budget_cross_charge`` extension's concern: it
+        overrides this constraint to allow multiple codes when every account is
+        flagged ``cross_chargeable``.
         """
         for commitment in self.mapped("commitment_id"):
             accounts = commitment.line_ids.filtered(
                 lambda l: l.state == "posted" and l.move_type == "reserve"
             ).mapped("account_id")
             if len(accounts) > 1:
-                blocked = accounts.filtered(lambda a: not a.cross_chargeable)
-                if blocked:
-                    raise ValidationError(
-                        _(
-                            "A reservation may use more than one budget code only "
-                            "if every code is marked ถัวจ่ายได้ (cross-chargeable). "
-                            "These are not: %s"
-                        )
-                        % ", ".join(blocked.mapped("display_name"))
+                raise ValidationError(
+                    _(
+                        "A reservation may only use one budget code. "
+                        "Cross-charge (ถัวจ่าย) requires the Budget Cross Charge "
+                        "module."
                     )
+                )
 
     # --- Immutability ---
+    # Posted lines are the audit ledger — but only once the commitment is
+    # active. A *draft* commitment is a staging area (ADR 0006): it does not
+    # lock budget, so its reserve lines stay freely editable/deletable (the
+    # cross-charge manual line grid relies on this).
+
+    def _immutable(self):
+        return self.filtered(
+            lambda l: l.state == "posted" and l.commitment_id.state != "draft"
+        )
 
     def write(self, vals):
-        if PROTECTED_FIELDS & set(vals):
-            posted = self.filtered(lambda l: l.state == "posted")
-            if posted:
-                raise UserError(
-                    _("Cannot edit posted ledger lines. Cancel and create a new entry instead.")
-                )
+        if PROTECTED_FIELDS & set(vals) and self._immutable():
+            raise UserError(
+                _("Cannot edit posted ledger lines. Cancel and create a new entry instead.")
+            )
         return super().write(vals)
 
     def unlink(self):
-        posted = self.filtered(lambda l: l.state == "posted")
-        if posted:
+        if self._immutable():
             raise UserError(
                 _("Cannot delete posted ledger lines. Cancel them instead.")
             )
