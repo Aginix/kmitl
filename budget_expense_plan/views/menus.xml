@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Main: แผนการเบิกจ่าย (documents) under the Budget app root -->
+    <menuitem
+        id="menu_budget_expense_plan"
+        name="แผนการเบิกจ่าย"
+        parent="budget.budget_root_menu"
+        action="action_budget_expense_plan"
+        sequence="35"
+    />
+
+    <!-- Config: template (owns budget lines) + required departments -->
+    <menuitem
+        id="menu_budget_expense_template"
+        name="แม่แบบแผนเบิกจ่าย"
+        parent="budget.budget_config_menu"
+        action="action_budget_expense_template"
+        sequence="71"
+    />
+    <menuitem
+        id="menu_budget_expense_required_department"
+        name="ส่วนงานที่ต้องทำแผน"
+        parent="budget.budget_config_menu"
+        action="action_budget_expense_required_department"
+        sequence="72"
+    />
+
+</odoo>

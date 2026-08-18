@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_budget_expense_template_tree" model="ir.ui.view">
+        <field name="name">budget.expense.template.tree</field>
+        <field name="model">budget.expense.template</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'draft'">
+                <field name="name" />
+                <field name="fiscal_year_id" />
+                <field name="source_analytic_id" />
+                <field name="plan_count" string="เอกสารแผน" />
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'" decoration-success="state == 'published'" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_budget_expense_template_form" model="ir.ui.view">
+        <field name="name">budget.expense.template.form</field>
+        <field name="model">budget.expense.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_publish" type="object" string="เผยแพร่"
+                        class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
+                    <button name="action_generate_plans" type="object" string="สร้างเอกสารแผน"
+                        attrs="{'invisible': [('state', '!=', 'published')]}" />
+                    <button name="action_reset_to_draft" type="object" string="กลับเป็นร่าง"
+                        attrs="{'invisible': [('state', '!=', 'published')]}" />
+                    <button name="action_duplicate" type="object" string="ทำสำเนา (ปีถัดไป)" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,published" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_plans" type="object" class="oe_stat_button" icon="fa-files-o">
+                            <field name="plan_count" widget="statinfo" string="เอกสารแผน" />
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="fiscal_year_id" />
+                            <field name="source_analytic_id" options="{'no_create': True}"
+                                attrs="{'readonly': [('id', '!=', False)]}" />
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="รายการงบ" name="lines">
+                            <p class="text-muted">
+                                กำหนดรายการงบ (คอลัมน์แผน) พร้อมหมวดและสูตรดึงผลเบิกจ่าย — บันทึกก่อนไปตั้งค่ากองทุน
+                            </p>
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="category_id" options="{'no_create': True}" />
+                                    <field name="expr" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="กองทุน &amp; รายการงบ" name="funds">
+                            <p class="text-muted">
+                                ตั้งค่าว่าในแต่ละกองทุน มีรายการงบใดบ้าง (เลือกจากรายการงบด้านบน)
+                            </p>
+                            <field name="fund_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="fund_analytic_id" options="{'no_create': True}" />
+                                    <field name="budget_line_ids" widget="many2many_tags"
+                                        options="{'no_create': True}" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="ด้าน/แผนงาน &amp; กองทุน" name="activities">
+                            <p class="text-muted">
+                                ตั้งค่าว่าในแต่ละด้าน/แผนงาน มีกองทุนใดบ้าง (เลือกจากกองทุนด้านบน)
+                            </p>
+                            <field name="activity_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="activity_analytic_id" options="{'no_create': True}" />
+                                    <field name="fund_ids" widget="many2many_tags" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_budget_expense_template" model="ir.actions.act_window">
+        <field name="name">แม่แบบแผนเบิกจ่าย</field>
+        <field name="res_model">budget.expense.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">สร้างแม่แบบแผนเบิกจ่าย</p>
+            <p>1 แม่แบบต่อ (แหล่งเงิน × ปีงบประมาณ): ตั้งค่ารายการงบ, กองทุน→รายการงบ และ ด้าน/แผนงาน→กองทุน; ปีถัดไปกด "ทำสำเนา" แล้วเปลี่ยนปี</p>
+        </field>
+    </record>
+
+</odoo>

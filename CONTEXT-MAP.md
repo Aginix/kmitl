@@ -35,6 +35,11 @@ upfront.
 - [Procurement Plan](./procurement_plan/CONTEXT.md) — annual procurement planning; each
   plan is created from an appropriation, reserves its budget at that moment, and is
   realised through one purchase request + installment disbursements.
+- [Expense Plan](./budget_expense_plan/CONTEXT.md) — annual monthly **แผนการเบิกจ่าย** per
+  ส่วนงาน set beside actual consume; each ส่วนงาน chooses its own activities while the
+  Template (per แหล่งเงิน × ปีงบ, which owns the budget lines + Fund→Budget-Line and
+  Activity→Fund compositions) supplies the rest; the actual column is derived from budget
+  consume via a per-budget-line `expr`. A new fiscal year is a duplicate of the Template.
 - [KMITL Project](./kmitl_project/CONTEXT.md) — institutional project/activity planning
   (โครงการ/กิจกรรม); งานแผน allocates budget into the project's own dimension (ปรับเข้าแผน),
   the project reserves that allocation, then spends like a procurement plan (ADR-0006).
@@ -94,6 +99,11 @@ upfront.
 - **Procurement Plan → Budget**: the plan's single purchase request and its installment
   disbursement requests draw that one shared commitment down (obligate+consume per งวด)
   (ADR-0004, ADR-0006).
+- **Budget → Expense Plan**: an Expense Plan's Actual (ผล) column reads Budget consume from
+  the ledger `budget.move.line` (`move_type='consume'`, **not** `budget.commitment.line` —
+  ADR-0003) aggregated by month and budget code, scoped by each row's Activity + Fund and
+  the document's ส่วนงาน + แหล่งเงิน + ปีงบ. A planning/comparison artifact — see its own
+  `docs/adr/` (`budget_expense_plan` ADR-0001..0005).
 - **Budget → KMITL Project**: posting an appropriation on an `is_project` budget code
   leaves the pool _floating_ — it does **not** auto-create a project or reserve
   (contrast Procurement Plan). งานแผน then **allocates** a slice into the project's own
