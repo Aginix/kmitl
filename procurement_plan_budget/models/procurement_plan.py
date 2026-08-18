@@ -124,8 +124,9 @@ class ProcurementPlan(models.Model):
             "type": "ir.actions.act_window",
             "res_model": "budget.move.line",
             "view_mode": "tree,form",
-            "domain": [
+            "domain": ['&',
                 ("procurement_plan_analytic_id", "=", self.analytic_account_id.id),
+                ("procurement_plan_analytic_id", "!=", False),
                 ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
             ],
         }

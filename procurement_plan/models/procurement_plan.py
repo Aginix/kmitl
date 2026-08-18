@@ -115,7 +115,7 @@ class ProcurementPlan(models.Model):
         tracking=True,
     )
     payment_ids = fields.One2many(
-        comodel_name="procurement.plan.payment", inverse_name="procurement_plan_id"
+        comodel_name="procurement.plan.payment", inverse_name="procurement_plan_id", copy=True
     )
     user_id = fields.Many2one(
         string="User",
@@ -173,6 +173,16 @@ class ProcurementPlan(models.Model):
             dist = dict(self.analytic_distribution or {})
             dist.pop(str(self.analytic_account_id.id), None)
             default["analytic_distribution"] = dist or False
+        # Keep ชื่อรายการ unique on duplicate: append " (copy)" until it no longer
+        # collides with an existing plan (repeat so copying a copy doesn't clash).
+        if "description" not in default and self.description:
+            copy_name = self.description
+            while self.with_context(active_test=False).search_count(
+                [("description", "=", copy_name)]
+            ):
+                copy_name = _("%s (copy)") % copy_name
+            if copy_name != self.description:
+                default["description"] = copy_name
         return super().copy(default)
 
     def unlink(self):
@@ -321,6 +331,7 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="กิจกรรม",
         compute="_compute_analytic_id",
+        inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
         store=True,
         tracking=True,
@@ -331,6 +342,7 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="ส่วนงาน",
         compute="_compute_analytic_id",
+        inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
         store=True,
         tracking=True,
@@ -341,8 +353,9 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="กองทุน",
         compute="_compute_analytic_id",
+        inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
-        store=True,
+        store=False,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -351,6 +364,7 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="แหล่งเงิน",
         compute="_compute_analytic_id",
+        inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
         store=True,
         tracking=True,
@@ -364,6 +378,26 @@ class ProcurementPlan(models.Model):
         "sources": "source_analytic_id",
         "procurement_plan": "analytic_account_id",
     }
+
+    def _inverse_activity_analytic(self):
+        """Update distribution when activity changes"""
+        for line in self:
+            line._update_analytic_distribution("activities")
+
+    def _inverse_department_analytic(self):
+        """Update distribution when department changes"""
+        for line in self:
+            line._update_analytic_distribution("departments")
+
+    def _inverse_fund_analytic(self):
+        """Update distribution when fund changes"""
+        for line in self:
+            line._update_analytic_distribution("funds")
+
+    def _inverse_source_analytic(self):
+        """Update distribution when fund changes"""
+        for line in self:
+            line._update_analytic_distribution("sources")
 
     def _inverse_analytic_account_id(self):
         """Update distribution when source changes"""
