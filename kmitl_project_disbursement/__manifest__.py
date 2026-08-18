@@ -6,7 +6,7 @@
     "summary": "Link disbursement requests (ใบขอเบิก) raised under a KMITL project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["kmitl_project", "disbursement"],
+    "depends": ["kmitl_project", "disbursement", "budget_product"],
     "data": [
         "data/exception_rule_data.xml",
         "views/kmitl_project_views.xml",

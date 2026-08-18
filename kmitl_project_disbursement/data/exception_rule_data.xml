@@ -17,4 +17,22 @@ if self.budget_account_id.is_project and not self.kmitl_project_analytic_id:
         <field name="is_blocking" eval="True" />
         <field name="active" eval="True" />
     </record>
+
+    <!-- A project budget code drives the line product automatically from
+         budget.account.product_id (see disbursement_request_line). If that budget
+         account has no product bound, the product cannot be resolved — block on
+         submit with a clear message instead of a raw "product required" error. -->
+    <record id="excep_disbursement_project_no_product" model="exception.rule">
+        <field name="name">รหัสงบประมาณโครงการยังไม่ได้ผูกสินค้า (product)</field>
+        <field name="description">รหัสงบประมาณค่าใช้จ่ายเป็นประเภทโครงการ แต่ยังไม่ได้ผูกสินค้า (product) จึงกำหนดรหัสบัญชีให้บรรทัดใบขอเบิกไม่ได้</field>
+        <field name="sequence">61</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self.budget_account_id.is_project and not self.budget_account_id.product_id:
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
 </odoo>
