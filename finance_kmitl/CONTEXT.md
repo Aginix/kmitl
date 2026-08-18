@@ -20,14 +20,17 @@ a name — the **Hand-over** — and it is documented with the phase that crosse
   the payee's bank account, the paying account (หัวจ่าย), currency, payment and partner
   type, journal, and the **date**. Frozen from the moment the finance office confirms
   the voucher for the bank, because from then on changing any of them makes the record
-  disagree with what the bank was told to do. Not "the document is locked" — half of it
-  stays open.
+  disagree with what the bank was told to do. Not "the document is locked" — the other
+  half stays open, on the accounting office's own form.
 
 - **ฝั่งบันทึกบัญชี / Booking side**: what the accounting maker may still
   correct after the money has left — the analytic distribution (all 6 dimensions), the
   reference and description, attachments, and the operation type (ประเภทธุรกรรม) and
   with it the counterpart account. This is the side the accounting office has a maker
   step *for*; freezing it would leave the people who own the books unable to fix them.
+  It is corrected on the **journal entry**, not here: `account.payment` `_inherits`
+  `account.move`, so these are the same stored columns seen from the other office's
+  form ([ADR-0002](./docs/adr/0002-the-payment-voucher-form-belongs-to-the-finance-office.md)).
 
 - **`finance_state`**: the finance office's own lifecycle on the voucher —
   `draft → confirmed → paid` — kept apart from `state`, which belongs to the accounting
@@ -106,6 +109,11 @@ a name — the **Hand-over** — and it is documented with the phase that crosse
 - **A voucher may enter an e-payment file only once it can no longer change.** That is
   what confirming it for the bank buys, and it is why the file's gate is a finance-side
   fact and never the accounting office's `state`.
+- **The voucher form is the finance office's, and it closes whole when they confirm.**
+  Nothing else opens it, so once the money side is frozen there is nothing left on it
+  for the holder to change — and a form that offers an edit it will refuse on save is
+  worse than one that says up front it is closed. The booking side is corrected on the
+  journal entry. Note ประเภทธุรกรรม has no node there yet (ADR-0002).
 - **One file debits one account**, so a file's sending account is read from the paying
   account and never from the journal — a KMITL journal is a voucher type (ใบสำคัญ) and
   holds no bank account at all.

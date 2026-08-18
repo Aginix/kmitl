@@ -129,7 +129,10 @@ upfront.
   voucher waits in `draft` for the accounting **maker** to correct the booking and submit
   it and the **approver** to approve = post = ล้างหนี้. The lock is per side — the money
   side (amount, payee, หัวจ่าย, date) freezes when finance confirms; the booking side
-  (dimensions, ประเภทธุรกรรม, description) stays open for the maker. The bank's result
+  (dimensions, ประเภทธุรกรรม, description) stays open for the maker — but the **surface**
+  is per form: the payment voucher form is the finance office's and closes whole at
+  ยืนยันพร้อมส่งธนาคาร, the maker correcting the booking on the journal entry instead
+  (`finance_kmitl` ADR-0002). The bank's result
   file is never imported: exceptions are settled outside the system and vouched for by the
   single จ่ายครบ confirmation.
 - **Disbursement → Approval (return)**: returning a `disbursement.request` at `signed`
