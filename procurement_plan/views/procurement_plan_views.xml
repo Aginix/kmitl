@@ -17,6 +17,7 @@
                 <field name="source_analytic_id" optional="show" />
                 <field name="fund_analytic_id" optional="hide" />
                 <field name="activity_analytic_id" optional="hide" />
+                <field name="user_id" widget="many2one_avatar_user" optional="hide" />
                 <field name="state" widget="badge" decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state == 'to_verify'" decoration-muted="state == 'draft'" />
             </tree>
         </field>
@@ -119,29 +120,44 @@
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name" filter_domain="['|', ('name','ilike',self), ('description','ilike',self)]" />
+                <field name="name" string="แผนจัดซื้อจัดจ้าง" filter_domain="['|', ('name','ilike',self), ('description','ilike',self)]" />
+                <field name="description" />
+                <field name="user_id" />
+                <field name="account_fiscal_year_id" />
                 <field name="department_analytic_id" />
                 <field name="source_analytic_id" />
                 <field name="fund_analytic_id" />
                 <field name="activity_analytic_id" />
                 <separator/>
+                <filter name="my_plans" string="แผนของฉัน" domain="[('user_id', '=', uid)]" />
+                <separator/>
                 <filter name="hide_draft_cancel" string="ซ่อนร่าง/ยกเลิก" domain="[('state', 'not in', ('draft', 'cancel'))]" />
                 <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator/>
+                <filter name="state_draft" string="แบบร่าง" domain="[('state', '=', 'draft')]" />
+                <filter name="state_to_verify" string="รอตรวจสอบ/จัดสรรงบ" domain="[('state', '=', 'to_verify')]" />
+                <filter name="state_verified" string="รอดำเนินการ" domain="[('state', '=', 'verified')]" />
+                <filter name="state_in_progress" string="กำลังดำเนินการ" domain="[('state', '=', 'in_progress')]" />
+                <filter name="state_done" string="เสร็จสิ้น" domain="[('state', '=', 'done')]" />
+                <filter name="state_cancel" string="ยกเลิก" domain="[('state', '=', 'cancel')]" />
+                <separator/>
                 <group expand="1" name="group_by" string="Group By">
                     <filter string="ปีงบประมาณ" name="group_by_fiscal_year" context="{'group_by': 'account_fiscal_year_id'}" />
+                    <filter string="สถานะ" name="group_by_state" context="{'group_by': 'state'}" />
+                    <filter string="ผู้จัดทำ" name="group_by_user" context="{'group_by': 'user_id'}" />
                     <filter string="ส่วนงาน" name="group_by_department" context="{'group_by': 'department_analytic_id'}" />
                     <filter string="แหล่งเงิน" name="group_by_source" context="{'group_by': 'source_analytic_id'}" />
                     <filter string="กองทุน" name="group_by_fund" context="{'group_by': 'fund_analytic_id'}" />
                     <filter string="กิจกรรม" name="group_by_activity" context="{'group_by': 'activity_analytic_id'}" />
-                    <filter string="สถานะ" name="group_by_state" context="{'group_by': 'state'}" />
+                    <filter string="บริษัท" name="group_by_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company" />
                 </group>
                 <searchpanel>
                     <field name="account_fiscal_year_id" icon="fa-calendar" select="multi" enable_counters="1" />
-                    <field name="state" icon="fa-calendar" select="multi" enable_counters="1" />
-                    <field name="department_analytic_id" icon="fa-sitemap" select="multi" />
-                    <field name="source_analytic_id" icon="fa-money" select="multi" />
-                    <field name="fund_analytic_id" icon="fa-university" select="multi" />
+                    <field name="state" icon="fa-flag" select="multi" enable_counters="1" />
+                    <field name="department_analytic_id" icon="fa-sitemap" select="multi" enable_counters="1" />
+                    <field name="source_analytic_id" icon="fa-money" select="multi" enable_counters="1" />
+                    <field name="fund_analytic_id" icon="fa-university" select="multi" enable_counters="1" />
+                    <field name="activity_analytic_id" icon="fa-tasks" select="multi" enable_counters="1" />
                 </searchpanel>
             </search>
         </field>
