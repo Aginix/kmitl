@@ -129,6 +129,8 @@
                          it; a from_record one is OFF by default (its origin report is
                          the body) but the drafter can tick แนบเนื้อหา to add a covering
                          note above the origin's report. -->
+                    <label string="มีเนื้อหา" for="include_content"
+                           attrs="{'invisible': [('origin_model', '=', False)]}"/>
                     <field name="include_content"
                            attrs="{'invisible': [('origin_model', '=', False)], 'readonly': [('is_editable', '=', False)]}"/>
                     <separator string="เนื้อหา (Content)"
