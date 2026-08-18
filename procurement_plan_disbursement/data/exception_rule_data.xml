@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- If the disbursement draws a procurement-plan (investment) budget code
+         (budget.account.procurement_plan), it must carry the procurement-plan
+         dimension. Blocking so it can't be ignored — the แผนจัดซื้อจัดจ้าง
+         dimension is mandatory for this spending. Checked on submit via the
+         base.exception framework the DR already uses. -->
+    <record id="excep_disbursement_procurement_dimension" model="exception.rule">
+        <field name="name">ต้องระบุมิติแผนจัดซื้อจัดจ้างสำหรับรหัสงบประมาณงบลงทุน</field>
+        <field name="description">รหัสงบประมาณค่าใช้จ่ายเป็นประเภททำแผนจัดซื้อจัดจ้าง แต่ใบขอเบิกยังไม่ได้ระบุมิติแผนจัดซื้อจัดจ้าง</field>
+        <field name="sequence">70</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self.budget_account_id.procurement_plan and not self.procurement_plan_analytic_id:
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+
+    <!-- A procurement-plan budget code drives the line product automatically from
+         budget.account.product_id. If that budget account has no product bound,
+         the product cannot be resolved — block on submit with a clear message
+         instead of a raw "product required" error. -->
+    <record id="excep_disbursement_procurement_no_product" model="exception.rule">
+        <field name="name">รหัสงบประมาณงบลงทุนยังไม่ได้ผูกสินค้า (product)</field>
+        <field name="description">รหัสงบประมาณค่าใช้จ่ายเป็นประเภททำแผนจัดซื้อจัดจ้าง แต่ยังไม่ได้ผูกสินค้า (product) จึงกำหนดรหัสบัญชีให้บรรทัดใบขอเบิกไม่ได้</field>
+        <field name="sequence">71</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self.budget_account_id.procurement_plan and not self.budget_account_id.product_id:
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+</odoo>

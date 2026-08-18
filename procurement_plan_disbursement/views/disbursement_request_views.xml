@@ -25,9 +25,12 @@
                 />
             </xpath>
 
-            <!-- Req 1: hide the line product for procurement-plan expenses -->
+            <!-- Req 1: the product (รหัสบัญชี) is derived from the budget account,
+                 so hide the whole column for procurement-plan expenses
+                 (column_invisible, keyed on the parent) and keep it required only
+                 for ordinary disbursements. -->
             <xpath expr="//field[@name='line_ids']/tree/field[@name='product_id']" position="attributes">
-                <attribute name="attrs">{'column_invisible': [('parent.is_procurement_plan_expense', '=', True)]}</attribute>
+                <attribute name="attrs">{'column_invisible': [('parent.is_procurement_plan_expense', '=', True)], 'required': [('parent.is_procurement_plan_expense', '=', False)]}</attribute>
             </xpath>
 
         </field>

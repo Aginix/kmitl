@@ -9,6 +9,7 @@
     "depends": ["procurement_plan_budget", "disbursement", "budget_product"],
     "data": [
         "security/ir.model.access.csv",
+        "data/exception_rule_data.xml",
         "views/procurement_plan_views.xml",
         "views/disbursement_request_views.xml",
     ],
