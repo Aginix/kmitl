@@ -214,7 +214,7 @@
                                                 <t t-else="">-</t>
                                             </td>
                                             <td class="text-end border-start">
-                                                <t t-if="plan.analytic_account_balance" t-esc="'{:,.0f}'.format(plan.analytic_account_balance)" />
+                                                <t t-if="plan.analytic_account_balance" t-esc="'{:,.0f}'.format(-plan.analytic_account_balance)" />
                                                 <t t-else="">-</t>
                                             </td>
                                             <td class="text-center border-start">
