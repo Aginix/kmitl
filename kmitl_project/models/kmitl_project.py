@@ -882,9 +882,18 @@ class KmitlProject(models.Model):
         self.ensure_one()
         if self.key:
             return
-        self.key = self.env["ir.sequence"].next_by_code(
+        # The number's year must come from the ปีงบประมาณ, not today. In the
+        # use_date_range path %(year_be)s reads the effective date from the
+        # ``ir_sequence_date`` context (the date_range only drives the per-year
+        # counter reset), so pin both to the fiscal year's end date — its
+        # Gregorian year + 543 is the BE fiscal-year number (e.g. FY 2570 ends
+        # 2027 → 2570).
+        fiscal_date = self.account_fiscal_year_id.date_to
+        self.key = self.env["ir.sequence"].with_context(
+            ir_sequence_date=fiscal_date
+        ).next_by_code(
             "kmitl.project",
-            sequence_date=self.account_fiscal_year_id.date_to,
+            sequence_date=fiscal_date,
         )
 
     # States in which the accounting target (budget code + budget dimensions)
