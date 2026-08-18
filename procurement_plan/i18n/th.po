@@ -639,7 +639,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__cancel
 #: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
 msgid "ยกเลิก"
-msgstr "ยกเลิกแผนจัดซื้อจัดจ้าง"
+msgstr "ยกเลิก"
 
 #. module: procurement_plan
 #: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form

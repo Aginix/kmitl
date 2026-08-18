@@ -129,17 +129,16 @@
                 <field name="fund_analytic_id" />
                 <field name="activity_analytic_id" />
                 <separator/>
-                <filter name="my_plans" string="แผนของฉัน" domain="[('user_id', '=', uid)]" />
-                <separator/>
-                <filter name="hide_draft_cancel" string="ซ่อนร่าง/ยกเลิก" domain="[('state', 'not in', ('draft', 'cancel'))]" />
-                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
-                <separator/>
                 <filter name="state_draft" string="แบบร่าง" domain="[('state', '=', 'draft')]" />
-                <filter name="state_to_verify" string="รอตรวจสอบ/จัดสรรงบ" domain="[('state', '=', 'to_verify')]" />
+                <filter name="state_to_verify" string="จัดสรรงบประมาณ (ปรับเข้าแผน)" domain="[('state', '=', 'to_verify')]" />
                 <filter name="state_verified" string="รอดำเนินการ" domain="[('state', '=', 'verified')]" />
                 <filter name="state_in_progress" string="กำลังดำเนินการ" domain="[('state', '=', 'in_progress')]" />
                 <filter name="state_done" string="เสร็จสิ้น" domain="[('state', '=', 'done')]" />
                 <filter name="state_cancel" string="ยกเลิก" domain="[('state', '=', 'cancel')]" />
+                <separator/>
+                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
+                <separator/>
+                <filter name="my_plans" string="แผนของฉัน" domain="[('user_id', '=', uid)]" />
                 <separator/>
                 <group expand="1" name="group_by" string="Group By">
                     <filter string="ปีงบประมาณ" name="group_by_fiscal_year" context="{'group_by': 'account_fiscal_year_id'}" />
@@ -153,11 +152,6 @@
                 </group>
                 <searchpanel>
                     <field name="account_fiscal_year_id" icon="fa-calendar" select="multi" enable_counters="1" />
-                    <field name="state" icon="fa-flag" select="multi" enable_counters="1" />
-                    <field name="department_analytic_id" icon="fa-sitemap" select="multi" enable_counters="1" />
-                    <field name="source_analytic_id" icon="fa-money" select="multi" enable_counters="1" />
-                    <field name="fund_analytic_id" icon="fa-university" select="multi" enable_counters="1" />
-                    <field name="activity_analytic_id" icon="fa-tasks" select="multi" enable_counters="1" />
                 </searchpanel>
             </search>
         </field>

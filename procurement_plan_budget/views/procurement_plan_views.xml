@@ -63,7 +63,7 @@
             <filter name="group_by_state" position="before">
                 <filter string="รหัสงบประมาณ" name="group_by_budget_account" context="{'group_by': 'budget_account_id'}" />
             </filter>
-            <xpath expr="//searchpanel/field[@name='fund_analytic_id']" position="after">
+            <xpath expr="//searchpanel/field[@name='account_fiscal_year_id']" position="after">
                 <field name="budget_account_id" icon="fa-money" select="multi" enable_counters="1" />
             </xpath>
         </field>
