@@ -127,7 +127,7 @@
             </xpath>
 
             <xpath expr="//button[@name='action_view_purchase_order']" position="attributes">
-                <attribute name="icon">fa-book</attribute>
+                <attribute name="icon">fa-shopping-bag</attribute>
             </xpath>
 
             <button name="button_rejected" position="attributes">
