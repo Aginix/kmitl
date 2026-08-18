@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Budget Transfer Form View -->
+    <record id="view_budget_transfer_form" model="ir.ui.view">
+        <field name="name">budget.transfer.form</field>
+        <field name="model">budget.transfer</field>
+        <field name="arch" type="xml">
+            <form string="Budget Transfer">
+                <header>
+                    <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" attrs="{'invisible': [('show_submit_button', '=', False)]}"/>
+                    <button name="action_approve" type="object" string="Approve &amp; Post" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}" confirm="Approval will automatically post the transfer. Do you want to continue?"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_posted_button', '=', False)]}" confirm="Resetting a posted transfer back to draft will reverse the budget entry that has already been recorded, and may lead to budget inconsistencies. Do you want to continue?"/>
+                    <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,posted"/>
+                </header>
+
+                <sheet>
+                    <widget name="web_ribbon" title="Posted" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'posted')]}"/>
+                    <widget name="web_ribbon" title="Cancelled" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+                    <div class="oe_button_box" name="button_box">
+                        <!-- Show the move's BM number via the non-required
+                             move_reference mirror, NOT the required move_id
+                             delegate — rendering move_id here made the web client
+                             block a new record's save with "Budget Move required".
+                             Hidden until the move exists (i.e. after save). -->
+                        <button name="action_view_budget_move" type="object" class="oe_stat_button" icon="fa-exchange" attrs="{'invisible': [('has_budget_move', '=', False)]}">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="move_reference" readonly="1" nolabel="1"/></span>
+                                <span class="o_stat_text">Budget Move</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" class="o_text_overflow" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group name="transfer_info" string="Transfer Information">
+                            <field name="date" attrs="{'readonly': ['|', ('can_edit', '=', False), ('fiscal_year_locked', '=', True)]}"/>
+                            <field name="account_fiscal_year_id" attrs="{'readonly': ['|', ('can_edit', '=', False), ('fiscal_year_locked', '=', True)]}"/>
+                            <field name="budget_type" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                            <field name="user_id" widget="employee_detail_many2one" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                        </group>
+                        <group name="dimension_info" string="Financial Dimensions">
+                            <field name="department_analytic_id" required="1" attrs="{'readonly': [('can_edit', '=', False)]}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="source_analytic_id" required="1" attrs="{'readonly': [('can_edit', '=', False)]}" options="{'no_create': True, 'no_open': True}" />
+                            <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group name="approval_meta" attrs="{'invisible': [('approver_id', '=', False)]}">
+                        <group>
+                            <field name="approver_id"/>
+                            <field name="approval_date"/>
+                        </group>
+                    </group>
+
+                    <!-- Budget Validation Alert -->
+                    <div class="alert alert-warning d-flex align-items-start" role="alert" attrs="{'invisible': ['|', ('has_sufficient_budget', '=', True), ('state', 'in', ['posted', 'cancelled'])]}">
+                        <i class="fa fa-exclamation-triangle fa-fw mt-1 me-2" role="img" aria-label="Warning"/>
+                        <div>
+                            <strong>Budget Check</strong>
+                            <field name="budget_validation_message" nolabel="1"/>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success d-flex align-items-center" role="alert" attrs="{'invisible': ['|', ('has_sufficient_budget', '=', False), ('state', 'in', ['posted', 'cancelled'])]}">
+                        <i class="fa fa-check-circle fa-fw me-2" role="img" aria-label="OK"/>
+                        <strong>Budget Sufficient for Transfer</strong>
+                    </div>
+
+                    <group name="transfer_reason" colspan="8">
+                        <field name="reason" placeholder="Please provide detailed justification for this budget transfer..." attrs="{'readonly': [('can_edit', '=', False)]}" colspan="2"/>
+                    </group>
+
+                    <!-- Transfer Lines (authored directly as budget.move.line) -->
+                    <notebook>
+                        <page name="transfer_lines" string="Transfer Details">
+                            <group>
+                                <separator string="Transfer FROM (Source)"/>
+                                <field name="from_line_ids" nolabel="1" colspan="2"
+                                       context="{'default_transfer_direction': 'from', 'default_department_analytic_id': department_analytic_id}"
+                                       attrs="{'readonly': [('can_edit', '=', False)]}">
+                                    <!-- Non-editable tree: a click opens the line editor dialog. -->
+                                    <tree decoration-danger="not budget_sufficient" create="1" delete="1">
+                                        <field name="account_id"/>
+                                        <field name="activity_analytic_id"/>
+                                        <field name="fund_analytic_id"/>
+                                        <field name="department_analytic_id"/>
+                                        <field name="kmitl_project_analytic_id" optional="show"/>
+                                        <field name="procurement_plan_analytic_id" optional="show"/>
+                                        <field name="amount" widget="monetary" sum="Total Source"/>
+                                        <field name="available_budget" widget="monetary" attrs="{'column_invisible': [('parent.state', 'in', ['posted', 'cancelled'])]}"/>
+                                        <field name="budget_sufficient" widget="boolean_toggle" attrs="{'column_invisible': [('parent.state', 'in', ['posted', 'cancelled'])]}"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                    <form string="Transfer Out (Source)">
+                                        <sheet>
+                                            <!-- FROM Department / Source always equal the header — hidden, defaulted via context. -->
+                                            <field name="transfer_direction" invisible="1"/>
+                                            <field name="account_is_project" invisible="1"/>
+                                            <field name="account_is_procurement" invisible="1"/>
+                                            <field name="source_analytic_id" invisible="1"/>
+                                            <field name="department_analytic_id" invisible="1"/>
+                                            <field name="currency_id" invisible="1"/>
+                                            <field name="budget_sufficient" invisible="1"/>
+                                            <group>
+                                                <group string="Budget Account / Dimensions">
+                                                    <field name="account_id" required="1"
+                                                           options="{'no_create': True, 'no_open': True}"
+                                                           domain="[('budget_type', '=', parent.budget_type)]"
+                                                           placeholder="Select source budget account..."/>
+                                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="kmitl_project_analytic_id" options="{'no_create': True, 'no_open': True}"
+                                                           attrs="{'invisible': [('account_is_project', '=', False)]}"/>
+                                                    <field name="procurement_plan_analytic_id" options="{'no_create': True, 'no_open': True}"
+                                                           attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
+                                                </group>
+                                                <group string="Amount">
+                                                    <field name="amount" widget="monetary" required="1"/>
+                                                    <field name="available_budget" widget="monetary" readonly="1"/>
+                                                </group>
+                                            </group>
+                                            <div class="alert alert-danger d-flex align-items-center" role="alert"
+                                                 attrs="{'invisible': [('budget_sufficient', '=', True)]}">
+                                                <i class="fa fa-exclamation-triangle fa-fw me-2" role="img" aria-label="Warning"/>
+                                                <span>Insufficient remaining budget for the requested transfer amount.</span>
+                                            </div>
+                                            <group string="Note">
+                                                <field name="note" nolabel="1" placeholder="Additional details (if any)..." colspan="2"/>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                                <separator string="Transfer TO (Destination)"/>
+                                <field name="to_line_ids" nolabel="1" colspan="2"
+                                       context="{'default_transfer_direction': 'to', 'default_department_analytic_id': department_analytic_id}"
+                                       attrs="{'readonly': [('can_edit', '=', False)]}">
+                                    <!-- Non-editable tree: a click opens the line editor dialog. -->
+                                    <tree decoration-success="1" create="1" delete="1">
+                                        <field name="account_id"/>
+                                        <field name="activity_analytic_id"/>
+                                        <field name="fund_analytic_id"/>
+                                        <field name="department_analytic_id"/>
+                                        <field name="kmitl_project_analytic_id" optional="show"/>
+                                        <field name="procurement_plan_analytic_id" optional="show"/>
+                                        <field name="amount" widget="monetary" sum="Total Destination"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                    <form string="Transfer In (Destination)">
+                                        <sheet>
+                                            <field name="transfer_direction" invisible="1"/>
+                                            <field name="account_is_project" invisible="1"/>
+                                            <field name="account_is_procurement" invisible="1"/>
+                                            <field name="source_analytic_id" invisible="1"/>
+                                            <field name="currency_id" invisible="1"/>
+                                            <group>
+                                                <group string="Budget Account / Dimensions">
+                                                    <field name="account_id" required="1"
+                                                           options="{'no_create': True, 'no_open': True}"
+                                                           domain="[('budget_type', '=', parent.budget_type)]"
+                                                           placeholder="Select destination budget account..."/>
+                                                    <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="kmitl_project_analytic_id" options="{'no_create': True, 'no_open': True}"
+                                                           attrs="{'invisible': [('account_is_project', '=', False)]}"/>
+                                                    <field name="procurement_plan_analytic_id" options="{'no_create': True, 'no_open': True}"
+                                                           attrs="{'invisible': [('account_is_procurement', '=', False)]}"/>
+                                                </group>
+                                                <group string="Amount">
+                                                    <field name="amount" widget="monetary" required="1"/>
+                                                </group>
+                                            </group>
+                                            <group string="Note">
+                                                <field name="note" nolabel="1" placeholder="Additional details (if any)..." colspan="2"/>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <!-- Chatter -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+
+                <!-- Hidden fields for computations -->
+                <field name="show_submit_button" invisible="1"/>
+                <field name="show_approve_button" invisible="1"/>
+                <field name="show_cancel_button" invisible="1"/>
+                <field name="show_reset_button" invisible="1"/>
+                <field name="show_reset_posted_button" invisible="1"/>
+                <field name="fiscal_year_locked" invisible="1"/>
+                <field name="can_edit" invisible="1"/>
+                <field name="has_budget_move" invisible="1"/>
+                <field name="has_sufficient_budget" invisible="1"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Budget Transfer Tree View -->
+    <record id="view_budget_transfer_tree" model="ir.ui.view">
+        <field name="name">budget.transfer.tree</field>
+        <field name="model">budget.transfer</field>
+        <field name="arch" type="xml">
+            <tree string="Budget Transfers" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state == 'posted'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="department_analytic_id" optional="show"/>
+                <field name="source_analytic_id" optional="show"/>
+                <field name="user_id"/>
+                <field name="amount" widget="monetary" sum="Total"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state == 'posted'" decoration-danger="state == 'cancelled'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Budget Transfer Search View -->
+    <record id="view_budget_transfer_search" model="ir.ui.view">
+        <field name="name">budget.transfer.search</field>
+        <field name="model">budget.transfer</field>
+        <field name="arch" type="xml">
+            <search string="Search Budget Transfers">
+                <field name="name" string="Transfer Number"/>
+                <field name="user_id" string="Responsible"/>
+                <field name="account_fiscal_year_id" string="Fiscal Year"/>
+                <field name="budget_type" string="Budget Type"/>
+                <field name="department_analytic_id" string="Department"/>
+                <field name="source_analytic_id" string="Source"/>
+                <field name="reason" string="Reason"/>
+
+                <filter name="my_transfers" string="My Transfers" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter name="current_fiscal_year" string="Current Fiscal Year" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today().strftime('%Y-%m-%d')),
+                                ('account_fiscal_year_id.date_to', '>=', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="pending_approval" string="Pending Approval" domain="[('state', '=', 'submitted')]"/>
+                <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <filter name="cancelled" string="Cancelled" domain="[('state', '=', 'cancelled')]"/>
+
+                <separator/>
+                <filter name="this_month" string="This Month" domain="[('date', '>=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                ('date', '&lt;', (context_today() + relativedelta(months=1, day=1)).strftime('%Y-%m-%d'))]"/>
+                <filter name="this_year" string="This Year" domain="[('date', '>=', (context_today() - relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),
+                                ('date', '&lt;', (context_today() + relativedelta(years=1, month=1, day=1)).strftime('%Y-%m-%d'))]"/>
+
+                <group expand="0" name="group_by" string="Group By">
+                    <filter name="group_by_state" string="Status" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_fiscal_year" string="Fiscal Year" domain="[]" context="{'group_by': 'account_fiscal_year_id'}"/>
+                    <filter name="group_by_budget_type" string="Budget Type" domain="[]" context="{'group_by': 'budget_type'}"/>
+                    <filter name="group_by_user" string="Responsible" domain="[]" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_by_department" string="Department" domain="[]" context="{'group_by': 'department_analytic_id'}"/>
+                    <filter name="group_by_source" string="Source" domain="[]" context="{'group_by': 'source_analytic_id'}"/>
+                    <filter name="group_by_date" string="Date" domain="[]" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Budget Transfer Kanban View -->
+    <record id="view_budget_transfer_kanban" model="ir.ui.view">
+        <field name="name">budget.transfer.kanban</field>
+        <field name="model">budget.transfer</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="amount"/>
+                <field name="currency_id"/>
+                <field name="user_id"/>
+                <field name="approver_id"/>
+                <field name="date"/>
+                <field name="state"/>
+                <field name="reason"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top mb-2">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <span class="badge badge-pill badge-info">
+                                            <field name="amount" widget="monetary"/>
+                                        </span>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <field name="date"/>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <strong>Responsible:</strong>
+                                        <field name="user_id"/>
+                                    </div>
+                                </div>
+                                <div class="row" t-if="record.approver_id.raw_value">
+                                    <div class="col-12">
+                                        <strong>Approver:</strong>
+                                        <field name="approver_id"/>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <field name="reason" widget="text" class="text-muted"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Keep only the empty draft moves of not-yet-posted transfers out of the
+         general ledger list (they carry a zero-amount draft move that would
+         pollute it). A POSTED transfer is a real budget entry that moves Current
+         Budget (ADR-0003), so it stays visible in the ledger like any other
+         move; its transfer form is one click away via the move's stat button. -->
+    <record id="budget.action_budget_move" model="ir.actions.act_window">
+        <field name="domain">['|', ('is_transfer', '=', False), ('state', '=', 'posted')]</field>
+    </record>
+
+    <!-- Budget Transfer Actions -->
+    <record id="action_budget_transfer" model="ir.actions.act_window">
+        <field name="name">Budget Transfers</field>
+        <field name="res_model">budget.transfer</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="search_view_id" ref="view_budget_transfer_search"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first budget transfer!
+            </p>
+            <p>
+                Budget transfers move allocated budget between accounts with an
+                approval workflow and availability checking.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_my_budget_transfers" model="ir.actions.act_window">
+        <field name="name">My Budget Transfers</field>
+        <field name="res_model">budget.transfer</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="domain">[('user_id', '=', uid)]</field>
+        <field name="context">{'search_default_my_transfers': 1}</field>
+    </record>
+
+    <record id="action_budget_transfers_pending" model="ir.actions.act_window">
+        <field name="name">Pending Approvals</field>
+        <field name="res_model">budget.transfer</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="domain">[('state', '=', 'submitted')]</field>
+        <field name="context">{'search_default_pending_approval': 1}</field>
+    </record>
+
+</odoo>

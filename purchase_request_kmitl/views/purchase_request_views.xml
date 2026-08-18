@@ -142,8 +142,15 @@
             <xpath expr="//button[@name='button_draft']" position="after">
                 <button
                     name="button_cancel"
-                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress"
+                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress,returned"
                     string="Cancel"
+                    type="object"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
+                />
+                <button
+                    name="button_return"
+                    states="to_verify,to_submit"
+                    string="Return"
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
@@ -261,9 +268,9 @@
 
             <!-- === Notebook pages === -->
             <xpath expr="//form/sheet/notebook" position="inside">
-                <page name="committee" string="Committee">
+                <page name="committee" string="Committees">
                     <separator
-                        string="TOR Committee"
+                        string="Propose TOR Committee"
                         attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <field
@@ -273,7 +280,7 @@
                         attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <separator
-                        string="Price Determine Committee"
+                        string="Propose Price Determine Committee"
                         attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <field
@@ -283,7 +290,7 @@
                         attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <separator
-                        string="Evaluation Committee"
+                        string="Propose Evaluation Committee"
                         attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <field
@@ -292,7 +299,7 @@
                         context="{'default_committee_type': 'evaluation'}"
                         attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
-                    <separator string="Work Acceptance Committee" />
+                    <separator string="Propose Work Acceptance Committee" />
                     <field
                         name="work_acceptance_committee_ids"
                         nolabel="1"
@@ -321,6 +328,13 @@
                     </field>
                 </page>
                 <page name="document" string="Attachment">
+                    <div class="alert alert-info" role="alert">
+                        <b>ตัวอย่างเอกสารแนบ</b>
+                        <ul class="mb-0">
+                            <li>รายละเอียดและคุณลักษณะพัสดุ</li>
+                            <li>ใบเสนอราคาพัสดุ</li>
+                        </ul>
+                    </div>
                     <group name="attachment" string="Attachment">
                         <field
                             name="attachment_ids"

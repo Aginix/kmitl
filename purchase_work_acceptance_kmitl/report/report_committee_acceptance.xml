@@ -24,11 +24,6 @@
                             font-size: 16pt;
                             line-height: 1.4;
                         }
-                        .sig-line {
-                            display: inline-block;
-                            width: 200px;
-                            border-bottom: 1px dotted #000;
-                        }
                         .ub {
                             text-decoration: underline;
                             font-weight: bold;
@@ -175,14 +170,25 @@
                             <t t-if="line.approve_role != 'secretary'">
                                 <div class="row mt-5">
                                     <div class="col-9 offset-3 text-center">
-                                        <div style="white-space: nowrap">
-                                            (ลงชื่อ)
-                                            <span class="sig-line"></span>
-                                            <span t-field="line.approve_role" />
+                                        <div
+                                            t-if="line.status == 'accept' and line.employee_id.signature"
+                                        >
+                                            <img
+                                                t-att-src="image_data_uri(line.employee_id.signature)"
+                                                style="max-height: 60px;"
+                                            />
                                         </div>
-                                        <div class="mt-2">
+                                        <div
+                                            t-elif="line.status != 'accept' and line.note"
+                                            style="height: 60px; line-height: 60px;"
+                                        >
+                                            <span t-field="line.note" />
+                                        </div>
+                                        <div t-else="" style="height: 60px;" />
+                                        <div>
                                             (<span t-esc="line.name" />)
                                         </div>
+                                        <div t-field="line.approve_role" />
                                     </div>
                                 </div>
                             </t>
@@ -191,14 +197,25 @@
                             <t t-if="line.approve_role == 'secretary'">
                                 <div class="row mt-5">
                                     <div class="col-9 offset-3 text-center">
-                                        <div style="white-space: nowrap">
-                                            (ลงชื่อ)
-                                            <span class="sig-line"></span>
-                                            <span t-field="line.approve_role" />
+                                        <div
+                                            t-if="line.status == 'accept' and line.employee_id.signature"
+                                        >
+                                            <img
+                                                t-att-src="image_data_uri(line.employee_id.signature)"
+                                                style="max-height: 60px;"
+                                            />
                                         </div>
-                                        <div class="mt-2">
+                                        <div
+                                            t-elif="line.status != 'accept' and line.note"
+                                            style="height: 60px; line-height: 60px;"
+                                        >
+                                            <span t-field="line.note" />
+                                        </div>
+                                        <div t-else="" style="height: 60px;" />
+                                        <div>
                                             (<span t-esc="line.name" />)
                                         </div>
+                                        <div t-field="line.approve_role" />
                                     </div>
                                 </div>
                             </t>
@@ -208,14 +225,19 @@
                             <t>
                                 <div class="row mt-5">
                                     <div class="col-9 offset-3 text-center">
-                                        <div style="white-space: nowrap">
-                                            (ลงชื่อ)
-                                            <span class="sig-line"></span>
-                                            <span>ผู้ควบคุมงาน</span>
+                                        <div
+                                            t-if="o.state == 'accept' and line.employee_id.signature"
+                                        >
+                                            <img
+                                                t-att-src="image_data_uri(line.employee_id.signature)"
+                                                style="max-height: 60px;"
+                                            />
                                         </div>
-                                        <div class="mt-2">
+                                        <div t-else="" style="height: 60px;" />
+                                        <div>
                                             (<span t-esc="line.name" />)
                                         </div>
+                                        <div>ผู้ควบคุมงาน</div>
                                     </div>
                                 </div>
                             </t>

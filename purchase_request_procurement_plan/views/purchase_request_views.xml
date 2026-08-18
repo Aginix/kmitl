@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- View purchase.request form -->
+    <record id="view_purchase_request_form_procurement_plan" model="ir.ui.view">
+        <field name="name">view.purchase.request.form (Procurement Plan)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <field name="procurement_plan_id" invisible="1" />
+                <button
+                    name="action_view_procurement_plan"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-list-alt"
+                    attrs="{'invisible': [('procurement_plan_id', '=', False)]}"
+                >
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Procurement Plan</span>
+                    </div>
+                </button>
+            </xpath>
+            <field name="budget_account_id" position="attributes">
+                <attribute name="domain">[('procurement_plan', '=', False)]</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record
+        id="view_purchase_request_form_inherit_account_fiscal_year_procurement_plan"
+        model="ir.ui.view"
+    >
+        <field name="name">view.purchase.request.form (Procurement Plan)</field>
+        <field name="model">purchase.request</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_kmitl.view_purchase_request_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="after">
+                <h2>Purchase Request Form</h2>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_edit_only')]" position="before">
+                <!-- Plan-driven PRs are created from the procurement plan only
+                     (ADR-0006). The selector is gone; these stay invisible so
+                     the prefill onchange still fires from the create context. -->
+                <field name="use_procurement_plan" invisible="1" />
+                <field name="procurement_plan_analytic_id" invisible="1" />
+                <!-- Discoverability: tell users where plan-driven พ.1 come from,
+                     shown only on a fresh, non-plan-linked draft. Direct (non-plan)
+                     PRs are still created here as usual. -->
+                <div
+                    class="alert alert-info"
+                    role="alert"
+                    attrs="{'invisible': ['|', ('procurement_plan_id', '!=', False), ('state', '!=', 'draft')]}"
+                >
+                    <i class="fa fa-info-circle me-1" />
+                    ต้องการจัดทำใบ พ.1 จาก<b>แผนจัดซื้อจัดจ้าง</b>?
+                    เลือกแผน แล้วกดปุ่ม <b>"สร้างใบขอซื้อ"</b> จากหน้าแผน
+                    (แผนต้องอยู่สถานะ <b>"รอดำเนินการ"</b>)
+                    — ไม่สามารถเลือกแผนจากในใบ พ.1 นี้ได้
+                    <div class="mt-2">
+                        <a
+                            href="/web#action=purchase_request_procurement_plan.action_procurement_plan_ready_for_pr"
+                            class="btn btn-sm btn-primary"
+                        >
+                            <i class="fa fa-external-link me-1" />ไปที่แผนจัดซื้อจัดจ้าง
+                        </a>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

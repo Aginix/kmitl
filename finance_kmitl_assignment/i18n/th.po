@@ -174,3 +174,35 @@ msgstr "นำกฎการมอบหมายไปใช้แล้ว"
 #, python-format
 msgid "%(assigned)s of %(total)s pending voucher(s) were assigned."
 msgstr "มอบหมายแล้ว %(assigned)s จาก %(total)s ใบที่รอมอบหมาย"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assignment_rule__paying_account_id
+msgid "Paying Account"
+msgstr "หัวจ่าย"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,help:finance_kmitl_assignment.field_finance_assignment_rule__paying_account_id
+msgid ""
+"หัวจ่าย — the account the money leaves from, which names the payment method "
+"too, so a rule on a cheque account routes every cheque paid from it. Leave "
+"empty to match any paying account."
+msgstr ""
+"หัวจ่าย — บัญชีที่เงินออก ซึ่งระบุวิธีจ่ายไปในตัว "
+"กฎที่ตั้งกับหัวจ่ายที่เป็นเช็คจึงครอบใบที่จ่ายเป็นเช็คจากหัวจ่ายนั้นทั้งหมด "
+"เว้นว่างไว้เพื่อจับคู่ได้ทุกหัวจ่าย"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assignment_rule__payment_subject_id
+msgid "Payment Subject"
+msgstr "เรื่องที่จ่าย"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,help:finance_kmitl_assignment.field_finance_assignment_rule__payment_subject_id
+msgid ""
+"เรื่องที่จ่าย — what the disbursement is for, chosen once on the request. A "
+"voucher keyed in by hand has no request and so no subject, and is left to "
+"the rules that keep this empty. Leave empty to match any subject."
+msgstr ""
+"เรื่องที่จ่าย — ใบเบิกนี้จ่ายเรื่องอะไร เลือกครั้งเดียวที่ใบเบิก "
+"ใบสำคัญจ่ายที่คีย์เองไม่มีใบเบิกจึงไม่มีเรื่องที่จ่าย และจะเข้าเฉพาะกฎที่เว้นช่องนี้ว่าง "
+"เว้นว่างไว้เพื่อจับคู่ได้ทุกเรื่องที่จ่าย"

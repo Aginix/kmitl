@@ -132,7 +132,7 @@ class SarabunDocument(models.Model):
             ("draft", "ร่าง (Draft)"),
             ("circulating", "กำลังดำเนินการ (Circulating)"),
             ("completed", "เสร็จสิ้น (Completed)"),
-            ("returned", "ตีกลับ (Returned)"),
+            ("returned", "รอการแก้ไขเอกสาร (Pending Revision)"),
             ("rejected", "ปฏิเสธ (Rejected)"),
             ("cancelled", "ยกเลิก (Cancelled)"),
         ],

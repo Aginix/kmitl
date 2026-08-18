@@ -5,7 +5,10 @@
     <record id="action_account_payment_my_work" model="ir.actions.act_window">
         <field name="name">My Work</field>
         <field name="res_model">account.payment</field>
-        <field name="view_mode">tree,kanban,form</field>
+        <!-- The same view modes as the whole list: My Work is that list with one
+             filter already on, so nothing the office can do there should be
+             missing here. -->
+        <field name="view_mode">tree,kanban,form,graph</field>
         <field name="view_id" ref="finance_kmitl.view_account_payment_tree_kmitl" />
         <field
             name="search_view_id"

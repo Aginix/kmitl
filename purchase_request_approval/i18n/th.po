@@ -240,6 +240,11 @@ msgid "Can Review"
 msgstr ""
 
 #. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: purchase_request_approval
 #. odoo-python
 #: code:addons/purchase_request_approval/models/purchase_request_approval.py:0
 #, python-format
@@ -768,7 +773,7 @@ msgstr "คำสั่งซื้อ"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__request_id
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Purchase Request"
-msgstr "แบบขอซื้อ/จ้าง"
+msgstr "แบบขอให้จัดหา"
 
 #. module: purchase_request_approval
 #. odoo-python
@@ -923,13 +928,23 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+msgid "Resend to Sarabun"
+msgstr "ส่งข้อมูล"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Reset"
-msgstr "รีเซ็ต"
+msgstr "ดึงกลับ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__user_id
 msgid "Responsible"
 msgstr "ผู้รับผิดชอบ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__sarabun_returned
+msgid "Sarabun Returned"
+msgstr "รอการแก้ไข"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_user_id
@@ -1585,7 +1600,7 @@ msgstr "สินค้า"
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__name
 msgid "Description"
-msgstr "ชื่อรายการ"
+msgstr "รายการ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__product_qty
@@ -1595,7 +1610,7 @@ msgstr "จำนวน"
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__product_uom_id
 msgid "UoM"
-msgstr "หน่วยวัด"
+msgstr "หน่วยนับ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__price_unit
@@ -1606,3 +1621,13 @@ msgstr "ราคา"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__estimated_cost
 msgid "Estimated Cost"
 msgstr "จำนวนเงิน"
+
+#. module: purchase_request_approval
+#: model:ir.model,name:purchase_request_approval.model_purchase_request_approval_return_cancel_wizard
+msgid "Purchase Request Approval Return/Cancel Wizard"
+msgstr "Wizard ตีกลับ/ยกเลิก พจ.1"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__pending_pr
+msgid "Pending PR Revision"
+msgstr "รอ พ.1 แก้ไข"

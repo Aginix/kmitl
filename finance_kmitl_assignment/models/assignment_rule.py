@@ -20,8 +20,10 @@ class FinanceAssignmentRule(models.Model):
     _order = "sequence, id"
     _rec_name = "user_id"
 
-    # Dimension criteria used for matching, in stored-field order. An empty
-    # criterion behaves as a wildcard (matches any value on that dimension).
+    # Hierarchical dimension criteria, matched over the whole ancestor subtree.
+    # An empty criterion behaves as a wildcard (matches any value there).
+    # The flat criteria — partner type and paying account — are matched on
+    # equality in ``_find_for_payment`` instead, because neither has a tree.
     _CRITERIA = (
         "department_analytic_id",
         "source_analytic_id",
@@ -64,6 +66,28 @@ class FinanceAssignmentRule(models.Model):
         string="Partner Type",
         ondelete="restrict",
     )
+    paying_account_id = fields.Many2one(
+        "account.payment.method.line",
+        string="Paying Account",
+        ondelete="restrict",
+        # Every outbound account, not only the ใบสำคัญจ่าย (PV) ones the
+        # disbursement flow uses: routing covers every outbound voucher this
+        # office raises, so a rule has to be able to name the account a loan
+        # voucher (PVR/PAR) is paid from too.
+        domain=[("payment_type", "=", "outbound")],
+        help="หัวจ่าย — the account the money leaves from, which names the "
+        "payment method too, so a rule on a cheque account routes every cheque "
+        "paid from it. Leave empty to match any paying account.",
+    )
+    payment_subject_id = fields.Many2one(
+        "kmitl.payment.subject",
+        string="Payment Subject",
+        ondelete="restrict",
+        help="เรื่องที่จ่าย — what the disbursement is for, chosen once on the "
+        "request. A voucher keyed in by hand has no request and so no subject, "
+        "and is left to the rules that keep this empty. Leave empty to match "
+        "any subject.",
+    )
 
     user_id = fields.Many2one(
         "res.users",
@@ -84,10 +108,15 @@ class FinanceAssignmentRule(models.Model):
         budget engine uses (see budget_appropriation.py). A rule leaves a
         criterion empty to act as a wildcard for that dimension.
 
+        Partner type, paying account and payment subject are flat: none is a
+        tree, so all three match on equality.
+
         The dimensions are read off the payment directly: they live on the
         journal entry (``accounting_kmitl`` puts ``analytic.distribution.mixin``
         on ``account.move``) and the payment delegates to it through
-        ``_inherits``.
+        ``_inherits``. The payment subject is the one criterion the voucher does
+        not carry itself -- it is chosen on the disbursement request the voucher
+        was created from.
         """
         # Pin ("active", "=", True) explicitly rather than relying on the
         # implicit active_test: the "Apply Rules to Pending Payments" server
@@ -108,6 +137,26 @@ class FinanceAssignmentRule(models.Model):
                 "partner_type_id",
                 "in",
                 payment.partner_id.partner_type_id.ids + [False],
+            )
+        )
+        # And it leaves from exactly one หัวจ่าย, which is the only place a
+        # paying account can be recorded — so this too is unambiguous. It is set
+        # before the voucher is saved on both roads in: the disbursement puts it
+        # in the create values, and a voucher filled in by hand cannot be
+        # confirmed for the bank without one.
+        domain.append(
+            ("paying_account_id", "in", payment.payment_method_line_id.ids + [False])
+        )
+        # The subject (เรื่องที่จ่าย) is the one criterion recorded a step back:
+        # it is picked on the disbursement request, which is what the หัวจ่าย of
+        # every payee is derived from. A voucher keyed in by hand has no request
+        # and so no subject, which leaves it to the rules that keep this
+        # criterion blank -- the same wildcard the others mean by being empty.
+        domain.append(
+            (
+                "payment_subject_id",
+                "in",
+                payment.disbursement_request_id.payment_subject_id.ids + [False],
             )
         )
         return self.search(domain, limit=1)

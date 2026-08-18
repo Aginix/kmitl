@@ -7,8 +7,8 @@ class ProcurementPlanDashboardController(http.Controller):
 
     STATE_LABELS = {
         "draft": "ฉบับร่าง",
-        "new": "ยังไม่เริ่ม",
-        "on_hold": "ชะลอโครงการ",
+        "to_verify": "รอตรวจสอบข้อมูล",
+        "verified": "รอดำเนินการ",
         "in_progress": "กำลังดำเนินการ",
         "done": "เสร็จสิ้น",
         "cancel": "ยกเลิก",

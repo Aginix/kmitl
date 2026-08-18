@@ -109,7 +109,7 @@ class PurchaseRequest(models.Model):
         for record in self:
             if record.is_egp:
                 if not record.egp_project_id:
-                    raise UserError(_("กรุณากรอกเลขที่โครงการ e-GP ก่อนดำเนินการ"))
+                    raise UserError(_("กรุณากรอกเลขที่โครงการ e-GP ที่แท็บ e-GP ก่อนดำเนินการ"))
                 record.write({"egp_status": "in_progress"})
                 record.button_in_progress()
 

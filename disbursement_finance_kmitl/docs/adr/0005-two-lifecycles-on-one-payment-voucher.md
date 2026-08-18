@@ -4,6 +4,9 @@
 - Date: 2026-08-12
 - Supersedes: ADR-0004
 - Builds on: ADR-0001 (the accounting office posts the payment, and posting is clearing)
+- Amended by: `finance_kmitl` ADR-0002 — the per-side lock in §3 stands, but the payment
+  voucher **form** closes whole at `confirmed`, because it is the finance office's form
+  and no accounting person opens it; the booking side is corrected on the journal entry.
 
 ## Context
 

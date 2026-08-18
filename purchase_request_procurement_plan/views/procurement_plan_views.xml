@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View procurement.plan form - Add Smart Button -->
+    <record id="view_procurement_plan_form_purchase_request" model="ir.ui.view">
+        <field name="name">view.procurement.plan.form.purchase.request</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_create_purchase_request" type="object" string="สร้างใบขอซื้อ" class="btn-primary" attrs="{'invisible': [('can_create_purchase_request', '=', False)]}" />
+            </xpath>
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <field name="can_create_purchase_request" invisible="1" />
+                <button name="action_view_purchase_requests" type="object" class="oe_stat_button" icon="fa-shopping-cart" attrs="{'invisible': [('purchase_request_count', '=', 0)]}">
+                    <field name="purchase_request_count" widget="statinfo" string="ใบ พ.1" />
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='purchase_request_eta']" position="before">
+                <field name="procurement_method_id" widget="radio" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Plans a พ.1 can be created from (verified — budget reserved). Linked
+         from the info alert on the purchase request form so users land on a
+         filtered list. -->
+    <record id="action_procurement_plan_ready_for_pr" model="ir.actions.act_window">
+        <field name="name">แผนจัดซื้อจัดจ้าง</field>
+        <field name="res_model">procurement.plan</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'verified')]</field>
+    </record>
+
+    <!-- Tree: add procurement method column -->
+    <record id="view_procurement_plan_tree_procurement_method" model="ir.ui.view">
+        <field name="name">view.procurement.plan.tree.procurement.method</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='activity_analytic_id']" position="after">
+                <field name="procurement_method_id" optional="show" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search: add procurement method field, group by and search panel -->
+    <record id="view_procurement_plan_search_procurement_method" model="ir.ui.view">
+        <field name="name">view.procurement.plan.search.procurement.method</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//search/field[@name='activity_analytic_id']" position="after">
+                <field name="procurement_method_id" />
+            </xpath>
+            <xpath expr="//filter[@name='group_by_state']" position="before">
+                <filter string="วิธีการจัดซื้อจัดจ้าง" name="group_by_procurement_method" context="{'group_by': 'procurement_method_id'}" />
+            </xpath>
+            <xpath expr="//searchpanel/field[@name='account_fiscal_year_id']" position="after">
+                <field name="procurement_method_id" icon="fa-calendar" select="multi" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

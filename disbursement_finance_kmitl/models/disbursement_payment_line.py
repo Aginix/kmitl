@@ -277,8 +277,11 @@ class DisbursementPaymentLine(models.Model):
     # ------------------------------------------------------------------
     def _banking_editable(self):
         """A row's banking coordinates are editable exactly while no payment
-        contradicts them: the auditor's during Payment Audit, the finance
-        office's during Payment Review, nobody's once the payment exists.
+        contradicts them: the auditor's during Payment Audit, nobody's once the
+        payment exists — which, since the authorisation raises the vouchers
+        (ADR-0006), is from the authorisation onwards. The ``payment_authorized``
+        leaf below is therefore only ever reached by a request whose vouchers
+        could not be raised, which is exactly the state a correction is for.
 
         Phrased against the payment rather than against a list of states, so it
         stays true if the workflow grows another step.

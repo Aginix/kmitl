@@ -12,10 +12,7 @@ from . import budget_commitment_line
 from . import budget_mixin
 from . import budget_controller
 
-# Budget transfer models
-from . import budget_transfer
-from . import budget_transfer_line
-from . import budget_transfer_reject_wizard
+# Budget transfer lives in the `budget_transfer` add-on (ADR-0013).
 
 # Configuration settings
 from . import res_config_settings

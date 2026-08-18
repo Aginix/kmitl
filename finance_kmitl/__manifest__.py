@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Finance",
-    "version": "16.0.4.0.0",
+    "version": "16.0.4.3.1",
     "category": "KMITL/Finance",
     "summary": "งานการเงิน KMITL: จ่ายเงิน, bank export, WHT, ทะเบียนคุมเช็ค, รายรับ/ใบเสร็จ",
     "license": "LGPL-3",
@@ -21,6 +21,10 @@
         "l10n_th_fonts",
         "l10n_th_amount_to_text",
         "l10n_th_account_wht_cert_form",
+        # The payee's category carries their payable account and their WHT rate,
+        # both of which are this office's business — and it is what the finance
+        # list filters and the routing rules read.
+        "partner_type_aginix",
     ],
     "data": [
         "security/security.xml",
