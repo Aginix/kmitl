@@ -42,13 +42,22 @@ class PurchaseRequest(models.Model):
         return super()._domain_budget_account_id() + [("procurement_plan", "=", False)]
 
     def _check_drawable_commitment(self, commitment):
+        # A plan's shared commitment sits on a ``procurement_plan`` budget code
+        # this PR may not *reserve new* on (ADR-0006), so the base gate — which
+        # mirrors the full reserve-new field domain — would reject it. Drawing it
+        # down is allowed, but the code must still be a purchasable, product-backed
+        # PR budget code just like a directly selected one: check it against the
+        # base domain (purchase_ok + product), lifting only the ``procurement_plan``
+        # exclusion.
         if commitment.procurement_plan_id:
-            raise UserError(
-                _(
-                    "ใบจองงบประมาณของแผนจัดซื้อจัดจ้างต้องหยิบผ่านการสร้าง"
-                    "ใบขอซื้อจากแผนเท่านั้น"
+            if not self.env["budget.account"].search_count(
+                super()._domain_budget_account_id()
+                + [("id", "=", commitment.account_id.id)]
+            ):
+                raise UserError(
+                    _("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้")
                 )
-            )
+            return True
         return super()._check_drawable_commitment(commitment)
 
     def _inverse_procurement_analytic(self):
