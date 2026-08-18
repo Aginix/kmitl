@@ -125,13 +125,17 @@
                          button instead). Placed before the เนื้อหา section. -->
                     <widget name="sarabun_pdf_inline"
                             attrs="{'invisible': [('state', '=', 'draft')]}"/>
-                    <!-- เนื้อหา — the composed body, used ONLY for a no-source Document.
-                         Hidden when the หนังสือ has a source (its report is the body). -->
+                    <!-- เนื้อหา — the composed body. A no-source Document always shows
+                         it; a from_record one is OFF by default (its origin report is
+                         the body) but the drafter can tick แนบเนื้อหา to add a covering
+                         note above the origin's report. -->
+                    <field name="include_content"
+                           attrs="{'invisible': [('origin_model', '=', False)], 'readonly': [('is_editable', '=', False)]}"/>
                     <separator string="เนื้อหา (Content)"
-                               attrs="{'invisible': [('origin_model', '!=', False)]}"/>
+                               attrs="{'invisible': [('include_content', '=', False)]}"/>
                     <field name="content" nolabel="1" class="o_sarabun_content"
                            placeholder="พิมพ์เนื้อหาหนังสือ..."
-                           attrs="{'invisible': [('origin_model', '!=', False)], 'readonly': [('is_editable', '=', False)]}"/>
+                           attrs="{'invisible': [('include_content', '=', False)], 'readonly': [('is_editable', '=', False)]}"/>
                     <group>
                       <field name="remark" placeholder="หมายเหตุภายใน (ไม่บังคับ)..." attrs="{'readonly': [('is_editable', '=', False)]}"/>
                     </group>

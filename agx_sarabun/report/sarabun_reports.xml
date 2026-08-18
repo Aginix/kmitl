@@ -45,6 +45,23 @@
     </template>
 
     <!-- ============================================================
+         Covering note (บันทึกนำ) — the optional เนื้อหา a from_record
+         หนังสือ carries above its origin's report. A delegated (has-source)
+         report t-calls this at the TOP of its page, mirroring how it
+         t-calls the endorsement block at the tail. Expects `doc` in
+         context; renders nothing unless the drafter ticked แนบเนื้อหา
+         (include_content) AND wrote a body — so a plain from_record
+         document adds nothing.
+         ============================================================ -->
+    <template id="sarabun_covering_note">
+        <t t-if="doc and doc.include_content and doc.content">
+            <div style="margin-bottom:12px;">
+                <div t-field="doc.content"/>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================
          Standalone document report (no-source) — ADR-0007.
          For a composed หนังสือ with no source report (บันทึกข้อความ /
          หนังสือเวียน — a planned seam; every real Document today has a
@@ -109,8 +126,8 @@
                             </ol>
                         </div>
 
-                        <!-- เนื้อหา (body) — the composed content (no-source only). -->
-                        <div t-if="doc.content" style="margin:8px 0;">
+                        <!-- เนื้อหา (body) — the composed content. -->
+                        <div t-if="doc.include_content and doc.content" style="margin:8px 0;">
                             <div t-field="doc.content"/>
                         </div>
 
