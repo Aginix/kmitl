@@ -141,14 +141,16 @@ class BudgetMoveLine(models.Model):
         """
         self.ensure_one()
         distribution = {}
-        # NB: source is deliberately excluded — it is header-owned and read-only
-        # on the line (see _analytic_keys); writing it into the JSON would make
-        # the inverse push it back onto the header. The availability query
-        # (_transfer_distribution) still includes it from the column.
+        # Source is header-owned and read-only on the line, but it must still be
+        # recorded in analytic_distribution so the JSON carries all six
+        # dimensions (the field is the documented source of truth). Including it
+        # is safe: _analytic_keys pops "sources", so the mixin inverse skips the
+        # source entry and never writes it back onto the header.
         for account in (
             self.activity_analytic_id,
             self.department_analytic_id,
             self.fund_analytic_id,
+            self.source_analytic_id,
         ):
             if account:
                 distribution[str(account.id)] = 100.0
