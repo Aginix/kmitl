@@ -201,7 +201,7 @@
                 </div>
 
                 <!-- Hidden fields for computations -->
-                <field name="show_submit_button" invisible="1"/>
+                <field name="show_confirm_button" invisible="1"/>
                 <field name="show_approve_button" invisible="1"/>
                 <field name="show_cancel_button" invisible="1"/>
                 <field name="show_reset_button" invisible="1"/>
