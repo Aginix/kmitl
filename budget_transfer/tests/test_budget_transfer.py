@@ -250,7 +250,7 @@ class TestBudgetTransfer(TransactionCase):
         self.assertNotEqual(be1, be2, "distinct fiscal years must not share a year segment")
 
     def test_fiscal_year_frozen_after_confirm(self):
-        # Once confirmed, the fiscal year is frozen (it drives the BTR number).
+        # Once submitted, the fiscal year is frozen (it drives the BTR number).
         self._appropriate(self.src, 100_000)
         transfer = self._transfer(**self._balanced())
         transfer.action_confirm()
@@ -343,14 +343,14 @@ class TestBudgetTransfer(TransactionCase):
         with self.assertRaises(UserError):
             transfer.with_user(user).action_reset_to_draft()
 
-    def test_approve_blocked_outside_confirmed(self):
-        # The manual approve fallback only applies from `confirmed` — not a
+    def test_approve_blocked_outside_submitted(self):
+        # The manual approve fallback only applies from `submitted` — not a
         # bare draft (ADR-0014).
         transfer = self._transfer(**self._balanced())
         with self.assertRaises(UserError):
             transfer.action_approve()
 
-    def test_post_blocked_outside_confirmed(self):
+    def test_post_blocked_outside_submitted(self):
         # action_post (API/admin use) must not double-post a transfer that is
         # already `sent`/`posted` — that would race with the bridge's
         # _on_sarabun_completed (ADR-0014).

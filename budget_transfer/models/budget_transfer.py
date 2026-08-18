@@ -24,11 +24,11 @@ class BudgetTransfer(models.Model):
     mutually exclusive. The lines are authored directly as ``budget.move.line``
     (folded, ADR-0013).
 
-    State lifecycle (ADR-0014): draft → confirmed → sent → posted, plus
+    State lifecycle (ADR-0014): draft → submitted → sent → posted, plus
     returned / rejected / cancelled. The base declares all seven states so the
     module stays installable without ``budget_transfer_sarabun``; ``sent``/
     ``returned``/``rejected`` are only reached once that bridge is installed
-    and an e-Saraban letter drives them. ``confirmed → posted`` also stays
+    and an e-Saraban letter drives them. ``submitted → posted`` also stays
     reachable directly via the manual approve fallback.
     """
 
@@ -41,7 +41,7 @@ class BudgetTransfer(models.Model):
 
     READONLY_STATES = {
         state: [("readonly", True)]
-        for state in ("confirmed", "sent", "posted", "rejected", "cancelled")
+        for state in ("submitted", "sent", "posted", "rejected", "cancelled")
     }
 
     # The delegated budget move (created up front, ADR-0013).
@@ -84,7 +84,7 @@ class BudgetTransfer(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
-            ("confirmed", "ยืนยันแล้ว (รอสร้างหนังสือ)"),
+            ("submitted", "ยืนยันแล้ว (รอสร้างหนังสือ)"),
             ("sent", "กำลังเวียนสารบรรณ"),
             ("posted", "Posted"),
             ("returned", "ตีกลับเพื่อแก้ไข"),
@@ -288,22 +288,22 @@ class BudgetTransfer(models.Model):
             # self — kept visible alongside the e-Saraban letter when the
             # bridge is installed (KMITL has only two Budget Managers).
             transfer.show_approve_button = (
-                transfer.state == "confirmed"
+                transfer.state == "submitted"
                 and (is_manager or is_admin)
                 and (is_admin or transfer.user_id != user)
             )
-            # Cancel (draft/confirmed/returned → cancelled). Blocked from
+            # Cancel (draft/submitted/returned → cancelled). Blocked from
             # `sent` — a live letter must be pulled back or voided first.
             transfer.show_cancel_button = transfer.state in (
                 "draft",
-                "confirmed",
+                "submitted",
                 "returned",
             )
             # Reset to Draft: pull a pending/returned transfer back (owner/
             # admin) or revive a rejected/cancelled one (manager/admin) —
             # none of these unwind a live budget entry, so no confirmation.
             transfer.show_reset_button = (
-                transfer.state in ("confirmed", "returned")
+                transfer.state in ("submitted", "returned")
                 and (transfer.user_id == user or is_admin)
             ) or (
                 transfer.state in ("rejected", "cancelled")
@@ -386,7 +386,7 @@ class BudgetTransfer(models.Model):
             raise UserError(_("Only Budget Users can confirm transfers"))
         self._validate_transfer_data()
         self._validate_budget_availability()
-        self.write({"state": "confirmed"})
+        self.write({"state": "submitted"})
         return True
 
     def action_approve(self):
@@ -394,8 +394,8 @@ class BudgetTransfer(models.Model):
         are one step, kept alongside the e-Saraban letter as a sanctioned
         escape valve. Records the approver, re-checks availability, then
         posts the delegated move."""
-        if any(transfer.state != "confirmed" for transfer in self):
-            raise UserError(_("Only confirmed transfers can be approved."))
+        if any(transfer.state != "submitted" for transfer in self):
+            raise UserError(_("Only submitted transfers can be approved."))
         is_admin = self.env.is_admin()
         if not (
             self.env.user.has_group("budget.group_budget_manager") or is_admin
@@ -424,11 +424,11 @@ class BudgetTransfer(models.Model):
     def action_post(self):
         """Post the transfer directly (kept for API / admin use — the normal
         flow posts automatically on approval). Re-checks availability first.
-        Restricted to `confirmed` — from `sent` a letter is already circulating
+        Restricted to `submitted` — from `sent` a letter is already circulating
         (posting here would race with `_on_sarabun_completed`); from `posted`
         it would double-post the delegated move."""
-        if any(transfer.state != "confirmed" for transfer in self):
-            raise UserError(_("Only confirmed transfers can be posted."))
+        if any(transfer.state != "submitted" for transfer in self):
+            raise UserError(_("Only submitted transfers can be posted."))
         if not (
             self.env.user.has_group("budget.group_budget_manager")
             or self.env.is_admin()
@@ -458,14 +458,14 @@ class BudgetTransfer(models.Model):
         self.write({"state": "posted"})
 
     def action_cancel(self):
-        """Cancel from draft/confirmed/returned only (ADR-0014) — a `sent`
+        """Cancel from draft/submitted/returned only (ADR-0014) — a `sent`
         transfer has a live letter that must be pulled back or voided first,
         and a posted transfer must go through Reset to Draft instead."""
-        allowed = {"draft", "confirmed", "returned"}
+        allowed = {"draft", "submitted", "returned"}
         if any(transfer.state not in allowed for transfer in self):
             raise UserError(
                 _(
-                    "Only draft, confirmed or returned transfers can be "
+                    "Only draft, submitted or returned transfers can be "
                     "cancelled directly. Recall or void a transfer that is "
                     "out for signature first; reset a posted transfer to "
                     "draft instead."
@@ -477,7 +477,7 @@ class BudgetTransfer(models.Model):
         return True
 
     def action_reset_to_draft(self):
-        """Reset to draft (account.payment pattern). A confirmed/returned
+        """Reset to draft (account.payment pattern). A submitted/returned
         transfer is pulled back by its own owner/admin; a rejected/cancelled
         one is revived by a manager/admin; a posted transfer un-posts its
         delegated budget move and is manager/admin only. Blocked from `sent`
@@ -501,7 +501,7 @@ class BudgetTransfer(models.Model):
                         "or cancelled transfer to draft."
                     )
                 )
-            if transfer.state in ("confirmed", "returned") and not (
+            if transfer.state in ("submitted", "returned") and not (
                 transfer.user_id == self.env.user or is_admin
             ):
                 raise UserError(

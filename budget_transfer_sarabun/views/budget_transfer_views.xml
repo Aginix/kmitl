@@ -19,7 +19,7 @@
             <xpath expr="//button[@name='action_confirm']" position="after">
                 <button name="action_submit_to_sarabun" type="object"
                         string="สร้างหนังสือ" class="btn-primary"
-                        attrs="{'invisible': ['|', ('state', '!=', 'confirmed'), ('sarabun_has_live_document', '=', True)]}"/>
+                        attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('sarabun_has_live_document', '=', True)]}"/>
             </xpath>
 
             <!-- Sarabun status notification — rendered between the statusbar

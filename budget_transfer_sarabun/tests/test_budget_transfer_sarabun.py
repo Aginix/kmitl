@@ -147,7 +147,7 @@ class TestBudgetTransferSarabun(TransactionCase):
             )
         )
 
-    def _confirmed_transfer(self):
+    def _submitted_transfer(self):
         transfer = self._transfer()
         transfer.with_user(self.requestor).action_confirm()
         return transfer
@@ -162,12 +162,12 @@ class TestBudgetTransferSarabun(TransactionCase):
     # ------------------------------------------------------------------
     # tests
     # ------------------------------------------------------------------
-    def test_submit_guard_blocks_outside_confirmed(self):
+    def test_submit_guard_blocks_outside_submitted(self):
         transfer = self._transfer()  # still draft
         self.assertFalse(transfer.with_user(self.requestor).action_submit_to_sarabun())
 
     def test_submit_creates_document_with_content_and_enclosure(self):
-        transfer = self._confirmed_transfer()
+        transfer = self._submitted_transfer()
         document = self._submit(transfer)
         self.assertTrue(document)
         self.assertIn(transfer.name, document.subject)
@@ -182,7 +182,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         )
 
     def test_send_moves_transfer_to_sent(self):
-        transfer = self._confirmed_transfer()
+        transfer = self._submitted_transfer()
         document = self._submit(transfer)
         document.with_user(self.requestor).action_send()
         self.assertEqual(transfer.state, "sent")
@@ -191,7 +191,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         self.assertEqual(transfer.date, document.date)
 
     def test_completion_auto_posts_and_stamps_approver(self):
-        transfer = self._confirmed_transfer()
+        transfer = self._submitted_transfer()
         document = self._submit(transfer)
         document.with_user(self.requestor).action_send()
         step = self._gating_step(document)
@@ -204,7 +204,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         self.assertTrue(transfer.approval_date)
 
     def test_rejected_never_posts_and_cancels_move(self):
-        transfer = self._confirmed_transfer()
+        transfer = self._submitted_transfer()
         document = self._submit(transfer)
         document.with_user(self.requestor).action_send()
         step = self._gating_step(document)
@@ -214,7 +214,7 @@ class TestBudgetTransferSarabun(TransactionCase):
         self.assertEqual(transfer.move_id.state, "cancel")
 
     def test_returned_reopens_the_transfer(self):
-        transfer = self._confirmed_transfer()
+        transfer = self._submitted_transfer()
         document = self._submit(transfer)
         document.with_user(self.requestor).action_send()
         step = self._gating_step(document)
@@ -226,13 +226,13 @@ class TestBudgetTransferSarabun(TransactionCase):
         self.assertEqual(transfer.state, "returned")
         self.assertNotEqual(transfer.state, "posted")
 
-    def test_cancelled_send_falls_back_to_confirmed(self):
-        transfer = self._confirmed_transfer()
+    def test_cancelled_send_falls_back_to_submitted(self):
+        transfer = self._submitted_transfer()
         document = self._submit(transfer)
         document.with_user(self.requestor).action_send()
         document.with_user(self.requestor).action_recall(reason="ยกเลิกการส่ง")
         transfer.invalidate_recordset()
-        self.assertEqual(transfer.state, "confirmed")
+        self.assertEqual(transfer.state, "submitted")
 
     def test_manual_approve_fallback_still_available(self):
         # ADR-0014: the manual approve-and-post button stays visible alongside
@@ -243,6 +243,6 @@ class TestBudgetTransferSarabun(TransactionCase):
             name="ผจก โอนงบ",
             groups="base.group_user,budget.group_budget_manager",
         )
-        transfer = self._confirmed_transfer()
+        transfer = self._submitted_transfer()
         transfer.with_user(manager).action_approve()
         self.assertEqual(transfer.state, "posted")

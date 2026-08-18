@@ -7,7 +7,7 @@ class BudgetTransfer(models.Model):
     """Route a budget.transfer for approval (ขออนุมัติโอนงบประมาณ) through
     e-Saraban (ADR-0014). The transfer owns its own 7-state lifecycle
     (budget_transfer); this bridge only wires the หนังสือ: it creates the
-    Document at ``confirmed``, encloses the printed แบบ งปม.303 as สิ่งที่ส่ง
+    Document at ``submitted``, encloses the printed แบบ งปม.303 as สิ่งที่ส่ง
     มาด้วย, and maps the หนังสือ outcome back onto the transfer state.
     """
 
@@ -23,7 +23,7 @@ class BudgetTransfer(models.Model):
 
     def _sarabun_submit_guard(self):
         self.ensure_one()
-        return self.state == "confirmed"
+        return self.state == "submitted"
 
     def _get_sarabun_subject(self):
         self.ensure_one()
@@ -83,10 +83,10 @@ class BudgetTransfer(models.Model):
 
     # --- lifecycle callbacks ------------------------------------------
     def _on_sarabun_circulating(self, document):
-        if self.state in ("confirmed", "returned"):
+        if self.state in ("submitted", "returned"):
             # The transfer's own date field is hidden (ADR-0014 follow-up) —
             # it now tracks the letter's ลงวันที่ (re-stamped on every send),
-            # not the moment the transfer was confirmed in draft.
+            # not the moment the transfer was submitted in draft.
             self.write({"state": "sent", "date": document.date})
         return super()._on_sarabun_circulating(document)
 
@@ -114,7 +114,7 @@ class BudgetTransfer(models.Model):
         return super()._on_sarabun_rejected(document, step)
 
     def _on_sarabun_cancelled(self, document):
-        self.state = "confirmed"  # letter voided; ready to re-issue
+        self.state = "submitted"  # letter voided; ready to re-issue
         return super()._on_sarabun_cancelled(document)
 
     def _get_sarabun_report_action(self):

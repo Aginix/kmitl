@@ -34,26 +34,28 @@ and never re-implements `action_submit_to_sarabun` or `_prepare_sarabun_document
 
 ### Base `budget_transfer` — a 7-state lifecycle owned by the base
 
-`draft → confirmed → sent → posted`, plus `returned`, `rejected`, `cancelled`.
+`draft → submitted → sent → posted`, plus `returned`, `rejected`, `cancelled`.
 The base declares **all** states (mirroring `kmitl_project`), so the module still
 works with no bridge; the bridge only *drives* the sarabun-specific ones.
 
-- `submitted` is **renamed `confirmed`** — after *ยืนยันข้อมูล* the data is locked
-  and validated but not yet sent to anyone; "submitted" mis-read as "sent for
-  approval". The BTR number is still minted on leaving `draft`, and the fiscal year
-  freezes then (unchanged).
-- `draft → confirmed` (**ยืนยัน**, Budget User): runs `_validate_transfer_data` +
-  availability — the single validation checkpoint. Lines/dims lock here.
-- `confirmed → posted` (**manual approve fallback**, Budget Manager, not self):
+- `submitted` **keeps its original key** — only the action/button changes name
+  (`action_submit` → `action_confirm`, ยืนยัน); the stored state value stays
+  `submitted` so existing filters/reports keyed on it keep working unchanged.
+  The BTR number is still minted on leaving `draft`, and the fiscal year freezes
+  then (unchanged).
+- `draft → submitted` (**ยืนยัน**, `action_confirm`, Budget User): runs
+  `_validate_transfer_data` + availability — the single validation checkpoint.
+  Lines/dims lock here.
+- `submitted → posted` (**manual approve fallback**, Budget Manager, not self):
   the old `action_approve`, retargeted. Standalone-usable when no bridge is present.
 - Negative/terminal states `sent`, `returned`, `rejected` are declared by the base
   but only reached via the bridge.
-- **Editability:** readonly in `confirmed/sent/posted/rejected/cancelled`; editable
+- **Editability:** readonly in `submitted/sent/posted/rejected/cancelled`; editable
   in `draft` **and `returned`** (a returned letter reopens the whole transfer for
   revision, then re-send).
 - **`sent` locks cancel/reset:** you cannot Cancel or Reset-to-Draft directly from
   `sent` — deal with the live letter first (ดึงกลับ → `returned`, or ยกเลิกการส่ง →
-  `confirmed`). This keeps the transfer state and the letter state from diverging.
+  `submitted`). This keeps the transfer state and the letter state from diverging.
 
 ### New bridge `budget_transfer_sarabun`
 
@@ -62,8 +64,8 @@ works with no bridge; the bridge only *drives* the sarabun-specific ones.
   wherever both `budget_transfer` and `agx_sarabun` are present the integration is
   never silently absent (matches `budget_transfer`'s own auto-install philosophy).
 - **สร้างหนังสือ** = the mixin's `action_submit_to_sarabun`, gated by
-  `_sarabun_submit_guard → state == "confirmed"`. The base manual approve is **kept
-  visible** (see Considered options) — from `confirmed` a manager sees both buttons.
+  `_sarabun_submit_guard → state == "submitted"`. The base manual approve is **kept
+  visible** (see Considered options) — from `submitted` a manager sees both buttons.
 - **Route wiring via a bridge-owned document *type*, not `origin_model`.** The
   engine resolves a route at send as `route_template_id or type_id.default_route_id`
   (`_seed_route_from_template`); the `origin_model` matcher (`find_matching_templates`)
@@ -90,19 +92,19 @@ works with no bridge; the bridge only *drives* the sarabun-specific ones.
 - **`_get_sarabun_report_action → False`** — the letter uses the default e-Saraban
   body (plain text + endorsement/signature block); no custom transfer report.
 - **Callbacks (bridge):**
-  - `_on_sarabun_circulating` → `confirmed`/`returned` become `sent`.
+  - `_on_sarabun_circulating` → `submitted`/`returned` become `sent`.
   - `_on_sarabun_completed` → **auto-post** the transfer, and stamp
     `approver_id = document._signature_steps()[-1:].acted_by_id` (the final signer,
     empty-safe) and `approval_date = document.signed_at`.
   - `_on_sarabun_returned` (ตีกลับ) / `_on_sarabun_recalled` (ดึงกลับ) → `returned`.
   - `_on_sarabun_rejected` (ปฏิเสธ, terminal) → `rejected`; **never posts**.
-  - `_on_sarabun_cancelled` (ยกเลิกการส่ง) → `confirmed`; the letter's number is
+  - `_on_sarabun_cancelled` (ยกเลิกการส่ง) → `submitted`; the letter's number is
     voided, the transfer is ready to issue a fresh letter.
 
 ### No availability re-check at completion (for now)
 
 `_on_sarabun_completed` posts **without re-validating** availability — it trusts the
-`draft → confirmed` check. A transfer reserves nothing (ADR-0009), so its source
+`draft → submitted` check. A transfer reserves nothing (ADR-0009), so its source
 budget is **not locked while the letter circulates**; between confirm and signature
 another document could consume it, and the transfer could post the source below zero.
 We accept this window rather than block the final signer, because the real fix is to
@@ -113,8 +115,9 @@ action back (ADR-0004); we keep the completion callback non-raising.
 ### Rollout
 
 `budget_transfer` is **pre-production** (only just split out in #1097): the
-`submitted → confirmed` rename is applied in place — **no version bump, no
-migration** (transfer records ≈ 0). The bridge is a fresh install.
+existing `submitted` state is kept and extended in place with `sent`/`returned`/
+`rejected` — **no version bump, no migration** (transfer records ≈ 0). The
+bridge is a fresh install.
 
 ## Considered options
 
@@ -149,7 +152,7 @@ migration** (transfer records ≈ 0). The bridge is a fresh install.
   is unlocked while the letter circulates. The clean fix — put transfers through a
   reservation/*ใบจอง* the way commitments are — is parked as a follow-up; it would
   close the window and make the completion re-check moot. Until then, treat a
-  confirmed-but-unsigned transfer as *not yet holding* its source budget.
+  submitted-but-unsigned transfer as *not yet holding* its source budget.
 - **Dead code to reconcile.** The base now has a real `rejected` state, reached via
   the letter's ปฏิเสธ. The pre-split standalone reject wizard (which wrote a
   non-existent `state="rejected"` + `rejection_reason`) should be removed or
@@ -157,4 +160,5 @@ migration** (transfer records ≈ 0). The bridge is a fresh install.
 - **agx_sarabun unchanged.** The bridge lives entirely within the current mixin
   contract; the `origin_model` auto-matcher stays dormant (out of scope to wire).
 - **budget_transfer version stays 16.0.1.0.0** (pre-production). When the module goes
-  live, a normal bump + a trivial `submitted → confirmed` remap apply.
+  live, a normal bump applies — no state remap needed, since `submitted` was never
+  renamed.

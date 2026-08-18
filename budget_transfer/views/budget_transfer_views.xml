@@ -14,7 +14,7 @@
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_posted_button', '=', False)]}" confirm="Resetting a posted transfer back to draft will reverse the budget entry that has already been recorded, and may lead to budget inconsistencies. Do you want to continue?"/>
                     <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
 
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,sent,posted"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,sent,posted"/>
                 </header>
 
                 <sheet>
@@ -220,7 +220,7 @@
         <field name="arch" type="xml">
             <tree string="Budget Transfers"
                   decoration-muted="state in ('returned',)"
-                  decoration-warning="state == 'confirmed'"
+                  decoration-warning="state == 'submitted'"
                   decoration-info="state == 'sent'"
                   decoration-success="state == 'posted'"
                   decoration-danger="state in ('rejected', 'cancelled')">
@@ -233,7 +233,7 @@
                 <field name="currency_id" invisible="1"/>
                 <field name="state" widget="badge"
                        decoration-muted="state in ('returned',)"
-                       decoration-warning="state == 'confirmed'"
+                       decoration-warning="state == 'submitted'"
                        decoration-info="state == 'sent'"
                        decoration-success="state == 'posted'"
                        decoration-danger="state in ('rejected', 'cancelled')"/>
@@ -262,7 +262,7 @@
                                 ('account_fiscal_year_id.date_to', '>=', context_today().strftime('%Y-%m-%d'))]"/>
                 <separator/>
                 <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
-                <filter name="pending_approval" string="Pending Approval" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="pending_approval" string="Pending Approval" domain="[('state', '=', 'submitted')]"/>
                 <filter name="sent" string="Sent" domain="[('state', '=', 'sent')]"/>
                 <filter name="returned" string="Returned" domain="[('state', '=', 'returned')]"/>
                 <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
@@ -387,7 +387,7 @@
         <field name="name">Pending Approvals</field>
         <field name="res_model">budget.transfer</field>
         <field name="view_mode">tree,form,kanban</field>
-        <field name="domain">[('state', '=', 'confirmed')]</field>
+        <field name="domain">[('state', '=', 'submitted')]</field>
         <field name="context">{'search_default_pending_approval': 1}</field>
     </record>
 
