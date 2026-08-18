@@ -194,6 +194,18 @@ class TestBudgetTransfer(TransactionCase):
         self.assertTrue(from_line.budget_sufficient)
 
     # ------------------------------------------------------------------
+    # editability (can_edit drives the form's readonly modifiers)
+    # ------------------------------------------------------------------
+    def test_can_edit_only_in_draft(self):
+        self._appropriate(self.src, 100_000)
+        transfer = self._transfer(**self._balanced())
+        self.assertTrue(transfer.can_edit, "a draft transfer is editable")
+        transfer.action_submit()
+        self.assertFalse(transfer.can_edit, "a submitted transfer is locked")
+        transfer.action_approve()  # auto-posts (admin)
+        self.assertFalse(transfer.can_edit, "a posted transfer is locked")
+
+    # ------------------------------------------------------------------
     # workflow
     # ------------------------------------------------------------------
     def test_post_drives_the_delegated_move_balanced(self):
