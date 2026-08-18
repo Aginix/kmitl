@@ -24,12 +24,36 @@
                             invisible="0"
                             groups="base.group_erp_manager"
                         />
-                        <field name="budget_account_id"/>
+                        <field
+                            name="budget_commitment_id"
+                            options="{'no_create': True, 'no_open': True}"
+                            attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
+                        <field
+                            name="budget_account_id"
+                            attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
                         <field name="budget_account_product_id" invisible="1"/>
-                        <field name="activity_analytic_id" string="Activity"/>
-                        <field name="department_analytic_id" string="Department"/>
-                        <field name="fund_analytic_id" string="Fund"/>
-                        <field name="source_analytic_id" string="Source"/>
+                        <field
+                            name="activity_analytic_id"
+                            string="Activity"
+                            attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
+                        <field
+                            name="department_analytic_id"
+                            string="Department"
+                            attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
+                        <field
+                            name="fund_analytic_id"
+                            string="Fund"
+                            attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
+                        <field
+                            name="source_analytic_id"
+                            string="Source"
+                            attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
                         <field name="procurement_plan_analytic_id" invisible="1" />
                     </group>
                     <group name="procurement_plan" string="Procurement Plan">
@@ -55,7 +79,6 @@
                     icon="fa-money"
                     attrs="{'invisible':[('budget_commitment_id','=',False)]}"
                 >
-                    <field name="budget_commitment_id" invisible="1" />
                     <div class="o_stat_info">
                         <span>Budget Commitment</span>
                     </div>

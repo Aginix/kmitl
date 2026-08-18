@@ -23,9 +23,11 @@ class PurchaseOrder(models.Model):
     budget_commitment_id = fields.Many2one(
         "budget.commitment",
         string="Budget Commitment",
-        readonly=True,
+        domain=[("state", "not in", ["draft", "done", "cancel"])],
+        states=READONLY_STATES,
         copy=False,
-        help="Related budget commitment for this purchase request",
+        help="Pick an existing budget commitment to consume; "
+             "budget dimensions will be copied and locked from that commitment.",
     )
 
     budget_account_id = fields.Many2one(
@@ -123,6 +125,14 @@ class PurchaseOrder(models.Model):
             "res_id": self.procurement_plan_id.id,
             "target": "current",
         }
+
+    @api.onchange("budget_commitment_id")
+    def _onchange_budget_commitment_id(self):
+        for rec in self:
+            if rec.budget_commitment_id:
+                budget = rec.budget_commitment_id
+                rec.budget_account_id = budget.account_id
+                rec.analytic_distribution = budget.analytic_distribution
 
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):

@@ -70,7 +70,7 @@
                         <field
                             name="work_acceptance_committee_ids"
                             nolabel="1"
-                            readonly="1"
+                            attrs="{'readonly': [('state', '!=', 'draft')]}"
                         >
                             <tree editable="bottom">
                                 <field
