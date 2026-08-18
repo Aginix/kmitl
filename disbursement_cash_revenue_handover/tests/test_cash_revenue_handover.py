@@ -1,7 +1,5 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from datetime import date
-
 from odoo.tests.common import TransactionCase, tagged
 
 
@@ -11,9 +9,8 @@ class TestCashRevenueHandover(TransactionCase):
 
     The activity hierarchy is built to match the real chart — ``09`` (sector) →
     ``09007`` (program) → ``090070101`` (main) → ``09007010110`` (secondary) →
-    ``09007010110170`` (sub) — because rolling the activity up to the level
-    central holds it at is the one piece of the entry that is derived rather
-    than configured.
+    ``09007010110170`` (sub) — so the tests can show central's fixed activity and
+    the disbursement's own sitting at genuinely different depths of it.
     """
 
     @classmethod
@@ -61,15 +58,6 @@ class TestCashRevenueHandover(TransactionCase):
             "activities", "09007010110170", "Sub", cls.act_secondary
         )
 
-        cls.fiscal_year = cls.env["account.fiscal.year"].create(
-            {
-                "name": "FY-HANDOVER",
-                "date_from": date(2025, 10, 1),
-                "date_to": date(2026, 9, 30),
-                "company_id": cls.company.id,
-            }
-        )
-
         cls.bank_account = cls._account("THAND-BANK", "asset_cash")
         cls.revenue_account = cls._account("THAND-REV", "income")
         cls.expense_account = cls.env["account.account"].search(
@@ -88,12 +76,11 @@ class TestCashRevenueHandover(TransactionCase):
         cls.funding = cls.env["kmitl.central.funding"].create(
             {
                 "source_analytic_id": cls.source_gov.id,
-                "account_fiscal_year_id": cls.fiscal_year.id,
                 "bank_account_id": cls.bank_account.id,
                 "revenue_account_id": cls.revenue_account.id,
                 "central_department_analytic_id": cls.dept_central.id,
                 "central_fund_analytic_id": cls.fund_central.id,
-                "central_activity_level": "11",
+                "central_activity_analytic_id": cls.act_main.id,
                 "journal_id": cls.jv_journal.id,
                 "company_id": cls.company.id,
             }
@@ -210,7 +197,7 @@ class TestCashRevenueHandover(TransactionCase):
         self.assertEqual(sum(lines.mapped("credit")), 2000.0)
 
         central = self._distribution(
-            self.dept_central, self.fund_central, self.act_secondary
+            self.dept_central, self.fund_central, self.act_main
         )
         unit = request.analytic_distribution
 
@@ -258,32 +245,43 @@ class TestCashRevenueHandover(TransactionCase):
         )
 
     # ------------------------------------------------------------------
-    # Central activity roll-up
+    # Central dimensions are fixed, the unit's come from the request
     # ------------------------------------------------------------------
-    def test_activity_rolls_up_to_the_configured_level(self):
+    def _central_line(self, request):
+        return request.cash_revenue_handover_move_ids.line_ids.filtered(
+            lambda l: l.account_id == self.bank_account and l.credit
+        )
+
+    def test_central_activity_is_the_configured_one(self):
         request = self._request(activity=self.act_sub)
         request.action_create_bill()
-        central_line = request.cash_revenue_handover_move_ids.line_ids.filtered(
-            lambda l: l.account_id == self.bank_account and l.credit
-        )
-        self.assertIn(str(self.act_secondary.id), central_line.analytic_distribution)
+        distribution = self._central_line(request).analytic_distribution
+        self.assertIn(str(self.act_main.id), distribution)
+        self.assertNotIn(str(self.act_sub.id), distribution)
 
-    def test_activity_at_the_level_is_left_alone(self):
-        request = self._request(activity=self.act_secondary)
+    def test_central_activity_ignores_a_request_on_another_branch(self):
+        """Central parks every receipt of a source on one activity, whatever the
+        money is later spent on — even an activity outside its subtree."""
+        other_branch = self._analytic("activities", "10", "Other Sector")
+        request = self._request(activity=other_branch)
         request.action_create_bill()
-        central_line = request.cash_revenue_handover_move_ids.line_ids.filtered(
-            lambda l: l.account_id == self.bank_account and l.credit
+        distribution = self._central_line(request).analytic_distribution
+        self.assertIn(str(self.act_main.id), distribution)
+        self.assertNotIn(str(other_branch.id), distribution)
+        # …while the unit's side keeps exactly what the request carried.
+        unit_line = request.cash_revenue_handover_move_ids.line_ids.filtered(
+            lambda l: l.account_id == self.bank_account and l.debit
         )
-        self.assertIn(str(self.act_secondary.id), central_line.analytic_distribution)
+        self.assertIn(str(other_branch.id), unit_line.analytic_distribution)
 
-    def test_activity_above_the_level_is_left_alone(self):
-        """A coarser activity than central's level must not be pushed deeper."""
-        request = self._request(activity=self.act_program)
+    def test_central_department_and_fund_are_the_configured_ones(self):
+        request = self._request()
         request.action_create_bill()
-        central_line = request.cash_revenue_handover_move_ids.line_ids.filtered(
-            lambda l: l.account_id == self.bank_account and l.credit
-        )
-        self.assertIn(str(self.act_program.id), central_line.analytic_distribution)
+        distribution = self._central_line(request).analytic_distribution
+        self.assertIn(str(self.dept_central.id), distribution)
+        self.assertIn(str(self.fund_central.id), distribution)
+        self.assertNotIn(str(self.dept_faculty.id), distribution)
+        self.assertNotIn(str(self.fund_faculty.id), distribution)
 
     # ------------------------------------------------------------------
     # Skips

@@ -43,9 +43,21 @@ afterwards.
   collapse the two sides of the entry onto one set of dimensions and leave an entry
   that moves nothing.
 - **No source of funds is named in code.** Eligibility is "a Central Funding Profile
-  exists for this source and fiscal year", so widening scope — another government
-  source, or institute revenue — is configuration. The repo's only other
-  government-budget discriminator (`BUDGET_SOURCE_CODES` in
-  `budget_appropriation_summary_f3`) is deliberately not reused.
+  exists for this source", so widening scope — another government source, or
+  institute revenue — is configuration. The repo's only other government-budget
+  discriminator (`BUDGET_SOURCE_CODES` in `budget_appropriation_summary_f3`) is
+  deliberately not reused.
+- **Central's department, fund and activity are all plain configuration.** An earlier
+  design derived central's activity by walking the disbursement's activity up to a
+  configured depth, on the reading that central always holds the money one level
+  above the spender. It does not: central parks every receipt of a source on one
+  activity (e.g. `090070101`), which need not be an ancestor of what the money is
+  spent on. A fixed Many2one is both correct and simpler, and the depth machinery is
+  gone.
+- **The profile is not scoped by fiscal year.** One standing row per source of funds,
+  edited in place when accounts or dimensions change, rather than a row to create
+  every year — so `disbursement.request.account_fiscal_year_id` plays no part in
+  resolving a handover. The trade-off is that a handover for a back-dated
+  disbursement uses today's configured accounts, not the ones in force that year.
 - **The budget ledger is untouched.** Budget is already obligated and consumed at
   the request's final approval; the handover creates no `budget.move`.

@@ -85,7 +85,7 @@ upfront.
   the **โอนเงินและรายได้** entry that re-recognises centrally-held government-budget
   cash and revenue under the dimensions of the unit actually spending it; the first
   bridge in the repo between the budget side and the General Ledger, driven entirely
-  by a **Central Funding Profile** per source of funds × fiscal year.
+  by a **Central Funding Profile** per source of funds.
 - [Advance Payment](./advance_payment/CONTEXT.md) — employee cash-advance loans
   (สัญญายืมเงิน); a single-disbursement loan to one borrower, tracked from request
   through clearing to closure. A borrower may hold only one active agreement at a time,
@@ -168,10 +168,10 @@ upfront.
   disbursement that spends centrally-held money drafts one `account.move` moving the
   gross request total of **cash and recognised revenue** out of central's dimensions
   and into the spending unit's — same GL accounts on both sides, so nothing but the
-  dimensions change. Which sources of funds this applies to, and what central's
-  dimensions are, come entirely from a **Central Funding Profile**
-  (`kmitl.central.funding`) per source × fiscal year; a source with no profile is
-  never handed over. The entry is then **fully decoupled** — accounting posts,
+  dimensions change. Which sources of funds this applies to, and central's own
+  department/fund/activity (all three fixed, never derived from the disbursement),
+  come entirely from a **Central Funding Profile** (`kmitl.central.funding`) per
+  source of funds; a source with no profile is never handed over. The entry is then **fully decoupled** — accounting posts,
   corrects and cancels it on its own, and the budget ledger is untouched (budget was
   consumed at the request's final approval). A non-blocking exception warns if the
   bill is submitted while the handover is still draft

@@ -28,25 +28,28 @@ Configuration
 =============
 
 Accounting ‣ Configuration ‣ **Central Funding Profiles**
-(`kmitl.central.funding`). One row per source of funds and fiscal year:
+(`kmitl.central.funding`). One row per source of funds:
 
 * the cash/bank account the money sits in and the revenue account that recognised
   it;
-* central's department and fund;
-* the **Central Activity Level** — the level of the activity hierarchy central
-  holds the money at, read off the activity code's length (default *Secondary
-  Activity*, 11 digits). Central's side of a handover uses the deepest
-  ancestor-or-self of the disbursement's own activity within that level.
+* central's **department, fund and activity** — all three fixed, because central
+  parks every receipt of the source on the same three, whatever the money is later
+  spent on (e.g. activity ``090070101``).
+
+Only the source of funds is read off the disbursement, and it is the same on both
+sides of the entry because a handover never crosses แหล่งเงิน. The spending unit's
+side takes the disbursement's own dimensions whole.
 
 A source of funds with no profile is never handed over, so widening or narrowing
-scope is configuration, not code.
+scope is configuration, not code. Profiles are not scoped by fiscal year — edit the
+one row in place when accounts or dimensions change.
 
 Behaviour
 =========
 
 A handover is drafted when **all** of the following hold:
 
-* a profile matches the request's source of funds, fiscal year and company;
+* a profile matches the request's source of funds and company;
 * the request's department is neither central nor a department beneath it;
 * the request has no live handover already;
 * the gross total is positive.

@@ -6,16 +6,16 @@ from odoo import api, fields, models
 class KmitlCentralFunding(models.Model):
     """Where a source of funds is held centrally, and under which dimensions.
 
-    One row per (source of funds x fiscal year x company). The row's very
-    existence is the rule that says "money from this source is held centrally,
-    so spending it anywhere else has to be funded by a handover" — no source of
-    funds is named in code, which is what lets a new source (or a new fiscal
-    year) be brought in from the configuration screen alone.
+    One row per (source of funds x company). The row's very existence is the
+    rule that says "money from this source is held centrally, so spending it
+    anywhere else has to be funded by a handover" — no source of funds is named
+    in code, which is what lets a new source be brought into scope from the
+    configuration screen alone.
     """
 
     _name = "kmitl.central.funding"
     _description = "Central Funding Profile"
-    _order = "account_fiscal_year_id desc, source_analytic_id"
+    _order = "source_analytic_id"
 
     source_analytic_id = fields.Many2one(
         comodel_name="account.analytic.account",
@@ -26,12 +26,6 @@ class KmitlCentralFunding(models.Model):
         help="The source of funds this profile describes. Only disbursements "
         "carrying this source are handed over, and a handover never crosses "
         "from one source to another.",
-    )
-    account_fiscal_year_id = fields.Many2one(
-        comodel_name="account.fiscal.year",
-        string="Fiscal Year",
-        required=True,
-        ondelete="restrict",
     )
     bank_account_id = fields.Many2one(
         comodel_name="account.account",
@@ -77,22 +71,17 @@ class KmitlCentralFunding(models.Model):
         "side of a handover uses the fund on the disbursement instead, which is "
         "usually a different one.",
     )
-    central_activity_level = fields.Selection(
-        selection=[
-            ("2", "Sector"),
-            ("5", "Program"),
-            ("9", "Main Activity"),
-            ("11", "Secondary Activity"),
-            ("14", "Sub-activity"),
-        ],
-        string="Central Activity Level",
+    central_activity_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="Central Activity",
         required=True,
-        default="11",
-        help="The level of the activity hierarchy at which central holds the "
-        "money, read off the length of the activity code. Central's side of a "
-        "handover takes the deepest ancestor-or-self of the disbursement's own "
-        "activity that does not go past this level, so a disbursement already "
-        "at or above it keeps its activity unchanged.",
+        ondelete="restrict",
+        domain=[("root_plan_id.code", "=", "activities")],
+        help="The activity the money is recognised under when it arrives "
+        "centrally. It is a fixed value, not derived from the disbursement: "
+        "central parks every receipt of this source on the one activity, while "
+        "the spending unit's side of a handover uses the activity on the "
+        "disbursement.",
     )
     journal_id = fields.Many2one(
         comodel_name="account.journal",
@@ -113,10 +102,9 @@ class KmitlCentralFunding(models.Model):
 
     _sql_constraints = [
         (
-            "source_fiscal_year_company_unique",
-            "unique(source_analytic_id, account_fiscal_year_id, company_id)",
-            "A central funding profile already exists for this source of funds "
-            "and fiscal year.",
+            "source_company_unique",
+            "unique(source_analytic_id, company_id)",
+            "A central funding profile already exists for this source of funds.",
         ),
     ]
 
@@ -134,17 +122,7 @@ class KmitlCentralFunding(models.Model):
         return False
 
     def name_get(self):
-        return [
-            (
-                record.id,
-                "%s / %s"
-                % (
-                    record.source_analytic_id.display_name,
-                    record.account_fiscal_year_id.display_name,
-                ),
-            )
-            for record in self
-        ]
+        return [(record.id, record.source_analytic_id.display_name) for record in self]
 
     @api.model
     def _for_request(self, request):
@@ -155,13 +133,11 @@ class KmitlCentralFunding(models.Model):
         rather than an error.
         """
         source = request.source_analytic_id
-        fiscal_year = request.account_fiscal_year_id
-        if not source or not fiscal_year:
+        if not source:
             return self.browse()
         return self.search(
             [
                 ("source_analytic_id", "=", source.id),
-                ("account_fiscal_year_id", "=", fiscal_year.id),
                 ("company_id", "=", request.company_id.id),
             ],
             limit=1,
@@ -175,19 +151,3 @@ class KmitlCentralFunding(models.Model):
             return False
         ancestors = self.env["budget.controller"]._self_and_ancestor_ids(department)
         return central.id in ancestors
-
-    def central_activity(self, activity):
-        """The deepest ancestor-or-self of ``activity`` within the configured level.
-
-        The activity code names the level by its length — ``09`` (sector) →
-        ``09007`` (program) → ``090070101`` (main) → ``09007010110``
-        (secondary) → ``09007010110170`` (sub) — so walking up until the code is
-        short enough lands on the level central recognised the money at. An
-        activity that is already at or above that level comes back untouched.
-        """
-        self.ensure_one()
-        max_length = int(self.central_activity_level)
-        node = activity
-        while node.parent_id and len(node.code or "") > max_length:
-            node = node.parent_id
-        return node

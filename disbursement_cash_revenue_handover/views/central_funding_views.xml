@@ -6,13 +6,12 @@
         <field name="model">kmitl.central.funding</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="account_fiscal_year_id"/>
                 <field name="source_analytic_id"/>
                 <field name="bank_account_id"/>
                 <field name="revenue_account_id"/>
                 <field name="central_department_analytic_id"/>
                 <field name="central_fund_analytic_id"/>
-                <field name="central_activity_level"/>
+                <field name="central_activity_analytic_id"/>
                 <field name="journal_id"/>
                 <field name="company_id" groups="base.group_multi_company"/>
             </tree>
@@ -34,14 +33,13 @@
                     <group>
                         <group string="Money Held Centrally">
                             <field name="source_analytic_id" options="{'no_create': True}"/>
-                            <field name="account_fiscal_year_id" options="{'no_create': True}"/>
                             <field name="bank_account_id" options="{'no_create': True}"/>
                             <field name="revenue_account_id" options="{'no_create': True}"/>
                         </group>
                         <group string="Central Dimensions">
                             <field name="central_department_analytic_id" options="{'no_create': True}"/>
                             <field name="central_fund_analytic_id" options="{'no_create': True}"/>
-                            <field name="central_activity_level"/>
+                            <field name="central_activity_analytic_id" options="{'no_create': True}"/>
                         </group>
                         <group string="Bookkeeping">
                             <field name="journal_id" options="{'no_create': True}"/>
@@ -50,7 +48,7 @@
                         </group>
                     </group>
                     <div class="text-muted mt-3">
-                        <span>A disbursement carrying this source of funds in this fiscal year, raised by any department other than the central one, is funded by a draft handover entry when its vendor bill is created.</span>
+                        <span>A disbursement carrying this source of funds, raised by any department other than the central one, is funded by a draft handover entry when its vendor bill is created. Central's side of that entry uses the three dimensions above; the spending unit's side uses the ones on the disbursement.</span>
                     </div>
                 </sheet>
             </form>
@@ -63,18 +61,18 @@
         <field name="arch" type="xml">
             <search>
                 <field name="source_analytic_id"/>
-                <field name="account_fiscal_year_id"/>
+                <field name="central_department_analytic_id"/>
                 <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
                 <group expand="0" string="Group By">
-                    <filter
-                        name="group_fiscal_year"
-                        string="Fiscal Year"
-                        context="{'group_by': 'account_fiscal_year_id'}"
-                    />
                     <filter
                         name="group_source"
                         string="Source of Funds"
                         context="{'group_by': 'source_analytic_id'}"
+                    />
+                    <filter
+                        name="group_central_department"
+                        string="Central Department"
+                        context="{'group_by': 'central_department_analytic_id'}"
                     />
                 </group>
             </search>
@@ -87,7 +85,7 @@
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Set up a central funding profile</p>
-            <p>One row per source of funds and fiscal year, saying where the money is held and under which dimensions. A source with no row here is never handed over.</p>
+            <p>One row per source of funds, saying where the money is held and under which dimensions. A source with no row here is never handed over.</p>
         </field>
     </record>
 

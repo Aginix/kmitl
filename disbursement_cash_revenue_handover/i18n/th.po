@@ -43,12 +43,6 @@ msgstr ""
 "และการโอนจะไม่ข้ามแหล่งเงินไปหาแหล่งเงินอื่น"
 
 #. module: disbursement_cash_revenue_handover
-#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__account_fiscal_year_id
-#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_search
-msgid "Fiscal Year"
-msgstr "ปีงบประมาณ"
-
-#. module: disbursement_cash_revenue_handover
 #: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__bank_account_id
 msgid "Cash/Bank Account"
 msgstr "บัญชีเงินสด/เงินฝากธนาคาร"
@@ -81,6 +75,7 @@ msgstr ""
 
 #. module: disbursement_cash_revenue_handover
 #: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__central_department_analytic_id
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_search
 msgid "Central Department"
 msgstr "ส่วนงานส่วนกลาง"
 
@@ -110,48 +105,21 @@ msgstr ""
 "ซึ่งปกติเป็นกองทุนคนละตัว"
 
 #. module: disbursement_cash_revenue_handover
-#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__central_activity_level
-msgid "Central Activity Level"
-msgstr "ระดับกิจกรรมส่วนกลาง"
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__central_activity_analytic_id
+msgid "Central Activity"
+msgstr "กิจกรรมส่วนกลาง"
 
 #. module: disbursement_cash_revenue_handover
-#: model:ir.model.fields,help:disbursement_cash_revenue_handover.field_kmitl_central_funding__central_activity_level
+#: model:ir.model.fields,help:disbursement_cash_revenue_handover.field_kmitl_central_funding__central_activity_analytic_id
 msgid ""
-"The level of the activity hierarchy at which central holds the money, read "
-"off the length of the activity code. Central's side of a handover takes the "
-"deepest ancestor-or-self of the disbursement's own activity that does not go "
-"past this level, so a disbursement already at or above it keeps its activity "
-"unchanged."
+"The activity the money is recognised under when it arrives centrally. It is a "
+"fixed value, not derived from the disbursement: central parks every receipt of "
+"this source on the one activity, while the spending unit's side of a handover "
+"uses the activity on the disbursement."
 msgstr ""
-"ระดับในลำดับชั้นกิจกรรมที่ส่วนกลางถือเงินไว้ อ่านจากความยาวของรหัสกิจกรรม "
-"ฝั่งส่วนกลางของใบโอนจะใช้ตัวที่ลึกที่สุดในสายบรรพบุรุษ (รวมตัวเอง) "
-"ของกิจกรรมบนใบขอเบิกที่ไม่เกินระดับนี้ "
-"ดังนั้นใบขอเบิกที่อยู่ที่ระดับนี้หรือตื้นกว่าอยู่แล้วจะไม่เปลี่ยนกิจกรรม"
-
-#. module: disbursement_cash_revenue_handover
-#: model:ir.model.fields.selection,name:disbursement_cash_revenue_handover.selection__kmitl_central_funding__central_activity_level__2
-msgid "Sector"
-msgstr "ด้าน"
-
-#. module: disbursement_cash_revenue_handover
-#: model:ir.model.fields.selection,name:disbursement_cash_revenue_handover.selection__kmitl_central_funding__central_activity_level__5
-msgid "Program"
-msgstr "แผนงาน"
-
-#. module: disbursement_cash_revenue_handover
-#: model:ir.model.fields.selection,name:disbursement_cash_revenue_handover.selection__kmitl_central_funding__central_activity_level__9
-msgid "Main Activity"
-msgstr "กิจกรรมหลัก"
-
-#. module: disbursement_cash_revenue_handover
-#: model:ir.model.fields.selection,name:disbursement_cash_revenue_handover.selection__kmitl_central_funding__central_activity_level__11
-msgid "Secondary Activity"
-msgstr "กิจกรรมรอง"
-
-#. module: disbursement_cash_revenue_handover
-#: model:ir.model.fields.selection,name:disbursement_cash_revenue_handover.selection__kmitl_central_funding__central_activity_level__14
-msgid "Sub-activity"
-msgstr "กิจกรรมย่อย"
+"กิจกรรมที่ใช้รับรู้เงินตอนเข้ามาที่ส่วนกลาง เป็นค่าคงที่ ไม่ได้คำนวณจากใบขอเบิก — "
+"ส่วนกลางพักเงินที่รับมาจากแหล่งเงินนี้ไว้ที่กิจกรรมเดียวตลอด "
+"ขณะที่ฝั่งส่วนงานที่ใช้เงินจะใช้กิจกรรมที่ระบุบนใบขอเบิก"
 
 #. module: disbursement_cash_revenue_handover
 #: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__journal_id
@@ -174,11 +142,9 @@ msgid "Active"
 msgstr "ใช้งาน"
 
 #. module: disbursement_cash_revenue_handover
-#: model:ir.model.constraint,message:disbursement_cash_revenue_handover.constraint_kmitl_central_funding_source_fiscal_year_company_unique
-msgid ""
-"A central funding profile already exists for this source of funds and fiscal "
-"year."
-msgstr "มีผังเงินงบประมาณส่วนกลางของแหล่งเงินและปีงบประมาณนี้อยู่แล้ว"
+#: model:ir.model.constraint,message:disbursement_cash_revenue_handover.constraint_kmitl_central_funding_source_company_unique
+msgid "A central funding profile already exists for this source of funds."
+msgstr "มีผังเงินงบประมาณส่วนกลางของแหล่งเงินนี้อยู่แล้ว"
 
 #. module: disbursement_cash_revenue_handover
 #: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_account_move__cash_revenue_handover_request_id
@@ -249,12 +215,14 @@ msgstr "การบันทึกบัญชี"
 #. module: disbursement_cash_revenue_handover
 #: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_form
 msgid ""
-"A disbursement carrying this source of funds in this fiscal year, raised by "
-"any department other than the central one, is funded by a draft handover "
-"entry when its vendor bill is created."
+"A disbursement carrying this source of funds, raised by any department other "
+"than the central one, is funded by a draft handover entry when its vendor bill "
+"is created. Central's side of that entry uses the three dimensions above; the "
+"spending unit's side uses the ones on the disbursement."
 msgstr ""
-"ใบขอเบิกที่ใช้แหล่งเงินนี้ในปีงบประมาณนี้ และออกโดยส่วนงานอื่นที่ไม่ใช่ส่วนกลาง "
-"จะได้รับเงินผ่านร่างใบโอนเงินและรายได้ที่สร้างขึ้นตอนตั้งเจ้าหนี้"
+"ใบขอเบิกที่ใช้แหล่งเงินนี้ และออกโดยส่วนงานอื่นที่ไม่ใช่ส่วนกลาง "
+"จะได้รับเงินผ่านร่างใบโอนเงินและรายได้ที่สร้างขึ้นตอนตั้งเจ้าหนี้ "
+"ฝั่งส่วนกลางของใบโอนใช้สามมิติข้างบนนี้ ส่วนฝั่งส่วนงานที่ใช้เงินใช้มิติที่ระบุบนใบขอเบิก"
 
 #. module: disbursement_cash_revenue_handover
 #: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_form
@@ -275,8 +243,8 @@ msgstr "ตั้งค่าผังเงินงบประมาณส่
 #. module: disbursement_cash_revenue_handover
 #: model_terms:ir.actions.act_window,help:disbursement_cash_revenue_handover.action_central_funding
 msgid ""
-"One row per source of funds and fiscal year, saying where the money is held "
-"and under which dimensions. A source with no row here is never handed over."
+"One row per source of funds, saying where the money is held and under which "
+"dimensions. A source with no row here is never handed over."
 msgstr ""
-"หนึ่งแถวต่อแหล่งเงินและปีงบประมาณ ระบุว่าเงินอยู่ที่ไหนและอยู่ภายใต้มิติใด "
+"หนึ่งแถวต่อแหล่งเงิน ระบุว่าเงินอยู่ที่ไหนและอยู่ภายใต้มิติใด "
 "แหล่งเงินที่ไม่มีแถวที่นี่จะไม่มีการโอนเงินและรายได้"

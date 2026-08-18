@@ -157,17 +157,18 @@ class DisbursementRequest(models.Model):
     def _central_analytic_distribution(self, funding):
         """Central's side of the entry.
 
-        The profile's department and fund, the request's own source of funds (a
-        handover never crosses แหล่งเงิน, matching the rule budget transfers
-        already follow) and the activity rolled up to the level central holds it
-        at.
+        The profile's department, fund and activity — all three fixed, because
+        central parks every receipt of a source on the same three, whatever the
+        money is later spent on — plus the request's own source of funds, since a
+        handover never crosses แหล่งเงิน (the rule budget transfers already
+        follow).
         """
         self.ensure_one()
         accounts = (
             funding.central_department_analytic_id
             | funding.central_fund_analytic_id
+            | funding.central_activity_analytic_id
             | self.source_analytic_id
-            | funding.central_activity(self.activity_analytic_id)
         )
         return {str(account.id): 100.0 for account in accounts}
 

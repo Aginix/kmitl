@@ -23,27 +23,31 @@ year-start pool build-up), **Internal Transfer** (Odoo's `is_internal_transfer`,
 hidden in `finance_kmitl`), payment (the handover settles nothing and pays nobody).
 
 **ผังเงินงบประมาณส่วนกลาง (Central Funding Profile)**:
-`kmitl.central.funding` — one row per (source of funds × fiscal year × company)
-saying which bank account the money sits in, which revenue account recognised it,
-and which department, fund and activity level central holds it under. **The row's
-existence is the rule**: a source with no row is never handed over, so bringing a
-new source of funds or a new fiscal year into scope is a configuration change, not
-a code change.
+`kmitl.central.funding` — one row per (source of funds × company) saying which bank
+account the money sits in, which revenue account recognised it, and which
+**department, fund and activity** central holds it under. **The row's existence is
+the rule**: a source with no row is never handed over, so bringing a new source of
+funds into scope is a configuration change, not a code change. Deliberately **not**
+scoped by fiscal year — one standing profile per source, edited in place when the
+accounts or dimensions change.
 _Avoid_: หัวจ่าย (`account.payment.method.line` — the account money goes *out* of,
 a different thing entirely; see
 [disbursement_finance_kmitl](../disbursement_finance_kmitl/CONTEXT.md)),
 เรื่องที่จ่าย, ประเภทธุรกรรม, chart of accounts mapping.
 
-**ระดับกิจกรรมส่วนกลาง (Central Activity Level)**:
-The level of the `activities` hierarchy at which central recognised the money,
-named by the length of the activity code (`2` ด้าน → `5` แผนงาน → `9` กิจกรรมหลัก →
-`11` กิจกรรมรอง → `14` กิจกรรมย่อย). Central's side of a handover takes the deepest
-ancestor-or-self of the disbursement's own activity that does not go past this
-level, so a disbursement already at or above it keeps its activity unchanged.
-_Avoid_: Control Node (the `budget` notion of the nearest ancestor that *carries
-appropriation* — this level is configured, not discovered from any balance),
-parent activity (only the direct parent, which is wrong whenever the disbursement
-sits more or fewer than one level below central).
+**Central Dimensions (มิติของส่วนกลาง)**:
+The three dimensions on the profile — **department, fund and activity** — under which
+central holds the money. All three are **fixed configuration, never derived from the
+disbursement**: central parks every receipt of a source on the same three, whatever
+the money is later spent on. Only the fourth dimension, source of funds, is read off
+the disbursement, and it is identical on both sides because a handover never crosses
+แหล่งเงิน. The spending unit's side of the entry takes the disbursement's own
+`analytic_distribution` whole.
+_Avoid_: rolling central's activity up from the disbursement's (an earlier design —
+central's activity is normally a coarser node such as `090070101` กิจกรรมหลัก while
+the disbursement sits at a กิจกรรมย่อย, but it is not required to be an ancestor at
+all), Control Node (the `budget` notion of the nearest ancestor that *carries
+appropriation* — nothing here is discovered from a balance).
 
 **Central Department (ส่วนงานส่วนกลาง)**:
 The department on the profile — the one holding the money. A disbursement raised by
