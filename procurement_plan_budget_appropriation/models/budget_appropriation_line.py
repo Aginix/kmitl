@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo import models, fields, _
 
 _logger = logging.getLogger(__name__)
 
@@ -47,10 +46,19 @@ class BudgetAppropriationLine(models.Model):
         }
 
     def _create_procurement_plan(self):
+        """Create the plan (draft) and mint its analytic account by running the
+        same draft → to_verify transition a manually-created plan uses — no
+        bespoke mint here, so the analytic account exists before this line's
+        own move-line vals need it.
+
+        The context flag skip_fill_plan_todo suppresses the UC1 Todo that
+        procurement_plan_todo schedules on action_send_to_verify: the plan
+        immediately proceeds to verified via action_post → _reserve_procurement_plans,
+        so the Todo would be raised and auto-completed before any officer sees it."""
         self.ensure_one()
         vals = self._prepare_procurement_plan_vals()
         procurement_plan = self.env['procurement.plan'].create(vals)
-        procurement_plan.action_new()
+        procurement_plan.with_context(skip_fill_plan_todo=True).action_send_to_verify()
 
         self.procurement_plan_id = procurement_plan.id
         return procurement_plan

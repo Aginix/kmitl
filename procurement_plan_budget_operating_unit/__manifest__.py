@@ -6,7 +6,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": [
-        "procurement_plan_budget",
+        "procurement_plan_budget_appropriation",
         "procurement_plan_operating_unit",
         "budget_appropriation_operating_unit",
         "budget_operating_unit",

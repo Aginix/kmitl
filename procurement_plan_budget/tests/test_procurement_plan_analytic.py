@@ -4,7 +4,14 @@ from odoo.tests.common import TransactionCase, tagged
 @tagged("post_install", "-at_install")
 class TestProcurementPlanAnalytic(TransactionCase):
     """Test that analytic_distribution correctly populates convenience fields
-    on procurement.plan when each dimension account is included."""
+    on procurement.plan when each dimension account is included.
+
+    Lives in procurement_plan_budget (not core) because budget_account_id is
+    required=True in this layer; all tests create procurement.plan records so
+    the suite would fail on missing required field when the budget module is
+    installed (which CI always does).  The assertions themselves exercise core
+    analytic logic — the placement is purely to satisfy the required constraint.
+    """
 
     @classmethod
     def setUpClass(cls):
@@ -49,8 +56,19 @@ class TestProcurementPlanAnalytic(TransactionCase):
             )
 
         cls.budget_account = env["budget.account"].search(
-            [("budgetable", "=", True), ("budget_type", "=", "expense")], limit=1
+            [("procurement_plan", "=", True), ("budgetable", "=", True), ("budget_type", "=", "expense")],
+            limit=1,
         )
+        if not cls.budget_account:
+            cls.budget_account = env["budget.account"].create(
+                {
+                    "name": "Test Procurement Budget Account",
+                    "code": "TESTPROC",
+                    "procurement_plan": True,
+                    "budgetable": True,
+                    "budget_type": "expense",
+                }
+            )
 
     def _make_plan(self, analytic_distribution):
         """Helper: create a procurement.plan with the given analytic_distribution."""

@@ -6,7 +6,7 @@ import {useService} from "@web/core/utils/hooks";
 
 patch(
     BudgetAppropriationLineRenderer.prototype,
-    "procurement_plan_budget.BudgetAppropriationLineProcurementRenderer",
+    "procurement_plan_budget_appropriation.BudgetAppropriationLineProcurementRenderer",
     {
         setup() {
             this._super(...arguments);

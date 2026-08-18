@@ -33,12 +33,13 @@ class BudgetAppropriation(models.Model):
 
     def _reserve_procurement_plans(self):
         """Reserve each created procurement plan's budget the moment the
-        appropriation is posted (ADR-0005). super().action_post() has already
-        posted the appropriation move, so the pool is available to lock.
-        ``_reserve_plan_commitment`` is idempotent and skips plans that already
-        hold an active commitment."""
+        appropriation is posted. super().action_post() has already posted the
+        appropriation move, so the pool is available to lock. Drives the plan
+        through its own to_verify → verified transition — reserving is the
+        budget layer's ``_on_verify`` hook, not reimplemented here — so it lands
+        at ``verified`` in this single transaction."""
         for line in self.line_ids.filtered(lambda l: l.procurement_plan_id):
-            line.procurement_plan_id._reserve_plan_commitment()
+            line.procurement_plan_id.action_verify()
 
     def _log_message_on_linked_documents(self):
         procurement_lines = self.line_ids.filtered(lambda l: l.procurement_plan_id)
