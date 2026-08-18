@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_disbursement_request_form_procurement_plan" model="ir.ui.view">
+        <field name="name">disbursement.request.form.procurement.plan</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
+        <field name="arch" type="xml">
+
+            <!-- Flag available for parent.-references in the line tree -->
+            <xpath expr="//field[@name='analytic_distribution'][1]" position="before">
+                <field name="is_procurement_plan_expense" invisible="1" />
+            </xpath>
+
+            <!-- Req 3: procurement-plan dimension, shown only for investment codes -->
+            <xpath expr="//field[@name='activity_analytic_id']" position="after">
+                <field
+                    name="procurement_plan_analytic_id"
+                    options="{'no_create': True, 'no_open': True}"
+                    attrs="{
+                        'invisible': [('is_procurement_plan_expense', '=', False)],
+                        'required': [('is_procurement_plan_expense', '=', True)],
+                        'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]
+                    }"
+                />
+            </xpath>
+
+            <!-- Req 1: the product (รหัสบัญชี) is derived from the budget account,
+                 so hide the whole column for procurement-plan expenses
+                 (column_invisible, keyed on the parent) and keep it required only
+                 for ordinary disbursements. -->
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='product_id']" position="attributes">
+                <attribute name="attrs">{'column_invisible': [('parent.is_procurement_plan_expense', '=', True)], 'required': [('parent.is_procurement_plan_expense', '=', False)]}</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
