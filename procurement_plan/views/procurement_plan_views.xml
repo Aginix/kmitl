@@ -129,6 +129,8 @@
                 <field name="fund_analytic_id" />
                 <field name="activity_analytic_id" />
                 <separator/>
+                <filter name="hide_cancel" string="ซ่อนที่ยกเลิก" domain="[('state', '!=', 'cancel')]" />
+                <separator/>
                 <filter name="state_draft" string="แบบร่าง" domain="[('state', '=', 'draft')]" />
                 <filter name="state_to_verify" string="จัดสรรงบประมาณ (ปรับเข้าแผน)" domain="[('state', '=', 'to_verify')]" />
                 <filter name="state_verified" string="รอดำเนินการ" domain="[('state', '=', 'verified')]" />
@@ -164,7 +166,7 @@
         <field name="res_model">procurement.plan</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
-        <field name="context">{'search_default_hide_draft_cancel': 1}</field>
+        <field name="context">{'search_default_hide_cancel': 1}</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
                 There is no examples click here to add new Procurement Plan.
