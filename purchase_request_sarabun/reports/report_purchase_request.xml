@@ -41,6 +41,11 @@
                             บันทึกขอให้จัดหา
                         </h3>
                     </div>
+                    <!-- บันทึกนำ — optional covering note above the origin body;
+                         prints only when the drafter ticked แนบเนื้อหา. -->
+                    <t t-call="agx_sarabun.sarabun_covering_note">
+                        <t t-set="doc" t-value="o.active_sarabun_document_id" />
+                    </t>
                     <div class="row">
                         <div class="col-8">
                             เลขที่เอกสาร
