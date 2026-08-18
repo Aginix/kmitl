@@ -128,23 +128,12 @@ class PurchaseOrder(models.Model):
 
     @api.onchange("budget_commitment_id")
     def _onchange_budget_commitment_id(self):
-        """Copy budget code + 4 analytic dimensions from the picked commitment.
-
-        We assign the individual *_analytic_id fields (not analytic_distribution
-        directly) so the mixin's inverse doesn't fight with its compute during
-        the save round-trip — writing to analytic_distribution ends up cleared
-        by _compute_analytic_distribution firing on the *_analytic_id deps
-        before their values are materialised.
-        """
         for rec in self:
             if not rec.budget_commitment_id:
                 continue
             budget = rec.budget_commitment_id
             rec.budget_account_id = budget.account_id
-            rec.activity_analytic_id = budget.activity_analytic_id
-            rec.department_analytic_id = budget.department_analytic_id
-            rec.fund_analytic_id = budget.fund_analytic_id
-            rec.source_analytic_id = budget.source_analytic_id
+            rec.analytic_distribution = budget.analytic_distribution
 
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):
