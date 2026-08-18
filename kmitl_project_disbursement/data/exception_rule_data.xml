@@ -35,4 +35,23 @@ if self.budget_account_id.is_project and not self.budget_account_id.product_id:
         <field name="is_blocking" eval="True" />
         <field name="active" eval="True" />
     </record>
+
+    <!-- A DR linked to a kmitl.project may only be submitted while that project
+         is actively running. Blocking — a project that is not yet in_progress
+         (e.g. still in draft / to_verify / to_send / sent) or is already
+         complete / cancelled must not accept new disbursements. -->
+    <record id="excep_disbursement_project_in_progress" model="exception.rule">
+        <field name="name">โครงการ/กิจกรรมต้องอยู่ในสถานะ "กำลังดำเนินการ" จึงจะเบิกจ่ายได้</field>
+        <field name="description">ใบขอเบิกเชื่อมโยงกับโครงการ/กิจกรรมที่ยังไม่ได้อยู่ในสถานะกำลังดำเนินการ จึงไม่สามารถส่งขออนุมัติได้</field>
+        <field name="sequence">62</field>
+        <field name="model">disbursement.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+project = self.kmitl_project_id.sudo()
+if project and project.state != 'in_progress':
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
 </odoo>
