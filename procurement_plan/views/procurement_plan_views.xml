@@ -73,11 +73,11 @@
                         <page string="การดำเนินงาน">
                             <group>
                                 <group name="plan" string="แผน">
-                                    <field name="purchase_request_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}" />
-                                    <field name="procurement_announcement_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}" />
-                                    <field name="approval_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}" />
-                                    <field name="contract_order_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}" />
-                                    <field name="acceptance_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}" />
+                                    <field name="purchase_request_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'verified'))]}" />
+                                    <field name="procurement_announcement_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'verified'))]}" />
+                                    <field name="approval_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'verified'))]}" />
+                                    <field name="contract_order_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'verified'))]}" />
+                                    <field name="acceptance_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'verified'))]}" />
                                 </group>
                             </group>
                         </page>

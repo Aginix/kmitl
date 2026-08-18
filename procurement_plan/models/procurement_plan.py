@@ -149,7 +149,7 @@ class ProcurementPlan(models.Model):
     @api.depends("state")
     def _compute_can_edit_description(self):
         for record in self:
-            record.can_edit_description = record.state in ("draft", "to_verify")
+            record.can_edit_description = record.state in ("draft", "to_verify", "verified", "in_progress")
 
     analytic_account_id = fields.Many2one(
         "account.analytic.account",
