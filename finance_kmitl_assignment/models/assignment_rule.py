@@ -79,6 +79,15 @@ class FinanceAssignmentRule(models.Model):
         "payment method too, so a rule on a cheque account routes every cheque "
         "paid from it. Leave empty to match any paying account.",
     )
+    payment_subject_id = fields.Many2one(
+        "kmitl.payment.subject",
+        string="Payment Subject",
+        ondelete="restrict",
+        help="เรื่องที่จ่าย — what the disbursement is for, chosen once on the "
+        "request. A voucher keyed in by hand has no request and so no subject, "
+        "and is left to the rules that keep this empty. Leave empty to match "
+        "any subject.",
+    )
 
     user_id = fields.Many2one(
         "res.users",
@@ -99,13 +108,15 @@ class FinanceAssignmentRule(models.Model):
         budget engine uses (see budget_appropriation.py). A rule leaves a
         criterion empty to act as a wildcard for that dimension.
 
-        Partner type and paying account are flat: neither is a tree, so both
-        match on equality.
+        Partner type, paying account and payment subject are flat: none is a
+        tree, so all three match on equality.
 
         The dimensions are read off the payment directly: they live on the
         journal entry (``accounting_kmitl`` puts ``analytic.distribution.mixin``
         on ``account.move``) and the payment delegates to it through
-        ``_inherits``.
+        ``_inherits``. The payment subject is the one criterion the voucher does
+        not carry itself -- it is chosen on the disbursement request the voucher
+        was created from.
         """
         # Pin ("active", "=", True) explicitly rather than relying on the
         # implicit active_test: the "Apply Rules to Pending Payments" server
@@ -135,6 +146,18 @@ class FinanceAssignmentRule(models.Model):
         # confirmed for the bank without one.
         domain.append(
             ("paying_account_id", "in", payment.payment_method_line_id.ids + [False])
+        )
+        # The subject (เรื่องที่จ่าย) is the one criterion recorded a step back:
+        # it is picked on the disbursement request, which is what the หัวจ่าย of
+        # every payee is derived from. A voucher keyed in by hand has no request
+        # and so no subject, which leaves it to the rules that keep this
+        # criterion blank -- the same wildcard the others mean by being empty.
+        domain.append(
+            (
+                "payment_subject_id",
+                "in",
+                payment.disbursement_request_id.payment_subject_id.ids + [False],
+            )
         )
         return self.search(domain, limit=1)
 
