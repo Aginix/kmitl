@@ -76,10 +76,14 @@
                                 <td><span t-field="o.budget_type"/></td>
                             </tr>
                             <tr>
+                                <td class="k">หน่วยงาน</td>
+                                <td><span t-out="o.department_analytic_id.complete_name.replace(' / ', ' ')"/></td>
                                 <td class="k">ผู้รับผิดชอบ</td>
                                 <td><span t-out="o.user_id.name"/></td>
-                                <td class="k">จำนวนเงิน</td>
-                                <td><span t-out="'{:,.2f}'.format(o.amount)"/> บาท</td>
+                            </tr>
+                            <tr>
+                              <td class="k">จำนวนเงิน</td>
+                              <td colspan="3"><span t-out="'{:,.2f}'.format(o.amount)"/> บาท</td>
                             </tr>
                             <tr>
                               <td class="k">เหตุผล/รายละเอียด</td>
