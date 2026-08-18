@@ -32,7 +32,7 @@ class TestNotificationScope(TransactionCase):
         cls.registry.init_models(
             cls.cr,
             ["test.todo.host.scope"],
-            {"module": "mail_activity_todo_notify_scope"},
+            {"module": "mail_activity_todo_user_setting"},
         )
         cls.Host = cls.env["test.todo.host.scope"]
         cls.Activity = cls.env["mail.activity"]
