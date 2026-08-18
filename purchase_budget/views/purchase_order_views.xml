@@ -96,9 +96,10 @@
                 position="attributes"
             >
                 <attribute name="optional">hide</attribute>
+                <attribute name="attrs">{'readonly': [('state', 'in', ('purchase', 'to approve', 'done', 'cancel'))]}</attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']" position="attributes">
-                <attribute name="context">{'default_state': 'draft', 'default_product_id': product_id}</attribute>
+                <attribute name="context">{'default_state': 'draft', 'default_product_id': budget_account_product_id}</attribute>
             </xpath>
         </field>
     </record>
