@@ -25,6 +25,7 @@
                             groups="base.group_erp_manager"
                         />
                         <field name="budget_account_id"/>
+                        <field name="budget_account_product_id" invisible="1"/>
                         <field name="activity_analytic_id" string="Activity"/>
                         <field name="department_analytic_id" string="Department"/>
                         <field name="fund_analytic_id" string="Fund"/>
