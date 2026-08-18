@@ -476,8 +476,6 @@ class WorkAcceptance(models.Model):
 class WorkAcceptanceLine(models.Model):
     _inherit = "work.acceptance.line"
 
-    product_id = fields.Many2one(required=False)
-
     date_due = fields.Date(related="wa_id.date_due", string="Due Date", readonly=True)
     date_receive = fields.Date(
         related="wa_id.date_receive", string="Received Date", readonly=True

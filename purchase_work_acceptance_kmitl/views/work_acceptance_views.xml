@@ -67,7 +67,7 @@
                         <field
                             name="work_acceptance_committee_ids"
                             nolabel="1"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            readonly="1"
                         >
                             <tree editable="bottom">
                                 <field
@@ -425,6 +425,12 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='wa_tier_validation']" position="attributes">
                 <attribute name="invisible">0</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='work_acceptance_committee_ids']"
+                position="attributes"
+            >
+                <attribute name="readonly">1</attribute>
             </xpath>
         </field>
     </record>
