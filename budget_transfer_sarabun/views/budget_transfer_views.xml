@@ -27,7 +27,7 @@
             <xpath expr="//field[@name='state'][@widget='statusbar']" position="attributes">
                 <attribute name="statusbar_visible">draft,submitted,sent,posted</attribute>
             </xpath>
-            <xpath expr="//widget[@title='Posted']" position="before">
+            <xpath expr="//widget[@name='web_ribbon'][1]" position="before">
                 <widget name="web_ribbon" title="Returned" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'returned')]}"/>
                 <widget name="web_ribbon" title="Rejected" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
             </xpath>
