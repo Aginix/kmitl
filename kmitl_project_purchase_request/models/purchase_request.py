@@ -56,22 +56,22 @@ class PurchaseRequest(models.Model):
         # code (read-only), so the domain never blocks them.
         return super()._domain_budget_account_id() + [("is_project", "=", False)]
 
-    def _domain_reservation_commitment_id(self):
-        # A project's shared commitment is drawn only through the project's own
-        # create-from-project flow (capped at budget_amount, ADR-0007) — keep it
-        # out of the generic reservation picker.
-        return super()._domain_reservation_commitment_id() + [
-            ("kmitl_project_id", "=", False)
-        ]
-
     def _check_drawable_commitment(self, commitment):
+        # A project's shared commitment sits on an ``is_project`` budget code this
+        # PR may not *reserve new* on (ADR-0007), so the base gate — which mirrors
+        # the full reserve-new field domain — would reject it. Drawing it down is
+        # allowed, but the code must still be a purchasable, product-backed PR
+        # budget code just like a directly selected one: check it against the base
+        # domain (purchase_ok + product), lifting only the ``is_project`` exclusion.
         if commitment.kmitl_project_id:
-            raise UserError(
-                _(
-                    "ใบจองงบประมาณของโครงการต้องหยิบผ่านการสร้าง"
-                    "ใบขอซื้อจากโครงการเท่านั้น"
+            if not self.env["budget.account"].search_count(
+                super()._domain_budget_account_id()
+                + [("id", "=", commitment.account_id.id)]
+            ):
+                raise UserError(
+                    _("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้")
                 )
-            )
+            return True
         return super()._check_drawable_commitment(commitment)
 
     @api.depends("state", "use_project", "kmitl_project_id")
