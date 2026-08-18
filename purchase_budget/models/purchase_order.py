@@ -36,6 +36,12 @@ class PurchaseOrder(models.Model):
         help="Budget account to be used for commitment",
     )
 
+    budget_account_product_id = fields.Many2one(
+        related="budget_account_id.product_id",
+        string="Budget Product",
+        readonly=True,
+    )
+
     activity_analytic_id = fields.Many2one(
         states=READONLY_STATES,
     )
