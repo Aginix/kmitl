@@ -171,6 +171,7 @@ class BudgetTransfer(models.Model):
                 )
             elif transfer.state == "rejected":
                 transfer.show_reset_button = is_manager or is_admin
+            transfer.show_approve_button = is_manager or is_admin
 
     # --- extra guards for the states this bridge introduces -------------
     def action_cancel(self):
