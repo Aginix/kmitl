@@ -1,6 +1,6 @@
 import base64
 
-from odoo import _, models
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 
@@ -17,6 +17,26 @@ class BudgetTransfer(models.Model):
 
     _name = "budget.transfer"
     _inherit = ["budget.transfer", "sarabun.document.mixin"]
+
+    # The e-Saraban states the base doesn't need. Ordered via ``posted`` /
+    # ``cancelled`` anchors so the statusbar reads draft → submitted → sent →
+    # posted, with returned/rejected before cancelled. ``set default`` returns
+    # any record still in one of these states to ``draft`` if this bridge is
+    # ever uninstalled (base default), keeping the required field valid.
+    state = fields.Selection(
+        selection_add=[
+            ("sent", "กำลังเวียนสารบรรณ"),
+            ("posted",),
+            ("returned", "ตีกลับเพื่อแก้ไข"),
+            ("rejected", "ปฏิเสธ"),
+            ("cancelled",),
+        ],
+        ondelete={
+            "sent": "set default",
+            "returned": "set default",
+            "rejected": "set default",
+        },
+    )
 
     # --- hooks ---------------------------------------------------------
     def _get_sarabun_document_type(self):
@@ -124,7 +144,16 @@ class BudgetTransfer(models.Model):
     def _get_sarabun_report_action(self):
         return False  # default e-Saraban body; งปม.303 rides as enclosure
 
-    # --- button visibility for the bridge-owned states ------------------
+    # --- editability + button visibility for the bridge-owned states ----
+    def _compute_can_edit(self):
+        """Reopen editing for a ``returned`` (ตีกลับ) transfer — the whole
+        header/lines are revised before the letter is re-sent. Every other
+        state keeps the base rule (editable in ``draft`` only)."""
+        super()._compute_can_edit()
+        for transfer in self:
+            if transfer.state == "returned":
+                transfer.can_edit = True
+
     def _compute_button_visibility(self):
         """Extend the base compute for `returned`/`rejected` — states the
         base itself never reaches, so its own compute leaves every button

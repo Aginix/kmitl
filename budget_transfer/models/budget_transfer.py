@@ -14,8 +14,8 @@ class BudgetTransfer(models.Model):
     company, currency, fiscal year, budget_type, department/source, move_type,
     and the *lines*) is the move's — accessed by the same field names through
     delegation, so no columns are duplicated. This model adds only what a
-    transfer needs on top of a budget move: its own BTR number, an approval
-    workflow, a reason, and the requestor/approver trail.
+    transfer needs on top of a budget move: its own BTR number, a six-state
+    approval workflow, a reason, and the requestor/approver trail.
 
     Business rules (unchanged, ADR-0009): a transfer is a **pure move** — it
     reserves/releases nothing; a FROM line credits its bucket, a balanced TO line
@@ -27,12 +27,6 @@ class BudgetTransfer(models.Model):
     State lifecycle: draft → submitted → approved → posted, with rejected /
     cancelled and reset-to-draft. ``move_id.state`` follows: draft while the
     transfer is draft/submitted/approved, posted on post, cancel on cancel.
-    ``sent``/``returned``/``rejected`` are declared here (a Selection must list
-    every value a bridge module may write) but are only ever reached once
-    ``budget_transfer_sarabun`` is installed and an e-Saraban letter drives
-    them — see ADR-0014. That bridge owns all the behaviour specific to those
-    states (button visibility, extra action guards); this base model stays a
-    plain 4-state workflow otherwise.
     """
 
     _name = "budget.transfer"
@@ -41,14 +35,6 @@ class BudgetTransfer(models.Model):
     _description = "Budget Transfer"
     _order = "date desc, name desc, id desc"
     _rec_names_search = ["name", "ref"]
-
-    READONLY_STATES = {
-        "submitted": [("readonly", True)],
-        "sent": [("readonly", True)],
-        "posted": [("readonly", True)],
-        "rejected": [("readonly", True)],
-        "cancelled": [("readonly", True)],
-    }
 
     # The delegated budget move (created up front, ADR-0013).
     move_id = fields.Many2one(
@@ -91,13 +77,7 @@ class BudgetTransfer(models.Model):
         selection=[
             ("draft", "Draft"),
             ("submitted", "Submitted"),
-            # sent/returned/rejected: only reached with budget_transfer_sarabun
-            # installed (ADR-0014) — declared here because a Selection must
-            # list every value a bridge module may write.
-            ("sent", "กำลังเวียนสารบรรณ"),
             ("posted", "Posted"),
-            ("returned", "ตีกลับเพื่อแก้ไข"),
-            ("rejected", "ปฏิเสธ"),
             ("cancelled", "Cancelled"),
         ],
         string="Status",
@@ -121,7 +101,6 @@ class BudgetTransfer(models.Model):
         string="Transfer Reason",
         required=True,
         readonly=False,
-        states=READONLY_STATES,
         tracking=True,
         help="Please provide detailed justification for this budget transfer",
     )
@@ -135,7 +114,6 @@ class BudgetTransfer(models.Model):
         default=lambda self: self.env.user,
         required=True,
         readonly=False,
-        states=READONLY_STATES,
     )
     approver_id = fields.Many2one(
         string="Approved by",
@@ -172,6 +150,13 @@ class BudgetTransfer(models.Model):
     # True once the BTR number has been minted — the fiscal year is then frozen
     # (it drives the number's year), even after a Reset to Draft.
     fiscal_year_locked = fields.Boolean(compute="_compute_fiscal_year_locked")
+
+    # Single flag driving every "editable while …" readonly modifier in the
+    # form (header, dimensions, reason, lines). The base opens editing in
+    # ``draft`` only; a module that adds intermediate states — e.g.
+    # ``budget_transfer_sarabun`` reopening a ``returned`` letter — extends
+    # ``_compute_can_edit`` instead of overriding each field's modifiers.
+    can_edit = fields.Boolean(compute="_compute_can_edit")
 
     # ------------------------------------------------------------------
     # Create — force the delegated move to be a budget entry
@@ -267,6 +252,14 @@ class BudgetTransfer(models.Model):
             transfer.fiscal_year_locked = bool(
                 transfer.name and transfer.name not in placeholders
             )
+
+    @api.depends("state")
+    def _compute_can_edit(self):
+        """The transfer's data is editable in ``draft`` only. Modules that add
+        intermediate states extend this (super() + reopen) rather than
+        re-declaring each field's readonly modifier."""
+        for transfer in self:
+            transfer.can_edit = transfer.state == "draft"
 
     @api.depends("move_id")
     def _compute_has_budget_move(self):

@@ -42,14 +42,14 @@
 
                     <group>
                         <group name="transfer_info" string="Transfer Information">
-                            <field name="date" attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'returned']), ('fiscal_year_locked', '=', True)]}"/>
-                            <field name="account_fiscal_year_id" attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'returned']), ('fiscal_year_locked', '=', True)]}"/>
-                            <field name="budget_type" attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}"/>
-                            <field name="user_id" widget="employee_detail_many2one" />
+                            <field name="date" attrs="{'readonly': ['|', ('can_edit', '=', False), ('fiscal_year_locked', '=', True)]}"/>
+                            <field name="account_fiscal_year_id" attrs="{'readonly': ['|', ('can_edit', '=', False), ('fiscal_year_locked', '=', True)]}"/>
+                            <field name="budget_type" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                            <field name="user_id" widget="employee_detail_many2one" attrs="{'readonly': [('can_edit', '=', False)]}"/>
                         </group>
                         <group name="dimension_info" string="Financial Dimensions">
-                            <field name="department_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}" options="{'no_create': True, 'no_open': True}"/>
-                            <field name="source_analytic_id" required="1" attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}" options="{'no_create': True, 'no_open': True}" />
+                            <field name="department_analytic_id" required="1" attrs="{'readonly': [('can_edit', '=', False)]}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="source_analytic_id" required="1" attrs="{'readonly': [('can_edit', '=', False)]}" options="{'no_create': True, 'no_open': True}" />
                             <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
@@ -77,7 +77,7 @@
                     </div>
 
                     <group name="transfer_reason" colspan="8">
-                        <field name="reason" placeholder="Please provide detailed justification for this budget transfer..." attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}" colspan="2"/>
+                        <field name="reason" placeholder="Please provide detailed justification for this budget transfer..." attrs="{'readonly': [('can_edit', '=', False)]}" colspan="2"/>
                     </group>
 
                     <!-- Transfer Lines (authored directly as budget.move.line) -->
@@ -87,7 +87,7 @@
                                 <separator string="Transfer FROM (Source)"/>
                                 <field name="from_line_ids" nolabel="1" colspan="2"
                                        context="{'default_transfer_direction': 'from', 'default_department_analytic_id': department_analytic_id}"
-                                       attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}">
+                                       attrs="{'readonly': [('can_edit', '=', False)]}">
                                     <!-- Non-editable tree: a click opens the line editor dialog. -->
                                     <tree decoration-danger="not budget_sufficient" create="1" delete="1">
                                         <field name="account_id"/>
@@ -143,7 +143,7 @@
                                 <separator string="Transfer TO (Destination)"/>
                                 <field name="to_line_ids" nolabel="1" colspan="2"
                                        context="{'default_transfer_direction': 'to', 'default_department_analytic_id': department_analytic_id}"
-                                       attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}">
+                                       attrs="{'readonly': [('can_edit', '=', False)]}">
                                     <!-- Non-editable tree: a click opens the line editor dialog. -->
                                     <tree decoration-success="1" create="1" delete="1">
                                         <field name="account_id"/>
@@ -205,6 +205,7 @@
                 <field name="show_reset_button" invisible="1"/>
                 <field name="show_reset_posted_button" invisible="1"/>
                 <field name="fiscal_year_locked" invisible="1"/>
+                <field name="can_edit" invisible="1"/>
                 <field name="has_budget_move" invisible="1"/>
                 <field name="has_sufficient_budget" invisible="1"/>
             </form>

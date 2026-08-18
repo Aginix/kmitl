@@ -32,38 +32,48 @@ and never re-implements `action_submit_to_sarabun` or `_prepare_sarabun_document
 
 ## Decision
 
-### Base `budget_transfer` — declares the states, changes nothing else
+### Base `budget_transfer` — stays 4-state; only gains an extensibility seam
 
 `budget_transfer` stays a **thin, mostly-untouched base**: this branch's job is the
-bridge, not a base rewrite. Odoo requires a `Selection` field to list every value
-it may ever hold, so the base gains three new keys — `sent`, `returned`,
-`rejected` — plus `sent`/`rejected` in `READONLY_STATES` (field-level lock, which
-can't be done from a child module without redeclaring the fields) and `returned`
-added alongside `draft` in the view's existing `attrs` (so a returned letter
-reopens the whole transfer for revision, matching draft). That is the **entire**
-base diff. Nothing else changes: `action_submit`, `action_approve`,
-`action_cancel`, `action_reset_to_draft` and `_compute_button_visibility` keep
-their original names, bodies and behaviour — the base has no idea `sent`/
-`returned`/`rejected` mean anything beyond a locked/unlocked flag; it never
-writes them itself, `budget_transfer_sarabun` does.
+bridge, not a base rewrite. The base keeps its original 4-state Selection
+(`draft/submitted/posted/cancelled`) — it does **not** declare `sent`/`returned`/
+`rejected` at all; those are added by the bridge (see below). `action_submit`,
+`action_approve`, `action_cancel`, `action_reset_to_draft` and
+`_compute_button_visibility` keep their original names, bodies and behaviour.
+
+The one deliberate base change is an **extensibility seam for editability**: the
+old `READONLY_STATES` dict (hard-coded `submitted/posted/cancelled` on the field
+`states=` + repeated `('state','not in',['draft'])` view modifiers) is replaced
+by a single computed **`can_edit`** boolean (`True` in `draft`) that every
+readonly modifier in the form keys off (`attrs="{'readonly': [('can_edit','=',
+False)]}"`). This lets a downstream module reopen editing for a new state by
+extending one compute (`super()._compute_can_edit()` + reopen) instead of
+redeclaring each field's `states=`/`attrs`. Behaviour is identical for a
+base-only install (editable in `draft` only); the change is purely structural.
 
 - `submitted` keeps its name and meaning — ยืนยัน (`action_submit`), the single
   validation checkpoint (`_validate_transfer_data` + availability). The BTR
   number is still minted on leaving `draft`, unchanged.
 - `submitted → posted` (**manual approve fallback**, Budget Manager, not self):
-  the existing `action_approve`, unchanged. Standalone-usable when no bridge is
-  present — draft/submitted/posted/cancelled are the only states a base-only
-  install ever reaches.
-- `sent`, `returned`, `rejected` are declared but dead weight without the bridge:
-  nothing in the base ever writes them, so a base-only environment behaves
-  exactly as before.
+  the existing `action_approve`, unchanged. draft/submitted/posted/cancelled are
+  the only states a base-only install ever reaches.
 
-### New bridge `budget_transfer_sarabun` — owns everything state-specific
+### New bridge `budget_transfer_sarabun` — adds the states and owns their behaviour
 
-`budget_transfer_sarabun` **overrides** (`_inherit` + `super()`) rather than
-patches the base — every rule below about `sent`/`returned`/`rejected` lives
-here, not in `budget_transfer`:
+`budget_transfer_sarabun` **adds** the e-Saraban states and **overrides**
+(`_inherit` + `super()`) the base — every rule about `sent`/`returned`/`rejected`
+lives here, not in `budget_transfer`:
 
+- **The three new states are added via `state = fields.Selection(selection_add=…)`**
+  — `sent`, `returned`, `rejected`, ordered with `posted`/`cancelled` anchors so
+  the statusbar reads draft → submitted → sent → posted (returned/rejected before
+  cancelled). `ondelete='set default'` returns any record still in one of them to
+  `draft` if the bridge is uninstalled (base default), keeping the required field
+  valid. The base never needs to know these values exist.
+- `_compute_can_edit`: `super()` + reopen editing in `returned` (a ตีกลับ letter
+  reopens the whole transfer for revision before re-send). Every other state keeps
+  the base rule (editable in `draft` only). This is the payoff of the base seam —
+  no field modifiers are redeclared.
 - `_compute_button_visibility`: calls `super()`, then adds visibility for
   `returned` (Cancel; Reset to Draft for the owner/admin) and `rejected` (Reset
   to Draft for manager/admin, mirroring the base's own `cancelled` gate). `sent`
@@ -79,10 +89,9 @@ here, not in `budget_transfer`:
   double-post or revive a decided transfer through the back door.
 - Its own view (`inherit_id=budget_transfer.view_budget_transfer_form`) adds the
   Returned/Rejected ribbons, extends `statusbar_visible` to include `sent`, and
-  hides the `date` field (now synced from the letter's ลงวันที่, see below) —
-  none of this touches the base view beyond the `returned`-in-`attrs` change
-  above. Separate tree/search view inherits add decorations and filters for the
-  three new states.
+  hides the `date` field (now synced from the letter's ลงวันที่, see below).
+  Separate tree/search view inherits add decorations and filters for the
+  three new states. None of this touches the base view.
 - `_inherit = ["budget.transfer", "sarabun.document.mixin"]`; depends
   `[budget_transfer, agx_sarabun, budget_transfer_pdf]`; **`auto_install=True`** —
   wherever both `budget_transfer` and `agx_sarabun` are present the integration is
@@ -138,10 +147,11 @@ action back (ADR-0004); we keep the completion callback non-raising.
 
 ### Rollout
 
-`budget_transfer` is **pre-production** (only just split out in #1097): the
-existing `submitted` state is kept and extended in place with `sent`/`returned`/
-`rejected` — **no version bump, no migration** (transfer records ≈ 0). The
-bridge is a fresh install.
+`budget_transfer` is **pre-production** (only just split out in #1097): it keeps
+its 4-state Selection and only swaps `READONLY_STATES` for the `can_edit` seam —
+**no version bump, no migration** (transfer records ≈ 0, and the seam is a
+structural no-op for existing states). The three new states arrive with the
+bridge, a fresh install.
 
 ## Considered options
 

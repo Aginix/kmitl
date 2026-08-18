@@ -187,6 +187,8 @@ class TestBudgetTransferSarabun(TransactionCase):
         document = self._submit(transfer)
         document.with_user(self.requestor).action_send()
         self.assertEqual(transfer.state, "sent")
+        # A circulating (sent) transfer is locked for editing.
+        self.assertFalse(transfer.can_edit)
         # The transfer's own date is hidden and now tracks the letter's
         # ลงวันที่ (stamped at send), not the draft/confirm date.
         self.assertEqual(transfer.date, document.date)
@@ -226,6 +228,9 @@ class TestBudgetTransferSarabun(TransactionCase):
         transfer.invalidate_recordset()
         self.assertEqual(transfer.state, "returned")
         self.assertNotEqual(transfer.state, "posted")
+        # The bridge reopens editing in `returned` (extends _compute_can_edit);
+        # the base would leave it locked (editable in draft only).
+        self.assertTrue(transfer.can_edit)
 
     def test_cancelled_send_falls_back_to_submitted(self):
         transfer = self._submitted_transfer()
