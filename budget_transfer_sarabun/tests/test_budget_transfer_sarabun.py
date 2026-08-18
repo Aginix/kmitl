@@ -186,6 +186,9 @@ class TestBudgetTransferSarabun(TransactionCase):
         document = self._submit(transfer)
         document.with_user(self.requestor).action_send()
         self.assertEqual(transfer.state, "sent")
+        # The transfer's own date is hidden and now tracks the letter's
+        # ลงวันที่ (stamped at send), not the draft/confirm date.
+        self.assertEqual(transfer.date, document.date)
 
     def test_completion_auto_posts_and_stamps_approver(self):
         transfer = self._confirmed_transfer()

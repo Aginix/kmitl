@@ -84,7 +84,10 @@ class BudgetTransfer(models.Model):
     # --- lifecycle callbacks ------------------------------------------
     def _on_sarabun_circulating(self, document):
         if self.state in ("confirmed", "returned"):
-            self.state = "sent"
+            # The transfer's own date field is hidden (ADR-0014 follow-up) —
+            # it now tracks the letter's ลงวันที่ (re-stamped on every send),
+            # not the moment the transfer was confirmed in draft.
+            self.write({"state": "sent", "date": document.date})
         return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):

@@ -44,7 +44,7 @@
 
                     <group>
                         <group name="transfer_info" string="Transfer Information">
-                            <field name="date" attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'returned']), ('fiscal_year_locked', '=', True)]}"/>
+                            <field name="date" invisible="1"/>
                             <field name="account_fiscal_year_id" attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'returned']), ('fiscal_year_locked', '=', True)]}"/>
                             <field name="budget_type" attrs="{'readonly': [('state', 'not in', ['draft', 'returned'])]}"/>
                             <field name="user_id" widget="employee_detail_many2one" />
