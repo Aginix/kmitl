@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- KMITL project form - smart button linking the project's disbursements -->
+    <record id="view_kmitl_project_form_disbursement" model="ir.ui.view">
+        <field name="name">view.kmitl.project.form.disbursement</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button name="action_open_disbursements" type="object" class="oe_stat_button" icon="fa-money" attrs="{'invisible': [('disbursement_count', '=', 0)]}">
+                    <field name="disbursement_count" widget="statinfo" string="การเบิกจ่าย"/>
+                </button>
+                <button name="action_open_cancelled_disbursements" type="object" class="oe_stat_button" icon="fa-ban" attrs="{'invisible': [('disbursement_cancelled_count', '=', 0)]}">
+                    <field name="disbursement_cancelled_count" widget="statinfo" string="เบิกจ่ายที่ยกเลิก"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
