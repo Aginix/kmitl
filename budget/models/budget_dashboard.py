@@ -668,7 +668,11 @@ class BudgetDashboard(models.AbstractModel):
             )
             budgetable = bool(account and account.budgetable)
             row["budgetable"] = budgetable
-            row["cross_chargeable"] = bool(account and account.cross_chargeable)
+            # cross_chargeable is defined by the budget_cross_charge extension;
+            # without it every row is plain (the JS badge simply never shows).
+            row["cross_chargeable"] = bool(
+                account and getattr(account, "cross_chargeable", False)
+            )
             row["selectable"] = (
                 budgetable
                 if selectable_ids is None

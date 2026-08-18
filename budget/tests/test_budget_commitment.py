@@ -178,8 +178,10 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(c.state, "reserved")
         self.assertEqual(c.total_reserved, 100_000)
 
-    def test_02_reserve_without_lines_fails(self):
-        """Cannot reserve a commitment with no lines."""
+    def test_02_reserve_without_lines_creates_from_header(self):
+        """Form-first journey: reserving with no lines synthesizes the single
+        reserve line from the header — code, dimensions and money are entered
+        once, on the form, with no second dialog."""
         c = self.env["budget.commitment"].create(
             {
                 "date": date.today(),
@@ -192,8 +194,28 @@ class TestBudgetCommitment(TransactionCase):
                 "currency_id": self.env.company.currency_id.id,
             }
         )
+        c.action_reserve()
+        self.assertEqual(c.state, "reserved")
+        line = c.line_ids
+        self.assertEqual(len(line), 1)
+        self.assertEqual(line.move_type, "reserve")
+        self.assertEqual(line.account_id, self.account_1)
+        self.assertEqual(line.amount, 50_000)
+        self.assertEqual(line.analytic_distribution, self._header_analytic())
+        self.assertEqual(c.total_reserved, 50_000)
+
+    def test_02b_draft_lines_editable_frozen_after_reserve(self):
+        """Reserve lines are staging while the commitment is draft (editable,
+        deletable); posted immutability starts once it is active."""
+        c = self._create_commitment(100_000)
+        line = c.line_ids
+        line.amount = 80_000  # draft: staging, freely editable
+        self.assertEqual(c.total_reserved, 80_000)
+        c.action_reserve()
         with self.assertRaises(UserError):
-            c.action_reserve()
+            line.amount = 70_000
+        with self.assertRaises(UserError):
+            line.unlink()
 
     def test_03_obligate_moves_to_partial(self):
         """Adding an obligate line transitions header to partial."""

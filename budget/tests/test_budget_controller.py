@@ -221,15 +221,11 @@ class TestBudgetController(TransactionCase):
             }
         )
 
-    def test_cross_charge_requires_flag(self):
-        """Multiple budget codes in one reservation need cross_chargeable=True."""
+    def test_multi_code_reservation_blocked(self):
+        """Core allows exactly one budget code per reservation — multi-code
+        ถัวจ่าย is the budget_cross_charge extension's concern."""
         with self.assertRaises(ValidationError):
             self._reserve_multi([(self.child_a, 10_000), (self.child_b, 10_000)])
-        (self.child_a | self.child_b).write({"cross_chargeable": True})
-        commitment = self._reserve_multi(
-            [(self.child_a, 10_000), (self.child_b, 10_000)]
-        )
-        self.assertEqual(len(commitment.line_ids), 2)
 
     def test_reservation_grid_reuses_dashboard_columns_and_flags_selectable(self):
         """The picker feed = dashboard columns + budgetable/selectable flags."""

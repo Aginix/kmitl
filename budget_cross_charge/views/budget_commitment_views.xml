@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="budget_commitment_form_view_cross_charge" model="ir.ui.view">
+        <field name="name">budget.commitment.form.cross.charge</field>
+        <field name="model">budget.commitment</field>
+        <field name="inherit_id" ref="budget.budget_commitment_form_view"/>
+        <field name="arch" type="xml">
+
+            <!-- Picker = browse/edit tool for cross-charge slips: visible while
+                 the figures may still change (draft, or reserved with nothing
+                 obligated yet). Reopening with existing lines enters edit mode
+                 (current amounts seeded). -->
+            <button name="action_reserve" position="before">
+                <button name="action_open_reservation_picker" string="เลือกงบประมาณ"
+                    type="object"
+                    attrs="{'invisible': ['|', ('is_cross_charge', '=', False),
+                        '&amp;', ('state', '!=', 'draft'),
+                        '|', ('state', '!=', 'reserved'), ('total_obligated', '&gt;', 0)]}"/>
+            </button>
+
+            <!-- ถัวจ่าย mode switch: a UI affordance only — the reserve lines are
+                 the truth. In cross-charge mode the header account/amount become
+                 a mirror of the lines (synced by onchange). -->
+            <xpath expr="//group[@name='budget_details']/field[@name='account_id']"
+                position="before">
+                <field name="is_cross_charge"/>
+            </xpath>
+            <xpath expr="//group[@name='budget_details']/field[@name='account_id']"
+                position="attributes">
+                <attribute name="attrs">{'readonly': [('is_cross_charge', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//group[@name='budget_details']/field[@name='amount']"
+                position="attributes">
+                <attribute name="attrs">{'readonly': [('is_cross_charge', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//group[@name='budget_details']/field[@name='currency_id']"
+                position="after">
+                <field name="analytic_distribution" invisible="1"/>
+                <field name="total_obligated" invisible="1"/>
+            </xpath>
+
+            <!-- Manual reserve-line grid: editable only while staging a
+                 cross-charge slip in draft (ADR 0006: a draft commitment is the
+                 staging area). Dimensions stay header-level — new lines inherit
+                 the header distribution and the per-line activity/fund columns
+                 are display-only, because availability is checked against the
+                 HEADER combination (a diverging line would silently check the
+                 wrong pool). -->
+            <field name="line_ids" position="attributes">
+                <attribute name="readonly"/>
+                <attribute name="attrs">{'readonly': ['|', ('state', '!=', 'draft'), ('is_cross_charge', '=', False)]}</attribute>
+                <attribute name="context">{'default_move_type': 'reserve', 'default_analytic_distribution': analytic_distribution}</attribute>
+            </field>
+            <xpath expr="//field[@name='line_ids']/tree" position="attributes">
+                <attribute name="create"/>
+                <attribute name="editable">bottom</attribute>
+            </xpath>
+            <!-- Active in the row so default_analytic_distribution from the
+                 field context is picked up on new grid rows (defaults only
+                 apply to fields the view loads). -->
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='date']"
+                position="before">
+                <field name="analytic_distribution" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='move_type']"
+                position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='activity_analytic_id']"
+                position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='fund_analytic_id']"
+                position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

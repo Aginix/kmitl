@@ -35,17 +35,30 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.state.amounts = {};
         // Free-text search on the budget-account code (feedback: not autocomplete).
         this.state.accountSearch = "";
-        // The picker must open with a blank filter bar — never pre-seeded from the
-        // host's current selection (feedback: no default filters). The host still
-        // passes its dimensions as context defaults (the read-only dashboard uses
-        // them), so clear them here after super.setup() read them. แหล่งเงิน then
-        // falls back to its neutral system default in onWillStart (source code "2"),
-        // not the document's source. ประเภทงบ (root category) is kept as the
-        // browsing scope: clearing it would force a full expense-chart load before
-        // onWillStart re-picks a category.
-        this.state.filters = {};
-        this.state.filterLabels = {};
-        this.state.sourceId = false;
+        // Edit mode: the host passes its CURRENT reserve lines
+        // (edit_selections = [{account_id, amount}, ...]) so the picker opens on
+        // the reservation's own dimension tuple with the existing figures filled
+        // in, ready to correct — instead of demanding a full re-entry. The
+        // context dimension defaults super.setup() read are kept in this mode
+        // (they ARE the current selection), and zero-movement rows stay visible
+        // so a draft-staged line's row cannot hide.
+        this.editSelections = ctx.edit_selections || null;
+        if (this.editSelections) {
+            this.state.hideZero = false;
+        } else {
+            // Fresh pick: blank filter bar — never pre-seeded from the host's
+            // current selection (feedback: no default filters). The host still
+            // passes its dimensions as context defaults (the read-only dashboard
+            // uses them), so clear them here after super.setup() read them.
+            // แหล่งเงิน then falls back to its neutral system default in
+            // onWillStart (source code "2"), not the document's source. ประเภทงบ
+            // (root category) is kept as the browsing scope: clearing it would
+            // force a full expense-chart load before onWillStart re-picks a
+            // category.
+            this.state.filters = {};
+            this.state.filterLabels = {};
+            this.state.sourceId = false;
+        }
     }
 
     onAccountSearchInput(ev) {
@@ -112,6 +125,24 @@ export class BudgetReservationPicker extends BudgetDashboard {
             );
             this.state.rows = data.rows || [];
             this.state.hierOp = data.hier_op || "=";
+            // Seed the existing figures once, on the first load that shows the
+            // grid (edit mode). Filter changes after that clear the amounts as
+            // usual — the seed no longer maps to the new combination.
+            if (this.editSelections && this.state.rows.length) {
+                for (const sel of this.editSelections) {
+                    const row = this.state.rows.find(
+                        (r) =>
+                            r.row_type === "account" &&
+                            r.selectable &&
+                            r.account_id === sel.account_id &&
+                            !(r.key in this.state.amounts)
+                    );
+                    if (row && sel.amount > 0) {
+                        this.state.amounts[row.key] = sel.amount;
+                    }
+                }
+                this.editSelections = null;
+            }
         } finally {
             this.state.loading = false;
         }
