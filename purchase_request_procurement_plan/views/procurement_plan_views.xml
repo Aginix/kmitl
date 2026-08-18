@@ -56,7 +56,7 @@
             <xpath expr="//filter[@name='group_by_state']" position="before">
                 <filter string="วิธีการจัดซื้อจัดจ้าง" name="group_by_procurement_method" context="{'group_by': 'procurement_method_id'}" />
             </xpath>
-            <xpath expr="//searchpanel/field[@name='fund_analytic_id']" position="after">
+            <xpath expr="//searchpanel/field[@name='account_fiscal_year_id']" position="after">
                 <field name="procurement_method_id" icon="fa-calendar" select="multi" />
             </xpath>
         </field>
