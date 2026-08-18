@@ -54,6 +54,14 @@ class DisbursementRequest(models.Model):
                 else False
             )
 
+    # True when this DR draws a project budget code. Lives on the request so the
+    # line list can hide the whole product column with ``column_invisible`` (a
+    # per-row ``invisible`` only blanks the cells, the column header stays).
+    is_project_expense = fields.Boolean(
+        related="budget_account_id.is_project",
+        string="Is Project Expense",
+    )
+
     def action_open_kmitl_project(self):
         self.ensure_one()
         if not self.kmitl_project_id:

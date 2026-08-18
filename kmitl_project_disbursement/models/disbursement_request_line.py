@@ -5,15 +5,6 @@ from odoo import api, fields, models
 class DisbursementRequestLine(models.Model):
     _inherit = "disbursement.request.line"
 
-    # True when the parent DR draws a project budget code. Drives the view: the
-    # product (รหัสบัญชี) is hidden and derived from the budget account instead of
-    # being picked per line, because a project disbursement spends one project
-    # budget code that maps to exactly one product.
-    is_project_expense = fields.Boolean(
-        related="request_id.budget_account_id.is_project",
-        string="Is Project Expense",
-    )
-
     # For project expenses the product is not chosen by hand — it is the product
     # bound to the project budget account (budget_product). Editable computed so
     # ordinary (non-project) disbursements keep picking their product manually.
