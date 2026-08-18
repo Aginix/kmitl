@@ -16,6 +16,7 @@
     ],
     "data": [
         "data/mail_activity_type_update.xml",
+        "data/mail_activity_completed_data.xml",
         "views/res_users_views.xml",
     ],
     "installable": True,
