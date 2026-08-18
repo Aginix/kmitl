@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_account_move_form_inherit_handover" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.cash_revenue_handover</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="accounting_kmitl.view_move_form_inherit_kmitl"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_handover_request"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-exchange"
+                        groups="accounting_kmitl.group_accounting_kmitl_user"
+                        attrs="{'invisible': [('cash_revenue_handover_request_name', '=', False)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Handover For</span>
+                        <span class="o_stat_text"><field name="cash_revenue_handover_request_name" nolabel="1"/></span>
+                    </div>
+                </button>
+            </xpath>
+
+            <!-- On a handover the header dimensions are copied from the funded
+                 request and its two sides carry different ones, so editing them
+                 here would change nothing on the lines. Lock them rather than
+                 offer an inert field. -->
+            <xpath expr="//group[@name='analytic_dimensions']" position="before">
+                <field name="cash_revenue_handover_request_id" invisible="1"/>
+            </xpath>
+            <xpath expr="//group[@name='analytic_dimensions']/field[@name='activity_analytic_id']" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('state', '!=', 'draft'), ('cash_revenue_handover_request_id', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//group[@name='analytic_dimensions']/field[@name='department_analytic_id']" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('state', '!=', 'draft'), ('cash_revenue_handover_request_id', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//group[@name='analytic_dimensions']/field[@name='fund_analytic_id']" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('state', '!=', 'draft'), ('cash_revenue_handover_request_id', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//group[@name='analytic_dimensions']/field[@name='source_analytic_id']" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('state', '!=', 'draft'), ('cash_revenue_handover_request_id', '!=', False)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
