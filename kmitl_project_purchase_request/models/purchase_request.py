@@ -56,14 +56,6 @@ class PurchaseRequest(models.Model):
         # code (read-only), so the domain never blocks them.
         return super()._domain_budget_account_id() + [("is_project", "=", False)]
 
-    def _domain_reservation_commitment_id(self):
-        # A project's shared commitment is drawn only through the project's own
-        # create-from-project flow (capped at budget_amount, ADR-0007) — keep it
-        # out of the generic reservation picker.
-        return super()._domain_reservation_commitment_id() + [
-            ("kmitl_project_id", "=", False)
-        ]
-
     def _check_drawable_commitment(self, commitment):
         if commitment.kmitl_project_id:
             raise UserError(
