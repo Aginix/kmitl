@@ -869,6 +869,11 @@ class KmitlProject(models.Model):
                     "kmitl_project.analytic_plan_project",
                     raise_if_not_found=True,
                 ).id,
+                # Scope the project's dimension to the project's operating unit so
+                # it stays visible only to the owning unit (analytic OU access rule).
+                "operating_unit_ids": [(6, 0, self.operating_unit_id.ids)]
+                if self.operating_unit_id
+                else False,
             }
         )
 
