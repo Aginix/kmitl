@@ -17,7 +17,7 @@
                 </button>
             </xpath>
             <xpath expr="//field[@name='purchase_request_eta']" position="before">
-                <field name="procurement_method_id" widget="radio" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify'))]}" />
+                <field name="procurement_method_id" widget="radio" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'verified'))]}" />
             </xpath>
         </field>
     </record>
