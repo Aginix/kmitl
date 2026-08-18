@@ -14,6 +14,9 @@
         # The review popup raised on ยืนยัน (_get_popup_action refs
         # action_budget_transfer_exception_confirm from here).
         "wizard/budget_transfer_exception_confirm_view.xml",
+        # Exceptions banner on the form + a filtered rule menu + a list
+        # column/filter to spot transfers carrying a review exception.
+        "views/budget_transfer_views.xml",
     ],
     # Framework layer only — ships no exception.rule. The concrete checks live in
     # thin bridge modules (budget_transfer_exception_kmitl_project /
