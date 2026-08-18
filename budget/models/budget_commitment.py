@@ -375,10 +375,16 @@ class BudgetCommitment(models.Model):
             if record.state != new_state:
                 record.state = new_state
 
-    @api.constrains("amount")
+    @api.constrains("amount", "state")
     def _check_positive_amount(self):
+        # A draft is a staging area — a zero วงเงินอนุมัติ is allowed while the
+        # slip is being filled in. Reserving requires a positive amount, enforced
+        # in action_reserve and re-guarded here for any active commitment. A
+        # negative cap is never valid.
         for record in self:
-            if record.amount <= 0:
+            if record.amount < 0:
+                raise UserError(_("Commitment cap amount cannot be negative."))
+            if record.state != "draft" and record.amount <= 0:
                 raise UserError(_("Commitment cap amount must be positive."))
 
     # --- Display ---
@@ -491,10 +497,23 @@ class BudgetCommitment(models.Model):
     # --- Workflow Methods ---
 
     def action_reserve(self):
-        """Draft -> Reserved: validate reserve lines exist and pool is available."""
+        """Draft -> Reserved: synthesize the reserve line from the header and
+        check the pool is available.
+
+        The header carries the budget code, dimensions and วงเงินอนุมัติ, so the
+        reservation is filled in once on the form — no picker dialog. A zero cap
+        is allowed while draft (staging), but reserving requires a positive
+        amount.
+        """
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft commitments can be reserved."))
+            if record.amount <= 0:
+                raise UserError(
+                    _("กรุณาระบุวงเงินอนุมัติมากกว่า 0 ก่อนจองงบประมาณ")
+                )
+            if record.total_reserved <= 0:
+                record._create_reserve_line_from_header()
             if record.total_reserved <= 0:
                 raise UserError(
                     _("Cannot reserve: no reserve lines found. Add reserve lines first.")
@@ -505,6 +524,34 @@ class BudgetCommitment(models.Model):
                     "budget.commitment"
                 ) or _("New")
             record.state = "reserved"
+
+    def _create_reserve_line_from_header(self):
+        """Synthesize the single reserve line from the header (form-first).
+
+        A standalone ใบจอง is filled in once — budget code, dimensions and
+        วงเงินอนุมัติ all live on the header — so reserving must not demand the
+        same data again through a dialog. Called by :meth:`action_reserve` only
+        when no reserve line exists yet, which leaves every programmatic creator
+        (project/plan hosts pass ``line_ids`` themselves) untouched.
+        """
+        self.ensure_one()
+        self.write(
+            {
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "move_type": "reserve",
+                            "account_id": self.account_id.id,
+                            "amount": self.amount,
+                            "analytic_distribution": self.analytic_distribution,
+                            "name": _("Reservation"),
+                        },
+                    )
+                ]
+            }
+        )
 
     def _check_reserve_availability(self):
         """Block reserving more than the control-node Available (ADR-0005).
@@ -717,88 +764,7 @@ class BudgetCommitment(models.Model):
             "context": {"default_commitment_id": self.id},
         }
 
-    # --- Reservation picker widget ---
-
-    def action_open_reservation_picker(self):
-        """Open the budget reservation picker (hierarchy + per-row available).
-
-        The picker is scoped to this commitment's fixed dimension combination,
-        so every row shows the control-node available the reservation check will
-        enforce. On confirm it calls :meth:`apply_reservation_selection`.
-        """
-        self.ensure_one()
-        if self.state != "draft":
-            raise UserError(
-                _("Budget can only be selected while the reservation is draft.")
-            )
-        account = self.account_id
-        root = account
-        while root and root.parent_id:
-            root = root.parent_id
-        return {
-            "type": "ir.actions.client",
-            "tag": "budget_reservation_picker",
-            "target": "new",
-            "name": _("เลือกงบประมาณ"),
-            "context": {
-                "res_model": "budget.commitment",
-                "res_id": self.id,
-                "select_only": False,
-                "default_fiscal_year_id": self.account_fiscal_year_id.id,
-                "default_root_account_id": root.id if root else False,
-                "default_department_analytic_id": self.department_analytic_id.id or False,
-                "default_source_analytic_id": self.source_analytic_id.id or False,
-                "default_fund_analytic_id": self.fund_analytic_id.id or False,
-                "default_activity_analytic_id": self.activity_analytic_id.id or False,
-            },
-        }
-
-    def apply_reservation_selection(self, selections, dims=None):
-        """Write reserve lines from the picker.
-
-        ``selections`` = ``[{"account_id": int, "amount": float}, ...]``. Replaces
-        the commitment's current reserve lines (re-selection cancels the old
-        ones), stamps the chosen dimensions (``dims`` = ``analytic_distribution``)
-        on the header and each line, and lifts the cap to cover the total.
-        Cross-charge (>1 code) is gated by the ``cross_chargeable`` constraint.
-        Draft only.
-        """
-        self.ensure_one()
-        if self.state != "draft":
-            raise UserError(
-                _("Budget can only be selected while the reservation is draft.")
-            )
-        selections = [
-            s for s in (selections or []) if s.get("account_id") and s.get("amount")
-        ]
-        if not selections:
-            raise UserError(_("Select at least one budget code with an amount."))
-
-        # Re-selection: cancel the existing posted reserve lines first.
-        self.line_ids.filtered(
-            lambda l: l.state == "posted" and l.move_type == "reserve"
-        ).action_cancel()
-
-        distribution = dims if dims is not None else self.analytic_distribution
-        total = sum(s["amount"] for s in selections)
-        line_cmds = [
-            (
-                0,
-                0,
-                {
-                    "move_type": "reserve",
-                    "account_id": s["account_id"],
-                    "amount": s["amount"],
-                    "analytic_distribution": distribution,
-                    "name": _("Reservation"),
-                },
-            )
-            for s in selections
-        ]
-        vals = {"line_ids": line_cmds, "account_id": selections[0]["account_id"]}
-        if dims is not None:
-            vals["analytic_distribution"] = dims or False
-        if not self.amount or self.amount < total:
-            vals["amount"] = total
-        self.write(vals)
-        return True
+    # The reservation picker (amounts mode) on the commitment itself is gone:
+    # the core journey is form-first — the header IS the single reserve line
+    # (see _create_reserve_line_from_header). The picker JS component stays as
+    # shared infrastructure for the select-only hosts (พ.1 / ใบขออนุมัติ).

@@ -30,7 +30,7 @@ class BudgetTransfer(models.Model):
 
             tag = line.procurement_plan_analytic_id
             if not tag:
-                return True  # plan code without its procurement-plan tag
+                continue  # plan code without its procurement-plan tag
 
             plan = self.env["procurement.plan"].search(
                 [("analytic_account_id", "=", tag.id)], limit=1
