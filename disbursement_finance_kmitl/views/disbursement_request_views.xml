@@ -77,7 +77,9 @@
          of its payees, so its own button has nothing to do here. The action refuses
          it too — this only keeps a button that would always error off the form. -->
     <record id="view_account_payment_form_inherit_disbursement" model="ir.ui.view">
-        <field name="name">account.payment.form.inherit.disbursement_finance_kmitl</field>
+        <field
+            name="name"
+        >account.payment.form.inherit.disbursement_finance_kmitl</field>
         <field name="model">account.payment</field>
         <field
             name="inherit_id"
@@ -157,12 +159,11 @@
          Their queues are per request, so this is how a row in the list connects
          back to the document they navigate by. -->
     <record id="view_account_payment_tree_inherit_disbursement" model="ir.ui.view">
-        <field name="name">account.payment.tree.inherit.disbursement_finance_kmitl</field>
-        <field name="model">account.payment</field>
         <field
-            name="inherit_id"
-            ref="finance_kmitl.view_account_payment_tree_kmitl"
-        />
+            name="name"
+        >account.payment.tree.inherit.disbursement_finance_kmitl</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="finance_kmitl.view_account_payment_tree_kmitl" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="before">
                 <field name="disbursement_request_id" optional="show" />
@@ -214,6 +215,16 @@
                     attrs="{'invisible': ['|', ('state', '!=', 'payment_authorized'), ('payment_count', '>', 0)]}"
                     groups="disbursement_finance_kmitl.group_disbursement_payment_finance"
                 />
+                <!-- A request crosses the Hand-over on its own, when the last of
+                     its vouchers is paid — which happens as each officer closes
+                     the e-payment file they handled. Nobody is asked to say "all
+                     of them are paid" for files that were not theirs.
+
+                     So this press is no longer part of the work, and it is kept out
+                     of the way in developer mode. It stays because it is the only
+                     way past a voucher that is stuck for a technical reason: it
+                     confirms whatever is still draft, marks the rest paid and
+                     crosses, all in one. -->
                 <button
                     name="action_confirm_paid"
                     string="ยืนยันจ่ายสำเร็จ"
@@ -221,7 +232,7 @@
                     class="oe_highlight"
                     confirm="ยืนยันว่าธนาคารจ่ายเงินสำเร็จครบทุกรายการแล้ว?"
                     attrs="{'invisible': ['|', ('state', '!=', 'payment_authorized'), ('payment_count', '=', 0)]}"
-                    groups="disbursement_finance_kmitl.group_disbursement_payment_finance"
+                    groups="base.group_no_one"
                 />
             </xpath>
 

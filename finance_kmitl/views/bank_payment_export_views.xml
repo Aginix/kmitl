@@ -14,31 +14,119 @@
             <!-- Add fiscal year field to right_header group -->
             <xpath expr="//group[@name='right_header']" position="inside">
                 <field name="account_fiscal_year_id" readonly="1" />
+                <!-- Who to go to about this file. Odoo already records it, so the
+                     office is asked for nothing: whoever assembled the file is the
+                     one who uploads it to the bank and closes it. Called ผู้จัดทำ
+                     rather than ผู้รับผิดชอบ because that is what it can promise —
+                     it never moves, so a file that changes hands would otherwise
+                     have a label saying the wrong name. -->
+                <field name="create_uid" string="Prepared By" readonly="1" />
             </xpath>
 
             <!-- หัวจ่าย is picked before the payments: one file debits one
-                 account, and the selectable payments are narrowed to it. -->
-            <xpath expr="//group[@name='right_header']" position="before">
-                <group name="paying_account">
-                    <field name="paying_account_id" options="{'no_create': True}" />
-                </group>
+                 account, and the selectable payments are narrowed to it. It goes
+                 first inside left_header, above the bank it implies — a third
+                 sibling group would have pushed right_header onto its own row,
+                 because the outer group only has two columns. -->
+            <xpath
+                expr="//group[@name='left_header']/field[@name='template_id']"
+                position="before"
+            >
+                <!-- Required on this office's form rather than on the column: the
+                     rule is KMITL's, and a NOT NULL would impose it on every other
+                     module's exports, including their tests. -->
+                <field
+                    name="paying_account_id"
+                    options="{'no_create': True}"
+                    attrs="{'required': [('state', '=', 'draft')]}"
+                />
             </xpath>
 
-            <!-- Finance confirms the actual bank result on the whole batch -->
+            <!-- The fourth state is where the money is confirmed to have arrived;
+                 'done' only says the file was produced. -->
+            <xpath
+                expr="//field[@name='state'][@widget='statusbar']"
+                position="attributes"
+            >
+                <attribute name="statusbar_visible">draft,confirm,done,paid</attribute>
+            </xpath>
+
+            <!-- Nothing here is told by a bank: this is a person saying what
+                 happened after they uploaded the file, so it cannot be pressed
+                 before there was a file to upload. It opens a wizard rather than a
+                 browser dialog, because what it needs is not agreement but the
+                 exception — which payee the bank could not credit, and how they
+                 were settled instead. -->
             <xpath expr="//header" position="inside">
+                <button
+                    name="action_confirm_epayment_success"
+                    type="object"
+                    string="Confirm Transfer Succeeded"
+                    class="btn-primary"
+                    states="done"
+                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                />
+                <!-- The office confirms a file whole and does not work row by row,
+                     so these are kept out of the way. They stay reachable in
+                     developer mode: the per-row result is still what
+                     account.payment.bank_result_status is read from, and a file
+                     that has to be corrected one payee at a time has nowhere else
+                     to do it. -->
                 <button
                     name="action_mark_all_epayment_success"
                     type="object"
-                    string="ยืนยันผลจ่ายสำเร็จ (ทั้งหมด)"
-                    class="btn-success"
-                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                    string="Mark All Rows Paid"
+                    states="done,paid"
+                    groups="base.group_no_one"
                 />
                 <button
                     name="action_mark_all_epayment_failed"
                     type="object"
-                    string="ผลจ่ายไม่สำเร็จ (ทั้งหมด)"
-                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                    string="Mark All Rows Failed"
+                    states="done,paid"
+                    confirm="This marks every row failed, including any already marked paid. Continue?"
+                    groups="base.group_no_one"
                 />
+            </xpath>
+
+            <!-- What came back from the bank, and what the officer had to do about
+                 it. Only once there is a file to have uploaded. -->
+            <xpath expr="//page[@name='information']" position="after">
+                <page
+                    name="transfer_result"
+                    string="Transfer Result"
+                    attrs="{'invisible': [('state', 'in', ('draft', 'confirm'))]}"
+                >
+                    <group>
+                        <field
+                            name="transfer_proof_ids"
+                            widget="many2many_binary"
+                            attrs="{'readonly': [('state', '=', 'paid')]}"
+                        />
+                        <field
+                            name="epayment_note"
+                            attrs="{'invisible': [('epayment_note', '=', False)]}"
+                        />
+                    </group>
+                </page>
+            </xpath>
+
+            <!-- Named rather than merely flagged, so the officer can see whether
+                 the other file is the one they meant to add to. -->
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    attrs="{'invisible': [('other_draft_export_ids', '=', [])]}"
+                >
+                    <span>Another draft file already debits this paying account:</span>
+                    <field
+                        name="other_draft_export_ids"
+                        widget="many2many_tags"
+                        nolabel="1"
+                        readonly="1"
+                    />
+                </div>
             </xpath>
 
         </field>
@@ -53,34 +141,58 @@
             ref="l10n_th_bank_payment_export.bank_payment_export_line_view_tree"
         />
         <field name="arch" type="xml">
+
+            <!-- What the bank was told to debit. Computed since the paying account
+                 became the file's own field, but shown nowhere until now — so a
+                 blank sending account could only be found by reading the file. -->
+            <xpath expr="//field[@name='payment_amount']" position="before">
+                <field name="sending_bank_id" optional="hide" />
+                <field name="sending_acc_number" optional="hide" />
+            </xpath>
+
             <xpath expr="//field[@name='state']" position="after">
-                <field name="epayment_status" optional="show" />
+                <!-- Hidden by default, all of it. The office does not work a file
+                     row by row: they upload it, chase whatever the bank could not
+                     credit outside the system, and confirm the file whole — with
+                     the exception written in the file's own note. These columns
+                     still hold what each voucher's ผลการจ่าย is read from, so they
+                     stay available in the optional-columns menu rather than being
+                     taken away. -->
+                <field
+                    name="epayment_status"
+                    widget="badge"
+                    decoration-success="epayment_status == 'success'"
+                    decoration-danger="epayment_status == 'failed'"
+                    optional="hide"
+                />
                 <field name="epayment_ref" optional="hide" />
                 <field name="epayment_date" optional="hide" />
-                <!-- Shown by default: this is where the officer writes down how a
-                     payee the bank rejected was actually settled, outside the
-                     system. It stays with the finance office — the accounting
-                     office never opens an e-payment file. -->
-                <field name="epayment_note" optional="show" />
+                <field name="epayment_note" optional="hide" />
+                <!-- Developer mode only, for the file that has to be corrected one
+                     payee at a time. The base's Reject button sits after these and
+                     is also a fa-times, so this one is labelled to keep them
+                     apart. -->
                 <button
                     name="action_mark_epayment_success"
                     type="object"
                     icon="fa-check text-success"
-                    title="ยืนยันจ่ายสำเร็จ"
-                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                    title="Paid"
+                    attrs="{'invisible': [('state', 'not in', ('done', 'paid'))]}"
+                    groups="base.group_no_one"
                 />
                 <button
                     name="action_mark_epayment_failed"
                     type="object"
-                    icon="fa-times text-danger"
-                    title="จ่ายไม่สำเร็จ"
-                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                    icon="fa-exclamation-triangle text-danger"
+                    title="Not paid"
+                    attrs="{'invisible': [('state', 'not in', ('done', 'paid'))]}"
+                    groups="base.group_no_one"
                 />
             </xpath>
         </field>
     </record>
 
-    <!-- Inherit Tree View: add fiscal year and update state badge -->
+    <!-- Inherit Tree View: add paying account, fiscal year and the fourth state -->
     <record id="bank_payment_export_view_tree_inherit" model="ir.ui.view">
         <field name="name">bank.payment.export.tree.inherit.kmitl</field>
         <field name="model">bank.payment.export</field>
@@ -89,13 +201,37 @@
             ref="l10n_th_bank_payment_export.bank_payment_export_view_tree"
         />
         <field name="arch" type="xml">
+            <!-- The field the whole file hangs off, and the only way to tell two
+                 files of the same bank apart at a glance. -->
+            <xpath expr="//field[@name='bank']" position="before">
+                <field name="paying_account_id" optional="show" />
+            </xpath>
             <xpath expr="//field[@name='total_amount']" position="after">
+                <field name="export_line_count" optional="hide" />
+                <field name="create_uid" string="Prepared By" optional="show" />
                 <field name="account_fiscal_year_id" optional="show" />
+            </xpath>
+            <!-- 'done' means the file exists, not that the money arrived, so the
+                 green is kept for the state that does say so.
+
+                 'cancel' is left undecorated on purpose. The view schema allows only
+                 bf/it/danger/info/muted/primary/success/warning here, and the badge
+                 widget turns a decoration into text-bg-{name}, which Bootstrap
+                 generates from its theme colours — so 'secondary' would render the
+                 grey this wants but the schema rejects it, and 'muted' passes the
+                 schema while naming no class at all. An undecorated badge is already
+                 the neutral one. -->
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="decoration-info">state == 'draft'</attribute>
+                <attribute
+                    name="decoration-warning"
+                >state in ('confirm', 'done')</attribute>
+                <attribute name="decoration-success">state == 'paid'</attribute>
             </xpath>
         </field>
     </record>
 
-    <!-- Inherit Search View: add fiscal year filter -->
+    <!-- Inherit Search View: add paying account and fiscal year -->
     <record id="bank_payment_export_view_search_inherit" model="ir.ui.view">
         <field name="name">bank.payment.export.search.inherit.kmitl</field>
         <field name="model">bank.payment.export</field>
@@ -104,7 +240,32 @@
             ref="l10n_th_bank_payment_export.bank_payment_export_view_search"
         />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='effective_date']" position="after">
+                <field name="paying_account_id" />
+                <field name="bank" />
+            </xpath>
+            <xpath
+                expr="//filter[@name='bank_payment_export_state_done']"
+                position="attributes"
+            >
+                <attribute name="string">Exported</attribute>
+            </xpath>
+            <xpath
+                expr="//filter[@name='bank_payment_export_state_done']"
+                position="after"
+            >
+                <filter
+                    string="Paid"
+                    name="bank_payment_export_state_paid"
+                    domain="[('state', '=', 'paid')]"
+                />
+            </xpath>
             <xpath expr="//filter[@name='group_by_state']" position="after">
+                <filter
+                    string="Paying Account"
+                    name="group_by_paying_account"
+                    context="{'group_by': 'paying_account_id'}"
+                />
                 <filter
                     string="Fiscal Year"
                     name="group_by_fiscal_year"

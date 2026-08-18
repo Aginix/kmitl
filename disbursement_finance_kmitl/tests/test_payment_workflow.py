@@ -534,15 +534,126 @@ class TestPaymentWorkflow(TransactionCase):
         # And the accounting office was told, on the request they navigate by.
         self.assertTrue(
             request.activity_ids.filtered(
-                lambda activity: activity.activity_type_id
+                lambda activity: (
+                    activity.activity_type_id
+                    == self.env.ref(
+                        "disbursement_finance_kmitl.mail_activity_dr_to_book"
+                    )
+                )
+            )
+        )
+
+    def _book_todos(self, request):
+        return request.activity_ids.filtered(
+            lambda activity: (
+                activity.activity_type_id
                 == self.env.ref("disbursement_finance_kmitl.mail_activity_dr_to_book")
             )
         )
 
-    def test_a_voucher_on_a_request_is_not_confirmed_one_by_one(self):
+    def test_the_request_crosses_when_its_last_voucher_is_paid(self):
+        """Nobody presses จ่ายครบ for the request. Its payees leave in as many
+        e-payment files as they have หัวจ่าย, each closed by whoever handled it, and
+        the request crosses when the last voucher lands (ADR-0007)."""
+        request = self._billed_request([self.payee_ktb, self.payee_other])
+        request.payment_subject_id = self.subject_fixed
+        request.action_audit()
+        request.action_authorize()
+        payments = request.payment_ids
+        self.assertEqual(len(payments), 2)
+        self.assertEqual(request.state, "payment_authorized")
+
+        first, second = payments[0], payments[1]
+        first._mark_paid()
+        self.assertEqual(
+            request.state,
+            "payment_authorized",
+            "one payee paid is not every payee paid",
+        )
+        self.assertFalse(self._book_todos(request))
+
+        second._mark_paid()
+
+        self.assertEqual(request.state, "paid")
+        # One Todo *per accounting maker*, not one in total — the group carries
+        # several users, so the count is the group's size and not worth asserting.
+        self.assertTrue(self._book_todos(request))
+
+    def test_the_request_is_not_handed_over_twice(self):
+        """``_hand_over`` is reached from the voucher write and from the override
+        press, and the accounting office must not get the same Todo twice."""
         request = self._authorized_with_payments(self.cash_account)
+        request.payment_ids._mark_paid()
+        self.assertEqual(request.state, "paid")
+        todos = len(self._book_todos(request))
+
+        request._hand_over()
+
+        self.assertEqual(len(self._book_todos(request)), todos)
+
+    def test_a_voucher_never_confirmed_holds_the_request(self):
+        """Intended: it has not been paid, so the accounting office has nothing to
+        book for it. The finance office's own Todo stays open to say so."""
+        request = self._authorized_with_payments(self.cash_account)
+        paid = request.payment_ids
+        stray = self.env["account.payment"].create(
+            {
+                "payment_type": "outbound",
+                "partner_type": "supplier",
+                "partner_id": self.payee_ktb.id,
+                "amount": 500.0,
+                "date": "2026-01-15",
+                "journal_id": self.cash_account.journal_id.id,
+                "payment_method_line_id": self.cash_account.id,
+                "kmitl_payment_type_id": paid.kmitl_payment_type_id.id,
+                "disbursement_request_id": request.id,
+            }
+        )
+        self.assertEqual(stray.finance_state, "draft")
+
+        paid._mark_paid()
+
+        self.assertEqual(request.state, "payment_authorized")
+        self.assertIn("1/2", request.payment_status_display)
+
+    def test_a_transfer_on_a_request_is_not_confirmed_one_by_one(self):
+        """It goes out in an e-payment file, and closing that file is already the
+        press. Giving it twice for one fact is how half a request gets handed over."""
+        request = self._authorized_with_payments()
+        self.assertTrue(request.payment_ids.needs_bank_export)
         with self.assertRaises(UserError):
             request.payment_ids.action_confirm_paid()
+
+    def test_a_cheque_payee_on_a_request_is_confirmed_on_itself(self):
+        """It enters no file, so there is nothing else to close. Before this, such a
+        payee had no reachable press at all once the request's own button went to
+        developer mode, and its request sat at payment_authorized forever."""
+        request = self._authorized_with_payments(self.cheque_account)
+        payment = request.payment_ids
+        self.assertFalse(payment.needs_bank_export)
+
+        payment.action_confirm_paid()
+
+        self.assertEqual(payment.finance_state, "paid")
+        self.assertEqual(request.state, "paid")
+        # The request handed over, and the voucher did not do it a second time.
+        self.assertTrue(self._book_todos(request))
+        self.assertFalse(payment.move_id.activity_ids)
+
+    def test_the_request_crosses_when_the_last_voucher_is_cancelled(self):
+        """The condition is "nothing left unpaid", and a voucher can stop being
+        unpaid by leaving as well as by being paid."""
+        request = self._billed_request([self.payee_ktb, self.payee_other])
+        request.payment_subject_id = self.subject_fixed
+        request.action_audit()
+        request.action_authorize()
+        first, second = request.payment_ids[0], request.payment_ids[1]
+        first._mark_paid()
+        self.assertEqual(request.state, "payment_authorized")
+
+        second.action_cancel()
+
+        self.assertEqual(request.state, "paid")
 
     def test_confirming_paid_refuses_a_transfer_that_never_left_in_a_file(self):
         request = self._authorized_with_payments()
