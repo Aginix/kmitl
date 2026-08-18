@@ -31,27 +31,32 @@
                         />
                         <field
                             name="budget_account_id"
+                            force_save="1"
                             attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
                         />
                         <field name="budget_account_product_id" invisible="1"/>
                         <field
                             name="activity_analytic_id"
                             string="Activity"
+                            force_save="1"
                             attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
                         />
                         <field
                             name="department_analytic_id"
                             string="Department"
+                            force_save="1"
                             attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
                         />
                         <field
                             name="fund_analytic_id"
                             string="Fund"
+                            force_save="1"
                             attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
                         />
                         <field
                             name="source_analytic_id"
                             string="Source"
+                            force_save="1"
                             attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ('purchase', 'done', 'cancel'))]}"
                         />
                         <field name="procurement_plan_analytic_id" invisible="1" />
