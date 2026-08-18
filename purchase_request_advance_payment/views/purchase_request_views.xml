@@ -11,7 +11,7 @@
                 <button name="action_view_advance_payment"
                     type="object"
                     class="oe_stat_button"
-                    icon="fa-money"
+                    icon="fa-handshake-o"
                     attrs="{'invisible': [('advance_payment_count', '=', 0)]}">
                     <field name="advance_payment_count" string="สัญญาเงินยืม" widget="statinfo"/>
                 </button>
