@@ -10,9 +10,7 @@ class PurchaseRequestLine(models.Model):
     name = fields.Text(string="Description", tracking=True)
 
     def _default_product_uom_id(self):
-        return self.env.ref(
-            "uom_category_kmitl.uom_kmitl_46", raise_if_not_found=False
-        )
+        return self.env.ref("uom.product_uom_unit", raise_if_not_found=False)
 
     product_uom_id = fields.Many2one(
         comodel_name="uom.uom",
