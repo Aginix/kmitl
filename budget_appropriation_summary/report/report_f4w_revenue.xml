@@ -19,6 +19,16 @@
             .table tbody .category .border-bottom {
                 border-bottom: 1pt solid #000 !important;
             }
+            .table tfoot .page-bottom-line td {
+                border-top: 1pt solid #000 !important;
+                padding: 0;
+                height: 0;
+                line-height: 0;
+                font-size: 0;
+            }
+            .table tbody .total-row td {
+              border-top: 1pt solid #000 !important;
+            }
             .table {
                 border-color: #000 !important;
             }
@@ -122,9 +132,7 @@
                             </t>
                             <t t-set="row_no" t-value="row_no + 1"/>
                         </t>
-                    </tbody>
-                    <tfoot>
-                        <tr>
+                        <tr class="total-row">
                             <td class="text-center">
                                 <strong>รวมทั้งสิ้น</strong>
                             </td>
@@ -146,6 +154,11 @@
                             <td class="text-end" style="font-weight: bold;" contenteditable="false">
                                 <t t-out="'{0:,.2f}'.format(o.f4w_revenue_data['summary']['diff_percentage'])"/>
                             </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="page-bottom-line">
+                            <td colspan="7" />
                         </tr>
                     </tfoot>
                 </table>
