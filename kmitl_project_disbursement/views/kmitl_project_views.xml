@@ -9,7 +9,10 @@
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <button name="action_open_disbursements" type="object" class="oe_stat_button" icon="fa-money" attrs="{'invisible': [('disbursement_count', '=', 0)]}">
-                    <field name="disbursement_count" widget="statinfo" string="การเบิกจ่าย"/>
+                    <div class="o_stat_info">
+                        <field name="disbursement_amount" widget="monetary" nolabel="1" class="o_stat_value" options="{'currency_field': 'currency_id'}"/>
+                        <span class="o_stat_text">การเบิกจ่าย</span>
+                    </div>
                 </button>
                 <button name="action_open_cancelled_disbursements" type="object" class="oe_stat_button" icon="fa-ban" attrs="{'invisible': [('disbursement_cancelled_count', '=', 0)]}">
                     <field name="disbursement_cancelled_count" widget="statinfo" string="เบิกจ่ายที่ยกเลิก"/>

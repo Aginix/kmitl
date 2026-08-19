@@ -10,10 +10,17 @@ DISBURSEMENT_SETTLED_STATES = ("cancel", "paid", "cleared")
 class KmitlProject(models.Model):
     _inherit = "kmitl.project"
 
+    currency_id = fields.Many2one(related="company_id.currency_id")
+
     # Active (non-cancelled) disbursements — the meaningful figure on the badge.
     disbursement_count = fields.Integer(
         compute="_compute_disbursement_count",
         string="Disbursement Count",
+    )
+    disbursement_amount = fields.Monetary(
+        compute="_compute_disbursement_count",
+        string="ยอดส่งเบิก",
+        currency_field="currency_id",
     )
     # Cancelled ones, counted separately so they never inflate the active badge.
     disbursement_cancelled_count = fields.Integer(
@@ -22,15 +29,18 @@ class KmitlProject(models.Model):
     )
 
     def _compute_disbursement_count(self):
-        DR = self.env["disbursement.request"]
+        # sudo so the amount/count shows even to users who lack disbursement.request
+        # read access — the access check fires when they actually click through.
+        DR = self.env["disbursement.request"].sudo()
         for rec in self:
             if not rec.analytic_account_id:
                 rec.disbursement_count = 0
+                rec.disbursement_amount = 0.0
                 rec.disbursement_cancelled_count = 0
                 continue
-            rec.disbursement_count = DR.search_count(
-                rec._disbursement_domain(cancelled=False)
-            )
+            active_drs = DR.search(rec._disbursement_domain(cancelled=False))
+            rec.disbursement_count = len(active_drs)
+            rec.disbursement_amount = sum(active_drs.mapped("amount_total"))
             rec.disbursement_cancelled_count = DR.search_count(
                 rec._disbursement_domain(cancelled=True)
             )
