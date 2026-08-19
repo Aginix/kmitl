@@ -51,7 +51,10 @@ class PurchaseOrder(models.Model):
         if not wa:
             return vals
         vals["line_ids"] = [
-            Command.create(line._prepare_disbursement_line_vals())
+            Command.create({
+                **line._prepare_disbursement_line_vals(),
+                "partner_id": self.partner_id.id,
+            })
             for line in wa.wa_line_ids
         ]
         return vals

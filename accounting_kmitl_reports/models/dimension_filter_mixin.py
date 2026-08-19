@@ -7,9 +7,9 @@ from odoo.tools import date_utils
 # order. Read from each move line's ``analytic_distribution`` (a JSON of
 # {analytic_account_id: percentage}).
 DIMENSION_CODES = ("departments", "sources", "funds", "activities")
-# Hierarchical dimensions: a selected node also matches all of its descendants
-# (when analytic accounts carry a ``parent_id`` hierarchy). ``sources`` is flat.
-HIERARCHICAL_DIMS = ("departments", "funds", "activities")
+# Flat dimensions have no parent/child hierarchy: their selection must match
+# the picked analytic accounts exactly and is never expanded to descendants.
+FLAT_DIMENSION_CODES = ("sources",)
 # Display order of the dimension chips shown in the shared expand-detail panel.
 DETAIL_DIM_PLANS = ("funds", "departments", "activities", "sources")
 # Lines never shown in the detail panel.
@@ -28,20 +28,33 @@ class DimensionFilterMixin(models.AbstractModel):
     _description = "KMITL Report Dimension Filter Mixin"
 
     @api.model
-    def _kmitl_build_dim_leaves(self, dims):
+    def _kmitl_build_dim_leaves(self, dims, dim_only_self=None):
         """Turn the selected dimension values into ``analytic_distribution``
-        domain leaves. Within a dimension the ids (plus descendants for
-        hierarchical dimensions) are OR-ed; the resulting leaves are AND-ed
-        across dimensions by the domain builder.
+        domain leaves. Within a dimension the ids (plus descendants by
+        default) are OR-ed; the resulting leaves are AND-ed across dimensions
+        by the domain builder.
+
+        ``dim_only_self``: optional ``{code: bool}``. When truthy for a
+        dimension only the exact selected analytic accounts match; otherwise
+        (the default) the selection is expanded to include all of its
+        descendants, since the KMITL dimensions are hierarchical. Flat
+        dimensions (``FLAT_DIMENSION_CODES``, e.g. ``sources``) have no
+        hierarchy, so they always match the selected accounts exactly
+        regardless of the toggle.
         """
         analytic = self.env["account.analytic.account"]
         use_child = "parent_id" in analytic._fields
+        dim_only_self = dim_only_self or {}
         leaves = []
         for code in DIMENSION_CODES:
             ids = (dims or {}).get(code) or []
             if not ids:
                 continue
-            if code in HIERARCHICAL_DIMS and use_child:
+            if (
+                use_child
+                and code not in FLAT_DIMENSION_CODES
+                and not dim_only_self.get(code)
+            ):
                 ids = analytic.search([("id", "child_of", ids)]).ids
             leaves.append(("analytic_distribution", "in", ids))
         return leaves
@@ -134,6 +147,13 @@ class DimensionFilterMixin(models.AbstractModel):
         """RPC for the on-screen expand: one entry's posting lines (account,
         label, partner, debit, credit and the KMITL accounting dimensions)."""
         return self._kmitl_move_lines_detail([move_id]).get(move_id, [])
+
+    @api.model
+    def get_move_lines_details(self, move_ids):
+        """RPC for the "Expand all" toggle: posting lines for several entries
+        at once, keyed by move id (so the current page can expand in a single
+        round-trip)."""
+        return self._kmitl_move_lines_detail(move_ids)
 
     # ------------------------------------------------------------------
     # Shared filter helpers used by the date-ranged reports (Trial Balance,

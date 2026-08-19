@@ -1,6 +1,6 @@
 {
     "name": "KMITL Accounting",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "category": "KMITL/Accounting",
     "summary": "งานบัญชี KMITL: ตั้งหนี้, ล้างหนี้, สมุดรายวัน, รายงานบัญชี",
     "author": "KMITL",
@@ -8,16 +8,28 @@
     "license": "AGPL-3",
     "depends": [
         "account_operating_unit",
+        "base_exception",
         "base_tier_validation",
         "budget",
         "l10n_th_account_tax",
     ],
     "data": [
         "security/security.xml",
+        "security/ir.model.access.csv",
+        "data/account_move_exception_data.xml",
+        "wizard/account_move_exception_confirm_view.xml",
         "views/account_move_views.xml",
         "views/account_payment_method_views.xml",
+        "views/accounting_dashboard_views.xml",
         "views/menuitem.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "accounting_kmitl/static/src/dashboard/accounting_dashboard.scss",
+            "accounting_kmitl/static/src/dashboard/accounting_dashboard.js",
+            "accounting_kmitl/static/src/dashboard/accounting_dashboard.xml",
+        ],
+    },
     "installable": True,
     "auto_install": False,
     "application": True,

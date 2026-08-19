@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Demo",
-    "version": "16.0.0.0.0",
+    "version": "16.0.0.0.1",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -16,7 +16,6 @@
         "hr_department_operating_unit",
         "purchase_request_kmitl",
         "purchase_request_exception",
-        "purchase_request_vendor_kmitl",
         "purchase_request_tender_kmitl",
         "purchase_request_egp",
         "purchase_request_department",

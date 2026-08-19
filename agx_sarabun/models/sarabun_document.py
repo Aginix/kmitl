@@ -1,26 +1,38 @@
 # -*- coding: utf-8 -*-
+"""sarabun.document — the หนังสือ (Document), protagonist of e-Saraban.
+
+P1 scope: the static data foundation only (header, classification, origin link,
+อ้างถึง / สิ่งที่ส่งมาด้วย, lifecycle state field). The routing engine and the
+lifecycle state *machine* (transitions, numbering, freeze, callbacks) arrive in
+P2–P5 — see DESIGN.md and IMPLEMENTATION-PLAN.md. Methods here are intentionally
+minimal; behaviour is added per phase.
+"""
+import base64
 import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-_logger = logging.getLogger(__name__)
+from .sarabun_routing_step import POSITIVE_DISPOSITIONS
 
-READONLY_STATES = {
-    "sent": [("readonly", True)],
-    "completed": [("readonly", True)],
-    "cancelled": [("readonly", True)],
-}
+_logger = logging.getLogger(__name__)
 
 
 class SarabunDocument(models.Model):
     _name = "sarabun.document"
-    _description = "Sarabun Document"
-    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin", 'thai.date.mixin']
+    _description = "Sarabun Document (หนังสือ)"
+    _inherit = ["mail.thread", "mail.activity.mixin", "thai.date.mixin"]
     _order = "date desc, name desc, id desc"
     _rec_names_search = ["name", "subject"]
+    # An involved holder is read-only on the หนังสือ (see security.xml), yet the
+    # awaiting-action surface is now native mail.activity (ADR-0014), whose
+    # read/search/read_group delegate to this document's _mail_post_access
+    # (mail.thread default 'write'). Set it to 'read' so a read-only holder can
+    # read / count / open their own Todo without AccessError (ADR-0013). Accepted
+    # side effect: a document-reader may also post chatter on the หนังสือ.
+    _mail_post_access = "read"
 
-    # === Document Identification ===
+    # === Identification ===
     name = fields.Char(
         string="Document Number",
         required=True,
@@ -29,168 +41,110 @@ class SarabunDocument(models.Model):
         default="/",
         tracking=True,
         index="trigram",
+        help="Official registered number (running number only — no ปีงบ in the number; "
+        "the year lives on ลงวันที่). Assigned only when the final approver signs — "
+        "completion (ADR-0010); stays '/' while draft/circulating.",
     )
 
-    # === Numbering System ===
-    document_sequence_id = fields.Many2one(
-        comodel_name="sarabun.document.sequence",
-        string="Document Sequence",
-        states=READONLY_STATES,
-        help="Select the numbering sequence to use for this document",
-    )
-    document_number_id = fields.Many2one(
-        comodel_name="sarabun.document.number",
-        string="Reserved Number",
-        states=READONLY_STATES,
-        help="If using a reserved number, link it here",
-    )
-    numbering_mode = fields.Selection(
-        selection=[
-            ("auto", "Use Next Available"),
-            ("reserved", "Use Reserved Number"),
-            ("available", "Use Available (Gap) Number"),
-            ("manual", "Enter Manually"),
-        ],
-        string="Numbering Mode",
-        default="auto",
-        states=READONLY_STATES,
-    )
-    manual_number = fields.Integer(
-        string="Manual Number",
-        states=READONLY_STATES,
-        help="Enter specific number when using manual mode",
-    )
-
-    # === Document Type ===
-    document_type_id = fields.Many2one(
+    # === Classification (kind / type) ===
+    type_id = fields.Many2one(
         comodel_name="sarabun.document.type",
         string="Document Type",
         required=True,
         tracking=True,
-        states=READONLY_STATES,
     )
-    document_type_code = fields.Selection(
-        related="document_type_id.code",
+    kind = fields.Selection(
+        related="type_id.kind",
+        string="Kind",
         store=True,
+        readonly=True,
     )
 
-    # === Document Fields ===
-    subject = fields.Char(
-        string="Subject",
-        required=True,
-        tracking=True,
-        states=READONLY_STATES,
-    )
+    # === Header (เรื่อง / เรียน / วันที่) ===
+    subject = fields.Text(string="เรื่อง (Subject)", required=True, tracking=True)
     date = fields.Date(
-        string="Document Date",
+        string="วันที่ (Document Date)",
         required=True,
         default=fields.Date.context_today,
         tracking=True,
-        states=READONLY_STATES,
+        help="ลงวันที่ — the หนังสือ's official date, printed beside ที่. It is the "
+        "date it is ส่ง (issued into circulation), (re)stamped at action_send "
+        "(ADR-0010), NOT the create-draft date — so a draft held over ปีงบประมาณ "
+        "year-end is dated in the new year when actually sent. Owner-editable is a "
+        "later phase; kept read-only in the form for now.",
+    )
+    addressee_prefix_id = fields.Many2one(
+        comodel_name="sarabun.addressee.prefix",
+        string="คำขึ้นต้น (Prefix)",
+        default=lambda self: self.env.ref(
+            "agx_sarabun.addressee_prefix_rian", raise_if_not_found=False
+        ),
+        help="Salutation opening the เรียน line (เรียน / กราบทูล / เสนอ …).",
+    )
+    addressee = fields.Text(
+        string="เรียน (Addressee)",
+        tracking=True,
+        help="The ceremonial recipient on the หนังสือ header — its own field, "
+        "separate from the routing actors. Manual or origin-set.",
+    )
+    include_content = fields.Boolean(
+        string="แนบเนื้อหา (บันทึกนำ)",
+        compute="_compute_include_content",
+        store=True,
+        readonly=False,
+        help="Whether the เนื้อหา body is written on this หนังสือ. A composed "
+        "(no-source) document always has it; a from_record document defaults to "
+        "OFF (its origin report is the body) but may opt in to add a covering note "
+        "above the origin's report.",
     )
     content = fields.Html(
-        string="Content",
-        tracking=True,
-        states=READONLY_STATES,
+        string="เนื้อหา (Content)",
+        sanitize=True,
+        help="The body of the หนังสือ. For a composed memo/circular this IS the "
+        "letter body; for a from_record document it is an optional covering note "
+        "rendered above the origin's report. Full regulation บันทึกข้อความ layout "
+        "is phase-2 — v1 is free rich text.",
     )
-    urgency = fields.Selection(
-        selection=[
-            ("normal", "Normal"),
-            ("urgent", "Urgent"),
-            ("very_urgent", "Very Urgent"),
-            ("immediate", "Immediate"),
-        ],
-        string="Urgency Level",
-        default="normal",
-        tracking=True,
-        states=READONLY_STATES,
-    )
-    secrecy = fields.Selection(
-        selection=[
-            ("normal", "Normal"),
-            ("confidential", "Confidential"),
-            ("secret", "Secret"),
-            ("top_secret", "Top Secret"),
-        ],
-        string="Secrecy Level",
-        default="normal",
-        tracking=True,
-        states=READONLY_STATES,
+    remark = fields.Html(
+        string="หมายเหตุ (Remark)",
+        sanitize=True,
+        help="Optional internal note — not part of the letter body.",
     )
 
-    # === Sender / Recipient Information ===
+    # === Sender (ส่วนงานเจ้าของเรื่อง) ===
     sender_user_id = fields.Many2one(
         comodel_name="res.users",
-        string="Sender User",
+        string="Sender",
         default=lambda self: self.env.user,
         required=True,
         readonly=True,
+        copy=False,
         tracking=True,
+        help="Owner of the เรื่อง. Never copied — a duplicate belongs to whoever "
+        "made it (falls back to the default = current user).",
     )
     sender_department_id = fields.Many2one(
         comodel_name="hr.department",
-        string="Sender Department",
+        string="ส่วนงาน (Sender Department)",
         default=lambda self: self._default_sender_department_id(),
         required=True,
         tracking=True,
-        states=READONLY_STATES,
-    )
-    sender_department_name = fields.Char(
-        string="Sender Department Name",
-        related="sender_department_id.complete_name",
-        help="Stored department name at the time of document creation",
+        help="Owning unit — drives register resolution (ส่วนงาน × type) in P3.",
     )
     sender_suffix = fields.Char(
         string="Sender Suffix",
-        tracking=True,
-        states=READONLY_STATES,
-        help="Sub-department name or extension number (e.g., 'สำนักงานคณบดี' or 'ต่อ 1234')",
-    )
-    sender_display = fields.Char(
-        string="From",
-        compute="_compute_sender_display",
-        store=True,
-    )
-    recipient = fields.Char(
-        string="To",
-        tracking=True,
-        states=READONLY_STATES,
-        help="Recipient name/department.",
+        help="Sub-unit name or extension (e.g. 'สำนักงานคณบดี', 'ต่อ 1234').",
     )
 
-    # === Origin Record Link ===
-    origin_model = fields.Char(
-        string="Origin Model",
-        readonly=True,
-        index=True,
-    )
-    origin_res_id = fields.Integer(
-        string="Origin Record ID",
-        readonly=True,
-        index=True,
-    )
-    origin_reference = fields.Char(
-        string="Origin Reference",
-        compute="_compute_origin_reference",
-    )
-
-    # === Report Delegation ===
-    has_delegated_report = fields.Boolean(
-        compute="_compute_delegated_report",
-        string="Has Delegated Report",
-    )
-    delegated_report_url = fields.Char(
-        compute="_compute_delegated_report",
-        string="Report Preview URL",
-    )
-
-    # === Workflow State ===
+    # === Lifecycle (state field; the state MACHINE is P2 — ADR-0002) ===
     state = fields.Selection(
         selection=[
-            ("draft", "Draft"),
-            ("sent", "Sent"),
-            ("completed", "Completed"),
-            ("cancelled", "Cancelled"),
+            ("draft", "ร่าง (Draft)"),
+            ("circulating", "กำลังดำเนินการ (Circulating)"),
+            ("completed", "เสร็จสิ้น (Completed)"),
+            ("returned", "รอการแก้ไขเอกสาร (Pending Revision)"),
+            ("rejected", "ปฏิเสธ (Rejected)"),
+            ("cancelled", "ยกเลิก (Cancelled)"),
         ],
         string="Status",
         required=True,
@@ -200,77 +154,206 @@ class SarabunDocument(models.Model):
         default="draft",
     )
 
-    # === Routing ===
-    route_template_id = fields.Many2one(
-        comodel_name="sarabun.route.template",
-        string="Route Template",
-        states=READONLY_STATES,
-    )
-    routing_line_ids = fields.One2many(
-        comodel_name="sarabun.routing.line",
-        inverse_name="document_id",
-        string="Routing",
-        copy=True,
-        states=READONLY_STATES,
+    # === Origin link (1:N side lives here — ADR-0004) ===
+    origin_model = fields.Char(string="Origin Model", readonly=True, index=True)
+    origin_res_id = fields.Integer(string="Origin Record ID", readonly=True, index=True)
+    origin_reference = fields.Char(
+        string="Origin Reference",
+        compute="_compute_origin_reference",
     )
 
-    # === Recipients (Delivery Tracking) ===
-    recipient_ids = fields.One2many(
-        comodel_name="sarabun.document.recipient",
-        inverse_name="document_id",
-        string="Recipients",
-        readonly=True,
-    )
-
-    # === Computed Routing Status ===
-    routing_progress = fields.Float(
-        string="Routing Progress",
-        compute="_compute_routing_progress",
-        store=True,
-    )
-    pending_routing_count = fields.Integer(
-        compute="_compute_routing_counts",
-    )
-    completed_routing_count = fields.Integer(
-        compute="_compute_routing_counts",
-    )
-
-    # === Current User Inbox ===
-    current_user_inbox_is_read = fields.Boolean(
-        compute="_compute_current_user_inbox_is_read",
-    )
-
-    # === Current User Action ===
-    current_user_recipient_id = fields.Many2one(
-        comodel_name="sarabun.document.recipient",
-        compute="_compute_current_user_recipient",
-        string="My Pending Action",
-    )
-    current_user_can_acknowledge = fields.Boolean(
-        compute="_compute_current_user_recipient",
-    )
-    current_user_can_approve = fields.Boolean(
-        compute="_compute_current_user_recipient",
-    )
-    report_preview_url = fields.Char(
-        compute="_compute_report_preview_url",
-    )
-
-    # === References ===
-    reference_ids = fields.One2many(
-        comodel_name="sarabun.reference",
-        inverse_name="document_id",
-        string="References",
-        states=READONLY_STATES,
-    )
-    referenced_document_ids = fields.Many2many(
+    # === อ้างถึง (References) ===
+    reference_document_ids = fields.Many2many(
         comodel_name="sarabun.document",
         relation="sarabun_document_reference_rel",
         column1="document_id",
         column2="referenced_id",
-        string="Referenced Documents",
-        states=READONLY_STATES,
+        string="อ้างถึง (Documents)",
+        help="Prior in-system หนังสือ referenced by this one.",
     )
+    reference_line_ids = fields.One2many(
+        comodel_name="sarabun.reference.line",
+        inverse_name="document_id",
+        string="อ้างถึง (External)",
+        help="Free-text references to letters outside the system.",
+    )
+
+    # === สิ่งที่ส่งมาด้วย (Enclosures) — plain attached files (feedback) ===
+    enclosure_attachment_ids = fields.Many2many(
+        comodel_name="ir.attachment",
+        relation="sarabun_document_enclosure_rel",
+        column1="document_id",
+        column2="attachment_id",
+        string="สิ่งที่ส่งมาด้วย (Enclosures)",
+        help="Files enclosed with the หนังสือ, managed through the attachments widget "
+        "(just the files — no caption or ordering). Listed by filename under "
+        "สิ่งที่ส่งมาด้วย on the printed document.",
+    )
+
+    # === Routing (the living Route — ADR-0001) ===
+    route_template_id = fields.Many2one(
+        comodel_name="sarabun.route.template",
+        string="Route Template (seed)",
+        help="Optional template that seeds the steps at send. Not authoritative "
+        "once seeded — the Route lives on the document.",
+    )
+    routing_step_ids = fields.One2many(
+        comodel_name="sarabun.routing.step",
+        inverse_name="document_id",
+        string="Routing",
+        domain=[("active", "=", True)],
+        copy=False,
+        help="The living Route — current attempt's steps.",
+    )
+    archived_step_ids = fields.One2many(
+        comodel_name="sarabun.routing.step",
+        inverse_name="document_id",
+        string="Routing History",
+        domain=[("active", "=", False)],
+        # Audit accessor only — the form no longer lists prior attempts beside the
+        # live Route (a ดึงกลับ / ตีกลับ / รีเซ็ต re-runs the whole เส้นทาง).
+        # Without active_test=False the ORM drops every archived row on the way out
+        # (_RelationalMulti.convert_to_record filters x2many values by `active`
+        # whenever active_test is on): the domain fetches them and the record
+        # conversion then hands back an empty set, so every reader saw nothing.
+        context={"active_test": False},
+        copy=False,
+        help="Frozen steps of closed attempts (kept for the เกษียน trail).",
+    )
+    attempt_seq = fields.Integer(
+        string="Attempt",
+        default=1,
+        readonly=True,
+        copy=False,
+        help="Generation counter bumped on each re-send so prior attempts survive "
+        "as history (ADR-0002 §3.4).",
+    )
+    reached_user_ids = fields.Many2many(
+        comodel_name="res.users",
+        relation="sarabun_document_reached_user_rel",
+        column1="document_id",
+        column2="user_id",
+        string="Reached Users",
+        compute="_compute_reached_user_ids",
+        store=True,
+        help="Everyone the หนังสือ has ever reached — the union of "
+        "sarabun.step.recipient holders across ACTIVE and ARCHIVED steps. The "
+        "read-visibility key (ADR-0013): being involved is a property of the "
+        "หนังสือ, not of the current attempt, so read persists after completion and "
+        "across ตีกลับ / ดึงกลับ / Reset. It only grows — a recipient row is never "
+        "removed — matching the permanent per-person reach ledger of the Incoming box.",
+    )
+    strongest_verb_id = fields.Many2one(
+        comodel_name="sarabun.verb",
+        string="Strongest Verb Done",
+        compute="_compute_strongest_verb_done",
+        store=True,
+        help="Highest-ranked verb positively completed so far. Drives the Recall "
+        "window (Recall blocked once a signing step has occurred — ADR-0002).",
+    )
+    has_signed = fields.Boolean(compute="_compute_strongest_verb_done", store=True)
+    can_withdraw = fields.Boolean(
+        compute="_compute_can_withdraw",
+        string="Can Withdraw",
+        help="True only for the sender (or a manager) while the หนังสือ may still be "
+        "ดึงกลับ / ยกเลิกการส่ง — mirrors _check_sender_withdraw_allowed so a mere "
+        "recipient never sees the withdraw button.",
+    )
+
+    # current user's actionable step(s) + routing progress (UI)
+    my_active_step_id = fields.Many2one(
+        comodel_name="sarabun.routing.step",
+        compute="_compute_my_active_step",
+        string="My Pending Step",
+        help="The current user's *active* step (drives the 'Act on My Step' button). "
+        "Empty once they have acted.",
+    )
+    my_reaching_step_id = fields.Many2one(
+        comodel_name="sarabun.routing.step",
+        compute="_compute_my_active_step",
+        string="Step That Reached Me",
+        help="The step by which this หนังสือ reached the current user — their active "
+        "step, or (once they have acted) their most recent completed step. Backs the "
+        "incoming-box columns (read status / received / verb) so they stay populated "
+        "after the user has acted.",
+    )
+    pending_ack_count = fields.Integer(
+        compute="_compute_routing_progress", string="ค้างรับทราบ",
+    )
+    routing_progress = fields.Float(
+        compute="_compute_routing_progress", string="Routing Progress",
+    )
+    next_step_order = fields.Integer(
+        compute="_compute_next_step_order",
+        help="Default ลำดับ (Stage) for the next routing step added on the form — "
+        "max(existing) + 1 so new steps auto-increment instead of always starting at "
+        "1. Fed to routing_step_ids' context as default_order.",
+    )
+
+    # === Inbox (per current user — from the step that reached them) ===
+    my_received_date = fields.Datetime(
+        compute="_compute_my_inbox", string="วันที่ได้รับ",
+        help="When the step that reached the current user was received by them "
+        "(per-person; may differ from the step's activation under delegation).",
+    )
+    my_action_verb_id = fields.Many2one(
+        "sarabun.verb", compute="_compute_my_inbox", string="เพื่อดำเนินการ",
+        help="What the current user was asked to do on the step that reached them "
+        "(may already be a completed step).",
+    )
+    my_read_state = fields.Selection(
+        selection=[
+            ("unread", "รอการเปิดอ่าน"),
+            ("read", "เปิดอ่านแล้ว"),
+            ("forwarded", "รอการส่งต่อ"),
+        ],
+        compute="_compute_my_inbox", string="สถานะการอ่าน",
+        help="Whether the current user has opened this หนังสือ — tracked per person.",
+    )
+
+    # === Numbering / Register (P3 — ADR-0002 §4) ===
+    sequence_id = fields.Many2one(
+        comodel_name="sarabun.document.sequence",
+        string="เล่มทะเบียน (Register Book)",
+        compute="_compute_sequence_id",
+        store=True,
+        readonly=False,
+        copy=False,
+        domain="[('sender_department_id', '=', sender_department_id), ('active', '=', True)]",
+        help="เล่มทะเบียนที่จะใช้ออกเลขหนังสือฉบับนี้ (ADR-0012) — ตั้งต้นจากเล่มทะเบียนหลัก "
+        "ของหน่วยงาน เปลี่ยนได้ก่อนส่ง และถูกตรึงไว้ตอนส่ง.",
+    )
+    register_number_id = fields.Many2one(
+        comodel_name="sarabun.document.number",
+        string="Register Number",
+        readonly=True,
+        copy=False,
+        help="The register ledger row assigned by ลงทะเบียน at completion (ADR-0010).",
+    )
+    numbering_mode = fields.Selection(
+        selection=[
+            ("auto", "Auto (next available)"),
+            ("reserved", "Reserved number"),
+        ],
+        string="Numbering Mode",
+        default="auto",
+        help="from_record always registers automatically; reserved (a pre-reserved "
+        "number) is for manual compose (memo/circular).",
+    )
+    reserved_number_id = fields.Many2one(
+        comodel_name="sarabun.document.number",
+        string="Reserved Number",
+        domain="[('state', '=', 'reserved'), ('sequence_id', '=', sequence_id)]",
+    )
+
+    # === Signing / official record (P5 — DESIGN §5) ===
+    signed_pdf = fields.Binary(
+        string="ฉบับลงนาม (Signed Copy)", attachment=True, copy=False, readonly=True,
+        help="Immutable PDF frozen at completion (cover sheet + origin body merged).",
+    )
+    signed_pdf_filename = fields.Char(copy=False, readonly=True)
+    signed_at = fields.Datetime(string="Frozen At", copy=False, readonly=True)
+    is_frozen = fields.Boolean(compute="_compute_is_frozen")
 
     # === Attachments ===
     attachment_ids = fields.One2many(
@@ -279,11 +362,7 @@ class SarabunDocument(models.Model):
         domain=[("res_model", "=", "sarabun.document")],
         string="Attachments",
     )
-    attachment_count = fields.Integer(
-        compute="_compute_attachment_count",
-    )
 
-    # === Company ===
     company_id = fields.Many2one(
         comodel_name="res.company",
         string="Company",
@@ -291,266 +370,304 @@ class SarabunDocument(models.Model):
         default=lambda self: self.env.company,
     )
 
-    # === Display name ===
-    def name_get(self):
-        result = []
-        for record in self:
-            name = record.name or _("New")
-            if record.subject:
-                name = f"{name} - {record.subject}"
-            result.append((record.id, name))
-        return result
+    # === Semantic helpers (computed booleans — accessed as attributes) ===
+    is_draft = fields.Boolean(compute="_compute_state_flags")
+    is_circulating = fields.Boolean(compute="_compute_state_flags")
+    is_completed = fields.Boolean(compute="_compute_state_flags")
+    is_returned = fields.Boolean(compute="_compute_state_flags")
+    is_rejected = fields.Boolean(compute="_compute_state_flags")
+    is_cancelled = fields.Boolean(compute="_compute_state_flags")
+    is_terminal = fields.Boolean(compute="_compute_state_flags")
+    is_editable = fields.Boolean(
+        compute="_compute_state_flags",
+        help="True while the หนังสือ may still be edited (draft or returned).",
+    )
 
-    # === Default Methods ===
+    # === Defaults ===
     @api.model
     def _default_sender_department_id(self):
-        """Get default sender department from user's employee"""
-        user = self.env.user
-        if user.employee_id and user.employee_id.department_id:
-            return user.employee_id.department_id.id
-        return False
+        employee = self.env.user.employee_id
+        return employee.department_id.id if employee and employee.department_id else False
 
-    # === Computed Fields ===
-    @api.depends("sender_department_name", "sender_suffix")
-    def _compute_sender_display(self):
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Every หนังสือ starts with the mandatory ผู้จัดทำ/ผู้ส่ง step (row 1) so it is
+        always the first name in the Route (and locked from removal)."""
+        docs = super().create(vals_list)
+        for doc in docs:
+            doc._ensure_originator_step()
+        return docs
+
+    # === Computes ===
+    @api.depends("state")
+    def _compute_state_flags(self):
         for record in self:
-            parts = []
-            if record.sender_department_name:
-                parts.append(record.sender_department_name)
-            if record.sender_suffix:
-                parts.append(record.sender_suffix)
-            record.sender_display = " ".join(parts) if parts else ""
+            record.is_draft = record.state == "draft"
+            record.is_circulating = record.state == "circulating"
+            record.is_completed = record.state == "completed"
+            record.is_returned = record.state == "returned"
+            record.is_rejected = record.state == "rejected"
+            record.is_cancelled = record.state == "cancelled"
+            record.is_terminal = record.state in ("rejected", "cancelled")
+            record.is_editable = record.state in ("draft", "returned")
+
+    @api.depends("origin_model")
+    def _compute_include_content(self):
+        """A no-source (composed) หนังสือ always carries its own body; a from_record
+        one defaults OFF (the origin report is the body). Editable — the drafter may
+        opt a from_record document in to add a covering note."""
+        for record in self:
+            record.include_content = not record.origin_model
+
+    @api.depends("sender_department_id")
+    def _compute_sequence_id(self):
+        """Default the เล่มทะเบียน from the unit (its เล่มทะเบียนหลัก, or its only book)
+        — so the drafter never has to pick when the unit keeps a single register.
+        Editable (readonly=False) until sent; a numbered หนังสือ keeps the book its
+        number actually came from."""
+        for record in self:
+            if record.register_number_id:
+                record.sequence_id = record.register_number_id.sequence_id
+            elif record.sender_department_id:
+                record.sequence_id = record.sender_department_id._sarabun_default_sequence()
+            else:
+                record.sequence_id = False
+
+    @api.constrains("sequence_id", "sender_department_id")
+    def _check_sequence_department(self):
+        for record in self:
+            seq = record.sequence_id
+            if seq and seq.sender_department_id != record.sender_department_id:
+                raise ValidationError(_(
+                    "เล่มทะเบียน '%(book)s' ไม่ใช่ของหน่วยงาน '%(unit)s'."
+                ) % {
+                    "book": seq.display_name,
+                    "unit": record.sender_department_id.display_name,
+                })
 
     @api.depends("origin_model", "origin_res_id")
     def _compute_origin_reference(self):
         for record in self:
+            ref = False
             if record.origin_model and record.origin_res_id:
-                try:
-                    origin = self.env[record.origin_model].browse(record.origin_res_id)
-                    record.origin_reference = origin.display_name
-                except Exception:
-                    record.origin_reference = False
-            else:
-                record.origin_reference = False
+                model = self.env.get(record.origin_model)
+                if model is not None:
+                    # sudo: whoever may read the หนังสือ (Route visibility) sees the
+                    # origin's name as a reference on it, even without rights on the
+                    # origin record itself — the หนังสือ's ACL governs, not the origin's.
+                    origin = model.sudo().browse(record.origin_res_id)
+                    if origin.exists():
+                        ref = origin.display_name
+            record.origin_reference = ref
 
-    @api.depends("origin_model", "origin_res_id")
-    def _compute_delegated_report(self):
+    @api.depends(
+        "routing_step_ids.recipient_ids.user_id",
+        "archived_step_ids.recipient_ids.user_id",
+    )
+    def _compute_reached_user_ids(self):
+        """Aggregate every recipient holder across ACTIVE and ARCHIVED steps
+        (ADR-0013). Recipient rows carry a stored ``document_id``, so a direct
+        search — under ``sudo`` and ``active_test=False`` — spans archived attempts
+        that the ``active``-scoped ``routing_step_ids`` traversal would drop. The
+        field only ever grows (rows are never deleted), so read never lapses."""
+        Recipient = (
+            self.env["sarabun.step.recipient"]
+            .sudo()
+            .with_context(active_test=False)
+        )
         for record in self:
-            delegated_report = record._get_delegated_report_action()
-            record.has_delegated_report = bool(delegated_report)
+            rid = record.id if isinstance(record.id, int) else record._origin.id
+            recips = (
+                Recipient.search([("document_id", "=", rid)])
+                if rid
+                else Recipient.browse()
+            )
+            record.reached_user_ids = [(6, 0, recips.user_id.ids)]
 
-            # Compute report URL for iframe preview
-            if delegated_report and record.origin_model and record.origin_res_id:
-                try:
-                    origin = record.env[record.origin_model].browse(record.origin_res_id)
-                    if origin.exists() and hasattr(origin, "get_portal_url"):
-                        record.delegated_report_url = origin.get_portal_url(report_type="html")
-                    else:
-                        record.delegated_report_url = False
-                except Exception:
-                    record.delegated_report_url = False
-            else:
-                record.delegated_report_url = False
+    @api.depends(
+        "routing_step_ids.state",
+        "routing_step_ids.disposition",
+        "routing_step_ids.verb",
+        "routing_step_ids.is_originator",
+    )
+    def _compute_strongest_verb_done(self):
+        for record in self:
+            # Exclude the originator (ผู้จัดทำ) — their auto-signature at send is not
+            # an approval, so it must not set has_signed (which would block the
+            # sender's own ดึงกลับ / ยกเลิกการส่ง right after sending).
+            done = record.routing_step_ids.filtered(
+                lambda s: s.state == "done"
+                and s.disposition in POSITIVE_DISPOSITIONS
+                and not s.is_originator
+            )
+            strongest = done.mapped("verb").sorted(key=lambda v: v.rank)[-1:]
+            record.strongest_verb_id = strongest
+            record.has_signed = any(s.verb.is_signature for s in done)
 
-    @api.depends("recipient_ids", "recipient_ids.state", "routing_line_ids")
+    @api.depends("state", "has_signed", "sender_user_id")
+    def _compute_can_withdraw(self):
+        is_manager = self.env.user.has_group("agx_sarabun.group_sarabun_manager")
+        for record in self:
+            record.can_withdraw = (
+                record.state == "circulating"
+                and not record.has_signed
+                and (record.sender_user_id == self.env.user or is_manager)
+            )
+
+    @api.depends(
+        "routing_step_ids.state",
+        "routing_step_ids.actor_user_ids",
+        "routing_step_ids.recipient_ids.user_id",
+    )
+    def _compute_my_active_step(self):
+        uid = self.env.user
+        for record in self:
+            # Act button: I'm a *current actor* on an active step (drops once I act
+            # or delegate the step away).
+            record.my_active_step_id = record.routing_step_ids.filtered(
+                lambda s: s.state == "active" and uid in s.actor_user_ids
+            )[:1]
+            # "reaching" step drives the persistent incoming box + its columns. It is
+            # keyed on my sarabun.step.recipient rows (the permanent per-person ledger,
+            # never removed) — not the mutable actor_user_ids snapshot — so it survives
+            # delegate / recall / reject. Active step preferred, else my latest.
+            my_recips = record.routing_step_ids.recipient_ids.filtered(
+                lambda r: r.user_id == uid
+            )
+            active = my_recips.filtered(lambda r: r.step_id.state == "active")[:1]
+            # latest-reached: higher stage order, then later-created row (id monotonic)
+            reaching = active or my_recips.sorted(
+                key=lambda r: (r.step_id.order, r.id)
+            )[-1:]
+            record.my_reaching_step_id = reaching.step_id
+
+    # Depend on the real routing_step_ids O2m (searchable), not the non-stored
+    # my_reaching_step_id — Odoo can't resolve reverse triggers (e.g. when a verb
+    # changes) through a non-stored computed M2o (UserWarning). my_reaching_step_id
+    # is itself derived from these same routing_step_ids fields, so this is equivalent.
+    @api.depends(
+        "routing_step_ids.state",
+        "routing_step_ids.verb",
+        "routing_step_ids.recipient_ids.user_id",
+        "routing_step_ids.recipient_ids.received_date",
+        "routing_step_ids.recipient_ids.read_state",
+    )
+    def _compute_my_inbox(self):
+        uid = self.env.user
+        for record in self:
+            step = record.my_reaching_step_id
+            recipient = step.recipient_ids.filtered(lambda r: r.user_id == uid)[:1]
+            # per-person "วันที่ได้รับ" — correct even when the step was delegated after
+            # activation (the delegate received later than the step's activated_date).
+            record.my_received_date = recipient.received_date
+            record.my_action_verb_id = step.verb
+            record.my_read_state = recipient.read_state or ("unread" if step else False)
+
+    def action_mark_read(self):
+        """Stamp read_date on the current user's recipient rows (called when they
+        open the หนังสือ form). Opening IS reading — so every unread row of theirs on
+        this หนังสือ is marked, not only the one on a still-active step (a รับทราบ / CC
+        or already-acted recipient must flip to อ่านแล้ว too). Idempotent; only
+        touches own rows. Waiting/future steps carry no recipient row yet, so nothing
+        is marked before the หนังสือ actually reaches the user."""
+        recipients = self.env["sarabun.step.recipient"].sudo().search([
+            ("document_id", "in", self.ids),
+            ("user_id", "=", self.env.user.id),
+            ("read_date", "=", False),
+        ])
+        if recipients:
+            recipients.write({"read_date": fields.Datetime.now()})
+        return True
+
+    @api.depends("routing_step_ids.order")
+    def _compute_next_step_order(self):
+        """The Stage a freshly-added step should default to: one past the highest
+        existing order (the originator sits at row 1), so the ลำดับ auto-increments
+        instead of every new step landing on 1."""
+        for record in self:
+            orders = record.routing_step_ids.mapped("order")
+            record.next_step_order = (max(orders) + 1) if orders else 1
+
+    @api.depends("routing_step_ids.state", "routing_step_ids.gating")
     def _compute_routing_progress(self):
         for record in self:
-            total = len(record.routing_line_ids)
-            if total:
-                done = len(
-                    record.recipient_ids.filtered(
-                        lambda r: r.state in ("acknowledged", "approved")
-                    )
+            steps = record.routing_step_ids
+            record.pending_ack_count = len(
+                steps.filtered(lambda s: s.state == "active" and not s.gating)
+            )
+            gating = steps.filtered("gating")
+            if gating:
+                done = gating.filtered(
+                    lambda s: s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS
                 )
-                record.routing_progress = (done / total) * 100
+                record.routing_progress = 100.0 * len(done) / len(gating)
             else:
-                record.routing_progress = 0
+                record.routing_progress = 0.0
 
-    @api.depends("recipient_ids", "recipient_ids.state")
-    def _compute_routing_counts(self):
+    @api.depends("signed_at")
+    def _compute_is_frozen(self):
         for record in self:
-            record.pending_routing_count = len(
-                record.recipient_ids.filtered(lambda r: r.state == "new")
-            )
-            record.completed_routing_count = len(
-                record.recipient_ids.filtered(
-                    lambda r: r.state in ("acknowledged", "approved")
+            record.is_frozen = bool(record.signed_at)
+
+    # === Display ===
+    def name_get(self):
+        # While unnumbered (draft → circulating → returned, until completion —
+        # ADR-0010) the หนังสือ is identified purely by its เรื่อง; no interim
+        # code. The official number prefixes the เรื่อง only once ลงทะเบียน runs
+        # at completion.
+        result = []
+        for record in self:
+            numbered = record.name and record.name != "/"
+            if numbered:
+                label = (
+                    f"{record.name} — {record.subject}"
+                    if record.subject
+                    else record.name
                 )
-            )
+            else:
+                label = record.subject or _("(ยังไม่มีเรื่อง)")
+            result.append((record.id, label))
+        return result
 
-    @api.depends("recipient_ids", "recipient_ids.state")
-    def _compute_current_user_recipient(self):
-        for record in self:
-            recipient = False
-            for r in record.recipient_ids.filtered(lambda x: x.state == "new"):
-                if r._can_user_access():
-                    recipient = r
-                    break
-            record.current_user_recipient_id = recipient
-            record.current_user_can_acknowledge = (
-                bool(recipient) and recipient.routing_type == "acknowledge"
-            )
-            record.current_user_can_approve = (
-                bool(recipient) and recipient.routing_type == "approve"
-            )
-
-    def _compute_current_user_inbox_is_read(self):
-        for record in self:
-            inbox = self.env["sarabun.inbox"].search([
-                ("user_id", "=", self.env.user.id),
-                ("document_id", "=", record.id),
-            ], limit=1)
-            record.current_user_inbox_is_read = inbox.is_read if inbox else True
-
-    def action_mark_inbox_read(self):
-        """Mark inbox as read for current user"""
+    def _status_label(self):
+        """Short human status for the origin record: state + routing progress +
+        who the หนังสือ is waiting on right now. Consumed by
+        sarabun.document.mixin.sarabun_state_label, so the source form can track the
+        route — how far it has progressed AND who currently holds it — without
+        opening the หนังสือ."""
         self.ensure_one()
-        inbox_entries = self.env["sarabun.inbox"].search([
-            ("user_id", "=", self.env.user.id),
-            ("document_id", "=", self.id),
-            ("is_read", "=", False),
-        ])
-        if inbox_entries:
-            inbox_entries.action_mark_read()
-
-    def action_mark_inbox_unread(self):
-        """Mark inbox as unread for current user"""
-        self.ensure_one()
-        inbox_entries = self.env["sarabun.inbox"].search([
-            ("user_id", "=", self.env.user.id),
-            ("document_id", "=", self.id),
-            ("is_read", "=", True),
-        ])
-        if inbox_entries:
-            inbox_entries.action_mark_unread()
-
-    @api.depends("attachment_ids")
-    def _compute_attachment_count(self):
-        for record in self:
-            record.attachment_count = len(record.attachment_ids)
-
-    # === Onchange ===
-    @api.onchange("route_template_id")
-    def _onchange_route_template_id(self):
-        if self.route_template_id:
-            lines = []
-            for tmpl_line in self.route_template_id.line_ids:
-                line_vals = {
-                    "sequence": tmpl_line.sequence,
-                    "routing_type": tmpl_line.routing_type,
-                    "recipient_type": tmpl_line.recipient_type,
-                    "user_id": tmpl_line.user_id.id if tmpl_line.user_id else False,
-                    "department_id": (
-                        tmpl_line.department_id.id if tmpl_line.department_id else False
-                    ),
-                    "role_id": tmpl_line.role_id.id if tmpl_line.role_id else False,
+        label = dict(self._fields["state"].selection).get(self.state, self.state)
+        if self.state == "circulating":
+            gating = self.routing_step_ids.filtered("gating")
+            if gating:
+                done = gating.filtered(
+                    lambda s: s.state == "done"
+                    and s.disposition in POSITIVE_DISPOSITIONS
+                )
+                label = _("%(state)s • ผ่านแล้ว %(done)s/%(total)s") % {
+                    "state": label,
+                    "done": len(done),
+                    "total": len(gating),
                 }
-                lines.append((0, 0, line_vals))
-            self.routing_line_ids = lines
-
-    @api.onchange("document_type_id")
-    def _onchange_document_type_id(self):
-        if (
-            self.document_type_id
-            and self.document_type_id.default_route_template_id
-            and not self.routing_line_ids
-        ):
-            self.route_template_id = self.document_type_id.default_route_template_id
-
-    @api.onchange("numbering_mode")
-    def _onchange_numbering_mode(self):
-        """Clear number selection when mode changes"""
-        if self.numbering_mode != "reserved":
-            self.document_number_id = False
-        if self.numbering_mode != "manual":
-            self.manual_number = False
-
-    @api.onchange("document_sequence_id")
-    def _onchange_document_sequence_id(self):
-        """Reset numbering options when sequence changes"""
-        self.document_number_id = False
-        self.manual_number = False
-        self.numbering_mode = "auto"
-
-    # === Actions ===
-    def action_send(self):
-        """Send document and create recipients from routing lines"""
-        for document in self:
-            if document.state != "draft":
-                raise UserError(_("Only draft documents can be sent."))
-
-            if not document.routing_line_ids:
-                raise UserError(_("Please add at least one routing line."))
-            
-            if not document.recipient:
-                raise UserError(_("กรุณาระบุผู้รับก่อนยืนยันเอกสาร"))
-            
-            # # === VALIDATE ROUTING ORDER BEFORE SENDING ===
-            lines = document.routing_line_ids.sorted("sequence")
-            approve_lines = lines.filtered(lambda l: l.routing_type == "approve")
-
-            if approve_lines:
-                max_seq = max(lines.mapped("sequence"))
-                for approve_line in approve_lines:
-                    if approve_line.sequence < max_seq:
-                        raise ValidationError(
-                            _("Cannot send document: All approval steps must be at the end of routing. "
-                            "Please reorder your routing lines.")
-                        )
-            # # === END VALIDATION ===
-
-            # Generate document number
-            if document.name == "/":
-                document.name = document._generate_document_number()
-
-            document.state = "sent"
-
-            # Create only the first recipient (not all at once)
-            document._activate_next_recipient()
-
-            document.message_post(
-                body=_("Document sent for routing by %s") % document.sender_user_id.name,
-                message_type="notification",
+            # Who the หนังสือ awaits now — its active step(s). Prefer the gating
+            # (blocking) ones; fall back to any active รับทราบ / CC step.
+            active = self.routing_step_ids.filtered(lambda s: s.state == "active")
+            active = active.filtered("gating") or active
+            waiting = ", ".join(
+                "%s: %s" % (s.verb.name, s.target_name) if s.target_name else s.verb.name
+                for s in active
             )
-
-    def action_cancel(self):
-        """Cancel draft document - like email, once sent cannot be cancelled"""
-        for document in self:
-            if document.state != "draft":
-                raise UserError(_("Only draft documents can be cancelled. Once sent, documents cannot be cancelled."))
-
-            document.state = "cancelled"
-            document.message_post(
-                body=_("Document cancelled."),
-                message_type="notification",
-            )
-
-    def action_acknowledge(self):
-        """Acknowledge - delegate to current recipient"""
-        self.ensure_one()
-        if not self.current_user_recipient_id:
-            raise UserError(_("No pending action for you."))
-        return self.current_user_recipient_id.action_acknowledge()
-
-    def action_approve(self):
-        """Approve - delegate to current recipient"""
-        self.ensure_one()
-        if not self.current_user_recipient_id:
-            raise UserError(_("No pending action for you."))
-        return self.current_user_recipient_id.action_approve()
-
-    def action_reject(self):
-        """Reject - delegate to current recipient"""
-        self.ensure_one()
-        if not self.current_user_recipient_id:
-            raise UserError(_("No pending action for you."))
-        return self.current_user_recipient_id.action_reject()
+            if waiting:
+                label = _("%(label)s • กำลังรอ %(who)s") % {
+                    "label": label, "who": waiting,
+                }
+        return label
 
     def action_view_origin(self):
-        """View origin record"""
+        """Open the linked origin record (kept from the old API; harmless in P1)."""
         self.ensure_one()
         if not self.origin_model or not self.origin_res_id:
-            raise UserError(_("No origin record linked to this document."))
+            return False
         return {
             "type": "ir.actions.act_window",
             "res_model": self.origin_model,
@@ -559,370 +676,599 @@ class SarabunDocument(models.Model):
             "target": "current",
         }
 
-    def action_lookup_recipient(self):
-        """Open department lookup wizard for recipient"""
+    # ============================================================ #
+    #  Lifecycle & routing engine (P2 — ADR-0001 / ADR-0002)        #
+    #  Numbering (_register/_void_register) is P3; freeze is P5.     #
+    # ============================================================ #
+
+    # === Send / Recall (lifecycle transitions) ===
+    def action_send(self):
+        """draft|returned → circulating: ensure the ผู้จัดทำ step, seed the approver
+        chain (if needed), auto-sign the originator (ส่ง = ลงนามผู้จัดทำ), activate
+        stage 1. The official number is NOT assigned here — ลงทะเบียน now runs only
+        when the final approver signs (see ``_complete_document``); send merely
+        verifies a register resolves so the route can't strand at completion."""
+        for doc in self:
+            if doc.state not in ("draft", "returned"):
+                raise UserError(_("Only draft or returned documents can be sent."))
+            doc._ensure_originator_step()
+            # Seed the approver chain only when it is still empty (the originator
+            # step alone doesn't count).
+            if doc.state == "draft" and not doc.routing_step_ids.filtered(
+                lambda s: not s.is_originator
+            ):
+                doc._seed_route_from_template()
+            if not doc.routing_step_ids.filtered("gating"):
+                raise UserError(_(
+                    "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
+                ))
+            # P3: fail fast if no register resolves, and PIN the resolved เล่มทะเบียน
+            # so a later config change can't move the หนังสือ to another book between
+            # ส่ง and ลงทะเบียน (which runs at completion — ADR-0010/0011).
+            doc.sequence_id = doc._resolve_sequence()
+            doc._sign_originator_step()  # ส่ง = ลงนามของผู้จัดทำ (auto)
+            # ลงวันที่ = the ส่ง (issue) date, not the create-draft date (ADR-0010): a
+            # draft held over from the old ปีงบประมาณ is dated when it is actually sent
+            # in the new one, so ที่ and ลงวันที่ stay in the same fiscal year (a หนังสือ
+            # never straddles the year boundary). Re-stamped on each re-send.
+            doc.date = fields.Date.context_today(doc)
+            doc.state = "circulating"
+            doc.message_post(body=_("Document sent for routing."))
+            doc._call_origin("_on_sarabun_circulating", doc)
+            doc._advance_stage()
+        return True
+
+    # === Originator (ผู้จัดทำ/ผู้ส่ง) — the mandatory, locked first step ===
+    def _ensure_originator_step(self):
+        """Guarantee the mandatory first step = the ผู้จัดทำ/ผู้ส่ง (is_originator),
+        waiting until auto-signed at send. Idempotent — one active originator per
+        attempt. Created at document create() and re-ensured after re-seed."""
         self.ensure_one()
-        return {
-            "name": _("Select Department"),
-            "type": "ir.actions.act_window",
-            "res_model": "sarabun.department.lookup.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {
-                "default_target_model": "sarabun.document",
-                "default_target_record_id": self.id,
-                "default_target_field": "recipient",
-            },
-        }
+        if self.routing_step_ids.filtered("is_originator"):
+            return
+        Step = self.env["sarabun.routing.step"]
+        verb = self.env.ref("agx_sarabun.verb_originate", raise_if_not_found=False)
+        orders = self.routing_step_ids.mapped("order")
+        first_order = (min(orders) - 1) if orders else 1
+        self.routing_step_ids = [(0, 0, {
+            "order": first_order,
+            "verb": (verb or Step._default_verb()).id,
+            "is_originator": True,
+            "target_mode": "person",
+            "employee_id": self.sender_user_id.employee_id.id,
+            "attempt_seq": self.attempt_seq or 1,
+            "created_by_disposition": "seed",
+            "state": "waiting",
+        })]
 
-    def action_select_number(self):
-        """Open number selection wizard"""
+    def _sign_originator_step(self):
+        """Auto-sign the originator at send (ส่ง = ลงนามผู้จัดทำ). Idempotent; the
+        write is sudo so it passes the originator write-guard."""
         self.ensure_one()
-        if not self.document_sequence_id:
-            raise UserError(_("Please select a document sequence first."))
-        return {
-            "name": _("Select Document Number"),
-            "type": "ir.actions.act_window",
-            "res_model": "sarabun.number.selection.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {
-                "default_document_id": self.id,
-                "default_sequence_id": self.document_sequence_id.id,
-            },
-        }
-
-    def action_select_route(self):
-        """Open wizard to select route template when multiple match"""
-        self.ensure_one()
-        templates = self._get_matching_route_templates()
-
-        if not templates:
-            raise UserError(_("No route templates available for this document."))
-
-        if len(templates) == 1:
-            # Only one template, apply directly
-            self._apply_route_template(templates)
-            return True
-
-        # Multiple templates, open selection wizard
-        return {
-            "name": _("Select Route"),
-            "type": "ir.actions.act_window",
-            "res_model": "sarabun.route.selection.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {
-                "default_document_id": self.id,
-                "default_available_template_ids": [(6, 0, templates.ids)],
-            },
-        }
-
-    def _get_matching_route_templates(self):
-        """Get route templates that match this document's context"""
-        self.ensure_one()
-
-        origin_record = False
-        if self.origin_model and self.origin_res_id:
-            try:
-                origin_record = self.env[self.origin_model].browse(self.origin_res_id)
-                if not origin_record.exists():
-                    origin_record = False
-            except Exception:
-                origin_record = False
-
-        return self.env["sarabun.route.template"].find_matching_templates(
-            origin_record=origin_record,
-            department_id=self.sender_department_id.id if self.sender_department_id else False,
-            document_type_id=self.document_type_id.id if self.document_type_id else False,
-        )
-
-    def _apply_route_template(self, template):
-        """Apply route template to this document"""
-        self.ensure_one()
-        self.route_template_id = template
-        # Create routing lines from template
-        lines = []
-        for tmpl_line in template.line_ids:
-            line_vals = {
-                "sequence": tmpl_line.sequence,
-                "routing_type": tmpl_line.routing_type,
-                "recipient_type": tmpl_line.recipient_type,
-                "user_id": tmpl_line.user_id.id if tmpl_line.user_id else False,
-                "department_id": tmpl_line.department_id.id if tmpl_line.department_id else False,
-                "role_id": tmpl_line.role_id.id if tmpl_line.role_id else False,
+        step = self.routing_step_ids.filtered(
+            lambda s: s.is_originator and s.state != "done"
+        )[:1]
+        if step:
+            now = fields.Datetime.now()
+            step = step.sudo()  # passes the originator write-guard
+            vals = {
+                "state": "done",
+                "disposition": "complete",
+                "acted_by_id": self.sender_user_id.id,
+                "acted_date": now,
+                "sent_date": now,  # ส่ง = ลงนามผู้จัดทำ (auto at send)
             }
-            lines.append((0, 0, line_vals))
-        # Clear existing and set new
-        self.routing_line_ids = [(5, 0, 0)] + lines
+            # Freeze the drafter's signature identity when the originator verb signs
+            # (ลงนามผู้จัดทำ); a non-signing จัดทำ/ร่าง verb snapshots nothing (ADR-0009).
+            if step.verb.show_signature:
+                vals.update(step._signature_snapshot_vals(self.sender_user_id))
+            step.write(vals)
 
-    # === Helper Methods ===
-    def _generate_document_number(self):
-        """Generate document number based on numbering mode"""
+    def action_open_send_wizard(self):
+        """Open the send confirmation wizard (the header Send button). The actual
+        transition stays in action_send, which the wizard calls on confirm."""
         self.ensure_one()
+        if self.state not in ("draft", "returned"):
+            raise UserError(_("Only draft or returned documents can be sent."))
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ยืนยันการส่งเอกสาร"),
+            "res_model": "sarabun.send.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_document_id": self.id},
+        }
 
-        # Use document sequence if specified
-        if self.document_sequence_id:
-            if self.numbering_mode == "reserved":
-                # Use reserved number
-                if not self.document_number_id:
-                    raise UserError(_("Please select a reserved number."))
-                if self.document_number_id.state != "reserved":
-                    raise UserError(_("Selected number is not reserved."))
-                # Mark as used
-                self.document_number_id.write({
-                    "state": "used",
-                    "document_id": self.id,
-                    "used_date": fields.Datetime.now(),
-                })
-                return self.document_sequence_id.format_number(self.document_number_id.number)
-
-            elif self.numbering_mode == "available":
-                # Use available (gap) number
-                if not self.document_number_id:
-                    raise UserError(_("Please select an available number."))
-                # Use the number
-                self.document_sequence_id.use_number(
-                    self.document_number_id.number, self.id
-                )
-                return self.document_sequence_id.format_number(self.document_number_id.number)
-
-            elif self.numbering_mode == "manual":
-                # Use manually entered number
-                if not self.manual_number:
-                    raise UserError(_("Please enter a document number."))
-                # Use the number
-                self.document_sequence_id.use_number(self.manual_number, self.id)
-                return self.document_sequence_id.format_number(self.manual_number)
-
-            else:
-                # Auto mode - use next available
-                return self.document_sequence_id.get_next_and_use(self.id)
-
-        # Fallback to document type sequence if available
-        if self.document_type_id and self.document_type_id.sequence_id:
-            return self.document_type_id.sequence_id.next_by_id()
-
-        # Fallback to default sequence
-        seq = self.env["ir.sequence"].next_by_code("sarabun.document") or "0001"
-
-        return f"สจล./{seq}"
-
-    def _activate_next_recipient(self):
-        """Create the next recipient from routing lines (sequential delivery)"""
+    def _check_sender_withdraw_allowed(self):
+        """Shared guard for the sender's ดึงกลับ / ยกเลิกการส่ง (ADR-0006): only
+        while circulating, by the sender (or a manager), and before any
+        ลงนาม-อนุมัติ step has occurred."""
         self.ensure_one()
+        if self.state != "circulating":
+            raise UserError(_("Only a circulating document can be withdrawn."))
+        if self.sender_user_id != self.env.user and not self.env.user.has_group(
+            "agx_sarabun.group_sarabun_manager"
+        ):
+            raise UserError(_("Only the sender may withdraw this document."))
+        if self.has_signed:
+            raise UserError(_(
+                "This document has been signed; withdrawal now requires issuing a "
+                "cancellation หนังสือ, not ดึงกลับ / ยกเลิกการส่ง."
+            ))
 
-        if self.state != "sent":
+    def action_pull_back(self, reason=None):
+        """ดึงกลับ (recall) — circulating → returned, KEEPING the register number
+        (ADR-0006). Archives the current chain and restarts on re-send: a
+        self-initiated ตีกลับ-to-sender, so the หนังสือ becomes editable and can be
+        revised and re-sent on the same number. Fires ``_on_sarabun_recalled``."""
+        self.ensure_one()
+        self._check_sender_withdraw_allowed()
+        if not reason:
+            raise UserError(_("A reason is required to ดึงกลับ (pull back)."))
+        self.routing_step_ids._clear_activities()
+        self._restart_chain()
+        self.state = "returned"
+        self.message_post(body=_("Document pulled back (ดึงกลับ). Reason: %s") % reason)
+        self._call_origin("_on_sarabun_recalled", self)
+        return True
+
+    def action_recall(self, reason=None):
+        """ยกเลิกการส่ง (cancel-send) — circulating → cancelled (terminal); the
+        register number is VOIDED as a permanent gap (ADR-0006). Sender-only,
+        before any ลงนาม-อนุมัติ step."""
+        self.ensure_one()
+        self._check_sender_withdraw_allowed()
+        if not reason:
+            raise UserError(_("A reason is required to ยกเลิกการส่ง (cancel the send)."))
+        self.routing_step_ids._clear_activities()
+        self.routing_step_ids.filtered(lambda s: s.state in ("waiting", "active")).write(
+            {"state": "skipped"}
+        )
+        self.state = "cancelled"
+        self._void_register("cancelled")
+        self.message_post(body=_("Send cancelled (ยกเลิกการส่ง). Reason: %s") % reason)
+        self._call_origin("_on_sarabun_cancelled", self)
+        return True
+
+    def action_open_recall_wizard(self):
+        """Open the ดึงกลับ / ยกเลิกการส่ง wizard (collects the mandatory reason)."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ดึงกลับ / ยกเลิกการส่ง"),
+            "res_model": "sarabun.recall.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_document_id": self.id},
+        }
+
+    def action_act_on_my_step(self):
+        """Open the act wizard for the current user's active step."""
+        self.ensure_one()
+        if not self.my_active_step_id:
+            raise UserError(_("You have no pending action on this document."))
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Act on Step"),
+            "res_model": "sarabun.step.act.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_step_id": self.my_active_step_id.id},
+        }
+
+    # The awaiting-action surface is native mail.activity now (ADR-0014): the
+    # bespoke systray + its get_my_sarabun_inbox RPC and sarabun_inbox bus were
+    # dissolved. The persistent กล่องหนังสือเข้า (Incoming box) menu/action stays.
+
+    def action_duplicate_to_draft(self):
+        """rejected → a NEW draft linked to the same origin (1:N — ADR-0002 #8)."""
+        self.ensure_one()
+        new_doc = self.copy({"state": "draft", "name": "/", "attempt_seq": 1})
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "sarabun.document",
+            "res_id": new_doc.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
+    # === Stage engine ===
+    def _seed_route_from_template(self):
+        """Materialise the seed template's lines into waiting steps (ADR-0001)."""
+        self.ensure_one()
+        template = self.route_template_id or self.type_id.default_route_id
+        if not template:
             return
+        self.route_template_id = template
+        self.routing_step_ids = [
+            (0, 0, dict(line._seed_vals(), attempt_seq=self.attempt_seq or 1))
+            for line in template.line_ids
+        ]
 
-        # Find which routing lines already have recipients
-        existing_line_ids = self.recipient_ids.mapped("routing_line_id").ids
-
-        # Find next routing line that doesn't have a recipient yet
-        next_line = self.routing_line_ids.filtered(
-            lambda l: l.id not in existing_line_ids
-        ).sorted("sequence")[:1]
-
-        if next_line:
-            # Create new recipient (state=new)
-            Recipient = self.env["sarabun.document.recipient"].sudo()
-            new_recipient = Recipient.create({
-                "document_id": self.id,
-                "routing_line_id": next_line.id,
-                "sequence": next_line.sequence,
-                "routing_type": next_line.routing_type,
-                "recipient_type": next_line.recipient_type,
-                "user_id": next_line.user_id.id if next_line.user_id else False,
-                "department_id": next_line.department_id.id if next_line.department_id else False,
-                "department_text": next_line.department_text,
-                "role_id": next_line.role_id.id if next_line.role_id else False,
-                "state": "new",
-            })
-            new_recipient._send_notification()
-        else:
-            # No more routing lines - check if completed
-            self._check_completion()
-
-    def _check_completion(self):
-        """Check if all routing lines are done and update document state"""
+    def _shift_stages_from(self, order):
+        """Make room for an inserted stage (เกษียนสั่งการ) at `order`."""
         self.ensure_one()
+        for step in self.routing_step_ids.filtered(lambda s: s.order >= order):
+            step.order = step.order + 1
 
-        if self.state != "sent":
-            return
-
-        # Check for rejected recipients
-        rejected = self.recipient_ids.filtered(lambda r: r.state == "rejected")
-        if rejected:
-            # Document stays in sent state, origin notified
-            return
-
-        # Check if all routing lines have been processed
-        # (recipient exists and state is not 'new')
-        all_lines_count = len(self.routing_line_ids)
-        completed_count = len(self.recipient_ids.filtered(
-            lambda r: r.state in ("acknowledged", "approved")
-        ))
-
-        if completed_count >= all_lines_count:
-            self.state = "completed"
-            self._on_routing_completed()
-
-    def _mark_recipient_read(self):
-        """Mark the current user's new recipient as read"""
+    def _stage_complete(self, order):
+        """A stage is passed when every gating step in it is positively done.
+        A stage with no gating step never stalls the Route."""
         self.ensure_one()
-        user = self.env.user
-
-        # Find new recipients for current user
-        for recipient in self.recipient_ids.filtered(lambda r: r.state == "new"):
-            if recipient._can_user_access(user):
-                recipient.mark_as_read()
-
-    def read(self, fields=None, load="_classic_read"):
-        """Override to track read_date when document form is opened"""
-        result = super().read(fields=fields, load=load)
-
-        # Only track when reading full record (form view)
-        # Avoid tracking when reading partial fields (list view)
-        if fields is None or "subject" in fields:
-            for record in self:
-                if record.state == "sent":
-                    record.sudo()._mark_recipient_read()
-
-        return result
-
-    def _on_routing_completed(self):
-        """Called when all routing lines are completed"""
-        self.message_post(
-            body=_("All routing completed. Document is now complete."),
-            message_type="notification",
+        gating = self.routing_step_ids.filtered(lambda s: s.order == order and s.gating)
+        if not gating:
+            return True
+        return all(
+            s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS for s in gating
         )
 
-        # Callback to origin record if exists
-        # Use sudo() because the approver may not have access to the origin record
-        if self.origin_model and self.origin_res_id:
-            try:
-                origin_record = self.env[self.origin_model].sudo().browse(self.origin_res_id)
-                if origin_record.exists() and hasattr(origin_record, "_on_sarabun_completed"):
-                    _logger.info(
-                        "Calling _on_sarabun_completed on %s (id=%s)",
-                        self.origin_model, self.origin_res_id
-                    )
-                    origin_record._on_sarabun_completed(self)
-            except Exception as e:
-                _logger.exception(
-                    "Error calling _on_sarabun_completed for %s (id=%s): %s",
-                    self.origin_model, self.origin_res_id, e
-                )
-
-    def _on_routing_rejected(self, recipient):
-        """Called when a recipient rejects the document"""
-        self.message_post(
-            body=_("Document rejected by %s. Reason: %s")
-            % (recipient.actioned_by.name, recipient.comment or _("No reason")),
-            message_type="notification",
-        )
-
-        # Callback to origin record if exists
-        # Use sudo() because the approver may not have access to the origin record
-        if self.origin_model and self.origin_res_id:
-            try:
-                origin_record = self.env[self.origin_model].sudo().browse(self.origin_res_id)
-                if origin_record.exists() and hasattr(origin_record, "_on_sarabun_rejected"):
-                    _logger.info(
-                        "Calling _on_sarabun_rejected on %s (id=%s)",
-                        self.origin_model, self.origin_res_id
-                    )
-                    origin_record._on_sarabun_rejected(self, recipient)
-            except Exception as e:
-                _logger.exception(
-                    "Error calling _on_sarabun_rejected for %s (id=%s): %s",
-                    self.origin_model, self.origin_res_id, e
-                )
-
-    def _trigger_origin_action_callback(self, recipient, action):
-        """Trigger _on_sarabun_action callback on origin record for every action"""
+    def _advance_stage(self):
+        """Activate stages in order; stop at the first stage with unfinished gating;
+        complete the document when all gating is positively done."""
         self.ensure_one()
-        if self.origin_model and self.origin_res_id:
-            try:
-                origin_record = self.env[self.origin_model].sudo().browse(self.origin_res_id)
-                if origin_record.exists() and hasattr(origin_record, "_on_sarabun_action"):
-                    _logger.info(
-                        "Calling _on_sarabun_action on %s (id=%s) with action=%s",
-                        self.origin_model, self.origin_res_id, action
-                    )
-                    origin_record._on_sarabun_action(self, recipient, action)
-            except Exception as e:
-                _logger.exception(
-                    "Error calling _on_sarabun_action for %s (id=%s): %s",
-                    self.origin_model, self.origin_res_id, e
-                )
-
-    # === Constraints ===
-    @api.constrains("routing_line_ids")
-    def _check_routing_lines(self):
-        for record in self:
-            approve_lines = record.routing_line_ids.filtered(
-                lambda l: l.routing_type == "approve"
+        if self.state != "circulating":
+            return
+        for order in sorted(set(self.routing_step_ids.mapped("order"))):
+            waiting = self.routing_step_ids.filtered(
+                lambda s: s.order == order and s.state == "waiting"
             )
-            if len(approve_lines) > 1:
-                # Allow multiple approvers but warn via tracking
-                pass
+            if waiting:
+                waiting._activate()
+            if not self._stage_complete(order):
+                return  # frontier — wait for this stage's gating steps
+        self._complete_document()
 
-    # === Portal ===
-    def _compute_access_url(self):
-        """Compute the access URL for portal access."""
-        super()._compute_access_url()
-        for document in self:
-            document.access_url = f"/my/sarabun_document/{document.id}"
+    def _complete_document(self):
+        self.ensure_one()
+        if self.state != "circulating":
+            return
+        self.state = "completed"
+        self.routing_step_ids._clear_activities()  # clear any remaining to-dos
+        # ลงทะเบียน happens HERE — the number runs only once the final ลงนาม/อนุมัติ is
+        # in (ADR-0010). Must precede the freeze so the frozen PDF carries the number.
+        self._assign_register_number()
+        self._freeze_signed_copy()  # P5
+        self.message_post(body=_("All routing completed. Document is now complete."))
+        self._call_origin("_on_sarabun_completed", self)
 
-    def _compute_report_preview_url(self):
-        """Compute the preview URL for report preview."""
-        for document in self:
-            document.report_preview_url = document.get_portal_url(report_type='html')
+    # === Negative paths (driven from step dispositions) ===
+    def _do_return(self, step, destination="sender_restart", resume_step_id=None):
+        """ตีกลับ — send back for revision; destination chosen by the returner.
+
+        Archive-not-overwrite (ADR-0006): the current attempt is ALWAYS frozen as
+        history (``active=False``, ``attempt_seq`` bumped) — never reset in place.
+        The new attempt re-seeds either the full template (restart) or just the
+        chosen resume step onward (resume), leaving the prior chain intact."""
+        self.ensure_one()
+        self.routing_step_ids._clear_activities()  # drop to-dos before archive
+        if destination == "resume_step" and resume_step_id:
+            resume = self.env["sarabun.routing.step"].browse(int(resume_step_id))
+            # Snapshot the tail's seed vals BEFORE archiving, then recreate them
+            # fresh in the new attempt (the originals stay archived as history).
+            tail = self.routing_step_ids.filtered(
+                lambda s: s.order >= resume.order
+            ).sorted("order")
+            seeds = [s._resume_seed_vals() for s in tail]
+            self._bump_attempt_and_archive()
+            new_seq = self.attempt_seq or 1
+            self.routing_step_ids = [
+                (0, 0, dict(v, attempt_seq=new_seq)) for v in seeds
+            ]
+            self._ensure_originator_step()  # resume tail starts above row 1 — re-add it
+        else:
+            self._restart_chain()
+        self.state = "returned"
+        self.message_post(body=_("Document returned for revision (ตีกลับ)."))
+        self._call_origin("_on_sarabun_returned", self, step)
+
+    def _do_reject(self, step):
+        """ปฏิเสธ — terminal; void the number, skip remaining steps."""
+        self.ensure_one()
+        self.routing_step_ids._clear_activities()
+        self.routing_step_ids.filtered(lambda s: s.state in ("waiting", "active")).write(
+            {"state": "skipped"}
+        )
+        self.state = "rejected"
+        self._void_register("rejected")
+        self.message_post(body=_("Document rejected (ปฏิเสธ)."))
+        self._call_origin("_on_sarabun_rejected", self, step)
+
+    def _bump_attempt_and_archive(self):
+        """Freeze the current attempt's steps as history and start a new attempt.
+
+        sudo: archiving is an ENGINE write over the whole chain — the originator row
+        included — so it must pass the ผู้จัดทำ/ผู้ส่ง write-guard. Without it the
+        sender's own ดึงกลับ (which runs in their user env, unlike a returner's
+        sudoed ตีกลับ) died on "the ผู้จัดทำ/ผู้ส่ง step is fixed"."""
+        self.ensure_one()
+        self.routing_step_ids.sudo().write({"active": False})
+        self.attempt_seq = (self.attempt_seq or 1) + 1
+
+    def _restart_chain(self):
+        """Archive the current chain and re-seed a fresh waiting one for a restart
+        (ตีกลับ→sender_restart or ดึงกลับ). Prefer the route template; if the
+        document has no template — the common from_record / ad-hoc case — recreate
+        the just-archived chain's steps so the Route is never left empty (which
+        would strand the หนังสือ in ``returned``, unable to re-send)."""
+        self.ensure_one()
+        seeds = [s._resume_seed_vals() for s in self.routing_step_ids.sorted("order")]
+        self._bump_attempt_and_archive()
+        self._seed_route_from_template()
+        if not self.routing_step_ids:
+            new_seq = self.attempt_seq or 1
+            self.routing_step_ids = [
+                (0, 0, dict(v, attempt_seq=new_seq)) for v in seeds
+            ]
+        # The archived attempt's originator is now inactive — re-add it (unless the
+        # recreated seeds already carried one) so the new attempt keeps its row 1.
+        self._ensure_originator_step()
+
+    # === Origin adapter dispatch (ADR-0004: same txn, no swallow) ===
+    def _call_origin(self, method, *args):
+        """Dispatch an origin callback in the actor's transaction (ADR-0004 §8.7).
+        sudo() is used because the approver legitimately lacks rights on the origin,
+        but there is NO try/except — a raising callback propagates and rolls the
+        whole action back (correctness over availability; no silent swallow)."""
+        self.ensure_one()
+        if not (self.origin_model and self.origin_res_id):
+            return
+        model = self.env.get(self.origin_model)
+        if model is None:
+            return
+        origin = model.sudo().browse(self.origin_res_id)
+        if not origin.exists():
+            return
+        fn = getattr(origin, method, None)
+        if fn:
+            fn(*args)
+
+    # === Numbering / Register (P3 — ADR-0002 §4) ===
+    @api.constrains("numbering_mode", "kind")
+    def _check_numbering_mode_scope(self):
+        for doc in self:
+            if doc.kind == "from_record" and doc.numbering_mode != "auto":
+                raise ValidationError(_(
+                    "from_record documents register automatically; "
+                    "reserved numbering is for manual compose only."
+                ))
+
+    def _resolve_sequence(self):
+        """Resolve the เล่มทะเบียน this หนังสือ issues from (ADR-0012): the book chosen
+        on the document, else the unit's เล่มทะเบียนหลัก / only book. Block on missing
+        or ambiguous; never number from a default pool (DESIGN §4.2)."""
+        self.ensure_one()
+        dept = self.sender_department_id
+        # An archived book must not issue a number: sequence_id is a stored compute
+        # snapshotted at create, so a draft can still hold a book the unit retired
+        # afterwards. Treat an inactive pick as unset and fall back to the unit's
+        # (active) default — everywhere else already filters archived books out.
+        seq = (self.sequence_id.active and self.sequence_id) or (
+            dept and dept._sarabun_default_sequence()
+        )
+        if not seq:
+            unit = dept.display_name
+            if dept and dept._sarabun_registers():
+                raise UserError(_(
+                    "ส่วนงาน '%(unit)s' มีหลายเล่มทะเบียน — โปรดเลือกเล่มทะเบียนที่จะใช้ส่ง "
+                    "(หรือกำหนดเล่มทะเบียนหลักของหน่วยงาน)."
+                ) % {"unit": unit})
+            raise UserError(_(
+                "ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%(unit)s'. "
+                "(No register configured for unit '%(unit)s'.) "
+                "Configure a register before sending."
+            ) % {"unit": unit})
+        return seq
+
+    def _assign_register_number(self):
+        """ลงทะเบียน — the distinct Register seam (phase-2 clerk gate lands here).
+        Called at completion (ADR-0010): the number runs only once the final
+        ลงนาม/อนุมัติ is in, so a document that is rejected/cancelled mid-route never
+        consumes a number. Idempotent (guarded on ``register_number_id``).
+
+        NOTE: do not rename back to ``_register`` — that name is reserved by
+        Odoo's ORM (BaseModel._register, the registry-visibility flag) and gets
+        clobbered to a bool on registry reload."""
+        self.ensure_one()
+        if self.register_number_id:
+            return
+        seq = self._resolve_sequence()
+        if self.numbering_mode == "reserved":
+            number = self.reserved_number_id
+            if not number or number.state != "reserved" or number.sequence_id != seq:
+                raise UserError(_("Select a valid reserved number for this register."))
+            number.write({
+                "state": "used",
+                "document_id": self.id,
+                "used_date": fields.Datetime.now(),
+            })
+        else:  # auto
+            number = seq.allocate(self)
+        self.register_number_id = number
+        self.name = number.register_number
+
+    def _void_register(self, reason):
+        """Void the register number as a permanent gap (เลขยกเลิก) — never reissued.
+
+        Since ADR-0010 the number is assigned at completion, so reject/cancel (both
+        pre-completion) find no number to void — this is a guarded no-op on the normal
+        path, kept for the ledger's reserved/manual paths and belt-and-braces."""
+        self.ensure_one()
+        if self.register_number_id:
+            self.register_number_id.write({
+                "state": "voided",
+                "void_reason": reason,
+                "void_date": fields.Datetime.now(),
+            })
+
+    # === Signing / official record (P5 — DESIGN §5) ===
+    def _signature_steps(self):
+        """Completed ลงนาม-อนุมัติ steps — the signature block(s)."""
+        self.ensure_one()
+        return self.routing_step_ids.filtered(
+            lambda s: s.state == "done"
+            and s.disposition in POSITIVE_DISPOSITIONS
+            and s.verb.is_signature
+        ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
+
+    def _kasian_trail_steps(self):
+        """The เกษียน/endorsement trail — AUDIT ONLY (ADR-0008). No longer rendered on
+        the official document (the document shows signatures only — see
+        _signature_block_steps); kept for UI / audit uses."""
+        self.ensure_one()
+        return self.routing_step_ids.filtered(
+            lambda s: s.state == "done"
+            and s.disposition in POSITIVE_DISPOSITIONS
+            and s.verb.gating
+        ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
+
+    def _signature_block_steps(self):
+        """Signatures rendered on the official document (ADR-0008): every positive-done
+        step whose verb has show_signature — the signing ผู้จัดทำ + เห็นชอบ +
+        ลงนาม-อนุมัติ — in one uniform ลงนาม/อนุมัติ format, ordered by stage. Non-signing
+        verbs (ตรวจสอบ / พิจารณา / ส่งต่อ, a non-signing ผู้จัดทำ) render nothing; the
+        routing trail is audit-only."""
+        self.ensure_one()
+        return self.routing_step_ids.filtered(
+            lambda s: s.state == "done"
+            and s.disposition in POSITIVE_DISPOSITIONS
+            and s.verb.show_signature
+        ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
 
     def _get_delegated_report_action(self):
-        """Get report action from origin model if available for delegation"""
+        """The origin's report — the official PDF body for a has-source Document
+        (delegation contract, ADR-0004). The source report embeds the endorsement
+        block at its own tail (ADR-0007); False → this Document has no source report
+        and renders our own standalone report instead.
+
+        Resolved under sudo: rendering the official document is a SYSTEM operation
+        gated by the หนังสือ's own read access (the controller checks it), so a Route
+        recipient without rights on the origin still gets the correct report — and an
+        origin override that reads its own fields here never trips the recipient's ACL."""
         self.ensure_one()
         if self.origin_model and self.origin_res_id:
-            try:
-                origin = self.env[self.origin_model].browse(self.origin_res_id)
+            model = self.env.get(self.origin_model)
+            if model is not None:
+                origin = model.sudo().browse(self.origin_res_id)
                 if origin.exists() and hasattr(origin, "_get_sarabun_report_action"):
                     return origin._get_sarabun_report_action()
-            except Exception:
-                pass
         return False
 
     def _get_report_base_filename(self):
-        """Override to use origin filename when delegating report"""
         self.ensure_one()
-        report_action = self._get_delegated_report_action()
-        if report_action and self.origin_model and self.origin_res_id:
-            try:
-                origin = self.env[self.origin_model].browse(self.origin_res_id)
-                if origin.exists():
-                    if hasattr(origin, '_get_report_base_filename'):
-                        return origin._get_report_base_filename()
-                    return origin.display_name
-            except Exception:
-                pass
-        return 'Sarabun Document-%s' % (self.name)
+        name = (self.name or "").replace("/", "-") or "sarabun"
+        return f"{name} - {self.subject or ''}".strip()
 
-    def open_preview(self):
-        if self.id:
-            return {
-                'type': 'ir.actions.act_url',
-                'url': self.access_url,
-                'target': 'new',
-            }
+    def _render_official_pdf(self):
+        """The official PDF — a SINGLE report, no cover sheet, no merge (ADR-0007).
+        Rendered with sudo — the frozen copy is the system's official record.
+
+        has-source: the origin's delegated report, which `t-call`s the endorsement
+        block (เกษียน trail + signature) at its own tail. no-source: our own
+        standalone document report (header + เนื้อหา + the same block)."""
+        self.ensure_one()
+        Report = self.env["ir.actions.report"].sudo()
+        delegated = self._get_delegated_report_action()
+        if delegated and self.origin_res_id:
+            pdf, _dummy = Report._render_qweb_pdf(
+                delegated.report_name, [self.origin_res_id]
+            )
+        else:
+            pdf, _dummy = Report._render_qweb_pdf(
+                "agx_sarabun.action_report_sarabun_document", [self.id]
+            )
+        return pdf
+
+    def _get_official_pdf(self):
+        """Frozen bytes once completed; a live render before that (§5.4)."""
+        self.ensure_one()
+        if self.is_frozen and self.signed_pdf:
+            return base64.b64decode(self.signed_pdf)
+        return self._render_official_pdf()
+
+    def _render_preview_html(self):
+        """On-screen HTML preview — the SAME report as the PDF, rendered as HTML (fast,
+        no wkhtmltopdf) and framed to A4 (ADR-0007). This is a screen preview only; the
+        official record stays the PDF (freeze / print). Always a live render."""
+        self.ensure_one()
+        Report = self.env["ir.actions.report"].sudo()
+        delegated = self._get_delegated_report_action()
+        if delegated and self.origin_res_id:
+            html, _dummy = Report._render_qweb_html(
+                delegated.report_name, [self.origin_res_id]
+            )
+        else:
+            html, _dummy = Report._render_qweb_html(
+                "agx_sarabun.action_report_sarabun_document", [self.id]
+            )
+        return self._frame_preview_html(html)
+
+    def _frame_preview_html(self, html):
+        """Constrain the report's .page to A4 on a page-like backdrop so the HTML
+        preview reads like the printed sheet. Injected last, so it wins over the
+        report's own .page rules."""
+        if isinstance(html, bytes):
+            html = html.decode("utf-8")
+        style = (
+            "<style>"
+            "body{background:#d9d9d9 !important;margin:0;}"
+            ".page{position:relative;box-sizing:border-box;width:210mm;"
+            "min-height:296mm;margin:12px auto;padding:15mm;background:#fff;"
+            "box-shadow:0 1px 6px rgba(0,0,0,.35);}"
+            "</style>"
+        )
+        if "</body>" in html:
+            html = html.replace("</body>", style + "</body>", 1)
+        else:
+            html += style
+        return html.encode("utf-8")
+
+    def _freeze_signed_copy(self):
+        """Freeze the immutable ฉบับลงนาม at completion (idempotent, one-way) AND drop
+        a visible copy into the หนังสือ's Attachments (feedback).
+
+        ``signed_pdf`` is a ``res_field``-backed Binary — Odoo hides such attachments
+        from the record's attachment list — so on its own the approved PDF never
+        surfaces in the chatter box. A second plain ``ir.attachment`` (``res_field``
+        unset) is what actually appears in the record's data for download."""
+        self.ensure_one()
+        if self.is_frozen:
+            return
+        pdf = self._render_official_pdf()
+        filename = self._get_report_base_filename() + ".pdf"
+        datas = base64.b64encode(pdf)
+        self.write({
+            "signed_pdf": datas,
+            "signed_pdf_filename": filename,
+            "signed_at": fields.Datetime.now(),
+        })
+        # sudo: completion runs in the final approver's env and the freeze is a system
+        # act — they may lack ir.attachment create rights for this record.
+        self.env["ir.attachment"].sudo().create({
+            "name": filename,
+            "datas": datas,
+            "res_model": "sarabun.document",
+            "res_id": self.id,
+            "mimetype": "application/pdf",
+        })
 
     def action_print_report(self):
-        """Print report - uses delegated report from origin if available"""
+        """Open the official PDF (frozen if completed, else a live preview)."""
         self.ensure_one()
-        delegated_report = self._get_delegated_report_action()
-        if delegated_report and self.origin_model and self.origin_res_id:
-            # Use origin model's report
-            origin = self.env[self.origin_model].browse(self.origin_res_id)
-            if origin.exists():
-                return delegated_report.report_action(origin)
-        # Fallback to Sarabun's own report
-        return self.env.ref('agx_sarabun.action_report_sarabun_documents').report_action(self)
+        return {
+            "type": "ir.actions.act_url",
+            "url": "/sarabun/document/%s/pdf" % self.id,
+            "target": "new",
+        }
+
+    def action_open_pdf_preview(self):
+        """Open the official PDF in a preview dialog (ADR-0007) — the draft
+        'ดูตัวอย่างเอกสาร' button, since a draft has no inline preview yet. Sent
+        documents preview inline in the form via the sarabun_pdf_inline widget."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.client",
+            "tag": "sarabun_pdf_preview",
+            "name": _("ตัวอย่างเอกสาร (Preview)"),
+            "target": "new",
+            "params": {"doc_id": self.id, "doc_name": self.display_name},
+        }

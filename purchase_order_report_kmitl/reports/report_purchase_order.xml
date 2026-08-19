@@ -158,7 +158,7 @@
                                 <th>ลำดับ</th>
                                 <th class="text-center">รายการ</th>
                                 <th class="text-center">จำนวน</th>
-                                <th class="text-end">ราคาต่อหน่วย (บาท)</th>
+                                <th class="text-end">ราคา (บาท)</th>
                                 <th class="text-end">จำนวนเงิน (บาท)</th>
                             </tr>
                         </thead>

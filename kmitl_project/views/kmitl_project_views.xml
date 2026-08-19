@@ -24,7 +24,12 @@
         <field name="name">view.kmitl.project.tree</field>
         <field name="model">kmitl.project</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree decoration-info="state in ('to_verify', 'to_send', 'sent')"
+                decoration-primary="state == 'in_progress'"
+                decoration-success="state == 'complete'"
+                decoration-warning="state == 'returned'"
+                decoration-danger="state == 'rejected'"
+                decoration-muted="state == 'cancel'">
                 <field name="name"/>
                 <field name="activity_ids" widget="list_activity" optional="show"/>
                 <field name="key" optional="show" />
@@ -32,7 +37,13 @@
                 <field name="project_type"/>
                 <field name="department_analytic_id" optional="show" />
                 <field name="operating_unit_id" optional="hide" groups="operating_unit.group_multi_operating_unit" />
-                <field name="state" widget="badge" />
+                <field name="state" widget="badge"
+                    decoration-info="state in ('to_verify', 'to_send', 'sent')"
+                    decoration-primary="state == 'in_progress'"
+                    decoration-success="state == 'complete'"
+                    decoration-warning="state == 'returned'"
+                    decoration-danger="state == 'rejected'"
+                    decoration-muted="state == 'cancel'" />
             </tree>
         </field>
     </record>
@@ -44,21 +55,25 @@
         <field name="arch" type="xml">
             <form string="KMITL Project">
                 <header>
-                    <button string="Confirm" name="button_new" states="draft" type="object" class="oe_highlight" />
-                    <button string="In Progress" name="button_in_progress" states="new" type="object" />
-                    <button string="On hold" name="button_on_hold" states="new" type="object" />
-                    <button string="Complete" name="button_complete" states="in_progress" type="object" class="oe_highlight" />
-                    <button string="Reset to Draft" name="button_draft" groups="project.group_project_manager" states="cancel,in_progress,on_hold" type="object" />
-                    <button string="Reset to Draft" name="button_draft" states="new" type="object" />
-                    <button string="Cancel" name="button_cancel" groups="project.group_project_manager" states="draft,new,in_progress,on_hold" type="object" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,new,in_progress,complete" />
+                    <button string="ส่งเข้าแผน / รอจัดสรรงบประมาณ" name="action_confirm" states="draft" type="object" class="oe_highlight"
+                        confirm="เมื่อส่งเข้าแผน ระบบจะออกเลขที่โครงการ + ล็อกเฉพาะปีงบประมาณ (รหัสงบ/มิติงบ และรายละเอียดโครงการยังแก้ได้จนกว่าจะจองงบประมาณ) ต้องการยืนยันหรือไม่?" />
+                    <button string="จองงบประมาณ" name="action_reserve_budget" type="object" class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'to_verify')]}" />
+                    <button string="อนุมัติ" name="action_approve" states="to_send,sent" type="object" class="oe_highlight" />
+                    <button string="ปิดโครงการ" name="action_complete" states="in_progress" type="object" class="oe_highlight" />
+                    <button string="Reset to Draft" name="action_draft" states="to_verify,to_send,returned" type="object" />
+                    <button string="Reset to Draft" name="action_draft" groups="project.group_project_manager" states="rejected,cancel" type="object" />
+                    <button string="Cancel" name="action_cancel" groups="project.group_project_manager" states="draft,to_verify,to_send,returned,rejected,in_progress" type="object" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,to_send,sent,in_progress,complete" />
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
                     <widget name="web_ribbon" title="Cancelled" bg_color="bg-black" attrs="{'invisible': [('state', '!=', 'cancel')]}" />
-                    <widget name="web_ribbon" title="On hold" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'on_hold')]}" />
+                    <widget name="web_ribbon" title="ถูกตีกลับ" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'returned')]}" />
+                    <widget name="web_ribbon" title="ถูกปฏิเสธ" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'rejected')]}" />
                     <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'complete')]}" />
                     <field name="is_editable" invisible="1" />
+                    <field name="budget_target_locked" invisible="1" />
                     <div class="oe_button_box" name="button_box" groups="base.group_user">
                         <button
                             string="Portal Preview"
@@ -74,7 +89,14 @@
                             class="oe_stat_button"
                             icon="fa-thumb-tack"
                             attrs="{'invisible': [('budget_commitment_count', '=', 0)]}">
-                            <field name="budget_commitment_count" widget="statinfo" string="ผูกพันงบประมาณ" />
+                            <field name="budget_commitment_count" widget="statinfo" string="Budget Commitment" />
+                        </button>
+                        <button
+                            name="action_open_budget_move_lines"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-exchange">
+                            <field name="budget_move_line_count" widget="statinfo" string="Budget Move" />
                         </button>
                     </div>
                     <div class="oe_title">
@@ -86,7 +108,8 @@
                     <group>
                         <group>
                             <field name="id" invisible="1"/>
-                            <field name="account_fiscal_year_id" widget="selection" attrs="{'readonly': [('id', '!=', False)]}" />
+                            <field name="key" attrs="{'invisible': [('key', '=', False)]}" />
+                            <field name="account_fiscal_year_id" widget="selection" attrs="{'readonly': [('budget_target_locked', '=', True)]}" />
                             <field name="manager_id" widget="many2one_avatar_employee" options="{'no_create_edit': True, 'no_open': True}"/>
                             <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit" />
 
@@ -104,13 +127,13 @@
                             <field name="company_id" invisible="1" />
                         </group>
                     </group>
-                    <group string="ความสอดคล้องกับนโยบายสถาบัน">
+                    <group name="institute_policy_alignment" string="ความสอดคล้องกับนโยบายสถาบัน">
                         <group>
-                            <field name="impact_id" widget="selection" />
-                            <field name="global_index_id" widget="selection" />
+                            <field name="impact_id" widget="radio" />
+                            <field name="global_index_id" widget="radio" />
                         </group>
                         <group>
-                            <field name="fight_id" widget="selection" />
+                            <field name="fight_id" widget="radio" />
                         </group>
                     </group>
                     <notebook>
@@ -122,17 +145,20 @@
                                 <field name="kmitl_plan_id" />
                             </group>
                             <group name="budget" string="งบประมาณ">
-                                <field name="budget_amount" required="1"/>
-                                <field name="budget_remaining" attrs="{'invisible': [('state', '=', 'draft')]}"/>
-                                <button name="action_open_reservation_picker" type="object"
-                                    string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
-                                    class="btn btn-primary" icon="fa-sitemap" colspan="2"
-                                    attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                                <field name="budget_account_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
-                                <field name="activity_analytic_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
-                                <field name="fund_analytic_id" readonly="1" widget="selection" />
-                                <field name="department_analytic_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
-                                <field name="source_analytic_id" readonly="1" widget="selection" />
+                                <div attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('budget_amount', '>', 0)]}"
+                                     class="alert alert-warning" role="alert" colspan="2">
+                                    <strong>ยังไม่ได้รับการจัดสรรงบประมาณ</strong>
+                                    — โปรดรอให้งานแผนโอนงบเข้าโครงการ (ปรับเข้าแผน) ก่อนจึงจะจองงบประมาณได้
+                                </div>
+                                <field name="source_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
+                                <field name="budget_account_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
+                                <field name="activity_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
+                                <field name="fund_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
+                                <field name="department_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
+                                <field name="budget_estimate" />
+                                <field name="budget_amount" />
+                                <field name="budget_reserved" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
+                                <field name="budget_remaining" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
                                 <field name="analytic_account_id" invisible="1" />
                                 <field name="analytic_distribution" invisible="1" />
                             </group>
@@ -170,18 +196,46 @@
                                 </field>
                             </group>
                         </page>
+                        <page name="project_budget" string="งบประมาณโครงการ">
+                            <div class="alert alert-info" role="alert">
+                                <i>วางแผนงบประมาณของโครงการ ฝั่งรายจ่ายจัดกลุ่มเป็นหมวดตามประเภทงบให้อัตโนมัติ (งบบุคลากร/งบดำเนินงาน/งบอุดหนุน) พร้อมคำอธิบายการแตกตัวคูณและจำนวนเงิน หากโครงการมีรายรับ ให้ติ๊กช่องด้านล่างเพื่อแสดงตารางรายรับ</i>
+                            </div>
+                            <group>
+                                <field name="has_income" />
+                            </group>
+                            <div attrs="{'invisible': [('has_income', '=', False)]}">
+                                <separator string="รายรับ" />
+                                <field name="income_line_ids" nolabel="1" colspan="2" context="{'default_budget_type': 'income'}">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="budget_type" invisible="1" />
+                                        <field name="category_id" invisible="1" />
+                                        <field name="name" placeholder="ชื่อรายการรายรับ (พิมพ์เอง)" />
+                                        <field name="budget_item_id" string="เลือกจากรายการ" options="{'no_create': True, 'no_open': True}" optional="show" />
+                                        <field name="description" placeholder="คำอธิบาย" optional="hide" />
+                                        <field name="amount" sum="รวม" />
+                                    </tree>
+                                </field>
+                            </div>
+                            <separator string="รายจ่าย" />
+                            <field name="expense_line_ids" nolabel="1" colspan="2" widget="project_budget_table" context="{'default_budget_type': 'expense'}" />
+                            <group class="oe_subtotal_footer" colspan="2">
+                                <field name="budget_income_total" attrs="{'invisible': [('has_income', '=', False)]}" />
+                                <field name="budget_expense_total" />
+                            </group>
+                        </page>
                         <page string="การดำเนินโครงการ">
                             <group>
-                                <group string="การดำเนินโครงการ">
+                                <group name="project_execution" string="การดำเนินโครงการ">
                                     <field name="methodology_ids" widget="many2many_checkboxes" />
                                     <field name="methodology_detail" string="รายละเอียด" />
                                 </group>
-                                <group string="วิธีการ/เครื่องมือติดตามและประเมินผล">
+                                <group name="monitoring_evaluation_tools" string="วิธีการ/เครื่องมือติดตามและประเมินผล">
                                     <field name="evaluation_ids" widget="many2many_checkboxes" string="วิธีการ" />
                                     <field name="evaluation_detail" string="รายละเอียด" />
                                 </group>
                             </group>
-                            <group string="เป้าหมาย ผลผลิต และผลลัพธ์">
+                            <group name="goals_outputs_outcomes" string="เป้าหมาย ผลผลิต และผลลัพธ์">
                                 <group>
                                     <separator string="ผลผลิต (Output)" />
                                     <div colspan="2" class="alert alert-info" role="alert">
@@ -197,7 +251,7 @@
                                     <field name="outcome_ids" nolabel="1" colspan="2" context="{'default_line_type': 'outcome'}" />
                                 </group>
                             </group>
-                            <group string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ">
+                            <group name="target_group_and_executors" string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ">
                                 <separator string="กลุ่มเป้าหมาย" />
                                 <div colspan="2" class="alert alert-info" role="alert">
                                     <i>ระบุกลุ่มเป้าหมายหลักและจำนวนคน เพื่อกำหนดเป็นตัวชี้วัดและค่าเป้าหมายของโครงการ ซึ่งได้รับประโยชน์จากการดำเนินโครงการ</i>
@@ -214,7 +268,7 @@
                                 </div>
                                 <field name="organizer_ids" nolabel="1" colspan="2" context="{'default_line_type': 'organizer'}"/>
                             </group>
-                            <group string="ผลที่คาดว่าจะได้รับ">
+                            <group name="expected_results" string="ผลที่คาดว่าจะได้รับ">
                                 <div colspan="2" class="alert alert-info" role="alert">
                                     <i>ผลที่เกิดโดยตรงทันทีที่สิ้นสุดโครงการ  และผลที่จะเกิดตามมาในระยะยาว</i>
                                 </div>
@@ -271,23 +325,69 @@
         <field name="model">kmitl.project</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('key', 'ilike', self)]" />
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('key', 'ilike', self)]" />
+                <field name="manager_id" string="Project Manager" />
+                <field name="creating_user_id" />
+                <field name="department_analytic_id" string="Department" />
+                <field name="budget_account_id" string="Budget Account" />
+                <field name="account_fiscal_year_id" />
+                <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" />
                 <separator />
-                <filter name="project_type_project" string="โครงการ/กิจกรรม" domain="[('project_type', '=', 'project')]" />
+                <filter name="my_projects" string="My Projects" domain="[('creating_user_id', '=', uid)]" />
+                <separator />
+                <filter name="project_type_project" string="โครงการ (งบประจำ)" domain="[('project_type', '=', 'project')]" />
+                <filter name="project_type_activity" string="กิจกรรม (งบประจำ)" domain="[('project_type', '=', 'activity')]" />
                 <filter name="project_type_strategic" string="โครงการยุทธศาสตร์" domain="[('project_type', '=', 'strategic_project')]" />
                 <separator />
-                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
+                <filter name="state_draft" string="Draft" domain="[('state', '=', 'draft')]" />
+                <filter name="state_to_verify" string="To Verify / Reserve Budget" domain="[('state', '=', 'to_verify')]" />
+                <filter name="state_to_send" string="To Submit" domain="[('state', '=', 'to_send')]" />
+                <filter name="state_sent" string="Submitted" domain="[('state', '=', 'sent')]" />
+                <filter name="state_in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]" />
+                <filter name="state_complete" string="Completed" domain="[('state', '=', 'complete')]" />
+                <filter name="state_returned" string="Returned" domain="[('state', '=', 'returned')]" />
+                <filter name="state_rejected" string="Rejected" domain="[('state', '=', 'rejected')]" />
+                <filter name="state_cancel" string="Cancelled" domain="[('state', '=', 'cancel')]" />
+                <separator />
+                <filter name="current_fy" string="Current Fiscal Year" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator />
                 <filter string="Late Activities" name="activities_overdue" domain="[('my_activity_date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]" help="Show all records which have a next action date before today"/>
                 <filter string="Today Activities" name="activities_today" domain="[('my_activity_date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
                 <filter string="Future Activities" name="activities_upcoming_all" domain="[('my_activity_date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
-                <group expand="1" string="Group By">
-                    <filter string="ประเภทโครงการ" name="by_project_type" domain="[]" context="{'group_by':'project_type'}"/>
-                    <filter string="สถานะ" name="by_state" domain="[]" context="{'group_by':'state'}"/>
-                    <filter string="ปีงบประมาณ" name="by_account_fiscal_year_id" domain="[]" context="{'group_by':'account_fiscal_year_id'}"/>
+                <separator />
+                <filter name="inactive" string="Archived" domain="[('active', '=', False)]" />
+                <group expand="1" name="group_by" string="Group By">
+                    <filter string="Project Type" name="by_project_type" domain="[]" context="{'group_by':'project_type'}"/>
+                    <filter string="Status" name="by_state" domain="[]" context="{'group_by':'state'}"/>
+                    <filter string="Department" name="by_department" domain="[]" context="{'group_by':'department_analytic_id'}"/>
+                    <filter string="Budget Account" name="by_budget_account" domain="[]" context="{'group_by':'budget_account_id'}"/>
+                    <filter string="Project Manager" name="by_manager" domain="[]" context="{'group_by':'manager_id'}"/>
+                    <filter string="Responsible" name="by_creating_user" domain="[]" context="{'group_by':'creating_user_id'}"/>
+                    <filter string="Fiscal year" name="by_account_fiscal_year_id" domain="[]" context="{'group_by':'account_fiscal_year_id'}"/>
                     <filter string="Operating Unit" name="by_operating_unit" domain="[]" context="{'group_by':'operating_unit_id'}" groups="operating_unit.group_multi_operating_unit"/>
                 </group>
             </search>
+        </field>
+    </record>
+
+    <record id="view_project_budget_line_tree" model="ir.ui.view">
+        <field name="name">view.project.budget.line.tree</field>
+        <field name="model">project.budget.line</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="budget_type" invisible="1" />
+                <field name="is_custom" invisible="1" />
+                <field name="category_id" invisible="1" />
+                <field name="category_complete_name" invisible="1" />
+                <field name="category_parent_path" invisible="1" />
+                <field name="budget_item_id" invisible="1" options="{'no_create': True, 'no_open': True}" />
+                <field name="name" string="รายการ" widget="budget_line_item" placeholder="ระบุรายการ" />
+                <field name="unit" optional="hide" />
+                <field name="unit_price" optional="hide" />
+                <field name="description" placeholder="คำอธิบาย (แตกตัวคูณ)" />
+                <field name="amount" sum="รวม" />
+            </tree>
         </field>
     </record>
 
@@ -300,7 +400,7 @@
                 <field name="name" placeholder="รายการ" />
                 <field name="line_type" invisible="1" />
                 <field name="unit" placeholder="หน่วย" />
-                <field name="amount" />
+                <field name="target" />
             </tree>
         </field>
     </record>
@@ -332,7 +432,7 @@
                         <field name="project_id" invisible="1" />
                     </group>
 
-                    <group string="ระบุเดือนที่ดำเนินการ">
+                    <group name="execution_months" string="ระบุเดือนที่ดำเนินการ">
                         <group>
                             <separator string="ไตรมาสที่ 1 (ต.ค. - ธ.ค.)" />
                             <field name="m10" />

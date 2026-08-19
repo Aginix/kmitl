@@ -214,17 +214,14 @@
                                                 <t t-else="">-</t>
                                             </td>
                                             <td class="text-end border-start">
-                                                <t t-if="plan.analytic_account_balance" t-esc="'{:,.0f}'.format(plan.analytic_account_balance)" />
+                                                <t t-if="plan.analytic_account_balance" t-esc="'{:,.0f}'.format(-plan.analytic_account_balance)" />
                                                 <t t-else="">-</t>
                                             </td>
                                             <td class="text-center border-start">
-                                                <t t-if="plan.state == 'new'">
-                                                    <span class="badge text-bg-secondary">ยังไม่เริ่ม</span>
+                                                <t t-if="plan.state == 'to_verify'">
+                                                    <span class="badge text-bg-secondary">รอตรวจสอบข้อมูล</span>
                                                 </t>
-                                                <t t-elif="plan.state == 'on_hold'">
-                                                    <span class="badge text-bg-warning">ชะลอโครงการ</span>
-                                                </t>
-                                                <t t-elif="plan.state == 'ready'">
+                                                <t t-elif="plan.state == 'verified'">
                                                     <span class="badge text-bg-info">รอดำเนินการ</span>
                                                 </t>
                                                 <t t-elif="plan.state == 'in_progress'">
@@ -370,9 +367,8 @@
                             <div>
                                 <div class="btn-group" role="group" aria-label="สถานะการดำเนินงาน">
                                     <label t-attf-class="btn #{'btn-secondary' if plan.state == 'draft' else 'btn-outline-secondary'}">แบบร่าง</label>
-                                    <label t-attf-class="btn #{'btn-secondary' if plan.state == 'new' else 'btn-outline-secondary'}">ยังไม่เริ่ม</label>
-                                    <label t-attf-class="btn #{'btn-warning' if plan.state == 'on_hold' else 'btn-outline-secondary'}">ชะลอโครงการ</label>
-                                    <label t-attf-class="btn #{'btn-info' if plan.state == 'ready' else 'btn-outline-secondary'}">รอดำเนินการ</label>
+                                    <label t-attf-class="btn #{'btn-secondary' if plan.state == 'to_verify' else 'btn-outline-secondary'}">รอตรวจสอบข้อมูล</label>
+                                    <label t-attf-class="btn #{'btn-info' if plan.state == 'verified' else 'btn-outline-secondary'}">รอดำเนินการ</label>
                                     <label t-attf-class="btn #{'btn-primary' if plan.state == 'in_progress' else 'btn-outline-secondary'}">กำลังดำเนินการ</label>
                                     <label t-attf-class="btn #{'btn-success' if plan.state == 'done' else 'btn-outline-secondary'}">เสร็จสิ้น</label>
                                     <label t-attf-class="btn #{'btn-danger' if plan.state == 'cancel' else 'btn-outline-secondary'}">ยกเลิก</label>

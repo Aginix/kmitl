@@ -1,13 +1,51 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
 
+    <!-- View purchase.guarantee tree -->
+    <record id="view_purchase_guarantee_tree_expiring" model="ir.ui.view">
+        <field name="name">purchase.guarantee.tree.expiring</field>
+        <field name="model">purchase.guarantee</field>
+        <field name="arch" type="xml">
+            <tree string="Guarantees Nearly Expiring"
+                  decoration-muted="days_to_expire &lt; 0"
+                  decoration-danger="days_to_expire &lt; 15 and days_to_expire &gt;= 0"
+                  decoration-warning="days_to_expire &lt; 30 and days_to_expire &gt;= 15">
+                <field name="name"/>
+                <field name="reference"/>
+                <field name="partner_id"/>
+                <field name="guarantee_method_id"/>
+                <field name="amount" optional="hide"/>
+                <field name="date_due_guarantee"/>
+                <field name="days_to_expire" invisible="1"/>
+                <field name="days_to_expire_display"/>
+                <field name="expire_range" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_purchase_guarantee_search_expiring" model="ir.ui.view">
+        <field name="name">purchase.guarantee.search.expiring</field>
+        <field name="model">purchase.guarantee</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" name="group_by" string="Group By">
+                    <filter name="group_by_expire_range" string="Expire Range"
+                            context="{'group_by':'expire_range'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <!-- Action -->
     <record id="action_guarantees_expiring" model="ir.actions.act_window">
         <field name="name">Guarantee Expire</field>
         <field name="res_model">purchase.guarantee</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">['|', ('date_due_guarantee', '&lt;', (context_today() + relativedelta(days=30))), ('date_due_guarantee', '=', False)]</field>
-        <field name="context">{}</field>
+        <field name="view_id" ref="purchase_guarantee_expiration.view_purchase_guarantee_tree_expiring"/>
+        <field name="search_view_id" ref="purchase_guarantee_expiration.view_purchase_guarantee_search_expiring"/>
+        <field name="domain">[('days_to_expire', '&lt;', 90), ('date_due_guarantee', '!=', False)]</field>
+        <field name="context">{'search_default_group_by_expire_range': 1}</field>
     </record>
 
     <!-- Menu -->

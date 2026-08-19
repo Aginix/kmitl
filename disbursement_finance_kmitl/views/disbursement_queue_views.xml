@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- OWL approval queues (audit / authorize), one parametrised client action -->
+    <record id="action_dr_audit_queue" model="ir.actions.client">
+        <field name="name">ตรวจสอบการเบิกจ่าย</field>
+        <field name="tag">disbursement_finance_kmitl.payment_queue</field>
+        <field name="context">{'kind': 'audit'}</field>
+    </record>
+
+    <record id="action_dr_authorize_queue" model="ir.actions.client">
+        <field name="name">อนุมัติเบิกจ่าย</field>
+        <field name="tag">disbursement_finance_kmitl.payment_queue</field>
+        <field name="context">{'kind': 'authorize'}</field>
+    </record>
+
+    <!-- The accounting office's end of the Hand-over: requests the finance office
+         has paid, whose vouchers are waiting in draft to be booked. Lives in the
+         Accounting app because the work is theirs, and the voucher-level list
+         (Accounting ▸ ใบจ่ายรอบันทึกบัญชี) catches the payments made by hand, which
+         have no request to navigate by. -->
+    <record id="action_dr_book_queue" model="ir.actions.client">
+        <field name="name">ใบขอเบิกรอบันทึกบัญชี</field>
+        <field name="tag">disbursement_finance_kmitl.payment_queue</field>
+        <field name="context">{'kind': 'book'}</field>
+    </record>
+
+    <menuitem
+        id="menu_dr_book_queue"
+        name="ใบขอเบิกรอบันทึกบัญชี"
+        parent="accounting_kmitl.menu_accounting_root"
+        action="action_dr_book_queue"
+        sequence="23"
+        groups="accounting_kmitl.group_accounting_kmitl_user"/>
+
+    <!-- Queue menus under the Disbursement app root -->
+    <menuitem
+        id="menu_dr_audit_queue"
+        name="ตรวจสอบการเบิกจ่าย"
+        parent="disbursement.menu_disbursement_root"
+        action="action_dr_audit_queue"
+        sequence="20"
+        groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"/>
+
+    <menuitem
+        id="menu_dr_authorize_queue"
+        name="อนุมัติเบิกจ่าย"
+        parent="disbursement.menu_disbursement_root"
+        action="action_dr_authorize_queue"
+        sequence="30"
+        groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"/>
+
+</odoo>

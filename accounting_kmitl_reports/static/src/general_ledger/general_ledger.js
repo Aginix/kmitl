@@ -41,6 +41,8 @@ export class GeneralLedger extends Component {
             expanded: {},
             // Lazily-fetched Dr/Cr breakdown of each journal entry, by move id.
             linesByMove: {},
+            // "Expand all" toggle: expand every row on the current page.
+            expandAll: false,
             // Filters (mirror the Trial Balance).
             fiscalYearId: false,
             dateFrom: false,
@@ -59,12 +61,20 @@ export class GeneralLedger extends Component {
             sources: [],
             funds: [],
             activities: [],
+            // Per-dimension "only the specified entry" toggles. When false
+            // (default) a selected node also matches its descendants.
+            dimOnlySelf: {
+                departments: false,
+                funds: false,
+                activities: false,
+            },
         });
         this.labels = {
             title: _t("General Ledger"),
             changeCriteria: _t("Change criteria"),
             printPdf: _t("Print PDF"),
             exportExcel: _t("Export Excel"),
+            exportCsv: _t("Export CSV"),
             empty: _t("No entries for the selected criteria."),
             opening: _t("Opening Balance"),
             carried: _t("Carried Forward"),
@@ -168,6 +178,7 @@ export class GeneralLedger extends Component {
                 funds: this.state.funds.map((r) => r.id),
                 activities: this.state.activities.map((r) => r.id),
             },
+            dim_only_self: { ...this.state.dimOnlySelf },
         };
     }
 
@@ -187,6 +198,9 @@ export class GeneralLedger extends Component {
             this.state.sections = data.accounts || [];
         } finally {
             this.state.loading = false;
+        }
+        if (this.state.expandAll) {
+            await this.expandCurrentPage();
         }
     }
 
@@ -261,18 +275,27 @@ export class GeneralLedger extends Component {
     prevPage() {
         if (!this.isFirstPage) {
             this.state.page -= 1;
+            if (this.state.expandAll) {
+                this.expandCurrentPage();
+            }
         }
     }
 
     nextPage() {
         if (!this.isLastPage) {
             this.state.page += 1;
+            if (this.state.expandAll) {
+                this.expandCurrentPage();
+            }
         }
     }
 
     setPageSize(ev) {
         this.state.pageSize = parseInt(ev.target.value) || 100;
         this.state.page = 0;
+        if (this.state.expandAll) {
+            this.expandCurrentPage();
+        }
     }
 
     // ------------------------------------------------------------------
@@ -321,6 +344,12 @@ export class GeneralLedger extends Component {
         }
     }
 
+    // Toggle a dimension's "only the specified entry" flag (no descendants).
+    onToggleDimOnlySelf(code, value) {
+        this.state.dimOnlySelf[code] = value;
+        this.load();
+    }
+
     // ------------------------------------------------------------------
     // Row interactions
     // ------------------------------------------------------------------
@@ -339,6 +368,37 @@ export class GeneralLedger extends Component {
                 "get_move_lines_detail",
                 [moveId]
             );
+        }
+    }
+
+    // Expand every row on the current page, batch-fetching the entry details
+    // that are not cached yet (one round-trip per page).
+    async expandCurrentPage() {
+        const moveIds = new Set();
+        for (const acc of this.pagedSections) {
+            for (const line of acc.lines) {
+                this.state.expanded[line.id] = true;
+                if (line.entry_id && !this.state.linesByMove[line.entry_id]) {
+                    moveIds.add(line.entry_id);
+                }
+            }
+        }
+        if (moveIds.size) {
+            const data = await this.orm.call(
+                REPORT_MODEL,
+                "get_move_lines_details",
+                [[...moveIds]]
+            );
+            Object.assign(this.state.linesByMove, data);
+        }
+    }
+
+    async onToggleExpandAll(ev) {
+        this.state.expandAll = ev.target.checked;
+        if (this.state.expandAll) {
+            await this.expandCurrentPage();
+        } else {
+            this.state.expanded = {};
         }
     }
 
@@ -396,6 +456,13 @@ export class GeneralLedger extends Component {
 
     async exportXlsx() {
         const action = await this.orm.call(REPORT_MODEL, "action_export_xlsx", [
+            this.options,
+        ]);
+        await this.action.doAction(action);
+    }
+
+    async exportCsv() {
+        const action = await this.orm.call(REPORT_MODEL, "action_export_csv", [
             this.options,
         ]);
         await this.action.doAction(action);

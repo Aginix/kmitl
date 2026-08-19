@@ -1,0 +1,208 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* finance_kmitl_assignment
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assignment_rule__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assignment_rule__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assignment_rule__department_analytic_id
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assignment_rule__source_analytic_id
+msgid "Source"
+msgstr "แหล่งเงิน"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assignment_rule__fund_analytic_id
+msgid "Fund"
+msgstr "กองทุน"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assignment_rule__activity_analytic_id
+msgid "Activity"
+msgstr "ด้าน/แผนงาน/กิจกรรม"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assignment_rule__partner_type_id
+msgid "Partner Type"
+msgstr "จ่ายตาม"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_account_payment__assigned_to
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assign_officer_wizard__user_id
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assignment_rule__user_id
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_assignment.view_account_payment_search_assignment
+msgid "Assigned Officer"
+msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_account_payment__assignment_can_assign_me
+msgid "Assignment Can Assign Me"
+msgstr "รับงานนี้ได้"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assign_officer_wizard__payment_id
+msgid "Payment Voucher"
+msgstr "ใบสำคัญจ่าย"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assign_officer_wizard__allowed_user_ids
+msgid "Allowed User"
+msgstr "ผู้ใช้ที่มอบหมายได้"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model,name:finance_kmitl_assignment.model_finance_assignment_rule
+msgid "Finance Assignment Rule"
+msgstr "กฎการมอบหมายใบสำคัญจ่าย"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model,name:finance_kmitl_assignment.model_finance_assign_officer_wizard
+msgid "Assign Finance Payment Officer"
+msgstr "มอบหมายเจ้าหน้าที่การเงินจ่าย"
+
+#. module: finance_kmitl_assignment
+#: model:ir.actions.act_window,name:finance_kmitl_assignment.action_finance_assignment_rule
+#: model:ir.ui.menu,name:finance_kmitl_assignment.menu_finance_assignment_rule
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_assignment.view_finance_assignment_rule_tree
+msgid "Assignment Rules"
+msgstr "กฎการมอบหมายงาน"
+
+#. module: finance_kmitl_assignment
+#: model:ir.actions.server,name:finance_kmitl_assignment.action_apply_rules_to_pending
+msgid "Apply Rules to Pending Payments"
+msgstr "นำกฎไปใช้กับใบสำคัญจ่ายที่ยังไม่มอบหมาย"
+
+#. module: finance_kmitl_assignment
+#: model:ir.actions.act_window,name:finance_kmitl_assignment.action_account_payment_my_work
+#: model:ir.ui.menu,name:finance_kmitl_assignment.menu_account_payment_my_work
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_assignment.view_account_payment_search_assignment
+msgid "My Work"
+msgstr "งานของฉัน"
+
+#. module: finance_kmitl_assignment
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_assignment.view_account_payment_search_assignment
+msgid "Unassigned"
+msgstr "ยังไม่มีผู้รับผิดชอบ"
+
+#. module: finance_kmitl_assignment
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_assignment.view_account_payment_form_assignment
+msgid "Assign to me"
+msgstr "รับงานนี้"
+
+#. module: finance_kmitl_assignment
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_assignment.view_account_payment_form_assignment
+msgid "Assign…"
+msgstr "มอบหมาย…"
+
+#. module: finance_kmitl_assignment
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_assignment.view_account_payment_form_assignment
+msgid "Unassign"
+msgstr "ถอนผู้รับผิดชอบ"
+
+#. module: finance_kmitl_assignment
+#: code:addons/finance_kmitl_assignment/models/account_payment.py:0
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_assignment.finance_assign_officer_wizard_form
+#, python-format
+msgid "Assign Officer"
+msgstr "มอบหมายเจ้าหน้าที่"
+
+#. module: finance_kmitl_assignment
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_assignment.finance_assign_officer_wizard_form
+msgid "Assign"
+msgstr "มอบหมาย"
+
+#. module: finance_kmitl_assignment
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_assignment.finance_assign_officer_wizard_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: finance_kmitl_assignment
+#: code:addons/finance_kmitl_assignment/models/account_payment.py:0
+#, python-format
+msgid "Assigned as responsible finance officer"
+msgstr "ได้รับมอบหมายเป็นผู้รับผิดชอบใบสำคัญจ่าย"
+
+#. module: finance_kmitl_assignment
+#: code:addons/finance_kmitl_assignment/models/account_payment.py:0
+#, python-format
+msgid "This voucher is already assigned to %s."
+msgstr "ใบสำคัญจ่ายนี้มีผู้รับผิดชอบแล้วคือ %s"
+
+#. module: finance_kmitl_assignment
+#: code:addons/finance_kmitl_assignment/models/account_payment.py:0
+#, python-format
+msgid "Only a manager can unassign the officer."
+msgstr "เฉพาะผู้จัดการเท่านั้นที่ถอนผู้รับผิดชอบได้"
+
+#. module: finance_kmitl_assignment
+#: code:addons/finance_kmitl_assignment/models/account_payment.py:0
+#: code:addons/finance_kmitl_assignment/wizards/assign_officer_wizard.py:0
+#, python-format
+msgid "Only a manager can assign another officer."
+msgstr "เฉพาะผู้จัดการเท่านั้นที่มอบหมายผู้รับผิดชอบคนอื่นได้"
+
+#. module: finance_kmitl_assignment
+#: code:addons/finance_kmitl_assignment/models/assignment_rule.py:0
+#, python-format
+msgid "Assignment Rules Applied"
+msgstr "นำกฎการมอบหมายไปใช้แล้ว"
+
+#. module: finance_kmitl_assignment
+#: code:addons/finance_kmitl_assignment/models/assignment_rule.py:0
+#, python-format
+msgid "%(assigned)s of %(total)s pending voucher(s) were assigned."
+msgstr "มอบหมายแล้ว %(assigned)s จาก %(total)s ใบที่รอมอบหมาย"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assignment_rule__paying_account_id
+msgid "Paying Account"
+msgstr "หัวจ่าย"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,help:finance_kmitl_assignment.field_finance_assignment_rule__paying_account_id
+msgid ""
+"หัวจ่าย — the account the money leaves from, which names the payment method "
+"too, so a rule on a cheque account routes every cheque paid from it. Leave "
+"empty to match any paying account."
+msgstr ""
+"หัวจ่าย — บัญชีที่เงินออก ซึ่งระบุวิธีจ่ายไปในตัว "
+"กฎที่ตั้งกับหัวจ่ายที่เป็นเช็คจึงครอบใบที่จ่ายเป็นเช็คจากหัวจ่ายนั้นทั้งหมด "
+"เว้นว่างไว้เพื่อจับคู่ได้ทุกหัวจ่าย"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,field_description:finance_kmitl_assignment.field_finance_assignment_rule__payment_subject_id
+msgid "Payment Subject"
+msgstr "เรื่องที่จ่าย"
+
+#. module: finance_kmitl_assignment
+#: model:ir.model.fields,help:finance_kmitl_assignment.field_finance_assignment_rule__payment_subject_id
+msgid ""
+"เรื่องที่จ่าย — what the disbursement is for, chosen once on the request. A "
+"voucher keyed in by hand has no request and so no subject, and is left to "
+"the rules that keep this empty. Leave empty to match any subject."
+msgstr ""
+"เรื่องที่จ่าย — ใบเบิกนี้จ่ายเรื่องอะไร เลือกครั้งเดียวที่ใบเบิก "
+"ใบสำคัญจ่ายที่คีย์เองไม่มีใบเบิกจึงไม่มีเรื่องที่จ่าย และจะเข้าเฉพาะกฎที่เว้นช่องนี้ว่าง "
+"เว้นว่างไว้เพื่อจับคู่ได้ทุกเรื่องที่จ่าย"

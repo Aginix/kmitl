@@ -13,6 +13,11 @@ class PurchaseRequest(models.Model):
         ("done", "done e-GP")
     ]
 
+    state = fields.Selection(
+        selection_add=[("in_egp", "Waiting for e-GP"), ("approved",)],
+        ondelete={"in_egp": "set default"},
+    )
+
     is_egp = fields.Boolean(
         string="e-GP",
         compute="_compute_is_egp",
@@ -57,8 +62,20 @@ class PurchaseRequest(models.Model):
     def _show_egp_create_purchase_order_button(self):
         for rec in self:
             rec.show_egp_create_purchase_order_button = False
-            if rec.is_egp and rec.state in ('approved', 'in_progress') and rec.purchase_count == 0:
+            if (
+                rec.is_egp
+                and rec.state in ('approved', 'in_progress')
+                and rec.purchase_count == 0
+            ):
                 rec.show_egp_create_purchase_order_button = True
+
+    def _transition_after_sarabun_approve(self):
+        for rec in self:
+            if rec.is_egp:
+                rec._apply_sarabun_approve_metadata()
+                rec.write({"state": "in_egp", "egp_status": "waiting"})
+            else:
+                super(PurchaseRequest, rec)._transition_after_sarabun_approve()
 
     @api.depends_context("uid")
     def _compute_can_edit_egp(self):
@@ -82,14 +99,6 @@ class PurchaseRequest(models.Model):
         action = self.env.ref("purchase_request.action_purchase_request_line_make_purchase_order").sudo().read()[0]
         return action
 
-    def write(self, vals):
-        res = super().write(vals)
-        for record in self:
-            if 'state' in vals and record.is_egp:
-                if record.state == "approved":
-                    record.egp_status = "waiting"
-        return res
-
     def action_del_egp_status(self):
         for record in self:
             if record.is_egp:
@@ -100,8 +109,8 @@ class PurchaseRequest(models.Model):
         for record in self:
             if record.is_egp:
                 if not record.egp_project_id:
-                    raise UserError(_("กรุณากรอกเลขที่โครงการ e-GP ก่อนดำเนินการ"))
-                record.egp_status = "in_progress"
+                    raise UserError(_("กรุณากรอกเลขที่โครงการ e-GP ที่แท็บ e-GP ก่อนดำเนินการ"))
+                record.write({"egp_status": "in_progress"})
                 record.button_in_progress()
 
     def button_draft(self):
@@ -109,6 +118,3 @@ class PurchaseRequest(models.Model):
         self.write({"egp_status": False})
         return res
 
-    def button_rejected_egp(self):
-        self.action_del_egp_status()
-        return self.button_rejected()

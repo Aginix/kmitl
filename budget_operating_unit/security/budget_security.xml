@@ -28,8 +28,11 @@
         <field eval="0" name="perm_create" />
     </record>
 
+    <!-- budget.transfer is a 1:1 delegated budget.move (budget ADR-0013), so its
+         operating_unit_id is the move's. The transfer's lines are budget.move.line
+         and fall under ir_rule_budget_move_line_allowed_operating_units above. -->
     <record id="ir_rule_budget_transfer_allowed_operating_units" model="ir.rule">
-        <field name="model_id" ref="budget.model_budget_transfer" />
+        <field name="model_id" ref="budget_transfer.model_budget_transfer" />
         <field name="domain_force">
             ['|', ('operating_unit_id','=',False),
             ('operating_unit_id','in',user.operating_unit_ids.ids)]
@@ -42,25 +45,12 @@
         <field eval="0" name="perm_create" />
     </record>
 
-    <record id="ir_rule_budget_transfer_line_allowed_operating_units" model="ir.rule">
-        <field name="model_id" ref="budget.model_budget_transfer_line" />
-        <field name="domain_force">
-            ['|', ('operating_unit_id','=',False),
-            ('operating_unit_id','in',user.operating_unit_ids.ids)]
-        </field>
-        <field name="name">budget transfer line from allowed operating units</field>
-        <field name="global" eval="True" />
-        <field eval="0" name="perm_unlink" />
-        <field eval="0" name="perm_write" />
-        <field eval="1" name="perm_read" />
-        <field eval="0" name="perm_create" />
-    </record>
-
     <record id="ir_rule_budget_commitment_allowed_operating_units" model="ir.rule">
         <field name="model_id" ref="budget.model_budget_commitment" />
         <field name="domain_force">
-            ['|', ('operating_unit_id','=',False),
-            ('operating_unit_id','in',user.operating_unit_ids.ids)]
+            ['|', '|', ('operating_unit_id','=',False),
+            ('operating_unit_id','in',user.operating_unit_ids.ids),
+            ('beneficiary_operating_unit_id','in',user.operating_unit_ids.ids)]
         </field>
         <field name="name">budget commitment from allowed operating units</field>
         <field name="global" eval="True" />
@@ -73,8 +63,9 @@
     <record id="ir_rule_budget_commitment_line_allowed_operating_units" model="ir.rule">
         <field name="model_id" ref="budget.model_budget_commitment_line" />
         <field name="domain_force">
-            ['|', ('operating_unit_id','=',False),
-            ('operating_unit_id','in',user.operating_unit_ids.ids)]
+            ['|', '|', ('operating_unit_id','=',False),
+            ('operating_unit_id','in',user.operating_unit_ids.ids),
+            ('commitment_id.beneficiary_operating_unit_id','in',user.operating_unit_ids.ids)]
         </field>
         <field name="name">budget commitment line from allowed operating units</field>
         <field name="global" eval="True" />

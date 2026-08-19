@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_central_funding_user,kmitl.central.funding accounting user,model_kmitl_central_funding,accounting_kmitl.group_accounting_kmitl_user,1,0,0,0
+access_central_funding_manager,kmitl.central.funding accounting manager,model_kmitl_central_funding,accounting_kmitl.group_accounting_kmitl_manager,1,1,1,1

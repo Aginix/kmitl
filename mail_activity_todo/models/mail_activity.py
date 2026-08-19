@@ -3,15 +3,15 @@ from datetime import timedelta
 from odoo import api, fields, models
 
 TODO_CATEGORIES = [
-    ("approval", "Approval"),
     ("execution", "Execution"),
     ("acknowledgement", "Acknowledgement"),
-    ("fyi", "FYI"),
 ]
 
-# Categories the user may dismiss with "Mark as Read" (ADR-0003). The others
-# (approval/execution) clear only by acting on the source record.
-READABLE_CATEGORIES = ("acknowledgement", "fyi")
+# The one category that clears only by acting on the source document. Every
+# other Todo — Acknowledgement and uncategorised built-in / hand-scheduled
+# activities alike — is dismissable per-user with "Mark as Read" (ADR-0003,
+# ADR-0006). Kept as a constant so the "readable?" test lives in one place.
+SOURCE_CLEARED_CATEGORY = "execution"
 
 
 class MailActivityType(models.Model):
@@ -21,8 +21,8 @@ class MailActivityType(models.Model):
         TODO_CATEGORIES,
         string="Todo Category",
         help="Behavioural category of Todos created from this activity type. "
-        "Approval/Execution clear by acting on the source; "
-        "Acknowledgement/FYI can be dismissed with 'Mark as Read'.",
+        "Execution clears by acting on the source; Acknowledgement (and any "
+        "uncategorised activity) can be dismissed with 'Mark as Read'.",
     )
 
 
@@ -36,14 +36,18 @@ class MailActivity(models.Model):
         store=True,
         index=True,
         readonly=False,
-        help="Defaults from the activity type. Set it on a manually scheduled "
-        "activity to turn it into a Todo that lands in your inbox.",
+        help="Set on the activity type and auto-filled here. It only refines "
+        "behaviour — Execution Todos clear at the source, everything else is "
+        "dismissable with 'Mark as Read' — it does not decide whether the "
+        "activity appears in the inbox (every assigned activity does; ADR-0006).",
     )
 
     @api.depends("activity_type_id")
     def _compute_todo_category(self):
-        """Default the category from the type, but leave it user-overridable so a
-        manually scheduled activity can be categorised into the Todo inbox."""
+        """Mirror the type's category. Left blank (not defaulted) for types that
+        set none: an uncategorised activity still shows in the inbox and clears
+        like an Acknowledgement, but keeping it False is what scopes history and
+        notifications to real workflow Todos (ADR-0006)."""
         for activity in self:
             activity.todo_category = activity.activity_type_id.todo_category
 
@@ -127,31 +131,47 @@ class MailActivity(models.Model):
                 partners |= act.user_id.partner_id
         return partners
 
-    def _todo_notify(self, partners=None):
-        """Ping affected users' bus channels so their systray badge refetches."""
+    def _todo_notify(self, partners=None, sound=False):
+        """Ping affected users' bus channels so their systray badge refetches.
+
+        ``sound`` carries a *new-work* intent (create → True; write/unlink → False):
+        the payload is built per-partner via ``_todo_payload`` so an add-on
+        (``mail_activity_todo_sound``) can turn that intent into an audible ding
+        under a per-user preference — the bus payload alone (``{refresh: True}``)
+        cannot distinguish new work from a clear (ADR-0014).
+        """
         if partners is None:
             partners = self._todo_recipient_partners()
         for partner in partners:
             self.env["bus.bus"]._sendone(
-                partner, "mail_activity_todo/updated", {"refresh": True}
+                partner,
+                "mail_activity_todo/updated",
+                self._todo_payload(partner, sound),
             )
+
+    def _todo_payload(self, partner, sound):
+        """The bus payload for one recipient. Core only asks the badge to refetch;
+        the ``sound`` intent is a hook for add-ons (kept out of core so the
+        high-volume inbox stays silent by default — ADR-0014)."""
+        return {"refresh": True}
 
     @api.model_create_multi
     def create(self, vals_list):
         activities = super().create(vals_list)
-        # Only Todo-categorised activities drive the inbox; skip the rest.
-        activities.filtered("todo_category")._todo_notify()
+        # Every assigned activity is in someone's inbox now (ADR-0006), so the
+        # badge must react to all of them, not only categorised Todos. A create is
+        # new work → carry the sound intent (add-ons decide whether to play it).
+        activities._todo_notify(sound=True)
         return activities
 
     def write(self, vals):
-        # A write can move a Todo between inboxes (reassigning user_id), turn an
-        # activity into/out of a Todo (todo_category), or re-route a group Todo
-        # (role/unit, in the role-in-unit layer). Ping both the recipients before
-        # the change and after it, so the old and new owners' badges refresh live
-        # — not only on reload.
-        before = self.filtered("todo_category")._todo_recipient_partners()
+        # A write can move an activity between inboxes (reassigning user_id) or
+        # re-route a group Todo (role/unit, in the role-in-unit layer). Ping the
+        # recipients before the change and after it, so the old and new owners'
+        # badges refresh live — not only on reload.
+        before = self._todo_recipient_partners()
         res = super().write(vals)
-        after = self.filtered("todo_category")._todo_recipient_partners()
+        after = self._todo_recipient_partners()
         partners = before | after
         if partners:
             self._todo_notify(partners)
@@ -159,7 +179,7 @@ class MailActivity(models.Model):
 
     def unlink(self):
         # Capture recipients before the records vanish (badge goes down).
-        partners = self.filtered("todo_category")._todo_recipient_partners()
+        partners = self._todo_recipient_partners()
         res = super().unlink()
         self._todo_notify(partners)
         return res
@@ -168,20 +188,22 @@ class MailActivity(models.Model):
     # Actions
     # ------------------------------------------------------------------
     def action_mark_read(self):
-        """Dismiss FYI/Acknowledgement Todos for the current user only (ADR-0003).
+        """Dismiss a Todo for the current user only (ADR-0003): anything that is
+        not an Execution Todo — Acknowledgement or uncategorised alike.
 
         Category-gated server-side so the rule holds beyond the view's attrs.
         """
         self.env["todo.read"]._mark_read(
-            self.filtered(lambda a: a.todo_category in READABLE_CATEGORIES)
+            self.filtered(lambda a: a.todo_category != SOURCE_CLEARED_CATEGORY)
         )
         self._todo_notify(self.env.user.partner_id)
         return True
 
     def action_mark_unread(self):
-        """Undo a dismissal — bring FYI/Acknowledgement Todos back for me."""
+        """Undo a dismissal — bring a read Todo back for me (anything that is not
+        an Execution Todo)."""
         self.env["todo.read"]._mark_unread(
-            self.filtered(lambda a: a.todo_category in READABLE_CATEGORIES)
+            self.filtered(lambda a: a.todo_category != SOURCE_CLEARED_CATEGORY)
         )
         self._todo_notify(self.env.user.partner_id)
         return True
@@ -194,23 +216,25 @@ class MailActivity(models.Model):
         )
 
     # ------------------------------------------------------------------
-    # Retention (ADR-0003): read FYI/Acknowledgement Todos are garbage
-    # collected once older than a configurable threshold (default 180 days).
+    # Retention (ADR-0003): read dismissable Todos (Acknowledgement +
+    # uncategorised) are garbage collected once older than a configurable
+    # threshold (default 180 days).
     # ------------------------------------------------------------------
     @api.model
-    def _gc_read_fyi_todos(self):
+    def _gc_read_dismissed_todos(self):
         days = int(
             self.env["ir.config_parameter"]
             .sudo()
-            .get_param("mail_activity_todo.fyi_retention_days", 180)
+            .get_param("mail_activity_todo.dismissed_retention_days", 180)
         )
         threshold = fields.Datetime.now() - timedelta(days=days)
         # Personal Todos only: a group Todo is one shared record, so one member's
         # read receipt must not delete it for the whole group (ADR-0003). Group
-        # FYI/Ack are not auto-GC'd on first-reader-read.
+        # dismissable Todos are not auto-GC'd on first-reader-read.
+        # "!= execution" also matches uncategorised (NULL) read Todos in Odoo.
         stale = self.search(
             [
-                ("todo_category", "in", list(READABLE_CATEGORIES)),
+                ("todo_category", "!=", SOURCE_CLEARED_CATEGORY),
                 ("user_id", "!=", False),
                 ("create_date", "<", threshold),
                 ("read_ids", "!=", False),

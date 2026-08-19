@@ -12,12 +12,6 @@
         action="action_advance_payment"
         sequence="10"/>
 
-    <menuitem id="menu_advance_payment_usage_line"
-        name="รายการบันทึกการใช้เงินยืม"
-        parent="menu_advance_payment_root"
-        action="action_advance_payment_usage_line"
-        sequence="20"/>
-
     <menuitem id="menu_advance_payment_config"
         name="การกำหนดค่า"
         parent="menu_advance_payment_root"

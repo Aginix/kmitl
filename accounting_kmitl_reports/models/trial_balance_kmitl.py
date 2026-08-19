@@ -88,7 +88,9 @@ class TrialBalanceReportKmitl(models.AbstractModel):
         account_ids = self._kmitl_apply_account_range(options, company_id, account_ids)
 
         fy_start_date = self._kmitl_fy_start_date(date_from, company)
-        leaves = self._kmitl_build_dim_leaves(options.get("dims") or {})
+        leaves = self._kmitl_build_dim_leaves(
+            options.get("dims") or {}, options.get("dim_only_self")
+        )
 
         report = self.with_context(kmitl_dim_leaves=leaves)
         total_amount, accounts_data, _partners = report._get_data(
@@ -201,6 +203,12 @@ class TrialBalanceReportKmitl(models.AbstractModel):
     def action_export_xlsx(self, options):
         return self._kmitl_report_action(
             options, "accounting_kmitl_reports.action_report_trial_balance_kmitl_xlsx"
+        )
+
+    @api.model
+    def action_export_csv(self, options):
+        return self._kmitl_report_action(
+            options, "accounting_kmitl_reports.action_report_trial_balance_kmitl_csv"
         )
 
     # ------------------------------------------------------------------
@@ -323,3 +331,49 @@ class TrialBalanceXlsxKmitl(models.AbstractModel):
 
         sheet.set_column(0, 0, 42)
         sheet.set_column(1, 9, 15)
+
+
+class TrialBalanceCsvKmitl(models.AbstractModel):
+    """CSV export of the trial balance — one flat row per account (no
+    subtotals), sharing the compute with the screen / PDF / XLSX."""
+
+    _name = "report.accounting_kmitl_reports.trial_balance_csv"
+    _inherit = "accounting_kmitl_reports.csv.report"
+    _description = "KMITL Trial Balance CSV"
+
+    _COLS = (
+        "opening_debit",
+        "opening_credit",
+        "opening_balance",
+        "period_debit",
+        "period_credit",
+        "period_balance",
+        "ending_debit",
+        "ending_credit",
+        "ending_balance",
+    )
+
+    def _kmitl_csv_rows(self, options):
+        report = self.env["report.accounting_kmitl_reports.trial_balance_kmitl"]
+        result = report.get_trial_balance_data(options)
+        rows = [
+            [
+                _("Account Code"),
+                _("Account Name"),
+                _("Opening Debit"),
+                _("Opening Credit"),
+                _("Opening Balance"),
+                _("Period Debit"),
+                _("Period Credit"),
+                _("Period Balance"),
+                _("Ending Debit"),
+                _("Ending Credit"),
+                _("Ending Balance"),
+            ]
+        ]
+        for row in result["rows"]:
+            rows.append(
+                [row["code"], row["name"]]
+                + [self._csv_num(row[k]) for k in self._COLS]
+            )
+        return rows

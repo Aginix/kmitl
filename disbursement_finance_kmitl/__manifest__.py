@@ -2,10 +2,11 @@
 
 {
     "name": "Disbursement ↔ KMITL Finance Bridge",
-    "version": "16.0.1.0.0",
+    "version": "16.0.5.0.0",
     "category": "KMITL/Finance",
-    "summary": "DR ↔ Payment: enable payment creation from disbursement "
-    "requests, WHT calc, deferred reconciliation, and pipeline status sync",
+    "summary": "DR ↔ Payment: post-bill payment-execution workflow "
+    "(audit → authorize → pay → clear), payee-level paying account, WHT, "
+    "e-payment result, and pipeline status sync",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
     "license": "LGPL-3",
@@ -13,11 +14,23 @@
         "disbursement",
         "finance_kmitl",
         "disbursement_accounting_kmitl",
+        "accounting_kmitl_workflow",
+        "tracking_manager",
     ],
     "data": [
+        "security/security.xml",
         "security/ir.model.access.csv",
+        "data/mail_activity_type.xml",
+        "data/disbursement_payment_line_tracking.xml",
         "views/disbursement_request_views.xml",
+        "views/disbursement_queue_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js",
+            "disbursement_finance_kmitl/static/src/payment_queue/payment_queue.xml",
+        ],
+    },
     "installable": True,
     "auto_install": False,
 }

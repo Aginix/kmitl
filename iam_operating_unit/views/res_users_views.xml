@@ -24,4 +24,33 @@
         </field>
     </record>
 
+    <!-- "With / Without Operating Unit" filters on the Users search view.
+         Filters on assigned_operating_unit_ids (the stored Many2many) for the
+         same reason the tree column does: operating_unit_ids is a non-stored
+         compute with no search method and cannot back a filter domain. Gated to
+         the IAM manager to match the OU column and keep the standard Users
+         search (used under Settings) uncluttered for everyone else. -->
+    <record id="view_users_search_iam_ou" model="ir.ui.view">
+        <field name="name">res.users.search.iam-ou</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_search" />
+        <field name="arch" type="xml">
+            <filter name="Inactive" position="after">
+                <separator groups="iam.group_iam_manager" />
+                <filter
+                    name="filter_with_operating_unit"
+                    string="With Operating Unit"
+                    domain="[('assigned_operating_unit_ids', '!=', False)]"
+                    groups="iam.group_iam_manager"
+                />
+                <filter
+                    name="filter_without_operating_unit"
+                    string="Without Operating Unit"
+                    domain="[('assigned_operating_unit_ids', '=', False)]"
+                    groups="iam.group_iam_manager"
+                />
+            </filter>
+        </field>
+    </record>
+
 </odoo>

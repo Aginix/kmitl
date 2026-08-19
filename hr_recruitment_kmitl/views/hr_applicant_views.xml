@@ -1,5 +1,254 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <!-- Extend hr.applicant form with profile tabs.
+         NOTE: this view must load before the onboarding-button view below.
+         Both inherit the same base form, and Odoo validates the full combined
+         arch when writing any sibling. Loading this view first ensures fields
+         removed here (e.g. spouse_*) are cleaned before the other view is
+         validated, avoiding upgrade failures against a stale stored view. -->
+    <record id="hr_applicant_view_form_profile" model="ir.ui.view">
+        <field name="name">hr.applicant.form.profile</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <field
+                    name="photo_file"
+                    widget="image"
+                    class="oe_avatar m-0"
+                    options='{"zoom": true}'
+                />
+            </xpath>
+            <xpath expr="//field[@name='department_id']" position="after">
+                <field name="old_code" />
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <!-- Profile Info tab -->
+                <page string="Profile Info" name="profile_info">
+                    <group>
+                        <group name="thai_name" string="Thai Name">
+                            <field name="applicant_title" />
+                            <field name="first_name" />
+                            <field name="middle_name" />
+                            <field name="last_name" />
+                        </group>
+                        <group name="english_name" string="English Name">
+                            <field name="first_name_en" />
+                            <field name="middle_name_en" />
+                            <field name="last_name_en" />
+                        </group>
+                    </group>
+                    <group>
+                        <group name="personal_info" string="Personal Info">
+                            <field name="identification_id" />
+                            <field name="birthday" />
+                            <field name="gender" />
+                            <field name="nationality_id" />
+                            <field name="marital" />
+                        </group>
+                    </group>
+                </page>
+                <!-- Contact & Address tab -->
+                <page string="Contact &amp; Address" name="contact_address">
+                    <group>
+                        <group name="registered_address" string="Registered Address">
+                            <field name="address_street" />
+                            <field name="address_zip_id" />
+                            <field name="address_city" />
+                            <field name="address_state_id" />
+                            <field name="address_zip" />
+                            <field name="address_country_id" />
+                        </group>
+                        <group name="current_address" string="Current Address">
+                            <field name="current_street" />
+                            <field name="current_zip_id" />
+                            <field name="current_city" />
+                            <field name="current_state_id" />
+                            <field name="current_zip" />
+                            <field name="current_country_id" />
+                        </group>
+                        <group name="emergency_contact" string="Emergency Contact">
+                            <field name="emergency_contact_name" />
+                            <field name="emergency_contact_relation" />
+                            <field name="emergency_contact_phone" />
+                            <field name="emergency_contact_email" />
+                        </group>
+                    </group>
+                    <group name="health" string="Health">
+                        <field name="congenital_disease" />
+                    </group>
+                </page>
+                <!-- Education History tab -->
+                <page string="Education History" name="education_history">
+                    <group>
+                        <field name="highest_education" />
+                    </group>
+                    <field name="education_history_ids">
+                        <tree editable="bottom">
+                            <field name="education_level_id" />
+                            <field name="program" />
+                            <field name="major" />
+                            <field name="institution" />
+                            <field name="country_id" />
+                            <field name="start_year" />
+                            <field name="graduate_year" />
+                            <field
+                                name="certificate_file"
+                                filename="certificate_filename"
+                            />
+                            <field name="certificate_filename" column_invisible="1" />
+                            <field
+                                name="transcript_file"
+                                filename="transcript_filename"
+                            />
+                            <field name="transcript_filename" column_invisible="1" />
+                        </tree>
+                    </field>
+                </page>
+                <!-- Work History tab -->
+                <page string="Work History" name="work_history">
+                    <field name="work_history_ids">
+                        <tree editable="bottom">
+                            <field name="company_name" />
+                            <field name="job_title" />
+                            <field name="salary" />
+                            <field name="date_start" />
+                            <field name="date_end" />
+                            <field name="duration" />
+                        </tree>
+                    </field>
+                </page>
+                <!-- Skills & Qualifications tab -->
+                <page string="Skills &amp; Qualifications" name="skills">
+                    <field name="job_role" invisible="1" />
+                    <group>
+                        <group
+                            name="academic"
+                            string="Academic"
+                            attrs="{'invisible': [('job_role', '!=', 'academic')]}"
+                        >
+                            <field name="academic_standing_id" />
+                            <field name="academic_position_date" />
+                            <field name="academic_position_institution" />
+                            <field
+                                name="academic_position_file"
+                                filename="academic_position_filename"
+                            />
+                            <field name="academic_position_filename" invisible="1" />
+                        </group>
+                        <group
+                            name="ocsc_exam"
+                            string="OCSC Exam"
+                            attrs="{'invisible': [('job_role', '!=', 'support')]}"
+                        >
+                            <field name="has_ocsc_exam" />
+                            <field
+                                name="ocsc_exam_level"
+                                attrs="{'invisible': [('has_ocsc_exam', '=', False)]}"
+                            />
+                            <field
+                                name="ocsc_exam_date"
+                                attrs="{'invisible': [('has_ocsc_exam', '=', False)]}"
+                            />
+                            <field
+                                name="ocsc_exam_number"
+                                attrs="{'invisible': [('has_ocsc_exam', '=', False)]}"
+                            />
+                            <field
+                                name="ocsc_exam_file"
+                                filename="ocsc_exam_filename"
+                                attrs="{'invisible': [('has_ocsc_exam', '=', False)]}"
+                            />
+                            <field name="ocsc_exam_filename" invisible="1" />
+                        </group>
+                    </group>
+                    <group>
+                        <group
+                            name="english_test"
+                            string="English Test"
+                            attrs="{'invisible': [('job_role', '!=', 'academic')]}"
+                        >
+                            <field name="english_test_type" />
+                            <field name="english_test_score" />
+                            <field name="english_test_date" />
+                            <field name="english_test_certificate_number" />
+                            <field
+                                name="english_score_file"
+                                filename="english_score_filename"
+                            />
+                            <field name="english_score_filename" invisible="1" />
+                        </group>
+                        <group
+                            name="skills"
+                            string="Skills"
+                            attrs="{'invisible': [('job_role', '!=', 'support')]}"
+                        >
+                            <field name="foreign_language_skills" />
+                            <field name="computer_skills" />
+                            <field name="other_abilities" />
+                            <field name="interests" />
+                        </group>
+                    </group>
+                </page>
+                <!-- Documents tab -->
+                <page string="Documents" name="documents">
+                    <group>
+                        <group name="personal_documents" string="Personal Documents">
+                            <field name="id_card_file" filename="id_card_filename" />
+                            <field name="id_card_filename" invisible="1" />
+                            <field
+                                name="household_registration_file"
+                                filename="household_registration_filename"
+                            />
+                            <field
+                                name="household_registration_filename"
+                                invisible="1"
+                            />
+                            <field
+                                name="military_certificate_file"
+                                filename="military_certificate_filename"
+                                attrs="{'invisible': [('gender', '!=', 'male')]}"
+                            />
+                            <field name="military_certificate_filename" invisible="1" />
+                        </group>
+                        <group
+                            name="work_documents"
+                            string="Work Documents"
+                            attrs="{'invisible': [('job_role', '!=', 'academic')]}"
+                        >
+                            <field name="resume_file" filename="resume_filename" />
+                            <field name="resume_filename" invisible="1" />
+                            <field
+                                name="work_certificate_file"
+                                filename="work_certificate_filename"
+                            />
+                            <field name="work_certificate_filename" invisible="1" />
+                        </group>
+                    </group>
+                    <group>
+                        <group
+                            name="application_documents"
+                            string="Application Documents"
+                        >
+                            <field name="exam_fee_file" filename="exam_fee_filename" />
+                            <field name="exam_fee_filename" invisible="1" />
+                            <field
+                                name="medical_certificate_file"
+                                filename="medical_certificate_filename"
+                            />
+                            <field name="medical_certificate_filename" invisible="1" />
+                            <field
+                                name="other_documents_file"
+                                filename="other_documents_filename"
+                            />
+                            <field name="other_documents_filename" invisible="1" />
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
     <!-- Extend hr.applicant form with onboarding button -->
     <record id="hr_applicant_view_form_onboarding_button" model="ir.ui.view">
         <field name="name">hr.applicant.form.onboarding.button</field>
@@ -33,250 +282,6 @@
                         string="Onboarding"
                     />
                 </button>
-            </xpath>
-        </field>
-    </record>
-
-    <!-- Extend hr.applicant form with profile tabs -->
-    <record id="hr_applicant_view_form_profile" model="ir.ui.view">
-        <field name="name">hr.applicant.form.profile</field>
-        <field name="model">hr.applicant</field>
-        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form" />
-        <field name="arch" type="xml">
-            <xpath expr="//div[hasclass('oe_title')]" position="before">
-                <field
-                    name="photo_file"
-                    widget="image"
-                    class="oe_avatar m-0"
-                    options='{"zoom": true}'
-                />
-            </xpath>
-            <xpath expr="//field[@name='department_id']" position="after">
-                <field name="old_code" />
-            </xpath>
-            <xpath expr="//notebook" position="inside">
-                <!-- Profile Info tab -->
-                <page string="Profile Info" name="profile_info">
-                    <group>
-                        <group string="Thai Name">
-                            <field name="applicant_title" />
-                            <field name="first_name" />
-                            <field name="middle_name" />
-                            <field name="last_name" />
-                        </group>
-                        <group string="English Name">
-                            <field name="first_name_en" />
-                            <field name="middle_name_en" />
-                            <field name="last_name_en" />
-                        </group>
-                    </group>
-                    <group>
-                        <group string="Personal Info">
-                            <field name="identification_id" />
-                            <field name="birthday" />
-                            <field name="gender" />
-                            <field name="nationality_id" />
-                            <field name="marital" />
-                        </group>
-                        <group
-                            string="Spouse"
-                            attrs="{'invisible': [('marital', '!=', 'married')]}"
-                        >
-                            <field name="spouse_prefix" />
-                            <field name="spouse_first_name" />
-                            <field name="spouse_middle_name" />
-                            <field name="spouse_last_name" />
-                        </group>
-                    </group>
-                </page>
-                <!-- Contact & Address tab -->
-                <page string="Contact &amp; Address" name="contact_address">
-                    <group>
-                        <group string="Registered Address">
-                            <field name="address_street" />
-                            <field name="address_zip_id" />
-                            <field name="address_city" />
-                            <field name="address_state_id" />
-                            <field name="address_zip" />
-                            <field name="address_country_id" />
-                        </group>
-                        <group string="Current Address">
-                            <field name="current_street" />
-                            <field name="current_zip_id" />
-                            <field name="current_city" />
-                            <field name="current_state_id" />
-                            <field name="current_zip" />
-                            <field name="current_country_id" />
-                        </group>
-                        <group string="Emergency Contact">
-                            <field name="emergency_contact_name" />
-                            <field name="emergency_contact_relation" />
-                            <field name="emergency_contact_phone" />
-                            <field name="emergency_contact_email" />
-                        </group>
-                    </group>
-                    <group string="Health">
-                        <field name="congenital_disease" />
-                    </group>
-                </page>
-                <!-- Education History tab -->
-                <page string="Education History" name="education_history">
-                    <group>
-                        <field name="highest_education" />
-                    </group>
-                    <field name="education_history_ids">
-                        <tree editable="bottom">
-                            <field name="education_level_id" />
-                            <field name="program" />
-                            <field name="major" />
-                            <field name="institution" />
-                            <field name="country_id" />
-                            <field name="graduation_date" />
-                            <field
-                                name="certificate_file"
-                                filename="certificate_filename"
-                            />
-                            <field name="certificate_filename" column_invisible="1" />
-                            <field
-                                name="transcript_file"
-                                filename="transcript_filename"
-                            />
-                            <field name="transcript_filename" column_invisible="1" />
-                        </tree>
-                    </field>
-                </page>
-                <!-- Work History tab -->
-                <page string="Work History" name="work_history">
-                    <field name="work_history_ids">
-                        <tree editable="bottom">
-                            <field name="company_name" />
-                            <field name="job_title" />
-                            <field name="salary" />
-                            <field name="date_start" />
-                            <field name="date_end" />
-                            <field name="duration" />
-                        </tree>
-                    </field>
-                </page>
-                <!-- Skills & Qualifications tab -->
-                <page string="Skills &amp; Qualifications" name="skills">
-                    <field name="job_role" invisible="1" />
-                    <group>
-                        <group
-                            string="Academic"
-                            attrs="{'invisible': [('job_role', '!=', 'academic')]}"
-                        >
-                            <field name="academic_standing_id" />
-                            <field name="academic_position_date" />
-                            <field name="academic_position_institution" />
-                            <field
-                                name="academic_position_file"
-                                filename="academic_position_filename"
-                            />
-                            <field name="academic_position_filename" invisible="1" />
-                        </group>
-                        <group
-                            string="OCSC Exam"
-                            attrs="{'invisible': [('job_role', '!=', 'support')]}"
-                        >
-                            <field name="has_ocsc_exam" />
-                            <field
-                                name="ocsc_exam_level"
-                                attrs="{'invisible': [('has_ocsc_exam', '=', False)]}"
-                            />
-                            <field
-                                name="ocsc_exam_date"
-                                attrs="{'invisible': [('has_ocsc_exam', '=', False)]}"
-                            />
-                            <field
-                                name="ocsc_exam_number"
-                                attrs="{'invisible': [('has_ocsc_exam', '=', False)]}"
-                            />
-                            <field
-                                name="ocsc_exam_file"
-                                filename="ocsc_exam_filename"
-                                attrs="{'invisible': [('has_ocsc_exam', '=', False)]}"
-                            />
-                            <field name="ocsc_exam_filename" invisible="1" />
-                        </group>
-                    </group>
-                    <group>
-                        <group
-                            string="English Test"
-                            attrs="{'invisible': [('job_role', '!=', 'academic')]}"
-                        >
-                            <field name="english_test_type" />
-                            <field name="english_test_score" />
-                            <field name="english_test_date" />
-                            <field name="english_test_certificate_number" />
-                            <field
-                                name="english_score_file"
-                                filename="english_score_filename"
-                            />
-                            <field name="english_score_filename" invisible="1" />
-                        </group>
-                        <group
-                            string="Skills"
-                            attrs="{'invisible': [('job_role', '!=', 'support')]}"
-                        >
-                            <field name="foreign_language_skills" />
-                            <field name="computer_skills" />
-                            <field name="other_abilities" />
-                            <field name="interests" />
-                        </group>
-                    </group>
-                </page>
-                <!-- Documents tab -->
-                <page string="Documents" name="documents">
-                    <group>
-                        <group string="Personal Documents">
-                            <field name="id_card_file" filename="id_card_filename" />
-                            <field name="id_card_filename" invisible="1" />
-                            <field
-                                name="household_registration_file"
-                                filename="household_registration_filename"
-                            />
-                            <field
-                                name="household_registration_filename"
-                                invisible="1"
-                            />
-                            <field
-                                name="military_certificate_file"
-                                filename="military_certificate_filename"
-                                attrs="{'invisible': [('gender', '!=', 'male')]}"
-                            />
-                            <field name="military_certificate_filename" invisible="1" />
-                        </group>
-                        <group
-                            string="Work Documents"
-                            attrs="{'invisible': [('job_role', '!=', 'academic')]}"
-                        >
-                            <field name="resume_file" filename="resume_filename" />
-                            <field name="resume_filename" invisible="1" />
-                            <field
-                                name="work_certificate_file"
-                                filename="work_certificate_filename"
-                            />
-                            <field name="work_certificate_filename" invisible="1" />
-                        </group>
-                    </group>
-                    <group>
-                        <group string="Application Documents">
-                            <field name="exam_fee_file" filename="exam_fee_filename" />
-                            <field name="exam_fee_filename" invisible="1" />
-                            <field
-                                name="medical_certificate_file"
-                                filename="medical_certificate_filename"
-                            />
-                            <field name="medical_certificate_filename" invisible="1" />
-                            <field
-                                name="other_documents_file"
-                                filename="other_documents_filename"
-                            />
-                            <field name="other_documents_filename" invisible="1" />
-                        </group>
-                    </group>
-                </page>
             </xpath>
         </field>
     </record>

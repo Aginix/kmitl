@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 import base64
-import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-_logger = logging.getLogger(__name__)
-
 
 class PurchaseRequestApproval(models.Model):
     _name = "purchase.request.approval"
-    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin", "thai.date.mixin", "tier.validation", "sarabun.document.mixin"]
-    _inherits = {"purchase.request": "request_id"}
+    _inherit = [
+        "mail.thread",
+        "mail.activity.mixin",
+        "portal.mixin",
+        "thai.date.mixin",
+        "tier.validation",
+        "sarabun.document.mixin",
+    ]
 
     _description = "Purchase Request Approval"
     _order = "date_start desc, name desc"
@@ -46,10 +49,12 @@ class PurchaseRequestApproval(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
-            ("validate", "Validate"),
             ("to_approve", "To be approved"),
             ("approved", "Approved"),
             ("rejected", "Rejected"),
+            ("cancelled", "Cancelled"),
+            ("sarabun_returned", "Sarabun Returned"),
+            ("pending_pr", "Pending PR Revision"),
         ],
         string="Status",
         default="draft",
@@ -101,7 +106,9 @@ class PurchaseRequestApproval(models.Model):
         copy=False,
     )
 
-    requesting_department_id = fields.Many2one('hr.department', string='Department', tracking=True)
+    requesting_department_id = fields.Many2one(
+        "hr.department", string="Department", tracking=True
+    )
 
     report_html_url = fields.Char(compute="_compute_report_html_url")
 
@@ -111,13 +118,167 @@ class PurchaseRequestApproval(models.Model):
         copy=False,
     )
 
-    # _sql_constraints = [
-    #     (
-    #         "request_id_uniq",
-    #         "unique(request_id)",
-    #         _("A purchase approval already exists!"),
-    #     )
-    # ]
+    # == Own fields (copied from purchase.request on creation) ==
+    title = fields.Char(string="Title")
+    description = fields.Text(string="Description")
+    procurement_type_id = fields.Many2one(
+        comodel_name="procurement.type",
+        string="Procurement Type",
+    )
+    procurement_method_id = fields.Many2one(
+        comodel_name="procurement.method",
+        string="Procurement Method",
+    )
+    account_fiscal_year_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="Fiscal Year",
+    )
+    estimated_cost = fields.Monetary(
+        string="Estimated Cost",
+        store=True,
+        readonly=True,
+        compute="_amount_all",
+    )
+    payment_type = fields.Selection(
+        [("direct", "Direct paid"), ("advance", "Advance"), ("prepaid", "Prepaid")],
+    )
+    line_ids = fields.One2many(
+        comodel_name="purchase.request.approval.line",
+        inverse_name="approval_id",
+        string="Lines",
+    )
+
+    # == Related fields (read-through to purchase.request) ==
+    # Note: `title` and `description` are PA-own copied fields (per ADR-0004);
+    # they used to be re-declared as `related=request_id.*` here, which
+    # accidentally shadowed the own declarations above and prevented PA-side
+    # divergence. Removed to restore ADR-0004 intent.
+    requested_by = fields.Many2one(related="request_id.requested_by")
+    department_id = fields.Many2one(related="request_id.department_id", store=True)
+    company_id = fields.Many2one(related="request_id.company_id", store=True)
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="Vendor",
+        tracking=True,
+    )
+    vat_included = fields.Selection(
+        [("exclusive", "VAT Exclusive"), ("inclusive", "VAT Inclusive")],
+        default="exclusive",
+        tracking=True,
+    )
+    tax_id = fields.Many2one(
+        "account.tax",
+        string="Tax",
+        domain="[('type_tax_use', 'in', ['purchase']), ('company_id', '=', company_id)]",
+        check_company=True,
+        context={"active_test": False},
+    )
+
+    @api.onchange("vat_included")
+    def _onchange_vat_included(self):
+        if self.vat_included == "inclusive":
+            if self.tax_id:
+                return
+            default_tax = self.env["account.tax"].search(
+                [
+                    ("type_tax_use", "in", ["purchase"]),
+                    ("company_id", "=", self.company_id.id),
+                ],
+                limit=1,
+            )
+            self.tax_id = default_tax.id
+        else:
+            self.tax_id = False
+
+    user_id = fields.Many2one(related="request_id.user_id")
+    product_id = fields.Many2one(related="request_id.product_id")
+    currency_id = fields.Many2one(related="request_id.currency_id")
+    amount_untaxed = fields.Monetary(
+        string="Untaxed Amount",
+        store=True,
+        readonly=True,
+        compute="_amount_all",
+        tracking=True,
+    )
+    amount_tax = fields.Monetary(
+        string="Taxes",
+        store=True,
+        readonly=True,
+        compute="_amount_all",
+    )
+    amount_total = fields.Monetary(
+        string="Total",
+        store=True,
+        readonly=True,
+        compute="_amount_all",
+    )
+    tax_totals = fields.Binary(compute="_compute_tax_totals", exportable=False)
+    source_analytic_id = fields.Many2one(related="request_id.source_analytic_id")
+    budget_account_id = fields.Many2one(related="request_id.budget_account_id")
+    budget_commitment_id = fields.Many2one(related="request_id.budget_commitment_id")
+    analytic_distribution = fields.Json(related="request_id.analytic_distribution")
+    attachment_ids = fields.One2many(
+        comodel_name="ir.attachment",
+        inverse_name="res_id",
+        string="Document Attachments",
+        domain=[("res_model", "=", "purchase.request.approval")],
+        auto_join=True,
+    )
+    work_acceptance_committee_ids = fields.One2many(
+        related="request_id.work_acceptance_committee_ids"
+    )
+    tor_committee_ids = fields.One2many(related="request_id.tor_committee_ids")
+    price_determine_committee_ids = fields.One2many(
+        related="request_id.price_determine_committee_ids"
+    )
+    evaluation_committee_ids = fields.One2many(
+        related="request_id.evaluation_committee_ids"
+    )
+
+    is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        for rec in self:
+            rec.is_editable = rec.state in ("draft", "sarabun_returned")
+
+    @api.depends("line_ids.price_total")
+    def _amount_all(self):
+        for record in self:
+            line_ids = record.line_ids
+            if record.company_id.tax_calculation_rounding_method == "round_globally":
+                tax_results = self.env["account.tax"]._compute_taxes(
+                    [line._convert_to_tax_base_line_dict() for line in line_ids]
+                )
+                totals = tax_results["totals"]
+                amount_untaxed = (
+                    totals.get(record.currency_id, {}).get("amount_untaxed", 0.0)
+                )
+                amount_tax = (
+                    totals.get(record.currency_id, {}).get("amount_tax", 0.0)
+                )
+            else:
+                amount_untaxed = sum(line_ids.mapped("price_subtotal"))
+                amount_tax = sum(line_ids.mapped("price_tax"))
+            record.amount_untaxed = amount_untaxed
+            record.amount_tax = amount_tax
+            record.amount_total = amount_untaxed + amount_tax
+            record.estimated_cost = amount_untaxed + amount_tax
+
+    @api.depends_context("lang")
+    @api.depends(
+        "line_ids.tax_id",
+        "line_ids.price_subtotal",
+        "amount_total",
+        "amount_untaxed",
+    )
+    def _compute_tax_totals(self):
+        for record in self:
+            line_ids = record.line_ids
+            record.tax_totals = self.env["account.tax"]._prepare_tax_totals(
+                [x._convert_to_tax_base_line_dict() for x in line_ids],
+                record.currency_id or record.company_id.currency_id,
+            )
 
     def button_draft(self):
         return self.write({"state": "draft"})
@@ -140,12 +301,11 @@ class PurchaseRequestApproval(models.Model):
             [self.id],
         )
         filename = self.name + ".pdf"
-        attachment = self.env["ir.attachment"].create(
+        self.env["ir.attachment"].create(
             {
                 "name": filename,
                 "res_id": self.id,
                 "res_model": self._name,
-                # "raw": base64.b64encode(report[0]),
                 "datas": base64.b64encode(report[0]),
                 "type": "binary",
                 "mimetype": "application/pdf",
@@ -168,12 +328,12 @@ class PurchaseRequestApproval(models.Model):
         )
 
     def button_approved(self):
-        # Check if sarabun routing is pending
         for rec in self:
-            if rec.main_sarabun_document_id and rec.main_sarabun_document_id.state == "sent":
+            document = rec.active_sarabun_document_id
+            if document and document.is_circulating:
                 raise UserError(
-                    _("Cannot manually approve while Sarabun routing is pending. "
-                      "Please wait for the routing to complete or cancel the Sarabun document.")
+                    _("Cannot manually approve while the หนังสือ is still circulating. "
+                      "Please wait for the routing to complete or recall the Sarabun document.")
                 )
         for rec in self:
             message = (
@@ -182,6 +342,8 @@ class PurchaseRequestApproval(models.Model):
             rec.request_id.message_post(body=message, message_type="comment")
             rec._activity_awaiting_create_purchase_order()
             rec.write({"state": "approved", "approval_date": fields.Datetime.now()})
+            if rec.request_id and rec.request_id.state == "in_approval":
+                rec.request_id.write({"state": "in_progress"})
 
     def _activity_awaiting_create_purchase_order(self):
         self.request_id.activity_schedule(
@@ -189,15 +351,137 @@ class PurchaseRequestApproval(models.Model):
             user_id=self.request_id.user_id.id,
         )
 
-    def button_rejected(self):
-        for rec in self:
-            message = rec.request_id._purchase_request_approval_rejected_message_content(
-                rec
-            )
-            rec.request_id.message_post(body=message, message_type="comment")
-            rec.write({"state": "rejected"})
-            if rec.request_id:
-                rec.request_id.button_rejected()
+    def button_cancel(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ยกเลิกใบขออนุมัติ (พจ.1)"),
+            "res_model": "purchase.request.approval.cancel.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_approval_id": self.id},
+        }
+
+    def action_open_material_withdrawal_wizard(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("พิมพ์ใบเบิกวัสดุ (พ.43)"),
+            "res_model": "purchase.request.approval.material.withdrawal.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_approval_id": self.id},
+        }
+
+    def _action_do_cancel(self, reason):
+        self.ensure_one()
+        pa_body = _(
+            "ยกเลิกใบขออนุมัติ (พจ.1) %(pa)s เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
+        pr_body = self.request_id._purchase_request_approval_cancelled_message_content(
+            self
+        )
+        pr_body += "<br/>%s" % (_("เหตุผล: %s") % reason)
+        self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
+        self.write({"state": "cancelled"})
+        if self.request_id:
+            self.request_id.write({"state": "cancelled"})
+
+    def _action_do_reject(self, reason):
+        self.ensure_one()
+        pa_body = _(
+            "ปฎิเสธใบขออนุมัติ (พจ.1) %(pa)s เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
+        pr_body = self.request_id._purchase_request_approval_rejected_message_content(
+            self
+        )
+        pr_body += "<br/>%s" % (_("เหตุผล: %s") % reason)
+        self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
+        self.write({"state": "rejected"})
+        if self.request_id:
+            self.request_id.button_rejected()
+
+    def action_open_return_cancel_wizard(self):
+        """Open the ตีกลับ/แก้ไข wizard from PA draft — collects the mandatory
+        reason before parking PA in ``pending_pr`` and resetting PR + sarabun."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ตีกลับ/แก้ไข พจ.1"),
+            "res_model": "purchase.request.approval.return.cancel.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_approval_id": self.id},
+        }
+
+    def _cancel_request_sarabun(self, reason):
+        """Cancel the PR's active sarabun.document (state=cancelled) so it
+        stops counting as live. The document, its register number, and the
+        completed routing chain are ALL retained on the record — the user
+        will later click ``action_resume_returned_sarabun`` on the PR to
+        revive it back to draft and re-send.
+
+        This is a soft-void — no ``_restart_chain`` yet (the reset happens on
+        resume). Runs sudo since ``action_recall``'s guard blocks a signed
+        document; this is the origin's escape hatch when พจ.1 rejects the
+        approval downstream.
+        """
+        self.ensure_one()
+        pr = self.request_id
+        if not pr:
+            return
+        doc = pr.active_sarabun_document_id
+        if not doc or doc.state in ("cancelled", "rejected"):
+            return
+        doc.sudo().write({"state": "cancelled"})
+        doc.message_post(
+            body=_(
+                "หนังสือถูกยกเลิกเนื่องจาก พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. "
+                "เหตุผล: %(reason)s"
+            ) % {"pa": self.name, "reason": reason},
+            subtype_xmlid="mail.mt_note",
+        )
+
+    def _action_return_for_revision(self, reason):
+        """ตีกลับ/แก้ไข — send PA back to พ.1 for revision, keeping the พจ.1
+        number for reuse.
+
+        - PA → ``pending_pr`` (name preserved; ``_transition_after_sarabun_approve``
+          flips it back to ``draft`` when the fresh sarabun re-completes).
+        - PR → ``to_submit`` (budget commitment stays intact).
+        - PR's active sarabun is CANCELLED (state=cancelled) so it no longer
+          counts as live. The user then explicitly clicks
+          ``action_resume_returned_sarabun`` on the PR to revive it — that
+          two-step ceremony is intentional (no auto-magic revival on close).
+        - Redirect the user to the PR form so they can act immediately.
+        """
+        self.ensure_one()
+        pa_body = _(
+            "ตีกลับ พจ.1 %(pa)s (เก็บเลข) เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
+        pr_body = _(
+            "พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
+        self._cancel_request_sarabun(reason)
+        self.request_id.write({"state": "to_submit"})
+        self.write({"state": "pending_pr"})
+        return self._redirect_to_request()
+
+    def _redirect_to_request(self):
+        """Return an action that opens this PA's linked PR (พ.1) so the user
+        lands on the record they need to edit after a return."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "purchase.request",
+            "res_id": self.request_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
 
     def copy(self, default=None):
         default = dict(default or {})
@@ -218,8 +502,12 @@ class PurchaseRequestApproval(models.Model):
         return self.state == "draft"
 
     def unlink(self):
-        if not self.env.user.has_group("purchase_request.group_purchase_request_manager"):
-            raise UserError(_("You do not have permission to delete purchase approvals."))
+        if not self.env.user.has_group(
+            "purchase_request.group_purchase_request_manager"
+        ):
+            raise UserError(
+                _("You do not have permission to delete purchase approvals.")
+            )
         for rec in self:
             if not rec._can_be_deleted():
                 raise UserError(
@@ -228,7 +516,6 @@ class PurchaseRequestApproval(models.Model):
         return super().unlink()
 
     def _compute_access_url(self):
-        """Compute the access URL for portal access."""
         super()._compute_access_url()
         for request in self:
             request.access_url = f"/my/purchase_request_approval/{request.id}"
@@ -262,101 +549,68 @@ class PurchaseRequestApproval(models.Model):
         action["res_id"] = self.request_id.id
         return action
 
-    @api.depends("state")
-    def _compute_is_editable(self):
-        """Override to make validate state non-editable."""
-        super()._compute_is_editable()
-        for record in self:
-            if record.state in ("validate", "to_approve", "approved", "rejected"):
-                record.is_editable = False
-
     # === Sarabun Document Integration ===
 
-    def button_validate(self):
-        """Move to validate state for data confirmation before routing."""
+    def _get_sarabun_subject(self):
+        return self.title or self.name
+
+    def _sarabun_submit_guard(self):
         self.ensure_one()
-        self.write({"state": "validate"})
-        self.message_post(body=_("Document validated and ready for routing."))
+        if not self.partner_id:
+            raise UserError(_("กรุณาระบุผู้ขาย (Vendor) ก่อนส่งเข้าสารบรรณ"))
+        return super()._sarabun_submit_guard()
 
-    def _prepare_sarabun_document_vals(self):
-        """Prepare values for creating a sarabun document."""
-        self.ensure_one()
-        vals = super()._prepare_sarabun_document_vals()
-        vals["subject"] = self.title or self.name
-        if self.requesting_department_id:
-            vals["sender_department_id"] = self.requesting_department_id.id
-        return vals
+    def _get_sarabun_sender_department(self):
+        return self.requesting_department_id or super()._get_sarabun_sender_department()
 
-    def action_submit_to_sarabun(self):
-        """Submit PA to Sarabun for approval routing."""
-        self.ensure_one()
-
-        # Create sarabun document
-        result = self.action_create_sarabun_document()
-        document = self.env["sarabun.document"].browse(result.get("res_id"))
-
-        # Link to PA
-        self.main_sarabun_document_id = document
-
-        # Log to chatter
-        self.message_post(
-            body=_("Submitted to Sarabun for approval: %s") % document.name,
-        )
-
-        # Open sarabun document form for routing selection
-        return {
-            "type": "ir.actions.act_window",
-            "res_model": "sarabun.document",
-            "res_id": document.id,
-            "view_mode": "form",
-            "target": "current",
-        }
-
-    def _on_sarabun_sent(self, document):
-        """
-        Called when sarabun document is sent (routing started).
-        Changes PA state to 'to_approve'.
-        """
-        _logger.info(
-            "Sarabun sent callback for PA %s (id=%s) from document %s",
-            self.name, self.id, document.name
-        )
+    def _on_sarabun_circulating(self, document):
+        # Explicit override: flip the PA to 'to_approve' on send. Do NOT call
+        # button_to_approve here — that also renders the PDF and assigns the name.
         self.write({"state": "to_approve"})
-        self.message_post(
-            body=_("Sent for approval via Sarabun document: %s") % document.name,
-        )
+        return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):
-        """
-        Called when sarabun document routing is completed.
-        Auto-approves the PA.
-        """
-        _logger.info(
-            "Sarabun completed callback for PA %s (id=%s) from document %s",
-            self.name, self.id, document.name
-        )
+        # Routing completed → auto-approve the PA.
         self.button_approved()
-        self.message_post(
-            body=_("Approved via Sarabun document: %s") % document.name,
-        )
+        return super()._on_sarabun_completed(document)
 
-    def _on_sarabun_rejected(self, document, recipient):
-        """
-        Called when sarabun document is rejected.
-        Changes PA state to rejected.
-        """
-        _logger.info(
-            "Sarabun rejected callback for PA %s (id=%s) from document %s",
-            self.name, self.id, document.name
-        )
-        self.button_rejected()
-        reason = recipient.comment if recipient else _("No reason provided")
-        self.message_post(
-            body=_("Rejected via Sarabun. Reason: %s") % reason,
-        )
+    def _on_sarabun_rejected(self, document, step):
+        reason = _("ปฏิเสธผ่านสารบรรณ: %s") % (step.note or document.name)
+        self._action_do_reject(reason)
+        return super()._on_sarabun_rejected(document, step)
+
+    def _on_sarabun_returned(self, document, step):
+        self.write({"state": "sarabun_returned"})
+        return super()._on_sarabun_returned(document, step)
+
+    def action_resend_to_sarabun(self):
+        self.ensure_one()
+        document = self.active_sarabun_document_id
+        if not document:
+            raise UserError(_("No active Sarabun document to resend."))
+        return document.action_send()
+
+    def _on_sarabun_cancelled(self, document):
+        # ยกเลิกการส่ง Sarabun (terminal) → same effect as manual cancel wizard:
+        # cascade cancel to PA + PR, and release the PR's budget commitment.
+        reason = _("ยกเลิกการส่งหนังสือ %s") % document.name
+        self._action_do_cancel(reason)
+        pr = self.request_id
+        if pr and pr.budget_commitment_id:
+            try:
+                pr._cancel_budget_commitment()
+                pr.message_post(
+                    body=_("Budget commitment %s has been cancelled")
+                    % pr.budget_commitment_id.name
+                )
+            except UserError as e:
+                pr.message_post(
+                    body=_("Warning: Could not cancel budget commitment: %s")
+                    % str(e)
+                )
+        return super()._on_sarabun_cancelled(document)
 
     def _get_sarabun_report_action(self):
-        """Delegate Sarabun report to Purchase Request Approval report."""
         return self.env.ref(
             "purchase_request_approval.action_report_purchase_request_approvals"
         )

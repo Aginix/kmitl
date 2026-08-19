@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add the notification-sound toggle to the user's own Preferences page.
+         Anchored on a core-stable node so it loads independently of any bridge. -->
+    <record id="view_users_form_simple_modif_todo_sound" model="ir.ui.view">
+        <field name="name">res.users.preferences.todo.sound</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='preference_contact']" position="after">
+                <group name="todo_notifications" string="Todo Notifications">
+                    <field name="todo_sound_enabled" readonly="0"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

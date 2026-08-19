@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- A user granted "Access all OUs' Budget" may pick any operating unit,
+         even with a single OU assigned (so not in group_multi_operating_unit).
+         The base budget_operating_unit view only shows the field to multi-OU
+         users and only lets Budget Managers edit it — widen both gates to also
+         cover access_all users. -->
+    <record id="view_budget_transfer_form_access_all" model="ir.ui.view">
+        <field name="name">budget.transfer.form.ou.access.all</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget_operating_unit.view_budget_transfer_form"/>
+        <field name="arch" type="xml">
+            <!-- Show the field block to multi-OU OR access_all users. -->
+            <xpath expr="//t[field[@name='operating_unit_id']]" position="attributes">
+                <attribute name="groups">operating_unit.group_multi_operating_unit,budget_operating_unit_access_all.group_all_ou_budget</attribute>
+            </xpath>
+            <!-- Editable variant: Budget Manager OR access_all. -->
+            <xpath expr="//field[@name='operating_unit_id'][not(@readonly)]" position="attributes">
+                <attribute name="groups">budget.group_budget_manager,budget_operating_unit_access_all.group_all_ou_budget</attribute>
+            </xpath>
+            <!-- Read-only variant: only users who are NEITHER manager NOR access_all. -->
+            <xpath expr="//field[@name='operating_unit_id'][@readonly='1']" position="attributes">
+                <attribute name="groups">!budget.group_budget_manager,!budget_operating_unit_access_all.group_all_ou_budget</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -51,7 +51,6 @@ export class TodoSystray extends Component {
             domain: [
                 ["is_my_todo", "=", true],
                 ["is_read_by_me", "=", false],
-                ["todo_category", "!=", false],
                 ["res_model_id", "=", group.model_id],
             ],
             views: [

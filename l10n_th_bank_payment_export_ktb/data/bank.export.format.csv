@@ -1,2 +1,3 @@
-id,name,bank
-ktb_ipay,KTB iPay,KTB
+id,name,bank,encoding
+ktb_ipay,KTB iPay,KTB,cp874
+ktb_hdt,KTB Direct Credit (H/D/T),KTB,cp874

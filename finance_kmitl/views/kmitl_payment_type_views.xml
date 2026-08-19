@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <record id="kmitl_payment_type_view_tree" model="ir.ui.view">
@@ -6,11 +6,11 @@
         <field name="model">kmitl.payment.type</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="sequence" widget="handle"/>
-                <field name="name"/>
-                <field name="direction"/>
-                <field name="journal_id" optional="show"/>
-                <field name="override_account_id" optional="show"/>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="direction" />
+                <field name="journal_id" optional="show" />
+                <field name="override_account_id" optional="show" />
             </tree>
         </field>
     </record>
@@ -22,18 +22,21 @@
             <form>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name"/>
-                        <h1><field name="name" placeholder="e.g. รับเงินประกันสัญญา"/></h1>
+                        <label for="name" />
+                        <h1><field
+                                name="name"
+                                placeholder="e.g. รับเงินประกันสัญญา"
+                            /></h1>
                     </div>
                     <group>
                         <group>
-                            <field name="direction"/>
-                            <field name="sequence"/>
-                            <field name="journal_id"/>
-                            <field name="active"/>
+                            <field name="direction" />
+                            <field name="sequence" />
+                            <field name="journal_id" />
+                            <field name="active" />
                         </group>
-                        <group string="Account Overrides">
-                            <field name="override_account_id"/>
+                        <group name="account_overrides" string="Account Overrides">
+                            <field name="override_account_id" />
                         </group>
                     </group>
                 </sheet>

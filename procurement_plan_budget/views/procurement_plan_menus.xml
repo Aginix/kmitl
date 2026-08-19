@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="budget_procurement_plan_inherit_menu"
+        name="แผนจัดซื้อจัดจ้าง"
+        sequence="88"
+        parent="budget.budget_root_menu"
+        action="procurement_plan.action_procurement_plan"
+    />
+</odoo>

@@ -14,7 +14,6 @@
             </xpath>
             <field name="origin" position="after">
                 <field name="assigned_to" optional="hide" />
-                <field name="purchase_type_id" invisible="1" />
                 <field name="procurement_method_id" optional="hide" />
             </field>
             <xpath expr="//field[@name='requested_by']" position="after">
@@ -49,7 +48,6 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
         <field name="arch" type="xml">
             <field name="requested_by" position="before">
-                <field name="purchase_type_id" />
                 <field name="procurement_method_id" />
                 <searchpanel>
                     <field
@@ -68,12 +66,6 @@
             </xpath>
             <group position="inside">
                 <filter
-                    string="Purchase Type"
-                    name="purchase_type"
-                    domain="[]"
-                    context="{'group_by': 'purchase_type_id'}"
-                />
-                <filter
                     string="Procurement Method"
                     name="procurement_method"
                     domain="[]"
@@ -90,7 +82,22 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
 
+            <xpath expr="//field[@name='line_ids']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('is_editable', '=', False)]}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='line_ids']" position="before">
+                <group>
+                    <group>
+                        <field
+                            name="partner_id"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
+                        />
+                    </group>
+                </group>
                 <group name="warning_prepaid">
                     <group>
                         <div
@@ -108,29 +115,51 @@
 
             <xpath expr="//form" position="inside">
                 <field name="hide_create_po_button" invisible="1" />
+                <field name="can_reset_to_draft" invisible="1" />
             </xpath>
 
-            <xpath expr="//button[@name='%(purchase_request.action_purchase_request_line_make_purchase_order)d']" position="attributes">
-                <attribute name="states"/>
+            <xpath
+                expr="//button[@name='%(purchase_request.action_purchase_request_line_make_purchase_order)d']"
+                position="attributes"
+            >
+                <attribute name="states" />
                 <attribute name="invisible">1</attribute>
             </xpath>
 
             <button name="button_rejected" position="attributes">
-                <attribute name="states">to_approve</attribute>
-                <attribute
-                    name="groups"
-                >purchase_request.group_purchase_request_manager</attribute>
+                <attribute name="states" />
+                <attribute name="invisible">1</attribute>
             </button>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="states">to_verify,rejected</attribute>
-                <attribute name="groups"></attribute>
+                <attribute name="states" />
+                <attribute name="groups" />
+                <attribute
+                    name="attrs"
+                >{'invisible': [('can_reset_to_draft', '=', False)]}</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_draft']" position="after">
+                <button
+                    name="button_cancel"
+                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress,returned"
+                    string="Cancel"
+                    type="object"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
+                />
+                <button
+                    name="button_return"
+                    states="to_verify,to_submit"
+                    string="Return"
+                    type="object"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
+                />
             </xpath>
 
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,to_approve,approved,in_progress,done</attribute>
+                >draft,to_verify,to_submit,to_approve,in_approval,in_progress,done</attribute>
             </xpath>
 
             <xpath expr="//h1/field[@name='name']" position="attributes">
@@ -140,17 +169,9 @@
             <xpath expr="//field[@name='assigned_to']" position="attributes">
                 <attribute
                     name="attrs"
-                >{'readonly': [('state','not in', ['to_approve', 'approved'])]}</attribute>
+                >{'readonly': [('state','not in', ['to_approve', 'approved', 'in_egp', 'in_approval', 'in_progress'])]}</attribute>
             </xpath>
 
-            <field name="requested_by" position="before">
-                <field name="to_create" invisible="True" />
-                <field name="procurement_method_ids" invisible="True" />
-                <field
-                    name="expense_reason"
-                    attrs="{'invisible': [('to_create', '!=', 'expense')], 'required': [('to_create', '=', 'expense')], 'readonly': [('is_editable','=', False)]}"
-                />
-            </field>
 
             <xpath
                 expr="//field[@name='line_ids']//tree/field[@name='name']"
@@ -159,12 +180,33 @@
                 <attribute name="required">1</attribute>
             </xpath>
 
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='product_qty']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='line_ids']//tree" position="attributes">
                 <attribute name="no_open">1</attribute>
             </xpath>
 
             <xpath expr="//h1" position="after">
-                <group string="Purchase Request Details" name="purchase_request_details_group">
+                <group
+                    string="Purchase Request Details"
+                    name="purchase_request_details_group"
+                >
                     <group>
                         <field
                             name="title"
@@ -177,13 +219,14 @@
                         />
                         <field
                             name="requested_by"
+                            widget="employee_detail_many2one"
                             attrs="{'readonly': [('is_editable','=', False)]}"
                         />
                         <field
                             name="department_id"
                             string="Department"
                             options="{'limit': 50, 'search_more': false, 'create': false, 'create_edit': false}"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            attrs="{'readonly': [('is_editable', '=', False)]}"
                         />
                         <field name="user_id" readonly="1" />
                     </group>
@@ -225,9 +268,9 @@
 
             <!-- === Notebook pages === -->
             <xpath expr="//form/sheet/notebook" position="inside">
-                <page name="committee" string="Committee">
+                <page name="committee" string="Committees">
                     <separator
-                        string="TOR Committee"
+                        string="Propose TOR Committee"
                         attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <field
@@ -237,7 +280,7 @@
                         attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <separator
-                        string="Price Determine Committee"
+                        string="Propose Price Determine Committee"
                         attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <field
@@ -247,7 +290,7 @@
                         attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <separator
-                        string="Evaluation Committee"
+                        string="Propose Evaluation Committee"
                         attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <field
@@ -256,7 +299,7 @@
                         context="{'default_committee_type': 'evaluation'}"
                         attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
-                    <separator string="Work Acceptance Committee" />
+                    <separator string="Propose Work Acceptance Committee" />
                     <field
                         name="work_acceptance_committee_ids"
                         nolabel="1"
@@ -285,37 +328,22 @@
                     </field>
                 </page>
                 <page name="document" string="Attachment">
-                    <field
-                        name="attachment_ids"
-                        attrs="{'readonly': [('is_editable','=', False)]}"
-                        context="{'default_res_model': 'purchase.request'}"
-                    >
-                        <tree default_order="attachment_type, sequence">
-                            <field name="sequence" widget="handle" />
-                            <field name="attachment_type" required="1" />
-                            <field name="name" string="File Name" required="1" />
-                            <field name="description" />
-                        </tree>
-                        <form>
-                            <sheet>
-                                <group>
-                                    <field
-                                        name="res_model"
-                                        invisible="1"
-                                        readonly="0"
-                                    />
-                                    <field name="res_id" invisible="1" readonly="0" />
-                                    <field name="attachment_type" required="1" />
-                                    <field name="name" required="1" invisible="1" />
-                                    <field name="datas" filename="name" required="1" />
-                                    <field
-                                        name="description"
-                                        placeholder="Description"
-                                    />
-                                </group>
-                            </sheet>
-                        </form>
-                    </field>
+                    <div class="alert alert-info" role="alert">
+                        <b>ตัวอย่างเอกสารแนบ</b>
+                        <ul class="mb-0">
+                            <li>รายละเอียดและคุณลักษณะพัสดุ</li>
+                            <li>ใบเสนอราคาพัสดุ</li>
+                        </ul>
+                    </div>
+                    <group name="attachment" string="Attachment">
+                        <field
+                            name="attachment_ids"
+                            widget="many2many_binary"
+                            nolabel="1"
+                            colspan="2"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                    </group>
                 </page>
             </xpath>
 
@@ -324,7 +352,10 @@
                 <page name="operation" string="Operation">
                     <group>
                         <group>
-                            <field name="date_start" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field
+                                name="date_start"
+                                attrs="{'readonly': [('is_editable','=', False)]}"
+                            />
                         </group>
                     </group>
                 </page>
@@ -394,7 +425,9 @@
             </xpath>
 
             <xpath expr="//field[@name='origin']" position="attributes">
-                <attribute name="attrs">{'invisible': [('origin', '=', False)]}</attribute>
+                <attribute
+                    name="attrs"
+                >{'invisible': [('origin', '=', False)]}</attribute>
             </xpath>
 
             <xpath expr="//field[@name='date_start']" position="attributes">

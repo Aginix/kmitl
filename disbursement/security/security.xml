@@ -8,10 +8,19 @@
         </record>
 
         <!-- User Group -->
+        <!-- Inherit account (Billing) + budget groups so disbursement users
+             can read the related models the DR form relies on (account,
+             tax, journal, fiscal year, bills) and read/commit budget
+             (obligate on approve, reverse on cancel). Cascades to head /
+             officer / manager, which imply this group. -->
         <record id="group_disbursement_user" model="res.groups">
             <field name="name">Disbursement User</field>
             <field name="category_id" ref="disbursement.module_category_disbursement"/>
-            <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+            <field name="implied_ids" eval="[(6, 0, [
+                ref('base.group_user'),
+                ref('account.group_account_invoice'),
+                ref('budget.group_budget_user'),
+            ])]"/>
         </record>
 
         <!-- Head Group (inherits from User) -->
@@ -33,6 +42,25 @@
             <field name="name">Disbursement Manager</field>
             <field name="category_id" ref="disbursement.module_category_disbursement"/>
             <field name="implied_ids" eval="[(4, ref('group_disbursement_officer'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+
+        <!-- Two-approver step: the request must be approved by the Finance
+             Division Director (ผอ.กองคลัง) then the Rector-delegated approver
+             (ผู้ได้รับมอบอำนาจอธิการบดี). These are distinct authorities: each
+             only implies the base User group (record access), NOT each other and
+             NOT the Manager group, so approval rights are granted deliberately. -->
+        <record id="group_disbursement_finance_director" model="res.groups">
+            <field name="name">Disbursement Finance Director</field>
+            <field name="category_id" ref="disbursement.module_category_disbursement"/>
+            <field name="implied_ids" eval="[(4, ref('group_disbursement_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+
+        <record id="group_disbursement_rector_delegate" model="res.groups">
+            <field name="name">Disbursement Rector-delegated Approver</field>
+            <field name="category_id" ref="disbursement.module_category_disbursement"/>
+            <field name="implied_ids" eval="[(4, ref('group_disbursement_user'))]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
     </data>

@@ -5,9 +5,8 @@ from odoo.exceptions import UserError, ValidationError
 
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
-    _state_from = ["to_verify", "to_approve"]
 
-    _STATES = [("to_verify", "To be verified"), ("to_approve",)]
+    _STATES = [("to_verify", "To be verified"), ("to_submit",)]
 
     is_purchase_request = fields.Boolean(compute="_compute_is_purchase_request")
     state = fields.Selection(
@@ -35,10 +34,10 @@ class PurchaseRequest(models.Model):
 
     @api.depends("state")
     def _compute_is_editable(self):
-        res = super()._compute_is_editable()
+        super()._compute_is_editable()
+        editable_states = ("draft", "to_verify", "to_submit", "returned")
         for record in self:
-            if record.state in ("to_verify"):
-                record.is_editable = False
+            record.is_editable = record.state in editable_states
 
     @api.depends("requested_by")
     def _compute_can_request(self):
@@ -63,3 +62,5 @@ class PurchaseRequest(models.Model):
         for rec in self:
             if rec.state == "to_verify" and can_edit:
                 rec.is_budget_editable = True
+            elif rec.state == "to_submit":
+                rec.is_budget_editable = False

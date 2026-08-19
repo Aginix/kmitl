@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!--
-      "Access all OUs' Todos" — the Operating Unit dimension on the Todos inbox
-      and the Completed history is shown only to holders of this group (gated at
-      the view level). Regular users still route by role ∩ their own OU
-      server-side (ADR-0002), so hiding the column never changes which Todos
-      they receive. Standalone like the other *_operating_unit_access_all groups:
-      assign it deliberately to cross-OU / oversight users.
+      Read-only access to res.users.role for every internal user. base_user_role
+      gates the role model to ERP managers, but Todo routing needs regular users
+      to (a) display the Responsible Role on group Todos in the inbox and (b)
+      pick a role in the "Schedule Activity" popup to route a Todo to it. Read
+      only — creating/assigning roles stays ERP-manager territory. Role names are
+      no more sensitive than res.groups, which is already user-readable in core.
     -->
-    <record id="group_all_ou_todo" model="res.groups">
-        <field name="name">Access all OUs' Todos</field>
-        <field name="category_id" ref="operating_unit.module_operating_units" />
+    <record id="access_res_users_role_todo_read" model="ir.model.access">
+        <field name="name">res.users.role: read for Todo role routing</field>
+        <field name="model_id" ref="base_user_role.model_res_users_role" />
+        <field name="group_id" ref="base.group_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_unlink" eval="0" />
     </record>
 
     <!--

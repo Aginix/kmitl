@@ -1,6 +1,3 @@
-# Copyright 2021 Ecosoft Co., Ltd. (http://ecosoft.co.th)
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -8,6 +5,10 @@ from odoo.exceptions import ValidationError
 class ProcurementCommittee(models.Model):
     _name = "procurement.committee"
     _description = "Procurement Committee"
+
+    _ALLOWED_CROSS_COMMITTEE_TYPES = frozenset(
+        {"tor_committee", "evaluation", "work_supervisor"}
+    )
 
     request_id = fields.Many2one(
         comodel_name="purchase.request",
@@ -86,7 +87,6 @@ class ProcurementCommittee(models.Model):
 
     @api.constrains("employee_id", "request_id", "committee_type")
     def _check_committee_cross_type_unique(self):
-        allowed_overlap = {"tor_committee", "evaluation" , "work_supervisor"}
         for rec in self:
             if not rec.employee_id or not rec.request_id:
                 continue
@@ -97,7 +97,9 @@ class ProcurementCommittee(models.Model):
                 ]
             )
             types = set(same_committees.mapped("committee_type"))
-            if len(types) > 1 and not types.issubset(allowed_overlap):
+            if len(types) > 1 and not types.issubset(
+                self._ALLOWED_CROSS_COMMITTEE_TYPES
+            ):
                 raise ValidationError(
                     _(
                         "Employee %s cannot appear in multiple committees "

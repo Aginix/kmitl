@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "KRIS Project - Extra Allocation",
+    "version": "16.0.1.1.0",
+    "category": "KMITL",
+    "summary": "Support multiple extra payees per KRIS project",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "depends": [
+        "kris_project",
+    ],
+    "data": [
+        "security/ir.model.access.csv",
+        "data/kris_project_exception_data.xml",
+        "data/kris_project_tracking_data.xml",
+        "views/kris_project_views.xml",
+    ],
+    "post_init_hook": "post_init_copy_extra_payees",
+    "installable": True,
+    "application": False,
+    "auto_install": False,
+    "license": "LGPL-3",
+}

@@ -6,33 +6,71 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
-            <xpath expr="//header/button[1]" position="before">
-                <button
-                    name="action_assignment_assign_me"
-                    type="object"
-                    string="Assign to me"
-                    class="oe_highlight"
-                    groups="purchase_request.group_purchase_request_user"
-                    attrs="{'invisible': [('assignment_can_assign_me', '=', False)]}"
-                />
-                <button
-                    name="action_assignment_open_wizard"
-                    type="object"
-                    string="Assign…"
-                    groups="purchase_request.group_purchase_request_manager"
-                />
-                <button
-                    name="action_assignment_unassign"
-                    type="object"
-                    string="Unassign"
-                    groups="purchase_request.group_purchase_request_manager"
+            <xpath expr="//header" position="after">
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('assigned_to', '!=', False)]}"
+                >
+                    <strong>ยังไม่มีเจ้าหน้าที่รับผิดชอบเอกสารนี้</strong>
+                    <button
+                        name="action_assignment_assign_me"
+                        type="object"
+                        string="Assign to me"
+                        class="btn btn-sm btn-primary ms-2"
+                        groups="purchase_request.group_purchase_request_user"
+                        attrs="{'invisible': [('assignment_can_assign_me', '=', False)]}"
+                    />
+                    <button
+                        name="action_assignment_open_wizard"
+                        type="object"
+                        string="Assign…"
+                        class="btn btn-sm btn-secondary ms-2"
+                        groups="purchase_request.group_purchase_request_manager"
+                    />
+                </div>
+                <div
+                    class="alert alert-info"
+                    role="alert"
+                    style="margin-bottom:0px;"
                     attrs="{'invisible': [('assigned_to', '=', False)]}"
-                />
+                >
+                    <strong>มอบหมายให้:</strong>
+                    <field
+                        name="assigned_to"
+                        nolabel="1"
+                        readonly="1"
+                        class="oe_inline ms-1"
+                    />
+                    <button
+                        name="action_assignment_assign_me"
+                        type="object"
+                        string="Assign to me"
+                        class="btn btn-sm btn-primary ms-2"
+                        groups="purchase_request.group_purchase_request_user"
+                        attrs="{'invisible': [('assignment_can_assign_me', '=', False)]}"
+                    />
+                    <button
+                        name="action_assignment_open_wizard"
+                        type="object"
+                        string="Assign…"
+                        class="btn btn-sm btn-secondary ms-2"
+                        groups="purchase_request.group_purchase_request_manager"
+                    />
+                    <button
+                        name="action_assignment_unassign"
+                        type="object"
+                        string="Unassign"
+                        class="btn btn-sm btn-secondary ms-2"
+                        groups="purchase_request.group_purchase_request_manager"
+                    />
+                </div>
             </xpath>
-            <field name="assigned_to" position="before">
+            <xpath expr="//sheet//field[@name='assigned_to']" position="before">
                 <field name="assignment_can_assign_me" invisible="1" />
-            </field>
-            <xpath expr="//field[@name='assigned_to']" position="attributes">
+            </xpath>
+            <xpath expr="//sheet//field[@name='assigned_to']" position="attributes">
                 <attribute name="readonly">1</attribute>
                 <attribute name="attrs" />
             </xpath>

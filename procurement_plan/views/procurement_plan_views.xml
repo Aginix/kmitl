@@ -6,19 +6,19 @@
         <field name="name">view.procurement.plan.tree</field>
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
-            <tree create="false" decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state in ('new', 'on_hold')" decoration-muted="state == 'draft'">
+            <tree decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state == 'to_verify'" decoration-muted="state == 'draft'">
                 <field name="account_fiscal_year_id" />
                 <field name="name" />
                 <field name="description" />
                 <field name="amount" optional="hide" />
                 <field name="unit" optional="hide" />
                 <field name="total_price" sum="รวมทั้งหมด" widget="monetary" />
-                <field name="budget_account_id" optional="hide" />
                 <field name="department_analytic_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
                 <field name="fund_analytic_id" optional="hide" />
                 <field name="activity_analytic_id" optional="hide" />
-                <field name="state" widget="badge" decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state in ('new', 'on_hold')" decoration-muted="state == 'draft'" />
+                <field name="user_id" widget="many2one_avatar_user" optional="hide" />
+                <field name="state" widget="badge" decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state == 'to_verify'" decoration-muted="state == 'draft'" />
             </tree>
         </field>
     </record>
@@ -28,23 +28,20 @@
         <field name="name">view.procurement.plan.form</field>
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
-            <form string="Procurement Plan" create="false">
+            <form string="Procurement Plan">
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,new,ready,in_progress,done" />
-                    <button name="action_ready" string="Ready" type="object" class="btn-primary" states="new" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,verified,in_progress,done" />
+                    <button name="action_send_to_verify" string="ส่งเข้ารอจัดสรรงบประมาณ" type="object" class="btn-primary" states="draft" />
+                    <button name="action_verify" string="ยืนยัน" type="object" class="btn-primary" states="to_verify" />
+                    <button name="action_in_progress" string="ดำเนินการ" type="object" class="btn-primary" states="verified" />
+                    <button name="action_done" string="เสร็จสิ้น" type="object" states="in_progress" />
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" states="to_verify,verified" />
+                    <button name="action_cancel" string="ยกเลิก" type="object" states="draft,to_verify,verified,in_progress" />
                 </header>
                 <sheet>
                     <field name="can_edit" invisible="1"/>
                     <field name="can_edit_description" invisible="1"/>
-                    <div class="oe_button_box" name="button_box">
-                        <field name="budget_commitment_count" invisible="1" />
-                        <button name="action_open_budget_commitments" type="object" class="oe_stat_button" icon="fa-money" attrs="{'invisible': [('budget_commitment_count', '=', 0)]}">
-                            <div class="o_field_widget o_stat_info">
-                                <field name="budget_commitment_count" />
-                                <span class="o_stat_text">Budget Commitment</span>
-                            </div>
-                        </button>
-                    </div>
+                    <div class="oe_button_box" name="button_box"/>
                     <div class="oe_title">
                         <label for="name" />
                         <h1>
@@ -65,23 +62,22 @@
                         </group>
                         <group>
                             <field name="analytic_distribution" invisible="1" />
-                            <field name="account_fiscal_year_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('id', '!=', False)]}" />
-                            <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
-                            <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
-                            <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
-                            <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
-                            <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="account_fiscal_year_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('analytic_account_id', '!=', False)]}" />
+                            <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
                         </group>
                     </group>
                     <notebook>
                         <page string="การดำเนินงาน">
                             <group>
-                                <group string="แผน">
-                                    <field name="purchase_request_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="procurement_announcement_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="approval_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="contract_order_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="acceptance_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
+                                <group name="plan" string="แผน">
+                                    <field name="purchase_request_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'verified'))]}" />
+                                    <field name="procurement_announcement_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'verified'))]}" />
+                                    <field name="approval_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'verified'))]}" />
+                                    <field name="contract_order_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'verified'))]}" />
+                                    <field name="acceptance_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'verified'))]}" />
                                 </group>
                             </group>
                         </page>
@@ -99,6 +95,7 @@
                             <group>
                                 <group>
                                     <field name="analytic_account_id" groups="analytic.group_analytic_accounting" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" />
                                     <field name="analytic_account_id" invisible="1" />
                                     <field name="company_id" invisible="1" />
                                     <field name="currency_id" invisible="1" />
@@ -123,31 +120,40 @@
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name" filter_domain="['|', ('name','ilike',self), ('description','ilike',self)]" />
-                <field name="budget_account_id" />
+                <field name="name" string="แผนจัดซื้อจัดจ้าง" filter_domain="['|', ('name','ilike',self), ('description','ilike',self)]" />
+                <field name="description" />
+                <field name="user_id" />
+                <field name="account_fiscal_year_id" />
                 <field name="department_analytic_id" />
                 <field name="source_analytic_id" />
                 <field name="fund_analytic_id" />
                 <field name="activity_analytic_id" />
                 <separator/>
-                <filter name="hide_draft_cancel" string="ซ่อนร่าง/ยกเลิก" domain="[('state', 'not in', ('draft', 'cancel'))]" />
+                <filter name="hide_cancel" string="ซ่อนที่ยกเลิก" domain="[('state', '!=', 'cancel')]" />
+                <separator/>
+                <filter name="state_draft" string="แบบร่าง" domain="[('state', '=', 'draft')]" />
+                <filter name="state_to_verify" string="จัดสรรงบประมาณ (ปรับเข้าแผน)" domain="[('state', '=', 'to_verify')]" />
+                <filter name="state_verified" string="รอดำเนินการ" domain="[('state', '=', 'verified')]" />
+                <filter name="state_in_progress" string="กำลังดำเนินการ" domain="[('state', '=', 'in_progress')]" />
+                <filter name="state_done" string="เสร็จสิ้น" domain="[('state', '=', 'done')]" />
+                <filter name="state_cancel" string="ยกเลิก" domain="[('state', '=', 'cancel')]" />
+                <separator/>
                 <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator/>
-                <group expand="1" string="Group By">
+                <filter name="my_plans" string="แผนของฉัน" domain="[('user_id', '=', uid)]" />
+                <separator/>
+                <group expand="1" name="group_by" string="Group By">
                     <filter string="ปีงบประมาณ" name="group_by_fiscal_year" context="{'group_by': 'account_fiscal_year_id'}" />
+                    <filter string="สถานะ" name="group_by_state" context="{'group_by': 'state'}" />
+                    <filter string="ผู้จัดทำ" name="group_by_user" context="{'group_by': 'user_id'}" />
                     <filter string="ส่วนงาน" name="group_by_department" context="{'group_by': 'department_analytic_id'}" />
                     <filter string="แหล่งเงิน" name="group_by_source" context="{'group_by': 'source_analytic_id'}" />
                     <filter string="กองทุน" name="group_by_fund" context="{'group_by': 'fund_analytic_id'}" />
                     <filter string="กิจกรรม" name="group_by_activity" context="{'group_by': 'activity_analytic_id'}" />
-                    <filter string="รหัสงบประมาณ" name="group_by_budget_account" context="{'group_by': 'budget_account_id'}" />
-                    <filter string="สถานะ" name="group_by_state" context="{'group_by': 'state'}" />
+                    <filter string="บริษัท" name="group_by_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company" />
                 </group>
                 <searchpanel>
                     <field name="account_fiscal_year_id" icon="fa-calendar" select="multi" enable_counters="1" />
-                    <field name="state" icon="fa-calendar" select="multi" enable_counters="1" />
-                    <field name="department_analytic_id" icon="fa-sitemap" select="multi" />
-                    <field name="source_analytic_id" icon="fa-money" select="multi" />
-                    <field name="fund_analytic_id" icon="fa-university" select="multi" />
                 </searchpanel>
             </search>
         </field>
@@ -160,7 +166,7 @@
         <field name="res_model">procurement.plan</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
-        <field name="context">{'search_default_hide_draft_cancel': 1}</field>
+        <field name="context">{'search_default_hide_cancel': 1}</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
                 There is no examples click here to add new Procurement Plan.

@@ -65,12 +65,37 @@ class KrisProjectReceipt(models.Model):
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         related="project_id.currency_id",
-        string="สกุลเงิน",
+        string="Currency",
         readonly=True,
+    )
+    attachment_ids = fields.One2many(
+        comodel_name="ir.attachment",
+        inverse_name="res_id",
+        domain=[("res_model", "=", "kris.project.receipt")],
+        string="Attachment",
     )
     project_state = fields.Selection(
         related="project_id.state",
         string="Project State",
+    )
+    fiscal_year_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="Fiscal Year",
+        related="project_id.account_fiscal_year_id",
+        store=True,
+        index=True,
+    )
+    project_category_id = fields.Many2one(
+        comodel_name="kris.project.category",
+        string="Project Category",
+        related="project_id.project_category_id",
+        store=True,
+        index=True,
+    )
+    project_name = fields.Char(
+        string="Project Name",
+        related="project_id.project_name",
+        store=True,
     )
 
     def action_delete(self):

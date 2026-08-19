@@ -25,8 +25,9 @@ class BudgetDashboard(models.AbstractModel):
         reserved   (b) เงินจอง           Σreserve - Σobligate   (commitment lines)
         obligated  (c) ผูกพัน            Σobligate - Σconsume
         consumed   (d) เบิกจ่าย          Σconsume
-        used       (e) รวม              b + c + d  (= Σreserve)
+        used       (e) รวม              b + c + d  (= Σreserve, net of returns)
         remaining  (f) คงเหลือ           current - used
+        returned   (g) ส่งคืนเงินเหลือจ่าย  Σ คืนจอง (negative reserve, is_return), shown positive
     """
 
     _name = "budget.dashboard"
@@ -170,11 +171,26 @@ class BudgetDashboard(models.AbstractModel):
         reserved = by_type.get("reserve", {})
         obligated = by_type.get("obligate", {})
         consumed = by_type.get("consume", {})
+        # (g) ส่งคืนเงินเหลือจ่าย: the คืนจอง lines (negative reserve, is_return),
+        # summed separately as a memo column. The signed reserve bucket above
+        # already nets these in, so b/e/f need no change — they drop/rise on
+        # their own once a return is posted.
+        returned = self._sum_by_account(
+            "budget.commitment.line", cl_base + [("is_return", "=", True)], "amount"
+        )
 
         cap = self._sum_by_account("budget.commitment", commit_domain, "amount")
 
         # --- roll own values up the subtree via parent_path ---
-        keys = ("initial", "current", "cap", "reserved", "obligated", "consumed")
+        keys = (
+            "initial",
+            "current",
+            "cap",
+            "reserved",
+            "obligated",
+            "consumed",
+            "returned",
+        )
         sources = {
             "initial": initial,
             "current": current,
@@ -182,6 +198,7 @@ class BudgetDashboard(models.AbstractModel):
             "reserved": reserved,
             "obligated": obligated,
             "consumed": consumed,
+            "returned": returned,
         }
         rolled = {aid: dict.fromkeys(keys, 0.0) for aid in account_ids}
         for acc in accounts:
@@ -259,7 +276,15 @@ class BudgetDashboard(models.AbstractModel):
         into a per-level "ไม่ระบุ" sentinel (id 0). Keys are path-encoded and
         unique (e.g. ``a5|p12|b9``) so one account can appear under many tuples.
         """
-        keys = ("initial", "current", "cap", "reserved", "obligated", "consumed")
+        keys = (
+            "initial",
+            "current",
+            "cap",
+            "reserved",
+            "obligated",
+            "consumed",
+            "returned",
+        )
 
         sources = {
             "current": self._facts_by_account_dims(
@@ -286,6 +311,13 @@ class BudgetDashboard(models.AbstractModel):
         sources["reserved"] = by_type.get("reserve", {})
         sources["obligated"] = by_type.get("obligate", {})
         sources["consumed"] = by_type.get("consume", {})
+        # (g) ส่งคืนเงินเหลือจ่าย: คืนจอง lines (negative reserve, is_return).
+        sources["returned"] = self._facts_by_account_dims(
+            "budget.commitment.line",
+            cl_base + [("is_return", "=", True)],
+            "amount",
+            dims,
+        )
 
         # own[(account_id, dim_tuple)] = {metric: value}; 0 in a tuple = untagged
         # at that position. Each read_group group maps to exactly one tuple, so
@@ -909,7 +941,13 @@ class BudgetDashboard(models.AbstractModel):
 
         commitments = self.env["budget.commitment"].search(domain, limit=limit)
         moves = self.env["budget.move"].search(domain, limit=limit)
-        transfers = self.env["budget.transfer"].search(domain, limit=limit)
+        # budget.transfer lives in the optional `budget_transfer` add-on
+        # (ADR-0013); the core dashboard stays self-contained without it.
+        transfers = (
+            self.env["budget.transfer"].search(domain, limit=limit)
+            if "budget.transfer" in self.env
+            else []
+        )
         return {
             "commitment": [
                 {
@@ -1081,7 +1119,7 @@ class BudgetDashboard(models.AbstractModel):
     # ------------------------------------------------------------------
     @staticmethod
     def _value_columns(r):
-        """Map the six rolled-up sources to the nine displayed money columns."""
+        """Map the seven rolled-up sources to the ten displayed money columns."""
         reserved_v, obligated_v, consumed_v, current_v = (
             r["reserved"],
             r["obligated"],
@@ -1096,8 +1134,9 @@ class BudgetDashboard(models.AbstractModel):
             "reserved": reserved_v - obligated_v,  # b
             "obligated": obligated_v - consumed_v,  # c
             "consumed": consumed_v,  # d
-            "used": reserved_v,  # e = b + c + d
+            "used": reserved_v,  # e = b + c + d (net of returns)
             "remaining": current_v - reserved_v,  # f
+            "returned": -r.get("returned", 0.0),  # g ส่งคืนเงินเหลือจ่าย (shown positive)
         }
 
     def _make_row(self, account, r, level, has_children):

@@ -131,6 +131,7 @@ class TestBudgetCommitment(TransactionCase):
         """Create a commitment in draft state with a single reserve line."""
         vals = {
             "date": date.today(),
+            "title": "Test commitment",
             "account_id": (account_id or self.account_1).id,
             "amount": amount,
             "analytic_distribution": self._header_analytic(),
@@ -177,11 +178,14 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(c.state, "reserved")
         self.assertEqual(c.total_reserved, 100_000)
 
-    def test_02_reserve_without_lines_fails(self):
-        """Cannot reserve a commitment with no lines."""
+    def test_02_reserve_without_lines_creates_from_header(self):
+        """Form-first journey: reserving with no lines synthesizes the single
+        reserve line from the header — code, dimensions and money are entered
+        once, on the form, with no picker dialog."""
         c = self.env["budget.commitment"].create(
             {
                 "date": date.today(),
+                "title": "Test commitment",
                 "account_id": self.account_1.id,
                 "amount": 50_000,
                 "analytic_distribution": self._header_analytic(),
@@ -190,6 +194,32 @@ class TestBudgetCommitment(TransactionCase):
                 "currency_id": self.env.company.currency_id.id,
             }
         )
+        c.action_reserve()
+        self.assertEqual(c.state, "reserved")
+        line = c.line_ids
+        self.assertEqual(len(line), 1)
+        self.assertEqual(line.move_type, "reserve")
+        self.assertEqual(line.account_id, self.account_1)
+        self.assertEqual(line.amount, 50_000)
+        self.assertEqual(line.analytic_distribution, self._header_analytic())
+        self.assertEqual(c.total_reserved, 50_000)
+
+    def test_02b_reserve_requires_positive_amount(self):
+        """A zero วงเงินอนุมัติ is allowed while draft (staging) but cannot be
+        reserved — pressing จองงบประมาณ requires a positive amount."""
+        c = self.env["budget.commitment"].create(
+            {
+                "date": date.today(),
+                "title": "Zero-cap draft",
+                "account_id": self.account_1.id,
+                "amount": 0,
+                "analytic_distribution": self._header_analytic(),
+                "account_fiscal_year_id": self.fiscal_year.id,
+                "company_id": self.env.company.id,
+                "currency_id": self.env.company.currency_id.id,
+            }
+        )
+        self.assertEqual(c.state, "draft")
         with self.assertRaises(UserError):
             c.action_reserve()
 
@@ -392,20 +422,23 @@ class TestBudgetCommitment(TransactionCase):
     # 8. Header positive amount constraint
     # ====================================================================
 
-    def test_70_zero_amount_fails(self):
-        """Commitment cap must be positive."""
-        with self.assertRaises(UserError):
-            self.env["budget.commitment"].create(
-                {
-                    "date": date.today(),
-                    "account_id": self.account_1.id,
-                    "amount": 0,
-                    "analytic_distribution": self._header_analytic(),
-                    "account_fiscal_year_id": self.fiscal_year.id,
-                    "company_id": self.env.company.id,
-                    "currency_id": self.env.company.currency_id.id,
-                }
-            )
+    def test_70_zero_amount_allowed_in_draft(self):
+        """A zero วงเงินอนุมัติ is allowed while draft (staging); it is only
+        the จองงบประมาณ step that requires a positive amount (see test_02b)."""
+        c = self.env["budget.commitment"].create(
+            {
+                "date": date.today(),
+                "title": "Test commitment",
+                "account_id": self.account_1.id,
+                "amount": 0,
+                "analytic_distribution": self._header_analytic(),
+                "account_fiscal_year_id": self.fiscal_year.id,
+                "company_id": self.env.company.id,
+                "currency_id": self.env.company.currency_id.id,
+            }
+        )
+        self.assertEqual(c.state, "draft")
+        self.assertEqual(c.amount, 0)
 
     def test_71_negative_amount_fails(self):
         """Commitment cap cannot be negative."""
@@ -413,6 +446,7 @@ class TestBudgetCommitment(TransactionCase):
             self.env["budget.commitment"].create(
                 {
                     "date": date.today(),
+                "title": "Test commitment",
                     "account_id": self.account_1.id,
                     "amount": -1,
                     "analytic_distribution": self._header_analytic(),
@@ -590,3 +624,75 @@ class TestBudgetCommitment(TransactionCase):
             }
         )
         self.assertEqual(explicit.appropriation_type, "supplementary")
+
+    # ====================================================================
+    # 6. Return leftover reserved budget (ส่งคืนเงินเหลือจ่าย / คืนจอง)
+    # ====================================================================
+
+    def _return_wizard(self, commitment, **ctx):
+        """Open + return the leftover via the confirmation wizard."""
+        action = commitment.action_return_leftover()
+        self.assertEqual(action["res_model"], "budget.commitment.return.wizard")
+        wizard = (
+            self.env["budget.commitment.return.wizard"]
+            .with_context(**action["context"], **ctx)
+            .create({})
+        )
+        return wizard
+
+    def test_60_return_leftover_releases_reservation(self):
+        """Returning the leftover posts a -reserve line and closes the commitment."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        # Disburse 550 (obligate + consume together, like the DR flow).
+        self._add_line(c, "obligate", 550)
+        self._add_line(c, "consume", 550)
+        self.assertEqual(c.available_to_obligate, 50)
+        self.assertEqual(c.state, "partial")
+        wizard = self._return_wizard(c)
+        self.assertEqual(wizard.return_amount, 50)
+        wizard.action_confirm()
+        # Reserved dropped to consumed; leftover back in the pool; commitment done.
+        self.assertEqual(c.total_reserved, 550)
+        self.assertEqual(c.available_to_obligate, 0)
+        self.assertEqual(c.state, "done")
+        ret = c.line_ids.filtered(lambda l: l.is_return)
+        self.assertEqual(len(ret), 1)
+        self.assertEqual(ret.move_type, "reserve")
+        self.assertEqual(ret.amount, -50)
+        self.assertFalse(ret.budget_move_id)  # no GL/budget move for คืนจอง
+
+    def test_61_return_inherits_reserve_account_and_dims(self):
+        """The return line mirrors the first reserve line's account + dimensions."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "obligate", 500)
+        self._add_line(c, "consume", 500)
+        self._return_wizard(c).action_confirm()
+        ret = c.line_ids.filtered(lambda l: l.is_return)
+        self.assertEqual(ret.account_id, c.account_id)
+        self.assertEqual(ret.analytic_distribution, self._line_analytic())
+
+    def test_62_return_stamps_source_document_from_context(self):
+        """A return opened from a source doc stamps res_model/res_id for audit."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "obligate", 550)
+        self._add_line(c, "consume", 550)
+        wizard = self._return_wizard(
+            c, default_res_model="budget.commitment", default_res_id=c.id
+        )
+        wizard.action_confirm()
+        ret = c.line_ids.filtered(lambda l: l.is_return)
+        self.assertEqual(ret.res_model, "budget.commitment")
+        self.assertEqual(ret.res_id, c.id)
+
+    def test_63_return_blocked_when_nothing_left(self):
+        """No leftover -> the action refuses to open the wizard."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "obligate", 600)
+        self._add_line(c, "consume", 600)
+        self.assertEqual(c.available_to_obligate, 0)
+        with self.assertRaises(UserError):
+            c.action_return_leftover()

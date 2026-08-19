@@ -794,8 +794,13 @@ class DepartmentDashboard extends Component {
     getStateClass(state) {
         const classes = {
             'draft': 'badge bg-secondary',
-            'review': 'badge bg-warning',
-            'approved': 'badge bg-success',
+            'to_verify': 'badge bg-info',
+            'to_send': 'badge bg-info',
+            'sent': 'badge bg-primary',
+            'returned': 'badge bg-warning',
+            'rejected': 'badge bg-danger',
+            'in_progress': 'badge bg-primary',
+            'complete': 'badge bg-success',
             'cancel': 'badge bg-danger',
         };
         return classes[state] || 'badge bg-secondary';

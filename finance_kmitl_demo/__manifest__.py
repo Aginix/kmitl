@@ -2,27 +2,29 @@
 
 {
     "name": "KMITL Finance Demo",
-    "version": "16.0.0.0.0",
+    "version": "16.0.1.0.0",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "summary": "Demo data for the post-budget finance flow: disbursement "
-    "requests, vendor bills, payments, bank payment export and fixed assets.",
+    "requests, vendor bills and fixed assets, plus a developer-only menu to "
+    "regenerate it on demand.",
     "depends": [
         "kmitl_demo",
         "disbursement",
         "purchase_request_approval_work_acceptance",
         "agx_approval_disbursement",
         "disbursement_accounting_kmitl",
-        "disbursement_finance_kmitl",
-        "finance_kmitl",
         "accounting_kmitl",
         "account_asset_kmitl",
         "account_asset_depreciation_board",
         "l10n_th_gov_gpsc",
-        "l10n_th_bank_payment_export_ktb",
     ],
-    "data": [],
+    "data": [
+        "security/ir.model.access.csv",
+        "wizards/demo_regen_wizard_views.xml",
+        "views/menuitem.xml",
+    ],
     "post_init_hook": "post_init",
     "application": False,
     "installable": True,

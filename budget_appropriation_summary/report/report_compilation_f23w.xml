@@ -22,10 +22,8 @@
         <field name="paperformat_id" ref="paperformat_compilation_f23w" />
         <field name="binding_type">report</field>
     </record>
-    <!-- F23W Document Template -->
-    <template id="report_compilation_f23w_document">
-        <t t-call="web.basic_layout">
-            <t t-call="budget_appropriation_summary.report_compilation_f23w_styles" />
+    <!-- F23W body (shared by the standalone report and the per-unit book) -->
+    <template id="report_compilation_f23w_body">
             <div class="page budget-compilation-f23w-report" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
                 <t t-if="o.env.context.get('html_preview', False)">
                     <button class="f23w-print-btn" onclick="window.print()" contenteditable="false">
@@ -230,8 +228,16 @@
                     </table>
                 </div>
             </div>
+    </template>
+
+    <!-- F23W Document Template -->
+    <template id="report_compilation_f23w_document">
+        <t t-call="web.basic_layout">
+            <t t-call="budget_appropriation_summary.report_compilation_f23w_styles" />
+            <t t-call="budget_appropriation_summary.report_compilation_f23w_body" />
         </t>
     </template>
+
     <!-- Styles template -->
     <template id="report_compilation_f23w_styles">
         <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)" />

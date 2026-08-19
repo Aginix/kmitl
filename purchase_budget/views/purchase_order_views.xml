@@ -9,7 +9,7 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Budget" name="budget_page">
                     <group
-                        string="Budget Details"
+                        name="budget_details" string="Budget Details"
                         attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
                     >
                         <field name="product_id" invisible="1" />
@@ -31,7 +31,7 @@
                         <field name="source_analytic_id" string="Source"/>
                         <field name="procurement_plan_analytic_id" invisible="1" />
                     </group>
-                    <group string="Procurement Plan">
+                    <group name="procurement_plan" string="Procurement Plan">
                         <field
                             name="use_procurement_plan"
                             attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"

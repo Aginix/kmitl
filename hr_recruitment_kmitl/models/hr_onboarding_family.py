@@ -27,6 +27,22 @@ class HrOnboardingFamily(models.Model):
         [("alive", "Alive"), ("pass_away", "Pass Away"), ("divorce", "Divorce")],
         tracking=True,
     )
+    house_registration_file = fields.Binary(
+        string="House Registration", attachment=True
+    )
+    house_registration_filename = fields.Char(tracking=True)
+    id_card_file = fields.Binary(
+        string="National ID / Birth Certificate", attachment=True
+    )
+    id_card_filename = fields.Char(tracking=True)
+    other_attachment_ids = fields.Many2many(
+        "ir.attachment",
+        "hr_onboarding_family_other_attachment_rel",
+        "family_id",
+        "attachment_id",
+        string="Other Documents",
+        tracking=True,
+    )
 
     def _applicant_for_tracking(self):
         self.ensure_one()

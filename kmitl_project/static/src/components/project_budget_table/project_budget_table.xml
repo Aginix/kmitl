@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates xml:space="preserve">
+    <t t-name="kmitl_project.ProjectBudgetTableRows" t-inherit="web.ListRenderer.Rows" t-inherit-mode="primary" owl="1">
+        <xpath expr="//t[@t-foreach='list.records']" position="replace">
+            <t t-foreach="renderRows" t-as="row" t-key="row.key">
+                <t t-if="row.type === 'header'">
+                    <tr t-attf-class="o_budget_section_header o_budget_level_{{ row.level }}">
+                        <td t-if="hasSelectors" />
+                        <td t-att-colspan="colsBeforeAmount" t-attf-style="{{ indent(row.level) }}">
+                            <i class="fa fa-folder-open-o me-2" role="img" aria-label="Section" />
+                            <t t-esc="row.name" />
+                        </td>
+                        <td class="o_list_number fw-bold">
+                            <t t-esc="formatAmount(row.total)" />
+                        </td>
+                        <td colspan="99" />
+                    </tr>
+                </t>
+                <t t-elif="row.type === 'record'">
+                    <t t-set="record" t-value="row.record" />
+                    <t t-call="{{ constructor.recordRowTemplate }}" />
+                </t>
+                <t t-elif="row.type === 'add' and displayRowCreates">
+                    <tr t-attf-class="o_budget_section_add o_budget_add_level_{{ row.level }}">
+                        <td colspan="99" t-attf-style="{{ indent(row.level + 1) }}">
+                            <a href="#" role="button" class="o_budget_section_add_link o_budget_add_catalog"
+                                t-att-tabindex="props.list.editedRecord ? '-1' : '0'"
+                                t-on-click.stop.prevent="() => this.addInSection(row.categoryId, false)">
+                                <i class="fa fa-list-ul me-1" />เพิ่มรายการ
+                            </a>
+                            <a href="#" role="button" class="o_budget_section_add_link o_budget_add_free ms-3"
+                                t-att-tabindex="props.list.editedRecord ? '-1' : '0'"
+                                t-on-click.stop.prevent="() => this.addInSection(row.categoryId, true)">
+                                <i class="fa fa-pencil me-1" />เพิ่มอื่น ๆ
+                            </a>
+                        </td>
+                    </tr>
+                </t>
+            </t>
+        </xpath>
+    </t>
+</templates>

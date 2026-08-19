@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
-from . import sarabun_role
+# P1 core data model + P2 routing engine & lifecycle.
+# Register (P3), notifications/access (P4), signing/report (P5) and the hardened
+# adapter (P6) are added per phase.
+from . import sarabun_verb
+from . import sarabun_addressee_prefix
+from . import sarabun_position
 from . import sarabun_document_type
-from . import sarabun_document_sequence
 from . import sarabun_route_template
-from . import sarabun_document
-from . import sarabun_routing_line
-from . import sarabun_document_recipient
-from . import sarabun_reference
-from . import sarabun_document_mixin
-from . import sarabun_inbox
+from . import sarabun_routing_step
+from . import sarabun_routing_step_activity
+from . import sarabun_step_recipient
+from . import sarabun_document_sequence
+from . import sarabun_reference_line
 from . import hr_department
-from . import res_users
+from . import sarabun_document
+from . import sarabun_document_mixin

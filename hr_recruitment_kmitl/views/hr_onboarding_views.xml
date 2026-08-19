@@ -38,7 +38,7 @@
                     name="filter_submitted"
                     domain="[('state', '=', 'submitted')]"
                 />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter
                         string="State"
                         name="group_state"
@@ -158,7 +158,7 @@
                         </page>
                         <page string="Benefits" name="benefits">
                             <group attrs="{'readonly': [('state', '=', 'submitted')]}">
-                                <group string="Health Insurance">
+                                <group name="health_insurance" string="Health Insurance">
                                     <field
                                         name="health_employee_file"
                                         filename="health_employee_filename"
@@ -172,7 +172,7 @@
                                         widget="many2many_binary"
                                     />
                                 </group>
-                                <group string="Accident Insurance">
+                                <group name="accident_insurance" string="Accident Insurance">
                                     <field
                                         name="accident_employee_file"
                                         filename="accident_employee_filename"
@@ -188,7 +188,7 @@
                                 </group>
                             </group>
                             <group attrs="{'readonly': [('state', '=', 'submitted')]}">
-                                <group string="Provident Fund">
+                                <group name="provident_fund" string="Provident Fund">
                                     <field
                                         name="provident_fund_file"
                                         filename="provident_fund_filename"
@@ -198,7 +198,7 @@
                                         invisible="1"
                                     />
                                 </group>
-                                <group string="Declarations">
+                                <group name="declarations" string="Declarations">
                                     <field
                                         name="beneficiary_declaration_file"
                                         filename="beneficiary_declaration_filename"
@@ -220,11 +220,11 @@
                         </page>
                         <page string="Confirmation" name="confirmation">
                             <group attrs="{'readonly': [('state', '=', 'submitted')]}">
-                                <group string="Background Check &amp; Bank">
+                                <group name="background_check_and_bank" string="Background Check &amp; Bank">
                                     <field name="background_check_location_type" />
                                     <field name="krungthai_bank_account" />
                                 </group>
-                                <group string="Supporting Documents">
+                                <group name="supporting_documents" string="Supporting Documents">
                                     <field
                                         name="salary_book_file"
                                         filename="salary_book_filename"
@@ -241,7 +241,7 @@
                                 </group>
                             </group>
                             <group attrs="{'readonly': [('state', '=', 'submitted')]}">
-                                <group string="PDPA &amp; Final Confirmation">
+                                <group name="pdpa_and_final_confirmation" string="PDPA &amp; Final Confirmation">
                                     <field name="pdpa_consent" />
                                     <field name="final_confirm" />
                                 </group>

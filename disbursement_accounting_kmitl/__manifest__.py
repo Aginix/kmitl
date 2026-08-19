@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement ↔ KMITL Accounting Bridge",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.2.0",
     "category": "KMITL/Accounting",
     "summary": "DR ↔ Bill: enable vendor bill creation from disbursement "
     "requests and pipeline status sync",

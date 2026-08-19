@@ -2,7 +2,7 @@ import logging
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from odoo.tools import float_compare
+from odoo.tools import float_compare, formatLang
 
 _logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class BudgetCommitment(models.Model):
     _description = "Budget Commitment"
     _inherit = ["analytic.mixin", "mail.thread", "mail.activity.mixin"]
     _order = "date desc, name desc, id desc"
-    _rec_names_search = ["name", "ref"]
+    _rec_names_search = ["name", "ref", "title"]
 
     READONLY_STATES = {
         "reserved": [("readonly", True)],
@@ -38,6 +38,19 @@ class BudgetCommitment(models.Model):
         default=lambda self: _("New"),
         readonly=False,
         states=READONLY_STATES,
+    )
+    title = fields.Char(
+        string="ชื่อรายการจอง",
+        required=True,
+        tracking=True,
+        index="trigram",
+        readonly=False,
+        states=READONLY_STATES,
+        help=(
+            "ชื่อ/วัตถุประสงค์ของใบจองงบประมาณ แสดงคู่กับเลขที่ใบจองทุกที่ที่ต้องเลือกใบจอง "
+            "(เช่น ช่องหยิบใบจองใน พ.1 / ใบขออนุมัติ) — ใบจองที่สร้างจากโครงการหรือ"
+            "แผนจัดซื้อจัดจ้างจะเติมชื่อของเอกสารต้นทางให้อัตโนมัติ"
+        ),
     )
     ref = fields.Char(
         string="Reference",
@@ -362,28 +375,261 @@ class BudgetCommitment(models.Model):
             if record.state != new_state:
                 record.state = new_state
 
-    @api.constrains("amount")
+    @api.constrains("amount", "state")
     def _check_positive_amount(self):
+        # A draft is a staging area — a zero วงเงินอนุมัติ is allowed while the
+        # slip is being filled in. Reserving requires a positive amount, enforced
+        # in action_reserve and re-guarded here for any active commitment. A
+        # negative cap is never valid.
         for record in self:
-            if record.amount <= 0:
+            if record.amount < 0:
+                raise UserError(_("Commitment cap amount cannot be negative."))
+            if record.state != "draft" and record.amount <= 0:
                 raise UserError(_("Commitment cap amount must be positive."))
+
+    # --- Display ---
+
+    def name_get(self):
+        """Show ``BC0001 - ชื่อรายการจอง`` instead of the bare number.
+
+        A reservation is picked by *what it is for* (a การจอง for a project, a
+        plan, or a unit's support), so every place that offers a commitment —
+        the draw-down dropdown on พ.1 / ใบขออนุมัติ above all — must carry the
+        title next to the number.
+        """
+        return [
+            (record.id, "%s - %s" % (record.name, record.title))
+            if record.title
+            else (record.id, record.name)
+            for record in self
+        ]
+
+    @api.depends("name", "title")
+    def _compute_display_name(self):
+        # Base depends only on _rec_name (``name``), so editing the title would
+        # otherwise leave a stale display_name in cache.
+        return super()._compute_display_name()
+
+    def get_reservation_info(self):
+        """Display payload for the ``budget_commitment_info`` field widget.
+
+        One dict per record: identity plus label/value rows the widget renders
+        verbatim, so labels, translations and money formatting all stay
+        server-side and the widget stays dumb. Bridge modules may enrich it by
+        overriding :meth:`_reservation_info_rows`; the operating unit is left out
+        on purpose (it is the visibility axis, not what a slip is picked by).
+        """
+        state_labels = dict(self._fields["state"]._description_selection(self.env))
+        return [
+            {
+                "id": record.id,
+                "name": record.name,
+                "title": record.title or "",
+                "state": record.state,
+                "state_label": state_labels.get(record.state, record.state),
+                "rows": record._reservation_info_rows(),
+                "amounts": record._reservation_info_amounts(),
+            }
+            for record in self
+        ]
+
+    # The four financial dimensions are always listed, even when empty: the
+    # engine matches all dimensions or pins a missing one to False, so "this
+    # reservation has no กองทุน" is information the reader needs, not noise.
+    _RESERVATION_INFO_FIELDS = (
+        "account_id",
+        "department_analytic_id",
+        "source_analytic_id",
+        "activity_analytic_id",
+        "fund_analytic_id",
+        "account_fiscal_year_id",
+    )
+    # โครงการ/แผนจัดซื้อจัดจ้าง are source markers rather than part of every
+    # reservation — a standalone slip carries neither — so they are listed only
+    # when set, instead of adding two empty rows to the common case.
+    _RESERVATION_INFO_FIELDS_IF_SET = (
+        "kmitl_project_analytic_id",
+        "procurement_plan_analytic_id",
+    )
+
+    def _reservation_info_rows(self):
+        """Dimension/identity rows shown by the widget (label, value) pairs."""
+        self.ensure_one()
+        rows = []
+        for fname in self._RESERVATION_INFO_FIELDS:
+            value = self[fname]
+            rows.append(
+                {
+                    "label": self._fields[fname]._description_string(self.env),
+                    "value": value.display_name if value else "-",
+                }
+            )
+        for fname in self._RESERVATION_INFO_FIELDS_IF_SET:
+            value = self[fname]
+            if value:
+                rows.append(
+                    {
+                        "label": self._fields[fname]._description_string(self.env),
+                        "value": value.display_name,
+                    }
+                )
+        return rows
+
+    def _reservation_info_amounts(self):
+        """Money rows shown by the widget: just the reservation's own amount.
+
+        Kept as a list so a bridge can still add a figure, but the widget shows
+        one by default. The obligated/leftover breakdown belongs on the
+        reservation itself — on a consuming document it read as a ledger the
+        reader had to interpret, where all they are answering is "is this the
+        right slip, and for how much".
+        """
+        self.ensure_one()
+        return [
+            {
+                "label": _("จำนวนเงิน"),
+                "value": formatLang(
+                    self.env, self.amount, currency_obj=self.currency_id
+                ),
+            }
+        ]
 
     # --- Workflow Methods ---
 
     def action_reserve(self):
-        """Draft -> Reserved: validate reserve lines exist"""
+        """Draft -> Reserved: synthesize the reserve line from the header and
+        check the pool is available.
+
+        The header carries the budget code, dimensions and วงเงินอนุมัติ, so the
+        reservation is filled in once on the form — no picker dialog. A zero cap
+        is allowed while draft (staging), but reserving requires a positive
+        amount.
+        """
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft commitments can be reserved."))
+            if record.amount <= 0:
+                raise UserError(
+                    _("กรุณาระบุวงเงินอนุมัติมากกว่า 0 ก่อนจองงบประมาณ")
+                )
+            if record.total_reserved <= 0:
+                record._create_reserve_line_from_header()
             if record.total_reserved <= 0:
                 raise UserError(
                     _("Cannot reserve: no reserve lines found. Add reserve lines first.")
                 )
+            record._check_reserve_availability()
             if record.name == _("New"):
                 record.name = self.env["ir.sequence"].next_by_code(
                     "budget.commitment"
                 ) or _("New")
             record.state = "reserved"
+
+    def _create_reserve_line_from_header(self):
+        """Synthesize the single reserve line from the header (form-first).
+
+        A standalone ใบจอง is filled in once — budget code, dimensions and
+        วงเงินอนุมัติ all live on the header — so reserving must not demand the
+        same data again through a dialog. Called by :meth:`action_reserve` only
+        when no reserve line exists yet, which leaves every programmatic creator
+        (project/plan hosts pass ``line_ids`` themselves) untouched.
+        """
+        self.ensure_one()
+        self.write(
+            {
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "move_type": "reserve",
+                            "account_id": self.account_id.id,
+                            "amount": self.amount,
+                            "analytic_distribution": self.analytic_distribution,
+                            "name": _("Reservation"),
+                        },
+                    )
+                ]
+            }
+        )
+
+    def _check_reserve_availability(self):
+        """Block reserving more than the control-node Available (ADR-0005).
+
+        Runs while the commitment is still ``draft`` (so its own reserve lines are
+        not yet counted as ``used``). Skipped when ``budget.allow_negative`` is set.
+        Availability is evaluated with the **header** dimension combination
+        (``analytic_distribution``) — the reserve lines a host mixin builds carry
+        only a subset (activity+fund) while the header carries all dimensions —
+        paired with each reserve line's own budget account, so cross-charge lines
+        are each checked against their own pool.
+        """
+        self.ensure_one()
+        allow_negative = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("budget.allow_negative", False)
+        )
+        if allow_negative:
+            return
+        controller = self.env["budget.controller"]
+        fy_id = self.account_fiscal_year_id.id
+        company_id = self.company_id.id
+        rounding = self.currency_id.rounding or 0.01
+        avail_distribution = self._availability_distribution()
+        reserve_lines = self.line_ids.filtered(
+            lambda l: l.state == "posted" and l.move_type == "reserve"
+        )
+        per_account = {}
+        for line in reserve_lines:
+            per_account.setdefault(line.account_id, 0.0)
+            per_account[line.account_id] += line.amount
+        for account, amount in per_account.items():
+            available = controller.get_available(
+                account, avail_distribution, fy_id, company_id
+            )
+            if float_compare(available, amount, precision_rounding=rounding) < 0:
+                raise UserError(
+                    _(
+                        "Insufficient budget to reserve %(amount).2f on %(code)s: "
+                        "only %(available).2f available at the control node."
+                    )
+                    % {
+                        "amount": amount,
+                        "code": account.display_name,
+                        "available": available,
+                    }
+                )
+
+    # kmitl_project rides on the reserve line but the project pool is
+    # floating/UNTAGGED (ADR-0007), so availability must be evaluated without it.
+    # procurement_plan is NOT stripped: a plan's source appropriation IS tagged
+    # with its procurement_plan dimension, so the check must keep the tag to match
+    # it (procurement.plan._reserve_plan_commitment carries it in its own
+    # pre-check for the same reason).
+    _POOL_TAG_PLAN_CODES = ("kmitl_project",)
+
+    def _availability_distribution(self):
+        """The dimension combination to evaluate Available against: the header
+        distribution with the floating-pool tag (kmitl_project) removed, so a
+        project reservation is checked against its floating (untagged)
+        appropriation pool — matching kmitl.project._reserve_project_commitment,
+        whose pre-check builds analytic_data from the four financial dimensions
+        only. Plan (procurement_plan, tagged appropriation) and standalone
+        reservations are unchanged."""
+        self.ensure_one()
+        distribution = dict(self.analytic_distribution or {})
+        if not distribution:
+            return distribution
+        account_ids = [int(k) for k in distribution]
+        tag_accounts = self.env["account.analytic.account"].browse(
+            account_ids
+        ).filtered(
+            lambda a: a.root_plan_id and a.root_plan_id.code in self._POOL_TAG_PLAN_CODES
+        )
+        for acc in tag_accounts:
+            distribution.pop(str(acc.id), None)
+        return distribution
 
     def action_done(self):
         """Close the commitment"""
@@ -461,6 +707,51 @@ class BudgetCommitment(models.Model):
             },
         }
 
+    def action_return_leftover(self):
+        """Open the confirmation wizard to return leftover reserved budget (คืนจอง).
+
+        The leftover = ``available_to_obligate`` (reserved − obligated, which
+        equals reserved − consumed because the KMITL flows post obligate and
+        consume together). Confirming posts a single negative ``reserve`` line
+        (``is_return=True``) that releases the unspent earmark back to the pool
+        without cancelling the commitment (see CONTEXT.md / ADR-0009).
+        Reserved/in-progress only.
+        """
+        self.ensure_one()
+        if self.state not in ("reserved", "partial"):
+            raise UserError(
+                _(
+                    "Can only return leftover budget on a reserved or "
+                    "in-progress commitment."
+                )
+            )
+        return self._action_return_leftover_wizard()
+
+    def _action_return_leftover_wizard(self, res_model=False, res_id=False):
+        """Build the act_window that opens the return-leftover (คืนจอง) wizard.
+
+        Shared by the commitment button and the disbursement-request shortcut so
+        the wizard model, the label and the "no leftover" guard live in one
+        place. ``res_model``/``res_id`` stamp the initiating document on the
+        posted return line for drill-down traceability.
+        """
+        self.ensure_one()
+        if self.available_to_obligate <= 0:
+            raise UserError(_("No leftover reserved budget to return."))
+        context = {"default_commitment_id": self.id}
+        if res_model:
+            context["default_res_model"] = res_model
+        if res_id:
+            context["default_res_id"] = res_id
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ส่งคืนเงินเหลือจ่าย"),
+            "res_model": "budget.commitment.return.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": context,
+        }
+
     def action_view_budget_moves(self):
         """View related budget moves"""
         self.ensure_one()
@@ -473,88 +764,7 @@ class BudgetCommitment(models.Model):
             "context": {"default_commitment_id": self.id},
         }
 
-    # --- Reservation picker widget ---
-
-    def action_open_reservation_picker(self):
-        """Open the budget reservation picker (hierarchy + per-row available).
-
-        The picker is scoped to this commitment's fixed dimension combination,
-        so every row shows the control-node available the reservation check will
-        enforce. On confirm it calls :meth:`apply_reservation_selection`.
-        """
-        self.ensure_one()
-        if self.state != "draft":
-            raise UserError(
-                _("Budget can only be selected while the reservation is draft.")
-            )
-        account = self.account_id
-        root = account
-        while root and root.parent_id:
-            root = root.parent_id
-        return {
-            "type": "ir.actions.client",
-            "tag": "budget_reservation_picker",
-            "target": "new",
-            "name": _("เลือกงบประมาณ"),
-            "context": {
-                "res_model": "budget.commitment",
-                "res_id": self.id,
-                "select_only": False,
-                "default_fiscal_year_id": self.account_fiscal_year_id.id,
-                "default_root_account_id": root.id if root else False,
-                "default_department_analytic_id": self.department_analytic_id.id or False,
-                "default_source_analytic_id": self.source_analytic_id.id or False,
-                "default_fund_analytic_id": self.fund_analytic_id.id or False,
-                "default_activity_analytic_id": self.activity_analytic_id.id or False,
-            },
-        }
-
-    def apply_reservation_selection(self, selections, dims=None):
-        """Write reserve lines from the picker.
-
-        ``selections`` = ``[{"account_id": int, "amount": float}, ...]``. Replaces
-        the commitment's current reserve lines (re-selection cancels the old
-        ones), stamps the chosen dimensions (``dims`` = ``analytic_distribution``)
-        on the header and each line, and lifts the cap to cover the total.
-        Cross-charge (>1 code) is gated by the ``cross_chargeable`` constraint.
-        Draft only.
-        """
-        self.ensure_one()
-        if self.state != "draft":
-            raise UserError(
-                _("Budget can only be selected while the reservation is draft.")
-            )
-        selections = [
-            s for s in (selections or []) if s.get("account_id") and s.get("amount")
-        ]
-        if not selections:
-            raise UserError(_("Select at least one budget code with an amount."))
-
-        # Re-selection: cancel the existing posted reserve lines first.
-        self.line_ids.filtered(
-            lambda l: l.state == "posted" and l.move_type == "reserve"
-        ).action_cancel()
-
-        distribution = dims if dims is not None else self.analytic_distribution
-        total = sum(s["amount"] for s in selections)
-        line_cmds = [
-            (
-                0,
-                0,
-                {
-                    "move_type": "reserve",
-                    "account_id": s["account_id"],
-                    "amount": s["amount"],
-                    "analytic_distribution": distribution,
-                    "name": _("Reservation"),
-                },
-            )
-            for s in selections
-        ]
-        vals = {"line_ids": line_cmds, "account_id": selections[0]["account_id"]}
-        if dims is not None:
-            vals["analytic_distribution"] = dims or False
-        if not self.amount or self.amount < total:
-            vals["amount"] = total
-        self.write(vals)
-        return True
+    # The reservation picker (amounts mode) on the commitment itself is gone:
+    # the core journey is form-first — the header IS the single reserve line
+    # (see _create_reserve_line_from_header). The picker JS component stays as
+    # shared infrastructure for the select-only hosts (พ.1 / ใบขออนุมัติ).

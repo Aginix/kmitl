@@ -1,25 +1,21 @@
 # Procurement Plan
 
-Annual procurement planning (แผนจัดซื้อจัดจ้าง) for KMITL. A plan is born from an approved budget appropriation, reserves its full amount against the budget pipeline at that moment, and is realised through exactly one purchase request and a series of installment disbursements.
+Annual procurement planning (แผนจัดซื้อจัดจ้าง) for KMITL. A plan stands on its own: it is created directly, carries the classification dimensions, and moves through a self-contained workflow — no budget involved. Budget backing (reservation) and origination from a budget appropriation are optional capabilities layered on by separate modules.
 
 ## Language
 
 **Procurement Plan (แผนจัดซื้อจัดจ้าง)**:
-A single planned procurement, created when a `budget.appropriation` line is posted. Owns one `budget.commitment` (its reservation) and at most one *active* purchase request. Carries the financial dimensions via `analytic_distribution`.
+A single planned procurement. Created manually (or, with the budget-appropriation layer, born from a posted appropriation line). Carries the four classification dimensions (ส่วนงาน / แหล่งเงิน / กองทุน / กิจกรรม) via `analytic_distribution`, and owns its own analytic account in the `procurement_plan` dimension once submitted.
 _Avoid_: purchase plan, procurement request
 
+**Plan analytic account (มิติแผนจัดซื้อจัดจ้าง)**:
+The `account.analytic.account` in the `procurement_plan` dimension that *is* this plan — its identity as a dimension value, so other documents can be tagged to it. Minted when the plan is first submitted (draft → รอตรวจสอบข้อมูล). Exists independently of any budget.
+_Avoid_: dimension, tag
+
+**Submit (ส่งเข้ารอจัดสรรงบประมาณ / ปรับแผน)**:
+The draft → รอตรวจสอบข้อมูล transition. The single act that takes a plan out of drafting and mints its plan analytic account. Budget-free at the core level.
+_Avoid_: confirm, activate
+
 **Installment (งวดงาน, `procurement.plan.payment`)**:
-A planned disbursement tranche of a plan. Actual budget consumption happens งวด-by-งวด through disbursement requests; the installment rows are the *plan*, not the ledger.
+A planned disbursement tranche of a plan. Purely informational at the core level — the rows are the *plan*, not a ledger.
 _Avoid_: payment, period
-
-**Reserve (จองงบ)**:
-The plan's full-amount earmark, created the moment its source appropriation is posted — i.e. when the plan reaches state `new`. The single act of จองงบ; nothing downstream reserves again. See [budget » Reserve](../budget/CONTEXT.md).
-_Avoid_: allocate
-
-**Ready (the ETA gate)**:
-The operational checkpoint — all five ETA fields + procurement method filled — that **unlocks creating the plan's purchase request**. It does not touch budget (the reserve already happened at `new`).
-_Avoid_: confirmed, approved
-
-**Reserve Budget (the PR `action_reserve_budget` button)**:
-A misnomer for plan-driven PRs: it does **not** จองงบ. The reservation already exists on the plan; a plan-driven PR only *links* it. Reserving (จองงบ) is exclusively the appropriation→`new` event.
-_Avoid_: using "reserve budget" to mean จองงบ for plan-driven PRs

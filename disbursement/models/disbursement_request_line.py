@@ -102,9 +102,6 @@ class DisbursementRequestLine(models.Model):
     partner_id = fields.Many2one(
         comodel_name="res.partner",
         string="Partner",
-        compute="_compute_line_partner_id",
-        store=True,
-        readonly=False,
     )
 
     partner_bank_id = fields.Many2one(
@@ -190,7 +187,7 @@ class DisbursementRequestLine(models.Model):
 
     @api.onchange("product_id")
     def _onchange_product_id(self):
-        """Update description, price, account, and taxes when product changes"""
+        """Update description, price, and account when product changes"""
         if self.product_id:
             self.name = self.product_id.display_name
             self.price_unit = self.product_id.standard_price
@@ -201,30 +198,14 @@ class DisbursementRequestLine(models.Model):
             )
             if account:
                 self.account_id = account
-            # Set taxes from product
-            if self.product_id.supplier_taxes_id:
-                self.tax_ids = self.product_id.supplier_taxes_id
 
     # -------------------------------------------------------------------------
     # Partner compute methods
     # -------------------------------------------------------------------------
-    @api.depends("request_id.partner_type", "request_id.partner_id")
-    def _compute_line_partner_id(self):
-        for line in self:
-            if line.request_id.partner_type == "single":
-                line.partner_id = line.request_id.partner_id
-
-    @api.depends(
-        "partner_id",
-        "request_id.partner_type",
-        "request_id.partner_bank_id",
-        "request_id.company_id",
-    )
+    @api.depends("partner_id", "request_id.company_id")
     def _compute_line_partner_bank_id(self):
         for line in self:
-            if line.request_id.partner_type == "single":
-                line.partner_bank_id = line.request_id.partner_bank_id
-            elif line.partner_id:
+            if line.partner_id:
                 banks = line.partner_id.bank_ids.filtered(
                     lambda b: not b.company_id
                     or b.company_id == line.request_id.company_id
@@ -236,9 +217,9 @@ class DisbursementRequestLine(models.Model):
     @api.constrains("partner_id")
     def _check_line_partner_required(self):
         for line in self:
-            if line.request_id.partner_type == "multi" and not line.partner_id:
+            if not line.partner_id:
                 raise ValidationError(
-                    _("Partner is required on each line in multi-partner mode.")
+                    _("Partner is required on each line.")
                 )
 
     # -------------------------------------------------------------------------

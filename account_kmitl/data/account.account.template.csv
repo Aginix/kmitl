@@ -9,6 +9,7 @@
 "a_1111100000","เงินสดย่อย","1111100000","asset_current","account_kmitl.chart","False"
 "a_1111100004","เงินสดย่อย","1111100004","asset_current","account_kmitl.chart","False"
 "a_1112000000","เงินฝากธนาคาร","1112000000","asset_current","account_kmitl.chart","False"
+"a_1112000006","ใบสำคัญจ่ายลูกหนี้เงินยืม (สำเนา)","1112000006","asset_cash","account_kmitl.chart","True"
 "a_1112110000","เงินฝากธนาคาร - เงินงบประมาณ-ออมทรัพย์","1112110000","asset_current","account_kmitl.chart","False"
 "a_1112110001","ธ.กรุงไทย สาขาลาดกระบัง บ/ช 69293-9","1112110001","asset_cash","account_kmitl.chart","True"
 "a_1112110002","ธ.กรุงไทย สาขาลาดกระบัง บ/ช 70392-2","1112110002","asset_cash","account_kmitl.chart","True"

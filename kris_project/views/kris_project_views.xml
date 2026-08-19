@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <!-- ============================================================ -->
@@ -10,28 +10,44 @@
         <field name="model">kris.project.receipt</field>
         <field name="arch" type="xml">
             <form string="Revenue Record">
-                <field name="currency_id" invisible="1"/>
+                <sheet>
+                <field name="currency_id" invisible="1" />
                 <group>
-                    <field name="project_id" readonly="1"/>
-                    <field name="name"/>
-                    <field name="installment_id"/>
-                    <field name="date"/>
-                    <field name="equipment_cost_in_installment"/>
-                    <field name="amount"/>
-                    <field name="extra_income"/>
-                    <field name="net_amount" readonly="1"/>
-                    <field name="note"/>
+                    <field name="project_id" readonly="1" />
+                    <field name="name" />
+                    <field name="installment_id" />
+                    <field name="date" />
+                    <field name="equipment_cost_in_installment" />
+                    <field name="amount" />
+                    <field name="extra_income" />
+                    <field name="net_amount" readonly="1" />
+                    <field name="note" />
                 </group>
-                <separator string="Allocation based on revenue."/>
-                <field name="allocation_ids">
-                    <tree create="0" delete="0" editable="bottom">
-                        <field name="allocation_line_id" invisible="1" />
-                        <field name="name" string="Allocator" />
-                        <field name="remaining_amount" readonly="1" />
-                        <field name="amount" />
-                        <field name="currency_id" invisible="1" />
-                    </tree>
-                </field>
+                <notebook>
+                    <page string="Allocation" name="allocation">
+                        <field name="allocation_ids">
+                            <tree create="0" delete="0" editable="bottom">
+                                <field name="allocation_line_id" invisible="1" />
+                                <field name="name" string="Allocator" />
+                                <field name="remaining_amount" readonly="1" />
+                                <field name="amount" />
+                                <field name="currency_id" invisible="1" />
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Attachment" name="attachments">
+                        <group name="attachment" string="Attachment">
+                            <field
+                                    name="attachment_ids"
+                                    widget="many2many_binary"
+                                    nolabel="1"
+                                    colspan="2"
+                                    context="{'default_res_model': 'kris.project.receipt'}"
+                                />
+                        </group>
+                    </page>
+                </notebook>
+                </sheet>
             </form>
         </field>
     </record>
@@ -45,39 +61,44 @@
         <field name="model">kris.project.installment</field>
         <field name="arch" type="xml">
             <form string="Installment">
-                <field name="currency_id" invisible="1"/>
+                <field name="currency_id" invisible="1" />
                 <group>
-                    <group string="Installment Infomation">
-                        <field name="project_id" readonly="1"/>
-                        <field name="name"/>
-                        <field name="due_date"/>
-                        <field name="state" widget="badge"
+                    <group
+                        name="installment_infomation"
+                        string="Installment Infomation"
+                    >
+                        <field name="project_id" readonly="1" />
+                        <field name="name" />
+                        <field name="due_date" />
+                        <field
+                            name="state"
+                            widget="badge"
                             decoration-info="state == 'pending'"
                             decoration-warning="state == 'partial'"
                             decoration-success="state == 'received'"
                         />
                     </group>
-                    <group string="Finance">
-                        <field name="amount"/>
-                        <field name="deduction_guarantee"/>
-                        <field name="deduction_advance"/>
-                        <field name="extra_income"/>
-                        <field name="received_from_employer" readonly="1"/>
-                        <field name="maintenance_fee" readonly="1"/>
-                        <field name="extra_deduction"/>
-                        <field name="amount_net" readonly="1"/>
+                    <group name="finance" string="Finance">
+                        <field name="amount" />
+                        <field name="deduction_guarantee" />
+                        <field name="deduction_advance" />
+                        <field name="extra_income" />
+                        <field name="received_from_employer" readonly="1" />
+                        <field name="maintenance_fee" readonly="1" />
+                        <field name="extra_deduction" />
+                        <field name="amount_net" readonly="1" />
                     </group>
                 </group>
-                <separator string="Installment allocation"/>
+                <separator string="Installment allocation" />
                 <field name="allocation_ids">
                     <tree editable="bottom" create="0" delete="0">
-                        <field name="allocation_line_id" invisible="1"/>
-                        <field name="name" readonly="1" string="Allocator"/>
-                        <field name="estimated_amount" readonly="1"/>
-                        <field name="allocated_amount" readonly="1"/>
-                        <field name="remaining_amount" readonly="1"/>
-                        <field name="amount" sum="รวม"/>
-                        <field name="currency_id" invisible="1"/>
+                        <field name="allocation_line_id" invisible="1" />
+                        <field name="name" readonly="1" string="Allocator" />
+                        <field name="estimated_amount" readonly="1" />
+                        <field name="allocated_amount" readonly="1" />
+                        <field name="remaining_amount" readonly="1" />
+                        <field name="amount" sum="รวม" />
+                        <field name="currency_id" invisible="1" />
                     </tree>
                 </field>
             </form>
@@ -103,54 +124,69 @@
                         groups="kris_project.group_kris_project_officer"
                     />
                     <button
-                        name="action_done"
-                        string="Done"
-                        type="object"
-                        class="btn-primary"
-                        states="in_progress"
-                        groups="kris_project.group_kris_project_officer"
-                    />
-                    <button
                         name="action_cancel"
                         string="Cancel"
                         type="object"
-                        states="draft,in_progress,done"
+                        states="draft"
                         groups="kris_project.group_kris_project_officer"
+                    />
+                    <button
+                        name="%(kris_project.action_kris_project_state_wizard)d"
+                        string="Change Project Status"
+                        type="action"
+                        class="btn-primary"
+                        states="in_progress,suspended"
+                        groups="kris_project.group_kris_project_officer"
+                        context="{'active_id': active_id, 'active_model': 'kris.project'}"
                     />
                     <button
                         name="action_draft"
                         string="Reset to Draft"
                         type="object"
-                        states="cancel"
-                        groups="kris_project.group_kris_project_manager"
+                        states="cancel,in_progress,done,terminated,conditional_close"
+                        groups="kris_project.group_kris_project_officer"
                     />
                     <field
                         name="state"
                         widget="statusbar"
                         statusbar_visible="draft,in_progress,done"
+                        attrs="{'invisible': [('state', 'in', ('terminated', 'conditional_close', 'cancel'))]}"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,in_progress"
+                        attrs="{'invisible': [('state', 'not in', ('terminated', 'conditional_close', 'cancel'))]}"
                     />
                 </header>
-                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"
-                    attrs="{'invisible': [('exceptions_summary', '=', False)]}">
+                <div
+                    class="alert alert-danger"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('exceptions_summary', '=', False)]}"
+                >
                     <p><strong>Exception:</strong></p>
-                    <field name="exceptions_summary"/>
+                    <field name="exceptions_summary" />
                 </div>
                 <sheet>
-                    <field name="can_edit" invisible="1"/>
-                    <field name="installment_editable" invisible="1"/>
-                    <field name="warn_allocation_mismatch" invisible="1"/>
-                    <field name="warn_installment_maintenance_mismatch" invisible="1"/>
-                    <field name="warn_installment_total_mismatch" invisible="1"/>
-                    <field name="warn_extra_overshoot" invisible="1"/>
-                    <field name="warn_cancel_with_receipts" invisible="1"/>
-                    <field name="warn_maintenance_exceeds_expense" invisible="1"/>
-                    <div class="alert alert-warning" role="alert"
-                        attrs="{'invisible': [('warn_cancel_with_receipts', '=', False)]}">
+                    <field name="can_edit" invisible="1" />
+                    <field name="installment_editable" invisible="1" />
+                    <field name="warn_allocation_mismatch" invisible="1" />
+                    <field name="warn_installment_maintenance_mismatch" invisible="1" />
+                    <field name="warn_installment_total_mismatch" invisible="1" />
+                    <field name="warn_extra_overshoot" invisible="1" />
+                    <field name="warn_cancel_with_receipts" invisible="1" />
+                    <field name="warn_maintenance_exceeds_expense" invisible="1" />
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        attrs="{'invisible': [('warn_cancel_with_receipts', '=', False)]}"
+                    >
                         โครงการนี้มีการบันทึกรายรับแล้ว โปรดตรวจสอบก่อนยกเลิกโครงการ
                     </div>
                     <div class="oe_title">
                         <h1>
-                            <field name="name" readonly="1"/>
+                            <field name="name" readonly="1" />
                         </h1>
                         <h1>
                             <field
@@ -160,9 +196,9 @@
                             />
                         </h1>
                     </div>
-                    <field name="currency_id" invisible="1"/>
+                    <field name="currency_id" invisible="1" />
                     <group>
-                        <group string="Project Information">
+                        <group name="project_information" string="Project Information">
                             <field
                                 name="project_category_id"
                                 widget="selection"
@@ -191,30 +227,41 @@
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </group>
-                        <group string="Contract Information">
+                        <group
+                            string="Contract Information (Institute - Employer)"
+                            name="contract_information"
+                        >
+                            <field
+                                name="project_code"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
+                            />
                             <field
                                 name="contract_number"
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                             <label for="date_contract_start" string="Date Start" />
                             <div name="date_contract_start_div" class="o_row">
-                                <field name="date_contract_start"
+                                <field
+                                    name="date_contract_start"
                                     widget="daterange"
                                     options='{"related_end_date": "date_contract_end"}'
-                                    attrs="{'readonly': [('can_edit', '=', False)]}" />
+                                    attrs="{'readonly': [('can_edit', '=', False)]}"
+                                />
                                 <i
                                     class="fa fa-long-arrow-right mx-2 oe_edit_only"
                                     aria-label="Arrow icon"
                                     title="Arrow"
                                 />
-                                <field name="date_contract_end"
+                                <field
+                                    name="date_contract_end"
                                     widget="daterange"
                                     options='{"related_start_date": "date_contract_start"}'
-                                    attrs="{'readonly': [('can_edit', '=', False)]}" />
+                                    attrs="{'readonly': [('can_edit', '=', False)]}"
+                                />
                             </div>
-                            <label for="project_duration"/>
+                            <label for="project_duration" />
                             <div>
-                                <field name="project_duration" class="oe_inline"/> Day
+                                <field name="project_duration" class="oe_inline" /> Day
                             </div>
                             <field
                                 name="account_fiscal_year_id"
@@ -223,7 +270,10 @@
                         </group>
                     </group>
                     <group>
-                        <group string="Client/Funding Organization">
+                        <group
+                            name="client_funding_organization"
+                            string="Client/Funding Organization"
+                        >
                             <field
                                 name="client_name"
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
@@ -241,12 +291,20 @@
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </group>
+                        <group
+                            string="Contract/MOU Information (KRIS - Project Manager)"
+                        >
+                            <field
+                                name="kris_contract_date"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
+                            />
+                        </group>
                     </group>
                     <notebook>
                         <!-- Tab 1: มูลค่าและงวดงาน -->
                         <page string="Financials" name="financials">
                             <group>
-                                <group string="1. Project Value">
+                                <group name="project_value" string="1. Project Value">
                                     <field
                                         name="project_value"
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
@@ -268,8 +326,8 @@
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
                                 </group>
-                                <group string="Allocation">
-                                    <field name="allocatable_value" readonly="1"/>
+                                <group name="allocation" string="Allocation">
+                                    <field name="allocatable_value" readonly="1" />
                                     <field
                                         name="maintenance_deduction_type"
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
@@ -289,24 +347,34 @@
                                             'readonly': [('can_edit', '=', False)]
                                         }"
                                     />
-                                    <field name="maintenance_deduction_amount" readonly="1"/>
+                                    <field
+                                        name="maintenance_deduction_amount"
+                                        readonly="1"
+                                    />
                                 </group>
                             </group>
-                            <separator string="2. Allocate Income" name="allocation_separator" />
+                            <separator
+                                string="2. Allocate Income"
+                                name="allocation_separator"
+                            />
                             <group>
                                 <group>
-                                    <field name="maintenance_deduction_amount"
+                                    <field
+                                        name="maintenance_deduction_amount"
                                         readonly="1"
                                         string="Maintenance Deduction Value"
                                     />
                                 </group>
                             </group>
-                            <div class="alert alert-danger mb-2" role="alert"
+                            <div
+                                class="alert alert-danger mb-2"
+                                role="alert"
                                 attrs="{'invisible': [('warn_maintenance_exceeds_expense', '=', False)]}"
                             >
                                 มูลค่าหักค่าบำรุงเกินค่าดำเนินการ (Operating Expense) กรุณาตรวจสอบวิธีคิดค่าบำรุง
                             </div>
-                            <div class="mb-3"
+                            <div
+                                class="mb-3"
                                 attrs="{'invisible': [('can_edit', '=', False)]}"
                                 groups="kris_project.group_kris_project_officer"
                             >
@@ -324,7 +392,9 @@
                                     class="btn-secondary"
                                 />
                             </div>
-                            <div class="alert alert-danger mb-2" role="alert"
+                            <div
+                                class="alert alert-danger mb-2"
+                                role="alert"
                                 attrs="{'invisible': [('warn_allocation_mismatch', '=', False)]}"
                             >
                                 The total allocated revenue does not equal the value minus maintenance fees. กรุณาตรวจสอบการจัดสรร
@@ -334,43 +404,64 @@
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             >
                                 <tree editable="bottom">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="item_id"
+                                    <field name="sequence" widget="handle" />
+                                    <field
+                                        name="item_id"
                                         attrs="{'readonly': [('is_locked', '=', True)]}"
                                     />
-                                    <field name="department_analytic_id"
+                                    <field
+                                        name="department_analytic_id"
                                         attrs="{'readonly': [('is_locked', '=', True)]}"
                                     />
-                                    <field name="is_locked" invisible="1"/>
-                                    <field name="allocation_pct" string="Allocation %" readonly="1" sum="รวม"/>
-                                    <field name="estimated_amount" sum="รวม"/>
-                                    <field name="actual_amount" readonly="1" sum="รวม"/>
-                                    <field name="currency_id" invisible="1"/>
+                                    <field name="is_locked" invisible="1" />
+                                    <field
+                                        name="allocation_pct"
+                                        string="Allocation %"
+                                        readonly="1"
+                                        sum="รวม"
+                                    />
+                                    <field name="estimated_amount" sum="รวม" />
+                                    <field
+                                        name="actual_amount"
+                                        readonly="1"
+                                        sum="รวม"
+                                    />
+                                    <field name="currency_id" invisible="1" />
                                 </tree>
                             </field>
-                            <separator string="3. Contract payment installments" name="installment_separator" />
+                            <separator
+                                string="3. Contract payment installments"
+                                name="installment_separator"
+                            />
                             <group>
                                 <field
                                     name="no_installment_tracking"
                                     attrs="{'readonly': [('can_edit', '=', False)]}"
                                 />
                             </group>
-                            <div class="alert alert-danger mb-2" role="alert"
+                            <div
+                                class="alert alert-danger mb-2"
+                                role="alert"
                                 attrs="{'invisible': [('warn_extra_overshoot', '=', False)]}"
                             >
                                 ยอดค่า Extra รวมทุกงวดเกินจากยอดค่า Extra โครงการ กรุณาตรวจสอบการกำหนดค่า Extra แต่ละงวด
                             </div>
-                            <div class="alert alert-danger mb-2" role="alert"
+                            <div
+                                class="alert alert-danger mb-2"
+                                role="alert"
                                 attrs="{'invisible': [('warn_installment_total_mismatch', '=', False)]}"
                             >
                                 The sum of the amounts received in each payment installment does not equal the project value. Please check the payment installments.
                             </div>
-                            <div class="alert alert-danger mb-2" role="alert"
+                            <div
+                                class="alert alert-danger mb-2"
+                                role="alert"
                                 attrs="{'invisible': [('warn_installment_maintenance_mismatch', '=', False)]}"
                             >
                                 The sum of institutional maintenance fees in the work period does not equal the value after deduction of maintenance fees. Please check the allocation for each period.
                             </div>
-                            <div class="mb-3"
+                            <div
+                                class="mb-3"
                                 attrs="{'invisible': [('installment_editable', '=', False)]}"
                                 groups="kris_project.group_kris_project_officer"
                             >
@@ -386,27 +477,57 @@
                                 attrs="{'readonly': [('installment_editable', '=', False)]}"
                             >
                                 <tree create="0">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="name"/>
-                                    <field name="amount"/>
-                                    <field name="deduction_guarantee" sum="รวม" optional="show"/>
-                                    <field name="deduction_advance" sum="รวม" optional="show"/>
-                                    <field name="received_from_employer" sum="รวม" optional="show"/>
-                                    <field name="maintenance_fee" sum="รวม" optional="show"/>
-                                    <field name="extra_deduction" sum="รวม" optional="show"/>
-                                    <field name="extra_income" sum="รวม" optional="show"/>
-                                    <field name="amount_net" sum="รวม" optional="show"/>
-                                    <field name="due_date"/>
-                                    <field name="state" widget="badge"
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="amount" />
+                                    <field
+                                        name="deduction_guarantee"
+                                        sum="รวม"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="deduction_advance"
+                                        sum="รวม"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="received_from_employer"
+                                        sum="รวม"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="maintenance_fee"
+                                        sum="รวม"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="extra_deduction"
+                                        sum="รวม"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="extra_income"
+                                        sum="รวม"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="amount_net"
+                                        sum="รวม"
+                                        optional="show"
+                                    />
+                                    <field name="due_date" />
+                                    <field
+                                        name="state"
+                                        widget="badge"
                                         decoration-info="state == 'pending'"
                                         decoration-warning="state == 'partial'"
                                         decoration-success="state == 'received'"
                                     />
-                                    <field name="currency_id" invisible="1"/>
+                                    <field name="currency_id" invisible="1" />
                                 </tree>
                             </field>
                             <group>
-                                <field name="total_installment_amount" readonly="1"/>
+                                <field name="total_installment_amount" readonly="1" />
                             </group>
                         </page>
 
@@ -414,9 +535,9 @@
                         <page string="Revenue" name="receipts">
                             <group>
                                 <group>
-                                    <field name="total_received_amount" readonly="1"/>
-                                    <field name="total_net_received" readonly="1"/>
-                                    <field name="revenue_remaining" readonly="1"/>
+                                    <field name="total_received_amount" readonly="1" />
+                                    <field name="total_net_received" readonly="1" />
+                                    <field name="revenue_remaining" readonly="1" />
                                     <field
                                         name="over_revenue"
                                         readonly="1"
@@ -424,8 +545,9 @@
                                     />
                                 </group>
                             </group>
-                            <separator string="Revenue Record"/>
-                            <div class="mb-3"
+                            <separator string="Revenue Record" />
+                            <div
+                                class="mb-3"
                                 attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
                                 groups="kris_project.group_kris_project_officer"
                             >
@@ -436,20 +558,21 @@
                                     class="btn-secondary"
                                 />
                             </div>
-                            <field
-                                name="receipt_ids"
-                            >
+                            <field name="receipt_ids">
                                 <tree create="0">
-                                    <field name="project_id" invisible="1"/>
-                                    <field name="project_state" invisible="1"/>
-                                    <field name="name"/>
-                                    <field name="installment_id"/>
-                                    <field name="date"/>
-                                    <field name="equipment_cost_in_installment" sum="รวม"/>
-                                    <field name="amount" sum="รวม"/>
-                                    <field name="net_amount" sum="รวม"/>
-                                    <field name="note"/>
-                                    <field name="currency_id" invisible="1"/>
+                                    <field name="project_id" invisible="1" />
+                                    <field name="project_state" invisible="1" />
+                                    <field name="name" />
+                                    <field name="installment_id" />
+                                    <field name="date" />
+                                    <field
+                                        name="equipment_cost_in_installment"
+                                        sum="รวม"
+                                    />
+                                    <field name="amount" sum="รวม" />
+                                    <field name="net_amount" sum="รวม" />
+                                    <field name="note" />
+                                    <field name="currency_id" invisible="1" />
                                     <button
                                         name="action_delete"
                                         type="object"
@@ -464,23 +587,27 @@
 
                         <!-- Tab 3: เอกสารแนบ -->
                         <page string="Attachment" name="attachments">
-                            <field
-                                name="attachment_ids"
-                                widget="many2many_binary"
-                                string="File"
-                            />
+                            <group name="attachment" string="Attachment">
+                                <field
+                                    name="attachment_ids"
+                                    widget="many2many_binary"
+                                    nolabel="1"
+                                    colspan="2"
+                                    context="{'default_res_model': 'kris.project'}"
+                                />
+                            </group>
                         </page>
 
                         <!-- Tab 4: หมายเหตุ -->
                         <page string="Note" name="notes">
-                            <field name="note" placeholder="Note..." nolabel="1"/>
+                            <field name="note" placeholder="Note..." nolabel="1" />
                         </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
                 </div>
             </form>
         </field>
@@ -498,22 +625,24 @@
                 decoration-danger="main_exception_id"
                 decoration-muted="state == 'cancel'"
             >
-                <field name="currency_id" invisible="1"/>
-                <field name="name"/>
-                <field name="project_name"/>
-                <field name="contract_number" optional="hide"/>
-                <field name="project_category_id" optional="show"/>
-                <field name="project_type_id" optional="hide"/>
-                <field name="manager_id" optional="show"/>
-                <field name="user_id" widget="many2one_avatar_user" optional="hide"/>
-                <field name="department_analytic_id" optional="show"/>
-                <field name="client_name" optional="hide"/>
-                <field name="account_fiscal_year_id" optional="show"/>
-                <field name="project_value" sum="รวม" optional="show"/>
-                <field name="total_received_amount" sum="รวม" optional="show"/>
-                <field name="revenue_remaining" sum="รวม" optional="hide"/>
-                <field name="main_exception_id" optional="hide"/>
-                <field name="state" widget="badge"
+                <field name="currency_id" invisible="1" />
+                <field name="name" />
+                <field name="project_name" />
+                <field name="project_code" optional="hide" />
+                <field name="project_category_id" optional="show" />
+                <field name="project_type_id" optional="hide" />
+                <field name="manager_id" optional="show" />
+                <field name="user_id" widget="many2one_avatar_user" optional="hide" />
+                <field name="department_analytic_id" optional="show" />
+                <field name="client_name" optional="hide" />
+                <field name="account_fiscal_year_id" optional="show" />
+                <field name="project_value" sum="รวม" optional="show" />
+                <field name="total_received_amount" sum="รวม" optional="show" />
+                <field name="revenue_remaining" sum="รวม" optional="hide" />
+                <field name="main_exception_id" optional="hide" />
+                <field
+                    name="state"
+                    widget="badge"
                     decoration-info="state == 'draft'"
                     decoration-primary="state == 'in_progress'"
                     decoration-success="state == 'done'"
@@ -532,22 +661,37 @@
         <field name="model">kris.project</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name" string="Project"
-                    filter_domain="['|', '|', '|', ('name', 'ilike', self), ('project_name', 'ilike', self), ('contract_number', 'ilike', self), ('client_name', 'ilike', self)]"/>
-                <field name="project_name" string="Project Name"/>
-                <field name="contract_number"/>
-                <field name="client_name"/>
-                <field name="manager_id"/>
-                <field name="department_analytic_id"/>
-                <field name="user_id"/>
-                <field name="project_category_id"/>
-                <field name="project_type_id"/>
-                <separator/>
-                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
-                <filter name="in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]"/>
-                <filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
-                <filter name="cancel" string="Cancel" domain="[('state', '=', 'cancel')]"/>
-                <separator/>
+                <field
+                    name="name"
+                    string="Project"
+                    filter_domain="['|', '|', '|', ('name', 'ilike', self), ('project_name', 'ilike', self), ('project_code', 'ilike', self), ('client_name', 'ilike', self)]"
+                />
+                <field name="project_name" string="Project Name" />
+                <field name="project_code" />
+                <field name="client_name" />
+                <field name="manager_id" />
+                <field name="department_analytic_id" />
+                <field name="user_id" />
+                <field name="project_category_id" />
+                <field name="project_type_id" />
+                <separator />
+                <filter
+                    name="draft"
+                    string="Draft"
+                    domain="[('state', '=', 'draft')]"
+                />
+                <filter
+                    name="in_progress"
+                    string="In Progress"
+                    domain="[('state', '=', 'in_progress')]"
+                />
+                <filter name="done" string="Done" domain="[('state', '=', 'done')]" />
+                <filter
+                    name="cancel"
+                    string="Cancel"
+                    domain="[('state', '=', 'cancel')]"
+                />
+                <separator />
                 <filter
                     name="has_exceptions"
                     string="มี Exception"
@@ -558,21 +702,61 @@
                     string="My Project"
                     domain="[('user_id', '=', uid)]"
                 />
-                <separator/>
-                <filter name="contract_start" string="Contract Start Date" date="date_contract_start"/>
+                <separator />
+                <filter
+                    name="contract_start"
+                    string="Contract Start Date"
+                    date="date_contract_start"
+                />
                 <!-- Group By -->
-                <group expand="0" string="จัดกลุ่มตาม">
-                    <filter name="group_category" string="Project Category" context="{'group_by': 'project_category_id'}"/>
-                    <filter name="group_type" string="Project Type" context="{'group_by': 'project_type_id'}"/>
-                    <filter name="group_manager" string="Project Manager" context="{'group_by': 'manager_id'}"/>
-                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
-                    <filter name="group_fiscal_year" string="Fiscal Year" context="{'group_by': 'account_fiscal_year_id'}"/>
-                    <filter name="group_department" string="Department" context="{'group_by': 'department_analytic_id'}"/>
+                <group expand="0" name="group_by" string="จัดกลุ่มตาม">
+                    <filter
+                        name="group_category"
+                        string="Project Category"
+                        context="{'group_by': 'project_category_id'}"
+                    />
+                    <filter
+                        name="group_type"
+                        string="Project Type"
+                        context="{'group_by': 'project_type_id'}"
+                    />
+                    <filter
+                        name="group_manager"
+                        string="Project Manager"
+                        context="{'group_by': 'manager_id'}"
+                    />
+                    <filter
+                        name="group_state"
+                        string="State"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        name="group_fiscal_year"
+                        string="Fiscal Year"
+                        context="{'group_by': 'account_fiscal_year_id'}"
+                    />
+                    <filter
+                        name="group_department"
+                        string="Department"
+                        context="{'group_by': 'department_analytic_id'}"
+                    />
                 </group>
                 <searchpanel>
-                    <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1"/>
-                    <field name="project_category_id" icon="fa-folder" enable_counters="1"/>
-                    <field name="department_analytic_id" icon="fa-building-o" enable_counters="1"/>
+                    <field
+                        name="account_fiscal_year_id"
+                        icon="fa-calendar"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="project_category_id"
+                        icon="fa-folder"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="department_analytic_id"
+                        icon="fa-building-o"
+                        enable_counters="1"
+                    />
                 </searchpanel>
             </search>
         </field>
@@ -587,13 +771,13 @@
         <field name="model">kris.project</field>
         <field name="arch" type="xml">
             <pivot string="KRIS Project Analysis" disable_linking="True">
-                <field name="project_category_id" type="row"/>
-                <field name="project_type_id" type="row"/>
-                <field name="project_value" type="measure"/>
-                <field name="maintenance_deduction_amount" type="measure"/>
-                <field name="total_received_amount" type="measure"/>
-                <field name="total_net_received" type="measure"/>
-                <field name="revenue_remaining" type="measure"/>
+                <field name="project_category_id" type="row" />
+                <field name="project_type_id" type="row" />
+                <field name="project_value" type="measure" />
+                <field name="maintenance_deduction_amount" type="measure" />
+                <field name="total_received_amount" type="measure" />
+                <field name="total_net_received" type="measure" />
+                <field name="revenue_remaining" type="measure" />
             </pivot>
         </field>
     </record>
@@ -606,16 +790,18 @@
         <field name="name">Exception Rules</field>
         <field name="res_model">exception.rule</field>
         <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="base_exception.view_exception_rule_tree"/>
+        <field name="view_id" ref="base_exception.view_exception_rule_tree" />
         <field name="domain">[('model', '=', 'kris.project')]</field>
-        <field name="context">{'active_test': False, 'default_model': 'kris.project'}</field>
+        <field
+            name="context"
+        >{'active_test': False, 'default_model': 'kris.project'}</field>
     </record>
 
     <record id="action_kris_project" model="ir.actions.act_window">
         <field name="name">KRIS Project</field>
         <field name="res_model">kris.project</field>
         <field name="view_mode">tree,pivot,form</field>
-        <field name="search_view_id" ref="view_kris_project_search"/>
+        <field name="search_view_id" ref="view_kris_project_search" />
         <field name="context">{}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

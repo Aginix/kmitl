@@ -4,6 +4,8 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.pdf import merge_pdf
 
+from odoo.addons.budget_appropriation_summary.pdf_utils import stamp_page_numbers
+
 
 class BudgetAppropriationMasterSummary(models.Model):
     _name = "budget.appropriation.master.summary"
@@ -179,6 +181,15 @@ class BudgetAppropriationMasterSummary(models.Model):
     note = fields.Text(
         string="หมายเหตุ",
         readonly=False,
+    )
+    final_document = fields.Binary(
+        string="ไฟล์ฉบับสมบูรณ์",
+        attachment=True,
+        help="ไฟล์งบประมาณสถาบันฉบับสมบูรณ์ที่ export ออกไปจัดรูปแบบ/แทรกหน้า/"
+        "ใส่ references นอกระบบแล้วนำกลับมาอัปโหลดเข้าระบบ",
+    )
+    final_document_filename = fields.Char(
+        string="ชื่อไฟล์ฉบับสมบูรณ์",
     )
     f2_revenue_data = fields.Json(
         string="F2 Revenue Data",
@@ -411,19 +422,39 @@ class BudgetAppropriationMasterSummary(models.Model):
             "target": "new",
         }
 
-    def _get_merged_pdf(self):
-        """Render each sub-report with its own paperformat and merge into one PDF.
+    def _get_overview_report_refs(self):
+        """Ordered report XML-IDs for the institute-overview book.
 
-        Using merge_pdf preserves each report's orientation (portrait/landscape)
-        and starts every sub-report on a new page.
+        Satellite modules extend this to inject their own forms — e.g.
+        ``budget_appropriation_summary_f24`` appends F24-W.
+        """
+        return [
+            "budget_appropriation_summary.%s" % ref
+            for ref in self.PRINT_REPORT_ORDER
+        ]
+
+    def _get_overview_report_pdfs(self):
+        """Render every overview sub-report on its own paper format.
+
+        Rendering separately then merging preserves each report's orientation
+        (portrait/landscape) and starts every sub-report on a new page.
         """
         self.ensure_one()
         pdfs = []
-        for ref in self.PRINT_REPORT_ORDER:
-            report = self.env.ref(f"budget_appropriation_summary.{ref}")
+        for ref in self._get_overview_report_refs():
+            report = self.env.ref(ref)
             pdf_content, __ = report._render_qweb_pdf(report.id, self.ids)
             pdfs.append(pdf_content)
-        return merge_pdf(pdfs)
+        return pdfs
+
+    def _get_merged_pdf(self):
+        """Institute-overview book: sub-reports merged and page-numbered 1..N.
+
+        Page numbers run continuously across the whole book (no code page).
+        """
+        self.ensure_one()
+        merged = merge_pdf(self._get_overview_report_pdfs())
+        return stamp_page_numbers(merged, lambda index: str(index + 1))
 
     def _get_pdf_filename(self):
         """Return an ASCII-safe PDF filename so it survives HTTP transport."""
@@ -451,6 +482,29 @@ class BudgetAppropriationMasterSummary(models.Model):
         return {
             "type": "ir.actions.act_url",
             "url": f"/web/content/{attachment.id}?download=false",
+            "target": "new",
+        }
+
+    def action_open_print_by_department(self):
+        """Open the wizard to print a per-unit book for selected departments."""
+        self.ensure_one()
+        compilations = self.compilation_ids.sorted(
+            lambda c: c.department_analytic_id.code or ""
+        )
+        wizard = self.env["budget.appropriation.master.summary.print.wizard"].create(
+            {
+                "master_summary_id": self.id,
+                "line_ids": [
+                    (0, 0, {"compilation_id": c.id, "code_page": c.code_page or "X"})
+                    for c in compilations
+                ],
+            }
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "budget.appropriation.master.summary.print.wizard",
+            "res_id": wizard.id,
+            "view_mode": "form",
             "target": "new",
         }
 

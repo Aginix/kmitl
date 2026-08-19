@@ -33,6 +33,7 @@ const VALUE_KEYS = [
     "consumed",
     "used",
     "remaining",
+    "returned",
 ];
 // Drill-down opens in a separate browser tab. A dynamic domain cannot survive
 // Odoo's URL hash, so the action is stashed in localStorage under a one-shot
@@ -437,6 +438,26 @@ export class BudgetDashboard extends Component {
         ];
         this._openDrill(
             `${this._drillName(row)} — ${USAGE_LABELS[moveType]}`,
+            "budget.commitment.line",
+            domain
+        );
+    }
+
+    drillReturned(row) {
+        // ส่งคืนเงินเหลือจ่าย drills into only the คืนจอง lines (negative
+        // reserve flagged is_return), so the audit list shows exactly the
+        // returns behind the figure and their source documents.
+        const domain = [
+            ["state", "=", "posted"],
+            ["commitment_id.state", "in", ["reserved", "partial", "done"]],
+            ["account_fiscal_year_id", "=", this.state.fiscalYearId],
+            ["move_type", "=", "reserve"],
+            ["is_return", "=", true],
+            ...this._drillLeaves(row),
+            ...this._dimDomain(this._drillExclude),
+        ];
+        this._openDrill(
+            `${this._drillName(row)} — ส่งคืนเงินเหลือจ่าย`,
             "budget.commitment.line",
             domain
         );

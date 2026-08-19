@@ -439,7 +439,7 @@ msgstr ""
 #. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch_line__price_per_unit
 msgid "Price Per Unit"
-msgstr "ราคาต่อหน่วย"
+msgstr "ราคา"
 
 #. module: account_asset_batch
 #: model:ir.model.fields.selection,name:account_asset_batch.selection__account_asset_batch__source_of_asset__procurement

@@ -155,7 +155,7 @@
                                 <td t-esc="displayName(move.partner_id)"/>
                                 <td t-esc="displayName(move.journal_id)"/>
                                 <td t-esc="displayName(move.submitted_by)"/>
-                                <td class="text-end" t-esc="formatCurrency(move.amount_total_signed)"/>
+                                <td class="text-end" t-esc="formatCurrency(move.amount_total)"/>
                                 <td class="text-end text-nowrap">
                                     <button class="btn btn-sm btn-outline-secondary me-1"
                                             t-on-click.stop="() => this.openMove(move)">

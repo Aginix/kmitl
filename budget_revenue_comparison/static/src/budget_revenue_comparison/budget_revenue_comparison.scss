@@ -1,0 +1,132 @@
+// Filters hosted in the control panel
+.o_brc_filters {
+    label.o_form_label {
+        display: block;
+    }
+    .form-select-sm,
+    .form-control-sm {
+        min-width: 9rem;
+    }
+    .o_brc_dim {
+        min-width: 13rem;
+    }
+}
+
+// Centered report body
+.o_brc_body {
+    // Paper/card framing the table, centered on screen.
+    .o_brc_card {
+        max-width: 72rem;
+        margin: 0 auto;
+        // Clip the table's square corners to the card's rounded border.
+        overflow: hidden;
+    }
+
+    .o_brc_table {
+        // Fixed layout so the columns keep stable, proportional widths and
+        // fill the centered frame exactly (no overflow, no dead space).
+        table-layout: fixed;
+        width: 100%;
+
+        th {
+            background-color: #f8f9fa;
+            vertical-align: middle;
+        }
+        td,
+        th {
+            font-size: 1rem;
+        }
+        // The indicator label may wrap; the numeric columns stay on one line.
+        .o_brc_amount,
+        .o_brc_pct {
+            white-space: nowrap;
+        }
+        .o_brc_item {
+            width: 37%;
+        }
+        .o_brc_amount {
+            width: 17%;
+        }
+        .o_brc_pct {
+            width: 12%;
+        }
+
+        // Row types
+        .o_brc_department td {
+            font-weight: bold;
+            background-color: #e9ecef;
+            border-top: 2px solid #adb5bd;
+            padding-top: 0.5rem;
+        }
+        .o_brc_header td {
+            font-weight: bold;
+            padding-top: 0.6rem;
+        }
+        .o_brc_line td:first-child {
+            padding-left: 1.5rem;
+        }
+        .o_brc_total td {
+            font-weight: bold;
+            border-top: 1px solid #adb5bd;
+        }
+    }
+}
+
+// Dimension multi-select (now hosted in the control panel)
+.o_brc_ms {
+    position: relative;
+
+    .o_brc_ms_box {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.25rem;
+        min-height: 2.25rem;
+        height: auto;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .o_brc_ms_tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .o_brc_ms_x {
+        cursor: pointer;
+        font-weight: bold;
+        line-height: 1;
+    }
+
+    .o_brc_ms_input {
+        flex: 1 1 4rem;
+        min-width: 4rem;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        padding: 0.1rem;
+    }
+
+    .o_brc_ms_dropdown {
+        position: absolute;
+        z-index: 1000;
+        left: 0;
+        right: 0;
+        top: 100%;
+        max-height: 14rem;
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 0 0 0.25rem 0.25rem;
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    }
+
+    .o_brc_ms_option {
+        padding: 0.3rem 0.5rem;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #f1f3f5;
+        }
+    }
+}

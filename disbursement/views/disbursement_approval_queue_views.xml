@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Approver queues: a custom OWL screen, one per approval stage. The
+         stage is passed through the action context (approval_stage). -->
+    <record id="action_disbursement_approval_finance" model="ir.actions.client">
+        <field name="name">Awaiting Finance Director</field>
+        <field name="tag">disbursement.approval_queue</field>
+        <field name="context">{'approval_stage': 'finance'}</field>
+    </record>
+
+    <record id="action_disbursement_approval_rector" model="ir.actions.client">
+        <field name="name">Awaiting Rector Delegate</field>
+        <field name="tag">disbursement.approval_queue</field>
+        <field name="context">{'approval_stage': 'rector'}</field>
+    </record>
+
+    <!-- Approved history: every request that has received at least one of the
+         two approvals (Finance Director and/or Rector-delegated). Kept as a
+         permanent history — a fully-approved request stays here through the
+         bill/payment stages because the approver stamps persist. -->
+    <record id="view_disbursement_request_approved_tree" model="ir.ui.view">
+        <field name="name">disbursement.request.approved.tree</field>
+        <field name="model">disbursement.request</field>
+        <!-- ir.ui.view is ordered by (priority, name), and default_view() takes
+             the first primary view: at equal priority this name would sort
+             before "disbursement.request.tree" and silently become the default
+             list for every action that does not pin a view_id. It is only ever
+             opened through action_disbursement_approved, which pins it. -->
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <tree string="Approved" create="false" edit="false"
+                  default_order="finance_approve_date desc">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="user_id"/>
+                <field name="finance_approver_id"/>
+                <field name="finance_approve_date"/>
+                <field name="rector_approver_id"/>
+                <field name="rector_approve_date"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="amount_net" sum="Net Total"/>
+                <field name="approval_state" widget="badge"
+                       decoration-success="approval_state == 'approved'"
+                       decoration-warning="approval_state == 'pending_rector'"
+                       decoration-danger="approval_state == 'rejected'"/>
+                <field name="display_status" optional="show" widget="badge"
+                       decoration-success="display_status in ('approved', 'payment_posted', 'done')"
+                       decoration-primary="display_status in ('bill_posted',)"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Filters for the approved history -->
+    <record id="view_disbursement_request_approved_search" model="ir.ui.view">
+        <field name="name">disbursement.request.approved.search</field>
+        <field name="model">disbursement.request</field>
+        <!-- Same reason as the approved tree: keep it out of default_view() so
+             the standard search view (and every search_default_* filter the
+             disbursement actions rely on) stays in effect. -->
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <search string="Approved">
+                <field name="name" string="Number"
+                       filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]"/>
+                <field name="user_id"/>
+                <field name="finance_approver_id"/>
+                <field name="rector_approver_id"/>
+                <field name="account_fiscal_year_id"/>
+                <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]"/>
+                <field name="department_analytic_id" domain="[('root_plan_id.code', '=', 'departments')]"/>
+                <separator/>
+                <filter name="finance_approved" string="Finance Director Approved"
+                        domain="[('finance_approver_id', '!=', False)]"/>
+                <filter name="rector_approved" string="Rector-delegated Approved"
+                        domain="[('rector_approver_id', '!=', False)]"/>
+                <filter name="fully_approved" string="Fully Approved"
+                        domain="[('approval_state', '=', 'approved')]"/>
+                <separator/>
+                <filter name="finance_approve_date" string="Finance Approved On"
+                        date="finance_approve_date"/>
+                <filter name="rector_approve_date" string="Rector Approved On"
+                        date="rector_approve_date"/>
+                <group expand="0" name="group_by" string="Group By">
+                    <filter string="Finance Director" name="group_finance"
+                            context="{'group_by': 'finance_approver_id'}"/>
+                    <filter string="Rector-delegated Approver" name="group_rector"
+                            context="{'group_by': 'rector_approver_id'}"/>
+                    <filter string="Department" name="group_department"
+                            context="{'group_by': 'department_analytic_id'}"/>
+                    <filter string="Fiscal Year" name="group_fy"
+                            context="{'group_by': 'account_fiscal_year_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_disbursement_approved" model="ir.actions.act_window">
+        <field name="name">Approved</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_disbursement_request_approved_tree"/>
+        <field name="search_view_id" ref="view_disbursement_request_approved_search"/>
+        <field name="domain">['|', ('finance_approver_id', '!=', False), ('rector_approver_id', '!=', False)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ยังไม่มีใบขอเบิกที่ได้รับการอนุมัติ
+            </p>
+            <p>
+                รายการนี้เก็บประวัติใบขอเบิกที่ ผอ.กองคลัง และ/หรือ ผู้ได้รับมอบอำนาจอธิการบดี อนุมัติแล้ว
+            </p>
+        </field>
+    </record>
+
+    <!-- Approver menu, placed right after the Verification (หมวดตรวจ) section -->
+    <menuitem
+        id="menu_disbursement_approver"
+        name="Approver"
+        parent="disbursement.menu_disbursement_root"
+        sequence="30"
+        groups="disbursement.group_disbursement_finance_director,disbursement.group_disbursement_rector_delegate"/>
+
+    <menuitem
+        id="menu_disbursement_approve_finance"
+        name="Awaiting Finance Director"
+        parent="menu_disbursement_approver"
+        action="action_disbursement_approval_finance"
+        sequence="10"
+        groups="disbursement.group_disbursement_finance_director"/>
+
+    <menuitem
+        id="menu_disbursement_approve_rector"
+        name="Awaiting Rector Delegate"
+        parent="menu_disbursement_approver"
+        action="action_disbursement_approval_rector"
+        sequence="20"
+        groups="disbursement.group_disbursement_rector_delegate"/>
+
+    <menuitem
+        id="menu_disbursement_approved"
+        name="Approved"
+        parent="menu_disbursement_approver"
+        action="action_disbursement_approved"
+        sequence="30"/>
+
+</odoo>

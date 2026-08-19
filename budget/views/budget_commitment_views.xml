@@ -8,15 +8,17 @@
         <field name="arch" type="xml">
             <tree string="Budget Commitments">
                 <field name="name" optional="show" />
+                <field name="title" optional="show" />
                 <field name="date" optional="hide" />
                 <field name="account_fiscal_year_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
                 <field name="department_analytic_id" optional="hide" />
                 <field name="account_id" optional="show" />
                 <field name="amount" string="วงเงิน"/>
-                <field name="total_reserved" optional="show" />
-                <field name="total_obligated" optional="show" />
-                <field name="total_consumed" optional="show" />
+                <field name="total_reserved" string="จองเงิน" optional="show" />
+                <field name="available_to_consume" string="ผูกพัน" optional="show" />
+                <field name="total_consumed" string="เบิกจ่าย" optional="show" />
+                <field name="available_to_obligate" string="คงเหลือ" optional="show" />
                 <field name="state" widget="badge"
                     decoration-warning="state == 'draft'"
                     decoration-info="state == 'reserved'"
@@ -35,17 +37,18 @@
         <field name="arch" type="xml">
             <form string="Budget Commitment">
                 <header>
-                    <button name="action_open_reservation_picker" string="เลือกงบประมาณ"
-                        type="object" class="oe_highlight"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_reserve" string="Reserve Budget" type="object"
+                    <button name="action_reserve" string="จองงบประมาณ" type="object"
+                        class="oe_highlight"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_obligate" string="ผูกพัน" type="object"
                         class="oe_highlight"
                         attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
-                    <button name="action_consume" string="ตัดงบ" type="object"
+                    <button name="action_consume" string="เบิกจ่าย" type="object"
                         class="oe_highlight"
                         attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
+                    <button name="action_return_leftover" string="ส่งคืนเงินเหลือจ่าย"
+                        type="object"
+                        attrs="{'invisible': ['|', ('state', 'not in', ['reserved', 'partial']), ('available_to_obligate', '&lt;=', 0)]}"/>
                     <button name="action_done" string="Mark as Done" type="object"
                         attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
                     <button name="action_cancel" string="Cancel" type="object"
@@ -68,17 +71,21 @@
                         <h1>
                             <field name="name" readonly="1" />
                         </h1>
+                        <h2>
+                            <field name="title"
+                                placeholder="ชื่อรายการจอง เช่น จองงบสนับสนุนคณะวิศวกรรมศาสตร์"/>
+                        </h2>
                     </div>
 
                     <group>
-                        <group string="Basic Information">
+                        <group name="basic_information" string="Basic Information">
                             <field name="date" invisible="1" />
                             <field name="user_id" options="{'no_create': True, 'no_open': True}"/>
                             <field name="account_fiscal_year_id"
                                 options="{'no_create': True, 'no_open': True}"
                                 attrs="{'readonly': [('id', '!=', False)]}"/>
                         </group>
-                        <group string="Budget Details">
+                        <group name="budget_details" string="Budget Details">
                             <field name="account_id"
                                 options="{'no_create': True, 'no_open': True}" />
                             <field name="department_analytic_id" required="1"
@@ -96,17 +103,16 @@
 
                     <group string="Budget Summary" name="budget_summary">
                         <group>
-                            <field name="total_reserved" widget="monetary"/>
-                            <field name="total_obligated" widget="monetary"/>
-                            <field name="total_consumed" widget="monetary"/>
-                        </group>
-                        <group>
-                            <field name="available_to_obligate" widget="monetary"
-                                decoration-danger="available_to_obligate &lt; 0"
-                                decoration-success="available_to_obligate &gt; 0"/>
-                            <field name="available_to_consume" widget="monetary"
+                            <field name="total_reserved" string="จองเงิน" widget="monetary"/>
+                            <field name="available_to_consume" string="ผูกพัน"
+                                widget="monetary"
                                 decoration-danger="available_to_consume &lt; 0"
                                 decoration-success="available_to_consume &gt; 0"/>
+                            <field name="total_consumed" string="เบิกจ่าย" widget="monetary"/>
+                            <field name="available_to_obligate" string="คงเหลือ"
+                                widget="monetary"
+                                decoration-danger="available_to_obligate &lt; 0"
+                                decoration-success="available_to_obligate &gt; 0"/>
                         </group>
                     </group>
 
@@ -178,7 +184,8 @@
         <field name="model">budget.commitment</field>
         <field name="arch" type="xml">
             <search string="Budget Commitments">
-                <field name="name"/>
+                <field name="name" string="ใบจองงบประมาณ"
+                    filter_domain="['|', '|', ('name', 'ilike', self), ('title', 'ilike', self), ('ref', 'ilike', self)]"/>
                 <field name="user_id"/>
                 <field name="account_fiscal_year_id"/>
 
@@ -195,7 +202,7 @@
                     domain="[('user_id', '=', uid)]"/>
                 <separator/>
 
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="Status" name="group_state"
                         context="{'group_by': 'state'}"/>
                     <filter string="Fiscal Year" name="group_fy"
@@ -275,7 +282,7 @@
                         </button>
                     </div>
                     <group>
-                        <group string="ข้อมูลทั่วไป">
+                        <group name="general_info" string="ข้อมูลทั่วไป">
                             <field name="commitment_id" options="{'no_create': True}"/>
                             <field name="date"/>
                             <field name="move_type"/>
@@ -286,7 +293,7 @@
                                 decoration-success="state == 'posted'"
                                 decoration-danger="state == 'cancel'"/>
                         </group>
-                        <group string="มิติบัญชี">
+                        <group name="analytic_dimensions" string="มิติบัญชี">
                             <field name="account_id" options="{'no_open': True}"/>
                             <field name="department_analytic_id" options="{'no_open': True}"/>
                             <field name="source_analytic_id" options="{'no_open': True}"/>
@@ -294,7 +301,7 @@
                             <field name="fund_analytic_id" options="{'no_open': True}"/>
                         </group>
                     </group>
-                    <group string="รายละเอียด">
+                    <group name="details" string="รายละเอียด">
                         <field name="name"/>
                         <field name="res_name" string="เอกสารต้นทาง"/>
                         <field name="res_model" invisible="1"/>
@@ -328,7 +335,7 @@
                 <separator/>
                 <filter string="Posted" name="posted" domain="[('state', '=', 'posted')]"/>
                 <filter string="Cancelled" name="cancel" domain="[('state', '=', 'cancel')]"/>
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="ประเภท" name="group_move_type" context="{'group_by': 'move_type'}"/>
                     <filter string="รหัสงบประมาณ" name="group_account" context="{'group_by': 'account_id'}"/>
                     <filter string="ส่วนงาน" name="group_department" context="{'group_by': 'department_analytic_id'}"/>
