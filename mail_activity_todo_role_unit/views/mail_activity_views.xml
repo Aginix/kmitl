@@ -12,7 +12,7 @@
                     name="operating_unit_id"
                     string="Operating Unit"
                     optional="show"
-                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                    groups="operating_unit.group_multi_operating_unit"
                 />
                 <field name="responsible_role_id" optional="hide" />
             </field>
@@ -44,7 +44,7 @@
             <field name="user_id" position="after">
                 <field
                     name="operating_unit_id"
-                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                    groups="operating_unit.group_multi_operating_unit"
                 />
                 <field name="responsible_role_id" />
             </field>
@@ -77,7 +77,7 @@
             <field name="activity_type_id" position="after">
                 <field
                     name="operating_unit_id"
-                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                    groups="operating_unit.group_multi_operating_unit"
                 />
             </field>
             <filter name="planned" position="after">
@@ -98,7 +98,7 @@
                     name="group_ou"
                     string="Operating Unit"
                     context="{'group_by': 'operating_unit_id'}"
-                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                    groups="operating_unit.group_multi_operating_unit"
                 />
             </filter>
             <searchpanel position="inside">
@@ -107,7 +107,7 @@
                     string="Operating Unit"
                     select="multi"
                     enable_counters="1"
-                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                    groups="operating_unit.group_multi_operating_unit"
                 />
             </searchpanel>
         </field>
@@ -123,7 +123,7 @@
                 <field
                     name="operating_unit_id"
                     optional="show"
-                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                    groups="operating_unit.group_multi_operating_unit"
                 />
                 <field name="responsible_role_id" optional="hide" />
             </field>
@@ -145,7 +145,7 @@
                 <field
                     name="operating_unit_id"
                     attrs="{'invisible': [('responsible_role_id', '=', False)]}"
-                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                    groups="operating_unit.group_multi_operating_unit"
                 />
             </field>
         </field>
@@ -159,7 +159,7 @@
             <field name="res_name" position="after">
                 <field
                     name="operating_unit_id"
-                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                    groups="operating_unit.group_multi_operating_unit"
                 />
             </field>
             <filter name="group_completed_by" position="after">
@@ -167,7 +167,7 @@
                     name="group_ou"
                     string="Operating Unit"
                     context="{'group_by': 'operating_unit_id'}"
-                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                    groups="operating_unit.group_multi_operating_unit"
                 />
             </filter>
         </field>
