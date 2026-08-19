@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    The constants KTB issued to the institute, so an officer does not retype
+    them on every e-payment file.
+
+    Two KTB templates, not one: ``_check_constraint_confirm`` refuses a
+    ``direct`` file that carries a payee at another bank, and refuses a
+    ``standard`` file that carries a KTB payee. A single template would dead-end
+    on every file of the other kind.
+
+    ``kmitl`` is a placeholder, not a value. The Company ID and the Sender Name
+    come from KTB when the institute is onboarded and we do not have them, and
+    ``bank.payment.config.value`` is required so the line cannot ship blank.
+    Replace both in Finance > Settings > Bank Payment Templates before the first
+    real file.
+
+    The file layout (``bank_export_format_id``) is deliberately not preset: a
+    config line's value is a Char, and Odoo maps a string to no record at all
+    for a Many2one, so such a line would silently clear the field instead of
+    setting it. The officer picks the layout on the file, from a dropdown
+    already narrowed to the bank the template selected.
+
+    noupdate: the Company ID an officer fills in, and any service type the
+    treasury office adjusts, have to survive ``-u``. That is also why these are
+    XML rather than CSV like the layout files next to them — a CSV row is
+    re-imported on every module update and would silently put ``kmitl`` back.
+-->
+<odoo noupdate="1">
+
+    <!-- Direct: KTB account to KTB account. -->
+    <record id="payment_template_ktb_direct" model="bank.payment.template">
+        <field name="name">KTB Direct (โอนเข้าบัญชีกรุงไทย)</field>
+        <field name="bank">KRTHTHBK</field>
+    </record>
+    <record id="payment_template_ktb_direct_company_id" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_ktb_direct" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_ktb.field_bank_payment_export__ktb_company_id"
+        />
+        <field name="value">kmitl</field>
+    </record>
+    <record id="payment_template_ktb_direct_sender_name" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_ktb_direct" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_ktb.field_bank_payment_export__ktb_sender_name"
+        />
+        <field name="value">kmitl</field>
+    </record>
+    <record id="payment_template_ktb_direct_bank_type" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_ktb_direct" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_ktb.field_bank_payment_export__ktb_bank_type"
+        />
+        <field name="value">direct</field>
+    </record>
+    <!-- 14 - Purchase & Service: an e-payment file carries vendor payments. -->
+    <record id="payment_template_ktb_direct_service_type" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_ktb_direct" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_ktb.field_bank_payment_export__ktb_service_type_direct"
+        />
+        <field name="value">14</field>
+    </record>
+
+    <!-- Standard / Express: KTB account to an account at another bank. -->
+    <record id="payment_template_ktb_standard" model="bank.payment.template">
+        <field name="name">KTB Standard/Express (โอนต่างธนาคาร)</field>
+        <field name="bank">KRTHTHBK</field>
+    </record>
+    <record id="payment_template_ktb_standard_company_id" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_ktb_standard" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_ktb.field_bank_payment_export__ktb_company_id"
+        />
+        <field name="value">kmitl</field>
+    </record>
+    <record id="payment_template_ktb_standard_sender_name" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_ktb_standard" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_ktb.field_bank_payment_export__ktb_sender_name"
+        />
+        <field name="value">kmitl</field>
+    </record>
+    <record id="payment_template_ktb_standard_bank_type" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_ktb_standard" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_ktb.field_bank_payment_export__ktb_bank_type"
+        />
+        <field name="value">standard</field>
+    </record>
+    <!-- 04 - Goods & Services, the Standard/Express counterpart of Direct's 14. -->
+    <record id="payment_template_ktb_standard_service_type" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_ktb_standard" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_ktb.field_bank_payment_export__ktb_service_type_standard"
+        />
+        <field name="value">04</field>
+    </record>
+
+</odoo>

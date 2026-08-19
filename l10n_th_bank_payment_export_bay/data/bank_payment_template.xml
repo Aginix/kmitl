@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    The constants BAY issued to the institute, so an officer does not retype
+    them on every e-payment file.
+
+    One template: CashLink models no same-bank / other-bank split the way KTB
+    and SCB do, so there is nothing to branch on.
+
+    ``kmitl`` is a placeholder, not a value. The Company ID and the Sender Name
+    come from BAY when the institute is onboarded and we do not have them, and
+    ``bank.payment.config.value`` is required so the line cannot ship blank.
+    Replace both in Finance > Settings > Bank Payment Templates before the first
+    real file. The Sender Name matters most: it is the only one of the three the
+    ``bay_cashlink`` layout writes into the file today.
+
+    noupdate: those replacements, and any service type the treasury office
+    adjusts, have to survive ``-u``. That is also why this is XML rather than
+    CSV like the layout files next to it — a CSV row is re-imported on every
+    module update and would silently put ``kmitl`` back.
+-->
+<odoo noupdate="1">
+
+    <record id="payment_template_bay_cashlink" model="bank.payment.template">
+        <field name="name">BAY CashLink (โอนกรุงศรีอยุธยา)</field>
+        <field name="bank">AYUDTHBK</field>
+    </record>
+    <record id="payment_template_bay_cashlink_company_id" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_bay_cashlink" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_bay.field_bank_payment_export__bay_company_id"
+        />
+        <field name="value">kmitl</field>
+    </record>
+    <record id="payment_template_bay_cashlink_sender_name" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_bay_cashlink" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_bay.field_bank_payment_export__bay_sender_name"
+        />
+        <field name="value">kmitl</field>
+    </record>
+    <!-- 04 - Goods & Services: an e-payment file carries vendor payments. -->
+    <record id="payment_template_bay_cashlink_service_type" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_bay_cashlink" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_bay.field_bank_payment_export__bay_service_type"
+        />
+        <field name="value">04</field>
+    </record>
+
+</odoo>

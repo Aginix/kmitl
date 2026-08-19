@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    The constants SCB issued to the institute, so an officer does not retype
+    them on every e-payment file.
+
+    Two SCB templates, not one, and not one per bank account: the product code
+    is what changes between files (DCP credits an SCB account directly, MCL
+    clears to another bank), while the account money leaves from is read per
+    file from the หัวจ่าย — ``line.sending_acc_number`` — never from the
+    template. All three SCB paying accounts therefore share these two.
+
+    ``kmitl`` is a placeholder, not a value. The Company ID comes from SCB when
+    the institute is onboarded and we do not have it, and
+    ``bank.payment.config.value`` is required so the line cannot ship blank.
+    Replace it in Finance > Settings > Bank Payment Templates before the first
+    real file. Confirm with SCB whether one Company ID covers all three accounts
+    or each account has its own — if the latter, this becomes six templates.
+
+    Not preset because the model default already says it: ``scb_bank_type``
+    (Next Day), ``scb_invoice_language`` (Thai), ``scb_wht_signatory`` (Bank).
+    Not preset because nothing gives us a basis: the delivery mode, pickup
+    location, payment type code and remark, which only matter once credit
+    advice or WHT documents are delivered through the file.
+
+    No boolean line here either: a config line's value is a Char, and Odoo reads
+    the text "False" as True, so a boolean line can only ever turn a flag on.
+    The four SCB flags all default to off, so the convention is presence turns
+    one on and omission leaves it off.
+
+    noupdate: the Company ID an officer fills in, and any service type the
+    treasury office adjusts, have to survive ``-u``. That is also why these are
+    XML rather than CSV like the layout files next to them — a CSV row is
+    re-imported on every module update and would silently put ``kmitl`` back.
+-->
+<odoo noupdate="1">
+
+    <!-- Direct Credit: SCB account to SCB account. -->
+    <record id="payment_template_scb_dcp" model="bank.payment.template">
+        <field name="name">SCB Direct Credit / DCP (โอนเข้าบัญชีไทยพาณิชย์)</field>
+        <field name="bank">SICOTHBK</field>
+    </record>
+    <record id="payment_template_scb_dcp_company_id" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_scb_dcp" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_company_id"
+        />
+        <field name="value">kmitl</field>
+    </record>
+    <record id="payment_template_scb_dcp_product_code" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_scb_dcp" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_product_code"
+        />
+        <field name="value">DCP</field>
+    </record>
+    <!-- 04 - Goods & Services: an e-payment file carries vendor payments. -->
+    <record id="payment_template_scb_dcp_service_type" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_scb_dcp" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_service_type"
+        />
+        <field name="value">04</field>
+    </record>
+
+    <!-- Media Clearing: SCB account to an account at another bank. -->
+    <record id="payment_template_scb_mcl" model="bank.payment.template">
+        <field name="name">SCB Media Clearing / MCL (โอนต่างธนาคาร)</field>
+        <field name="bank">SICOTHBK</field>
+    </record>
+    <record id="payment_template_scb_mcl_company_id" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_scb_mcl" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_company_id"
+        />
+        <field name="value">kmitl</field>
+    </record>
+    <record id="payment_template_scb_mcl_product_code" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_scb_mcl" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_product_code"
+        />
+        <field name="value">MCL</field>
+    </record>
+    <record id="payment_template_scb_mcl_service_type" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_scb_mcl" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_service_type"
+        />
+        <field name="value">04</field>
+    </record>
+
+</odoo>
