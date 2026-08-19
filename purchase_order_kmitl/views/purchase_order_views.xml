@@ -29,9 +29,6 @@
                     class="oe_stat_button"
                 />
             </xpath>
-            <xpath expr="//field[@name='company_id']" position="after">
-                <field name="department_id" />
-            </xpath>
             <xpath
                 expr="//button[@name='action_rfq_send' and @states='draft']"
                 position="attributes"
