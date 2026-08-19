@@ -224,6 +224,19 @@ class BudgetTransfer(models.Model):
             )
         return super().action_reset_to_draft()
 
+    def _check_no_live_sarabun_document(self):
+        """The manual Approve & Post fallback must not run behind a หนังสือ that
+        is still around (a draft not yet sent, or one mid-circulation) — that
+        would leave the letter dangling against an already-posted transfer.
+        Force the user to delete the หนังสือ first."""
+        if self.filtered("sarabun_has_live_document"):
+            raise UserError(
+                _(
+                    "มีหนังสือสารบรรณค้างอยู่ ไม่สามารถอนุมัติและบันทึกได้ "
+                    "กรุณาลบหนังสือก่อนจึงจะดำเนินการด้วยตนเองได้"
+                )
+            )
+
     def action_approve(self):
         """Restricted to `submitted` — from `sent` a letter is already
         circulating (approving here would race with `_on_sarabun_completed`);
@@ -231,10 +244,12 @@ class BudgetTransfer(models.Model):
         a decided transfer through the back door."""
         if self.filtered(lambda t: t.state != "submitted"):
             raise UserError(_("Only submitted transfers can be approved."))
+        self._check_no_live_sarabun_document()
         return super().action_approve()
 
     def action_post(self):
         """Same restriction as `action_approve` — see there."""
         if self.filtered(lambda t: t.state != "submitted"):
             raise UserError(_("Only submitted transfers can be posted."))
+        self._check_no_live_sarabun_document()
         return super().action_post()
