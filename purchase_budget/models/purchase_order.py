@@ -134,6 +134,14 @@ class PurchaseOrder(models.Model):
             budget = rec.budget_commitment_id
             rec.budget_account_id = budget.account_id
             rec.analytic_distribution = budget.analytic_distribution
+            # Also mirror the individual dimension fields so the form shows
+            # them immediately — the mixin's inverse only populates them on
+            # save, which leaves those four rows blank until the record is
+            # persisted.
+            rec.activity_analytic_id = budget.activity_analytic_id
+            rec.department_analytic_id = budget.department_analytic_id
+            rec.fund_analytic_id = budget.fund_analytic_id
+            rec.source_analytic_id = budget.source_analytic_id
 
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):
