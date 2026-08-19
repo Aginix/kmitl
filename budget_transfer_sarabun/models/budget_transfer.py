@@ -1,5 +1,7 @@
 import base64
 
+from markupsafe import escape
+
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 
@@ -24,7 +26,11 @@ class BudgetTransfer(models.Model):
     # any record still in one of these states to ``draft`` if this bridge is
     # ever uninstalled (base default), keeping the required field valid.
     state = fields.Selection(
+        # Relabel ``submitted`` for the e-Saraban flow: here it means the data
+        # is confirmed and merely waiting for the หนังสือ to be issued (via
+        # "สร้างหนังสือ"), not that anything has been sent yet.
         selection_add=[
+            ("submitted", "รอส่งขออนุมัติ"),
             ("sent", "กำลังเวียนสารบรรณ"),
             ("posted",),
             ("returned", "ตีกลับเพื่อแก้ไข"),
@@ -72,7 +78,13 @@ class BudgetTransfer(models.Model):
             "amt": "{:,.2f}".format(self.amount),
             "no": self.name or "",
         }
-        return "<p>%s</p>" % body
+        content = "<p>%s</p>" % body
+        # Carry the transfer's เหตุผลการโอน into the letter body so the default
+        # content is complete the moment the หนังสือ is created.
+        if self.reason:
+            reason_html = str(escape(self.reason)).replace("\n", "<br/>")
+            content += "<p>%s<br/>%s</p>" % (_("เหตุผลการโอน"), reason_html)
+        return content
 
     @staticmethod
     def _sarabun_dim_name(analytic):
@@ -171,7 +183,13 @@ class BudgetTransfer(models.Model):
                 )
             elif transfer.state == "rejected":
                 transfer.show_reset_button = is_manager or is_admin
-            transfer.show_approve_button = is_manager or is_admin
+            # Manual approve fallback — only a manager/admin, and only while the
+            # transfer is still `submitted`. Gating on the state keeps it hidden
+            # once posted (approval flowed through the letter) or in any other
+            # state, instead of the base's plain `state == 'submitted'` flag.
+            transfer.show_approve_button = transfer.state == "submitted" and (
+                is_manager or is_admin
+            )
 
     # --- extra guards for the states this bridge introduces -------------
     def action_cancel(self):

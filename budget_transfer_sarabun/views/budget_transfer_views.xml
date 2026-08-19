@@ -16,6 +16,13 @@
                         string="หนังสือ"/>
             </xpath>
 
+            <!-- In the e-Saraban flow this step only confirms the data (the
+                 actual approval request goes out via "สร้างหนังสือ"), so the
+                 base "Submit for Approval" label is reworded here. -->
+            <xpath expr="//button[@name='action_submit']" position="attributes">
+                <attribute name="string">ยืนยันข้อมูล</attribute>
+            </xpath>
+
             <xpath expr="//button[@name='action_submit']" position="after">
                 <button name="action_submit_to_sarabun" type="object"
                         string="สร้างหนังสือ" class="btn-primary"
