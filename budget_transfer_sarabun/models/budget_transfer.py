@@ -86,6 +86,11 @@ class BudgetTransfer(models.Model):
             content += "<p>%s<br/>%s</p>" % (_("เหตุผลการขออนุมัติ"), reason_html)
         return content
 
+    def _get_sarabun_addressee(self):
+        """เรียน — a budget transfer's approval หนังสือ is always addressed to
+        the อธิการบดี (Rector), who approves the transfer."""
+        return _("อธิการบดี")
+
     @staticmethod
     def _sarabun_dim_name(analytic):
         name = (analytic.complete_name or analytic.name or "") if analytic else ""
@@ -96,7 +101,12 @@ class BudgetTransfer(models.Model):
         action = super().action_submit_to_sarabun()
         if action and action.get("res_id"):
             document = self.env["sarabun.document"].browse(action["res_id"])
-            document.sudo().write({"content": self._get_sarabun_content()})
+            document.sudo().write(
+                {
+                    "content": self._get_sarabun_content(),
+                    "addressee": self._get_sarabun_addressee(),
+                }
+            )
             self._attach_transfer_pdf_enclosure(document)
         return action
 
