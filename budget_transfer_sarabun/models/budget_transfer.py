@@ -1,5 +1,7 @@
 import base64
 
+from markupsafe import escape
+
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 
@@ -24,7 +26,11 @@ class BudgetTransfer(models.Model):
     # any record still in one of these states to ``draft`` if this bridge is
     # ever uninstalled (base default), keeping the required field valid.
     state = fields.Selection(
+        # Relabel ``submitted`` for the e-Saraban flow: here it means the data
+        # is confirmed and merely waiting for the หนังสือ to be issued (via
+        # "สร้างหนังสือ"), not that anything has been sent yet.
         selection_add=[
+            ("submitted", "รอส่งขออนุมัติ"),
             ("sent", "กำลังเวียนสารบรรณ"),
             ("posted",),
             ("returned", "ตีกลับเพื่อแก้ไข"),
@@ -72,7 +78,18 @@ class BudgetTransfer(models.Model):
             "amt": "{:,.2f}".format(self.amount),
             "no": self.name or "",
         }
-        return "<p>%s</p>" % body
+        content = "<p>%s</p>" % body
+        # Carry the transfer's เหตุผลการขออนุมัติ into the letter body so the default
+        # content is complete the moment the หนังสือ is created.
+        if self.reason:
+            reason_html = str(escape(self.reason)).replace("\n", "<br/>")
+            content += "<p>%s<br/>%s</p>" % (_("เหตุผลการขออนุมัติ"), reason_html)
+        return content
+
+    def _get_sarabun_addressee(self):
+        """เรียน — a budget transfer's approval หนังสือ is always addressed to
+        the อธิการบดี (Rector), who approves the transfer."""
+        return _("อธิการบดี")
 
     @staticmethod
     def _sarabun_dim_name(analytic):
@@ -84,7 +101,12 @@ class BudgetTransfer(models.Model):
         action = super().action_submit_to_sarabun()
         if action and action.get("res_id"):
             document = self.env["sarabun.document"].browse(action["res_id"])
-            document.sudo().write({"content": self._get_sarabun_content()})
+            document.sudo().write(
+                {
+                    "content": self._get_sarabun_content(),
+                    "addressee": self._get_sarabun_addressee(),
+                }
+            )
             self._attach_transfer_pdf_enclosure(document)
         return action
 
@@ -171,7 +193,13 @@ class BudgetTransfer(models.Model):
                 )
             elif transfer.state == "rejected":
                 transfer.show_reset_button = is_manager or is_admin
-            transfer.show_approve_button = is_manager or is_admin
+            # Manual approve fallback — only a manager/admin, and only while the
+            # transfer is still `submitted`. Gating on the state keeps it hidden
+            # once posted (approval flowed through the letter) or in any other
+            # state, instead of the base's plain `state == 'submitted'` flag.
+            transfer.show_approve_button = transfer.state == "submitted" and (
+                is_manager or is_admin
+            )
 
     # --- extra guards for the states this bridge introduces -------------
     def action_cancel(self):
@@ -206,6 +234,19 @@ class BudgetTransfer(models.Model):
             )
         return super().action_reset_to_draft()
 
+    def _check_no_live_sarabun_document(self):
+        """The manual Approve & Post fallback must not run behind a หนังสือ that
+        is still around (a draft not yet sent, or one mid-circulation) — that
+        would leave the letter dangling against an already-posted transfer.
+        Force the user to delete the หนังสือ first."""
+        if self.filtered("sarabun_has_live_document"):
+            raise UserError(
+                _(
+                    "มีหนังสือสารบรรณค้างอยู่ ไม่สามารถอนุมัติและบันทึกได้ "
+                    "กรุณาลบหนังสือก่อนจึงจะดำเนินการด้วยตนเองได้"
+                )
+            )
+
     def action_approve(self):
         """Restricted to `submitted` — from `sent` a letter is already
         circulating (approving here would race with `_on_sarabun_completed`);
@@ -213,10 +254,12 @@ class BudgetTransfer(models.Model):
         a decided transfer through the back door."""
         if self.filtered(lambda t: t.state != "submitted"):
             raise UserError(_("Only submitted transfers can be approved."))
+        self._check_no_live_sarabun_document()
         return super().action_approve()
 
     def action_post(self):
         """Same restriction as `action_approve` — see there."""
         if self.filtered(lambda t: t.state != "submitted"):
             raise UserError(_("Only submitted transfers can be posted."))
+        self._check_no_live_sarabun_document()
         return super().action_post()

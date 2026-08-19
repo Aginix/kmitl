@@ -254,9 +254,19 @@ class BudgetMoveLine(models.Model):
                 and move.move_type != "appropriation"
                 and line.account_id
             )
-            if not drawing or not move.account_fiscal_year_id:
+            if not drawing:
                 line.available_budget = 0.0
-                line.budget_sufficient = not drawing
+                line.budget_sufficient = True
+                continue
+            if not move.account_fiscal_year_id:
+                # No resolvable fiscal year yet — e.g. a FROM line authored in
+                # the dialog of a not-yet-saved transfer, whose delegated move
+                # isn't persisted so its fiscal year can't be read. Availability
+                # can't be computed here; don't raise a false "insufficient"
+                # alarm. The authoritative check runs at submit/approve on the
+                # saved record (_validate_budget_availability).
+                line.available_budget = 0.0
+                line.budget_sufficient = True
                 continue
             available = controller.get_available(
                 line.account_id,
