@@ -13,7 +13,7 @@
                     type="object"
                     class="oe_stat_button"
                     icon="fa-list-alt"
-                    attrs="{'invisible':['&amp;', ('purchase_guarantee_count', '=', 0), ('state', 'not in', ['approved', 'in_progress', 'to_submit', 'to_approve', 'in_egp'])]}"
+                    attrs="{'invisible':['&amp;', ('purchase_guarantee_count', '=', 0), ('state', 'not in', ['approved', 'in_progress', 'done'])]}"
                 >
                     <field
                         name="purchase_guarantee_count"
