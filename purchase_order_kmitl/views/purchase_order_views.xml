@@ -27,7 +27,9 @@
                     icon="fa-shopping-cart"
                     string="Purchase Request"
                     class="oe_stat_button"
+                    attrs="{'invisible': [('request_id', '=', False)]}"
                 />
+                <field name="request_id" invisible="1"/>
             </xpath>
             <xpath
                 expr="//button[@name='action_rfq_send' and @states='draft']"
