@@ -215,8 +215,8 @@
                                     <field name="product_id" readonly="1" optional="hide"/>
                                     <field name="name" readonly="1"/>
                                     <field name="product_qty"/>
-                                    <field name="uom_text" required="1"/>
                                     <field name="price_unit"/>
+                                    <field name="uom_text" required="1"/>
                                     <field name="product_uom_id" invisible="1"/>
                                     <field name="tax_id" optional="hide"/>
                                     <field name="price_subtotal" widget="monetary" invisible="1"/>
