@@ -33,19 +33,23 @@ class ProcurementPlan(models.Model):
             else:
                 plan.activity_schedule(PLAN_FILL_ACTIVITY, user_id=plan.user_id.id)
 
-    def action_new(self):
-        res = super().action_new()
-        self._schedule_fill_plan_todo()
+    def action_send_to_verify(self):
+        res = super().action_send_to_verify()
+        # Skip when the caller signals the plan will be immediately verified
+        # (appropriation-born path) — the Todo would self-complete before any
+        # officer sees it.
+        if not self.env.context.get("skip_fill_plan_todo"):
+            self._schedule_fill_plan_todo()
         return res
 
-    def action_ready(self):
-        res = super().action_ready()
+    def action_verify(self):
+        res = super().action_verify()
         # Genuine completion: log it to the Completed history.
         self.activity_feedback([PLAN_FILL_ACTIVITY])
         return res
 
-    def action_on_hold(self):
-        res = super().action_on_hold()
+    def action_cancel(self):
+        res = super().action_cancel()
         # Cancellation, not completion: drop the Todo without a history row.
         self.activity_unlink([PLAN_FILL_ACTIVITY])
         return res

@@ -519,7 +519,7 @@ msgstr "เหตุผล/ความจำเป็น"
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_line__name
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__name
 msgid "Description"
-msgstr "ชื่อรายการ"
+msgstr "รายการ"
 
 #. module: purchase_request
 #. odoo-python
@@ -601,7 +601,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__estimated_cost
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__estimated_cost
 msgid "Estimated Cost"
-msgstr "มูลค่าทั้งหมด"
+msgstr "จำนวนเงิน"
 
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__estimated_cost
@@ -1022,6 +1022,31 @@ msgid "Price Determine Committees"
 msgstr "คณะกรรมการกำหนดราคากลาง"
 
 #. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Committees"
+msgstr "คณะกรรมการ"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Propose Evaluation Committee"
+msgstr "เสนอรายชื่อคณะกรรมการพิจารณาผล"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Propose Price Determine Committee"
+msgstr "เสนอรายชื่อคณะกรรมการกำหนดราคากลาง"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Propose TOR Committee"
+msgstr "เสนอรายชื่อคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Propose Work Acceptance Committee"
+msgstr "เสนอรายชื่อคณะกรรมการตรวจรับพัสดุ"
+
+#. module: purchase_request_kmitl
 #: model:ir.actions.act_window,name:purchase_request_kmitl.action_procurement_committee
 #: model:ir.model,name:purchase_request_kmitl.model_procurement_committee
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__procurement
@@ -1344,7 +1369,7 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_qty
 msgid "Quantity"
-msgstr "ปริมาณ"
+msgstr "จำนวน"
 
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__qty_cancelled
@@ -1846,7 +1871,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_uom_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__product_uom_id
 msgid "UoM"
-msgstr "หน่วยวัด"
+msgstr "หน่วยนับ"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_search_sub

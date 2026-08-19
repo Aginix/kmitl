@@ -66,6 +66,20 @@ class TestFinanceAssignment(TransactionCase):
                 {"name": "Test Bank", "code": "TBNK", "type": "bank"}
             )
 
+        # Two seeded หัวจ่าย on ใบสำคัญจ่าย (PV). A voucher takes its journal
+        # from the paying account, so the helper below swaps both together.
+        cls.paying_scb = cls.env.ref(
+            "account_kmitl.paying_account_1112210004_transfer"
+        )
+        cls.paying_ktb = cls.env.ref(
+            "account_kmitl.paying_account_1112120002_transfer"
+        )
+
+        # Two of the treasury office's seeded เรื่องที่จ่าย; which two does not
+        # matter, only that they differ.
+        cls.subject_a = cls.env.ref("finance_kmitl.payment_subject_company_revenue")
+        cls.subject_b = cls.env.ref("finance_kmitl.payment_subject_person_revenue")
+
         # -- users -------------------------------------------------------
         users = cls.env["res.users"].with_context(no_reset_password=True)
         g_officer = cls.env.ref("finance_kmitl.group_finance_kmitl_user_out")
@@ -101,8 +115,8 @@ class TestFinanceAssignment(TransactionCase):
         )
 
     # -- helpers ---------------------------------------------------------
-    def _payment_vals(self, department, source, partner):
-        return {
+    def _payment_vals(self, department, source, partner, paying_account=None):
+        vals = {
             "payment_type": "outbound",
             "partner_type": "supplier",
             "partner_id": partner.id,
@@ -115,16 +129,46 @@ class TestFinanceAssignment(TransactionCase):
             "fund_analytic_id": self.fund_a.id,
             "activity_analytic_id": self.activity_a.id,
         }
+        if paying_account:
+            # The paying account belongs to exactly one journal, so taking the
+            # journal from it is what keeps the two from disagreeing.
+            vals["journal_id"] = paying_account.journal_id.id
+            vals["payment_method_line_id"] = paying_account.id
+        return vals
+
+    def _make_request(self, subject):
+        """A disbursement request carrying nothing but its payment subject.
+
+        The rules read only the subject off the request, so it is left in
+        ``draft`` without lines: everything that makes a request payable belongs
+        to the workflow tests in ``disbursement_finance_kmitl``.
+        """
+        return self.env["disbursement.request"].create(
+            {
+                "date": fields.Date.today(),
+                "partner_type": "multi",
+                "payment_subject_id": subject.id,
+            }
+        )
 
     def _make_payment(
-        self, source=None, department=None, partner=None, create_as=None
+        self,
+        source=None,
+        department=None,
+        partner=None,
+        create_as=None,
+        paying_account=None,
+        request=None,
     ):
         """A voucher filled in on the form: the dimension fields are written."""
         vals = self._payment_vals(
             department or self.dept_child,
             source or self.source_gov,
             partner or self.partner_a,
+            paying_account=paying_account,
         )
+        if request:
+            vals["disbursement_request_id"] = request.id
         payments = self.Payment
         if create_as:
             payments = payments.with_user(create_as)
@@ -133,9 +177,9 @@ class TestFinanceAssignment(TransactionCase):
     def _make_payment_from_distribution(self, department=None, source=None):
         """A voucher created the way a disbursement request creates one.
 
-        ``action_create_payment`` passes ``analytic_distribution`` copied off the
-        bill rather than the individual dimension fields, so the dimensions only
-        exist once the mixin's inverse has run.
+        ``disbursement.request._create_payments`` passes ``analytic_distribution``
+        copied off the bill rather than the individual dimension fields, so the
+        dimensions only exist once the mixin's inverse has run.
         """
         department = department or self.dept_child
         source = source or self.source_gov
@@ -242,6 +286,83 @@ class TestFinanceAssignment(TransactionCase):
         self.assertEqual(payment_a.assigned_to, self.officer_a)
         payment_b = self._make_payment(partner=self.partner_b)
         self.assertEqual(payment_b.assigned_to, self.officer_b)
+
+    def test_paying_account_match_and_mismatch(self):
+        """A rule on a หัวจ่าย routes only the vouchers paid from it."""
+        self.Rule.create(
+            {"user_id": self.officer_a.id, "paying_account_id": self.paying_ktb.id}
+        )
+        self.Rule.create({"user_id": self.officer_b.id})
+        from_ktb = self._make_payment(paying_account=self.paying_ktb)
+        self.assertEqual(from_ktb.assigned_to, self.officer_a)
+        from_scb = self._make_payment(paying_account=self.paying_scb)
+        self.assertEqual(from_scb.assigned_to, self.officer_b)
+
+    def test_empty_paying_account_is_a_wildcard(self):
+        self.Rule.create({"user_id": self.officer_a.id})
+        payment = self._make_payment(paying_account=self.paying_ktb)
+        self.assertEqual(payment.assigned_to, self.officer_a)
+
+    def test_paying_account_ands_with_the_dimensions(self):
+        """หัวจ่าย narrows alongside the other criteria, it does not override them."""
+        self.Rule.create(
+            {
+                "user_id": self.officer_a.id,
+                "department_analytic_id": self.dept_parent.id,
+                "paying_account_id": self.paying_ktb.id,
+            }
+        )
+        matched = self._make_payment(
+            department=self.dept_child, paying_account=self.paying_ktb
+        )
+        self.assertEqual(matched.assigned_to, self.officer_a)
+        # Right account, wrong department.
+        other_faculty = self.env["account.analytic.account"].create(
+            {"name": "Other Faculty", "plan_id": self.dept_parent.plan_id.id}
+        )
+        missed = self._make_payment(
+            department=other_faculty, paying_account=self.paying_ktb
+        )
+        self.assertFalse(missed.assigned_to)
+
+    def test_payment_subject_match_and_mismatch(self):
+        """A rule on a เรื่องที่จ่าย routes only the vouchers raised for it."""
+        self.Rule.create(
+            {"user_id": self.officer_a.id, "payment_subject_id": self.subject_a.id}
+        )
+        self.Rule.create({"user_id": self.officer_b.id})
+        for_a = self._make_payment(request=self._make_request(self.subject_a))
+        self.assertEqual(for_a.assigned_to, self.officer_a)
+        for_b = self._make_payment(request=self._make_request(self.subject_b))
+        self.assertEqual(for_b.assigned_to, self.officer_b)
+
+    def test_payment_without_a_request_matches_blank_subject_only(self):
+        """A voucher keyed in by hand has no request, so no subject to route by."""
+        self.Rule.create(
+            {
+                "user_id": self.officer_a.id,
+                "sequence": 5,
+                "payment_subject_id": self.subject_a.id,
+            }
+        )
+        self.Rule.create({"user_id": self.officer_b.id, "sequence": 10})
+        payment = self._make_payment()
+        self.assertEqual(payment.assigned_to, self.officer_b)
+
+    def test_the_voucher_carries_the_payee_type_it_is_routed_by(self):
+        """``payee_type_id`` is the list's side of the rule's ``partner_type_id``.
+
+        It belongs to ``finance_kmitl`` — the finance list filters and groups by
+        it — but it is asserted here because this is where the partners that
+        carry a type are set up, and because a rule matching on a type the
+        voucher does not report would route by one thing and be searched by
+        another.
+        """
+        payment = self._make_payment(partner=self.partner_a)
+        self.assertEqual(payment.payee_type_id, self.pt_a)
+        # Stored and related, so it follows the payee rather than freezing.
+        payment.partner_id = self.partner_b
+        self.assertEqual(payment.payee_type_id, self.pt_b)
 
     def test_no_rule_leaves_unassigned(self):
         payment = self._make_payment()

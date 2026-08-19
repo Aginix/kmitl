@@ -386,7 +386,7 @@ msgstr "หน่วยงาน"
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__name
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_gov
 msgid "Description"
-msgstr "รายละเอียด"
+msgstr "รายการ"
 
 #. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__display_name
@@ -832,7 +832,7 @@ msgstr "ความคืบหน้า"
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__price_subtotal
 msgid "Project value"
-msgstr "มูลค่างาน"
+msgstr "มูลค่ารวม"
 
 #. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #. odoo-python
@@ -998,7 +998,7 @@ msgstr ""
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__price_subtotal
 msgid "Subtotal"
-msgstr "ราคารวม"
+msgstr "จำนวนเงิน"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__approve_role__supervisor
@@ -1057,7 +1057,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__fines_total
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
 msgid "Total"
-msgstr "มูลค่างานหลังหักค่าปรับ"
+msgstr "มูลค่ารวมหลังหักค่าปรับ"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__amount_total

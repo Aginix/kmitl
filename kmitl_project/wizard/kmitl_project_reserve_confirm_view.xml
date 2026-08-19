@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_kmitl_project_reserve_confirm_form" model="ir.ui.view">
+        <field name="name">kmitl.project.reserve.confirm.form</field>
+        <field name="model">kmitl.project.reserve.confirm</field>
+        <field name="arch" type="xml">
+            <form string="จองงบประมาณ">
+                <sheet>
+                    <p>ยืนยันการจองงบประมาณสำหรับโครงการนี้ใช่หรือไม่?</p>
+                </sheet>
+                <footer>
+                    <button name="action_confirm" type="object" string="ยืนยันจองงบประมาณ" class="btn-primary" />
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

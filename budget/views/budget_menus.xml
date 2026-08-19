@@ -20,29 +20,6 @@
             </menuitem>
         </menuitem>
 
-        <menuitem id="budget_transfer_management" name="โอนงบประมาณ" sequence="50">
-            <menuitem id="budget_transfer_menu" name="โอนงบประมาณ" sequence="1">
-                <menuitem
-                    id="action_my_budget_transfers_menu"
-                    name="คำขอโอนงบประมาณของฉัน"
-                    action="action_my_budget_transfers"
-                    sequence="1"
-                />
-                <menuitem
-                    id="action_budget_transfers_pending_menu"
-                    name="รอการอนุมัติ"
-                    action="action_budget_transfers_pending"
-                    sequence="2"
-                />
-                <menuitem
-                    id="action_budget_transfer_menu"
-                    name="คำขอโอนงบประมาณทั้งหมด"
-                    action="action_budget_transfer"
-                    sequence="3"
-                />
-            </menuitem>
-        </menuitem>
-
         <menuitem id="budget_reporting_menu" name="รายงาน" sequence="90" />
         <menuitem id="budget_config_menu" name="การกำหนดค่า" sequence="99" groups="budget.group_budget_manager">
             <menuitem

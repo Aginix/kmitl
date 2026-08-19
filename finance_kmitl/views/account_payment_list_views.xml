@@ -24,6 +24,7 @@
                 <field name="date" />
                 <field name="partner_id" string="ผู้รับเงิน" />
                 <field name="kmitl_payment_type_id" optional="show" />
+                <field name="kmitl_payment_subject_id" optional="hide" />
                 <field
                     name="payment_method_line_id"
                     string="หัวจ่าย"
@@ -95,10 +96,40 @@
                     filter_domain="['|', '|', ('name', 'ilike', self), ('partner_id', 'ilike', self), ('ref', 'ilike', self)]"
                 />
                 <field name="partner_id" string="ผู้รับเงิน" />
+                <field name="payee_type_id" />
                 <field name="payment_method_line_id" string="หัวจ่าย" />
                 <field name="kmitl_payment_type_id" />
+                <field name="kmitl_payment_subject_id" />
                 <field name="payment_export_id" string="ไฟล์ e-Payment" />
                 <field name="amount" />
+
+                <!-- The six things a voucher is routed by, so the office can ask
+                     the list the same questions the assignment rules ask.
+
+                     The dimensions read the whole subtree, exactly as
+                     finance.assignment.rule._find_for_payment does: picking a
+                     faculty finds every voucher of every department under it. A
+                     filter that matched only the account itself would return
+                     nothing for the faculty a rule was set on — the same word
+                     meaning two things in one system. The fields carry their own
+                     Thai labels from analytic.distribution.mixin, so none is
+                     restated here. -->
+                <field
+                    name="department_analytic_id"
+                    filter_domain="[('department_analytic_id', 'child_of', raw_value)]"
+                />
+                <field
+                    name="source_analytic_id"
+                    filter_domain="[('source_analytic_id', 'child_of', raw_value)]"
+                />
+                <field
+                    name="fund_analytic_id"
+                    filter_domain="[('fund_analytic_id', 'child_of', raw_value)]"
+                />
+                <field
+                    name="activity_analytic_id"
+                    filter_domain="[('activity_analytic_id', 'child_of', raw_value)]"
+                />
 
                 <separator />
                 <filter
@@ -191,9 +222,39 @@
                         context="{'group_by': 'partner_id'}"
                     />
                     <filter
+                        string="Payee Type"
+                        name="group_payee_type"
+                        context="{'group_by': 'payee_type_id'}"
+                    />
+                    <filter
+                        string="Department"
+                        name="group_department"
+                        context="{'group_by': 'department_analytic_id'}"
+                    />
+                    <filter
+                        string="Source"
+                        name="group_source"
+                        context="{'group_by': 'source_analytic_id'}"
+                    />
+                    <filter
+                        string="Fund"
+                        name="group_fund"
+                        context="{'group_by': 'fund_analytic_id'}"
+                    />
+                    <filter
+                        string="Activity"
+                        name="group_activity"
+                        context="{'group_by': 'activity_analytic_id'}"
+                    />
+                    <filter
                         string="ประเภทธุรกรรม"
                         name="group_payment_type"
                         context="{'group_by': 'kmitl_payment_type_id'}"
+                    />
+                    <filter
+                        string="Payment Subject"
+                        name="group_payment_subject"
+                        context="{'group_by': 'kmitl_payment_subject_id'}"
                     />
                     <filter
                         string="ไฟล์ e-Payment"
@@ -206,6 +267,26 @@
                         context="{'group_by': 'date'}"
                     />
                 </group>
+
+                <!-- หัวจ่าย down the left, because it is the axis this office
+                     actually works by: one e-payment file debits one account, so
+                     "what is left to send from KTB" is a question asked every
+                     morning. Read off the master data rather than written out as
+                     one filter per account, so a หัวจ่าย added in Settings shows
+                     up here without a code change; grouped by วิธีจ่าย because a
+                     paying account already names its method, and the officer
+                     thinks in เงินโอน / เช็ค / เงินสด first. -->
+                <searchpanel>
+                    <field
+                        name="payment_method_line_id"
+                        string="Paying Account"
+                        icon="fa-university"
+                        select="multi"
+                        groupby="payment_method_id"
+                        domain="[('payment_type', '=', 'outbound')]"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>

@@ -38,9 +38,14 @@
                     <div style="height: 1px" />
                     <div class="page-header mt-5 mb-5">
                         <h3 class="text-center fw-bolder" style="line-height: 1.575">
-                            บันทึกขอซื้อขอจ้าง
+                            บันทึกขอให้จัดหา
                         </h3>
                     </div>
+                    <!-- บันทึกนำ — optional covering note above the origin body;
+                         prints only when the drafter ticked แนบเนื้อหา. -->
+                    <t t-call="agx_sarabun.sarabun_covering_note">
+                        <t t-set="doc" t-value="o.active_sarabun_document_id" />
+                    </t>
                     <div class="row">
                         <div class="col-8">
                             เลขที่เอกสาร

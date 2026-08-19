@@ -57,15 +57,17 @@ class PurchaseRequest(models.Model):
     def _domain_reservation_commitment_id(self):
         """Reservations this document may draw down (phase-1 dropdown).
 
-        Base: any reserved/in-progress commitment with obligable headroom. OU
-        visibility is already enforced by the record rules (owner or beneficiary
-        unit — ADR-0011). Plan/project bridges narrow this to exclude their own
-        shared commitments, which are drawn only through their dedicated
-        create-from-source flow so ADR-0006/0007 invariants are preserved.
+        Any reserved/in-progress commitment with obligable headroom, restricted to
+        purchasable, product-backed budget codes — the same purchase_ok + product
+        gate as the ``budget_account_id`` selector, so the dropdown only offers
+        reservations this PR can actually draw. OU visibility is already enforced
+        by the record rules (owner or beneficiary unit — ADR-0011).
         """
         return [
             ("state", "in", ("reserved", "partial")),
             ("available_to_obligate", ">", 0),
+            ("account_id.purchase_ok", "=", True),
+            ("account_id.product_id", "!=", False),
         ]
 
     budget_account_id = fields.Many2one(

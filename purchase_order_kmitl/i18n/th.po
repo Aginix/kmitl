@@ -1141,7 +1141,7 @@ msgstr "แสดงวันที่ควรจะยืนยันใบเ
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__name
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
 msgid "Description"
-msgstr "คำอธิบาย"
+msgstr "รายการ"
 
 #. module: purchase_order_kmitl
 #: model:ir.model.fields.selection,name:purchase_order_kmitl.selection__purchase_order__payment_type__direct
@@ -2219,7 +2219,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
 #, python-format
 msgid "Purchase Request"
-msgstr "คำขอซื้อขอจ้าง"
+msgstr "แบบขอให้จัดหา (พ.1)"
 
 #. module: purchase_order_kmitl
 #: model:ir.model,name:purchase_order_kmitl.model_purchase_request_line_make_purchase_order
@@ -2338,7 +2338,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_qty
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "Quantity"
-msgstr "ปริมาณ"
+msgstr "จำนวน"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -2741,7 +2741,7 @@ msgstr ""
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_subtotal
 msgid "Subtotal"
-msgstr "ยอดรวมย่อย"
+msgstr "จำนวนเงิน"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_report_view_tree
@@ -3047,7 +3047,7 @@ msgstr "ราคา:"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_uom
 msgid "Unit of Measure"
-msgstr "หน่วยวัด"
+msgstr "หน่วยนับ"
 
 #. module: purchase
 #: model:ir.ui.menu,name:purchase.menu_purchase_uom_form_action
@@ -3089,7 +3089,7 @@ msgstr "จำนวนรวมไม่รวมภาษี"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "UoM"
-msgstr "หน่วยวัด"
+msgstr "หน่วยนับ"
 
 #. module: purchase
 #. odoo-python

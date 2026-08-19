@@ -87,6 +87,16 @@ class SarabunDocument(models.Model):
         help="The ceremonial recipient on the หนังสือ header — its own field, "
         "separate from the routing actors. Manual or origin-set.",
     )
+    include_content = fields.Boolean(
+        string="แนบเนื้อหา (บันทึกนำ)",
+        compute="_compute_include_content",
+        store=True,
+        readonly=False,
+        help="Whether the เนื้อหา body is written on this หนังสือ. A composed "
+        "(no-source) document always has it; a from_record document defaults to "
+        "OFF (its origin report is the body) but may opt in to add a covering note "
+        "above the origin's report.",
+    )
     content = fields.Html(
         string="เนื้อหา (Content)",
         sanitize=True,
@@ -400,6 +410,14 @@ class SarabunDocument(models.Model):
             record.is_cancelled = record.state == "cancelled"
             record.is_terminal = record.state in ("rejected", "cancelled")
             record.is_editable = record.state in ("draft", "returned")
+
+    @api.depends("origin_model")
+    def _compute_include_content(self):
+        """A no-source (composed) หนังสือ always carries its own body; a from_record
+        one defaults OFF (the origin report is the body). Editable — the drafter may
+        opt a from_record document in to add a covering note."""
+        for record in self:
+            record.include_content = not record.origin_model
 
     @api.depends("sender_department_id")
     def _compute_sequence_id(self):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Budget Operating Unit Access All',
-    'version': '16.0.1.0.0',
+    'version': '16.0.1.1.0',
     'summary': """ Budget Operating Unit Access All""",
     'author': 'Aginix Technologies',
     'website': 'https://github.com/Aginix/kmitl',

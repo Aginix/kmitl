@@ -941,7 +941,13 @@ class BudgetDashboard(models.AbstractModel):
 
         commitments = self.env["budget.commitment"].search(domain, limit=limit)
         moves = self.env["budget.move"].search(domain, limit=limit)
-        transfers = self.env["budget.transfer"].search(domain, limit=limit)
+        # budget.transfer lives in the optional `budget_transfer` add-on
+        # (ADR-0013); the core dashboard stays self-contained without it.
+        transfers = (
+            self.env["budget.transfer"].search(domain, limit=limit)
+            if "budget.transfer" in self.env
+            else []
+        )
         return {
             "commitment": [
                 {

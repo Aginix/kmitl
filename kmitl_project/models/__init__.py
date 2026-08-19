@@ -20,3 +20,4 @@ from . import exception_rule
 from . import budget_account
 from . import budget_commitment
 from . import budget_dashboard
+from . import budget_move

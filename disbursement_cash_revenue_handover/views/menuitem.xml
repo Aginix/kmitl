@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem
+        id="menu_config_central_funding"
+        name="Central Funding Profiles"
+        parent="accounting_kmitl.menu_accounting_config"
+        action="action_central_funding"
+        sequence="60"
+    />
+
+</odoo>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_procurement_plan_form_disbursement" model="ir.ui.view">
+        <field name="name">procurement.plan.form.disbursement</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form" />
+        <field name="arch" type="xml">
+
+            <!-- Smart button: linked disbursement requests -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_disbursement_requests"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-money"
+                    attrs="{'invisible': [('disbursement_request_count', '=', 0)]}"
+                >
+                    <field
+                        name="disbursement_request_count"
+                        widget="statinfo"
+                        string="ใบขอเบิก"
+                    />
+                </button>
+            </xpath>
+
+            <!-- Show total actually disbursed next to the planned amount -->
+            <xpath expr="//field[@name='total_price']" position="after">
+                <field name="amount_disbursed" widget="monetary" />
+            </xpath>
+
+            <!-- Per-งวด: manual DR link + actual disbursed -->
+            <xpath expr="//field[@name='payment_ids']/tree/field[@name='amount']" position="after">
+                <field
+                    name="disbursement_request_id"
+                    domain="[('budget_commitment_id.procurement_plan_id', '=', parent.id)]"
+                    options="{'no_create': True}"
+                    width="4"
+                />
+                <field name="disbursement_state" width="2" optional="show" />
+                <field name="amount_actual" widget="monetary" width="3" />
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_budget_transfer" model="ir.actions.report">
+        <field name="name">Budget Transfer</field>
+        <field name="binding_model_id" ref="budget_transfer.model_budget_transfer"/>
+        <field name="model">budget.transfer</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_transfer_pdf.report_budget_transfer</field>
+        <field name="report_file">budget_transfer_pdf.report_budget_transfer</field>
+        <field name="print_report_name">'Budget Transfer - %s' % (object.name or object.id)</field>
+        <field name="paperformat_id" ref="paperformat_budget_transfer"/>
+    </record>
+
+</odoo>

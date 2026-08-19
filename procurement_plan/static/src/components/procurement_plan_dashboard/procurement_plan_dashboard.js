@@ -247,8 +247,8 @@ export class ProcurementPlanDashboard extends Component {
     getStateClass(state) {
         const classes = {
             draft: "badge bg-secondary",
-            new: "badge bg-info",
-            on_hold: "badge bg-warning",
+            to_verify: "badge bg-info",
+            verified: "badge bg-warning",
             in_progress: "badge bg-primary",
             done: "badge bg-success",
             cancel: "badge bg-danger",

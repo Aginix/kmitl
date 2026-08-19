@@ -178,8 +178,10 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(c.state, "reserved")
         self.assertEqual(c.total_reserved, 100_000)
 
-    def test_02_reserve_without_lines_fails(self):
-        """Cannot reserve a commitment with no lines."""
+    def test_02_reserve_without_lines_creates_from_header(self):
+        """Form-first journey: reserving with no lines synthesizes the single
+        reserve line from the header — code, dimensions and money are entered
+        once, on the form, with no picker dialog."""
         c = self.env["budget.commitment"].create(
             {
                 "date": date.today(),
@@ -192,6 +194,32 @@ class TestBudgetCommitment(TransactionCase):
                 "currency_id": self.env.company.currency_id.id,
             }
         )
+        c.action_reserve()
+        self.assertEqual(c.state, "reserved")
+        line = c.line_ids
+        self.assertEqual(len(line), 1)
+        self.assertEqual(line.move_type, "reserve")
+        self.assertEqual(line.account_id, self.account_1)
+        self.assertEqual(line.amount, 50_000)
+        self.assertEqual(line.analytic_distribution, self._header_analytic())
+        self.assertEqual(c.total_reserved, 50_000)
+
+    def test_02b_reserve_requires_positive_amount(self):
+        """A zero วงเงินอนุมัติ is allowed while draft (staging) but cannot be
+        reserved — pressing จองงบประมาณ requires a positive amount."""
+        c = self.env["budget.commitment"].create(
+            {
+                "date": date.today(),
+                "title": "Zero-cap draft",
+                "account_id": self.account_1.id,
+                "amount": 0,
+                "analytic_distribution": self._header_analytic(),
+                "account_fiscal_year_id": self.fiscal_year.id,
+                "company_id": self.env.company.id,
+                "currency_id": self.env.company.currency_id.id,
+            }
+        )
+        self.assertEqual(c.state, "draft")
         with self.assertRaises(UserError):
             c.action_reserve()
 
@@ -394,21 +422,23 @@ class TestBudgetCommitment(TransactionCase):
     # 8. Header positive amount constraint
     # ====================================================================
 
-    def test_70_zero_amount_fails(self):
-        """Commitment cap must be positive."""
-        with self.assertRaises(UserError):
-            self.env["budget.commitment"].create(
-                {
-                    "date": date.today(),
+    def test_70_zero_amount_allowed_in_draft(self):
+        """A zero วงเงินอนุมัติ is allowed while draft (staging); it is only
+        the จองงบประมาณ step that requires a positive amount (see test_02b)."""
+        c = self.env["budget.commitment"].create(
+            {
+                "date": date.today(),
                 "title": "Test commitment",
-                    "account_id": self.account_1.id,
-                    "amount": 0,
-                    "analytic_distribution": self._header_analytic(),
-                    "account_fiscal_year_id": self.fiscal_year.id,
-                    "company_id": self.env.company.id,
-                    "currency_id": self.env.company.currency_id.id,
-                }
-            )
+                "account_id": self.account_1.id,
+                "amount": 0,
+                "analytic_distribution": self._header_analytic(),
+                "account_fiscal_year_id": self.fiscal_year.id,
+                "company_id": self.env.company.id,
+                "currency_id": self.env.company.currency_id.id,
+            }
+        )
+        self.assertEqual(c.state, "draft")
+        self.assertEqual(c.amount, 0)
 
     def test_71_negative_amount_fails(self):
         """Commitment cap cannot be negative."""

@@ -11,6 +11,14 @@
                 <field name="fund_analytic_id" options="{'no_create': True}" />
                 <field name="activity_analytic_id" options="{'no_create': True}" />
                 <field name="partner_type_id" options="{'no_create': True}" />
+                <field
+                    name="paying_account_id"
+                    options="{'no_create': True, 'no_open': True}"
+                />
+                <field
+                    name="payment_subject_id"
+                    options="{'no_create': True, 'no_open': True}"
+                />
                 <field name="user_id" options="{'no_create': True}" />
                 <field name="active" widget="boolean_toggle" />
             </tree>
@@ -30,6 +38,10 @@
                 เว้นเงื่อนไขว่างไว้เพื่อให้เป็น wildcard (จับคู่ได้ทุกค่า) กฎจะถูกจับคู่จากบนลงล่าง
                 โดยกฎแรกที่ตรงเป็นผู้ชนะ กฎที่ตั้งบนส่วนงาน/กองทุน/กิจกรรมระดับแม่
                 จะครอบคลุมระดับลูกทั้งหมด
+            </p>
+            <p>
+                เรื่องที่จ่ายมีเฉพาะใบสำคัญจ่ายที่สร้างจากใบเบิกเงิน
+                ใบที่คีย์เองจะเข้าได้เฉพาะกฎที่เว้นเงื่อนไขนี้ว่างไว้
             </p>
         </field>
     </record>
