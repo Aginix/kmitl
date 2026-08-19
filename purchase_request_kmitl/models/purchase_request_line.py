@@ -20,7 +20,7 @@ class PurchaseRequestLine(models.Model):
         default=_default_product_uom_id,
     )
 
-    uom_text = fields.Char(string="หน่วยนับ", required=True, tracking=True)
+    uom_text = fields.Char(string="หน่วยนับ", tracking=True)
 
     product_id = fields.Many2one(
         compute="_compute_default_product_id",

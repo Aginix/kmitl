@@ -390,6 +390,7 @@
             >
                 <field
                     name="uom_text"
+                    required="1"
                     attrs="{'readonly': [('parent.state', '!=', 'draft')]}"
                 />
             </xpath>
