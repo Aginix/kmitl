@@ -1,7 +1,7 @@
 import logging
 
 from datetime import datetime
-from odoo import models, fields, _
+from odoo import api, models, fields, _
 from odoo.exceptions import UserError
 from odoo.tools.safe_eval import safe_eval
 
@@ -19,6 +19,54 @@ class BankPaymentExport(models.Model):
         domain="[('bank', '=', bank)]",
         tracking=True,
     )
+
+    @api.onchange("bank")
+    def _onchange_bank_export_format_id(self):
+        """Keep the layout on the bank the file is actually going to.
+
+        The field carries a domain and nothing else, and a domain filters the
+        dropdown without ever looking at the value already sitting in it. So
+        changing the bank -- by hand, or by picking a template that carries a
+        different one -- used to leave the previous bank's layout in place, and
+        the file went out written in it.
+
+        A bank with exactly one layout selects it, which is every bank but KTB:
+        KTB ships two products (iPay and Direct Credit H/D/T) and which one the
+        institute bought is not something this can decide, so it is left empty
+        for the officer -- whose view already marks it required.
+
+        Reached on the template path too, without listening for it: Odoo runs
+        onchanges in passes, and a field a first-pass method changed is picked up
+        by the next one (``models.py`` ``onchange``). ``_onchange_template_id``
+        sets ``bank`` in pass one, so this runs in pass two.
+        """
+        for rec in self:
+            if rec.bank_export_format_id.bank != rec.bank:
+                rec.bank_export_format_id = False
+            if rec.bank and not rec.bank_export_format_id:
+                formats = self.env["bank.export.format"].search(
+                    [("bank", "=", rec.bank)]
+                )
+                if len(formats) == 1:
+                    rec.bank_export_format_id = formats
+
+    @api.constrains("bank", "bank_export_format_id")
+    def _check_bank_export_format_id(self):
+        """The onchange above only guards the form.
+
+        An export assembled in code -- from a payment selection, or by a test --
+        never runs it, and a layout belonging to another bank would produce a
+        file the receiving bank cannot read. Cheap to state, expensive to miss.
+        """
+        for rec in self:
+            if rec.bank_export_format_id and rec.bank_export_format_id.bank != rec.bank:
+                raise UserError(
+                    _(
+                        "Bank export format '%(format)s' belongs to another bank, "
+                        "so it cannot be used on this file."
+                    )
+                    % {"format": rec.bank_export_format_id.display_name}
+                )
 
     def _set_global_dict(self):
         """Set global dict for eval"""
@@ -113,11 +161,13 @@ class BankPaymentExport(models.Model):
             # search only lines that match the current group and condition
             # filter in loop because we need to check condition_line
             exp_format_line_group = exp_format_lines.filtered(
-                lambda l: (
-                    l.match_group == exp_format.match_group
+                lambda fmt_line: (
+                    fmt_line.match_group == exp_format.match_group
                     and (
-                        not l.condition_line
-                        or safe_eval(l.condition_line, globals_dict=globals_dict_line)
+                        not fmt_line.condition_line
+                        or safe_eval(
+                            fmt_line.condition_line, globals_dict=globals_dict_line
+                        )
                     )
                 )
             )
@@ -157,7 +207,9 @@ class BankPaymentExport(models.Model):
             processed_subloop.add(exp_format_line.sub_value_loop)
 
             exp_format_sub_line_group = exp_format_line_group.filtered(
-                lambda l: l.sub_value_loop == exp_format_line.sub_value_loop
+                lambda fmt_line: (
+                    fmt_line.sub_value_loop == exp_format_line.sub_value_loop
+                )
             )
             sub_lines = safe_eval(
                 exp_format_line.sub_value_loop, globals_dict=globals_dict_line

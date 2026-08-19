@@ -1,0 +1,29 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_th_bank_payment_export_format
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-08-19 00:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_payment_export__bank_export_format_id
+msgid "Bank Export Format"
+msgstr "รูปแบบไฟล์ธนาคาร"
+
+#. module: l10n_th_bank_payment_export_format
+#: code:addons/l10n_th_bank_payment_export_format/models/bank_payment_export.py:0
+#, python-format
+msgid ""
+"Bank export format '%(format)s' belongs to another bank, so it cannot be "
+"used on this file."
+msgstr "รูปแบบไฟล์ '%(format)s' เป็นของธนาคารอื่น จึงใช้กับไฟล์นี้ไม่ได้"

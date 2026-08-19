@@ -14,11 +14,14 @@
     Replace both in Finance > Settings > Bank Payment Templates before the first
     real file.
 
-    The file layout (``bank_export_format_id``) is deliberately not preset: a
-    config line's value is a Char, and Odoo maps a string to no record at all
-    for a Many2one, so such a line would silently clear the field instead of
-    setting it. The officer picks the layout on the file, from a dropdown
-    already narrowed to the bank the template selected.
+    The file layout (``bank_export_format_id``) is not a config line: a config
+    line's value is a Char, and Odoo maps a string to no record at all for a
+    Many2one, so such a line would silently clear the field instead of setting
+    it. It follows the bank instead — an onchange in
+    ``l10n_th_bank_payment_export_format`` selects the layout whenever the bank
+    has exactly one. KTB is the one bank where it cannot: it ships two products
+    (``ktb_ipay`` and ``ktb_hdt``), so the officer picks on the file, from a
+    dropdown already narrowed to KTB.
 
     noupdate: the Company ID an officer fills in, and any service type the
     treasury office adjusts, have to survive ``-u``. That is also why these are
