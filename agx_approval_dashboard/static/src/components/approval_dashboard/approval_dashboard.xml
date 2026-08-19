@@ -2,7 +2,9 @@
 <templates xml:space="preserve">
     <t t-name="agx_approval_dashboard.ApprovalDashboard" owl="1">
         <div class="o_action o_approval_dashboard">
-            <ControlPanel display="controlPanelDisplay"/>
+            <div class="o_ad_page_header">
+                <span class="o_ad_page_title">ขออนุมัติออนไลน์</span>
+            </div>
 
             <div class="o_ad_body">
                 <aside class="o_ad_sidebar">

@@ -2,7 +2,6 @@
 
 import {Component, onWillStart, useState} from "@odoo/owl";
 
-import {ControlPanel} from "@web/search/control_panel/control_panel";
 import {registry} from "@web/core/registry";
 import {useService} from "@web/core/utils/hooks";
 
@@ -14,11 +13,6 @@ export class ApprovalDashboard extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.router = useService("router");
-
-        this.controlPanelDisplay = {
-            "top-left": true,
-            "bottom-right": false,
-        };
 
         this.state = useState({
             groups: [],
@@ -167,6 +161,6 @@ export class ApprovalDashboard extends Component {
 }
 
 ApprovalDashboard.template = "agx_approval_dashboard.ApprovalDashboard";
-ApprovalDashboard.components = {ControlPanel};
+ApprovalDashboard.components = {};
 
 registry.category("actions").add("agx_approval_dashboard", ApprovalDashboard);
