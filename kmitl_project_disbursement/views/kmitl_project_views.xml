@@ -8,11 +8,18 @@
         <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
-                <field name="disbursement_count" invisible="1"/>
-                <button name="action_open_disbursements" type="object" class="oe_stat_button" icon="fa-money" attrs="{'invisible': [('disbursement_count', '=', 0)]}">
+                <field name="disbursement_pending_count" invisible="1"/>
+                <field name="disbursement_done_count" invisible="1"/>
+                <button name="action_open_pending_disbursements" type="object" class="oe_stat_button" icon="fa-clock-o" attrs="{'invisible': [('disbursement_pending_count', '=', 0)]}">
                     <div class="o_stat_info">
-                        <field name="disbursement_amount" widget="monetary" nolabel="1" class="o_stat_value" options="{'currency_field': 'currency_id'}"/>
-                        <span class="o_stat_text">การเบิกจ่าย</span>
+                        <field name="disbursement_pending_amount" widget="monetary" nolabel="1" class="o_stat_value" options="{'currency_field': 'currency_id'}"/>
+                        <span class="o_stat_text">รอดำเนินการ</span>
+                    </div>
+                </button>
+                <button name="action_open_done_disbursements" type="object" class="oe_stat_button" icon="fa-check-circle" attrs="{'invisible': [('disbursement_done_count', '=', 0)]}">
+                    <div class="o_stat_info">
+                        <field name="disbursement_done_amount" widget="monetary" nolabel="1" class="o_stat_value" options="{'currency_field': 'currency_id'}"/>
+                        <span class="o_stat_text">อนุมัติแล้ว</span>
                     </div>
                 </button>
                 <button name="action_open_cancelled_disbursements" type="object" class="oe_stat_button" icon="fa-ban" attrs="{'invisible': [('disbursement_cancelled_count', '=', 0)]}">
