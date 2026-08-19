@@ -86,9 +86,9 @@ class MailActivity(models.Model):
             self.responsible_role_id = False
 
     def _my_todo_domain(self):
-        """Extend the personal inbox domain (core) with group Todos for a role
-        the user holds in one of their operating units — unclaimed, or claimed
-        by this user. A group Todo claimed by someone else drops out (Claim)."""
+        """Full view-scope domain — personal Todos plus every group Todo the
+        user can see (role ∩ view-scope OU). Kept broad because record rules and
+        chatter access ride this domain."""
         domain = super()._my_todo_domain()
         user = self.env.user
         role_ids = user.todo_role_ids.ids
