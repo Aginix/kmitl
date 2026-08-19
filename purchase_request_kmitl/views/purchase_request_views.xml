@@ -386,7 +386,7 @@
             </xpath>
 
             <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='product_qty']"
+                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
                 position="after"
             >
                 <field
