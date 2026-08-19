@@ -79,11 +79,11 @@ class BudgetTransfer(models.Model):
             "no": self.name or "",
         }
         content = "<p>%s</p>" % body
-        # Carry the transfer's เหตุผลการโอน into the letter body so the default
+        # Carry the transfer's เหตุผลการขออนุมัติ into the letter body so the default
         # content is complete the moment the หนังสือ is created.
         if self.reason:
             reason_html = str(escape(self.reason)).replace("\n", "<br/>")
-            content += "<p>%s<br/>%s</p>" % (_("เหตุผลการโอน"), reason_html)
+            content += "<p>%s<br/>%s</p>" % (_("เหตุผลการขออนุมัติ"), reason_html)
         return content
 
     @staticmethod

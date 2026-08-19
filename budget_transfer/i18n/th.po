@@ -973,7 +973,7 @@ msgstr "โอนออก (ต้นทาง)"
 #. module: budget_transfer
 #: model:ir.model.fields,field_description:budget_transfer.field_budget_transfer__reason
 msgid "Transfer Reason"
-msgstr "เหตุผลการโอน"
+msgstr "เหตุผลการขออนุมัติ"
 
 #. module: budget_transfer
 #: model_terms:ir.ui.view,arch_db:budget_transfer.view_budget_transfer_form
