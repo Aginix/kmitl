@@ -146,6 +146,28 @@ export class ApprovalDashboard extends Component {
         if (input) input.value = "";
     }
 
+    onSwitchToKanban() {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "approval.category",
+            views: [[false, "kanban"], [false, "form"]],
+            domain: [],
+            context: {group_by: ["group_id"]},
+            target: "current",
+        });
+    }
+
+    onSwitchToList() {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "approval.category",
+            views: [[false, "list"], [false, "form"]],
+            domain: [],
+            context: {search_default_group_by_group_id: 1},
+            target: "current",
+        });
+    }
+
     onCardClick(categoryId) {
         this.action.doAction({
             type: "ir.actions.act_window",

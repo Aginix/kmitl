@@ -5,6 +5,9 @@
     background-color: #f5f7fb;
 
     .o_ad_page_header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         padding: 12px 20px;
         background: #ffffff;
         border-bottom: 1px solid #e5e9f0;
@@ -14,6 +17,38 @@
         font-size: 16px;
         font-weight: 600;
         color: #2d3748;
+    }
+
+    .o_ad_view_switcher {
+        display: flex;
+        gap: 2px;
+        background: #f0f2f8;
+        border-radius: 6px;
+        padding: 2px;
+    }
+
+    .o_ad_switch_btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border: none;
+        border-radius: 4px;
+        background: transparent;
+        color: #718096;
+
+        &:hover:not(:disabled) {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        &.active {
+            background: #ffffff;
+            color: #4a6cf7;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
     }
 
     .o_ad_body {

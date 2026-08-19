@@ -4,6 +4,17 @@
         <div class="o_action o_approval_dashboard">
             <div class="o_ad_page_header">
                 <span class="o_ad_page_title">ขออนุมัติออนไลน์</span>
+                <div class="o_ad_view_switcher">
+                    <button class="btn o_ad_switch_btn active" title="Dashboard" disabled="disabled">
+                        <i class="oi oi-apps"/>
+                    </button>
+                    <button class="btn o_ad_switch_btn" title="Kanban" t-on-click="onSwitchToKanban">
+                        <i class="oi oi-view-kanban"/>
+                    </button>
+                    <button class="btn o_ad_switch_btn" title="List" t-on-click="onSwitchToList">
+                        <i class="oi oi-view-list"/>
+                    </button>
+                </div>
             </div>
 
             <div class="o_ad_body">
