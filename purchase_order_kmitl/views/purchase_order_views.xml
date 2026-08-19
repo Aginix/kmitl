@@ -66,7 +66,7 @@
                 <attribute name="optional">show</attribute>
             </xpath>
             <xpath
-                expr="//field[@name='order_line']/tree/field[@name='product_uom']"
+                expr="//field[@name='order_line']/tree/field[@name='product_uom'][@groups='uom.group_uom']"
                 position="attributes"
             >
                 <attribute name="invisible">1</attribute>

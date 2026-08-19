@@ -378,10 +378,11 @@
             </xpath>
 
             <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='product_uom_id']"
+                expr="//field[@name='line_ids']//tree/field[@name='product_uom_id'][@groups='uom.group_uom']"
                 position="attributes"
             >
                 <attribute name="invisible">1</attribute>
+                <attribute name="column_invisible">1</attribute>
             </xpath>
 
             <xpath
