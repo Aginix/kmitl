@@ -8,6 +8,7 @@
         <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <field name="disbursement_count" invisible="1"/>
                 <button name="action_open_disbursements" type="object" class="oe_stat_button" icon="fa-money" attrs="{'invisible': [('disbursement_count', '=', 0)]}">
                     <div class="o_stat_info">
                         <field name="disbursement_amount" widget="monetary" nolabel="1" class="o_stat_value" options="{'currency_field': 'currency_id'}"/>
