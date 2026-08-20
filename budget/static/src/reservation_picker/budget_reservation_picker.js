@@ -31,6 +31,12 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.resId = ctx.res_id;
         this.selectMode = !!ctx.select_only;
         this.accountDomain = ctx.account_domain || false;
+        // Opt-in (approval host): collapse the browse tree to only the rows the
+        // host may actually pick — the selectable code(s) and the dimension path
+        // down to them — hiding non-selectable siblings and roll-up nodes. With a
+        // category-pinned single code this shows just that code. Other hosts
+        // (PR/PO/DR) do not pass it and keep the full-chart context view.
+        this.onlySelectable = !!ctx.only_selectable;
         this.state.selectedId = false;
         this.state.amounts = {};
         // Free-text search on the budget-account code (feedback: not autocomplete).
@@ -52,23 +58,14 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.state.accountSearch = ev.target.value;
     }
 
-    // Client-side filter on the budget-account code or name. Keeps each matching
-    // account row plus its ancestor (dimension) rows so the full hierarchy still
-    // shows, and ignores collapse/hide-zero so a match is never hidden. Matches
-    // code or name (feedback), case-insensitively.
-    get visibleRows() {
-        const query = (this.state.accountSearch || "").trim().toLowerCase();
-        if (!query) {
-            return super.visibleRows;
-        }
+    // Keep every row matching `predicate` plus its ancestor (dimension) rows so
+    // the full hierarchy down to each match still shows; ignores collapse/
+    // hide-zero so a match is never hidden.
+    _rowsWithAncestors(predicate) {
         const byKey = this.rowsByKey;
         const keep = new Set();
         for (const row of this.state.rows) {
-            if (
-                row.row_type === "account" &&
-                ((row.code || "").toLowerCase().includes(query) ||
-                    (row.name || "").toLowerCase().includes(query))
-            ) {
+            if (predicate(row)) {
                 keep.add(row.key);
                 let pk = row.parent_key;
                 while (pk && !keep.has(pk)) {
@@ -78,6 +75,25 @@ export class BudgetReservationPicker extends BudgetDashboard {
             }
         }
         return this.state.rows.filter((row) => keep.has(row.key));
+    }
+
+    // Free-text search (on code or name, case-insensitively) takes precedence;
+    // otherwise, in only-selectable mode, collapse the tree to the pickable rows
+    // and their dimension path. Neither ignores nothing — both keep ancestors.
+    get visibleRows() {
+        const query = (this.state.accountSearch || "").trim().toLowerCase();
+        if (query) {
+            return this._rowsWithAncestors(
+                (row) =>
+                    row.row_type === "account" &&
+                    ((row.code || "").toLowerCase().includes(query) ||
+                        (row.name || "").toLowerCase().includes(query))
+            );
+        }
+        if (this.onlySelectable) {
+            return this._rowsWithAncestors((row) => row.selectable);
+        }
+        return super.visibleRows;
     }
 
     // The picker's breakdown is fixed (always on, no toggles) — the table always
