@@ -101,9 +101,10 @@
             </xpath>
             <xpath expr="//field[@name='payment_method_line_id']" position="after">
                 <field name="needs_bank_export" invisible="1" />
-                <!-- Read by the cheque buttons in their attrs, so it has to be on
-                     the form even though nothing shows it. -->
+                <!-- Read by the cheque buttons in their attrs, so both have to be
+                     on the form even though nothing shows them. -->
                 <field name="is_cheque_payment" invisible="1" />
+                <field name="cheque_id" invisible="1" />
                 <!-- Carried again without the accountant group that
                      l10n_th_bank_payment_export puts on its own node: the finance
                      office's buttons read it in their attrs and they are not

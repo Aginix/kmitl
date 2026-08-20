@@ -155,6 +155,7 @@ class AccountPayment(models.Model):
         comodel_name="cheque.register",
         string="Cheque",
         compute="_compute_cheque_id",
+        search="_search_cheque_id",
         help="The one cheque that can still pay this voucher, if it has been "
         "written yet. A voucher never has two at once.",
     )
@@ -573,6 +574,36 @@ class AccountPayment(models.Model):
             payment.cheque_id = payment.cheque_ids.filtered(
                 lambda cheque: cheque.state != "cancelled"
             )[:1]
+
+    def _search_cheque_id(self, operator, value):
+        """Let the live cheque be searched, so what reads through it can be
+        recomputed.
+
+        Two computes reach a voucher's cheque this way — the number the smart
+        button shows, and the date on the withholding-tax certificate — and Odoo
+        works out *which* vouchers to recompute when a cheque changes by
+        searching back through the field. A computed field with no search is a
+        dead end there: the dependency is dropped with a warning, and the
+        certificate would keep a date the cheque no longer has.
+
+        ``False`` asks a different question from an id — "has a cheque at all"
+        rather than "is this cheque" — so it flips the sense of the test rather
+        than being matched against.
+        """
+        if operator not in ("=", "!=", "in", "not in"):
+            raise NotImplementedError(
+                "cheque_id can only be searched with =, !=, in or not in"
+            )
+        matches = operator in ("=", "in")
+        domain = [("state", "!=", "cancelled")]
+        asks_for_any = value is False or value is None
+        if not asks_for_any:
+            ids = value if isinstance(value, (list, tuple)) else [value]
+            domain.append(("id", "in", ids))
+        vouchers = self.env["cheque.register"].search(domain).payment_id
+        if asks_for_any:
+            matches = not matches
+        return [("id", "in" if matches else "not in", vouchers.ids)]
 
     def action_post(self):
         """Validate bank export for outbound, then reconcile after posting."""
