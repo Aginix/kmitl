@@ -1052,7 +1052,7 @@ class KmitlProject(models.Model):
                 "ref": self.key or self.name,
                 # ชื่อโครงการ = ชื่อใบจอง (shown next to the number wherever a
                 # reservation is offered, so it can be told apart from others).
-                "title": self.name,
+                "title": "[%s] %s" % (self.key, self.name) if self.key else self.name,
                 "description": self.name,
                 "kmitl_project_id": self.id,
                 "user_id": self.env.user.id,
