@@ -94,6 +94,26 @@ class TestSarabunTodoBridge(SarabunCommon):
         self.assertEqual(logs.completed_by, self.user_a)
         self.assertEqual(logs.user_id, self.user_a)
 
+    def test_completion_notifies_creator(self):
+        """When a หนังสือ reaches เสร็จสิ้น, its creator (sender_user_id) gets one
+        acknowledgement Todo — even though the originator was auto-signed at send and
+        is no longer a routing holder."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)  # gating
+        doc.with_user(self.user_a).action_send()
+        self.assertFalse(self._activities(doc, self.user_a))  # no Todo yet
+        step = self._active_step(doc)
+        with self.mute_pdf():
+            self._act(step, "complete", self.user_b)  # last gating → completed
+        self.assertEqual(doc.state, "completed")
+        act = self._activities(doc, self.user_a)
+        self.assertEqual(len(act), 1)
+        self.assertEqual(
+            act.activity_type_id,
+            self.env.ref("agx_sarabun_todo.mail_activity_sarabun_completed"),
+        )
+        self.assertEqual(act.todo_category, "acknowledgement")
+
     def test_recall_teardown_not_logged(self):
         """A ยกเลิกการส่ง (recall) tears the pending Todo down without logging it —
         it was never completed, only aborted."""
