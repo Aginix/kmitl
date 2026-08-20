@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- One-time backfill for the existing population: the on_create rule
+             only fires for users created AFTER install, so it does not touch
+             the HR-staff users created manually or employees already present.
+             Run once from Settings > Technical > Automation > Server Actions
+             (open this action and press "Run"). Re-running is harmless. -->
+        <record id="action_backfill_link_users" model="ir.actions.server">
+            <field name="name">KMITL: backfill link users to employees</field>
+            <field name="model_id" ref="base.model_res_users"/>
+            <field name="state">code</field>
+            <field name="code">env['res.users'].sudo().search([('share', '=', False)])._kmitl_link_employee_by_email()</field>
+        </record>
+    </data>
+</odoo>

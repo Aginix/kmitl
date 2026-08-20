@@ -29,5 +29,9 @@
                 </tbody>
             </table>
         </xpath>
+
+        <xpath expr="//span[@t-field='line.product_uom']" position="replace">
+            <span t-out="line.uom_text or line.product_uom.name or ''" groups="uom.group_uom"/>
+        </xpath>
     </template>
 </odoo>
