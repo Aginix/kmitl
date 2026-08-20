@@ -198,6 +198,46 @@ class TestP2Engine(SarabunCommon):
         # a fresh waiting chain exists to re-send on the same number
         self.assertTrue(doc.routing_step_ids.filtered(lambda s: s.state == "waiting"))
 
+    def test_pull_back_recreates_route_verbatim(self):
+        """ดึงกลับ recreates the SAME เส้นทาง exactly (ADR-0006, UAT revision) — it must
+        NOT re-seed from the route template and wipe runtime edits. A เกษียนสั่งการ
+        (direct) insertion made mid-flow survives the pull-back, even though the หนังสือ
+        was seeded from a template that never had that step."""
+        template = self.Template.create({
+            "name": "เส้นทางทดสอบ",
+            "line_ids": [(0, 0, {
+                "order": 10, "verb": self._verb("sign_approve").id,
+                "target_mode": "person", "employee_id": self.emp_a.id,
+            })],
+        })
+        doc = self._make_doc(route_template_id=template.id)
+        doc.action_send()  # seeds originator + the single template step, activates it
+        active = self._active_step(doc)
+        # เกษียนสั่งการ: insert a follow-on (gating) step targeting user_b that the
+        # template lacks — gating so the หนังสือ keeps circulating (a non-gating stage
+        # would pass immediately and complete the doc).
+        self._act(active, "direct", self.user_a, target_mode="person",
+                  employee_id=self.emp_b.id, verb=self._verb("sign_approve").id)
+        before = doc.routing_step_ids.sorted("order")
+        self.assertEqual(len(before), 3)  # originator + template step + direct
+        self.assertTrue(before.filtered(
+            lambda s: s.created_by_disposition == "direct"
+            and s.employee_id == self.emp_b
+        ))
+
+        doc.action_pull_back(reason="แก้ไขก่อนส่งใหม่")
+
+        self.assertTrue(doc.is_returned)
+        after = doc.routing_step_ids.sorted("order")
+        # The route is recreated exactly — the direct insertion is NOT lost to a
+        # template re-seed (which would leave only originator + template step).
+        self.assertEqual(len(after), 3)
+        self.assertTrue(all(s.state == "waiting" for s in after))
+        direct = after.filtered(lambda s: s.created_by_disposition == "direct")
+        self.assertEqual(len(direct), 1)
+        self.assertEqual(direct.employee_id, self.emp_b)
+        self.assertEqual(direct.verb, self._verb("sign_approve"))
+
     def test_pull_back_by_the_sender_themselves(self):
         """ดึงกลับ run by the SENDER (not as superuser): archiving the chain must not
         trip the ผู้จัดทำ/ผู้ส่ง write-guard. Regression — the guard used to reject the
