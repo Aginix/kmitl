@@ -260,7 +260,6 @@
                             required="1"
                             attrs="{'readonly': [('is_editable','=', False)]}"
                             widget="radio"
-                            options="{'horizontal': true}"
                         />
                         <field
                             name="operating_unit_id"
