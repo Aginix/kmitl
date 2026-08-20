@@ -663,6 +663,46 @@ class SarabunDocument(models.Model):
                 }
         return label
 
+    def unlink(self):
+        # ร่าง that never went out, and a send that was voided (ยกเลิกการส่ง), are the
+        # only two disposable shapes: nothing is in flight and no one downstream is
+        # holding the หนังสือ. Everything else — circulating / returned / rejected /
+        # completed — must go through ยกเลิกการส่ง first, the audited way out of
+        # circulation.
+        undeletable = self.filtered(lambda r: r.state not in ("draft", "cancelled"))
+        if undeletable:
+            raise UserError(
+                _(
+                    "ลบได้เฉพาะหนังสือที่เป็นร่าง หรือที่ยกเลิกการส่งแล้วเท่านั้น "
+                    "กรุณายกเลิกการส่งก่อนลบ\n"
+                    "Only a draft or a cancelled document can be deleted. "
+                    "Cancel the send (ยกเลิกการส่ง) first.\n\n"
+                    "Documents: %s"
+                )
+                % ", ".join(undeletable.mapped("display_name"))
+            )
+        # Neither state implies "never numbered": agx_sarabun_reset returns a signed /
+        # completed หนังสือ to draft while deliberately KEEPING its register number
+        # (ADR-0011), and the reserved/manual path voids a number on cancel without
+        # dropping its document link. Deleting either would sever the ledger's audit
+        # link — which sarabun.document.number.document_id (ondelete=restrict) refuses
+        # anyway, with the ORM's generic FK message — and cascade away the archived
+        # steps of an officially signed record. Refuse it with a message that says why.
+        numbered = self.filtered("register_number_id")
+        if numbered:
+            raise UserError(
+                _(
+                    "ไม่สามารถลบหนังสือที่ออกเลขที่แล้วได้ "
+                    "เลขที่ต้องคงคู่กับหนังสือไว้ในทะเบียนเพื่อการตรวจสอบ\n"
+                    "Cannot delete a document that has already been assigned a "
+                    "register number — the number must keep its document link "
+                    "for audit.\n\n"
+                    "Documents: %s"
+                )
+                % ", ".join(numbered.mapped("display_name"))
+            )
+        return super().unlink()
+
     def action_view_origin(self):
         """Open the linked origin record (kept from the old API; harmless in P1)."""
         self.ensure_one()
