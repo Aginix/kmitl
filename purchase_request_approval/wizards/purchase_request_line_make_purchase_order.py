@@ -83,6 +83,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     def _prepare_purchase_order_line(self, po, item):
         res = super()._prepare_purchase_order_line(po, item)
         res["taxes_id"] = [(4, item.tax_id.id)] if item.tax_id else False
+        res["uom_text"] = item.line_id.uom_text
         return res
 
     @api.model

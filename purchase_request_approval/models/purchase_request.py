@@ -154,6 +154,7 @@ class PurchaseRequest(models.Model):
                     "name": line.name,
                     "product_qty": line.product_qty,
                     "product_uom_id": line.product_uom_id.id,
+                    "uom_text": line.uom_text,
                     "price_unit": line.price_unit,
                 })
                 for line in self.line_ids

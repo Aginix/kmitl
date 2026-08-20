@@ -50,6 +50,7 @@ class PurchaseRequestApproval(models.Model):
                         "approval_line_id": line.id,
                         "name": line.name,
                         "product_uom": line.product_uom_id.id,
+                        "uom_text": line.uom_text,
                         "product_id": line.product_id.id,
                         "price_unit": line.price_unit,
                         "product_qty": line._get_product_qty(),

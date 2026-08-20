@@ -16,6 +16,7 @@ class PurchaseRequestApprovalLine(models.Model):
     name = fields.Text(string="Description")
     product_qty = fields.Float(string="Quantity")
     product_uom_id = fields.Many2one("uom.uom", string="UoM")
+    uom_text = fields.Char(string="หน่วยนับ")
     price_unit = fields.Float(string="Unit Price")
     currency_id = fields.Many2one(related="approval_id.currency_id")
     tax_id = fields.Many2one(
