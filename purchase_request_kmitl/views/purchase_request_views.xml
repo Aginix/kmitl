@@ -166,7 +166,7 @@
                 <attribute name="readonly">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='assigned_to']" position="attributes">
+            <xpath expr="//sheet//field[@name='assigned_to']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 
