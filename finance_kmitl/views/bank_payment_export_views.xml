@@ -111,6 +111,19 @@
                 </page>
             </xpath>
 
+            <!-- The base form has no button box at all, so the first module that
+                 wants a stat button has to bring one. It lives here rather than in
+                 whichever bridge needed it first, because this is the module that
+                 owns this form's layout — a trail back to the ใบขอเบิก is only the
+                 first tenant, and 'Rows' is already waiting for one.
+
+                 Inserted before the warning below, which targets the same anchor:
+                 xpaths apply in file order, so the box ends up above the alert —
+                 the box floats right, the alert spans the width. -->
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="oe_button_box" name="button_box" />
+            </xpath>
+
             <!-- Named rather than merely flagged, so the officer can see whether
                  the other file is the one they meant to add to. -->
             <xpath expr="//div[hasclass('oe_title')]" position="before">
