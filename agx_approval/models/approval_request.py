@@ -314,6 +314,16 @@ class ApprovalRequest(models.Model):
         domain.append(("account_id", "in", account_ids))
         return domain
 
+    def action_open_reservation_picker(self):
+        """Browse the picker in only-selectable mode: the requester may pick only
+        codes this request accepts (a category-pinned code, else the
+        non-procurement baseline), so the picker collapses the ประเภทงบ chart to
+        those codes and the dimension path to them instead of showing every code
+        of the root category with only one clickable."""
+        action = super().action_open_reservation_picker()
+        action["context"] = dict(action.get("context") or {}, only_selectable=True)
+        return action
+
     def apply_reservation_selection(self, selections, dims=None):
         """Picker write-back: set the budget code + dimensions, then push the
         distribution onto the request lines (the analytic_distribution onchange
