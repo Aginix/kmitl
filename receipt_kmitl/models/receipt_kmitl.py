@@ -202,40 +202,24 @@ class ReceiptKmitl(models.Model):
         budget_year_ce = date.year + (1 if date.month >= 10 else 0)
         return budget_year_ce + 543
 
-    def _get_fiscal_year_suffix(self, date):
-        """2-digit Buddhist Era fiscal year for display (e.g. 2025-10 → '69')."""
-        return str(self._get_fiscal_year_be(date))[-2:]
-
-    def _get_or_create_dept_fy_sequence(
-        self, department, date, code_ns, name_label, number_prefix
-    ):
-        """Lazy-create a per-(dept_code, fiscal_year) ir.sequence.
-
-        The lookup ``code`` uses the full BE year so it never collides across
-        century rollovers, while the human-facing ``prefix`` keeps the 2-digit
-        year (e.g. ``RC/01/69/0001``)."""
-        dept_code = department.code or "00"
+    def _get_receipt_sequence(self, date):
+        """Lazy-create the per-fiscal-year ir.sequence for receipt numbers
+        (e.g. ``RC/2569/0001``)."""
         fy_be = self._get_fiscal_year_be(date)
-        fy_suffix = str(fy_be)[-2:]
-        seq_code = "%s.%s.%s" % (code_ns, dept_code, fy_be)
+        seq_code = "kmitl.receipt.%s" % fy_be
         IrSeq = self.env["ir.sequence"].sudo()
         seq = IrSeq.search([("code", "=", seq_code)], limit=1)
         if not seq:
             seq = IrSeq.create(
                 {
-                    "name": "%s %s FY%s" % (name_label, dept_code, fy_suffix),
+                    "name": "Receipt FY%s" % fy_be,
                     "code": seq_code,
-                    "prefix": "%s/%s/%s/" % (number_prefix, dept_code, fy_suffix),
+                    "prefix": "RC/%s/" % fy_be,
                     "padding": 4,
                     "company_id": False,
                 }
             )
         return seq
-
-    def _get_receipt_sequence(self, department, date):
-        return self._get_or_create_dept_fy_sequence(
-            department, date, "kmitl.receipt", "Receipt", "RC"
-        )
 
     # -------------------------------------------------------------------------
     # Actions
@@ -263,7 +247,7 @@ class ReceiptKmitl(models.Model):
             if not rec.customer_name and rec.partner_id:
                 rec._sync_customer_snapshot()
             if rec.name == "/" or not rec.name:
-                seq = rec._get_receipt_sequence(rec.department_analytic_id, rec.date)
+                seq = rec._get_receipt_sequence(rec.date)
                 rec.name = seq.next_by_id()
             rec.state = "confirmed"
         return True

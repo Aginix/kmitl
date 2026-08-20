@@ -24,7 +24,7 @@ Key features
 * Configurable payment methods (``kmitl.payment.method``) — each binds a
   debit GL account and a journal
 * 6D analytic dimensions at the line level via ``analytic.mixin``
-* Per-department x per-fiscal-year sequence (``RC/{dept_code}/{FY2}/{####}``)
+* Per-fiscal-year sequence (``RC/{fiscal_year_be}/{####}``, e.g. ``RC/2569/0001``)
 * Confirm assigns the number and allows printing — no journal entry yet
 * ``kmitl.receipt.remittance`` (รายงานนำส่งคลัง) bundles confirmed receipts by
   department subtree; treasury posts the batch, generating one JE per receipt

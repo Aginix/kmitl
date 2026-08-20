@@ -30,8 +30,10 @@ _Avoid_: Reject, return, reset
 The organizational unit that issued a receipt or owns a deposit — a `departments`
 analytic account stored on the header as `department_analytic_id` (a plain
 required Many2one, kept as the source of truth). A **business dimension only**:
-it drives the per-department fiscal-year running number and remittance bundling —
-**not** access control (that is the Operating Unit's job).
+it drives remittance bundling (a remittance pulls its department's whole
+subtree) — **not** the receipt running number (per-fiscal-year only, shared
+across departments) and **not** access control (that is the Operating Unit's
+job).
 _Avoid_: Cost center
 
 **Department dimension**:
