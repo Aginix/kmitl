@@ -926,6 +926,26 @@ class SarabunDocument(models.Model):
             for line in template.line_ids
         ]
 
+    def action_seed_route_from_template(self):
+        """Button (draft/returned): (re)load the Route from ``route_template_id``.
+
+        Selecting a template alone is inert — the seed only materialises at ส่ง.
+        This gives the composer an explicit "apply now" so the chosen template's
+        steps appear immediately, wiping the current live เส้นทาง first (the locked
+        ผู้จัดทำ/originator step is preserved) so it truly *replaces* the route
+        rather than appending to it."""
+        self.ensure_one()
+        if self.state not in ("draft", "returned"):
+            raise UserError(_(
+                "The route can only be seeded on a draft or returned document."
+            ))
+        if not self.route_template_id:
+            raise UserError(_("Select a route template (แม่แบบเส้นทาง) first."))
+        self._ensure_originator_step()
+        self.routing_step_ids.filtered(lambda s: not s.is_originator).unlink()
+        self._seed_route_from_template()
+        return True
+
     def _shift_stages_from(self, order):
         """Make room for an inserted stage (เกษียนสั่งการ) at `order`."""
         self.ensure_one()

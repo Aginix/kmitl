@@ -159,6 +159,13 @@
                                 <group>
                                     <field name="route_template_id"
                                            attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                                    <button name="action_seed_route_from_template"
+                                            type="object"
+                                            string="โหลดเส้นทางจากแม่แบบ"
+                                            icon="fa-refresh"
+                                            class="btn-link"
+                                            confirm="แทนที่เส้นทางปัจจุบันทั้งหมดด้วยแม่แบบที่เลือก? (ขั้นตอนที่มีอยู่จะถูกลบ)"
+                                            attrs="{'invisible': ['|', ('is_editable', '=', False), ('route_template_id', '=', False)]}"/>
                                 </group>
                                 <group>
                                     <field name="routing_progress" widget="progressbar"/>
