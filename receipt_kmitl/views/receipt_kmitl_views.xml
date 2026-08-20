@@ -70,7 +70,10 @@
                             <field name="department_analytic_id"
                                    options="{'no_create': True}"/>
                             <field name="payment_method_id"/>
-                            <field name="user_id"/>
+                            <field name="user_id" readonly="1"
+                                   groups="!receipt_kmitl.group_receipt_kmitl_manager"/>
+                            <field name="user_id" readonly="0"
+                                   groups="receipt_kmitl.group_receipt_kmitl_manager"/>
                         </group>
                         <group name="customer" string="Customer">
                             <field name="partner_id"/>
