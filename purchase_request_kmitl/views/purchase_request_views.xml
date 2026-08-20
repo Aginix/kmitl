@@ -167,11 +167,14 @@
             </xpath>
 
             <xpath expr="//field[@name='assigned_to']" position="attributes">
+                <attribute name="string">Responsible Officer</attribute>
                 <attribute
                     name="attrs"
                 >{'readonly': [('state','not in', ['to_approve', 'approved', 'in_egp', 'in_approval', 'in_progress'])]}</attribute>
+                <attribute
+                    name="options"
+                >{'no_create': True, 'no_open': True}</attribute>
             </xpath>
-
 
             <xpath
                 expr="//field[@name='line_ids']//tree/field[@name='name']"
@@ -229,6 +232,10 @@
                             attrs="{'readonly': [('is_editable', '=', False)]}"
                         />
                         <field name="user_id" readonly="1" />
+                        <xpath
+                            expr="//field[@name='assigned_to']"
+                            position="move"
+                        />
                     </group>
                 </group>
                 <group string="Purchase Request" name="purchase_request_group">
