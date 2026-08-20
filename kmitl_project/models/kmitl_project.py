@@ -496,6 +496,7 @@ class KmitlProject(models.Model):
         inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
         store=False,
+        compute_sudo=True,
         tracking=True,
     )
 
@@ -507,6 +508,7 @@ class KmitlProject(models.Model):
         domain=[("root_plan_id.code", "=", "departments")],
         # Stored so the project dashboard can search/group by department dimension.
         store=True,
+        compute_sudo=True,
         tracking=True,
     )
 
@@ -517,6 +519,7 @@ class KmitlProject(models.Model):
         inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
         store=False,
+        compute_sudo=True,
         tracking=True,
     )
 
@@ -527,6 +530,7 @@ class KmitlProject(models.Model):
         inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
         store=False,
+        compute_sudo=True,
         tracking=True,
     )
 
