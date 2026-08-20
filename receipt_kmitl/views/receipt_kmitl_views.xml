@@ -58,6 +58,7 @@
                            statusbar_visible="draft,confirmed,posted"/>
                 </header>
                 <sheet>
+                    <field name="remittance_id" invisible="1"/>
                     <div class="oe_title">
                         <h1>
                             <field name="name" readonly="1"/>
