@@ -2,10 +2,10 @@
 <odoo>
     <menuitem
         id="contacts_kmitl.menu_contacts"
-        groups="purchase.group_purchase_user,account.group_account_invoice"
+        groups="group_can_access_contracts_app"
     />
     <menuitem
         id="contacts_kmitl.res_partner_menu_contacts"
-        groups="purchase.group_purchase_user,account.group_account_invoice"
+        groups="group_can_access_contracts_app"
     />
 </odoo>
