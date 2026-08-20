@@ -282,6 +282,18 @@ class PurchaseRequest(models.Model):
         Override in bridge modules to inject e.g. operating_unit_id."""
         return {}
 
+    def _get_commitment_title(self):
+        """นำเลขที่เอกสาร พ.1 ไปไว้ในชื่อรายการจอง (ชื่อรายการจอง) ของใบจองที่ พ.1 สร้าง.
+
+        ทุกที่ที่โชว์ใบจองใช้ ``display_name`` = ``BCxxxx - <ชื่อรายการจอง>`` — เลขที่ พ.1
+        เดิมอยู่แค่ในช่อง ``ref`` ซึ่งไม่ปรากฏตรงนั้น จึง prefix เลขที่ไว้หน้าชื่อรายการเดิม
+        เพื่อให้สืบย้อนกลับไปยัง พ.1 ต้นทางได้จากตัวรายการ."""
+        self.ensure_one()
+        base = super()._get_commitment_title()
+        if self.name and base and base != self.name:
+            return "[%s] %s" % (self.name, base)
+        return self.name or base
+
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
