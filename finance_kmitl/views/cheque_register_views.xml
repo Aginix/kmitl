@@ -1,78 +1,182 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <!-- Tree View -->
+    <!-- Tree. Editable, because the one thing a person does to a freshly created
+         run of cheques is check the numbers the guess proposed and correct the
+         ones the paper disagrees with — twenty rows, one column, one pass. -->
     <record id="view_cheque_register_tree" model="ir.ui.view">
         <field name="name">cheque.register.tree</field>
         <field name="model">cheque.register</field>
         <field name="arch" type="xml">
-            <tree string="Cheque Register">
-                <field name="name" />
-                <field name="cheque_number" />
-                <field name="cheque_date" />
-                <field name="partner_id" />
-                <field name="journal_id" optional="show" />
-                <field name="ref" optional="show" />
-                <field name="amount" sum="Total" />
+            <tree
+                string="Cheques"
+                editable="bottom"
+                create="false"
+                decoration-muted="state == 'cancelled'"
+                decoration-info="state == 'draft'"
+                decoration-success="state == 'paid'"
+            >
+                <header>
+                    <button
+                        name="action_issue"
+                        type="object"
+                        string="Issue"
+                        class="btn-primary"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"
+                    />
+                    <button
+                        name="action_print_cheque"
+                        type="object"
+                        string="Print"
+                        class="btn-secondary"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"
+                    />
+                    <button
+                        name="action_hand_over"
+                        type="object"
+                        string="Hand Over"
+                        class="btn-secondary"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"
+                    />
+                </header>
+                <field name="name" readonly="1" optional="hide" />
+                <field name="cheque_book_id" readonly="1" optional="show" />
+                <!-- The only editable column, and only while the cheque is a
+                     draft: once it is issued the number is printed on paper. -->
+                <field
+                    name="cheque_number"
+                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                />
+                <field name="next_cheque_number" readonly="1" optional="hide" />
+                <field
+                    name="cheque_date"
+                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                />
+                <field name="partner_id" readonly="1" />
+                <field name="payment_id" readonly="1" optional="show" />
+                <field name="amount" readonly="1" sum="Total" />
                 <field name="currency_id" invisible="1" />
-                <field name="handover_date" optional="hide" />
-                <field name="clearing_date" optional="show" />
-                <field name="direction" optional="hide" />
-                <field name="state" widget="badge"
+                <field name="handover_date" readonly="1" optional="show" />
+                <field name="cancel_reason" readonly="1" optional="hide" />
+                <field
+                    name="state"
+                    widget="badge"
+                    readonly="1"
                     decoration-info="state == 'draft'"
-                    decoration-warning="state == 'active'"
-                    decoration-success="state == 'cleared'"
-                    decoration-danger="state == 'bounced'"
-                    decoration-muted="state == 'cancelled'" />
+                    decoration-warning="state == 'issued'"
+                    decoration-success="state == 'paid'"
+                    decoration-muted="state == 'cancelled'"
+                />
             </tree>
         </field>
     </record>
 
-    <!-- Form View -->
     <record id="view_cheque_register_form" model="ir.ui.view">
         <field name="name">cheque.register.form</field>
         <field name="model">cheque.register</field>
         <field name="arch" type="xml">
-            <form string="Cheque Register">
+            <form string="Cheque">
                 <header>
-                    <button name="action_activate" string="Issue / Receive" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
-                    <button name="action_clear" string="Clear (Cashed)" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'active')]}" />
-                    <button name="action_bounce" string="Bounced" type="object" attrs="{'invisible': [('state', '!=', 'active')]}" />
-                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('cleared', 'cancelled'))]}" />
-                    <button name="action_reset_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', '=', 'draft')]}" groups="finance_kmitl.group_finance_kmitl_manager" />
-                    <button name="action_print_cheque" string="Print Cheque" type="object" class="btn-secondary" attrs="{'invisible': ['|', ('direction', '!=', 'outbound'), ('cheque_number', '=', False)]}" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,active,cleared" />
+                    <button
+                        name="action_issue"
+                        string="Issue"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"
+                    />
+                    <button
+                        name="action_print_cheque"
+                        string="Print Cheque"
+                        type="object"
+                        class="btn-secondary"
+                        attrs="{'invisible': [('state', 'not in', ('issued', 'paid'))]}"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"
+                    />
+                    <button
+                        name="action_hand_over"
+                        string="Hand Over"
+                        type="object"
+                        class="btn-success"
+                        confirm="ยืนยันว่าผู้รับได้รับเช็คไปแล้ว? ใบสำคัญจ่ายจะถูกบันทึกว่าจ่ายแล้ว และส่งต่อให้ห้องบัญชีบันทึกบัญชี"
+                        attrs="{'invisible': [('state', '!=', 'issued')]}"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"
+                    />
+                    <button
+                        name="action_open_cancel"
+                        string="Cancel Cheque"
+                        type="object"
+                        attrs="{'invisible': [('state', '=', 'cancelled')]}"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,issued,paid"
+                    />
                 </header>
                 <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Cancelled"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('state', '!=', 'cancelled')]}"
+                    />
                     <div class="oe_title">
+                        <label for="cheque_number" string="Cheque No." />
                         <h1>
-                            <field name="name" readonly="1" />
+                            <field
+                                name="cheque_number"
+                                placeholder="e.g. 0512007"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
                         </h1>
+                        <div
+                            class="text-muted"
+                            attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('next_cheque_number', '=', False)]}"
+                        >
+                            Next in this book:
+                            <field name="next_cheque_number" class="oe_inline" />
+                            — a guess from the last one used. Overtype it if the
+                            paper says otherwise.
+                        </div>
                     </div>
                     <group>
-                        <group name="cheque_information" string="Cheque Information">
-                            <field name="direction" widget="radio" attrs="{'readonly': [('state', '!=', 'draft')]}" />
-                            <field name="cheque_number" attrs="{'required': [('state', '!=', 'draft')], 'readonly': [('state', 'in', ('cleared', 'cancelled'))]}" />
-                            <field name="cheque_date" />
-                            <field name="journal_id" />
+                        <group name="cheque" string="Cheque">
+                            <field
+                                name="cheque_date"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field name="cheque_book_id" />
                             <field name="bank_id" />
-                            <field name="crossed" attrs="{'invisible': [('direction', '!=', 'outbound')]}" />
-                            <field name="strike_bearer" attrs="{'invisible': [('direction', '!=', 'outbound')]}" />
+                            <field name="crossed" />
+                            <field name="strike_bearer" />
                         </group>
-                        <group name="payment_information" string="Payment Information">
+                        <group name="voucher" string="Payment Voucher">
+                            <field
+                                name="payment_id"
+                                options="{'no_create': True}"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
                             <field name="partner_id" />
                             <field name="amount" />
                             <field name="currency_id" invisible="1" />
-                            <field name="ref" />
-                            <field name="payment_id" readonly="1" attrs="{'invisible': [('payment_id', '=', False)]}" />
+                            <field name="paying_account_id" />
                         </group>
-                        <group name="dates_and_status" string="Dates &amp; Status">
+                        <group name="outcome" string="Outcome">
                             <field name="handover_date" />
-                            <field name="deposit_date" attrs="{'invisible': [('direction', '!=', 'inbound')]}" />
-                            <field name="clearing_date" />
+                            <field
+                                name="cancel_reason"
+                                attrs="{'invisible': [('state', '!=', 'cancelled')]}"
+                            />
+                            <field name="name" string="Reference" />
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                            />
                         </group>
                     </group>
-                    <group name="notes" string="Notes">
+                    <group string="Notes">
                         <field name="note" nolabel="1" placeholder="Remarks..." />
                     </group>
                 </sheet>
@@ -85,7 +189,6 @@
         </field>
     </record>
 
-    <!-- Search View -->
     <record id="view_cheque_register_search" model="ir.ui.view">
         <field name="name">cheque.register.search</field>
         <field name="model">cheque.register</field>
@@ -93,38 +196,76 @@
             <search>
                 <field name="cheque_number" />
                 <field name="partner_id" />
-                <field name="ref" />
-                <field name="journal_id" />
-                <filter name="outstanding" string="Outstanding" domain="[('state', '=', 'active')]" />
-                <filter name="cleared" string="Cleared" domain="[('state', '=', 'cleared')]" />
-                <filter name="bounced" string="Bounced" domain="[('state', '=', 'bounced')]" />
+                <field name="payment_id" />
+                <field name="cheque_book_id" />
+                <filter
+                    name="to_issue"
+                    string="To Issue"
+                    domain="[('state', '=', 'draft')]"
+                />
+                <filter
+                    name="to_hand_over"
+                    string="Waiting to be Collected"
+                    domain="[('state', '=', 'issued')]"
+                />
+                <filter
+                    name="handed_over"
+                    string="Handed Over"
+                    domain="[('state', '=', 'paid')]"
+                />
                 <separator />
-                <filter name="issued" string="Issued" domain="[('direction', '=', 'outbound')]" />
-                <filter name="received" string="Received" domain="[('direction', '=', 'inbound')]" />
-                <group expand="0" name="group_by" string="Group By">
-                    <filter name="group_state" string="Status" context="{'group_by': 'state'}" />
-                    <filter name="group_journal" string="Bank/Cheque Book" context="{'group_by': 'journal_id'}" />
-                    <filter name="group_direction" string="Direction" context="{'group_by': 'direction'}" />
+                <filter
+                    name="cancelled"
+                    string="Cancelled"
+                    domain="[('state', '=', 'cancelled')]"
+                />
+                <separator />
+                <filter
+                    name="this_year"
+                    string="Cheque Date"
+                    date="cheque_date"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_state"
+                        string="Status"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        name="group_book"
+                        string="Cheque Book"
+                        context="{'group_by': 'cheque_book_id'}"
+                    />
+                    <filter
+                        name="group_partner"
+                        string="Payee"
+                        context="{'group_by': 'partner_id'}"
+                    />
+                    <filter
+                        name="group_cheque_date"
+                        string="Cheque Date"
+                        context="{'group_by': 'cheque_date'}"
+                    />
                 </group>
             </search>
         </field>
     </record>
 
-    <!-- Actions -->
-    <record id="action_cheque_register_outbound" model="ir.actions.act_window">
-        <field name="name">Issued Cheque Register</field>
+    <!-- One action. There is no received-cheque register here: a cheque KMITL
+         takes in is a receipt, and receipt_kmitl models it with its own payment
+         method. -->
+    <record id="action_cheque_register" model="ir.actions.act_window">
+        <field name="name">Cheques</field>
         <field name="res_model">cheque.register</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('direction', '=', 'outbound')]</field>
-        <field name="context">{'default_direction': 'outbound', 'search_default_outstanding': 1}</field>
-    </record>
-
-    <record id="action_cheque_register_inbound" model="ir.actions.act_window">
-        <field name="name">Received Cheque Register</field>
-        <field name="res_model">cheque.register</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[('direction', '=', 'inbound')]</field>
-        <field name="context">{'default_direction': 'inbound', 'search_default_outstanding': 1}</field>
+        <field name="context">{'search_default_to_issue': 1, 'search_default_to_hand_over': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No cheques yet</p>
+            <p>
+                A cheque is written from a payment voucher: tick the vouchers in
+                ใบสำคัญจ่าย and press Write Cheques.
+            </p>
+        </field>
     </record>
 
 </odoo>

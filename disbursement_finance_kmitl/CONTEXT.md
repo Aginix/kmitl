@@ -98,10 +98,11 @@ overwrite the account the person just picked.
   nothing in the system knows that.
 - **Paid / จ่ายครบ** (`payment_authorized → paid`): every payee of the request has their
   money, as the finance office says so. **Nobody presses this for the request as a
-  whole.** A request's payees span several หัวจ่าย, so its vouchers leave in as many
-  e-payment files, and no two of those files need be the same officer's — so each
-  officer confirms only the file they handled, closing a file pays the vouchers it
-  carried, and the request arrives here when the last of them lands. See
+  whole.** A request's payees span several หัวจ่าย and are settled in as many different
+  ways, and no two of those need be the same officer's — so each officer confirms only
+  what they handled, in the place that knows it: closing an **ไฟล์ e-Payment** pays the
+  transfer payees it carried, **มอบเช็ค** pays the payee that cheque was written for, and
+  cash is confirmed on the voucher. The request arrives here when the last of them lands. See
   [ADR-0007](./docs/adr/0007-the-request-crosses-when-its-last-voucher-is-paid.md). The
   money has left; the accounting entry is **not** posted yet. This is the **Hand-over**
   (below) — the moment the request stops being the finance office's and becomes the
@@ -132,6 +133,13 @@ overwrite the account the person just picked.
 
 - The workflow is **forward-only** in round 2: there is no reject/return. A request that
   must be corrected is cancelled (before payment) or the bill is reversed by accounting.
+  The one exception is a **cheque that dies after it was handed over** — bounced, lost,
+  out of date, drawn wrong. It is the only instrument that can fail once the payee is
+  holding it, so cancelling it withdraws that payee's voucher back to `confirmed` and a
+  replacement cheque is written on the same voucher. The **request does not follow it
+  back**: it stays at `paid` and reports จ่ายแล้ว n-1/m, because the other payees still
+  need booking and their queue should not be emptied over one of them. See
+  `finance_kmitl` ADR-0006.
 - **The bank's result file is never imported into Odoo.** A transfer the bank rejects is
   chased and settled **outside the system** — a corrected transfer made at the bank's
   own portal, a cheque handed over — and Odoo learns of it only through the finance

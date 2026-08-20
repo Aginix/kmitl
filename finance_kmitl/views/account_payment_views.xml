@@ -51,13 +51,18 @@
                     groups="finance_kmitl.group_finance_kmitl_user_out"
                     data-hotkey="v"
                 />
+                <!-- Cash only, by the time the other two are accounted for: a
+                     transfer is confirmed by closing the file that carried it and
+                     a cheque by handing the cheque over, so what is left here is
+                     the money paid across the counter, which nothing else
+                     records. -->
                 <button
                     name="action_confirm_paid"
                     string="ยืนยันจ่ายสำเร็จ"
                     type="object"
                     class="btn-success"
                     confirm="ยืนยันว่าเงินถึงมือผู้รับแล้ว? หลังจากนี้ฝั่งเงินจะแก้ไม่ได้ และใบสำคัญจะส่งต่อให้ห้องบัญชีบันทึก"
-                    attrs="{'invisible': [('finance_state', '!=', 'confirmed')]}"
+                    attrs="{'invisible': ['|', ('finance_state', '!=', 'confirmed'), ('is_cheque_payment', '=', True)]}"
                     groups="finance_kmitl.group_finance_kmitl_user_out"
                 />
                 <!-- Only while nothing has been sent: once the voucher is in a
@@ -96,6 +101,9 @@
             </xpath>
             <xpath expr="//field[@name='payment_method_line_id']" position="after">
                 <field name="needs_bank_export" invisible="1" />
+                <!-- Read by the cheque buttons in their attrs, so it has to be on
+                     the form even though nothing shows it. -->
+                <field name="is_cheque_payment" invisible="1" />
                 <!-- Carried again without the accountant group that
                      l10n_th_bank_payment_export puts on its own node: the finance
                      office's buttons read it in their attrs and they are not
@@ -397,21 +405,35 @@
                 </notebook>
             </xpath>
 
-            <!-- Smart button: cheques linked to this payment in the register -->
+            <!-- The cheque this voucher is paid by. Shown from the moment the
+                 voucher is confirmed, because an empty one is the thing the
+                 officer has come to act on: a cheque payee with no cheque is
+                 work outstanding, not a blank field. -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button
-                    name="action_view_cheque_register"
+                    name="action_view_cheques"
                     type="object"
                     class="oe_stat_button"
                     icon="fa-credit-card"
-                    attrs="{'invisible': [('cheque_register_count', '=', 0)]}"
+                    attrs="{'invisible': [('cheque_id', '=', False)]}"
                 >
-                    <field
-                        name="cheque_register_count"
-                        widget="statinfo"
-                        string="Cheques"
-                    />
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Cheque</span>
+                        <span class="o_stat_text"><field
+                                name="cheque_number"
+                                nolabel="1"
+                            /></span>
+                    </div>
                 </button>
+                <button
+                    name="action_create_cheques"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-credit-card"
+                    string="Write a Cheque"
+                    attrs="{'invisible': ['|', '|', ('is_cheque_payment', '=', False), ('finance_state', '!=', 'confirmed'), ('cheque_id', '!=', False)]}"
+                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                />
             </xpath>
 
         </field>

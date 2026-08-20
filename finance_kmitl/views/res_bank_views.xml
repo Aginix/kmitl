@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- The bank prints the cheque form, so the calibration for it hangs here.
+         It used to hang on the journal, which is a voucher type (ใบสำคัญ) and
+         holds no bank at all — one layout therefore served every bank at once. -->
+    <record id="view_res_bank_form_cheque" model="ir.ui.view">
+        <field name="name">res.bank.form.cheque</field>
+        <field name="model">res.bank</field>
+        <field name="inherit_id" ref="base.view_res_bank_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='bic']" position="after">
+                <field
+                    name="cheque_layout_id"
+                    options="{'no_create_edit': True}"
+                    groups="account.group_account_manager"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

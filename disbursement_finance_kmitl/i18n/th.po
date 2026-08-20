@@ -37,6 +37,16 @@ msgstr ""
 "กรุณาตั้งค่าที่ การเงิน ▸ ตั้งค่า ▸ หัวจ่าย"
 
 #. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"%s names no bank account, so there is no cheque book to draw on. Set it in "
+"Finance ▸ Settings ▸ Paying Accounts."
+msgstr ""
+"%s ไม่ได้ระบุบัญชีธนาคาร จึงไม่มีเล่มเช็คให้สั่งจ่าย ตั้งค่าได้ที่ "
+"การเงิน ▸ ตั้งค่า ▸ หัวจ่าย"
+
+#. module: disbursement_finance_kmitl
 #: model:mail.activity.type,summary:disbursement_finance_kmitl.mail_activity_dr_to_pay
 msgid ""
 "A disbursement request was authorized and its vouchers are ready — put them "
@@ -218,6 +228,12 @@ msgstr "เสร็จสิ้น"
 #. module: disbursement_finance_kmitl
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
+msgid "error"
+msgstr "ข้อผิดพลาด"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
 msgid "Every voucher of %s is already submitted."
 msgstr "ใบสำคัญจ่ายของ %s ส่งอนุมัติไปครบแล้ว"
 
@@ -225,6 +241,12 @@ msgstr "ใบสำคัญจ่ายของ %s ส่งอนุมั�
 #: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_payment_line__paying_account_match__fallback
 msgid "Fallback Account"
 msgstr "ไม่ตรงกับหัวจ่ายหลัก"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_payment_line.py:0
+#, python-format
+msgid "its payment %s already exists."
+msgstr "มีใบจ่ายเงิน %s แล้ว"
 
 #. module: disbursement_finance_kmitl
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
@@ -439,6 +461,12 @@ msgid ""
 msgstr "ออกใบสำคัญจ่ายไม่สำเร็จ: %s กรุณาแก้ไขแล้วกดปุ่มสร้างใบจ่ายเงิน"
 
 #. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_payment_line.py:0
+#, python-format
+msgid "the request is not open for audit or payment review."
+msgstr "ใบขอเบิกไม่ได้อยู่ในขั้นตรวจสอบหรือตรวจทานก่อนสร้างใบจ่าย"
+
+#. module: disbursement_finance_kmitl
 #: model:ir.model.fields,help:disbursement_finance_kmitl.field_bank_payment_export__disbursement_request_ids
 msgid ""
 "The ใบขอเบิก this file pays. A file is assembled from vouchers, and a "
@@ -517,24 +545,6 @@ msgstr ""
 #. module: disbursement_finance_kmitl
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "error"
-msgstr "ข้อผิดพลาด"
-
-#. module: disbursement_finance_kmitl
-#: code:addons/disbursement_finance_kmitl/models/disbursement_payment_line.py:0
-#, python-format
-msgid "its payment %s already exists."
-msgstr "มีใบจ่ายเงิน %s แล้ว"
-
-#. module: disbursement_finance_kmitl
-#: code:addons/disbursement_finance_kmitl/models/disbursement_payment_line.py:0
-#, python-format
-msgid "the request is not open for audit or payment review."
-msgstr "ใบขอเบิกไม่ได้อยู่ในขั้นตรวจสอบหรือตรวจทานก่อนสร้างใบจ่าย"
-
-#. module: disbursement_finance_kmitl
-#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
-#, python-format
 msgid "จ่ายแล้ว %s/%s"
 msgstr ""
 
@@ -547,3 +557,4 @@ msgstr ""
 #: model:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_request_finance
 msgid "ไม่มีใบขอเบิกที่รอทำการจ่ายเงิน"
 msgstr ""
+

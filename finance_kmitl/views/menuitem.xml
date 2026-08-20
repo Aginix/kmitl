@@ -94,29 +94,17 @@
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
 
-    <!-- Cheque Control Register -->
+    <!-- Cheques. One menu, beside the e-payment files: the two are the same job
+         for payees settled two different ways. A cheque KMITL *receives* is not
+         here and never was one of these — that is a receipt, and receipt_kmitl
+         models it with a payment method of its own. -->
     <menuitem
-        id="menu_cheque_register_root"
-        name="Cheque Register"
+        id="menu_cheque_register"
+        name="Cheques"
         parent="menu_payment_root"
+        action="action_cheque_register"
         sequence="30"
-        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_user_in"
-    />
-    <menuitem
-        id="menu_cheque_register_outbound"
-        name="Issued Cheques"
-        parent="menu_cheque_register_root"
-        action="action_cheque_register_outbound"
-        sequence="10"
         groups="finance_kmitl.group_finance_kmitl_user_out"
-    />
-    <menuitem
-        id="menu_cheque_register_inbound"
-        name="Received Cheques"
-        parent="menu_cheque_register_root"
-        action="action_cheque_register_inbound"
-        sequence="20"
-        groups="finance_kmitl.group_finance_kmitl_user_in"
     />
 
     <!-- Settings submenu (manager only) -->

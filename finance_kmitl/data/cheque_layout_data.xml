@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        Print calibration for the one bank KMITL draws cheques on. All three cheque
+        หัวจ่าย seeded by account_kmitl are SCB current accounts (088-3-00303-1,
+        088-2-60881-2, 088-3-00581-3), so one layout serves them: a cheque form is
+        printed by the bank, not by the account.
+
+        THESE NUMBERS ARE A STARTING GUESS. They are sized for a standard Thai
+        cheque (~178 x 82 mm) against the 200 x 95 mm paperformat this report uses,
+        and nobody can calibrate a printed form from a specification. Run one test
+        print onto real stationery, measure the drift, and correct the offsets in
+        Finance > Settings > Cheque Layouts. That screen exists for exactly this.
+
+        noupdate so a module upgrade never overwrites the values the treasury office
+        measured.
+    -->
+    <data noupdate="1">
+        <record id="cheque_layout_scb" model="cheque.layout">
+            <field name="name">เช็คธนาคารไทยพาณิชย์ (SCB)</field>
+            <field name="font_size">14.0</field>
+            <!-- Thai cheques carry the Buddhist Era year in the date boxes. -->
+            <field name="date_buddhist_year" eval="True" />
+            <field name="date_spacing">2.6</field>
+
+            <!-- Date boxes, top right -->
+            <field name="date_top">12.0</field>
+            <field name="date_left">131.0</field>
+            <!-- "จ่าย" payee line -->
+            <field name="payee_top">25.0</field>
+            <field name="payee_left">25.0</field>
+            <!-- Amount box, right of the payee line -->
+            <field name="amount_figure_top">25.0</field>
+            <field name="amount_figure_left">140.0</field>
+            <!-- Amount in Thai words, the line below -->
+            <field name="amount_text_top">35.0</field>
+            <field name="amount_text_left">25.0</field>
+            <!-- A/C PAYEE ONLY crossing, top left corner -->
+            <field name="crossing_top">6.0</field>
+            <field name="crossing_left">14.0</field>
+            <!-- Rule struck through the pre-printed "หรือผู้ถือ" -->
+            <field name="bearer_top">28.0</field>
+            <field name="bearer_left">118.0</field>
+        </record>
+
+        <record id="account_kmitl.bank_scb" model="res.bank">
+            <field name="cheque_layout_id" ref="cheque_layout_scb" />
+        </record>
+    </data>
+</odoo>
