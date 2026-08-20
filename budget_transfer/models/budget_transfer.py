@@ -99,7 +99,6 @@ class BudgetTransfer(models.Model):
 
     reason = fields.Text(
         string="Transfer Reason",
-        required=True,
         readonly=False,
         tracking=True,
         help="Please provide detailed justification for this budget transfer",

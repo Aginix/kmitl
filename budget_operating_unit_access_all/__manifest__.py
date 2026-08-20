@@ -9,6 +9,7 @@
     'depends': ['budget_operating_unit'],
     'data': [
         "security/budget_security.xml",
+        "views/budget_transfer_views.xml",
     ],
     'installable': True,
     'license': 'LGPL-3',

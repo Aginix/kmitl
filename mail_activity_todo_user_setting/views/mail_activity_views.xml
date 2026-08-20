@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- ADR-0007: narrow the primary inbox to the notification scope.
+         Retargets the base action so existing bookmarks / links keep working. -->
+    <record id="mail_activity_todo.action_my_todos" model="ir.actions.act_window">
+        <field
+            name="domain"
+        >[('is_my_todo', '=', True), ('is_my_primary_todo', '=', True)]</field>
+    </record>
+
+</odoo>

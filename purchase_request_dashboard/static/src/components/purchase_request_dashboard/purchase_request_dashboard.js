@@ -364,8 +364,7 @@ export class PurchaseRequestDashboard extends Component {
      * Build a list-view domain from active dashboard filters plus a chart-specific tuple.
      *
      * Mirrors the backend filter logic so a click-through tree view shows the same
-     * records contributing to the chart slice. The "draft" UI state maps to two
-     * Odoo states ("draft" + "to_examine") which the backend treats as one bucket.
+     * records contributing to the chart slice.
      */
     _pieDrilldownDomain(extraFilter) {
         const domain = [
@@ -375,12 +374,13 @@ export class PurchaseRequestDashboard extends Component {
         ];
         const selected = this.state.selectedStates;
         if (selected.length > 0) {
-            const states = selected.includes("draft")
-                ? [...selected, "to_examine"]
-                : selected;
-            domain.push(["state", "in", states]);
+            domain.push(["state", "in", selected]);
         } else {
-            domain.push(["state", "!=", "rejected"]);
+            domain.push([
+                "state",
+                "not in",
+                ["approved", "cancelled", "rejected"],
+            ]);
         }
         return domain;
     }
@@ -643,10 +643,13 @@ export class PurchaseRequestDashboard extends Component {
         const classes = {
             draft: "text-dark",
             to_verify: "text-info",
+            to_submit: "text-info",
             to_approve: "text-warning",
-            approved: "text-success",
+            in_egp: "text-warning",
+            in_approval: "text-warning",
             in_progress: "text-primary",
             done: "text-success",
+            cancelled: "text-secondary",
             rejected: "text-danger",
             total: "text-primary",
         };
