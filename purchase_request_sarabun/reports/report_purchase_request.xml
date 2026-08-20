@@ -165,7 +165,9 @@
                                         <span
                                             t-out="'{0:,.0f}'.format(line.product_qty)"
                                         />
-                                        <span t-field="line.product_uom_id" />
+                                        <span
+                                            t-out="line.uom_text or line.product_uom_id.name or ''"
+                                        />
                                     </td>
                                     <td
                                         class="text-end"

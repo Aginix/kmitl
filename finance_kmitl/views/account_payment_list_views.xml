@@ -20,16 +20,27 @@
                 decoration-muted="state == 'cancel'"
                 sample="1"
             >
+                <!-- The office's main move out of this list, so it is a button that
+                     appears the moment rows are ticked rather than a line in the
+                     Action menu, where it sat between two actions belonging to
+                     other offices. Same idiom core uses for Confirm on its own
+                     payment tree, and the same implementation as the server action
+                     still bound to this model. -->
+                <header>
+                    <button
+                        name="action_create_bank_payment_export"
+                        type="object"
+                        string="Create e-Payment File"
+                        class="btn-primary"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"
+                    />
+                </header>
                 <field name="name" string="เลขที่ใบสำคัญ" />
                 <field name="date" />
                 <field name="partner_id" string="ผู้รับเงิน" />
                 <field name="kmitl_payment_type_id" optional="show" />
                 <field name="kmitl_payment_subject_id" optional="hide" />
-                <field
-                    name="payment_method_line_id"
-                    string="หัวจ่าย"
-                    optional="show"
-                />
+                <field name="payment_method_line_id" string="หัวจ่าย" optional="show" />
                 <field name="payment_method_id" string="วิธีจ่าย" optional="hide" />
                 <field
                     name="partner_bank_id"
@@ -74,7 +85,11 @@
                 <field name="needs_bank_export" invisible="1" />
                 <field name="currency_id" invisible="1" />
                 <field name="state" invisible="1" />
-                <field name="company_id" invisible="1" groups="base.group_multi_company" />
+                <field
+                    name="company_id"
+                    invisible="1"
+                    groups="base.group_multi_company"
+                />
             </tree>
         </field>
     </record>
@@ -197,7 +212,11 @@
                 />
 
                 <separator />
-                <filter string="ยกเลิก" name="cancelled" domain="[('state', '=', 'cancel')]" />
+                <filter
+                    string="ยกเลิก"
+                    name="cancelled"
+                    domain="[('state', '=', 'cancel')]"
+                />
                 <filter string="วันที่" name="filter_date" date="date" />
 
                 <group expand="0" string="จัดกลุ่มตาม">

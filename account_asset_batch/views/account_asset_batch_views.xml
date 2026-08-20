@@ -54,6 +54,7 @@
                         string="Register Asset"
                         states="draft"
                         class="btn-primary"
+                        groups="purchase.group_purchase_user"
                     />
                     <field
                         name="state"

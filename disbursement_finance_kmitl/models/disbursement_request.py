@@ -29,7 +29,10 @@ class DisbursementRequest(models.Model):
           -> payment_authorized   (rector delegate: action_authorize, which also
                                    raises the vouchers, numbered and confirmed
                                    for the bank -- see ADR-0006)
-          -> paid                 (finance        : action_confirm_paid)
+          -> paid                 (no press: reached when the last of the request's
+                                   vouchers is paid, which happens as each officer
+                                   closes the e-payment file they handled -- see
+                                   ADR-0007)
           -> cleared              (accounting posts the payment move through the
                                    account.move maker-checker; set in
                                    account_move._post)
@@ -161,9 +164,7 @@ class DisbursementRequest(models.Model):
             total = len(active)
             rec.payment_count = total
             paid = len(active.filtered(lambda p: p.finance_state == "paid"))
-            rec.payment_status_display = (
-                _("จ่ายแล้ว %s/%s", paid, total) if total else ""
-            )
+            rec.payment_status_display = _("จ่ายแล้ว %s/%s", paid, total) if total else ""
             moves = active.mapped("move_id")
             rec.payment_move_ids = moves
             rec.payment_move_count = len(moves)
@@ -490,13 +491,68 @@ class DisbursementRequest(models.Model):
             active.filtered(
                 lambda p: p.finance_state == "draft"
             ).action_confirm_for_bank()
-            active._mark_paid()
+            # Only the ones still waiting. Closing an e-payment file is itself
+            # ยืนยันจ่ายสำเร็จ for the payees it carried, so by the time this press
+            # happens most of a request is usually paid already — and ``_mark_paid``
+            # refuses a voucher that is not ``confirmed``, so passing them all would
+            # make this press fail on exactly the requests that had gone out
+            # normally.
+            active.filtered(
+                lambda payment: payment.finance_state == "confirmed"
+            )._mark_paid()
+            # Usually a no-op by now: marking the last voucher paid crosses the
+            # Hand-over on its own. It still matters for a request whose vouchers
+            # were all paid before this press, where nothing was written and so
+            # nothing fired.
+            record._hand_over()
+        return True
+
+    def _hand_over(self):
+        """The Hand-over: the request stops being the finance office's.
+
+        Idempotent, and that is the point — it is reached two ways. Normally the
+        last voucher turning paid brings the request across
+        (``_try_hand_over_when_all_paid``); the finance office's own press calls it
+        too, for the case where there was nothing left to mark. Filtering on the
+        state it crosses *from* is what keeps the accounting office from getting the
+        same Todo twice.
+        """
+        for record in self.filtered(lambda rec: rec.state == "payment_authorized"):
             record.state = "paid"
             record.activity_feedback([TO_PAY_ACTIVITY])
-            # Hand the request to the accounting office: one Todo for the request,
-            # because the request is the document KMITL navigates by — not twelve
-            # for twelve payees.
+            # One Todo for the request, because the request is the document KMITL
+            # navigates by — not twelve for twelve payees.
             record._schedule_payment_todo(TO_BOOK_ACTIVITY, ACCOUNTING_MAKER_GROUP)
+        return True
+
+    def _try_hand_over_when_all_paid(self):
+        """Cross the Hand-over once every payee of this request has their money.
+
+        A request's payees can span several หัวจ่าย, so its vouchers go out in as
+        many e-payment files, and no two of those files need be the same officer's.
+        Nobody is therefore in a position to say "all of them are paid" on behalf of
+        the others — so nobody is asked to. Each officer closes the file they
+        handled, each closed file pays the vouchers it carried, and the request
+        crosses when the last of them lands. The officer who happens to be last
+        brings it across without having to know they were.
+
+        A voucher still at ``draft`` — added by hand and never confirmed for the
+        bank — holds the request here. That is intended: it has not been paid and
+        the accounting office has nothing to book for it. What says so is the
+        finance office's own Todo, which stays open, and จ่ายแล้ว n/m on the
+        request.
+        """
+        for record in self:
+            if record.state != "payment_authorized":
+                continue
+            active = record.payment_ids.filtered(
+                lambda payment: payment.state != "cancel"
+            )
+            if not active or active.filtered(
+                lambda payment: payment.finance_state != "paid"
+            ):
+                continue
+            record._hand_over()
         return True
 
     def action_submit_payments(self):

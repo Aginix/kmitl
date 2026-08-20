@@ -378,10 +378,22 @@
             </xpath>
 
             <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='product_uom_id']"
+                expr="//field[@name='line_ids']//tree/field[@name='product_uom_id'][@groups='uom.group_uom']"
                 position="attributes"
             >
-                <attribute name="invisible">0</attribute>
+                <attribute name="invisible">1</attribute>
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
+                position="after"
+            >
+                <field
+                    name="uom_text"
+                    required="1"
+                    attrs="{'readonly': [('parent.state', '!=', 'draft')]}"
+                />
             </xpath>
 
             <xpath

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    The constants KBANK issued to the institute, so an officer does not retype
+    them on every e-payment file.
+
+    One template: K-Cash Connect Plus is a direct credit product and the module
+    already refuses any beneficiary account that is not 10 digits, so there is
+    no other-bank variant to branch on.
+
+    ``kmitl`` is a placeholder, not a value. The Originator Code and the Sender
+    Name come from KBANK when the institute is onboarded and we do not have
+    them, and ``bank.payment.config.value`` is required so the line cannot ship
+    blank. Replace both in Finance > Settings > Bank Payment Templates before
+    the first real file — the Originator Code is 7 digits and the layout
+    zero-pads whatever it finds, so ``kmitl`` would go out as ``00kmitl``.
+
+    noupdate: those replacements, and any service type the treasury office
+    adjusts, have to survive ``-u``. That is also why this is XML rather than
+    CSV like the layout files next to it — a CSV row is re-imported on every
+    module update and would silently put ``kmitl`` back.
+-->
+<odoo noupdate="1">
+
+    <record id="payment_template_kbank_ccp" model="bank.payment.template">
+        <field name="name">KBANK K-Cash Connect Plus (โอนกสิกรไทย)</field>
+        <field name="bank">KASITHBK</field>
+    </record>
+    <record id="payment_template_kbank_ccp_company_id" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_kbank_ccp" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_kbank.field_bank_payment_export__kbank_company_id"
+        />
+        <field name="value">kmitl</field>
+    </record>
+    <record id="payment_template_kbank_ccp_sender_name" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_kbank_ccp" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_kbank.field_bank_payment_export__kbank_sender_name"
+        />
+        <field name="value">kmitl</field>
+    </record>
+    <!-- 04 - Goods & Services: an e-payment file carries vendor payments. -->
+    <record id="payment_template_kbank_ccp_service_type" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_kbank_ccp" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_kbank.field_bank_payment_export__kbank_service_type"
+        />
+        <field name="value">04</field>
+    </record>
+
+</odoo>

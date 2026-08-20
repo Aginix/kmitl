@@ -16,6 +16,7 @@
                     string="Create Purchase Order"
                     type="object"
                     class="oe_highlight"
+                    groups="purchase.group_purchase_user"
                     attrs="{'invisible': ['|', '|', ('use_purchase_order', '=', False), ('purchase_count', '&gt;', 0), ('state', 'not in', ['approved'])]}"
                 />
                 <button
