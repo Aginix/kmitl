@@ -400,8 +400,8 @@ msgstr ""
 #. module: disbursement_finance_kmitl
 #: code:addons/disbursement_finance_kmitl/models/account_payment.py:0
 #, python-format
-msgid "These payments are confirmed on their disbursement request, not one by one: %s."
-msgstr "ใบจ่ายเหล่านี้ยืนยันจ่ายสำเร็จที่ใบขอเบิก ไม่ใช่ยืนยันรายใบ: %s"
+msgid "These payments go out in an e-payment file, so they are confirmed by closing that file rather than one by one: %s."
+msgstr "ใบจ่ายเหล่านี้ออกไปในไฟล์ e-Payment จึงยืนยันด้วยการปิดไฟล์นั้น ไม่ใช่ยืนยันรายใบ: %s"
 
 #. module: disbursement_finance_kmitl
 #: model:mail.activity.type,name:disbursement_finance_kmitl.mail_activity_dr_to_book

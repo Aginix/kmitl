@@ -1,3 +1,4 @@
+import base64
 import logging
 
 from datetime import datetime
@@ -18,6 +19,16 @@ class BankPaymentExport(models.Model):
         states={"draft": [("readonly", False)]},
         domain="[('bank', '=', bank)]",
         tracking=True,
+    )
+    export_file_id = fields.Many2one(
+        comodel_name="ir.attachment",
+        string="Exported File",
+        readonly=True,
+        copy=False,
+        help="The very bytes that were handed to the bank. Kept because the file "
+        "cannot be reproduced: the layouts read today's date, and some banks "
+        "prepend a checksum over the body, so rendering the same record twice is "
+        "not guaranteed to give the same file.",
     )
 
     @api.onchange("bank")
@@ -260,3 +271,128 @@ class BankPaymentExport(models.Model):
         """
         self.ensure_one()
         return ""
+
+    # -------------------------------------------------------------------------
+    # The exported file is kept, not just downloaded
+    # -------------------------------------------------------------------------
+    def action_get_all_payments(self):
+        """Rebuild the file's rows from every payment that currently qualifies.
+
+        The base releases the rows *after* searching, which empties the file: the
+        domain matches ``export_status == 'draft'`` only, so the payments this file
+        already holds are filtered out of the result, and the unlink that follows
+        then drops them. Pressing the button a second time on a file of twenty rows
+        with two fresh candidates left two rows behind and released the twenty
+        without a word. Releasing first puts those twenty back at ``draft`` in time
+        for the search to find them again.
+        """
+        self.ensure_one()
+        self.export_line_ids.unlink()
+        payments = self.env["account.payment"].search(self._domain_payment_id())
+        if payments:
+            self.env["bank.payment.export.line"].create(
+                [
+                    {"payment_export_id": self.id, "payment_id": payment.id}
+                    for payment in payments
+                ]
+            )
+        return True
+
+    def _render_bank_payment_file(self):
+        """Return the file's bytes, encoded as the chosen layout requires.
+
+        Rendered through the report rather than by calling
+        ``_export_bank_payment_text_file`` directly, so the cp874 re-encode in
+        ``ir.actions.report._render_qweb_text`` stays the single place that knows
+        which code page a bank wants.
+        """
+        self.ensure_one()
+        content, _report_type = self.env["ir.actions.report"]._render_qweb_text(
+            self._get_view_report_text(), self.ids
+        )
+        return content
+
+    def _store_bank_payment_file(self):
+        """Render the file once and keep it as an attachment on the record."""
+        self.ensure_one()
+        content = self._render_bank_payment_file()
+        attachment = self.env["ir.attachment"].create(
+            {
+                "name": "{}.txt".format(self._get_report_base_filename()),
+                "datas": base64.b64encode(content),
+                "mimetype": "text/plain",
+                "res_model": self._name,
+                "res_id": self.id,
+            }
+        )
+        self.export_file_id = attachment
+        return attachment
+
+    def _action_download_export_file(self):
+        """Hand the stored bytes over, and let the form catch up.
+
+        Deliberately not ``target: 'self'``. The web client redirects for that and
+        returns, never calling the button's ``onClose`` — so the record on screen
+        keeps showing the state it had before the press, and the officer has to
+        reload the page to see that the file went out. Every other target reaches
+        the branch that does call it, which is what reloads the form. (The base
+        module got this for free by returning a report action: the report
+        downloader calls ``onClose`` itself.)
+
+        The URL answers with ``Content-Disposition: attachment``, so the window the
+        client opens downloads the file and closes rather than showing a page.
+        """
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": "/web/content/{}?download=true".format(self.export_file_id.id),
+            "target": "new",
+        }
+
+    def action_download_export_file(self):
+        """Hand out the file that was exported, unchanged."""
+        self.ensure_one()
+        if not self.export_file_id:
+            raise UserError(
+                _(
+                    "No file is kept for %s. It was exported before the file "
+                    "started being stored, so it can only be produced again by "
+                    "taking the record back to draft and exporting it afresh — "
+                    "which will not give the same bytes."
+                )
+                % self.display_name
+            )
+        return self._action_download_export_file()
+
+    def action_export_text_file(self):
+        """Keep the file, then hand it over.
+
+        The base prints the report and lets the browser own the only copy. What
+        went to the bank has to stay somewhere the office can look at it again,
+        and a failed download must not leave a record claiming it was exported
+        with nothing to show.
+        """
+        self.ensure_one()
+        self._store_bank_payment_file()
+        self.action_done()
+        return self._action_download_export_file()
+
+    def action_draft(self):
+        """Only a file that has not been exported may go back to draft.
+
+        The base writes the state with no guard at all, so a call from outside the
+        form could take an exported file back to ``draft`` while its payments stay
+        at ``exported`` — the file would then say it was never sent and the
+        vouchers that they were.
+        """
+        for record in self:
+            if record.state != "confirm":
+                raise UserError(
+                    _(
+                        "%s cannot be taken back to draft from its current state. "
+                        "Only a confirmed file that has not been exported yet may "
+                        "be reopened."
+                    )
+                    % record.display_name
+                )
+        return super().action_draft()

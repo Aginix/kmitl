@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="bank_payment_export_create_view_form" model="ir.ui.view">
+        <field name="name">bank.payment.export.create.form</field>
+        <field name="model">bank.payment.export.create</field>
+        <field name="arch" type="xml">
+            <form string="Create e-Payment File">
+                <div class="alert alert-info" role="alert">
+                    <span
+                    >One file debits one account, so the selected vouchers are split by paying account. Each row below is one file.</span>
+                </div>
+                <field name="line_ids" nolabel="1">
+                    <tree editable="bottom" create="false" delete="false">
+                        <field name="paying_account_id" />
+                        <field name="bank_id" />
+                        <field name="payment_count" />
+                        <field name="amount_total" sum="Total" />
+                        <field name="destination" />
+                        <!-- Offered per row rather than as a column modifier:
+                             column_invisible would hide the choice for every row
+                             as soon as one paying account had no draft file to
+                             join. -->
+                        <field
+                            name="payment_export_id"
+                            options="{'no_create': True}"
+                            attrs="{
+                                'readonly': [('destination', '!=', 'existing')],
+                                'required': [('destination', '=', 'existing')],
+                            }"
+                        />
+                        <field
+                            name="payment_export_count"
+                            attrs="{'invisible': [('destination', '!=', 'existing')]}"
+                        />
+                        <field
+                            name="payment_export_effective_date"
+                            attrs="{'invisible': [('destination', '!=', 'existing')]}"
+                        />
+                        <field name="available_export_ids" invisible="1" />
+                        <field name="currency_id" invisible="1" />
+                    </tree>
+                </field>
+                <footer>
+                    <button
+                        name="action_create"
+                        string="Create Files"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Finance",
-    "version": "16.0.4.3.1",
+    "version": "16.0.4.4.0",
     "category": "KMITL/Finance",
     "summary": "งานการเงิน KMITL: จ่ายเงิน, bank export, WHT, ทะเบียนคุมเช็ค, รายรับ/ใบเสร็จ",
     "license": "LGPL-3",
@@ -39,6 +39,9 @@
         "views/account_payment_list_views.xml",
         "views/account_move_views.xml",
         "views/bank_payment_export_views.xml",
+        "wizards/bank_payment_export_create_views.xml",
+        "wizards/bank_payment_export_confirm_views.xml",
+        "data/ir_actions_unbind.xml",
         "views/cheque_register_views.xml",
         "views/cheque_layout_views.xml",
         "views/account_journal_views.xml",

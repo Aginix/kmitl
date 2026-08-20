@@ -2,23 +2,61 @@
 # This file contains the translation of the following modules:
 # 	* l10n_th_bank_payment_export_format
 #
+# The "Help" page of the Bank Export Format form is deliberately left in
+# English. It documents the Python expression namespace a layout is written in
+# (rec, line, sub_line, idx_line, wht_cert, invoices, safe_eval semantics), and
+# its reader is whoever authors a layout against a bank's file specification —
+# which is written in English too. The screen is reachable only by a finance
+# manager, from Settings.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-08-19 00:00+0700\n"
+"POT-Creation-Date: 2026-08-18 00:00+0000\n"
+"PO-Revision-Date: 2026-08-18 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: l10n_th_bank_payment_export_format
+#: code:addons/l10n_th_bank_payment_export_format/models/bank_payment_export.py:0
+#, python-format
+msgid ""
+"%s cannot be taken back to draft from its current state. Only a confirmed "
+"file that has not been exported yet may be reopened."
+msgstr ""
+"%s ไม่สามารถนำกลับเป็นร่างจากสถานะปัจจุบันได้ "
+"นำกลับได้เฉพาะไฟล์ที่ยืนยันแล้วและยังไม่ได้ออกไฟล์"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__value_alignment
+msgid "Alignment"
+msgstr "การจัดชิด"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format__bank
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__bank_id
+msgid "Bank"
+msgstr "ธนาคาร"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model,name:l10n_th_bank_payment_export_format.model_bank_export_format
+#: model:ir.actions.act_window,name:l10n_th_bank_payment_export_format.action_bank_export_format_template
 #: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_payment_export__bank_export_format_id
+#: model:ir.ui.menu,name:l10n_th_bank_payment_export_format.menu_bank_export_format
+#: model:ir.ui.menu,name:l10n_th_bank_payment_export_format.menu_bank_export_format_template
 msgid "Bank Export Format"
 msgstr "รูปแบบไฟล์ธนาคาร"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model,name:l10n_th_bank_payment_export_format.model_bank_export_format_line
+msgid "Bank Export Format Line"
+msgstr "บรรทัดของรูปแบบไฟล์ธนาคาร"
 
 #. module: l10n_th_bank_payment_export_format
 #: code:addons/l10n_th_bank_payment_export_format/models/bank_payment_export.py:0
@@ -27,3 +65,207 @@ msgid ""
 "Bank export format '%(format)s' belongs to another bank, so it cannot be "
 "used on this file."
 msgstr "รูปแบบไฟล์ '%(format)s' เป็นของธนาคารอื่น จึงใช้กับไฟล์นี้ไม่ได้"
+
+#. module: l10n_th_bank_payment_export_format
+#: code:addons/l10n_th_bank_payment_export_format/models/bank_payment_export.py:0
+#, python-format
+msgid "Bank format not found."
+msgstr "ไม่พบรูปแบบไฟล์ธนาคาร"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__value_blank_space
+msgid "Blank Space"
+msgstr "อักขระเติมช่องว่าง"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,help:l10n_th_bank_payment_export_format.field_bank_export_format_line__value_blank_space
+msgid "Blank space for fill in value"
+msgstr "อักขระที่ใช้เติมให้ค่าเต็มความยาว"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,help:l10n_th_bank_payment_export_format.field_bank_export_format__encoding
+msgid ""
+"Byte encoding used when the text file is downloaded. Thai bank files are "
+"usually 'cp874' (TIS-620); keep 'utf-8' otherwise. The value must be a valid"
+" Python codec name."
+msgstr ""
+"การเข้ารหัสไบต์ที่ใช้เมื่อดาวน์โหลดไฟล์ ไฟล์ของธนาคารไทยมักใช้ 'cp874' "
+"(TIS-620) กรณีอื่นให้คงค่า 'utf-8' ค่านี้ต้องเป็นชื่อ codec ของ Python "
+"ที่ถูกต้อง"
+
+#. module: l10n_th_bank_payment_export_format
+#: model_terms:ir.actions.act_window,help:l10n_th_bank_payment_export_format.action_bank_export_format_template
+msgid "Click to create a Format Bank Export."
+msgstr "คลิกเพื่อสร้างรูปแบบไฟล์ธนาคาร"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__condition_line
+msgid "Condition Line"
+msgstr "เงื่อนไขของบรรทัด"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__name
+msgid "Description"
+msgstr "คำอธิบาย"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__display_type
+msgid "Display Type"
+msgstr "ชนิดการแสดง"
+
+#. module: l10n_th_bank_payment_export_format
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_format.view_bank_payment_export_form
+msgid "Download File Again"
+msgstr "ดาวน์โหลดไฟล์ซ้ำ"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_format.selection__bank_export_format_line__value_type__dynamic
+msgid "Dynamic"
+msgstr "ค่าคำนวณ"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format__encoding
+msgid "Encoding"
+msgstr "การเข้ารหัสอักขระ"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__end_line
+msgid "End Line"
+msgstr "จบบรรทัด"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format__export_format_ids
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_format.view_bank_export_format_form
+msgid "Export Format"
+msgstr "รูปแบบไฟล์"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_payment_export__export_file_id
+msgid "Exported File"
+msgstr "ไฟล์ที่ออกไปแล้ว"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_format.selection__bank_export_format_line__value_type__fixed
+msgid "Fixed"
+msgstr "ค่าคงที่"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__lenght_from
+msgid "From"
+msgstr "ตั้งแต่ตำแหน่ง"
+
+#. module: l10n_th_bank_payment_export_format
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_format.view_bank_export_format_form
+msgid "Group"
+msgstr "กลุ่ม"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_format.selection__bank_export_format_line__value_alignment__ljust
+msgid "Left Justify"
+msgstr "ชิดซ้าย"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__lenght
+msgid "Lenght"
+msgstr "ความยาว"
+
+#. module: l10n_th_bank_payment_export_format
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_format.view_bank_export_format_form
+msgid "Loop"
+msgstr "วนซ้ำ"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__match_group
+msgid "Match Group"
+msgstr "กลุ่มที่จับคู่"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format__name
+msgid "Name"
+msgstr "ชื่อ"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__need_loop
+msgid "Need Loop"
+msgstr "วนซ้ำ"
+
+#. module: l10n_th_bank_payment_export_format
+#: code:addons/l10n_th_bank_payment_export_format/models/bank_payment_export.py:0
+#, python-format
+msgid ""
+"No file is kept for %s. It was exported before the file started being "
+"stored, so it can only be produced again by taking the record back to draft "
+"and exporting it afresh — which will not give the same bytes."
+msgstr ""
+"ไม่มีไฟล์ที่เก็บไว้สำหรับ %s เพราะออกไฟล์ไปก่อนที่ระบบจะเริ่มเก็บไฟล์ "
+"หากต้องการไฟล์อีกครั้งต้องนำรายการกลับเป็นร่างแล้วออกไฟล์ใหม่ "
+"ซึ่งจะไม่ได้ไฟล์ที่เหมือนเดิม"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_format.selection__bank_export_format_line__display_type__line_note
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_format.view_bank_export_format_form
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_format.selection__bank_export_format_line__value_alignment__rjust
+msgid "Right Justify"
+msgstr "ชิดขวา"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_format.selection__bank_export_format_line__display_type__line_section
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_format.view_bank_export_format_form
+msgid "Section"
+msgstr "หัวข้อ"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__sub_loop
+msgid "Sub Loop"
+msgstr "วนซ้ำย่อย"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__sub_value_loop
+msgid "Sub Value Loop"
+msgstr "ค่าที่ใช้วนซ้ำย่อย"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,help:l10n_th_bank_payment_export_format.field_bank_payment_export__export_file_id
+msgid ""
+"The very bytes that were handed to the bank. Kept because the file cannot be"
+" reproduced: the layouts read today's date, and some banks prepend a "
+"checksum over the body, so rendering the same record twice is not guaranteed"
+" to give the same file."
+msgstr ""
+"ไฟล์ตัวจริงที่ส่งให้ธนาคาร เก็บไว้เพราะสร้างซ้ำให้เหมือนเดิมไม่ได้ "
+"รูปแบบไฟล์อ่านวันที่ปัจจุบัน และบางธนาคารใส่ checksum "
+"ของเนื้อไฟล์ไว้ข้างหน้า "
+"การสร้างไฟล์จากรายการเดิมสองครั้งจึงไม่รับประกันว่าจะได้ไฟล์เดียวกัน"
+
+#. module: l10n_th_bank_payment_export_format
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_format.view_bank_payment_export_form
+msgid ""
+"This replaces every row in the file with the payments that qualify right "
+"now. Continue?"
+msgstr ""
+"การกดนี้จะแทนที่ทุกแถวในไฟล์ด้วยใบสำคัญจ่ายที่เข้าเกณฑ์ในขณะนี้ "
+"ดำเนินการต่อหรือไม่?"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__lenght_to
+msgid "To"
+msgstr "ถึงตำแหน่ง"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__value
+msgid "Value"
+msgstr "ค่า"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__value_type
+msgid "Value Type"
+msgstr "ชนิดของค่า"
