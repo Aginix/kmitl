@@ -10,6 +10,11 @@ import { BudgetCommitmentInfoField } from "@budget/commitment_info/budget_commit
 // searching. This swaps in a rich optionTemplate for the dropdown itself,
 // batch-enriched by the same get_reservation_info() payload the selected-value
 // card (BudgetCommitmentInfoField) already uses.
+
+// Dimension rows too dense for the compact dropdown (still shown in the full
+// info card below the field once selected).
+const DROPDOWN_EXCLUDED_ROW_LABELS = ["กิจกรรม"];
+
 class BudgetCommitmentM2XAutocomplete extends Many2XAutocomplete {
     setup() {
         super.setup();
@@ -33,7 +38,12 @@ class BudgetCommitmentM2XAutocomplete extends Many2XAutocomplete {
             for (const o of options) {
                 const info = o.value && byId[o.value];
                 if (info) {
-                    o.commitmentInfo = info;
+                    o.commitmentInfo = {
+                        ...info,
+                        rows: info.rows.filter(
+                            (row) => !DROPDOWN_EXCLUDED_ROW_LABELS.includes(row.label)
+                        ),
+                    };
                     // Applied to the <li> — the scss uses it to undo the
                     // <a class="text-truncate"> single-line clamp.
                     o.classList = "o_bcm2o_item";
