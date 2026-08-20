@@ -17,7 +17,7 @@
                 name="implied_ids"
                 eval="[(6, 0, [
                 ref('purchase_request_kmitl.group_purchase_request_user_all'),
-                ref('purchase.group_purchase_user'),
+                ref('purchase_viewer.group_purchase_viewer'),
             ])]"
             />
         </record>
@@ -27,7 +27,7 @@
                 name="implied_ids"
                 eval="[(6, 0, [
                 ref('purchase_request_kmitl.group_purchase_request_user_all'),
-                ref('purchase.group_purchase_user'),
+                ref('purchase_viewer.group_purchase_viewer'),
             ])]"
             />
         </record>
@@ -61,7 +61,7 @@
                 name="implied_ids"
                 eval="[(6, 0, [
                 ref('purchase_request.group_purchase_request_user'),
-                ref('purchase.group_purchase_user'),
+                ref('purchase_viewer.group_purchase_viewer'),
                 ref('account.group_account_invoice'),
             ])]"
             />
