@@ -87,7 +87,24 @@ class PurchaseRequest(models.Model):
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
         tracking=True,
+        default=lambda self: self._default_account_fiscal_year_id(),
     )
+
+    @api.model
+    def _default_account_fiscal_year_id(self):
+        """ปีงบปัจจุบัน (ตามวันนี้) เป็นค่าตั้งต้น.
+
+        ทุก flow ด้านงบใช้ปีงบนี้อยู่แล้ว (จอง/หยิบใบจอง/ออกเลขที่ พจ.) การเว้นว่างทำให้
+        dropdown ใบจองที่กรองตามปีงบไม่ขึ้นรายการ และเลขที่ พจ. หล่นไปใช้ปีปฏิทินแทนปีงบ."""
+        today = fields.Date.context_today(self)
+        return self.env["account.fiscal.year"].search(
+            [
+                ("date_from", "<=", today),
+                ("date_to", ">=", today),
+                ("company_id", "in", [self.env.company.id, False]),
+            ],
+            limit=1,
+        )
     attachment_ids = fields.One2many(
         comodel_name="ir.attachment",
         inverse_name="res_id",
