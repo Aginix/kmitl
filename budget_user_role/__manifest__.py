@@ -11,6 +11,7 @@
         "disbursement",
         "procurement_plan",
         "account",
+        "purchase_user_role",
     ],
     "data": [
         "data/res_users_role.xml",

@@ -13,5 +13,11 @@
             ])]"
             />
         </record>
+        <record id="purchase_user_role.purchase_role_commitment" model="res.users.role">
+            <field
+                name="implied_ids"
+                eval="[(4, ref('budget.group_budget_commitment'))]"
+            />
+        </record>
     </data>
 </odoo>
