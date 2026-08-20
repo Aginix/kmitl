@@ -67,6 +67,7 @@
                     <group>
                         <group name="header" string="Header">
                             <field name="date"/>
+                            <field name="fiscal_year_be" readonly="1"/>
                             <field name="department_analytic_id"
                                    options="{'no_create': True}"/>
                             <field name="payment_method_id"/>

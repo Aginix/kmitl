@@ -46,6 +46,11 @@ class ReceiptKmitl(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
+    fiscal_year_be = fields.Char(
+        string="ปีงบประมาณ",
+        compute="_compute_fiscal_year_be",
+        store=True,
+    )
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Issuing Department",
@@ -153,6 +158,13 @@ class ReceiptKmitl(models.Model):
     def _compute_amount_total(self):
         for rec in self:
             rec.amount_total = sum(rec.line_ids.mapped("amount"))
+
+    @api.depends("date")
+    def _compute_fiscal_year_be(self):
+        for rec in self:
+            rec.fiscal_year_be = (
+                str(rec._get_fiscal_year_be(rec.date)) if rec.date else False
+            )
 
     @api.onchange("partner_id")
     def _onchange_partner_id(self):
