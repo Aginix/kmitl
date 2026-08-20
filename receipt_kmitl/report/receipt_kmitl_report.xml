@@ -146,7 +146,7 @@
                         <div>โดย / by</div>
                         <div style="margin-top: 40px;">............................................</div>
                         <div t-esc="o.user_id.name or ''"/>
-                        <div t-esc="o.department_id.display_name or ''"/>
+                        <div t-esc="o.department_analytic_id.display_name or ''"/>
                     </div>
                 </div>
             </div>

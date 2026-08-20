@@ -1,13 +1,11 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_payment_method_cashier,kmitl.payment.method cashier,model_kmitl_payment_method,group_receipt_kmitl_cashier,1,0,0,0
+access_receipt_kmitl_viewer,kmitl.receipt viewer,model_kmitl_receipt,group_receipt_kmitl_viewer,1,0,0,0
+access_receipt_kmitl_line_viewer,kmitl.receipt.line viewer,model_kmitl_receipt_line,group_receipt_kmitl_viewer,1,0,0,0
+access_receipt_remittance_viewer,kmitl.receipt.remittance viewer,model_kmitl_receipt_remittance,group_receipt_kmitl_viewer,1,0,0,0
+access_payment_method_viewer,kmitl.payment.method viewer,model_kmitl_payment_method,group_receipt_kmitl_viewer,1,0,0,0
+access_account_analytic_account_viewer,account.analytic.account viewer,analytic.model_account_analytic_account,group_receipt_kmitl_viewer,1,0,0,0
+access_account_account_viewer,account.account viewer,account.model_account_account,group_receipt_kmitl_viewer,1,0,0,0
+access_receipt_kmitl_user,kmitl.receipt user,model_kmitl_receipt,group_receipt_kmitl_user,1,1,1,1
+access_receipt_kmitl_line_user,kmitl.receipt.line user,model_kmitl_receipt_line,group_receipt_kmitl_user,1,1,1,1
+access_receipt_remittance_user,kmitl.receipt.remittance user,model_kmitl_receipt_remittance,group_receipt_kmitl_user,1,1,1,1
 access_payment_method_manager,kmitl.payment.method manager,model_kmitl_payment_method,group_receipt_kmitl_manager,1,1,1,1
-access_receipt_kmitl_cashier,kmitl.receipt cashier,model_kmitl_receipt,group_receipt_kmitl_cashier,1,1,1,1
-access_receipt_kmitl_central,kmitl.receipt central,model_kmitl_receipt,group_receipt_kmitl_central_finance,1,1,1,1
-access_receipt_kmitl_manager,kmitl.receipt manager,model_kmitl_receipt,group_receipt_kmitl_manager,1,1,1,1
-access_receipt_kmitl_line_cashier,kmitl.receipt.line cashier,model_kmitl_receipt_line,group_receipt_kmitl_cashier,1,1,1,1
-access_receipt_kmitl_line_central,kmitl.receipt.line central,model_kmitl_receipt_line,group_receipt_kmitl_central_finance,1,1,1,1
-access_receipt_kmitl_line_manager,kmitl.receipt.line manager,model_kmitl_receipt_line,group_receipt_kmitl_manager,1,1,1,1
-access_cash_deposit_cashier,kmitl.cash.deposit cashier,model_kmitl_cash_deposit,group_receipt_kmitl_cashier,1,1,1,1
-access_cash_deposit_central,kmitl.cash.deposit central,model_kmitl_cash_deposit,group_receipt_kmitl_central_finance,1,1,1,1
-access_cash_deposit_manager,kmitl.cash.deposit manager,model_kmitl_cash_deposit,group_receipt_kmitl_manager,1,1,1,1
-access_account_analytic_account_cashier,account.analytic.account cashier,analytic.model_account_analytic_account,group_receipt_kmitl_cashier,1,0,0,0

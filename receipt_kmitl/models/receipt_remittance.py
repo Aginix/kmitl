@@ -4,14 +4,14 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 
-class CashDeposit(models.Model):
-    _name = "kmitl.cash.deposit"
-    _description = "Cash Deposit Slip"
+class ReceiptRemittance(models.Model):
+    _name = "kmitl.receipt.remittance"
+    _description = "KMITL Receipt Remittance"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "date desc, id desc"
 
     name = fields.Char(
-        string="Deposit Number",
+        string="Remittance Number",
         required=True,
         readonly=True,
         copy=False,
@@ -22,7 +22,7 @@ class CashDeposit(models.Model):
         [
             ("draft", "Draft"),
             ("submitted", "Submitted"),
-            ("posted", "Posted"),
+            ("done", "Done"),
             ("cancelled", "Cancelled"),
         ],
         default="draft",
@@ -35,7 +35,7 @@ class CashDeposit(models.Model):
         default=fields.Date.context_today,
         tracking=True,
     )
-    department_id = fields.Many2one(
+    department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Department",
         required=True,
@@ -44,7 +44,7 @@ class CashDeposit(models.Model):
     )
     receipt_ids = fields.One2many(
         "kmitl.receipt",
-        "deposit_id",
+        "remittance_id",
         string="Receipts",
     )
     company_id = fields.Many2one(
@@ -65,8 +65,8 @@ class CashDeposit(models.Model):
     note = fields.Text()
     submitted_by = fields.Many2one("res.users", readonly=True, copy=False)
     submitted_date = fields.Datetime(readonly=True, copy=False)
-    posted_by = fields.Many2one("res.users", readonly=True, copy=False)
-    posted_date = fields.Datetime(readonly=True, copy=False)
+    done_by = fields.Many2one("res.users", readonly=True, copy=False)
+    done_date = fields.Datetime(readonly=True, copy=False)
 
     @api.depends("receipt_ids.amount_total")
     def _compute_amount_total(self):
@@ -75,21 +75,39 @@ class CashDeposit(models.Model):
 
     def _get_sequence(self):
         self.ensure_one()
-        return self.env["kmitl.receipt"]._get_or_create_dept_fy_sequence(
-            self.department_id, self.date, "kmitl.cash.deposit", "Cash Deposit", "CD"
-        )
+        Receipt = self.env["kmitl.receipt"]
+        fy_be = Receipt._get_fiscal_year_be(self.date)
+        seq_code = "kmitl.receipt.remittance.%s" % fy_be
+        IrSeq = self.env["ir.sequence"].sudo()
+        seq = IrSeq.search([("code", "=", seq_code)], limit=1)
+        if not seq:
+            seq = IrSeq.create(
+                {
+                    "name": "Receipt Remittance FY%s" % fy_be,
+                    "code": seq_code,
+                    "prefix": "RM/%s/" % fy_be,
+                    "padding": 4,
+                    "company_id": False,
+                }
+            )
+        return seq
 
     def action_pull_pending_receipts(self):
-        """Bundle the department's confirmed receipts not yet in any deposit."""
+        """Bundle confirmed, unremitted receipts from the department's whole
+        subtree (the remittance department may be a parent/rollup unit)."""
         for rec in self:
             if rec.state != "draft":
-                raise UserError(_("Can only pull receipts on draft deposits."))
+                raise UserError(_("Can only pull receipts on draft remittances."))
             receipts = self.env["kmitl.receipt"].search(
                 [
                     ("company_id", "=", rec.company_id.id),
-                    ("department_id", "=", rec.department_id.id),
+                    (
+                        "department_analytic_id",
+                        "child_of",
+                        rec.department_analytic_id.id,
+                    ),
                     ("state", "=", "confirmed"),
-                    ("deposit_id", "=", False),
+                    ("remittance_id", "=", False),
                     ("date", "<=", rec.date),
                 ]
             )
@@ -100,10 +118,10 @@ class CashDeposit(models.Model):
             rec.write({"receipt_ids": [(6, 0, receipts.ids)]})
 
     def action_submit(self):
-        """Department submits the deposit slip to central finance."""
+        """Department submits the remittance to central treasury."""
         for rec in self:
             if rec.state != "draft":
-                raise UserError(_("Only draft deposits can be submitted."))
+                raise UserError(_("Only draft remittances can be submitted."))
             if not rec.receipt_ids:
                 raise ValidationError(_("Add at least one receipt before submitting."))
             for receipt in rec.receipt_ids:
@@ -111,9 +129,14 @@ class CashDeposit(models.Model):
                     raise ValidationError(
                         _("Receipt %s must be confirmed.") % receipt.name
                     )
-                if receipt.department_id != rec.department_id:
+                if not self.env["account.analytic.account"].search_count(
+                    [
+                        ("id", "=", receipt.department_analytic_id.id),
+                        ("id", "child_of", rec.department_analytic_id.id),
+                    ]
+                ):
                     raise ValidationError(
-                        _("Receipt %s belongs to a different department.")
+                        _("Receipt %s does not belong to this department's subtree.")
                         % receipt.name
                     )
                 if receipt.company_id != rec.company_id:
@@ -123,9 +146,10 @@ class CashDeposit(models.Model):
                     )
                 if receipt.currency_id != rec.currency_id:
                     raise ValidationError(
-                        _("Receipt %s uses a different currency than the deposit.")
-                        % receipt.name
+                        _("Receipt %s uses a different currency than the "
+                          "remittance.") % receipt.name
                     )
+            rec.date = fields.Date.context_today(rec)
             if rec.name == "/" or not rec.name:
                 rec.name = rec._get_sequence().next_by_id()
             rec.write(
@@ -136,12 +160,12 @@ class CashDeposit(models.Model):
                 }
             )
 
-    def action_post(self):
-        """Central finance reviews and posts: every receipt in the batch gets
+    def action_done(self):
+        """Central treasury reviews and posts: every remaining receipt gets
         its own journal entry (Dr payment-method account / Cr income)."""
         for rec in self:
             if rec.state != "submitted":
-                raise UserError(_("Only submitted deposits can be posted."))
+                raise UserError(_("Only submitted remittances can be posted."))
             for receipt in rec.receipt_ids:
                 if receipt.state != "confirmed":
                     raise ValidationError(
@@ -150,22 +174,23 @@ class CashDeposit(models.Model):
             rec.receipt_ids.action_post()
             rec.write(
                 {
-                    "state": "posted",
-                    "posted_by": self.env.user.id,
-                    "posted_date": fields.Datetime.now(),
+                    "state": "done",
+                    "done_by": self.env.user.id,
+                    "done_date": fields.Datetime.now(),
                 }
             )
 
     def action_cancel(self):
         for rec in self:
-            if rec.state == "posted":
-                raise UserError(_("Posted deposits cannot be cancelled."))
+            if rec.state == "done":
+                raise UserError(_("Done remittances cannot be cancelled."))
+            rec.receipt_ids.write({"remittance_id": False})
             rec.state = "cancelled"
 
     def action_draft(self):
         for rec in self:
-            if rec.state not in ("submitted", "cancelled"):
-                raise UserError(_("Only submitted or cancelled deposits can reset."))
+            if rec.state != "cancelled":
+                raise UserError(_("Only cancelled remittances can reset to draft."))
             rec.write(
                 {
                     "state": "draft",
@@ -176,6 +201,6 @@ class CashDeposit(models.Model):
 
     def unlink(self):
         for rec in self:
-            if rec.state == "posted":
-                raise UserError(_("Posted deposits cannot be deleted."))
+            if rec.state == "done":
+                raise UserError(_("Done remittances cannot be deleted."))
         return super().unlink()

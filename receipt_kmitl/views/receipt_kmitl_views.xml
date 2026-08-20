@@ -9,12 +9,12 @@
                   decoration-success="state == 'posted'">
                 <field name="name"/>
                 <field name="date"/>
-                <field name="department_id"/>
+                <field name="department_analytic_id"/>
                 <field name="partner_id"/>
                 <field name="payment_method_id"/>
                 <field name="amount_total" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
-                <field name="deposit_id" optional="show"/>
+                <field name="remittance_id" optional="show"/>
                 <field name="state" widget="badge"
                        decoration-info="state == 'confirmed'"
                        decoration-success="state == 'posted'"
@@ -33,13 +33,19 @@
                             type="object"
                             string="Confirm"
                             class="btn-primary"
-                            states="draft"/>
+                            states="draft"
+                            groups="receipt_kmitl.group_receipt_kmitl_user"/>
                     <button name="action_post"
                             type="object"
                             string="Post"
                             class="btn-primary"
                             states="confirmed"
-                            groups="receipt_kmitl.group_receipt_kmitl_central_finance"/>
+                            groups="receipt_kmitl.group_receipt_kmitl_treasury_officer"/>
+                    <button name="action_correct"
+                            type="object"
+                            string="แก้ไขใบเสร็จ"
+                            attrs="{'invisible': ['|', ('state', '!=', 'confirmed'), ('remittance_id', '!=', False)]}"
+                            groups="receipt_kmitl.group_receipt_kmitl_user"/>
                     <button name="action_cancel"
                             type="object"
                             string="Cancel"
@@ -60,7 +66,7 @@
                     <group>
                         <group name="header" string="Header">
                             <field name="date"/>
-                            <field name="department_id"
+                            <field name="department_analytic_id"
                                    options="{'no_create': True}"/>
                             <field name="payment_method_id"/>
                             <field name="user_id"/>
@@ -88,6 +94,8 @@
                                     <field name="fund_analytic_id" optional="show"/>
                                     <field name="source_analytic_id" optional="show"/>
                                     <field name="activity_analytic_id" optional="show"/>
+                                    <field name="kmitl_project_analytic_id" optional="hide"/>
+                                    <field name="procurement_plan_analytic_id" optional="hide"/>
                                     <field name="analytic_distribution"
                                            widget="analytic_distribution"
                                            optional="hide"/>
@@ -103,10 +111,11 @@
                             <field name="note"/>
                         </page>
                         <page string="Accounting" name="accounting"
-                              attrs="{'invisible': ['&amp;', ('move_id', '=', False), ('deposit_id', '=', False)]}">
+                              groups="receipt_kmitl.group_receipt_kmitl_treasury_officer"
+                              attrs="{'invisible': ['&amp;', ('move_id', '=', False), ('remittance_id', '=', False)]}">
                             <group>
                                 <field name="move_id" readonly="1"/>
-                                <field name="deposit_id" readonly="1"/>
+                                <field name="remittance_id" readonly="1"/>
                             </group>
                         </page>
                     </notebook>
@@ -127,7 +136,7 @@
             <search>
                 <field name="name"/>
                 <field name="partner_id"/>
-                <field name="department_id"/>
+                <field name="department_analytic_id"/>
                 <field name="customer_name"/>
                 <field name="payment_method_id"/>
                 <separator/>
@@ -136,10 +145,10 @@
                 <filter string="Posted" name="posted" domain="[('state','=','posted')]"/>
                 <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
                 <separator/>
-                <filter string="Pending Deposit" name="pending_deposit"
-                        domain="[('state','=','confirmed'),('deposit_id','=',False)]"/>
+                <filter string="Pending Remittance" name="pending_remittance"
+                        domain="[('state','=','confirmed'),('remittance_id','=',False)]"/>
                 <group expand="0" name="group_by" string="Group By">
-                    <filter string="Department" name="group_department" context="{'group_by':'department_id'}"/>
+                    <filter string="Department" name="group_department" context="{'group_by':'department_analytic_id'}"/>
                     <filter string="State" name="group_state" context="{'group_by':'state'}"/>
                     <filter string="Date" name="group_date" context="{'group_by':'date'}"/>
                     <filter string="Payment Method" name="group_method" context="{'group_by':'payment_method_id'}"/>

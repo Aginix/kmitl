@@ -72,3 +72,42 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
         receipt.action_post()
         with self.assertRaises(UserError):
             receipt.unlink()
+
+    def test_line_analytic_mixin_both_directions(self):
+        receipt = self._make_receipt()
+        line = receipt.line_ids[0]
+
+        # distribution -> fields
+        line.analytic_distribution = {str(self.dept_a.id): 100.0}
+        self.assertEqual(line.department_analytic_id, self.dept_a)
+
+        # field -> distribution
+        line.department_analytic_id = self.dept_b
+        self.assertEqual(
+            line.analytic_distribution, {str(self.dept_b.id): 100.0}
+        )
+
+    def test_action_correct_reopens_detached_receipt(self):
+        receipt = self._make_receipt()
+        receipt.action_confirm()
+        name = receipt.name
+
+        receipt.action_correct()
+        self.assertEqual(receipt.state, "draft")
+        self.assertEqual(receipt.name, name)
+
+        receipt.action_confirm()
+        self.assertEqual(receipt.name, name)
+
+    def test_action_correct_blocked_while_remitted(self):
+        receipt = self._make_receipt()
+        receipt.action_confirm()
+        remittance = self.env["kmitl.receipt.remittance"].create(
+            {
+                "department_analytic_id": self.dept_a.id,
+                "receipt_ids": [(6, 0, [receipt.id])],
+            }
+        )
+        self.assertTrue(remittance)
+        with self.assertRaises(UserError):
+            receipt.action_correct()

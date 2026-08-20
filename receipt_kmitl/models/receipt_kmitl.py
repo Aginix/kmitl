@@ -46,7 +46,7 @@ class ReceiptKmitl(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    department_id = fields.Many2one(
+    department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Issuing Department",
         required=True,
@@ -119,9 +119,9 @@ class ReceiptKmitl(models.Model):
         readonly=True,
         copy=False,
     )
-    deposit_id = fields.Many2one(
-        "kmitl.cash.deposit",
-        string="Cash Deposit",
+    remittance_id = fields.Many2one(
+        "kmitl.receipt.remittance",
+        string="Receipt Remittance",
         readonly=True,
         copy=False,
     )
@@ -251,7 +251,7 @@ class ReceiptKmitl(models.Model):
             if not rec.customer_name and rec.partner_id:
                 rec._sync_customer_snapshot()
             if rec.name == "/" or not rec.name:
-                seq = rec._get_receipt_sequence(rec.department_id, rec.date)
+                seq = rec._get_receipt_sequence(rec.department_analytic_id, rec.date)
                 rec.name = seq.next_by_id()
             rec.state = "confirmed"
         return True
@@ -269,6 +269,33 @@ class ReceiptKmitl(models.Model):
             rec.state = "posted"
         return True
 
+    def _prepare_debit_line_vals(self):
+        """Dr line on the payment-method account for the receipt total."""
+        self.ensure_one()
+        method = self.payment_method_id
+        return {
+            "name": _("Receipt %s") % self.name,
+            "account_id": method.account_id.id,
+            "debit": self.amount_total,
+            "credit": 0.0,
+            "partner_id": self.partner_id.id,
+            "currency_id": self.currency_id.id,
+        }
+
+    def _prepare_move_line_vals(self, line):
+        """Cr line for a single receipt line. Override point for add-ons
+        (e.g. Operating Unit) that need to stamp extra fields on JE lines."""
+        self.ensure_one()
+        return {
+            "name": line.name or self.name,
+            "account_id": line.account_id.id,
+            "debit": 0.0,
+            "credit": line.amount,
+            "partner_id": self.partner_id.id,
+            "currency_id": self.currency_id.id,
+            "analytic_distribution": line.analytic_distribution,
+        }
+
     def _create_move(self):
         self.ensure_one()
         method = self.payment_method_id
@@ -276,36 +303,9 @@ class ReceiptKmitl(models.Model):
             raise UserError(
                 _("Payment method '%s' has no debit account.") % method.name
             )
-        line_vals = [
-            (
-                0,
-                0,
-                {
-                    "name": _("Receipt %s") % self.name,
-                    "account_id": method.account_id.id,
-                    "debit": self.amount_total,
-                    "credit": 0.0,
-                    "partner_id": self.partner_id.id,
-                    "currency_id": self.currency_id.id,
-                },
-            )
-        ]
+        line_vals = [(0, 0, self._prepare_debit_line_vals())]
         for line in self.line_ids:
-            line_vals.append(
-                (
-                    0,
-                    0,
-                    {
-                        "name": line.name or self.name,
-                        "account_id": line.account_id.id,
-                        "debit": 0.0,
-                        "credit": line.amount,
-                        "partner_id": self.partner_id.id,
-                        "currency_id": self.currency_id.id,
-                        "analytic_distribution": line.analytic_distribution,
-                    },
-                )
-            )
+            line_vals.append((0, 0, self._prepare_move_line_vals(line)))
         move = self.env["account.move"].create(
             {
                 "ref": self.name,
@@ -325,10 +325,10 @@ class ReceiptKmitl(models.Model):
                     _("Posted receipts cannot be cancelled. Use a reversal/credit "
                       "note from Accounting.")
                 )
-            if rec.deposit_id:
+            if rec.remittance_id:
                 raise UserError(
-                    _("Receipt %s is in cash deposit %s; remove it from the deposit "
-                      "first.") % (rec.name, rec.deposit_id.display_name)
+                    _("Receipt %s is in remittance %s; detach it from the "
+                      "remittance first.") % (rec.name, rec.remittance_id.display_name)
                 )
             rec.state = "cancelled"
         return True
@@ -338,6 +338,36 @@ class ReceiptKmitl(models.Model):
             if rec.state != "cancelled":
                 raise UserError(_("Only cancelled receipts can be reset to draft."))
             rec.state = "draft"
+        return True
+
+    def action_correct(self):
+        """One-click "แก้ไขใบเสร็จ": reopen a detached confirmed receipt for
+        editing (cancel then draft in one step) without touching its number,
+        so it can be re-confirmed and pulled into a later remittance."""
+        for rec in self:
+            if rec.state != "confirmed" or rec.remittance_id:
+                raise UserError(
+                    _("Only a confirmed, unremitted receipt can be corrected.")
+                )
+            rec.action_cancel()
+            rec.action_draft()
+        return True
+
+    def action_detach(self):
+        """Per-row action in the remittance's receipts tree: release this
+        receipt back to the unremitted confirmed pool without disturbing the
+        rest of the remittance."""
+        for rec in self:
+            if not rec.remittance_id:
+                raise UserError(_("This receipt is not in any remittance."))
+            remittance = rec.remittance_id
+            rec.remittance_id = False
+            remittance.message_post(
+                body=_("Receipt %s detached from this remittance.") % rec.name
+            )
+            rec.message_post(
+                body=_("Detached from remittance %s.") % remittance.name
+            )
         return True
 
     def unlink(self):
