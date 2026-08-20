@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="group_kmitl_project_viewer" model="res.groups">
+            <field name="name">Viewer</field>
+            <field name="category_id" ref="kmitl_project.module_category_kmitl_project"/>
+        </record>
+
+        <record id="kmitl_project.group_kmitl_project_user" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_kmitl_project_viewer'))]"/>
+        </record>
+    </data>
+</odoo>

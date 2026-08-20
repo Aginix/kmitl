@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Grant menu visibility to the viewer group -->
+    <record id="procurement_plan.procurement_plan_root_menu" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('procurement_plan.group_procurement_plan_user')), (4, ref('group_procurement_plan_viewer'))]"/>
+    </record>
+</odoo>
