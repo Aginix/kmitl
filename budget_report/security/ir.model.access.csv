@@ -1,2 +1,3 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_budget_report_summary_user,budget_report_summary_user,model_budget_report_summary,,1,1,1,1
+access_budget_report_summary_user,budget_report_summary_user,model_budget_report_summary,budget.group_budget_user,1,1,1,1
+access_budget_report_summary_viewer,budget_report_summary_viewer,model_budget_report_summary,budget.group_budget_viewer,1,0,0,0
