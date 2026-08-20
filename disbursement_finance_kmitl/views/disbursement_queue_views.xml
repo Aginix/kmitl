@@ -33,21 +33,55 @@
         sequence="23"
         groups="accounting_kmitl.group_accounting_kmitl_user"/>
 
-    <!-- Queue menus under the Disbursement app root -->
+    <!-- Round 2 is the treasury office's, so both its screens live in the Finance
+         app. The audit is a clerk's step in the paying run, so it sits with the
+         rest of that run under Payment Out; the authorisation is an approver's,
+         so it gets its own heading. Round 1 (ผอ.กองคลัง then the rector's
+         delegate) approves the *request* and stays in the Disbursement app —
+         see finance_kmitl/docs/adr/0005. -->
+
+    <!-- Neither round-2 group implies a finance-office group: an auditor holds no
+         rights on a payment voucher and an authorizer holds none on the books, and
+         neither should gain any by being given a screen. But the Finance app and
+         its Payment Out branch are gated on those finance groups, so without this
+         the two would be shown a door inside a room they cannot enter. The groups
+         are added rather than set (4, not 6) so the finance groups survive; note
+         that finance_kmitl's own menuitem sets the whole list, so upgrading it
+         alone drops these two until this module is upgraded too. -->
+    <record id="finance_kmitl.menu_payment_root" model="ir.ui.menu">
+        <field
+            name="groups_id"
+            eval="[(4, ref('disbursement_finance_kmitl.group_disbursement_payment_auditor')), (4, ref('disbursement_finance_kmitl.group_disbursement_payment_authorizer'))]"
+        />
+    </record>
+    <record id="finance_kmitl.menu_finance_payment_out" model="ir.ui.menu">
+        <field
+            name="groups_id"
+            eval="[(4, ref('disbursement_finance_kmitl.group_disbursement_payment_auditor'))]"
+        />
+    </record>
+
     <menuitem
         id="menu_dr_audit_queue"
         name="ตรวจสอบการเบิกจ่าย"
-        parent="disbursement.menu_disbursement_root"
+        parent="finance_kmitl.menu_finance_payment_out"
         action="action_dr_audit_queue"
         sequence="20"
         groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"/>
 
     <menuitem
+        id="menu_finance_approver"
+        name="ผู้อนุมัติ"
+        parent="finance_kmitl.menu_payment_root"
+        sequence="30"
+        groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"/>
+
+    <menuitem
         id="menu_dr_authorize_queue"
         name="อนุมัติเบิกจ่าย"
-        parent="disbursement.menu_disbursement_root"
+        parent="menu_finance_approver"
         action="action_dr_authorize_queue"
-        sequence="30"
+        sequence="10"
         groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"/>
 
 </odoo>

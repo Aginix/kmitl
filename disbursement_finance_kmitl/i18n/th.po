@@ -91,6 +91,21 @@ msgid "Authorized for Disbursement"
 msgstr "อนุมัติเบิกจ่ายแล้ว"
 
 #. module: disbursement_finance_kmitl
+#: model:ir.actions.act_window,name:disbursement_finance_kmitl.action_disbursement_payment_authorized
+msgid "Authorized for Payment"
+msgstr "รายการที่อนุมัติแล้ว"
+
+#. module: disbursement_finance_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_search_inherit_finance
+msgid "Audited by Me"
+msgstr "ที่ฉันตรวจสอบ"
+
+#. module: disbursement_finance_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_search_inherit_finance
+msgid "Authorized by Me"
+msgstr "ที่ฉันอนุมัติ"
+
+#. module: disbursement_finance_kmitl
 #: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_auto_match
 #: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_payment_line__allowed_paying_account_ids
 msgid "Auto-match by Payee's Bank"
@@ -330,6 +345,26 @@ msgid "Payment Audited"
 msgstr "ตรวจสอบการเบิกจ่ายแล้ว"
 
 #. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_audit_date
+msgid "Payment Audited On"
+msgstr "วันที่ตรวจสอบการเบิกจ่าย"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_auditor_id
+msgid "Payment Auditor"
+msgstr "ผู้ตรวจสอบการเบิกจ่าย"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_authorize_date
+msgid "Payment Authorized On"
+msgstr "วันที่อนุมัติเบิกจ่าย"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_authorizer_id
+msgid "Payment Authorizer"
+msgstr "ผู้อนุมัติเบิกจ่าย"
+
+#. module: disbursement_finance_kmitl
 #: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_count
 msgid "Payment Count"
 msgstr "จำนวนใบจ่ายเงิน"
@@ -545,5 +580,32 @@ msgstr ""
 
 #. module: disbursement_finance_kmitl
 #: model:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_request_finance
-msgid "ไม่มีใบขอเบิกที่รอทำการจ่ายเงิน"
+msgid "ยังไม่มีใบขอเบิกที่ตั้งหนี้แล้ว"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_request_finance
+msgid "ใบขอเบิกจะมาปรากฏที่นี่เมื่อบัญชีตั้งหนี้เสร็จ และอยู่ต่อไปตลอดจนล้างหนี้"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_payment_authorized
+msgid "ยังไม่มีใบขอเบิกที่อนุมัติเบิกจ่ายแล้ว"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_payment_authorized
+msgid ""
+"รายการนี้เก็บประวัติใบขอเบิกที่ผ่านการอนุมัติเบิกจ่าย "
+"และอยู่ต่อไปหลังจ่ายเงินและล้างหนี้แล้ว"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model:ir.ui.menu,name:disbursement_finance_kmitl.menu_finance_approver
+msgid "ผู้อนุมัติ"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model:ir.ui.menu,name:disbursement_finance_kmitl.menu_finance_payment_authorized
+msgid "รายการที่อนุมัติแล้ว"
 msgstr ""
