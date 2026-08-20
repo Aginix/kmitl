@@ -15,6 +15,7 @@
         "purchase_request_sarabun",
         "purchase_request_egp",
         "budget_role",
+        "purchase_user_role",
     ],
     "data": [
         "data/mail_activity_type.xml",

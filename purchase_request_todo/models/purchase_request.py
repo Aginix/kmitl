@@ -45,7 +45,7 @@ class PurchaseRequest(models.Model):
         the recipient sees which request landed in their inbox."""
         self.ensure_one()
         return _(
-            "ท่านได้รับ แบบคำขอซื้อขอจ้าง (พ.1) เลขที่ %s "
+            "ท่านได้รับ แบบขอให้จัดหา (พ.1) เลขที่ %s "
             "เพื่อดำเนินการ จองเงินงบประมาณ"
         ) % (self.name or "")
 
@@ -82,7 +82,7 @@ class PurchaseRequest(models.Model):
     def _endorsement_letter_todo_summary(self):
         self.ensure_one()
         return _(
-            "ท่านได้รับ แบบคำขอซื้อขอจ้าง (พ.1) เลขที่ %s "
+            "ท่านได้รับ แบบขอให้จัดหา (พ.1) เลขที่ %s "
             "เพื่อดำเนินการ สร้างหนังสือขอความเห็นชอบให้จัดหา"
         ) % (self.name or "")
 
@@ -112,7 +112,7 @@ class PurchaseRequest(models.Model):
     def _awaiting_signer_todo_summary(self):
         self.ensure_one()
         return _(
-            "แบบคำขอซื้อขอจ้าง (พ.1) เลขที่ %s "
+            "แบบขอให้จัดหา (พ.1) เลขที่ %s "
             "รอท่านพิจารณาลงนามให้ความเห็นชอบ"
         ) % (self.name or "")
 
@@ -142,13 +142,13 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
         if self.is_egp:
             return _(
-                "แบบคำขอซื้อขอจ้าง (พ.1) เลขที่ %s "
+                "แบบขอให้จัดหา (พ.1) เลขที่ %s "
                 "ได้รับความเห็นชอบให้ดำเนินการจัดหาแล้ว "
                 "กรุณาตรวจสอบเพื่อ บันทึกเลขที่โครงการจากระบบ EGP "
                 "และบันทึกข้อมูลสัญญา/ใบสั่งซื้อ/จ้างภายในระบบ"
             ) % (self.name or "")
         return _(
-            "แบบคำขอซื้อขอจ้าง (พ.1) เลขที่ %s "
+            "แบบขอให้จัดหา (พ.1) เลขที่ %s "
             "ได้รับความเห็นชอบให้ดำเนินการจัดหาแล้ว "
             "กรุณาตรวจสอบเพื่อจัดทำ แบบรายงานขอให้จัดซื้อจัดจ้าง (พจ.1)"
         ) % (self.name or "")
@@ -156,7 +156,7 @@ class PurchaseRequest(models.Model):
     def _schedule_endorsement_approved_todo(self):
         """Route to the จองงบประมาณ role of the พ.1's operating unit; fall
         back to ``assigned_to`` when the unit or role is unknown."""
-        role = self.env.ref(BUDGET_COMMITMENT_ROLE, raise_if_not_found=False)
+        role = self.env.ref("purchase_user_role.purchase_role_procurement", raise_if_not_found=False)
         for rec in self:
             summary = rec._endorsement_approved_todo_summary()
             if role and rec.operating_unit_id:
