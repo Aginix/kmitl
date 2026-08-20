@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- ผู้ใช้งานทั่วไป — KMITL general user (internal + purchase request + sarabun) -->
+        <record id="role_general_user" model="res.users.role">
+            <field name="name">ผู้ใช้งานทั่วไป</field>
+            <field
+                name="implied_ids"
+                eval="[
+                    (4, ref('base.group_user')),
+                    (4, ref('purchase_request.group_purchase_request_user')),
+                    (4, ref('agx_sarabun.group_sarabun_user')),
+                ]"
+            />
+        </record>
+
+    </data>
+</odoo>
