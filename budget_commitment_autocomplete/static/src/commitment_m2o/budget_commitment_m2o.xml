@@ -12,8 +12,6 @@
                     <strong t-esc="option.commitmentInfo.name"/>
                     <span t-if="option.commitmentInfo.title" class="text-truncate"
                         t-esc="option.commitmentInfo.title"/>
-                    <span class="badge rounded-pill bg-info text-dark ms-auto"
-                        t-esc="option.commitmentInfo.state_label"/>
                 </div>
                 <div class="o_bcm2o_rows">
                     <span t-foreach="option.commitmentInfo.rows" t-as="row" t-key="row_index"
