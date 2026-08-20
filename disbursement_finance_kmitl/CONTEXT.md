@@ -178,6 +178,14 @@ overwrite the account the person just picked.
 - **One e-payment file debits one account.** The paying account is chosen on the bank
   payment export first, and the payments that can be picked into it are narrowed to the
   ones paid from it — a DR whose payees span four paying accounts produces four files.
+- **Everything in the payment phase leads back to the ใบขอเบิก.** The request is the
+  document KMITL navigates by, so the voucher, its journal entry and the e-payment file
+  each carry a trail back to it. The file's trail is computed rather than stored
+  (`bank.payment.export.disbursement_request_ids`, from
+  `export_line_ids.payment_id.disbursement_request_id`): the relation is many-to-many in
+  both directions — a file spans several requests, a request spans several files — and
+  nothing would keep a stored copy honest. It names the request only when there is
+  exactly one, and the per-row column is what answers it for a file carrying several.
 
 ## System note
 

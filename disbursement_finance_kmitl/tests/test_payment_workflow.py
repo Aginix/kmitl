@@ -757,6 +757,59 @@ class TestPaymentWorkflow(TransactionCase):
         self.assertEqual(payment.disbursement_request_name, request.name)
         self.assertEqual(move.payment_disbursement_request_name, request.name)
 
+    def _make_export(self, payments, paying_account=None):
+        return self.env["bank.payment.export"].create(
+            {
+                "paying_account_id": (paying_account or self.ktb_account).id,
+                "effective_date": fields.Date.add(
+                    fields.Date.context_today(self.env["bank.payment.export"]), days=1
+                ),
+                "export_line_ids": [
+                    (0, 0, {"payment_id": payment.id}) for payment in payments
+                ],
+            }
+        )
+
+    def test_an_epayment_file_leads_back_to_the_request_it_pays(self):
+        request = self._authorized_with_payments(self.ktb_account)
+        export = self._make_export(request.payment_ids)
+        self.assertEqual(export.disbursement_request_ids, request)
+        self.assertEqual(export.disbursement_request_count, 1)
+        # Named, because there is exactly one to name.
+        self.assertEqual(export.disbursement_request_name, request.name)
+        action = export.action_view_disbursement_requests()
+        self.assertEqual(action["res_id"], request.id)
+        self.assertEqual(action["view_mode"], "form")
+        # And on the row itself, which is where a file carrying several says
+        # which payee came from which.
+        self.assertEqual(export.export_line_ids.disbursement_request_id, request)
+
+    def test_a_file_spanning_two_requests_names_neither(self):
+        first = self._authorized_with_payments(self.ktb_account)
+        second = self._authorized_with_payments(self.ktb_account)
+        export = self._make_export(first.payment_ids | second.payment_ids)
+        self.assertEqual(export.disbursement_request_ids, first | second)
+        self.assertEqual(export.disbursement_request_count, 2)
+        self.assertFalse(export.disbursement_request_name)
+        action = export.action_view_disbursement_requests()
+        self.assertEqual(action["view_mode"], "tree,form")
+        self.assertEqual(set(action["domain"][0][2]), set((first | second).ids))
+
+    def test_a_rejected_row_still_leads_back_to_its_request(self):
+        """A payee the bank could not credit is the trail's best question.
+
+        The row was released and its voucher may already be in another file, but
+        this file did carry it — so it stays in the count rather than vanishing
+        from the one place someone would go looking.
+        """
+        request = self._authorized_with_payments(self.ktb_account)
+        export = self._make_export(request.payment_ids)
+        export.action_confirm()
+        export.action_done()
+        export.export_line_ids.action_reject()
+        self.assertEqual(export.export_line_ids.state, "reject")
+        self.assertEqual(export.disbursement_request_ids, request)
+
     # ------------------------------------------------------------------
     # Withholding tax is dated from the e-payment file (ADR-0006)
     # ------------------------------------------------------------------
