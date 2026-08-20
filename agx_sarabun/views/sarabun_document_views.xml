@@ -99,6 +99,7 @@
                             <!-- เล่มทะเบียน — which of the unit's registers issues the
                                  number (ADR-0012). Prefilled from the unit's default;
                                  pinned at send, so read-only afterwards. -->
+                            <field name="sequence_department_ids" invisible="1"/>
                             <field name="sequence_id" string="เล่มทะเบียน"
                                    attrs="{'readonly': [('is_editable', '=', False)]}"
                                    options="{'no_create': True, 'no_open': True}"/>

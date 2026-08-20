@@ -312,6 +312,14 @@ class SarabunDocument(models.Model):
     )
 
     # === Numbering / Register (P3 — ADR-0002 §4) ===
+    sequence_department_ids = fields.Many2many(
+        comodel_name="hr.department",
+        compute="_compute_sequence_department_ids",
+        store=False,
+        string="Valid Sequence Departments",
+        help="The document's sender department and all its ancestor departments — "
+        "used as domain to show inherited register books in the dropdown.",
+    )
     sequence_id = fields.Many2one(
         comodel_name="sarabun.document.sequence",
         string="เล่มทะเบียน (Register Book)",
@@ -319,7 +327,7 @@ class SarabunDocument(models.Model):
         store=True,
         readonly=False,
         copy=False,
-        domain="[('sender_department_id', '=', sender_department_id), ('active', '=', True)]",
+        domain="[('sender_department_id', 'in', sequence_department_ids), ('active', '=', True)]",
         help="เล่มทะเบียนที่จะใช้ออกเลขหนังสือฉบับนี้ (ADR-0012) — ตั้งต้นจากเล่มทะเบียนหลัก "
         "ของหน่วยงาน เปลี่ยนได้ก่อนส่ง และถูกตรึงไว้ตอนส่ง.",
     )
@@ -420,6 +428,18 @@ class SarabunDocument(models.Model):
             record.include_content = not record.origin_model
 
     @api.depends("sender_department_id")
+    def _compute_sequence_department_ids(self):
+        """Collect the document's sender department and all ancestor departments so
+        that register books defined at any parent level appear in the dropdown."""
+        for record in self:
+            dept = record.sender_department_id
+            ancestors = self.env["hr.department"]
+            while dept:
+                ancestors |= dept
+                dept = dept.parent_id
+            record.sequence_department_ids = ancestors
+
+    @api.depends("sender_department_id")
     def _compute_sequence_id(self):
         """Default the เล่มทะเบียน from the unit (its เล่มทะเบียนหลัก, or its only book)
         — so the drafter never has to pick when the unit keeps a single register.
@@ -437,9 +457,17 @@ class SarabunDocument(models.Model):
     def _check_sequence_department(self):
         for record in self:
             seq = record.sequence_id
-            if seq and seq.sender_department_id != record.sender_department_id:
+            if not seq or not record.sender_department_id:
+                continue
+            # Walk up the department hierarchy; a sequence owned by any ancestor is valid.
+            dept = record.sender_department_id
+            while dept:
+                if seq.sender_department_id == dept:
+                    break
+                dept = dept.parent_id
+            else:
                 raise ValidationError(_(
-                    "เล่มทะเบียน '%(book)s' ไม่ใช่ของหน่วยงาน '%(unit)s'."
+                    "เล่มทะเบียน '%(book)s' ไม่ใช่ของหน่วยงาน '%(unit)s' หรือหน่วยงานต้นสังกัด."
                 ) % {
                     "book": seq.display_name,
                     "unit": record.sender_department_id.display_name,
