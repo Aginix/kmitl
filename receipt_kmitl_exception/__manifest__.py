@@ -14,6 +14,7 @@
     "data": [
         "security/ir.model.access.csv",
         "wizard/receipt_kmitl_exception_confirm_view.xml",
+        "views/exception_rule_views.xml",
         "data/exception_data.xml",
     ],
     "installable": True,

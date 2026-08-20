@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_receipt_kmitl_exception_rule" model="ir.actions.act_window">
+        <field name="name">Receipt Exception Rules</field>
+        <field name="res_model">exception.rule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="base_exception.view_exception_rule_tree"/>
+        <field name="domain">[('model', 'in', ['kmitl.receipt'])]</field>
+        <field name="context">{'active_test': False, 'default_model': 'kmitl.receipt'}</field>
+    </record>
+
+    <menuitem id="menu_receipt_kmitl_exception_rule"
+              name="Exception Rules"
+              parent="receipt_kmitl.menu_receipt_kmitl_configuration"
+              action="action_receipt_kmitl_exception_rule"
+              sequence="40"/>
+</odoo>
