@@ -1178,6 +1178,11 @@ msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
 msgid "Purchase Representative"
 msgstr "ผู้แทนฝ่ายจัดซื้อ"
 
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Responsible Officer"
+msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
+
 #. modules: purchase_request, purchase_request_kmitl
 #: model:ir.actions.report,name:purchase_request.action_report_purchase_requests
 #: model:ir.model,name:purchase_request_kmitl.model_purchase_request
@@ -2043,7 +2048,12 @@ msgstr "รายการแบบขอให้จัดหา"
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__title
 msgid "title"
-msgstr "ชื่อเรื่อง"
+msgstr "เรื่องขอให้จัดหา"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__title
+msgid "Title"
+msgstr "เรื่องขอให้จัดหา"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,description:purchase_request_kmitl.purchase_exception_amount_not_exceed_pr
