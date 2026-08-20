@@ -30,6 +30,9 @@ How it works
   problem is logged and can be recovered with the backfill action below.
 * Matching is case-insensitive with an exact re-check, so ``_``/``%`` in an
   address cannot cause a wrong match.
+* If the employee already has a work contact (``work_contact_id``), the user is
+  repointed at that existing partner and the partner auto-created with the user
+  is removed — so linking never leaves an orphaned/duplicate ``res.partner``.
 
 Because the trigger is plain ``res.users`` creation, it also covers users
 created manually in the UI and, in the future, users provisioned via

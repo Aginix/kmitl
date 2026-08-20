@@ -43,10 +43,41 @@ class ResUsers(models.Model):
                 employee = candidates.filtered(
                     lambda e: (e.work_email or "").strip().lower() == login
                 )[:1]
-                if employee:
-                    employee.user_id = user.id
+                if not employee:
+                    continue
+                # Reuse the employee's existing work contact so we do not leave
+                # the freshly auto-created user partner orphaned (prod already
+                # carries many partners on employees).
+                self._kmitl_reuse_employee_partner(user, employee)
+                employee.user_id = user.id
             except Exception:  # noqa: BLE001 - linking must not break login
                 _logger.exception(
                     "hr_ldap_kmitl: could not link user %s to an employee",
                     user.login,
                 )
+
+    def _kmitl_reuse_employee_partner(self, user, employee):
+        """Repoint ``user`` at the employee's existing ``work_contact_id`` and
+        drop the partner that user-creation just auto-generated.
+
+        Without this, linking runs ``hr`` ``_sync_user`` which overwrites the
+        employee's ``work_contact_id`` with the user's partner, orphaning the
+        real contact and leaving two partner records for one person. Only
+        ``work_contact_id`` is reused (the professional identity); a private
+        ``address_home_id`` is a different role and is intentionally left as is.
+        """
+        existing_partner = employee.work_contact_id
+        stray_partner = user.partner_id
+        if not existing_partner or existing_partner == stray_partner:
+            return
+        # Move the FK first (partner_id is ondelete='restrict'), then remove the
+        # now-unreferenced stray partner.
+        user.partner_id = existing_partner.id
+        try:
+            stray_partner.sudo().unlink()
+        except Exception:  # noqa: BLE001 - keep going even if it cannot be deleted
+            _logger.warning(
+                "hr_ldap_kmitl: could not delete stray partner %s, archiving it",
+                stray_partner.id,
+            )
+            stray_partner.sudo().write({"active": False})
