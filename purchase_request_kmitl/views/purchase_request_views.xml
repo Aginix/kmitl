@@ -237,9 +237,7 @@
                             position="move"
                         />
                     </group>
-                </group>
-                <group string="Purchase Request" name="purchase_request_group">
-                    <group>
+                    <group name="purchase_request_group">
                         <field
                             name="account_fiscal_year_id"
                             attrs="{'readonly': [('is_editable','=', False)]}"
