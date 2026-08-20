@@ -1,0 +1,3 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_procurement_plan_viewer,procurement_plan viewer,procurement_plan.model_procurement_plan,procurement_plan_viewer.group_procurement_plan_viewer,1,0,0,0
+access_procurement_plan_payment_viewer,procurement_plan_payment viewer,procurement_plan.model_procurement_plan_payment,procurement_plan_viewer.group_procurement_plan_viewer,1,0,0,0

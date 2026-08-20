@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budget Transfer Exception",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "summary": """ base.exception framework for reviewing budget transfers on confirm """,
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",

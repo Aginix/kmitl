@@ -45,7 +45,7 @@ class BudgetCommitment(models.Model):
         tracking=True,
         index="trigram",
         readonly=False,
-        states=READONLY_STATES,
+        states={"cancel": [("readonly", True)]},
         help=(
             "ชื่อ/วัตถุประสงค์ของใบจองงบประมาณ แสดงคู่กับเลขที่ใบจองทุกที่ที่ต้องเลือกใบจอง "
             "(เช่น ช่องหยิบใบจองใน พ.1 / ใบขออนุมัติ) — ใบจองที่สร้างจากโครงการหรือ"

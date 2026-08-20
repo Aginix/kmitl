@@ -1,0 +1,29 @@
+// The option markup lives inside <a class="dropdown-item … text-truncate">,
+// which clamps to one line. Undo that for our items only, scoped by the
+// o_bcm2o_item class set on the <li> in budget_commitment_m2o.js.
+.o_bcm2o_item {
+    border-bottom: 1px solid var(--border-color, #dee2e6);
+
+    .dropdown-item {
+        white-space: normal;
+        overflow: visible;
+        height: auto;
+        line-height: 1.3;
+    }
+}
+.o_bcm2o_option {
+    .o_bcm2o_rows {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 .75rem;
+    }
+    .o_bcm2o_row small {
+        margin-right: .25rem;
+    }
+    .o_bcm2o_amount {
+        display: flex;
+        justify-content: space-between;
+        gap: .5rem;
+        margin-top: .25rem;
+    }
+}

@@ -663,6 +663,46 @@ class SarabunDocument(models.Model):
                 }
         return label
 
+    def unlink(self):
+        # ร่าง that never went out, and a send that was voided (ยกเลิกการส่ง), are the
+        # only two disposable shapes: nothing is in flight and no one downstream is
+        # holding the หนังสือ. Everything else — circulating / returned / rejected /
+        # completed — must go through ยกเลิกการส่ง first, the audited way out of
+        # circulation.
+        undeletable = self.filtered(lambda r: r.state not in ("draft", "cancelled"))
+        if undeletable:
+            raise UserError(
+                _(
+                    "ลบได้เฉพาะหนังสือที่เป็นร่าง หรือที่ยกเลิกการส่งแล้วเท่านั้น "
+                    "กรุณายกเลิกการส่งก่อนลบ\n"
+                    "Only a draft or a cancelled document can be deleted. "
+                    "Cancel the send (ยกเลิกการส่ง) first.\n\n"
+                    "Documents: %s"
+                )
+                % ", ".join(undeletable.mapped("display_name"))
+            )
+        # Neither state implies "never numbered": agx_sarabun_reset returns a signed /
+        # completed หนังสือ to draft while deliberately KEEPING its register number
+        # (ADR-0011), and the reserved/manual path voids a number on cancel without
+        # dropping its document link. Deleting either would sever the ledger's audit
+        # link — which sarabun.document.number.document_id (ondelete=restrict) refuses
+        # anyway, with the ORM's generic FK message — and cascade away the archived
+        # steps of an officially signed record. Refuse it with a message that says why.
+        numbered = self.filtered("register_number_id")
+        if numbered:
+            raise UserError(
+                _(
+                    "ไม่สามารถลบหนังสือที่ออกเลขที่แล้วได้ "
+                    "เลขที่ต้องคงคู่กับหนังสือไว้ในทะเบียนเพื่อการตรวจสอบ\n"
+                    "Cannot delete a document that has already been assigned a "
+                    "register number — the number must keep its document link "
+                    "for audit.\n\n"
+                    "Documents: %s"
+                )
+                % ", ".join(numbered.mapped("display_name"))
+            )
+        return super().unlink()
+
     def action_view_origin(self):
         """Open the linked origin record (kept from the old API; harmless in P1)."""
         self.ensure_one()
@@ -798,15 +838,16 @@ class SarabunDocument(models.Model):
 
     def action_pull_back(self, reason=None):
         """ดึงกลับ (recall) — circulating → returned, KEEPING the register number
-        (ADR-0006). Archives the current chain and restarts on re-send: a
-        self-initiated ตีกลับ-to-sender, so the หนังสือ becomes editable and can be
-        revised and re-sent on the same number. Fires ``_on_sarabun_recalled``."""
+        (ADR-0006). Archives the current attempt as history, then recreates the SAME
+        เส้นทาง verbatim (see ``_recreate_chain_verbatim``): the sender only wants to
+        pull back and re-send on the identical route, so the approval path must not be
+        wiped or re-seeded from the template. Fires ``_on_sarabun_recalled``."""
         self.ensure_one()
         self._check_sender_withdraw_allowed()
         if not reason:
             raise UserError(_("A reason is required to ดึงกลับ (pull back)."))
         self.routing_step_ids._clear_activities()
-        self._restart_chain()
+        self._recreate_chain_verbatim()
         self.state = "returned"
         self.message_post(body=_("Document pulled back (ดึงกลับ). Reason: %s") % reason)
         self._call_origin("_on_sarabun_recalled", self)
@@ -1001,6 +1042,28 @@ class SarabunDocument(models.Model):
             ]
         # The archived attempt's originator is now inactive — re-add it (unless the
         # recreated seeds already carried one) so the new attempt keeps its row 1.
+        self._ensure_originator_step()
+
+    def _recreate_chain_verbatim(self):
+        """Archive the current attempt and recreate the SAME เส้นทาง exactly (ดึงกลับ —
+        ADR-0006, revised per UAT). Unlike ``_restart_chain`` it NEVER re-seeds from the
+        route template: every live step is recreated in order with its exact target /
+        verb / for_info / provenance — including runtime เกษียนสั่งการ ('direct')
+        insertions and delegated targets — so a pull-back-and-re-send keeps the identical
+        approval path. History survives on the archived attempt (feeding the เกษียน trail
+        and the reached-user read ledger — ADR-0013)."""
+        self.ensure_one()
+        seeds = [
+            dict(
+                step._resume_seed_vals(),
+                created_by_disposition=step.created_by_disposition,
+            )
+            for step in self.routing_step_ids.sorted("order")
+        ]
+        self._bump_attempt_and_archive()
+        new_seq = self.attempt_seq or 1
+        self.routing_step_ids = [(0, 0, dict(v, attempt_seq=new_seq)) for v in seeds]
+        # Defensive: seeds already carry the originator row, so this is normally a no-op.
         self._ensure_originator_step()
 
     # === Origin adapter dispatch (ADR-0004: same txn, no swallow) ===

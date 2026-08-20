@@ -148,7 +148,9 @@
                                         />
                                         <td t-out="line.name" />
                                         <td class="text-center">
-                                            <span t-field="line.product_uom" />
+                                            <span
+                                                t-out="line.uom_text or line.product_uom.name or ''"
+                                            />
                                         </td>
                                         <td
                                             colspan="3"

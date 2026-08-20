@@ -237,7 +237,7 @@ class ProcurementPlan(models.Model):
             "ref": self.name,
             # ชื่อรายการของแผน = ชื่อใบจอง (budget.commitment._rec_name shows it
             # next to the number, so a drawing document can tell reservations apart).
-            "title": self.description,
+            "title": "[%s] %s" % (self.name, self.description) if self.name else self.description,
             "description": self.description,
             "procurement_plan_id": self.id,
             "user_id": self.env.user.id,
