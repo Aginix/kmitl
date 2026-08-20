@@ -76,8 +76,8 @@ class ThaiDateMixin(models.AbstractModel):
         return f"{dt.day} {MONTHS_TH_SHORT[dt.month]} {dt.year + 543}"
 
     def format_datetime_thai_sign(self, dt):
-        """Signature date-time in Thai — e.g. ``วันที่ ๒๐ ก.ค. ๖๙  เวลา ๑๓:๓๐:๓๑``:
-        Thai numerals, abbreviated month, 2-digit พ.ศ. year, and the time HH:MM:SS in
+        """Signature date-time — e.g. ``วันที่ 20 ก.ค. 69  เวลา 13:30:31``:
+        Arabic numerals, abbreviated month, 2-digit พ.ศ. year, and the time HH:MM:SS in
         a **fixed Asia/Bangkok** timezone (never the user's tz). For the signing date
         on the official document."""
         if not dt:
@@ -88,6 +88,4 @@ class ThaiDateMixin(models.AbstractModel):
         be_year_2 = (dt.year + 543) % 100
         date_part = "%d %s %02d" % (dt.day, MONTHS_TH_SHORT[dt.month], be_year_2)
         time_part = "%02d:%02d:%02d" % (dt.hour, dt.minute, dt.second)
-        return "วันที่ %s  เวลา %s" % (
-            to_thai_digits(date_part), to_thai_digits(time_part)
-        )
+        return "วันที่ %s  เวลา %s" % (date_part, time_part)

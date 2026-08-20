@@ -87,6 +87,16 @@ class SarabunDocument(models.Model):
         help="The ceremonial recipient on the หนังสือ header — its own field, "
         "separate from the routing actors. Manual or origin-set.",
     )
+    include_content = fields.Boolean(
+        string="แนบเนื้อหา (บันทึกนำ)",
+        compute="_compute_include_content",
+        store=True,
+        readonly=False,
+        help="Whether the เนื้อหา body is written on this หนังสือ. A composed "
+        "(no-source) document always has it; a from_record document defaults to "
+        "OFF (its origin report is the body) but may opt in to add a covering note "
+        "above the origin's report.",
+    )
     content = fields.Html(
         string="เนื้อหา (Content)",
         sanitize=True,
@@ -400,6 +410,14 @@ class SarabunDocument(models.Model):
             record.is_cancelled = record.state == "cancelled"
             record.is_terminal = record.state in ("rejected", "cancelled")
             record.is_editable = record.state in ("draft", "returned")
+
+    @api.depends("origin_model")
+    def _compute_include_content(self):
+        """A no-source (composed) หนังสือ always carries its own body; a from_record
+        one defaults OFF (the origin report is the body). Editable — the drafter may
+        opt a from_record document in to add a covering note."""
+        for record in self:
+            record.include_content = not record.origin_model
 
     @api.depends("sender_department_id")
     def _compute_sequence_id(self):
@@ -780,15 +798,16 @@ class SarabunDocument(models.Model):
 
     def action_pull_back(self, reason=None):
         """ดึงกลับ (recall) — circulating → returned, KEEPING the register number
-        (ADR-0006). Archives the current chain and restarts on re-send: a
-        self-initiated ตีกลับ-to-sender, so the หนังสือ becomes editable and can be
-        revised and re-sent on the same number. Fires ``_on_sarabun_recalled``."""
+        (ADR-0006). Archives the current attempt as history, then recreates the SAME
+        เส้นทาง verbatim (see ``_recreate_chain_verbatim``): the sender only wants to
+        pull back and re-send on the identical route, so the approval path must not be
+        wiped or re-seeded from the template. Fires ``_on_sarabun_recalled``."""
         self.ensure_one()
         self._check_sender_withdraw_allowed()
         if not reason:
             raise UserError(_("A reason is required to ดึงกลับ (pull back)."))
         self.routing_step_ids._clear_activities()
-        self._restart_chain()
+        self._recreate_chain_verbatim()
         self.state = "returned"
         self.message_post(body=_("Document pulled back (ดึงกลับ). Reason: %s") % reason)
         self._call_origin("_on_sarabun_recalled", self)
@@ -983,6 +1002,28 @@ class SarabunDocument(models.Model):
             ]
         # The archived attempt's originator is now inactive — re-add it (unless the
         # recreated seeds already carried one) so the new attempt keeps its row 1.
+        self._ensure_originator_step()
+
+    def _recreate_chain_verbatim(self):
+        """Archive the current attempt and recreate the SAME เส้นทาง exactly (ดึงกลับ —
+        ADR-0006, revised per UAT). Unlike ``_restart_chain`` it NEVER re-seeds from the
+        route template: every live step is recreated in order with its exact target /
+        verb / for_info / provenance — including runtime เกษียนสั่งการ ('direct')
+        insertions and delegated targets — so a pull-back-and-re-send keeps the identical
+        approval path. History survives on the archived attempt (feeding the เกษียน trail
+        and the reached-user read ledger — ADR-0013)."""
+        self.ensure_one()
+        seeds = [
+            dict(
+                step._resume_seed_vals(),
+                created_by_disposition=step.created_by_disposition,
+            )
+            for step in self.routing_step_ids.sorted("order")
+        ]
+        self._bump_attempt_and_archive()
+        new_seq = self.attempt_seq or 1
+        self.routing_step_ids = [(0, 0, dict(v, attempt_seq=new_seq)) for v in seeds]
+        # Defensive: seeds already carry the originator row, so this is normally a no-op.
         self._ensure_originator_step()
 
     # === Origin adapter dispatch (ADR-0004: same txn, no swallow) ===

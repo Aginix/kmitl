@@ -31,6 +31,7 @@ class SarabunDocumentMixin(models.AbstractModel):
     sarabun_document_ids = fields.One2many(
         comodel_name="sarabun.document",
         compute="_compute_sarabun_documents",
+        search="_search_sarabun_document_ids",
         string="หนังสือ (Documents)",
         help="All หนังสือ spawned from this record (1:N).",
     )
@@ -98,6 +99,17 @@ class SarabunDocumentMixin(models.AbstractModel):
             record.sarabun_state = active.state or False
             record.sarabun_is_draft = active.state == "draft"
             record.sarabun_state_label = active._status_label() if active else False
+
+    def _search_sarabun_document_ids(self, operator, value):
+        """Enable @api.depends('sarabun_document_ids.*') trigger resolution.
+
+        Odoo needs a search method on computed pseudo-O2m fields so it can find
+        which origin records to recompute when a sarabun.document field changes.
+        """
+        docs = self.env["sarabun.document"].search(
+            [("origin_model", "=", self._name), ("id", operator, value)]
+        )
+        return [("id", "in", docs.mapped("origin_res_id"))]
 
     def _prepare_sarabun_document_vals(self):
         """Build the ``sarabun.document`` create vals.

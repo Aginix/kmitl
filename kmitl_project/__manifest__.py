@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "KMITL Project",
-    "version": "16.0.2.0.1",
+    "version": "16.0.2.0.2",
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -14,6 +14,7 @@
         "base_exception",
         "l10n_th_fonts",
         "operating_unit",
+        "analytic_operating_unit",
         "portal",
         "account_analytic_kmitl",
     ],

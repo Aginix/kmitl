@@ -346,7 +346,7 @@
                                                     <td
                                                         class="text-end d-none d-sm-table-cell"
                                                     >
-                                                        <t t-out="line.product_uom.with_context(lang='th_TH').name or '-'" />
+                                                        <t t-out="line.uom_text or line.product_uom.with_context(lang='th_TH').name or '-'" />
                                                     </td>
                                                     <td
                                                         class="text-end d-none d-sm-table-cell"

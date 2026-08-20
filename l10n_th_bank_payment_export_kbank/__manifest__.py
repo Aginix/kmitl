@@ -3,7 +3,7 @@
 
 {
     "name": "Thai Localization - Bank Payment Export KBANK",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "license": "AGPL-3",
@@ -13,6 +13,7 @@
     "data": [
         "data/bank.export.format.csv",
         "data/bank.export.format.line.csv",
+        "data/bank_payment_template.xml",
         "views/bank_payment_export_view.xml",
     ],
     "installable": True,

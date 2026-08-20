@@ -869,6 +869,11 @@ class KmitlProject(models.Model):
                     "kmitl_project.analytic_plan_project",
                     raise_if_not_found=True,
                 ).id,
+                # Scope the project's dimension to the project's operating unit so
+                # it stays visible only to the owning unit (analytic OU access rule).
+                "operating_unit_ids": [(6, 0, self.operating_unit_id.ids)]
+                if self.operating_unit_id
+                else False,
             }
         )
 
@@ -1047,7 +1052,7 @@ class KmitlProject(models.Model):
                 "ref": self.key or self.name,
                 # ชื่อโครงการ = ชื่อใบจอง (shown next to the number wherever a
                 # reservation is offered, so it can be told apart from others).
-                "title": self.name,
+                "title": "[%s] %s" % (self.key, self.name) if self.key else self.name,
                 "description": self.name,
                 "kmitl_project_id": self.id,
                 "user_id": self.env.user.id,

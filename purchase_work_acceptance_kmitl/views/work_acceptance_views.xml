@@ -348,6 +348,21 @@
                 <attribute name="optional">hide</attribute>
             </xpath>
 
+            <xpath
+                expr="//field[@name='wa_line_ids']/tree/field[@name='product_uom']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='wa_line_ids']/tree/field[@name='product_qty']"
+                position="after"
+            >
+                <field name="uom_text"/>
+            </xpath>
+
             <xpath expr="//field[@name='invoice_ref']" position="attributes">
                 <attribute name="attrs">
                     {'readonly': [('state', '!=', 'draft')]}

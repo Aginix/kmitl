@@ -141,14 +141,16 @@ class BudgetMoveLine(models.Model):
         """
         self.ensure_one()
         distribution = {}
-        # NB: source is deliberately excluded — it is header-owned and read-only
-        # on the line (see _analytic_keys); writing it into the JSON would make
-        # the inverse push it back onto the header. The availability query
-        # (_transfer_distribution) still includes it from the column.
+        # Source is header-owned and read-only on the line, but it must still be
+        # recorded in analytic_distribution so the JSON carries all six
+        # dimensions (the field is the documented source of truth). Including it
+        # is safe: _analytic_keys pops "sources", so the mixin inverse skips the
+        # source entry and never writes it back onto the header.
         for account in (
             self.activity_analytic_id,
             self.department_analytic_id,
             self.fund_analytic_id,
+            self.source_analytic_id,
         ):
             if account:
                 distribution[str(account.id)] = 100.0
@@ -252,9 +254,19 @@ class BudgetMoveLine(models.Model):
                 and move.move_type != "appropriation"
                 and line.account_id
             )
-            if not drawing or not move.account_fiscal_year_id:
+            if not drawing:
                 line.available_budget = 0.0
-                line.budget_sufficient = not drawing
+                line.budget_sufficient = True
+                continue
+            if not move.account_fiscal_year_id:
+                # No resolvable fiscal year yet — e.g. a FROM line authored in
+                # the dialog of a not-yet-saved transfer, whose delegated move
+                # isn't persisted so its fiscal year can't be read. Availability
+                # can't be computed here; don't raise a false "insufficient"
+                # alarm. The authoritative check runs at submit/approve on the
+                # saved record (_validate_budget_availability).
+                line.available_budget = 0.0
+                line.budget_sufficient = True
                 continue
             available = controller.get_available(
                 line.account_id,

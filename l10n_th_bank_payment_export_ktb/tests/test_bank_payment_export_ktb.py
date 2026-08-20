@@ -129,7 +129,11 @@ class TestBankPaymentExportKTB(CommonBankPaymentExport):
         # Export Text File
         text_list = bank_payment.action_export_text_file()
         self.assertEqual(bank_payment.state, "done")
-        self.assertEqual(text_list["report_type"], "qweb-text")
+        # The file is rendered once, kept on the record, and handed over from there
+        # rather than re-rendered by a report action — the layouts read today's date
+        # and SCB checksums the body, so a second render is not the same bytes.
+        self.assertTrue(bank_payment.export_file_id)
+        self.assertIn(str(bank_payment.export_file_id.id), text_list["url"])
         text_word = bank_payment._export_bank_payment_text_file()
         self.assertNotEqual(
             text_word,

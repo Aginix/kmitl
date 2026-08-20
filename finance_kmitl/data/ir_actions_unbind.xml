@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        The only screen on account.payment at KMITL is the finance office's, and
+        core hangs two actions off its Action menu that are no part of their job.
+        Both were reachable and neither did anything the office wanted, so the menu
+        read as three unrelated choices next to the one that matters.
+
+        "Post Payments" is the worse of the two: it calls account.payment.action_post
+        straight on the selection, and posting is the accounting office's move, made
+        through the maker/checker steps in accounting_kmitl_workflow. Pressed from
+        here it skips the queue that exists to review it. It carries
+        account.group_account_invoice, which the finance groups imply so their users
+        can raise vouchers at all — so it appeared to them as a side effect of that
+        implication rather than by anyone's intent.
+
+        "Send receipts by email" mails the payee a payment receipt, which belongs to
+        money coming in, not going out. Core gives it no groups at all, so every
+        internal user could see it.
+
+        Note on durability: action_account_confirm_payments lives in a
+        noupdate="0" block of the account module, so upgrading account on its own
+        restores its binding. Upgrading it together with this module — the normal
+        case — does not.
+    -->
+    <record id="account.action_account_confirm_payments" model="ir.actions.server">
+        <field name="binding_model_id" eval="False" />
+    </record>
+
+    <record
+        id="account.account_send_payment_receipt_by_email_action_multi"
+        model="ir.actions.act_window"
+    >
+        <field name="binding_model_id" eval="False" />
+    </record>
+
+    <!--
+        The one that stays is renamed to the office's own word for the thing it
+        makes. It shares its implementation with the button on the payment list, so
+        either door behaves the same.
+    -->
+    <record
+        id="l10n_th_bank_payment_export.action_server_bank_payment_export"
+        model="ir.actions.server"
+    >
+        <field name="name">Create e-Payment File</field>
+    </record>
+</odoo>

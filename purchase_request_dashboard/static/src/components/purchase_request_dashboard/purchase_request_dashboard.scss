@@ -38,7 +38,7 @@
 
     .pr-summary-boxes {
         display: grid;
-        grid-template-columns: repeat(9, 1fr);
+        grid-template-columns: repeat(12, 1fr);
         gap: 0.5rem;
 
         @media (max-width: 1200px) {

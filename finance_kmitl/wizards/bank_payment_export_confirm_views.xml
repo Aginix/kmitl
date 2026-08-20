@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="bank_payment_export_confirm_view_form" model="ir.ui.view">
+        <field name="name">bank.payment.export.confirm.form</field>
+        <field name="model">bank.payment.export.confirm</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Transfer Succeeded">
+                <field name="payment_export_id" invisible="1" />
+                <div class="alert alert-info" role="alert">
+                    <span
+                    >Every row in this file will be marked paid, and the file will be closed. If the bank could not credit one of the payees, write here how they were settled instead — this is the only record of it.</span>
+                </div>
+                <!-- Outside a group and spanning the dialog: a group lays fields
+                     out in a label column and a value column, which left this at
+                     the width of a value cell — a few words wide for a field whose
+                     whole job is a sentence or two of explanation. -->
+                <field
+                    name="note"
+                    nolabel="1"
+                    class="w-100"
+                    placeholder="e.g. PV/2026/00014 bounced — account closed. Paid in cash on 20/08."
+                />
+                <footer>
+                    <button
+                        name="action_confirm"
+                        string="Confirm"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

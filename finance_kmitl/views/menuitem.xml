@@ -67,12 +67,22 @@
     <!-- Bank Payment Export (outbound-side workflow) -->
     <menuitem
         id="menu_bank_payment_export"
-        name="e-Payment List"
+        name="e-Payment Files"
         parent="menu_payment_root"
         action="l10n_th_bank_payment_export.action_bank_payment_export"
         sequence="20"
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
+
+    <!-- The base module's own menu for the same action sits under Accounting ▸
+         Actions under a different name, so the office met the screen twice and
+         called it two things. This one is theirs; that one is retired. -->
+    <record
+        id="l10n_th_bank_payment_export.menu_bank_payment_export"
+        model="ir.ui.menu"
+    >
+        <field name="active" eval="False" />
+    </record>
 
     <!-- Withholding Tax Certificates (outbound-side workflow) -->
     <menuitem
