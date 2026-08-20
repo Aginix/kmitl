@@ -4,8 +4,9 @@
          สร้างตาม CSV ส่วนงาน + โครงสร้างบริหารมหาวิทยาลัย
          holder_ids ว่างทั้งหมด — ให้ admin กรอกผู้ดำรงตำแหน่งใน Configuration ▸ Positions
 
-         hr.department อ้างอิงจาก kmitl_demo เช่นเดียวกับ sequence data
-         ต้องติดตั้ง kmitl_demo ก่อน / TODO ระบุรายการที่ชื่อไม่ตรงหรือไม่มีใน demo -->
+         department_id ค้นหาจากชื่อ hr.department ในฐานข้อมูล:
+         - ถ้าเจอ → link อัตโนมัติ
+         - ถ้าไม่เจอ → ว่าง (department_id เป็น optional field) -->
     <data noupdate="1">
 
         <!-- ══════════════════════════════════════════════════
@@ -13,49 +14,49 @@
              ══════════════════════════════════════════════════ -->
         <record id="pos_rector" model="sarabun.position">
             <field name="name">อธิการบดี</field>
-            <field name="department_id" ref="kmitl_demo.kmitl"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_vp_academic" model="sarabun.position">
             <field name="name">รองอธิการบดีด้านวิชาการ</field>
-            <field name="department_id" ref="kmitl_demo.kmitl"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_vp_admin" model="sarabun.position">
             <field name="name">รองอธิการบดีด้านบริหาร</field>
-            <field name="department_id" ref="kmitl_demo.kmitl"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">30</field>
         </record>
 
         <record id="pos_vp_student" model="sarabun.position">
             <field name="name">รองอธิการบดีด้านนักศึกษาและศิษย์เก่า</field>
-            <field name="department_id" ref="kmitl_demo.kmitl"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">40</field>
         </record>
 
         <record id="pos_vp_research" model="sarabun.position">
             <field name="name">รองอธิการบดีด้านวิจัยและนวัตกรรม</field>
-            <field name="department_id" ref="kmitl_demo.kmitl"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">50</field>
         </record>
 
         <record id="pos_vp_intl" model="sarabun.position">
             <field name="name">รองอธิการบดีด้านต่างประเทศ</field>
-            <field name="department_id" ref="kmitl_demo.kmitl"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">60</field>
         </record>
 
         <record id="pos_avp" model="sarabun.position">
             <field name="name">ผู้ช่วยอธิการบดี</field>
-            <field name="department_id" ref="kmitl_demo.kmitl"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">70</field>
         </record>
 
         <record id="pos_institute_secretary" model="sarabun.position">
             <field name="name">เลขานุการสถาบัน</field>
-            <field name="department_id" ref="kmitl_demo.kmitl"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">80</field>
         </record>
 
@@ -64,211 +65,208 @@
              ══════════════════════════════════════════════════ -->
         <record id="pos_7001_dir" model="sarabun.position">
             <field name="name">หัวหน้าสำนักงานอธิการบดี</field>
-            <field name="department_id" ref="kmitl_demo.89"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานอธิการบดี')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานอธิการบดี</field>
-            <field name="department_id" ref="kmitl_demo.89"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานอธิการบดี')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานบริหารงานทั่วไปและกิจการพิเศษ (อว 7001.01) -->
         <record id="pos_7001_01_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานบริหารงานทั่วไปและกิจการพิเศษ</field>
-            <field name="department_id" ref="kmitl_demo.89360"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารงานทั่วไปและกิจการพิเศษ')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_01_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานบริหารงานทั่วไปและกิจการพิเศษ</field>
-            <field name="department_id" ref="kmitl_demo.89360"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารงานทั่วไปและกิจการพิเศษ')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานบริหารทรัพยากรบุคคล (อว 7001.02) -->
         <record id="pos_7001_02_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานบริหารทรัพยากรบุคคล</field>
-            <field name="department_id" ref="kmitl_demo.89370"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารทรัพยากรบุคคล')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_02_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานบริหารทรัพยากรบุคคล</field>
-            <field name="department_id" ref="kmitl_demo.89370"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารทรัพยากรบุคคล')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานกิจการนักศึกษาและศิษย์เก่าสัมพันธ์ (อว 7001.03) -->
         <record id="pos_7001_03_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานกิจการนักศึกษาและศิษย์เก่าสัมพันธ์</field>
-            <field name="department_id" ref="kmitl_demo.89330"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานกิจการนักศึกษาและศิษย์เก่าสัมพันธ์')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_03_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานกิจการนักศึกษาและศิษย์เก่าสัมพันธ์</field>
-            <field name="department_id" ref="kmitl_demo.89330"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานกิจการนักศึกษาและศิษย์เก่าสัมพันธ์')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานคลัง (อว 7001.04) -->
         <record id="pos_7001_04_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานคลัง</field>
-            <field name="department_id" ref="kmitl_demo.89380"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานคลัง')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_04_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานคลัง</field>
-            <field name="department_id" ref="kmitl_demo.89380"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานคลัง')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานกิจการต่างประเทศ (อว 7001.05) -->
         <record id="pos_7001_05_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานกิจการต่างประเทศ</field>
-            <field name="department_id" ref="kmitl_demo.89320"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานกิจการต่างประเทศ')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_05_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานกิจการต่างประเทศ</field>
-            <field name="department_id" ref="kmitl_demo.89320"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานกิจการต่างประเทศ')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานบริหารยุทธศาสตร์ (อว 7001.06) -->
         <record id="pos_7001_06_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานบริหารยุทธศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.89340"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารยุทธศาสตร์')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_06_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานบริหารยุทธศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.89340"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารยุทธศาสตร์')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานบริหารทรัพยากรกายภาพและสิ่งแวดล้อม (อว 7001.07) -->
         <record id="pos_7001_07_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานบริหารทรัพยากรกายภาพและสิ่งแวดล้อม</field>
-            <field name="department_id" ref="kmitl_demo.89390"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารทรัพยากรกายภาพและสิ่งแวดล้อม')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_07_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานบริหารทรัพยากรกายภาพและสิ่งแวดล้อม</field>
-            <field name="department_id" ref="kmitl_demo.89390"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารทรัพยากรกายภาพและสิ่งแวดล้อม')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานนิติการ (อว 7001.10) -->
         <record id="pos_7001_10_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานนิติการ</field>
-            <field name="department_id" ref="kmitl_demo.89350"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานนิติการ')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_10_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานนิติการ</field>
-            <field name="department_id" ref="kmitl_demo.89350"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานนิติการ')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานบริหารวิชาการและประกันคุณภาพ (อว 7001.11)
-             TODO: demo ชื่อ "สำนักงานบริหารวิชาการและคุณภาพการศึกษา" (kmitl_demo.89310) -->
+             ชื่อในฐานข้อมูล: "สำนักงานบริหารวิชาการและคุณภาพการศึกษา" -->
         <record id="pos_7001_11_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานบริหารวิชาการและประกันคุณภาพ</field>
-            <field name="department_id" ref="kmitl_demo.89310"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารวิชาการและคุณภาพการศึกษา')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_11_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานบริหารวิชาการและประกันคุณภาพ</field>
-            <field name="department_id" ref="kmitl_demo.89310"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารวิชาการและคุณภาพการศึกษา')]"/>
             <field name="sequence">20</field>
         </record>
 
-        <!-- ศูนย์บ่มเพาะวิสาหกิจพระจอมเกล้าลาดกระบัง (อว 7001.12)
-             TODO: ไม่มีใน hr.department — ใช้ สำนักงานอธิการบดี แทน -->
+        <!-- ศูนย์บ่มเพาะวิสาหกิจพระจอมเกล้าลาดกระบัง (อว 7001.12) — ไม่มีใน hr.department -->
         <record id="pos_7001_12_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการศูนย์บ่มเพาะวิสาหกิจพระจอมเกล้าลาดกระบัง</field>
-            <field name="department_id" ref="kmitl_demo.89"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_12_admin" model="sarabun.position">
             <field name="name">ธุรการศูนย์บ่มเพาะวิสาหกิจพระจอมเกล้าลาดกระบัง</field>
-            <field name="department_id" ref="kmitl_demo.89"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานพัสดุ (อว 7001.14) -->
         <record id="pos_7001_14_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานพัสดุ</field>
-            <field name="department_id" ref="kmitl_demo.89400"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานพัสดุ')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_14_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานพัสดุ</field>
-            <field name="department_id" ref="kmitl_demo.89400"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานพัสดุ')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานสื่อสารองค์กร (อว 7001.17) -->
         <record id="pos_7001_17_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานสื่อสารองค์กร</field>
-            <field name="department_id" ref="kmitl_demo.89450"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานสื่อสารองค์กร')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_17_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานสื่อสารองค์กร</field>
-            <field name="department_id" ref="kmitl_demo.89450"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานสื่อสารองค์กร')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานบริหารทรัพย์สิน (อว 7001.19) -->
         <record id="pos_7001_19_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานบริหารทรัพย์สิน</field>
-            <field name="department_id" ref="kmitl_demo.89410"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารทรัพย์สิน')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_19_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานบริหารทรัพย์สิน</field>
-            <field name="department_id" ref="kmitl_demo.89410"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารทรัพย์สิน')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- โรงเรียนสาธิตนานาชาติพระจอมเกล้า (อว 7001.20)
-             TODO: demo ชื่อยาวกว่า "โรงเรียนสาธิตนานาชาติ สถาบันเทคโนโลยีฯ" (kmitl_demo.89420) -->
+             ชื่อในฐานข้อมูล: "โรงเรียนสาธิตนานาชาติ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง" -->
         <record id="pos_7001_20_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการโรงเรียนสาธิตนานาชาติพระจอมเกล้า</field>
-            <field name="department_id" ref="kmitl_demo.89420"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'โรงเรียนสาธิตนานาชาติ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_20_admin" model="sarabun.position">
             <field name="name">ธุรการโรงเรียนสาธิตนานาชาติพระจอมเกล้า</field>
-            <field name="department_id" ref="kmitl_demo.89420"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'โรงเรียนสาธิตนานาชาติ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานบริหารวารสารวิชาการ (อว 7001.22) -->
         <record id="pos_7001_22_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักงานบริหารวารสารวิชาการ</field>
-            <field name="department_id" ref="kmitl_demo.89440"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารวารสารวิชาการ')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7001_22_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานบริหารวารสารวิชาการ</field>
-            <field name="department_id" ref="kmitl_demo.89440"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานบริหารวารสารวิชาการ')]"/>
             <field name="sequence">20</field>
         </record>
 
@@ -279,247 +277,247 @@
         <!-- คณะวิศวกรรมศาสตร์ (อว 7002) -->
         <record id="pos_7002_dean" model="sarabun.position">
             <field name="name">คณบดีคณะวิศวกรรมศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.01"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะวิศวกรรมศาสตร์')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7002_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะวิศวกรรมศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.01"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะวิศวกรรมศาสตร์')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7002_admin" model="sarabun.position">
             <field name="name">ธุรการคณะวิศวกรรมศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.01"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะวิศวกรรมศาสตร์')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- คณะสถาปัตยกรรม ศิลปะและการออกแบบ (อว 7003) -->
         <record id="pos_7003_dean" model="sarabun.position">
             <field name="name">คณบดีคณะสถาปัตยกรรม ศิลปะและการออกแบบ</field>
-            <field name="department_id" ref="kmitl_demo.02"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะสถาปัตยกรรม ศิลปะและการออกแบบ')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7003_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะสถาปัตยกรรม ศิลปะและการออกแบบ</field>
-            <field name="department_id" ref="kmitl_demo.02"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะสถาปัตยกรรม ศิลปะและการออกแบบ')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7003_admin" model="sarabun.position">
             <field name="name">ธุรการคณะสถาปัตยกรรม ศิลปะและการออกแบบ</field>
-            <field name="department_id" ref="kmitl_demo.02"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะสถาปัตยกรรม ศิลปะและการออกแบบ')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี (อว 7004) -->
         <record id="pos_7004_dean" model="sarabun.position">
             <field name="name">คณบดีคณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี</field>
-            <field name="department_id" ref="kmitl_demo.03"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7004_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี</field>
-            <field name="department_id" ref="kmitl_demo.03"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7004_admin" model="sarabun.position">
             <field name="name">ธุรการคณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี</field>
-            <field name="department_id" ref="kmitl_demo.03"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- คณะเทคโนโลยีการเกษตร (อว 7005) -->
         <record id="pos_7005_dean" model="sarabun.position">
             <field name="name">คณบดีคณะเทคโนโลยีการเกษตร</field>
-            <field name="department_id" ref="kmitl_demo.04"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะเทคโนโลยีการเกษตร')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7005_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะเทคโนโลยีการเกษตร</field>
-            <field name="department_id" ref="kmitl_demo.04"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะเทคโนโลยีการเกษตร')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7005_admin" model="sarabun.position">
             <field name="name">ธุรการคณะเทคโนโลยีการเกษตร</field>
-            <field name="department_id" ref="kmitl_demo.04"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะเทคโนโลยีการเกษตร')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- คณะวิทยาศาสตร์ (อว 7008) -->
         <record id="pos_7008_dean" model="sarabun.position">
             <field name="name">คณบดีคณะวิทยาศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.05"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะวิทยาศาสตร์')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7008_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะวิทยาศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.05"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะวิทยาศาสตร์')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7008_admin" model="sarabun.position">
             <field name="name">ธุรการคณะวิทยาศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.05"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะวิทยาศาสตร์')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- คณะเทคโนโลยีสารสนเทศ (อว 7011) -->
         <record id="pos_7011_dean" model="sarabun.position">
             <field name="name">คณบดีคณะเทคโนโลยีสารสนเทศ</field>
-            <field name="department_id" ref="kmitl_demo.06"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะเทคโนโลยีสารสนเทศ')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7011_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะเทคโนโลยีสารสนเทศ</field>
-            <field name="department_id" ref="kmitl_demo.06"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะเทคโนโลยีสารสนเทศ')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7011_admin" model="sarabun.position">
             <field name="name">ธุรการคณะเทคโนโลยีสารสนเทศ</field>
-            <field name="department_id" ref="kmitl_demo.06"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะเทคโนโลยีสารสนเทศ')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- คณะอุตสาหกรรมอาหาร (อว 7014) -->
         <record id="pos_7014_dean" model="sarabun.position">
             <field name="name">คณบดีคณะอุตสาหกรรมอาหาร</field>
-            <field name="department_id" ref="kmitl_demo.17"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะอุตสาหกรรมอาหาร')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7014_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะอุตสาหกรรมอาหาร</field>
-            <field name="department_id" ref="kmitl_demo.17"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะอุตสาหกรรมอาหาร')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7014_admin" model="sarabun.position">
             <field name="name">ธุรการคณะอุตสาหกรรมอาหาร</field>
-            <field name="department_id" ref="kmitl_demo.17"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะอุตสาหกรรมอาหาร')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- คณะบริหารธุรกิจ (อว 7025) -->
         <record id="pos_7025_dean" model="sarabun.position">
             <field name="name">คณบดีคณะบริหารธุรกิจ</field>
-            <field name="department_id" ref="kmitl_demo.36"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะบริหารธุรกิจ')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7025_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะบริหารธุรกิจ</field>
-            <field name="department_id" ref="kmitl_demo.36"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะบริหารธุรกิจ')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7025_admin" model="sarabun.position">
             <field name="name">ธุรการคณะบริหารธุรกิจ</field>
-            <field name="department_id" ref="kmitl_demo.36"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะบริหารธุรกิจ')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- คณะแพทยศาสตร์ (อว 7028) -->
         <record id="pos_7028_dean" model="sarabun.position">
             <field name="name">คณบดีคณะแพทยศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.38"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะแพทยศาสตร์')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7028_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะแพทยศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.38"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะแพทยศาสตร์')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7028_admin" model="sarabun.position">
             <field name="name">ธุรการคณะแพทยศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.38"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะแพทยศาสตร์')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- คณะศิลปศาสตร์ (อว 7029) -->
         <record id="pos_7029_dean" model="sarabun.position">
             <field name="name">คณบดีคณะศิลปศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.41"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะศิลปศาสตร์')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7029_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะศิลปศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.41"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะศิลปศาสตร์')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7029_admin" model="sarabun.position">
             <field name="name">ธุรการคณะศิลปศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.41"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะศิลปศาสตร์')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- คณะทันตแพทยศาสตร์ (อว 7033) -->
         <record id="pos_7033_dean" model="sarabun.position">
             <field name="name">คณบดีคณะทันตแพทยศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.45"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะทันตแพทยศาสตร์')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7033_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะทันตแพทยศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.45"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะทันตแพทยศาสตร์')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7033_admin" model="sarabun.position">
             <field name="name">ธุรการคณะทันตแพทยศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.45"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะทันตแพทยศาสตร์')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- คณะพยาบาลศาสตร์ (อว 7035) -->
         <record id="pos_7035_dean" model="sarabun.position">
             <field name="name">คณบดีคณะพยาบาลศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.47"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะพยาบาลศาสตร์')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7035_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะพยาบาลศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.47"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะพยาบาลศาสตร์')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7035_admin" model="sarabun.position">
             <field name="name">ธุรการคณะพยาบาลศาสตร์</field>
-            <field name="department_id" ref="kmitl_demo.47"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะพยาบาลศาสตร์')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- คณะเทคโนโลยีนวัตกรรมบูรณาการ (อว 7036) -->
         <record id="pos_7036_dean" model="sarabun.position">
             <field name="name">คณบดีคณะเทคโนโลยีนวัตกรรมบูรณาการ</field>
-            <field name="department_id" ref="kmitl_demo.48"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะเทคโนโลยีนวัตกรรมบูรณาการ')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7036_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีคณะเทคโนโลยีนวัตกรรมบูรณาการ</field>
-            <field name="department_id" ref="kmitl_demo.48"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะเทคโนโลยีนวัตกรรมบูรณาการ')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7036_admin" model="sarabun.position">
             <field name="name">ธุรการคณะเทคโนโลยีนวัตกรรมบูรณาการ</field>
-            <field name="department_id" ref="kmitl_demo.48"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'คณะเทคโนโลยีนวัตกรรมบูรณาการ')]"/>
             <field name="sequence">30</field>
         </record>
 
@@ -528,60 +526,60 @@
              ══════════════════════════════════════════════════ -->
 
         <!-- วิทยาลัยนวัตกรรมและอุตสาหกรรม (อว 7026)
-             TODO: demo ชื่อ "วิทยาลัยการจัดการนวัตกรรมและอุตสาหกรรม" (kmitl_demo.39) -->
+             ชื่อในฐานข้อมูล: "วิทยาลัยการจัดการนวัตกรรมและอุตสาหกรรม" -->
         <record id="pos_7026_dean" model="sarabun.position">
             <field name="name">คณบดีวิทยาลัยนวัตกรรมและอุตสาหกรรม</field>
-            <field name="department_id" ref="kmitl_demo.39"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'วิทยาลัยการจัดการนวัตกรรมและอุตสาหกรรม')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7026_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีวิทยาลัยนวัตกรรมและอุตสาหกรรม</field>
-            <field name="department_id" ref="kmitl_demo.39"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'วิทยาลัยการจัดการนวัตกรรมและอุตสาหกรรม')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7026_admin" model="sarabun.position">
             <field name="name">ธุรการวิทยาลัยนวัตกรรมและอุตสาหกรรม</field>
-            <field name="department_id" ref="kmitl_demo.39"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'วิทยาลัยการจัดการนวัตกรรมและอุตสาหกรรม')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- วิทยาลัยอุตสาหกรรมการบินนานาชาติ (อว 7027) -->
         <record id="pos_7027_dean" model="sarabun.position">
             <field name="name">คณบดีวิทยาลัยอุตสาหกรรมการบินนานาชาติ</field>
-            <field name="department_id" ref="kmitl_demo.40"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'วิทยาลัยอุตสาหกรรมการบินนานาชาติ')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7027_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีวิทยาลัยอุตสาหกรรมการบินนานาชาติ</field>
-            <field name="department_id" ref="kmitl_demo.40"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'วิทยาลัยอุตสาหกรรมการบินนานาชาติ')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7027_admin" model="sarabun.position">
             <field name="name">ธุรการวิทยาลัยอุตสาหกรรมการบินนานาชาติ</field>
-            <field name="department_id" ref="kmitl_demo.40"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'วิทยาลัยอุตสาหกรรมการบินนานาชาติ')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- วิทยาลัยวิศวกรรมสังคีต (อว 7030) -->
         <record id="pos_7030_dean" model="sarabun.position">
             <field name="name">คณบดีวิทยาลัยวิศวกรรมสังคีต</field>
-            <field name="department_id" ref="kmitl_demo.42"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'วิทยาลัยวิศวกรรมสังคีต')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7030_deputy_dean" model="sarabun.position">
             <field name="name">รองคณบดีวิทยาลัยวิศวกรรมสังคีต</field>
-            <field name="department_id" ref="kmitl_demo.42"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'วิทยาลัยวิศวกรรมสังคีต')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7030_admin" model="sarabun.position">
             <field name="name">ธุรการวิทยาลัยวิศวกรรมสังคีต</field>
-            <field name="department_id" ref="kmitl_demo.42"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'วิทยาลัยวิศวกรรมสังคีต')]"/>
             <field name="sequence">30</field>
         </record>
 
@@ -592,114 +590,114 @@
         <!-- สำนักบริหารข้อมูลดิจิทัลพระจอมเกล้าเจ้าคุณทหารลาดกระบัง (อว 7006) -->
         <record id="pos_7006_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักบริหารข้อมูลดิจิทัลพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
-            <field name="department_id" ref="kmitl_demo.09"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักบริหารข้อมูลดิจิทัลพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7006_deputy_dir" model="sarabun.position">
             <field name="name">รองผู้อำนวยการสำนักบริหารข้อมูลดิจิทัลพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
-            <field name="department_id" ref="kmitl_demo.09"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักบริหารข้อมูลดิจิทัลพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7006_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักบริหารข้อมูลดิจิทัลพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
-            <field name="department_id" ref="kmitl_demo.09"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักบริหารข้อมูลดิจิทัลพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- สำนักการเรียนรู้ตลอดชีวิตพระจอมเกล้าเจ้าคุณทหารลาดกระบัง (อว 7009) -->
         <record id="pos_7009_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักการเรียนรู้ตลอดชีวิตพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
-            <field name="department_id" ref="kmitl_demo.10"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักการเรียนรู้ตลอดชีวิตพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7009_deputy_dir" model="sarabun.position">
             <field name="name">รองผู้อำนวยการสำนักการเรียนรู้ตลอดชีวิตพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
-            <field name="department_id" ref="kmitl_demo.10"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักการเรียนรู้ตลอดชีวิตพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7009_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักการเรียนรู้ตลอดชีวิตพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
-            <field name="department_id" ref="kmitl_demo.10"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักการเรียนรู้ตลอดชีวิตพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- สำนักทะเบียนและบริการการศึกษา (อว 7012) -->
         <record id="pos_7012_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักทะเบียนและบริการการศึกษา</field>
-            <field name="department_id" ref="kmitl_demo.08"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักทะเบียนและบริการการศึกษา')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7012_deputy_dir" model="sarabun.position">
             <field name="name">รองผู้อำนวยการสำนักทะเบียนและบริการการศึกษา</field>
-            <field name="department_id" ref="kmitl_demo.08"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักทะเบียนและบริการการศึกษา')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7012_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักทะเบียนและบริการการศึกษา</field>
-            <field name="department_id" ref="kmitl_demo.08"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักทะเบียนและบริการการศึกษา')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- สำนักบริหารงานวิจัยและนวัตกรรมพระจอมเกล้าลาดกระบัง (อว 7015) -->
         <record id="pos_7015_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักบริหารงานวิจัยและนวัตกรรมพระจอมเกล้าลาดกระบัง</field>
-            <field name="department_id" ref="kmitl_demo.99"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักบริหารงานวิจัยและนวัตกรรมพระจอมเกล้าลาดกระบัง')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7015_deputy_dir" model="sarabun.position">
             <field name="name">รองผู้อำนวยการสำนักบริหารงานวิจัยและนวัตกรรมพระจอมเกล้าลาดกระบัง</field>
-            <field name="department_id" ref="kmitl_demo.99"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักบริหารงานวิจัยและนวัตกรรมพระจอมเกล้าลาดกระบัง')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7015_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักบริหารงานวิจัยและนวัตกรรมพระจอมเกล้าลาดกระบัง</field>
-            <field name="department_id" ref="kmitl_demo.99"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักบริหารงานวิจัยและนวัตกรรมพระจอมเกล้าลาดกระบัง')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- สำนักวิชาศึกษาทั่วไป (อว 7018) -->
         <record id="pos_7018_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักวิชาศึกษาทั่วไป</field>
-            <field name="department_id" ref="kmitl_demo.37"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักวิชาศึกษาทั่วไป')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7018_deputy_dir" model="sarabun.position">
             <field name="name">รองผู้อำนวยการสำนักวิชาศึกษาทั่วไป</field>
-            <field name="department_id" ref="kmitl_demo.37"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักวิชาศึกษาทั่วไป')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7018_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักวิชาศึกษาทั่วไป</field>
-            <field name="department_id" ref="kmitl_demo.37"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักวิชาศึกษาทั่วไป')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- สำนักวิจัยนวัตกรรมเมืองอัจฉริยะ (อว 7031) -->
         <record id="pos_7031_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสำนักวิจัยนวัตกรรมเมืองอัจฉริยะ</field>
-            <field name="department_id" ref="kmitl_demo.43"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักวิจัยนวัตกรรมเมืองอัจฉริยะ')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7031_deputy_dir" model="sarabun.position">
             <field name="name">รองผู้อำนวยการสำนักวิจัยนวัตกรรมเมืองอัจฉริยะ</field>
-            <field name="department_id" ref="kmitl_demo.43"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักวิจัยนวัตกรรมเมืองอัจฉริยะ')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7031_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักวิจัยนวัตกรรมเมืองอัจฉริยะ</field>
-            <field name="department_id" ref="kmitl_demo.43"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักวิจัยนวัตกรรมเมืองอัจฉริยะ')]"/>
             <field name="sequence">30</field>
         </record>
 
@@ -710,98 +708,95 @@
         <!-- วิทยาเขตชุมพรเขตรอุดมศักดิ์ (อว 7010) -->
         <record id="pos_7010_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการวิทยาเขตชุมพรเขตรอุดมศักดิ์</field>
-            <field name="department_id" ref="kmitl_demo.11"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'วิทยาเขตชุมพรเขตรอุดมศักดิ์')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7010_deputy_dir" model="sarabun.position">
             <field name="name">รองผู้อำนวยการวิทยาเขตชุมพรเขตรอุดมศักดิ์</field>
-            <field name="department_id" ref="kmitl_demo.11"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'วิทยาเขตชุมพรเขตรอุดมศักดิ์')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7010_admin" model="sarabun.position">
             <field name="name">ธุรการวิทยาเขตชุมพรเขตรอุดมศักดิ์</field>
-            <field name="department_id" ref="kmitl_demo.11"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'วิทยาเขตชุมพรเขตรอุดมศักดิ์')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร (อว 7032) -->
         <record id="pos_7032_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการโรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร</field>
-            <field name="department_id" ref="kmitl_demo.44"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7032_deputy_dir" model="sarabun.position">
             <field name="name">รองผู้อำนวยการโรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร</field>
-            <field name="department_id" ref="kmitl_demo.44"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7032_admin" model="sarabun.position">
             <field name="name">ธุรการโรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร</field>
-            <field name="department_id" ref="kmitl_demo.44"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร')]"/>
             <field name="sequence">30</field>
         </record>
 
-        <!-- สำนักงานสภาคณาจารย์และพนักงาน (อว 7016)
-             TODO: ไม่มีใน hr.department — ใช้ สำนักงานอธิการบดี แทน -->
+        <!-- สำนักงานสภาคณาจารย์และพนักงาน (อว 7016) — ไม่มีใน hr.department -->
         <record id="pos_7016_chair" model="sarabun.position">
             <field name="name">ประธานสภาคณาจารย์และพนักงาน</field>
-            <field name="department_id" ref="kmitl_demo.89"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7016_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานสภาคณาจารย์และพนักงาน</field>
-            <field name="department_id" ref="kmitl_demo.89"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สำนักงานสภาสถาบัน (อว 7017) -->
         <record id="pos_7017_secretary" model="sarabun.position">
             <field name="name">เลขานุการสภาสถาบัน</field>
-            <field name="department_id" ref="kmitl_demo.33"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานสภาสถาบัน')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7017_admin" model="sarabun.position">
             <field name="name">ธุรการสำนักงานสภาสถาบัน</field>
-            <field name="department_id" ref="kmitl_demo.33"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สำนักงานสภาสถาบัน')]"/>
             <field name="sequence">20</field>
         </record>
 
         <!-- สถาบัน KOSEN KMITL (อว 7037)
-             TODO: demo ชื่อ "สถาบันโคเซ็นแห่งสถาบันเทคโนโลยีฯ" (kmitl_demo.89430) -->
+             ชื่อในฐานข้อมูล: "สถาบันโคเซ็นแห่งสถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง" -->
         <record id="pos_7037_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการสถาบัน KOSEN KMITL</field>
-            <field name="department_id" ref="kmitl_demo.89430"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สถาบันโคเซ็นแห่งสถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7037_deputy_dir" model="sarabun.position">
             <field name="name">รองผู้อำนวยการสถาบัน KOSEN KMITL</field>
-            <field name="department_id" ref="kmitl_demo.89430"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สถาบันโคเซ็นแห่งสถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="pos_7037_admin" model="sarabun.position">
             <field name="name">ธุรการสถาบัน KOSEN KMITL</field>
-            <field name="department_id" ref="kmitl_demo.89430"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', 'สถาบันโคเซ็นแห่งสถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')]"/>
             <field name="sequence">30</field>
         </record>
 
         <!-- 42 บางกอก (อว 7034) -->
         <record id="pos_7034_dir" model="sarabun.position">
             <field name="name">ผู้อำนวยการ 42 บางกอก</field>
-            <field name="department_id" ref="kmitl_demo.46"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', '42 บางกอก')]"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="pos_7034_admin" model="sarabun.position">
             <field name="name">ธุรการ 42 บางกอก</field>
-            <field name="department_id" ref="kmitl_demo.46"/>
+            <field name="department_id" model="hr.department" search="[('name', '=', '42 บางกอก')]"/>
             <field name="sequence">20</field>
         </record>
 
