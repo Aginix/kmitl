@@ -8,8 +8,6 @@
     "category": "KMITL",
     "depends": [
         "base_user_role",
-        "purchase_request",
-        "agx_sarabun",
     ],
     "data": [
         "security/res_users_role.xml",
