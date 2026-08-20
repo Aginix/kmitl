@@ -5,6 +5,7 @@
         id="menu_assets_management"
         name="Asset"
         web_icon="account_asset_kmitl,static/description/icon.png"
+        groups="purchase.group_purchase_user"
         sequence="22"
     />
 
@@ -12,6 +13,7 @@
         id="menu_assets"
         name="Asset"
         parent="menu_assets_management"
+        groups="purchase.group_purchase_user"
         action="account_asset_management.account_asset_action"
     />
 

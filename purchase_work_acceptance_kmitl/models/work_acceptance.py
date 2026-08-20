@@ -480,3 +480,4 @@ class WorkAcceptanceLine(models.Model):
     date_receive = fields.Date(
         related="wa_id.date_receive", string="Received Date", readonly=True
     )
+    uom_text = fields.Char(string="หน่วยนับ")

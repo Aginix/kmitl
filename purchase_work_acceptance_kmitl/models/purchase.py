@@ -51,4 +51,10 @@ class PurchaseOrder(models.Model):
         result["context"]["default_fines_rate"] = self.fines_rate
         result["context"]["default_po_date_order_date"] = self.date_order_date
         result["context"]["default_po_work_start"] = self.work_start
+        po_lines_by_id = {line.id: line for line in self.order_line}
+        for cmd in result["context"].get("default_wa_line_ids", []):
+            if cmd[0] == 0 and isinstance(cmd[2], dict):
+                po_line = po_lines_by_id.get(cmd[2].get("purchase_line_id"))
+                if po_line:
+                    cmd[2]["uom_text"] = po_line.uom_text
         return result

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_guarantee_viewer,purchase.guarantee viewer,l10n_th_gov_purchase_guarantee.model_purchase_guarantee,purchase_viewer.group_purchase_viewer,1,0,0,0
+access_purchase_guarantee_method_viewer,purchase.guarantee.method viewer,l10n_th_gov_purchase_guarantee.model_purchase_guarantee_method,purchase_viewer.group_purchase_viewer,1,0,0,0
+access_purchase_guarantee_type_viewer,purchase.guarantee.type viewer,l10n_th_gov_purchase_guarantee.model_purchase_guarantee_type,purchase_viewer.group_purchase_viewer,1,0,0,0
