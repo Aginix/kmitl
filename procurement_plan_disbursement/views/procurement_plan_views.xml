@@ -7,20 +7,33 @@
         <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form" />
         <field name="arch" type="xml">
 
-            <!-- Smart button: linked disbursement requests -->
+            <!-- Smart buttons: disbursement requests split by state -->
             <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="disbursement_pending_count" invisible="1"/>
+                <field name="disbursement_done_count" invisible="1"/>
                 <button
-                    name="action_view_disbursement_requests"
+                    name="action_view_pending_disbursement_requests"
                     type="object"
                     class="oe_stat_button"
-                    icon="fa-money"
-                    attrs="{'invisible': [('disbursement_request_count', '=', 0)]}"
+                    icon="fa-clock-o"
+                    attrs="{'invisible': [('disbursement_pending_count', '=', 0)]}"
                 >
-                    <field
-                        name="disbursement_request_count"
-                        widget="statinfo"
-                        string="ใบขอเบิก"
-                    />
+                    <div class="o_stat_info">
+                        <field name="disbursement_pending_amount" widget="monetary" nolabel="1" class="o_stat_value" options="{'currency_field': 'currency_id'}"/>
+                        <span class="o_stat_text">เบิกจ่าย (รอดำเนินการ)</span>
+                    </div>
+                </button>
+                <button
+                    name="action_view_done_disbursement_requests"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-check-circle"
+                    attrs="{'invisible': [('disbursement_done_count', '=', 0)]}"
+                >
+                    <div class="o_stat_info">
+                        <field name="disbursement_done_amount" widget="monetary" nolabel="1" class="o_stat_value" options="{'currency_field': 'currency_id'}"/>
+                        <span class="o_stat_text">เบิกจ่าย (อนุมัติแล้ว)</span>
+                    </div>
                 </button>
             </xpath>
 
