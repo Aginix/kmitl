@@ -76,14 +76,12 @@
             <xpath expr="//button[@name='button_cancel']" position="attributes">
                 <attribute name="string">Cancel PO</attribute>
                 <attribute name="states">purchase</attribute>
-                <attribute name="groups">purchase.group_purchase_user</attribute>
             </xpath>
             <xpath expr="//button[@name='button_draft']" position="attributes">
                 <attribute name="states">done,cancel</attribute>
             </xpath>
             <xpath expr="//button[@name='button_done']" position="attributes">
                 <attribute name="string">Done</attribute>
-                <attribute name="groups">purchase.group_purchase_user</attribute>
             </xpath>
             <xpath expr="//button[@name='button_unlock']" position="attributes">
                 <attribute name="invisible">1</attribute>

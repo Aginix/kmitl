@@ -12,7 +12,6 @@
                     string="Create Sarabun"
                     type="object"
                     class="oe_highlight"
-                    groups="purchase.group_purchase_user"
                     attrs="{'invisible': ['|', ('state', '!=', 'to_submit'), ('sarabun_has_live_document', '=', True)]}"
                 />
                 <button

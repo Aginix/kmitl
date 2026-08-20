@@ -55,8 +55,6 @@
                 <button name="action_open_reservation_picker" type="object"
                     string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
                     class="btn btn-primary mb-2" icon="fa-sitemap"
-                    groups="budget.group_budget_commitment,
-                            purchase.group_purchase_user"
                     attrs="{'invisible': ['|', '|', ('is_budget_editable', '=', False), ('reservation_commitment_id', '!=', False), ('budget_selection_mode', '!=', 'chart')]}"/>
                 <group name="budget_details" string="Budget Details">
                     <field name="is_budget_editable" invisible="1" />
