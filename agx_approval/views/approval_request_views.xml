@@ -88,8 +88,10 @@
                             widget="radio" options="{'horizontal': True}"
                             attrs="{'invisible': [('is_budget_editable', '=', False)]}"/>
 
+                        <field name="allowed_reservation_commitment_ids" invisible="1"/>
                         <field name="reservation_commitment_id" colspan="2"
                             widget="budget_commitment_info"
+                            domain="[('id', 'in', allowed_reservation_commitment_ids)]"
                             options="{'no_create': True, 'no_open': True}"
                             attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '!=', 'reservation'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
                             placeholder="เลือกใบจองงบประมาณที่จะหยิบไปใช้"/>

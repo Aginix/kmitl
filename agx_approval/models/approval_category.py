@@ -79,7 +79,11 @@ class ApprovalCategory(models.Model):
     budget_account_id = fields.Many2one(
         "budget.account",
         string="Budget Account",
-        domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
+        domain=[
+            ("budgetable", "=", True),
+            ("budget_type", "=", "expense"),
+            ("purchase_ok", "=", False),
+        ],
     )
 
     activity_analytic_id = fields.Many2one(

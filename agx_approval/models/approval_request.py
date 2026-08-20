@@ -211,17 +211,27 @@ class ApprovalRequest(models.Model):
     )
 
     def _domain_budget_account_id(self):
-        return [("purchase_ok", "=", True), ("product_id", "!=", False)]
+        # An approval is not a procurement (ADR-0004): reserve against
+        # non-procurement expense codes, not product-backed purchase codes.
+        return [
+            ("budgetable", "=", True),
+            ("budget_type", "=", "expense"),
+            ("purchase_ok", "=", False),
+        ]
 
     def _reservation_account_domain(self):
         """Budget codes selectable in the reservation picker for this request.
 
-        Mirror the budget_account_id field domain (purchasable, product-backed
-        codes) on top of the mixin's budgetable/expense baseline, so the picker
-        cannot offer — and apply_reservation_selection cannot write — a code the
-        request rejects.
+        Non-procurement expense codes (ADR-0004) on top of the mixin's
+        budgetable/expense baseline, so the picker cannot offer — and
+        apply_reservation_selection cannot write — a code the request rejects.
+        When the category pins a budget code, that code is the request's hard
+        constraint (single choke point for picker, write-back, and draw-down).
         """
-        return super()._reservation_account_domain() + self._domain_budget_account_id()
+        domain = super()._reservation_account_domain() + self._domain_budget_account_id()
+        if self.category_id.budget_account_id:
+            domain += [("id", "=", self.category_id.budget_account_id.id)]
+        return domain
 
     def _get_commitment_title(self):
         """ชื่อรายการจอง of a commitment this request reserves = its ประเภทคำขออนุมัติ.
@@ -262,7 +272,6 @@ class ApprovalRequest(models.Model):
     reservation_commitment_id = fields.Many2one(
         "budget.commitment",
         string="ใบจองงบประมาณ",
-        domain=lambda self: self._domain_reservation_commitment_id(),
         copy=False,
         tracking=True,
         help=(
@@ -271,6 +280,18 @@ class ApprovalRequest(models.Model):
             "ใช้เมื่อเลือกวิธี 'หยิบจากใบจองงบประมาณที่มีอยู่'."
         ),
     )
+
+    allowed_reservation_commitment_ids = fields.Many2many(
+        "budget.commitment",
+        compute="_compute_allowed_reservation_commitment_ids",
+    )
+
+    @api.depends("category_id", "state")
+    def _compute_allowed_reservation_commitment_ids(self):
+        for rec in self:
+            rec.allowed_reservation_commitment_ids = self.env["budget.commitment"].search(
+                rec._domain_reservation_commitment_id()
+            )
 
     def _domain_reservation_commitment_id(self):
         """Reservations this request may draw down (phase-1 dropdown). OU
@@ -287,6 +308,10 @@ class ApprovalRequest(models.Model):
         for fname in ("procurement_plan_id", "kmitl_project_id"):
             if fname in Commitment._fields:
                 domain.append((fname, "=", False))
+        account_ids = (
+            self.env["budget.account"].search(self._reservation_account_domain()).ids
+        )
+        domain.append(("account_id", "in", account_ids))
         return domain
 
     def apply_reservation_selection(self, selections, dims=None):
@@ -752,7 +777,7 @@ class ApprovalRequest(models.Model):
         """Block drawing a reservation this request must not use: a plan/project
         shared commitment (drawn only through their create-from-source flows,
         ADR-0006/0007) or a budget code this request could not itself select
-        (must be purchasable + product-backed)."""
+        (non-procurement expense code, ADR-0004)."""
         for fname, label in (
             ("procurement_plan_id", _("แผนจัดซื้อจัดจ้าง")),
             ("kmitl_project_id", _("โครงการ")),
