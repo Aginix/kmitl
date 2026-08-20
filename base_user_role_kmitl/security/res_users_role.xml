@@ -9,8 +9,6 @@
                 name="implied_ids"
                 eval="[
                     (4, ref('base.group_user')),
-                    (4, ref('purchase_request.group_purchase_request_user')),
-                    (4, ref('agx_sarabun.group_sarabun_user')),
                 ]"
             />
         </record>
