@@ -60,15 +60,32 @@ class PurchaseRequest(models.Model):
         Any reserved/in-progress commitment with obligable headroom, restricted to
         purchasable, product-backed budget codes — the same purchase_ok + product
         gate as the ``budget_account_id`` selector, so the dropdown only offers
-        reservations this PR can actually draw. OU visibility is already enforced
-        by the record rules (owner or beneficiary unit — ADR-0011).
+        reservations this PR can actually draw — and to this request's own fiscal
+        year, since drawing one adopts its ปีงบ (ADR-0010): offering another year's
+        slip would silently flip the request's year. OU visibility is already
+        enforced by the record rules (owner or beneficiary unit — ADR-0011).
         """
         return [
             ("state", "in", ("reserved", "partial")),
             ("available_to_obligate", ">", 0),
             ("account_id.purchase_ok", "=", True),
             ("account_id.product_id", "!=", False),
+            ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
         ]
+
+    reservation_commitment_domain = fields.Binary(
+        compute="_compute_reservation_commitment_domain",
+        help=(
+            "Record-aware domain for the ใบจองงบประมาณ dropdown. A static field "
+            "domain cannot see this request's own account_fiscal_year_id, so the "
+            "year filter is applied through this computed domain instead."
+        ),
+    )
+
+    @api.depends("account_fiscal_year_id")
+    def _compute_reservation_commitment_domain(self):
+        for rec in self:
+            rec.reservation_commitment_domain = rec._domain_reservation_commitment_id()
 
     budget_account_id = fields.Many2one(
         "budget.account",
@@ -399,6 +416,20 @@ class PurchaseRequest(models.Model):
         if commitment:
             self.budget_account_id = commitment.account_id.id
             self.account_fiscal_year_id = commitment.account_fiscal_year_id.id
+
+    @api.onchange("account_fiscal_year_id")
+    def _onchange_account_fiscal_year_id(self):
+        """เปลี่ยนปีงบ = ใบจองที่หยิบไว้ (คนละปีงบ) ใช้กับเอกสารนี้ไม่ได้แล้ว → ล้างทิ้ง.
+
+        เทียบกับปีงบของใบจองเอง ไม่ใช่ล้างทุกครั้งที่ปีงบเปลี่ยน เพราะการหยิบใบจอง
+        (``_onchange_reservation_commitment_id``) ตั้งปีงบ = ปีงบของใบจองอยู่แล้ว ถ้าล้าง
+        ดื้อๆ การหยิบจะล้างตัวเองทันทีในรอบ onchange เดียวกัน."""
+        if (
+            self.reservation_commitment_id
+            and self.reservation_commitment_id.account_fiscal_year_id
+            != self.account_fiscal_year_id
+        ):
+            self.reservation_commitment_id = False
 
     @api.onchange("budget_selection_mode")
     def _onchange_budget_selection_mode(self):

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="budget_commitment_form_view" model="ir.ui.view">
+        <field name="name">budget.commitment.form (Purchase Request)</field>
+        <field name="model">budget.commitment</field>
+        <field name="inherit_id" ref="budget.budget_commitment_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    class="oe_stat_button"
+                    type="object"
+                    name="action_view_purchase_requests"
+                    icon="fa-shopping-cart"
+                    attrs="{'invisible': [('purchase_request_count', '=', 0)]}"
+                >
+                    <field
+                        string="ใบขอให้จัดหา"
+                        name="purchase_request_count"
+                        widget="statinfo"
+                    />
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>
