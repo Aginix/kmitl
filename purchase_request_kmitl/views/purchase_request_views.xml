@@ -167,13 +167,7 @@
             </xpath>
 
             <xpath expr="//field[@name='assigned_to']" position="attributes">
-                <attribute name="string">Responsible Officer</attribute>
-                <attribute
-                    name="attrs"
-                >{'readonly': [('state','not in', ['to_approve', 'approved', 'in_egp', 'in_approval', 'in_progress'])]}</attribute>
-                <attribute
-                    name="options"
-                >{'no_create': True, 'no_open': True}</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath
@@ -232,6 +226,12 @@
                             attrs="{'readonly': [('is_editable', '=', False)]}"
                         />
                         <field name="user_id" readonly="1" />
+                        <field
+                            name="assigned_to"
+                            string="Responsible Officer"
+                            attrs="{'readonly': [('state','not in', ['to_approve', 'approved', 'in_egp', 'in_approval', 'in_progress'])]}"
+                            options="{'no_create': True, 'no_open': True}"
+                        />
                     </group>
                     <group name="purchase_request_group">
                         <field
@@ -264,13 +264,6 @@
                         />
                     </group>
                 </group>
-            </xpath>
-
-            <xpath
-                expr="//group[@name='purchase_request_details_group']/group[1]/field[@name='user_id']"
-                position="after"
-            >
-                <xpath expr="//field[@name='assigned_to']" position="move" />
             </xpath>
 
             <!-- === Notebook pages === -->
