@@ -68,16 +68,24 @@
                         <field name="attachment_ids" attrs="{'readonly': [('is_plan_editable','=', False)]}" context="{'default_res_model': 'approval.request'}" widget="many2many_binary">
                         </field>
                     </group>
-                    <group name="budget" string="Budget">
-                        <!-- The reserved commitment, however it came to be: reserved
-                             by this request or drawn from an existing slip. Same
-                             widget as the picker below, so the two paths read alike. -->
+                    <!-- The reserved commitment, however it came to be: reserved by
+                         this request or drawn from an existing slip. Shown to everyone
+                         once a slip exists — users without budget.group_budget_commitment
+                         never see the selection UI below, but they must still see the
+                         ใบจองงบประมาณ their request ended up with. -->
+                    <group name="budget_commitment_info_group" string="รหัสงบประมาณ"
+                        attrs="{'invisible': [('budget_commitment_id', '=', False)]}">
+                        <field name="budget_commitment_state" invisible="1"/>
                         <field name="budget_commitment_id" colspan="2" nolabel="1"
                             widget="budget_commitment_info" readonly="1"
-                            options="{'no_create': True, 'no_open': True}"
-                            attrs="{'invisible': [('budget_commitment_id', '=', False)]}"/>
+                            options="{'no_create': True, 'no_open': True}"/>
+                    </group>
+                    <!-- Budget selection UI: reserved to budget officers. Users without
+                         budget.group_budget_commitment never see this group nor its
+                         heading — they only see the reserved commitment above. -->
+                    <group name="budget" string="Budget"
+                        groups="budget.group_budget_commitment">
                         <field name="is_budget_editable" invisible="1"/>
-                        <field name="budget_commitment_state" invisible="1"/>
                         <!-- Ask which way first, then show only that way's fields.
                              The mode is a UI affordance: the server still keys
                              draw-down off reservation_commitment_id (ADR-0010). Each
