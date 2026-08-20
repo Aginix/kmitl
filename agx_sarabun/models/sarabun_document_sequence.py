@@ -31,8 +31,16 @@ class SarabunDocumentSequence(models.Model):
     )
 
     # === Rendering ===
-    prefix = fields.Char(help="Rendered, not stored on the number (e.g. 'อว 6801.1/').")
-    suffix = fields.Char()
+    prefix = fields.Char(
+        trim=False,
+        help="Rendered, not stored on the number (e.g. 'อว 6801.1/'). "
+        "trim=False so a trailing space/separator survives the web-client trim.",
+    )
+    suffix = fields.Char(
+        trim=False,
+        help="Rendered after the counter. trim=False so a leading space/separator "
+        "survives the web-client trim.",
+    )
     padding = fields.Integer(default=4, help="Zero-pad width of the counter.")
 
     number_ids = fields.One2many("sarabun.document.number", "sequence_id", string="Numbers")
