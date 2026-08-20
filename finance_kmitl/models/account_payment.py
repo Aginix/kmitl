@@ -20,7 +20,6 @@ from odoo.exceptions import UserError
 MONEY_FIELDS = (
     "amount",
     "partner_id",
-    "partner_bank_id",
     "payment_method_line_id",
     "currency_id",
     "payment_type",
@@ -28,6 +27,15 @@ MONEY_FIELDS = (
     "journal_id",
     "date",
 )
+
+# The payee's bank account is money side too, but it closes later than the rest,
+# so it has a guard of its own. Everything above moves the books — the amount, the
+# period, the account credited — and is settled the moment the voucher is
+# confirmed. This one moves nothing: it is purely the instruction carried to the
+# bank, and the bank is not told anything until an e-payment file leaves. Until
+# then a wrong account number is a mistake nobody has acted on yet, and refusing
+# the correction only forces it to be made outside the system. See ADR-0003.
+PAYEE_ACCOUNT_FIELD = "partner_bank_id"
 
 
 class AccountPayment(models.Model):
@@ -228,14 +236,17 @@ class AccountPayment(models.Model):
         line, so looking it up then finds nothing and the correction silently
         does nothing.
         """
-        money = [name for name in vals if name in MONEY_FIELDS]
-        if money and not self.env.context.get("skip_account_move_synchronization"):
-            self._check_money_side_open(
-                ", ".join(
-                    description["string"]
-                    for description in self.fields_get(money, ["string"]).values()
+        if not self.env.context.get("skip_account_move_synchronization"):
+            money = [name for name in vals if name in MONEY_FIELDS]
+            if money:
+                self._check_money_side_open(
+                    ", ".join(
+                        description["string"]
+                        for description in self.fields_get(money, ["string"]).values()
+                    )
                 )
-            )
+            if PAYEE_ACCOUNT_FIELD in vals:
+                self._check_payee_account_open()
         liquidity_lines = {}
         if "payment_method_line_id" in vals:
             liquidity_lines = {
@@ -254,11 +265,15 @@ class AccountPayment(models.Model):
         """Refuse to change what the bank already acted on.
 
         The money side is open only while the voucher is the finance office's own
-        draft. From the moment it is confirmed for the bank it is either in a file,
-        at the bank, or booked — and in all three the record has to keep saying what
-        was actually instructed. The booking side is untouched by this: the
-        accounting maker corrects that after the money has left, which is what
-        their step exists for.
+        draft. From the moment it is confirmed for the bank the voucher has a
+        ใบสำคัญจ่าย number, a date and an accounting period, and every field guarded
+        here either is one of those or moves the entry that carries them. The
+        booking side is untouched by this: the accounting maker corrects that after
+        the money has left, which is what their step exists for.
+
+        The payee's bank account is the one money-side fact this does not cover. It
+        moves nothing, so it stays correctable until the instruction actually leaves
+        — ``_check_payee_account_open`` below, and ADR-0003.
 
         ``what`` is the label of whatever is being changed, built by the caller
         from its own model, so the message names the field the person just edited
@@ -275,6 +290,66 @@ class AccountPayment(models.Model):
                     "description) may still be corrected.",
                     what=what,
                     payment=payment.display_name,
+                )
+            )
+        return True
+
+    # -------------------------------------------------------------------------
+    # Into an e-payment file
+    # -------------------------------------------------------------------------
+    def grouped_by_paying_account(self):
+        """One recordset per หัวจ่าย, in the order the payments came in.
+
+        One file debits one account, so this is the shape every path into a file
+        works in: a selection is not one batch but as many as it has paying
+        accounts.
+        """
+        groups = {}
+        for payment in self:
+            paying_account = payment.payment_method_line_id
+            groups[paying_account] = groups.get(paying_account, self.browse()) | payment
+        return groups
+
+    def action_create_bank_payment_export(self):
+        """Put the selected vouchers into e-payment files.
+
+        Sits on this model so the payment list can carry it as a real button
+        instead of burying it in the Action menu, and delegates so that door and
+        the server action behave identically.
+        """
+        return (
+            self.env["bank.payment.export"]
+            .with_context(active_ids=self.ids, active_model=self._name)
+            .action_create_bank_payment_export()
+        )
+
+    def _payee_account_is_open(self):
+        """Whether the payee's bank account may still be corrected.
+
+        Open until the instruction leaves the office. For a voucher that goes out
+        in an e-payment file that is the moment the file is exported — up to then
+        no bank has been told anything, whatever the voucher's own status says. For
+        one settled by cheque or cash the account is part of no instruction at all,
+        so it closes with the rest of the voucher, when the finance office confirms
+        the money reached the payee.
+        """
+        self.ensure_one()
+        if self.needs_bank_export:
+            return self.export_status != "exported"
+        return self.finance_state != "paid"
+
+    def _check_payee_account_open(self):
+        for payment in self:
+            if payment._payee_account_is_open():
+                continue
+            raise UserError(
+                _(
+                    "The payee's bank account cannot be changed on %(payment)s: it "
+                    "has already gone to the bank in %(file)s. Reject that file if "
+                    "the bank could not credit the account.",
+                    payment=payment.display_name,
+                    file=payment.payment_export_id.display_name
+                    or _("an e-payment file"),
                 )
             )
         return True
@@ -368,8 +443,23 @@ class AccountPayment(models.Model):
         the request instead, one press for all of its payees.
         """
         self._mark_paid()
-        self._handover_to_accounting()
+        # Through the hook, not straight to the hand-over: a voucher belonging to a
+        # document that hands over for all of its own must not raise a second Todo
+        # for the same work.
+        self._hands_over_on_its_own()._handover_to_accounting()
         return True
+
+    def _hands_over_on_its_own(self):
+        """The vouchers whose Hand-over is theirs to make.
+
+        A voucher raised by a document that hands over for all of its own — a
+        disbursement request — is not one of them: the request puts one Todo in the
+        accounting office's inbox for every payee it covers, and a second one per
+        voucher would be the same work listed twice. Overridden where such a
+        document exists, so that whatever marks a voucher paid does not have to know
+        which documents those are.
+        """
+        return self
 
     def _handover_to_accounting(self):
         """Put the voucher in the accounting office's inbox.

@@ -1,17 +1,43 @@
-<?xml version="1.0" encoding="utf-8"?>
-  <odoo>
-      
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
     <!-- View bank.payment.export form -->
     <record id="view_bank_payment_export_form" model="ir.ui.view">
         <field name="name">view.bank.payment.export.form</field>
         <field name="model">bank.payment.export</field>
-        <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_view_form"/>
+        <field
+            name="inherit_id"
+            ref="l10n_th_bank_payment_export.bank_payment_export_view_form"
+        />
         <field name="arch" type="xml">
             <xpath expr="//group[@name='left_header']" position="inside">
               <field
-                  name="bank_export_format_id"
-                  attrs="{'required': [('bank', '!=', False)]}"
-              />
+                    name="bank_export_format_id"
+                    attrs="{'required': [('bank', '!=', False)]}"
+                />
+            </xpath>
+
+            <!-- Rebuilding the rows releases every payment the file holds, so it
+                 is not something to trigger by a stray click. -->
+            <xpath
+                expr="//button[@name='action_get_all_payments']"
+                position="attributes"
+            >
+                <attribute
+                    name="confirm"
+                >This replaces every row in the file with the payments that qualify right now. Continue?</attribute>
+            </xpath>
+
+            <!-- Keyed off the stored file rather than a state, so it keeps working
+                 for any state a localisation adds after 'done'. -->
+            <xpath expr="//button[@name='action_export_text_file']" position="after">
+                <field name="export_file_id" invisible="1" />
+                <button
+                    name="action_download_export_file"
+                    string="Download File Again"
+                    type="object"
+                    attrs="{'invisible': [('export_file_id', '=', False)]}"
+                />
             </xpath>
         </field>
     </record>

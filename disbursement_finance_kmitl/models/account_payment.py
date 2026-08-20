@@ -42,24 +42,85 @@ class AccountPayment(models.Model):
             "target": "current",
         }
 
-    def action_confirm_paid(self):
-        """A voucher on a disbursement request is confirmed **on the request**.
+    def _try_hand_over_requests(self, requests):
+        """Ask the requests whether every voucher of theirs is accounted for now.
 
-        The one press that says the money left is given per request, standing for
-        every payee it covers: a payee whose transfer went through waits for the
-        payees whose did not, because a request is handed to the accounting office
-        whole or not at all. Confirming a single payee here would break that and
-        hand over half a request. See ADR-0005.
+        ``sudo`` because the crossing is a **consequence** of what the user did, not
+        something they are editing: an e-payment officer holds write on the file they
+        just closed and read-only on the request it belongs to, so without it the
+        close raises AccessError and rolls back — taking the file with it. The same
+        reason ``_try_create_payments`` is sudo'd.
         """
-        on_request = self.filtered("disbursement_request_id")
+        return requests.sudo()._try_hand_over_when_all_paid()
+
+    def write(self, vals):
+        """A voucher turning paid may be the one that carries its request across.
+
+        Watched here rather than announced by whatever did the writing: a voucher
+        reaches paid from an e-payment file being closed, from the finance office's
+        own press, and from the request itself, and none of those should have to
+        remember to tell the request.
+        """
+        res = super().write(vals)
+        if vals.get("finance_state") == "paid":
+            self._try_hand_over_requests(self.disbursement_request_id)
+        return res
+
+    def action_cancel(self):
+        """A voucher can also stop holding its request back by leaving.
+
+        Hooked on the action rather than on ``write``: ``state`` belongs to the
+        journal entry through ``_inherits``, and core cancels by calling
+        ``move_id.button_cancel()``, so nothing is ever written to this model.
+        """
+        requests = self.disbursement_request_id
+        res = super().action_cancel()
+        self._try_hand_over_requests(requests)
+        return res
+
+    def unlink(self):
+        """A voucher removed is one fewer thing its request is waiting for."""
+        requests = self.disbursement_request_id
+        res = super().unlink()
+        self._try_hand_over_requests(requests)
+        return res
+
+    def _hands_over_on_its_own(self):
+        """A voucher on a request is handed over by the request.
+
+        One Todo for the request rather than one per payee, for the reasons in
+        ADR-0004 — so whatever marks these paid must not raise a second one.
+        """
+        return (
+            super()
+            ._hands_over_on_its_own()
+            .filtered(lambda payment: not payment.disbursement_request_id)
+        )
+
+    def action_confirm_paid(self):
+        """A voucher that travels in an e-payment file is confirmed by closing it.
+
+        Not here, and not one payee at a time: closing the file is already that
+        press, given for every payee the file carried, and giving it twice for one
+        fact is how a request ends up half handed over.
+
+        A voucher settled by cheque or cash is the other case. It enters no file, so
+        there is nothing else to close and it is confirmed on itself — and the
+        request crosses when it and its siblings are all paid (ADR-0007). Before
+        this distinction existed, such a payee had no reachable press at all and its
+        request sat at ``payment_authorized`` forever.
+        """
+        on_request = self.filtered(
+            lambda payment: (
+                payment.disbursement_request_id and payment.needs_bank_export
+            )
+        )
         if on_request:
             raise UserError(
                 _(
-                    "These payments are confirmed on their disbursement request, "
-                    "not one by one: %s."
+                    "These payments go out in an e-payment file, so they are "
+                    "confirmed by closing that file rather than one by one: %s."
                 )
-                % ", ".join(
-                    set(on_request.mapped("disbursement_request_id.name"))
-                )
+                % ", ".join(set(on_request.mapped("disbursement_request_id.name")))
             )
         return super().action_confirm_paid()

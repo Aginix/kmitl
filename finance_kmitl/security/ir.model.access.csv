@@ -10,3 +10,6 @@ access_cheque_register_user_in,cheque.register.user.in,model_cheque_register,gro
 access_cheque_register_manager,cheque.register.manager,model_cheque_register,group_finance_kmitl_manager,1,1,1,1
 access_cheque_layout_all,cheque.layout.all,model_cheque_layout,base.group_user,1,0,0,0
 access_cheque_layout_manager,cheque.layout.manager,model_cheque_layout,account.group_account_manager,1,1,1,1
+access_bank_payment_export_create,bank.payment.export.create,model_bank_payment_export_create,group_finance_kmitl_user_out,1,1,1,1
+access_bank_payment_export_create_line,bank.payment.export.create.line,model_bank_payment_export_create_line,group_finance_kmitl_user_out,1,1,1,1
+access_bank_payment_export_confirm,bank.payment.export.confirm,model_bank_payment_export_confirm,group_finance_kmitl_user_out,1,1,1,1

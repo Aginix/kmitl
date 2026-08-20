@@ -38,6 +38,43 @@ class BankPaymentExportLine(models.Model):
         )
         return domain
 
+    # -------------------------------------------------------------------------
+    # The payee's bank account belongs to the voucher, not to the row
+    # -------------------------------------------------------------------------
+    payment_partner_bank_id = fields.Many2one(
+        inverse="_inverse_payment_partner_bank_id",
+        # Pinned, because Odoo turns a computed field writable the moment an
+        # inverse is given (fields.py ``readonly = not inverse``) and that would
+        # silently discard the base's ``states``, leaving the column editable in
+        # every state including a file already at the bank. write() calls the
+        # inverse regardless of this flag, so nothing is lost by keeping it.
+        readonly=True,
+        help="The payee account the bank is told to credit. The same one the "
+        "voucher carries — correcting it here corrects the voucher, so the file "
+        "can never instruct something the voucher does not say.",
+    )
+
+    @api.depends("payment_id", "payment_id.partner_bank_id")
+    def _compute_payment_default(self):
+        """Follow the voucher's payee account instead of copying it once.
+
+        The base takes a snapshot when the row is created, and the row is editable,
+        so the two could disagree — and it is the row that is written into the file
+        (``_get_receiver_information``). A file may not instruct a bank to credit an
+        account the voucher does not name; the money side is one fact, wherever it
+        is read from. Adding the voucher's field to the dependencies is what keeps
+        the row following it; ``_inverse_payment_partner_bank_id`` keeps the voucher
+        following the row.
+        """
+        return super()._compute_payment_default()
+
+    def _inverse_payment_partner_bank_id(self):
+        """Push a correction made on the row back onto the voucher."""
+        for line in self:
+            payment = line.payment_id
+            if payment and payment.partner_bank_id != line.payment_partner_bank_id:
+                payment.partner_bank_id = line.payment_partner_bank_id
+
     # Both paths are declared: overriding the compute replaces the base
     # decorator, so the journal dependency has to be carried over or the
     # fallback would never recompute.

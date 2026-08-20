@@ -22,14 +22,14 @@ with round 1's verify/approve.
 Five records sit near a payment and three of them have "type" or "subject" in their
 name. They answer different questions and must not be conflated.
 
-| Term                                | Model                               | What it says                                                                                                                                                                                                                                         |
-| ----------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Term                                | Model                               | What it says                                                                                                                                                                                                                                            |
+| ----------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **เรื่องที่จ่าย** (Payment Subject) | `kmitl.payment.subject`             | _What the disbursement is for_, which is what decides the **paying account** each payee is served from. One per request, chosen by the auditor, and copied read-only onto every voucher it raises so a payment records why it left the account it left. |
-| **ประเภทธุรกรรม** (Operation Type)  | `kmitl.payment.type`                | The **counterpart** side: what the money _is_ — which receivable, payable or deposit liability it settles or creates (เงินรับฝากค้ำประกัน, เงินยืม), through its override account. Says nothing about how money moves.                               |
-| **ลักษณะการจ่าย**                   | `disbursement.request.payment_type` | `direct` / `advance` / `prepaid`, inherited from the approval request. Nothing to do with either of the above.                                                                                                                                       |
-| **หัวจ่าย** (Paying Account)        | `account.payment.method.line`       | The **money** side: out of which bank account the money leaves, by which means, under which voucher, booked against which GL account. One choice, one of Odoo's own records.                                                                         |
-| **วิธีจ่าย** (Payment Method)       | `account.payment.method`            | เงินโอน / เช็ค / เงินสด. **Not a field anyone sets**: a paying account already names its method, so choosing the account chooses the method and the two cannot contradict each other.                                                                |
-| **ใบสำคัญ** (Voucher)               | `account.journal`                   | The document type (PV/RV/PVR/PAR) that numbers the payment — its sequence _is_ the voucher number, which is why it stays a document type and never becomes a bank account. Choosing the paying account settles the voucher, not the other way round. |
+| **ประเภทธุรกรรม** (Operation Type)  | `kmitl.payment.type`                | The **counterpart** side: what the money _is_ — which receivable, payable or deposit liability it settles or creates (เงินรับฝากค้ำประกัน, เงินยืม), through its override account. Says nothing about how money moves.                                  |
+| **ลักษณะการจ่าย**                   | `disbursement.request.payment_type` | `direct` / `advance` / `prepaid`, inherited from the approval request. Nothing to do with either of the above.                                                                                                                                          |
+| **หัวจ่าย** (Paying Account)        | `account.payment.method.line`       | The **money** side: out of which bank account the money leaves, by which means, under which voucher, booked against which GL account. One choice, one of Odoo's own records.                                                                            |
+| **วิธีจ่าย** (Payment Method)       | `account.payment.method`            | เงินโอน / เช็ค / เงินสด. **Not a field anyone sets**: a paying account already names its method, so choosing the account chooses the method and the two cannot contradict each other.                                                                   |
+| **ใบสำคัญ** (Voucher)               | `account.journal`                   | The document type (PV/RV/PVR/PAR) that numbers the payment — its sequence _is_ the voucher number, which is why it stays a document type and never becomes a bank account. Choosing the paying account settles the voucher, not the other way round.    |
 
 A record describing the money side has no business on `kmitl.payment.type`, and vice
 versa. See `finance_kmitl/docs/adr/0001-paying-account-is-a-payment-method-line.md`.
@@ -71,22 +71,22 @@ overwrite the account the person just picked.
   "รายการจ่ายเงิน".
 - **Payment Audit** (`action_audit`, `bills_posted → payment_audited`): the auditor
   checks the disbursement documents after the bills are posted, and sets the
-  เรื่องที่จ่าย that gives every payee its paying account. It is the **only**
-  checkpoint on the banking coordinates — the finance office has none of its own, so
-  a coordinate that is wrong after this is corrected on the voucher itself.
+  เรื่องที่จ่าย that gives every payee its paying account. It is the **only** checkpoint
+  on the banking coordinates — the finance office has none of its own, so a coordinate
+  that is wrong after this is corrected on the voucher itself.
 - **Payment Authorization** (`action_authorize`,
-  `payment_audited → payment_authorized`): the rector's delegate authorises the money
-  to be paid, and that press is also what **raises the vouchers** — one
-  `account.payment` per payment line (net of WHT), each numbered and confirmed for the
-  bank, so the finance office's first act on the request is the e-payment file rather
-  than turning the request into payments one press per payee. Raising them is not part
-  of the authorisation's transaction: a coordinate that fails leaves the request
-  authorized with the reason in the chatter. See ADR-0006.
-  _Avoid_: reading "authorize" as touching only the request's state.
+  `payment_audited → payment_authorized`): the rector's delegate authorises the money to
+  be paid, and that press is also what **raises the vouchers** — one `account.payment`
+  per payment line (net of WHT), each numbered and confirmed for the bank, so the
+  finance office's first act on the request is the e-payment file rather than turning
+  the request into payments one press per payee. Raising them is not part of the
+  authorisation's transaction: a coordinate that fails leaves the request authorized
+  with the reason in the chatter. See ADR-0006. _Avoid_: reading "authorize" as touching
+  only the request's state.
 - **Payment** (`account.payment`, made by `_create_payments`): one payee's voucher
   against one posted bill. It carries the line's paying account and takes its voucher
-  journal from it, and it is **dated the day the request was authorised** — that date
-  is its accounting period and what numbers it, and neither may move afterwards. The
+  journal from it, and it is **dated the day the request was authorised** — that date is
+  its accounting period and what numbers it, and neither may move afterwards. The
   request stays at `payment_authorized` while the payments are in transit.
   `action_create_payment` is the same work behind a button, kept only for the requests
   the authorisation could not raise vouchers for.
@@ -96,32 +96,32 @@ overwrite the account the person just picked.
   Rules), so this field carries a person's word, given once per request at **Paid**, and
   it is the only thing downstream reads. _Avoid_ reading it as "what the bank reported":
   nothing in the system knows that.
-- **Paid / จ่ายครบ** (`action_confirm_paid`, `payment_authorized → paid`): the finance
-  office's assertion that every payee of the request has their money. It is the
-  **single** human confirmation of the whole payment phase — one press, on the request,
-  standing for every payment it covers — so nothing asks the officer to confirm the same
-  fact twice in two places. What may be checked before it is not "has each payment been
-  confirmed" (Odoo learns that from no one but this press) but whether the e-payment file
-  was actually produced for the payments that travel in one. The money has left; the
-  accounting entry is **not** posted yet. This is the **Hand-over** (below) — the one
-  moment the request stops being the finance office's and becomes the accounting
-  office's. Never call this "เคลียร์": เคลียร์/ล้างหนี้ is the accounting act that comes
-  after it.
+- **Paid / จ่ายครบ** (`payment_authorized → paid`): every payee of the request has their
+  money, as the finance office says so. **Nobody presses this for the request as a
+  whole.** A request's payees span several หัวจ่าย, so its vouchers leave in as many
+  e-payment files, and no two of those files need be the same officer's — so each
+  officer confirms only the file they handled, closing a file pays the vouchers it
+  carried, and the request arrives here when the last of them lands. See
+  [ADR-0007](./docs/adr/0007-the-request-crosses-when-its-last-voucher-is-paid.md). The
+  money has left; the accounting entry is **not** posted yet. This is the **Hand-over**
+  (below) — the moment the request stops being the finance office's and becomes the
+  accounting office's. Never call this "เคลียร์": เคลียร์/ล้างหนี้ is the accounting act
+  that comes after it.
 - **Hand-over / ส่งมอบให้บัญชี** (`paid`): the single moment a request's payments stop
   being the finance office's work and become the accounting office's. Before it, a
-  voucher is numbered and its **money side** is frozen, but it belongs to finance — it is
-  theirs to put in an e-payment file, chase at the bank, and vouch for. After it, the
+  voucher is numbered and its **money side** is frozen, but it belongs to finance — it
+  is theirs to put in an e-payment file, chase at the bank, and vouch for. After it, the
   voucher waits in `draft` as **the accounting office's entry to book**: their maker
   corrects the booking side, submits it, and their approver approves = posts = ล้างหนี้.
-  It is *not* a hand into the approval queue — the accounting office's own maker step
-  runs from the beginning, which is what lets them fix what is wrong in the books
- . There is exactly **one** such moment per request, and it is
-  per **request**, not per payment: a payee whose transfer succeeded waits for the payees
-  whose did not, because a request is handed over whole or not at all. It is also what
-  makes the work visible — one Todo per request to the accounting makers, and a queue at
-  `paid` — because the request, not the voucher, is what KMITL navigates by.
-  _Avoid_: "ส่งให้บัญชี / submit ให้บัญชี" (Submit is the accounting maker's action on the
-  voucher, not the hand-over), "เคลียร์".
+  It is _not_ a hand into the approval queue — the accounting office's own maker step
+  runs from the beginning, which is what lets them fix what is wrong in the books .
+  There is exactly **one** such moment per request, and it is per **request**, not per
+  payment: a payee whose transfer succeeded waits for the payees whose did not, because
+  a request is handed over whole or not at all. It is also what makes the work visible —
+  one Todo per request to the accounting makers, and a queue at `paid` — because the
+  request, not the voucher, is what KMITL navigates by. _Avoid_: "ส่งให้บัญชี / submit
+  ให้บัญชี" (Submit is the accounting maker's action on the voucher, not the hand-over),
+  "เคลียร์".
 - **Cleared / ล้างหนี้** (`paid → cleared`): the accounting office posts the payment
   move through the **same account.move maker-checker as the vendor bill** (Approve =
   post). Posting reconciles the payment against the bill, clearing the payable. Set in
@@ -133,23 +133,25 @@ overwrite the account the person just picked.
 - The workflow is **forward-only** in round 2: there is no reject/return. A request that
   must be corrected is cancelled (before payment) or the bill is reversed by accounting.
 - **The bank's result file is never imported into Odoo.** A transfer the bank rejects is
-  chased and settled **outside the system** — a corrected transfer made at the bank's own
-  portal, a cheque handed over — and Odoo learns of it only through the finance office's
-  one assertion at **Paid**. Nothing in the payment phase waits for a machine-readable
-  answer from a bank, and no per-payee outcome is imported, matched or reconciled against
-  a file. A payee is therefore never re-paid inside a request: the request has one set of
-  payments, and the exceptions among them are resolved elsewhere. What the finance office
-  writes down about an exception **stays with the finance office** — the note lives on the
-  row of the e-payment file (`bank.payment.export.line.epayment_note`), which the
-  accounting office never opens. The entry they post asserts only that the money left, and
-  that assertion is the finance office's word at **Paid**, nothing finer-grained.
-- **The accounting office sees a payment only at the Hand-over**.
-  What lets the finance office put a voucher in an e-payment file is a finance-side fact
-  (`finance_state = confirmed`), never `state` — `state` belongs to the accounting office,
-  and a voucher sits in `draft` for the whole of the finance office's stretch. So no list
-  of theirs shows an entry they could not act on, and neither office's field is read by
-  the other. See [`finance_kmitl/CONTEXT.md`](../finance_kmitl/CONTEXT.md) for the
-  money-side / booking-side split that makes a `draft` voucher safe to leave with them.
+  chased and settled **outside the system** — a corrected transfer made at the bank's
+  own portal, a cheque handed over — and Odoo learns of it only through the finance
+  office's one assertion at **Paid**. Nothing in the payment phase waits for a
+  machine-readable answer from a bank, and no per-payee outcome is imported, matched or
+  reconciled against a file. A payee is therefore never re-paid inside a request: the
+  request has one set of payments, and the exceptions among them are resolved elsewhere.
+  What the finance office writes down about an exception **stays with the finance
+  office** — the note lives on the row of the e-payment file
+  (`bank.payment.export.line.epayment_note`), which the accounting office never opens.
+  The entry they post asserts only that the money left, and that assertion is the
+  finance office's word at **Paid**, nothing finer-grained.
+- **The accounting office sees a payment only at the Hand-over**. What lets the finance
+  office put a voucher in an e-payment file is a finance-side fact
+  (`finance_state = confirmed`), never `state` — `state` belongs to the accounting
+  office, and a voucher sits in `draft` for the whole of the finance office's stretch.
+  So no list of theirs shows an entry they could not act on, and neither office's field
+  is read by the other. See [`finance_kmitl/CONTEXT.md`](../finance_kmitl/CONTEXT.md)
+  for the money-side / booking-side split that makes a `draft` voucher safe to leave
+  with them.
 - **Budget is untouched** in round 2. It is obligated and consumed exactly once at
   round-1 `approved` and never re-cut here.
 - A DR payment move can be **posted only after the request is `paid`** and the payment's
@@ -163,19 +165,27 @@ overwrite the account the person just picked.
   paying account can be recorded, and it holds one.
 - **A payment line's banking coordinates are editable exactly while no payment
   contradicts them** — the auditor's during Payment Audit, nobody's once the
-  `account.payment` exists, which since ADR-0006 is from the authorisation onwards.
-  The rule is phrased against the payment rather than against a list of states, so it
-  stays true if the workflow ever grows another step.
-- **The voucher's date and the day the money left are two different facts.** The
-  voucher is dated when it was authorised, because that is what numbers it and what
-  period it books in, and a number that has been issued must not change. The day the
-  money actually left is the e-payment file's **effective date**, and that is what the
+  `account.payment` exists, which since ADR-0006 is from the authorisation onwards. The
+  rule is phrased against the payment rather than against a list of states, so it stays
+  true if the workflow ever grows another step.
+- **The voucher's date and the day the money left are two different facts.** The voucher
+  is dated when it was authorised, because that is what numbers it and what period it
+  books in, and a number that has been issued must not change. The day the money
+  actually left is the e-payment file's **effective date**, and that is what the
   withholding-tax certificate is dated from — the law dates the withholding by the day
   the income was paid. They agree except when a file leaves in a later month than the
   authorisation, and then they are deliberately allowed to differ. See ADR-0006.
 - **One e-payment file debits one account.** The paying account is chosen on the bank
   payment export first, and the payments that can be picked into it are narrowed to the
   ones paid from it — a DR whose payees span four paying accounts produces four files.
+- **Everything in the payment phase leads back to the ใบขอเบิก.** The request is the
+  document KMITL navigates by, so the voucher, its journal entry and the e-payment file
+  each carry a trail back to it. The file's trail is computed rather than stored
+  (`bank.payment.export.disbursement_request_ids`, from
+  `export_line_ids.payment_id.disbursement_request_id`): the relation is many-to-many in
+  both directions — a file spans several requests, a request spans several files — and
+  nothing would keep a stored copy honest. It names the request only when there is
+  exactly one, and the per-row column is what answers it for a file carrying several.
 
 ## System note
 
