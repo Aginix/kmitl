@@ -77,6 +77,27 @@ class ApprovalRequest(models.Model):
             if rec.state == "returned" and rec.sarabun_state == "returned":
                 rec.is_plan_editable = True
 
+    def _compute_sarabun_documents(self):
+        """Own-only self-service users (group_approval_own) don't participate in
+        Sarabun routing and are granted no access to sarabun.document. Because
+        `_compute_is_plan_editable` reads `sarabun_state`, opening any request
+        would otherwise raise an AccessError for them — degrade to an empty
+        Sarabun status instead of granting them Sarabun access."""
+        if not self.env["sarabun.document"].check_access_rights(
+            "read", raise_exception=False
+        ):
+            empty = self.env["sarabun.document"]
+            for record in self:
+                record.sarabun_document_ids = empty
+                record.sarabun_document_count = 0
+                record.active_sarabun_document_id = False
+                record.sarabun_has_live_document = False
+                record.sarabun_state = False
+                record.sarabun_is_draft = False
+                record.sarabun_state_label = False
+            return
+        return super()._compute_sarabun_documents()
+
     def _get_sarabun_report_action(self):
         """Delegate Sarabun report to Approval Request report."""
         return self.env.ref("agx_approval.action_report_approval_request")
