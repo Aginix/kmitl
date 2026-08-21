@@ -21,9 +21,22 @@ class ApprovalRequest(models.Model):
         self.ensure_one()
         return _("คำขออนุมัติเลขที่ %s รอตรวจสอบและจองงบประมาณ") % (self.name or "")
 
+    def _reserve_budget_operating_unit(self):
+        """หน่วยงานที่ใช้ route group Todo จองงบประมาณ.
+
+        ใช้ OU ของ "ใบคำขอ" เอง (`operating_unit_id`, เพิ่มโดย
+        agx_approval_operating_unit) เป็นหลัก — เป็นหน่วยงานที่เอกสารสังกัดจริง
+        และเป็นฟิลด์ที่ mail_activity_todo_role_unit คอยซิงก์ OU ของ Todo ที่
+        เปิดค้างให้ตามเมื่อ OU ของคำขอเปลี่ยน. ตกไปใช้ OU ตั้งต้นของผู้ขอเมื่อ
+        ยังไม่ติดตั้งโมดูล OU (guard ไว้จึงไม่เพิ่ม hard dependency)."""
+        self.ensure_one()
+        if "operating_unit_id" in self._fields and self.operating_unit_id:
+            return self.operating_unit_id
+        return self.user_id.default_operating_unit_id
+
     def _notify_reserve_budget_todo(self):
         """เข้าสู่ to_verify → แจ้ง Todo ให้เจ้าหน้าที่ role จองงบประมาณ
-        ภายในหน่วยงานของผู้ขอเข้ามาตรวจสอบและจองงบประมาณ.
+        ภายในหน่วยงานของคำขอเข้ามาตรวจสอบและจองงบประมาณ.
 
         กรณีไม่มีหน่วยงาน/ไม่พบ role ก็ตกลงมาเป็น Todo ส่วนบุคคลของผู้ขอ
         เพื่อไม่ให้งานค้างเงียบ (แนวเดียวกับ purchase_request_todo)."""
@@ -37,7 +50,7 @@ class ApprovalRequest(models.Model):
             if rec.activity_ids.filtered(lambda a: a.activity_type_id == act_type):
                 continue
             summary = rec._reserve_budget_todo_summary()
-            operating_unit = rec.user_id.default_operating_unit_id
+            operating_unit = rec._reserve_budget_operating_unit()
             if role and operating_unit:
                 rec.activity_schedule(
                     RESERVE_BUDGET_ACTIVITY,
