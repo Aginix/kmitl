@@ -38,7 +38,8 @@ class KmitlProject(models.Model):
         return _("คณบดี")
 
     def _get_sarabun_content(self):
-        """เนื้อหา (บันทึกนำ) — วรรคเดียวย่อหน้าตามแบบหนังสือราชการ."""
+        """เนื้อหา (บันทึกนำ) — วรรคเดียวย่อหน้าตามแบบหนังสือราชการ พร้อมลิงก์หน้า
+        portal ของโครงการให้ผู้พิจารณาเปิดดูรายละเอียดได้."""
         self.ensure_one()
         body = _(
             "ด้วย%(dept)s ได้กำหนดแผนงาน%(name)s ซึ่งได้รับอนุมัติ%(src)s "
@@ -49,7 +50,17 @@ class KmitlProject(models.Model):
             "src": escape(self._sarabun_dim_name(self.source_analytic_id)),
             "fy": escape(self.account_fiscal_year_id.name or ""),
         }
-        return '<p style="text-indent: 2.5em;">%s</p>' % body
+        url = escape(self._get_sarabun_portal_url())
+        return (
+            '<p style="text-indent: 2.5em;">%s</p>'
+            '<p>%s <a href="%s">%s</a></p>'
+        ) % (body, _("รายละเอียดโครงการ:"), url, _("เปิดดูในระบบ"))
+
+    def _get_sarabun_portal_url(self):
+        """ลิงก์หน้า portal รายละเอียดโครงการ (absolute) — route เดียวกับ
+        ``action_preview_project`` เข้าถึงแบบ auth=user สำหรับผู้พิจารณาภายใน."""
+        self.ensure_one()
+        return "%s/my/kmitl-project/%s" % (self.get_base_url(), self.id)
 
     def _get_sarabun_route_template(self):
         """เส้นทาง seed ที่ตรงกับอำนาจอนุมัติ (เรียนหัวหน้าส่วนงาน / เรียนอธิการบดี),
