@@ -39,8 +39,6 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.onlySelectable = !!ctx.only_selectable;
         this.state.selectedId = false;
         this.state.amounts = {};
-        // Free-text search on the budget-account code (feedback: not autocomplete).
-        this.state.accountSearch = "";
         // The picker must open with a blank filter bar — never pre-seeded from the
         // host's current selection (feedback: no default filters). The host still
         // passes its dimensions as context defaults (the read-only dashboard uses
@@ -54,43 +52,12 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.state.sourceId = false;
     }
 
-    onAccountSearchInput(ev) {
-        this.state.accountSearch = ev.target.value;
-    }
-
-    // Keep every row matching `predicate` plus its ancestor (dimension) rows so
-    // the full hierarchy down to each match still shows; ignores collapse/
-    // hide-zero so a match is never hidden.
-    _rowsWithAncestors(predicate) {
-        const byKey = this.rowsByKey;
-        const keep = new Set();
-        for (const row of this.state.rows) {
-            if (predicate(row)) {
-                keep.add(row.key);
-                let pk = row.parent_key;
-                while (pk && !keep.has(pk)) {
-                    keep.add(pk);
-                    pk = byKey[pk] ? byKey[pk].parent_key : false;
-                }
-            }
-        }
-        return this.state.rows.filter((row) => keep.has(row.key));
-    }
-
-    // Free-text search (on code or name, case-insensitively) takes precedence;
+    // Free-text search (handled by the base visibleRows) takes precedence;
     // otherwise, in only-selectable mode, collapse the tree to the pickable rows
-    // and their dimension path. Neither ignores nothing — both keep ancestors.
+    // and their dimension path (keeping ancestors).
     get visibleRows() {
-        const query = (this.state.accountSearch || "").trim().toLowerCase();
-        if (query) {
-            return this._rowsWithAncestors(
-                (row) =>
-                    row.row_type === "account" &&
-                    ((row.code || "").toLowerCase().includes(query) ||
-                        (row.name || "").toLowerCase().includes(query))
-            );
-        }
-        if (this.onlySelectable) {
+        const query = (this.state.accountSearch || "").trim();
+        if (!query && this.onlySelectable) {
             return this._rowsWithAncestors((row) => row.selectable);
         }
         return super.visibleRows;
