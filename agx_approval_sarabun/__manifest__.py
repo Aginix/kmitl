@@ -16,6 +16,7 @@
         "portal",
     ],
     "data": [
+        "security/security.xml",
         "data/sarabun_route_template_data.xml",
         "views/approval_request_views.xml",
         "views/portal_templates.xml",
