@@ -48,8 +48,9 @@
                             <field name="date" readonly="1"/>
                             <field name="id" invisible="1" />
                             <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}" />
-                            <field name="owner_id" widget="employee_detail_many2one" attrs="{'readonly': [('is_plan_editable', '=', False)]}"/>
+                            <field name="owner_id" widget="employee_detail_many2one" attrs="{'readonly': ['|', ('can_edit_owner', '=', False), ('is_plan_editable', '=', False)]}"/>
                             <field name="user_id" readonly="1"/>
+                            <field name="can_edit_owner" invisible="1"/>
                             <field name="has_period" invisible="1" />
                             <field name="has_city" invisible="1" />
                             <field name="has_country_id" invisible="1" />
@@ -166,42 +167,6 @@
                     <field name="message_ids" />
                 </div>
             </form>
-        </field>
-    </record>
-
-    <!-- "Own only" users cannot change the requester (ผู้ขออนุมัติ): it is
-         always themselves, so the field is locked unconditionally. Done with
-         group-scoped view inheritance (evaluated server-side per user) rather
-         than an attrs flag, so it is reliable on new records too. Applies to
-         everyone carrying group_approval_own (own, and — via the imply — user
-         and manager); the next view re-enables it for the latter two. -->
-    <record id="approval_request_view_form_own_owner_lock" model="ir.ui.view">
-        <field name="name">approval.request.form.own.owner.readonly</field>
-        <field name="model">approval.request</field>
-        <field name="inherit_id" ref="approval_request_view_form"/>
-        <field name="groups_id" eval="[(4, ref('group_approval_own'))]"/>
-        <field name="priority">90</field>
-        <field name="arch" type="xml">
-            <field name="owner_id" position="attributes">
-                <attribute name="readonly">1</attribute>
-                <attribute name="attrs">{}</attribute>
-            </field>
-        </field>
-    </record>
-
-    <!-- Full Users / Managers (who imply Own) keep the normal editable-in-draft
-         requester. Higher priority so it applies after the lock above. -->
-    <record id="approval_request_view_form_user_owner_editable" model="ir.ui.view">
-        <field name="name">approval.request.form.user.owner.editable</field>
-        <field name="model">approval.request</field>
-        <field name="inherit_id" ref="approval_request_view_form"/>
-        <field name="groups_id" eval="[(4, ref('group_approval_user'))]"/>
-        <field name="priority">91</field>
-        <field name="arch" type="xml">
-            <field name="owner_id" position="attributes">
-                <attribute name="readonly">0</attribute>
-                <attribute name="attrs">{'readonly': [('is_plan_editable', '=', False)]}</attribute>
-            </field>
         </field>
     </record>
 

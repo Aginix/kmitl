@@ -105,6 +105,26 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
+    can_edit_owner = fields.Boolean(
+        compute="_compute_can_edit_owner",
+        help="Whether the acting user may change the requester (owner_id). "
+        '"Own only" members (group_approval_own but not group_approval_user) '
+        "are locked to themselves; full Users/Managers may edit it.",
+    )
+
+    # Depend on owner_id (always defaulted) purely so onchange delivers this
+    # user-based flag to the form's modifiers on new records — a context-only
+    # compute would not be sent until the first save.
+    @api.depends("owner_id")
+    @api.depends_context("uid")
+    def _compute_can_edit_owner(self):
+        user = self.env.user
+        own_only = user.has_group(
+            "agx_approval.group_approval_own"
+        ) and not user.has_group("agx_approval.group_approval_user")
+        for rec in self:
+            rec.can_edit_owner = not own_only
+
     @api.constrains("owner_id")
     def _check_owner_is_self_for_own_group(self):
         """"Own only" users may file requests in their own name only: the
