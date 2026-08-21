@@ -105,22 +105,6 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
-    is_own_only_user = fields.Boolean(
-        compute="_compute_is_own_only_user",
-        help="True when the acting user may only handle their own requests: a "
-        "member of group_approval_own that is NOT a full Approval User "
-        "(User implies Own, so the two must be distinguished this way).",
-    )
-
-    @api.depends_context("uid")
-    def _compute_is_own_only_user(self):
-        user = self.env.user
-        own_only = user.has_group(
-            "agx_approval.group_approval_own"
-        ) and not user.has_group("agx_approval.group_approval_user")
-        for rec in self:
-            rec.is_own_only_user = own_only
-
     @api.constrains("owner_id")
     def _check_owner_is_self_for_own_group(self):
         """"Own only" users may file requests in their own name only: the
