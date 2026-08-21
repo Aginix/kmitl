@@ -8,6 +8,7 @@
     "summary": "Self-service role that only sees and files its own approval requests",
     "depends": [
         "agx_approval",
+        "agx_approval_disbursement",
     ],
     "data": [
         "security/security.xml",
