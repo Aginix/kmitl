@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <!-- Let own-request users reach the Approval app. The root menu is
-         gated on group_approval_user; add our group alongside it. -->
-    <record id="agx_approval.approval_root_menu" model="ir.ui.menu">
-        <field name="groups_id" eval="[(4, ref('agx_approval_own_security.group_approval_own'))]"/>
-    </record>
-</odoo>

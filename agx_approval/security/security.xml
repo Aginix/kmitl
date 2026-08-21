@@ -5,10 +5,18 @@
         <field name="sequence">10</field>
     </record>
 
+    <!-- Self-service role: can access the app but only sees and files its
+         own requests. Lowest tier of Own ⊂ User ⊂ Manager. -->
+    <record id="group_approval_own" model="res.groups">
+        <field name="name">Own Requests Only</field>
+        <field name="category_id" ref="agx_approval.module_category_approval"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
     <record id="group_approval_user" model="res.groups">
         <field name="name">User</field>
         <field name="category_id" ref="agx_approval.module_category_approval"/>
-        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user'), ref('group_approval_own')])]"/>
     </record>
 
     <record id="group_approval_manager" model="res.groups">
@@ -16,5 +24,30 @@
         <field name="category_id" ref="agx_approval.module_category_approval"/>
         <field name="implied_ids" eval="[(4, ref('group_approval_user'))]"/>
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <!-- "Own" members (and only them) are limited to their own requests. -->
+    <record id="approval_request_own_rule" model="ir.rule">
+        <field name="name">Approval Request: own requests only</field>
+        <field name="model_id" ref="model_approval_request"/>
+        <field name="groups" eval="[(4, ref('group_approval_own'))]"/>
+        <field name="domain_force">['|', ('owner_id.user_id', '=', user.id), ('user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Users (and managers, who imply User) see everything: this permissive
+         rule ORs out the "own only" restriction they inherit via the imply. -->
+    <record id="approval_request_user_all_rule" model="ir.rule">
+        <field name="name">Approval Request: users see all</field>
+        <field name="model_id" ref="model_approval_request"/>
+        <field name="groups" eval="[(4, ref('group_approval_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
     </record>
 </odoo>

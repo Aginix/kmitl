@@ -1,0 +1,3 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_disbursement_request_approval_own,disbursement.request approval own (read),disbursement.model_disbursement_request,agx_approval.group_approval_own,1,0,0,0
+access_disbursement_request_line_approval_own,disbursement.request.line approval own (read),disbursement.model_disbursement_request_line,agx_approval.group_approval_own,1,0,0,0
