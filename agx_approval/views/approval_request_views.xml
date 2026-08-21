@@ -197,7 +197,12 @@
                 <field name="category_id" />
                 <field name="account_fiscal_year_id" />
                 <field name="owner_id" />
-                <filter name="filter_exception" string="Has Exception" domain="[('main_exception_id', '!=', False)]"/>
+                <separator />
+                <filter name="my_requests" string="My Requests" domain="[('owner_id.user_id','=', uid)]" />
+                <filter name="created_by_me" string="Created by Me" domain="[('user_id','=', uid)]" />
+                <separator />
+                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน"
+                    domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator />
                 <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]" />
                 <filter name="filter_to_verify" string="To Verify / Reserve Budget" domain="[('state', '=', 'to_verify')]" />
@@ -209,6 +214,7 @@
                 <filter name="filter_returned" string="Returned" domain="[('state', '=', 'returned')]" />
                 <filter name="filter_rejected" string="Rejected" domain="[('state', '=', 'rejected')]" />
                 <separator />
+                <filter name="filter_exception" string="Has Exception" domain="[('main_exception_id', '!=', False)]"/>
                 <filter name="filter_archived" string="Archived" domain="[('active', '=', False)]" />
                 <group expand="0" string="Group By">
                     <filter name="group_category" string="Category" context="{'group_by': 'category_id'}"/>

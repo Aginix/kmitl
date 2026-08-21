@@ -16,7 +16,7 @@
     <record id="group_approval_user" model="res.groups">
         <field name="name">User</field>
         <field name="category_id" ref="agx_approval.module_category_approval"/>
-        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user'), ref('group_approval_own')])]"/>
+        <field name="implied_ids" eval="[(4, ref('group_approval_own'))]"/>
     </record>
 
     <record id="group_approval_manager" model="res.groups">
