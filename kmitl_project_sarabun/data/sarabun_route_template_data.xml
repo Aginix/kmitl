@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Placeholder approving positions, seeded with no holder — assign the real
+         หัวหน้าส่วนงาน (คณบดี) และอธิการบดี holders in Configuration ▸ Positions
+         before go-live. noupdate="1" so the holder assignment survives upgrades. -->
+    <data noupdate="1">
+        <record id="position_kmitl_project_dean" model="sarabun.position">
+            <field name="name">หัวหน้าส่วนงาน/คณบดี (ผู้อนุมัติโครงการ)</field>
+        </record>
+        <record id="position_kmitl_project_rector" model="sarabun.position">
+            <field name="name">อธิการบดี (ผู้อนุมัติโครงการ)</field>
+        </record>
+    </data>
+
+    <data noupdate="0">
+        <!-- เส้นทาง 1: วงเงินไม่เกินเกณฑ์ → เรียน/ลงนาม หัวหน้าส่วนงาน (คณบดี).
+             เลือกใช้โดย _get_sarabun_route_template ผ่าน xmlid ตามวงเงินโครงการ. -->
+        <record id="route_template_kmitl_project_dean" model="sarabun.route.template">
+            <field name="name">ขออนุมัติจัดโครงการและขออนุมัติใช้เงิน (เรียนหัวหน้าส่วนงาน)</field>
+            <field name="description">เส้นทางขออนุมัติจัดโครงการวงเงินไม่เกินอำนาจคณบดี</field>
+            <field name="sequence">10</field>
+            <field name="origin_model">kmitl.project</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="route_template_line_kmitl_project_dean_approve" model="sarabun.route.template.line">
+            <field name="template_id" ref="route_template_kmitl_project_dean"/>
+            <field name="order">10</field>
+            <field name="verb" ref="agx_sarabun.verb_approve"/>
+            <field name="target_mode">position</field>
+            <field name="position_id" ref="position_kmitl_project_dean"/>
+        </record>
+
+        <!-- เส้นทาง 2: วงเงินเกินเกณฑ์ → เรียน/ลงนาม อธิการบดี. -->
+        <record id="route_template_kmitl_project_rector" model="sarabun.route.template">
+            <field name="name">ขออนุมัติจัดโครงการและขออนุมัติใช้เงิน (เรียนอธิการบดี)</field>
+            <field name="description">เส้นทางขออนุมัติจัดโครงการวงเงินเกินอำนาจคณบดี (เรียนอธิการบดี)</field>
+            <field name="sequence">20</field>
+            <field name="origin_model">kmitl.project</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="route_template_line_kmitl_project_rector_approve" model="sarabun.route.template.line">
+            <field name="template_id" ref="route_template_kmitl_project_rector"/>
+            <field name="order">10</field>
+            <field name="verb" ref="agx_sarabun.verb_approve"/>
+            <field name="target_mode">position</field>
+            <field name="position_id" ref="position_kmitl_project_rector"/>
+        </record>
+    </data>
+
+</odoo>
