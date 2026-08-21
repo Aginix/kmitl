@@ -45,9 +45,10 @@ class SarabunRoutingStep(models.Model):
         "sarabun.verb",
         string="Verb",
         required=True,
-        default=lambda self: self._default_verb(),
         ondelete="restrict",
         tracking=True,
+        help="No default on purpose — the user must read the choices and pick the "
+        "การดำเนินการ deliberately, so a step is never sent with an unintended verb.",
     )
     for_info = fields.Boolean(
         string="สำเนาเรียน (CC)",
@@ -202,6 +203,23 @@ class SarabunRoutingStep(models.Model):
     @api.model
     def _default_verb(self):
         return self.env.ref("agx_sarabun.verb_endorse", raise_if_not_found=False)
+
+    @api.onchange("document_id")
+    def _onchange_document_default_order(self):
+        """Auto-increment ลำดับ (Stage) for a freshly added step.
+
+        The modal's "บันทึกและสร้างใหม่" (Save & New) strips every ``default_*`` from
+        the context before opening the next record (Odoo web form_view_dialog), so a
+        context-fed ``default_order`` cannot survive past the 1st record — the 2nd, 3rd…
+        would all fall back to 1 and silently collide on the same Stage. Deriving the
+        order from the sibling steps here makes every fresh step land on the next free
+        Stage no matter how it was added. The originator is fixed and never re-numbered;
+        the user may still set two steps to the same order for a parallel Stage."""
+        for step in self:
+            if step.is_originator:
+                continue
+            orders = (step.document_id.routing_step_ids - step).mapped("order")
+            step.order = (max(orders) + 1) if orders else 1
 
     # ------------------------------------------------------------ ORM guards
     def write(self, vals):

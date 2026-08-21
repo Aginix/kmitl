@@ -153,7 +153,6 @@
                     <field name="has_signed" invisible="1"/>
                     <field name="can_withdraw" invisible="1"/>
                     <field name="my_active_step_id" invisible="1"/>
-                    <field name="next_step_order" invisible="1"/>
                     <notebook>
                         <page string="การเดินเรื่อง (Routing)" name="routing">
                             <group>
@@ -175,10 +174,10 @@
                                 </group>
                             </group>
                             <!-- Add เส้นทางเอกสาร via a modal form (non-editable tree).
-                                 default_order auto-increments the ลำดับ of a new step
-                                 (max existing + 1) instead of always starting at 1. -->
+                                 A new step's ลำดับ auto-increments to the next free Stage
+                                 via _onchange_document_default_order (survives Save & New,
+                                 which strips context default_*). -->
                             <field name="routing_step_ids"
-                                   context="{'default_order': next_step_order}"
                                    attrs="{'readonly': [('is_editable', '=', False)]}">
                                 <tree decoration-muted="state == 'skipped'"
                                       decoration-success="state == 'done' and disposition in ('complete','direct')"
