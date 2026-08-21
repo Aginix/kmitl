@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
+from markupsafe import escape
+
 from odoo import _, models
+
+# เกณฑ์อำนาจอนุมัติ: โครงการที่ใช้เงินเกินจำนวนนี้ให้เรียน "อธิการบดี" และเดินเส้นทาง
+# ลงนามของอธิการบดี ต่ำกว่าหรือเท่ากับให้เรียน "คณบดี" (หัวหน้าส่วนงาน). เป็นแหล่งอ้างอิง
+# เดียวของทั้ง เรียน (addressee) และการเลือก seed route — แก้ที่เดียวจบ.
+RECTOR_APPROVAL_THRESHOLD = 500000
 
 
 class KmitlProject(models.Model):
@@ -13,8 +20,70 @@ class KmitlProject(models.Model):
     _inherit = ["kmitl.project", "sarabun.document.mixin"]
 
     def _get_sarabun_subject(self):
-        # เรื่อง of the หนังสือ.
-        return _("ขออนุมัติจัดโครงการและค่าใช้จ่าย: %s") % (self.key or self.name)
+        # เรื่อง: ขออนุมัติจัดโครงการและขออนุมัติใช้เงิน<แหล่งเงิน>ในการจัด<ชื่อโครงการ>.
+        self.ensure_one()
+        return _(
+            "ขออนุมัติจัดโครงการและขออนุมัติใช้เงิน%(src)sในการจัด%(name)s"
+        ) % {
+            "src": self._sarabun_dim_name(self.source_analytic_id),
+            "name": self.name or "",
+        }
+
+    def _get_sarabun_addressee(self):
+        """เรียน — ต่ำกว่าหรือเท่ากับเกณฑ์ให้เรียน คณบดี (หัวหน้าส่วนงาน) เกินเกณฑ์ให้เรียน
+        อธิการบดี. ผูกกับเกณฑ์เดียวกับการเลือก seed route (``_get_sarabun_route_template``)."""
+        self.ensure_one()
+        if self.budget_amount > RECTOR_APPROVAL_THRESHOLD:
+            return _("อธิการบดีสถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง")
+        return _("คณบดี")
+
+    def _get_sarabun_content(self):
+        """เนื้อหา (บันทึกนำ) — วรรคเดียวย่อหน้าตามแบบหนังสือราชการ."""
+        self.ensure_one()
+        body = _(
+            "ด้วย%(dept)s ได้กำหนดแผนงาน%(name)s ซึ่งได้รับอนุมัติ%(src)s "
+            "ประจำปีงบประมาณ พ.ศ. %(fy)s"
+        ) % {
+            "dept": escape(self._sarabun_dim_name(self.department_analytic_id)),
+            "name": escape(self.name or ""),
+            "src": escape(self._sarabun_dim_name(self.source_analytic_id)),
+            "fy": escape(self.account_fiscal_year_id.name or ""),
+        }
+        return '<p style="text-indent: 2.5em;">%s</p>' % body
+
+    def _get_sarabun_route_template(self):
+        """เส้นทาง seed ที่ตรงกับอำนาจอนุมัติ (เรียนหัวหน้าส่วนงาน / เรียนอธิการบดี),
+        เลือกด้วยเกณฑ์เดียวกับ ``_get_sarabun_addressee`` เพื่อให้เรียนกับผู้ลงนามตรงกัน."""
+        self.ensure_one()
+        xmlid = (
+            "kmitl_project_sarabun.route_template_kmitl_project_rector"
+            if self.budget_amount > RECTOR_APPROVAL_THRESHOLD
+            else "kmitl_project_sarabun.route_template_kmitl_project_dean"
+        )
+        return self.env.ref(xmlid, raise_if_not_found=False)
+
+    @staticmethod
+    def _sarabun_dim_name(analytic):
+        name = (analytic.complete_name or analytic.name or "") if analytic else ""
+        return name.replace(" / ", " ")
+
+    # -- submit: wrap super() to seed เรียน / เนื้อหา / เส้นทาง on the fresh หนังสือ --
+    def action_submit_to_sarabun(self):
+        action = super().action_submit_to_sarabun()
+        if action and action.get("res_id"):
+            document = self.env["sarabun.document"].browse(action["res_id"])
+            vals = {
+                "addressee": self._get_sarabun_addressee(),
+                # from_record หนังสือ ตั้ง include_content = OFF โดยดีฟอลต์ (รายงานต้นทางเป็น
+                # ตัวเนื้อ) — เปิดให้ เนื้อหา (บันทึกนำ) แสดงในหนังสือ.
+                "include_content": True,
+                "content": self._get_sarabun_content(),
+            }
+            template = self._get_sarabun_route_template()
+            if template:
+                vals["route_template_id"] = template.id
+            document.sudo().write(vals)
+        return action
 
     def _sarabun_submit_guard(self):
         # A project may raise its หนังสือ only once its budget is reserved

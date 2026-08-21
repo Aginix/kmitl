@@ -13,6 +13,7 @@
         "agx_sarabun",
     ],
     "data": [
+        "data/sarabun_route_template_data.xml",
         "views/kmitl_project_views.xml",
     ],
     "installable": True,
