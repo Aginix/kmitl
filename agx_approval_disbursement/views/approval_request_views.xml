@@ -38,6 +38,7 @@
                     type="object"
                     class="oe_stat_button"
                     icon="fa-money"
+                    groups="disbursement.group_disbursement_user"
                     attrs="{'invisible': [('disbursement_request_count', '=', 0)]}"
                 >
                     <field
