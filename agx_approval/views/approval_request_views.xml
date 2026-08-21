@@ -48,9 +48,8 @@
                             <field name="date" readonly="1"/>
                             <field name="id" invisible="1" />
                             <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}" />
-                            <field name="owner_id" widget="employee_detail_many2one" attrs="{'readonly': ['|', ('can_edit_owner', '=', False), ('is_plan_editable', '=', False)]}"/>
+                            <field name="owner_id" widget="employee_detail_many2one" attrs="{'readonly': [('is_plan_editable', '=', False)]}"/>
                             <field name="user_id" readonly="1"/>
-                            <field name="can_edit_owner" invisible="1"/>
                             <field name="has_period" invisible="1" />
                             <field name="has_city" invisible="1" />
                             <field name="has_country_id" invisible="1" />
