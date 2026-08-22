@@ -45,8 +45,10 @@
 
                     <group name="approval_details" string="Request Details">
                         <group>
-                            <field name="date" readonly="1"/>
-                            <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
+                            <!-- วันที่ส่งคำขอ is stamped at draft → รอตรวจสอบ, so a
+                                 never-submitted draft simply has none to show. -->
+                            <field name="date" readonly="1" attrs="{'invisible': [('date', '=', False)]}"/>
+                            <field name="account_fiscal_year_id" options="{'no_open': True}" attrs="{'readonly': [('is_plan_editable', '=', False)]}"/>
                             <field name="id" invisible="1" />
                             <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}" options="{'no_open': True}" />
                             <field name="owner_id" widget="employee_detail_many2one" attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
@@ -83,8 +85,7 @@
                         <field name="budget_commitment_state" invisible="1"/>
                         <field name="budget_commitment_id" colspan="2" nolabel="1"
                             widget="budget_commitment_info" readonly="1"
-                            options="{'no_create': True, 'no_open': True}"
-                            invisible="1"/>
+                            options="{'no_create': True, 'no_open': True}"/>
                     </group>
                     <!-- Budget selection UI: reserved to budget officers. Users without
                          budget.group_budget_commitment never see this group nor its
@@ -250,6 +251,15 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
         <field name="context">{'search_default_my_request': 1}</field>
+    </record>
+
+    <!-- Settings > Exceptions: list exception rules scoped to approval.request -->
+    <record id="action_approval_exception_rule" model="ir.actions.act_window">
+        <field name="name">Exceptions</field>
+        <field name="res_model">exception.rule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('model', '=', 'approval.request')]</field>
+        <field name="context">{'active_test': False, 'default_model': 'approval.request'}</field>
     </record>
 
 </odoo>
