@@ -2042,7 +2042,7 @@ msgstr "สินค้า"
 msgid "Provide a double validation mechanism for purchases"
 msgstr "จัดให้มีกลไกการตรวจสอบซ้ำสำหรับการจัดซื้อ"
 
-#. module: purchase
+#. module: purchase_order_kmitl
 #: model:ir.model.fields,field_description:purchase.field_product_packaging__purchase
 #: model:ir.ui.menu,name:purchase.menu_purchase_root
 #: model:ir.ui.menu,name:purchase.purchase_report
