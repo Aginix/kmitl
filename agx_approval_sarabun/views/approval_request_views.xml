@@ -12,6 +12,19 @@
                 <button type="object" name="action_view_sarabun_documents" class="oe_stat_button" icon="fa-file-text-o" attrs="{'invisible': [('sarabun_document_count', '=', 0)]}" string="หนังสือ" />
             </xpath>
 
+            <!-- Request Date tracks the หนังสือ's ลงวันที่, stamped at send
+                 (_on_sarabun_circulating). Hidden until the letter is actually
+                 ส่ง — before that it holds no meaningful date. The ปีงบประมาณ
+                 shown beside it derives from the date, so it is hidden here too
+                 until the date is stamped (the budget-officer copy in the Budget
+                 group stays visible so reservation can still pick the FY). -->
+            <xpath expr="//field[@name='date']" position="attributes">
+                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_send'])]}</attribute>
+            </xpath>
+            <xpath expr="//group[@name='approval_details']//field[@name='account_fiscal_year_id']" position="attributes">
+                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_send'])]}</attribute>
+            </xpath>
+
             <!-- Add Submit to Sarabun button after To Verify button -->
             <xpath expr="//button[@name='action_to_verify']" position="after">
                 <button name="action_submit_to_sarabun" string="สร้างเอกสาร" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'to_send'), ('sarabun_has_live_document', '=', True)]}" />

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import api, models
+from odoo import _, api, models
 
 
 class ApprovalRequest(models.Model):
@@ -30,7 +30,20 @@ class ApprovalRequest(models.Model):
             }
 
     def _get_sarabun_subject(self):
-        return self.category_id.name
+        self.ensure_one()
+        return _(
+            "ขออนุมัติค่าใช้จ่ายประเภท%(name)s %(src)s ประจำปีงบประมาณ พ.ศ. %(fy)s %(dept)s"
+        ) % {
+            "name": self.category_id.name,
+            "src": self._sarabun_dim_name(self.source_analytic_id),
+            "fy": self.account_fiscal_year_id.name or "",
+            "dept": self._sarabun_dim_name(self.department_analytic_id),
+        }
+
+    @staticmethod
+    def _sarabun_dim_name(analytic):
+        name = (analytic.complete_name or analytic.name or "") if analytic else ""
+        return name.replace(" / ", " ")
 
     def _sarabun_submit_guard(self):
         # A request may only be routed once its budget is reserved (to_send).
@@ -40,8 +53,11 @@ class ApprovalRequest(models.Model):
     def _on_sarabun_circulating(self, document):
         # หนังสือเริ่มเวียน → คำขออยู่ระหว่างขออนุมัติ. Also covers re-sending a
         # หนังสือ that was returned (ตีกลับ/ดึงกลับ) for revision.
+        # The Request Date tracks the หนังสือ's ลงวันที่ (stamped/re-stamped at
+        # send, ADR-0010) — set only now, when the letter is actually ส่ง, not when
+        # the request or the หนังสือ draft was created; hidden in the form until then.
         if self.state in ("to_send", "returned"):
-            self.state = "sent"
+            self.write({"state": "sent", "date": document.date})
         return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):
@@ -77,6 +93,54 @@ class ApprovalRequest(models.Model):
             if rec.state == "returned" and rec.sarabun_state == "returned":
                 rec.is_plan_editable = True
 
-    def _get_sarabun_report_action(self):
-        """Delegate Sarabun report to Approval Request report."""
-        return self.env.ref("agx_approval.action_report_approval_request")
+    # ADR-0015: render through Sarabun's own no-source layout (so the หนังสือ reuses
+    # สารบรรณ's header — เลขที่/หน่วยงาน/เรียน/วันที่/อ้างถึง — and its endorsement
+    # block) rather than delegating to the standalone approval report. We therefore
+    # DON'T override _get_sarabun_report_action (mixin default → False), and instead:
+    #   - seed the editable เนื้อหา (บรรยาย) once, and
+    #   - contribute the live budget/expense tables as the origin body fragment.
+
+    def _get_sarabun_body_template(self):
+        """The live budget/expense body, rendered between the หนังสือ's เนื้อหา and
+        its signatures (ADR-0015). Kept live — never editable — so the official
+        หนังสือ can never show numbers that diverge from the reserved commitment or
+        the disbursement it feeds."""
+        return "agx_approval.report_approval_request_body"
+
+    def _prepare_sarabun_document_vals(self):
+        vals = super()._prepare_sarabun_document_vals()
+        # Seed the editable บรรยาย into เนื้อหา (policy 5A: seeded once at submit,
+        # then owned by the user — no auto-regenerate; the edit window is the
+        # หนังสือ's draft/returned states). The authoritative tables are NOT seeded
+        # here — they render live via _get_sarabun_body_template.
+        vals["include_content"] = True
+        vals["content"] = self.env["ir.qweb"]._render(
+            "agx_approval.report_approval_request_narrative",
+            {"o": self.with_context(lang="th_TH")},
+        )
+        return vals
+
+    def action_submit_to_sarabun(self):
+        """Also carry the request's เอกสารแนบ onto the หนังสือ as สิ่งที่ส่งมาด้วย."""
+        action = super().action_submit_to_sarabun()
+        if action and action.get("res_id"):
+            document = self.env["sarabun.document"].browse(action["res_id"])
+            self._copy_attachments_to_sarabun(document)
+        return action
+
+    def _copy_attachments_to_sarabun(self, document):
+        """Copy the request's attachments onto the หนังสือ as enclosures. Copied
+        (not merely referenced) with ``res_model=sarabun.document`` so a Route
+        recipient without rights on the request can still open them — the หนังสือ's
+        ACL governs (same ownership choice as budget_transfer_sarabun). Seeded once
+        at submit; the drafter then manages enclosures on the หนังสือ itself."""
+        self.ensure_one()
+        enclosures = self.env["ir.attachment"]
+        for attachment in self.attachment_ids:
+            enclosures |= attachment.sudo().copy(
+                {"res_model": "sarabun.document", "res_id": document.id}
+            )
+        if enclosures:
+            document.sudo().write(
+                {"enclosure_attachment_ids": [(4, a.id) for a in enclosures]}
+            )

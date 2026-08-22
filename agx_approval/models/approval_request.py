@@ -128,6 +128,13 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
+    period_type = fields.Selection(
+        [("range", "หลายวัน"), ("single", "วันเดียว")],
+        string="ลักษณะระยะเวลา",
+        default="range",
+        tracking=True,
+    )
+
     date_start = fields.Date(
         string="Date Start",
         tracking=True,
@@ -137,6 +144,23 @@ class ApprovalRequest(models.Model):
         string="Date End",
         tracking=True,
     )
+
+    day_portion = fields.Selection(
+        [("full", "เต็มวัน"), ("half", "ครึ่งวัน")],
+        string="ช่วงเวลา (วันเดียว)",
+        default="full",
+        tracking=True,
+    )
+
+    @api.onchange("period_type")
+    def _onchange_period_type(self):
+        """Clear the companion input that the chosen mode doesn't use (Odoo
+        convention): a single-day request has no end date, a multi-day one has no
+        day portion. Keeps the narrative unambiguous about which one applies."""
+        if self.period_type == "single":
+            self.date_end = False
+        else:
+            self.day_portion = False
 
     city = fields.Char(
         string="City",

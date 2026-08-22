@@ -319,3 +319,21 @@ class SarabunDocumentMixin(models.AbstractModel):
                 return self.env.ref("my_module.action_report_my_model")
         """
         return False
+
+    def _get_sarabun_body_template(self):
+        """XML id of a QWeb fragment rendering this origin's **live** body — its
+        data/tables — or ``False`` (default).
+
+        Used only on the **no-source layout** path (ADR-0015): when a from-record
+        Document opts out of the delegated report (``_get_sarabun_report_action`` →
+        ``False``), :meth:`sarabun.document._render_origin_body` renders this
+        fragment between the ``content`` (บันทึกนำ / เนื้อหา) and the endorsement
+        block. The origin record is passed in as ``o``. Rendered live so the
+        official หนังสือ always reflects the current record — keep authoritative
+        numbers here (not in the editable ``content``).
+
+        Example:
+            def _get_sarabun_body_template(self):
+                return "my_module.report_my_model_body"
+        """
+        return False

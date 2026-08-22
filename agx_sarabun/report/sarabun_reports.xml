@@ -98,10 +98,12 @@
                         p, span, strong, em {
                             line-height: 1.3;
                         }
-                        p {
+                        .oe-tabs {
+                            display: inline-block;
                             white-space: pre-wrap;
+                            max-width: 40px;
+                            width: 40px;
                         }
-
                         .doc-content h1, .doc-content h2, .doc-content h3, .doc-content h4, .doc-content h5, .doc-content h6 {
                             maring: 0;
                         }
@@ -204,10 +206,18 @@
 
                         </div>
 
-                        <!-- เนื้อหา (body) — the composed content. -->
+                        <!-- เนื้อหา (body) — the composed content / บันทึกนำ. -->
                         <div t-if="doc.include_content and doc.content" style="margin:8px 0;" class="doc-content">
                             <div t-field="doc.content"/>
                         </div>
+
+                        <!-- เนื้อจากต้นเรื่อง (origin body fragment) — ADR-0015: a
+                             from-record document's LIVE data body (tables), rendered
+                             between the เนื้อหา and the signatures. Empty for a
+                             composed (no-origin) document or an origin without a body
+                             template. -->
+                        <t t-set="origin_body" t-value="doc._render_origin_body()"/>
+                        <div t-if="origin_body" style="margin:8px 0;" class="doc-content" t-out="origin_body"/>
 
                         <!-- เกษียน trail + signature block(s) -->
                         <t t-call="agx_sarabun.sarabun_endorsement_block"/>
