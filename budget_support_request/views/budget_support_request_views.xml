@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Form -->
+    <record id="view_budget_support_request_form" model="ir.ui.view">
+        <field name="name">budget.support.request.form</field>
+        <field name="model">budget.support.request</field>
+        <field name="arch" type="xml">
+            <form string="Budget Support Request">
+                <header>
+                    <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" attrs="{'invisible': [('show_submit_button', '=', False)]}"/>
+                    <button name="action_approve" type="object" string="Approve" class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}"/>
+                    <button name="action_fulfil_transfer" type="object" string="จัดสรร → โอน" class="btn-primary" attrs="{'invisible': [('show_fulfil_transfer_button', '=', False)]}"/>
+                    <button name="action_fulfil_reserve" type="object" string="จัดสรร → จอง" class="btn-primary" attrs="{'invisible': [('show_fulfil_reserve_button', '=', False)]}"/>
+                    <button name="action_done" type="object" string="เสร็จสิ้น" class="btn-success" attrs="{'invisible': [('show_done_button', '=', False)]}"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft" attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
+                    <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,in_progress,done"/>
+                </header>
+
+                <sheet>
+                    <widget name="web_ribbon" title="Cancelled" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_transfers" type="object" class="oe_stat_button" icon="fa-exchange" attrs="{'invisible': [('transfer_count', '=', 0)]}">
+                            <field name="transfer_count" widget="statinfo" string="Transfers"/>
+                        </button>
+                        <button name="action_view_commitments" type="object" class="oe_stat_button" icon="fa-lock" attrs="{'invisible': [('commitment_count', '=', 0)]}">
+                            <field name="commitment_count" widget="statinfo" string="Commitments"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" class="o_text_overflow" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group name="request_info" string="Request Information">
+                            <field name="department_analytic_id" required="1" attrs="{'readonly': [('can_edit', '=', False)]}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="date" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                            <field name="account_fiscal_year_id" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                            <field name="user_id" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                        </group>
+                        <group name="amount_info" string="จำนวนเงิน">
+                            <field name="amount_requested" widget="monetary" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group name="approval_meta" attrs="{'invisible': [('approver_id', '=', False)]}">
+                        <group>
+                            <field name="approver_id"/>
+                            <field name="approval_date"/>
+                        </group>
+                    </group>
+
+                    <group name="reason" string="เหตุผล/ความจำเป็น" colspan="4">
+                        <field name="reason" nolabel="1" colspan="2" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                    </group>
+
+                    <group name="attachments" string="เอกสารแนบ" colspan="4">
+                        <field name="attachment_ids" nolabel="1" widget="many2many_binary" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                    </group>
+                </sheet>
+
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+
+                <field name="show_submit_button" invisible="1"/>
+                <field name="show_approve_button" invisible="1"/>
+                <field name="show_fulfil_transfer_button" invisible="1"/>
+                <field name="show_fulfil_reserve_button" invisible="1"/>
+                <field name="show_done_button" invisible="1"/>
+                <field name="show_cancel_button" invisible="1"/>
+                <field name="show_reset_button" invisible="1"/>
+                <field name="can_edit" invisible="1"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree -->
+    <record id="view_budget_support_request_tree" model="ir.ui.view">
+        <field name="name">budget.support.request.tree</field>
+        <field name="model">budget.support.request</field>
+        <field name="arch" type="xml">
+            <tree string="Budget Support Requests" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state in ('approved', 'in_progress', 'done')" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="department_analytic_id"/>
+                <field name="user_id"/>
+                <field name="amount_requested" widget="monetary" sum="Total"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state in ('approved', 'in_progress', 'done')" decoration-danger="state == 'cancelled'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search -->
+    <record id="view_budget_support_request_search" model="ir.ui.view">
+        <field name="name">budget.support.request.search</field>
+        <field name="model">budget.support.request</field>
+        <field name="arch" type="xml">
+            <search string="Search Budget Support Requests">
+                <field name="name" string="Request Number"/>
+                <field name="user_id" string="ผู้ขอ"/>
+                <field name="account_fiscal_year_id" string="Fiscal Year"/>
+                <field name="department_analytic_id" string="ส่วนงาน"/>
+
+                <filter name="my_requests" string="My Requests" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="pending_approval" string="Pending Approval" domain="[('state', '=', 'submitted')]"/>
+                <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                <filter name="in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
+                <filter name="cancelled" string="Cancelled" domain="[('state', '=', 'cancelled')]"/>
+
+                <group expand="0" name="group_by" string="Group By">
+                    <filter name="group_by_state" string="Status" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_fiscal_year" string="Fiscal Year" domain="[]" context="{'group_by': 'account_fiscal_year_id'}"/>
+                    <filter name="group_by_department" string="ส่วนงาน" domain="[]" context="{'group_by': 'department_analytic_id'}"/>
+                    <filter name="group_by_user" string="ผู้ขอ" domain="[]" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_budget_support_request" model="ir.actions.act_window">
+        <field name="name">Budget Support Requests</field>
+        <field name="res_model">budget.support.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_budget_support_request_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first budget support request!
+            </p>
+            <p>
+                Ask central for budget support on your department's dimension —
+                central will choose the funding source when fulfilling it.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_my_budget_support_requests" model="ir.actions.act_window">
+        <field name="name">My Support Requests</field>
+        <field name="res_model">budget.support.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('user_id', '=', uid)]</field>
+        <field name="context">{'search_default_my_requests': 1}</field>
+    </record>
+
+    <record id="action_budget_support_requests_pending" model="ir.actions.act_window">
+        <field name="name">Pending Approval</field>
+        <field name="res_model">budget.support.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'submitted')]</field>
+        <field name="context">{'search_default_pending_approval': 1}</field>
+    </record>
+
+</odoo>
