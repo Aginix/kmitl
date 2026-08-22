@@ -75,10 +75,35 @@ class BudgetSupportRequest(models.Model):
                 {
                     "include_content": True,
                     "content": self._get_sarabun_content(),
-                    "enclosure_attachment_ids": [(6, 0, self.attachment_ids.ids)],
+                    "enclosure_attachment_ids": [
+                        (6, 0, self._copy_attachments_to_sarabun(document).ids)
+                    ],
                 }
             )
         return action
+
+    def _copy_attachments_to_sarabun(self, document):
+        """Enclose *copies* of the request's เอกสารแนบ, owned by the หนังสือ.
+
+        Linking the request's own ``ir.attachment`` records would gate the
+        enclosures on read access to ``budget.support.request``; a signing
+        position holder normally reaches e-Saraban only. Copies stamped onto
+        ``sarabun.document`` are readable by anyone who can read the letter
+        (mirrors ``budget_transfer_sarabun._attach_transfer_pdf_enclosure``).
+        """
+        self.ensure_one()
+        copies = self.env["ir.attachment"].sudo()
+        for attachment in self.attachment_ids.sudo():
+            # ``raw`` is passed explicitly so the copy carries the file content
+            # regardless of how the store is configured (filestore vs db_datas).
+            copies |= attachment.copy(
+                {
+                    "res_model": "sarabun.document",
+                    "res_id": document.id,
+                    "raw": attachment.raw,
+                }
+            )
+        return copies
 
     # --- lifecycle callbacks ------------------------------------------
     def _on_sarabun_circulating(self, document):
@@ -139,7 +164,9 @@ class BudgetSupportRequest(models.Model):
                 )
             elif request.state == "rejected":
                 request.show_reset_button = is_manager or is_admin
-            request.show_approve_button = is_manager or is_admin
+            request.show_approve_button = request.state == "submitted" and (
+                is_manager or is_admin
+            )
 
     # --- extra guards for the states this bridge introduces -------------
     def action_cancel(self):

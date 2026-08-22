@@ -1,9 +1,17 @@
-from odoo import models
+from odoo import api, models
 
 
 class BudgetCommitment(models.Model):
     _inherit = "budget.commitment"
 
+    # The decorator must be re-applied: Odoo collects Python constraints from
+    # the most-derived method of each name, so an override without it silently
+    # drops the base gate instead of extending it.
+    @api.constrains(
+        "beneficiary_operating_unit_id",
+        "operating_unit_id",
+        "support_request_id",
+    )
     def _check_beneficiary_reserve_right(self):
         """An approved budget.support.request is itself the authority to
         reserve for another unit (decision-locked: the fulfilling Budget
