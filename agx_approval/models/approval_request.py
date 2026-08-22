@@ -1,6 +1,5 @@
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.osv import expression
 
 
 class ApprovalRequest(models.Model):
@@ -84,9 +83,13 @@ class ApprovalRequest(models.Model):
 
     date = fields.Date(
         string="Request Date",
-        required=True,
-        default=fields.Date.context_today,
+        copy=False,
         tracking=True,
+        help="วันที่ส่งคำขอ — stamped when the request is submitted for verification "
+        "(draft → รอตรวจสอบ), and re-stamped on every re-submit after a reset to "
+        "draft or a ดึงกลับ. Empty until the request is first submitted: a draft "
+        "has not been sent anywhere yet, so it has no submit date. NOT the "
+        "creation date (that is create_date) and NOT the หนังสือ's ลงวันที่.",
     )
 
     owner_id = fields.Many2one(
@@ -423,11 +426,21 @@ class ApprovalRequest(models.Model):
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
+        required=True,
         tracking=True,
-        store=True,
-        compute="_compute_date_range_fy",
-        search="_search_date_range_fy",
+        default=lambda self: self._default_account_fiscal_year_id(),
+        help="ปีงบประมาณที่คำขอนี้จะใช้งบ — chosen by the user, never derived from "
+        "the document date. A request drafted late in ปีงบ N to spend ปีงบ N+1 "
+        "money simply picks N+1 up front and waits. The budget reservation checks "
+        "and books against this year (see action_reserve_budget), so it is the "
+        "request's single statement of which year's money it is spending.",
     )
+
+    @api.model
+    def _default_account_fiscal_year_id(self):
+        """Today's ปีงบประมาณ — a convenience starting point, not a constraint;
+        the user overrides it to file ahead for the coming year."""
+        return self.env.company.find_daterange_fy(fields.Date.context_today(self))
 
     _analytic_keys = {
         "activities": "activity_analytic_id",
@@ -487,41 +500,6 @@ class ApprovalRequest(models.Model):
             )
         ]
 
-    @api.depends("date", "company_id")
-    def _compute_date_range_fy(self):
-        for rec in self:
-            date = fields.Date.to_date(rec.date)
-            company = rec.company_id
-            rec.account_fiscal_year_id = (
-                company and company.find_daterange_fy(date) or False
-            )
-
-    @api.model
-    def _search_date_range_fy(self, operator, value):
-        if operator in ("=", "!=", "in", "not in"):
-            date_range_domain = [("id", operator, value)]
-        else:
-            date_range_domain = [("name", operator, value)]
-
-        date_ranges = self.env["account.fiscal.year"].search(date_range_domain)
-
-        domain = [("id", "=", -1)]
-        for date_range in date_ranges:
-            domain = expression.OR(
-                [
-                    domain,
-                    [
-                        "&",
-                        ("date", ">=", date_range.date_from),
-                        ("date", "<=", date_range.date_to),
-                        "|",
-                        ("company_id", "=", False),
-                        ("company_id", "=", date_range.company_id.id),
-                    ],
-                ]
-            )
-        return domain
-
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):
         """When change analytic_distribution set analytic distribution on all order lines"""
@@ -557,7 +535,11 @@ class ApprovalRequest(models.Model):
             return self.with_context(
                 agx_exception_action="action_to_verify"
             )._popup_exceptions()
-        self.state = "to_verify"
+        # วันที่ส่งคำขอ is stamped here, not at creation: a draft has not been sent
+        # anywhere. Re-stamped on every pass through this transition, so a request
+        # reset to draft (or ดึงกลับ) and re-submitted carries the date it was
+        # actually submitted, not the first attempt's.
+        self.write({"state": "to_verify", "date": fields.Date.context_today(self)})
         return True
 
     def action_submit(self):
@@ -788,7 +770,7 @@ class ApprovalRequest(models.Model):
         commitment, and submits the request exactly like the reserve-new path. No
         new reservation and no availability re-check: the money is already locked;
         obligate/consume happen downstream at the disbursement (ADR-0010). The
-        request keeps its own computed fiscal year; the shared commitment carries
+        request keeps the ปีงบประมาณ the user chose; the shared commitment carries
         the fiscal year it was reserved in."""
         self.ensure_one()
         commitment = self.reservation_commitment_id

@@ -1,4 +1,4 @@
-from odoo import api, models
+from odoo import api, fields, models
 
 
 class ApprovalRequest(models.Model):
@@ -9,6 +9,31 @@ class ApprovalRequest(models.Model):
     @api.model
     def _reverse_field(self):
         return "approval_request_ids"
+
+    # -- exception.rule helpers --------------------------------------------
+    # Called from by_py_code rules in data/approval_request_exception_data.xml.
+    # The rules stay one-liners: the logic lives here where it is readable and
+    # not subject to safe_eval's restricted namespace.
+
+    def _exception_submit_date_outside_fy(self):
+        """True when today — the date about to be stamped as วันที่ส่งคำขอ — falls
+        outside the ปีงบประมาณ the request declares.
+
+        Drafting ahead is fine (pick next year's ปีงบ whenever); *submitting* ahead
+        is not. The submit date is what the ใบจอง and every downstream document key
+        off, so it has to sit inside the year whose money is being reserved — a
+        request filed in advance simply waits in draft until that year opens.
+
+        Checked against today rather than ``self.date`` because the stamp happens
+        in the same transition, after ``detect_exceptions`` has already run.
+        """
+        self.ensure_one()
+        fy = self.account_fiscal_year_id
+        if not fy:
+            # required=True already covers a missing year; don't double-report.
+            return False
+        today = fields.Date.context_today(self)
+        return not (fy.date_from <= today <= fy.date_to)
 
     @api.model
     def _get_popup_action(self):

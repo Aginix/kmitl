@@ -53,11 +53,12 @@ class ApprovalRequest(models.Model):
     def _on_sarabun_circulating(self, document):
         # หนังสือเริ่มเวียน → คำขออยู่ระหว่างขออนุมัติ. Also covers re-sending a
         # หนังสือ that was returned (ตีกลับ/ดึงกลับ) for revision.
-        # The Request Date tracks the หนังสือ's ลงวันที่ (stamped/re-stamped at
-        # send, ADR-0010) — set only now, when the letter is actually ส่ง, not when
-        # the request or the หนังสือ draft was created; hidden in the form until then.
+        # State only: the request's own วันที่ส่งคำขอ and ปีงบประมาณ are NOT touched
+        # here. The หนังสือ's ลงวันที่ is re-stamped on every (re-)send (ADR-0010) —
+        # copying it over would drag the request's ปีงบ along with it, away from the
+        # year its ใบจอง was reserved in. The letter's date lives on the letter.
         if self.state in ("to_send", "returned"):
-            self.write({"state": "sent", "date": document.date})
+            self.state = "sent"
         return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):
@@ -107,18 +108,16 @@ class ApprovalRequest(models.Model):
         the disbursement it feeds."""
         return "agx_approval.report_approval_request_body"
 
-    def _prepare_sarabun_document_vals(self):
-        vals = super()._prepare_sarabun_document_vals()
-        # Seed the editable บรรยาย into เนื้อหา (policy 5A: seeded once at submit,
-        # then owned by the user — no auto-regenerate; the edit window is the
-        # หนังสือ's draft/returned states). The authoritative tables are NOT seeded
-        # here — they render live via _get_sarabun_body_template.
-        vals["include_content"] = True
-        vals["content"] = self.env["ir.qweb"]._render(
+    def _get_sarabun_content(self):
+        """The editable บรรยาย seeding เนื้อหา (policy 5A: seeded once at submit,
+        then owned by the user — no auto-regenerate; the edit window is the
+        หนังสือ's draft/returned states). The authoritative tables are NOT seeded
+        here — they render live via _get_sarabun_body_template."""
+        self.ensure_one()
+        return self.env["ir.qweb"]._render(
             "agx_approval.report_approval_request_narrative",
             {"o": self.with_context(lang="th_TH")},
         )
-        return vals
 
     def action_submit_to_sarabun(self):
         """Also carry the request's เอกสารแนบ onto the หนังสือ as สิ่งที่ส่งมาด้วย."""
