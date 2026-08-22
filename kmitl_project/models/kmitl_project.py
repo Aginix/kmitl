@@ -1052,6 +1052,7 @@ class KmitlProject(models.Model):
                 "analytic_distribution": dist or False,
                 "account_fiscal_year_id": self.account_fiscal_year_id.id,
                 "company_id": self.company_id.id,
+                "operating_unit_id": self.operating_unit_id.id or False,
                 "date": fields.Date.context_today(self),
                 "ref": self.key or self.name,
                 # ชื่อโครงการ = ชื่อใบจอง (shown next to the number wherever a
