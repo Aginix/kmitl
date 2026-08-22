@@ -3,8 +3,11 @@
     <record id="ir_rule_approval_request_allowed_operating_units" model="ir.rule">
         <field name="model_id" ref="agx_approval.model_approval_request"/>
         <field name="domain_force">
-            ['|', ('operating_unit_id','=',False),
-            ('operating_unit_id','in',user.operating_unit_ids.ids)]
+            ['|',
+             '|', ('operating_unit_id','=',False),
+                  ('operating_unit_id','in',user.operating_unit_ids.ids),
+             '|', ('owner_id.user_id','=',user.id),
+                  ('user_id','=',user.id)]
         </field>
         <field name="name">Approval Request from allowed operating units</field>
         <field name="global" eval="True"/>
@@ -17,8 +20,11 @@
     <record id="ir_rule_approval_request_line_allowed_operating_units" model="ir.rule">
         <field name="model_id" ref="agx_approval.model_approval_request_line"/>
         <field name="domain_force">
-            ['|', ('operating_unit_id','=',False),
-            ('operating_unit_id','in',user.operating_unit_ids.ids)]
+            ['|',
+             '|', ('operating_unit_id','=',False),
+                  ('operating_unit_id','in',user.operating_unit_ids.ids),
+             '|', ('request_id.owner_id.user_id','=',user.id),
+                  ('request_id.user_id','=',user.id)]
         </field>
         <field name="name">Approval Request Line from allowed operating units</field>
         <field name="global" eval="True"/>
@@ -31,8 +37,11 @@
     <record id="ir_rule_approval_request_participant_allowed_operating_units" model="ir.rule">
         <field name="model_id" ref="agx_approval.model_approval_request_participant"/>
         <field name="domain_force">
-            ['|', ('operating_unit_id','=',False),
-            ('operating_unit_id','in',user.operating_unit_ids.ids)]
+            ['|',
+             '|', ('operating_unit_id','=',False),
+                  ('operating_unit_id','in',user.operating_unit_ids.ids),
+             '|', ('request_id.owner_id.user_id','=',user.id),
+                  ('request_id.user_id','=',user.id)]
         </field>
         <field name="name">Approval Request Participant from allowed operating units</field>
         <field name="global" eval="True"/>
@@ -45,8 +54,11 @@
     <record id="ir_rule_approval_request_allocation_allowed_operating_units" model="ir.rule">
         <field name="model_id" ref="agx_approval.model_approval_request_allocation"/>
         <field name="domain_force">
-            ['|', ('operating_unit_id','=',False),
-            ('operating_unit_id','in',user.operating_unit_ids.ids)]
+            ['|',
+             '|', ('operating_unit_id','=',False),
+                  ('operating_unit_id','in',user.operating_unit_ids.ids),
+             '|', ('request_id.owner_id.user_id','=',user.id),
+                  ('request_id.user_id','=',user.id)]
         </field>
         <field name="name">Approval Request Allocation from allowed operating units</field>
         <field name="global" eval="True"/>

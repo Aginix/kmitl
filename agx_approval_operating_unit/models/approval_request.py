@@ -8,7 +8,5 @@ class ApprovalRequest(models.Model):
         comodel_name="operating.unit",
         string="Operating Unit",
         default=lambda self: self.env["res.users"].operating_unit_default_get(),
-        states={"draft": [("readonly", False)]},
-        readonly=True,
         tracking=True,
     )
