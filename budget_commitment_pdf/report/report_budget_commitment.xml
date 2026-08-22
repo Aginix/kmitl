@@ -171,7 +171,7 @@
                         </table>
 
                         <div class="print-date">
-                            พิมพ์เอกสารเมื่อ <t t-out="print_dt.strftime('%d/%m/') + str(print_dt.year + 543) + ' ' + print_dt.strftime('%H:%M') + ' น.'"/>
+                            พิมพ์เอกสารเมื่อ <t t-out="print_dt.strftime('%d/%m/') + str(print_dt.year + 543) + ' ' + print_dt.strftime('%H:%M:%S') + ' น.'"/>
                         </div>
                     </div>
                 </t>
