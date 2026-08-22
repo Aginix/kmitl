@@ -221,7 +221,7 @@ msgstr ""
 #. module: agx_approval_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.approval_request_view_form_sarabun
 msgid "Create Document"
-msgstr "สร้างเอกสาร"
+msgstr "สร้างหนังสือ"
 
 #. module: agx_approval_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.approval_request_view_form_sarabun
