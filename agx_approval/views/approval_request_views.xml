@@ -197,7 +197,7 @@
                 <field name="account_fiscal_year_id" />
                 <field name="owner_id" />
                 <separator />
-                <filter name="my_requests" string="My Requests" domain="[('owner_id.user_id','=', uid)]" />
+                <filter name="my_request" string="My Requests" domain="[('owner_id.user_id','=', uid)]" />
                 <filter name="created_by_me" string="Created by Me" domain="[('user_id','=', uid)]" />
                 <separator />
                 <filter name="current_fy" string="ปีงบประมาณปัจจุบัน"
@@ -231,6 +231,17 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
+    </record>
+
+    <!-- "My Request" menu: same list as Approval Request but pre-filtered to
+         the acting user's own requests. -->
+    <record id="action_approval_my_request" model="ir.actions.act_window">
+        <field name="name">My Request</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">approval.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'search_default_my_request': 1}</field>
     </record>
 
 </odoo>
