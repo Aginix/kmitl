@@ -25,6 +25,7 @@
                     <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})"/>
                     <t t-set="currency" t-value="o.currency_id"/>
                     <t t-set="date_str" t-value="o.date and (o.date.strftime('%d/%m/') + str(o.date.year + 543)) or '-'"/>
+                    <t t-set="print_dt" t-value="context_timestamp(datetime.datetime.now())"/>
                     <t t-set="state_labels" t-value="{'draft': 'ร่าง', 'reserved': 'จองแล้ว', 'partial': 'อยู่ระหว่างดำเนินการ', 'done': 'เสร็จสิ้น', 'cancel': 'ยกเลิก'}"/>
                     <t t-set="posted_lines" t-value="o.line_ids.filtered(lambda l: l.state == 'posted')"/>
                     <!-- ถัวจ่าย = reserve lines span more than one budget code (see budget.commitment.line._check_cross_charge) -->
@@ -53,6 +54,7 @@
                         .in-words { text-align: right; font-style: italic; margin-bottom: 18pt; }
                         table.sign { width: 100%; border-collapse: collapse; margin-top: 28pt; }
                         table.sign td { width: 50%; text-align: center; padding: 6pt; font-size: 15pt; vertical-align: top; }
+                        .print-date { text-align: right; font-size: 12pt; color: #555; margin-top: 12pt; }
                     </style>
 
                     <div class="page">
@@ -167,6 +169,10 @@
                                 </tr>
                             </tbody>
                         </table>
+
+                        <div class="print-date">
+                            พิมพ์เอกสารเมื่อ <t t-out="print_dt.strftime('%d/%m/') + str(print_dt.year + 543) + ' ' + print_dt.strftime('%H:%M') + ' น.'"/>
+                        </div>
                     </div>
                 </t>
             </t>
