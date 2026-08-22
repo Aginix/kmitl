@@ -1,0 +1,15 @@
+.oe-toolbar.o_sticky_toolbar {
+    position: relative !important;
+    visibility: visible !important;
+    width: auto !important;
+    max-width: 100% !important;
+    top: auto !important;
+    left: auto !important;
+    margin-bottom: 4px;
+
+    // Remove floating arrow decorations
+    &::before,
+    &::after {
+        display: none !important;
+    }
+}
