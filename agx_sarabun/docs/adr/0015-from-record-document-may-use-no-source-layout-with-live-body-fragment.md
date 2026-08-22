@@ -11,9 +11,10 @@ content (บันทึกนำ)     ← optional editable Html; per-consumer 
 ลายเซ็น (endorsement) ← สารบรรณ
 ```
 
-The new engine seam is one hook + one render point:
+The new engine seam is two hooks + one render point:
 
 - `sarabun.document.mixin._get_sarabun_body_template()` → an XML id of a QWeb template rendering the origin's live body, or `False` (default). The origin record is passed in as `o`.
+- `sarabun.document.mixin._get_sarabun_content()` → Html seeding the editable `content`, or `False` (default). Called from `_prepare_sarabun_document_vals`, which also flips `include_content` on when it returns a value — so a consumer opts into the editable body through a hook rather than by overriding the vals builder (which the mixin owns).
 - `report_sarabun_document` resolves the origin (sudo browse of `origin_model`/`origin_res_id`) and `t-call`s that template **after** the `content` block and **before** the endorsement block. The fragment renders regardless of `include_content` (it is data, not the covering note).
 
 A from-record Document reaches this path by overriding `_get_sarabun_report_action()` → `False` (so `_get_delegated_report_action()` yields nothing and `_render_official_pdf` falls to `report_sarabun_document`). Editable body (`content`) and the live fragment are **both per-consumer opt-in**: a consumer that wants neither stays on the ADR-0007 delegation path unchanged.
@@ -23,7 +24,7 @@ A from-record Document reaches this path by overriding `_get_sarabun_report_acti
 The driver is that the approval report lacked สารบรรณ's header fields and would have had to reimplement them. `agx_approval_sarabun` adopts this model:
 
 - `_get_sarabun_report_action()` → `False`.
-- **content = ตัวบรรยาย, editable** — seeded once from the record (ผู้ขออนุมัติ / ผู้รับผิดชอบ / ประเภท / รายละเอียด / ระยะเวลา) at `action_submit_to_sarabun`, then owned by the user. **Policy 5A:** no auto-regenerate on record change; drift is tolerated because บรรยาย is low-integrity (no budget numbers) and the edit window is `draft` + `returned` only, after which the หนังสือ freezes. `include_content` defaults ON for this consumer.
+- **content = ตัวบรรยาย, editable** — seeded once from the record (ผู้ขออนุมัติ / ผู้รับผิดชอบ / ประเภท / รายละเอียด / ระยะเวลา) via `_get_sarabun_content()` at `action_submit_to_sarabun`, then owned by the user. **Policy 5A:** no auto-regenerate on record change; drift is tolerated because บรรยาย is low-integrity (no budget numbers) and the edit window is `draft` + `returned` only, after which the หนังสือ freezes. `include_content` defaults ON for this consumer.
 - **เนื้อจากต้นเรื่อง = the tables, live** — budget details / expense plan / participants / actual allocation, via `_get_sarabun_body_template()`. Rendered live and **not** editable, so the official หนังสือ can never show budget/allocation numbers that diverge from the reserved commitment or the disbursement it feeds.
 
 ## Considered options
@@ -34,7 +35,7 @@ The driver is that the approval report lacked สารบรรณ's header fie
 
 ## Consequences
 
-- **agx_approval retires its standalone report** (option 6B): `report_approval_request_document`, its `action_report_approval_request` binding, and the `report_approval_endorsement.xml` inject are removed — the หนังสือ is the only document, and the endorsement is สารบรรณ's `t-call` again. **No pre-submit preview**: the full letter (with header) exists only once the หนังสือ is created at submit; a `draft`/`to_send` request has no printable official document, which matches "approval is routed through e-Saraban."
+- **agx_approval's standalone report leaves the Print menu** (option 6B): `report_approval_endorsement.xml` is deleted, and `agx_approval_sarabun` unbinds `action_report_approval_request` (`binding_model_id = False`) so the หนังสือ is the only printable document. The report *action and templates stay registered* in `agx_approval` — `report_approval_request_document` still composes the narrative + body sub-templates, so a deployment without สารบรรณ keeps a working report; the unbind lives in the bridge, not in the base module. **No pre-submit preview**: the full letter (with header) exists only once the หนังสือ is created at submit; a `draft`/`to_send` request has no printable official document, which matches "approval is routed through e-Saraban."
 - The origin's body-fragment template must **not** repeat the header block (เลขที่ / วันที่ / หน่วยงาน / เรื่อง) — สารบรรณ renders those. It carries only บรรยาย-less data (approval keeps บรรยาย in `content`).
 - **Origin resolved under sudo** in the no-source report, same rationale as ADR-0007 — a Route recipient without origin rights still gets the correct fragment.
 - The delegation path (ADR-0007) **stays** for other consumers (purchase_request_sarabun, disbursement_sarabun, budget_transfer_sarabun, purchase_request_approval) until/unless they migrate. This is additive.
