@@ -12,7 +12,7 @@
         <div class="dim">
             <span class="dim-label"><t t-out="label"/> :</span>
             <span t-if="acc">
-                <t t-out="(acc.code and acc.code + ' ' or '') + (acc.complete_name or acc.name or '').replace(' / ', ' ')"/>
+                <t t-out="'[' + acc.code + ']' + ' ' + acc.complete_name"/>
             </span>
             <span t-if="not acc">-</span>
         </div>
@@ -27,6 +27,8 @@
                     <t t-set="date_str" t-value="o.date and (o.date.strftime('%d/%m/') + str(o.date.year + 543)) or '-'"/>
                     <t t-set="state_labels" t-value="{'draft': 'ร่าง', 'reserved': 'จองแล้ว', 'partial': 'อยู่ระหว่างดำเนินการ', 'done': 'เสร็จสิ้น', 'cancel': 'ยกเลิก'}"/>
                     <t t-set="posted_lines" t-value="o.line_ids.filtered(lambda l: l.state == 'posted')"/>
+                    <!-- ถัวจ่าย = reserve lines span more than one budget code (see budget.commitment.line._check_cross_charge) -->
+                    <t t-set="is_cross_charge" t-value="len(posted_lines.filtered(lambda l: l.move_type == 'reserve').mapped('account_id')) &gt; 1"/>
                     <style>
                         * { font-family: "THSarabunNew", Arial, sans-serif; }
                         .page { color: #000; font-size: 15pt; line-height: 1.25; }
@@ -128,7 +130,7 @@
                             <tr>
                                 <td class="k">ยอดเบิกจ่าย (ตัดงบ)</td>
                                 <td class="v"><span t-out="'{:,.2f}'.format(o.total_consumed)"/> บาท</td>
-                                <td class="k">คงเหลือผูกพันได้</td>
+                                <td class="k">คงเหลือ</td>
                                 <td class="v"><span t-out="'{:,.2f}'.format(o.available_to_obligate)"/> บาท</td>
                             </tr>
                         </table>
@@ -137,7 +139,7 @@
                             (<t t-out="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount)"/>)
                         </div>
 
-                        <table class="detail">
+                        <table class="detail" t-if="is_cross_charge">
                             <thead>
                                 <tr>
                                     <th class="seq">ที่</th>
@@ -164,23 +166,6 @@
                                     <td class="amt"/>
                                 </tr>
                             </tbody>
-                        </table>
-
-                        <table class="sign">
-                            <tr>
-                                <td>
-                                    ลงชื่อ ..................................................<br/>
-                                    (..................................................)<br/>
-                                    ผู้จัดทำ / ผู้ขอจองงบประมาณ<br/>
-                                    วันที่ ......../........./.........
-                                </td>
-                                <td>
-                                    ลงชื่อ ..................................................<br/>
-                                    (..................................................)<br/>
-                                    ผู้อนุมัติ<br/>
-                                    วันที่ ......../........./.........
-                                </td>
-                            </tr>
                         </table>
                     </div>
                 </t>
