@@ -28,7 +28,8 @@
                     <t t-set="date_str" t-value="o.date and (o.date.strftime('%d/%m/') + str(o.date.year + 543)) or '-'"/>
                     <style>
                         * { font-family: "THSarabunNew", Arial, sans-serif; }
-                        .page { color: #000; font-size: 15pt; line-height: 1.25; }
+                        .page { color: #000; font-size: 15pt; line-height: 1.25; position: relative; }
+                        .logo { position: absolute; top: 0; left: 0; max-height: 60pt; max-width: 160pt; }
                         .form-code { text-align: right; font-size: 15pt; }
                         .doc-title { text-align: center; font-weight: bold; font-size: 17pt; margin: 6pt 0 12pt 0; line-height: 1.4; }
                         table.meta { width: 100%; border-collapse: collapse; margin-bottom: 8pt; border: none; }
@@ -51,6 +52,7 @@
                     </style>
 
                     <div class="page">
+                        <img class="logo" t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"/>
                         <div class="form-code">แบบ งปม. 303</div>
 
                         <div class="doc-title">

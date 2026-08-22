@@ -32,7 +32,8 @@
                     <t t-set="is_cross_charge" t-value="len(posted_lines.filtered(lambda l: l.move_type == 'reserve').mapped('account_id')) &gt; 1"/>
                     <style>
                         * { font-family: "THSarabunNew", Arial, sans-serif; }
-                        .page { color: #000; font-size: 15pt; line-height: 1.25; }
+                        .page { color: #000; font-size: 15pt; line-height: 1.25; position: relative; }
+                        .logo { position: absolute; top: 0; left: 0; max-height: 60pt; max-width: 160pt; }
                         .org-name { text-align: center; font-weight: bold; font-size: 16pt; }
                         .doc-title { text-align: center; font-weight: bold; font-size: 18pt; margin: 6pt 0 12pt 0; line-height: 1.4; }
                         table.meta { width: 100%; border-collapse: collapse; margin-bottom: 8pt; border: none; }
@@ -58,6 +59,7 @@
                     </style>
 
                     <div class="page">
+                        <img class="logo" t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"/>
                         <div class="org-name" t-out="o.company_id.name"/>
 
                         <div class="doc-title">
