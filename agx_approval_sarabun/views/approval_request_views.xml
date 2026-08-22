@@ -17,12 +17,6 @@
                 <button name="action_submit_to_sarabun" string="Create Document" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'to_send'), ('sarabun_has_live_document', '=', True)]}" />
             </xpath>
 
-            <!-- Sarabun routing replaces direct approval. Hide the manual
-                 Approve button to avoid double-approval paths. -->
-            <xpath expr="//button[@name='action_approve']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
             <!-- Sarabun status notification — rendered between the statusbar
                  and the sheet (out of the form body). -->
             <xpath expr="//header" position="after">
