@@ -23,6 +23,11 @@ upfront.
     budget-transfer feature (การโอนงบ) split out of core `budget`. `budget.transfer` is a
     1:1 delegated `budget.move` (the `account.payment` ↔ `account.move` pattern) with its
     lines folded into `budget.move.line`; see budget ADR-0013.
+- [Budget Support Request](./budget_support_request/CONTEXT.md) — a requesting unit's
+  application for central to allocate budget onto its own `department` dimension
+  (ขอรับการสนับสนุนงบประมาณ); routed for approval through e-Saraban, then **fulfilled**
+  by central choosing either `budget.transfer` (โอน) or `budget.commitment` (จอง) —
+  structurally mirrors `budget_transfer`'s core + Operating Unit + e-Saraban module split.
 - [Budget Appropriation Summary](./budget_appropriation_summary/CONTEXT.md) —
   institution-wide roll-up of unit appropriations for one fiscal year × source
   (สรุปภาพรวมสถาบัน gathering รวมเล่มหน่วยงาน), rendering the F-series summary
@@ -115,6 +120,12 @@ upfront.
 - **KMITL Project → Budget**: the project's purchase requests (พ.1) and disbursements
   draw that one shared commitment down (obligate+consume); a project may hold many PRs,
   capped at the commitment (ADR-0007).
+- **Budget Support Request → Budget**: once approved (via e-Saraban), central fulfils the
+  request by opening a pre-filled, unsaved `budget.transfer` or `budget.commitment` form
+  (`support_request_id` carried via context defaults) for central to complete and
+  post/reserve; the request moves `approved → in_progress` the moment that document is
+  posted/reserved (an idempotent hook on the transfer's `_post_transfer()` /
+  commitment's `action_reserve()`).
 - **Disbursement ↔ Finance (paying account)**: a **หัวจ่าย** is one of Odoo's own
   `account.payment.method.line` records — bank account × method × voucher × GL — seeded
   by `account_kmitl` on ใบสำคัญจ่าย (PV) and administered in `finance_kmitl`

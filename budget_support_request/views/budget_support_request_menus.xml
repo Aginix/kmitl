@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Budget Support Request subtree — parent root stays in the core budget module. -->
+    <menuitem id="budget_support_request_management" name="Budget Support Request"
+              parent="budget.budget_root_menu" sequence="55">
+        <menuitem
+            id="action_my_budget_support_requests_menu"
+            name="My Support Requests"
+            action="action_my_budget_support_requests"
+            sequence="1"
+        />
+        <menuitem
+            id="action_budget_support_requests_pending_menu"
+            name="Pending Approval"
+            action="action_budget_support_requests_pending"
+            sequence="2"
+        />
+        <menuitem
+            id="action_budget_support_request_menu"
+            name="All Support Requests"
+            action="action_budget_support_request"
+            sequence="3"
+        />
+    </menuitem>
+</odoo>

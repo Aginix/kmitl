@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Notify-only role (decision 8, CONTEXT.md): members get a Todo when a
+         request is approved so they know to fulfil it. Approving/fulfilling
+         stay the Budget Manager's — this group grants read and nothing more.
+         Deliberately category-LESS (renders as a standalone checkbox, not
+         part of a level dropdown) and implies nothing. -->
+    <record id="group_budget_support_officer" model="res.groups">
+        <field name="name">Budget Support Officer</field>
+        <field name="category_id" eval="False"/>
+    </record>
+</odoo>
