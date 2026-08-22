@@ -105,6 +105,24 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
+    @api.constrains("owner_id")
+    def _check_owner_is_self_for_own_group(self):
+        """"Own only" users may file requests in their own name only: the
+        requester (ผู้ขออนุมัติ) must be themselves. Full Users, Managers and
+        superuser are unaffected."""
+        if self.env.su:
+            return
+        user = self.env.user
+        if not user.has_group(
+            "agx_approval.group_approval_own"
+        ) or user.has_group("agx_approval.group_approval_user"):
+            return
+        for rec in self:
+            if rec.owner_id != user.employee_id:
+                raise ValidationError(
+                    _("You can only submit approval requests in your own name.")
+                )
+
     description = fields.Text(
         string="Description",
         tracking=True,
