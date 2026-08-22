@@ -1117,6 +1117,24 @@ class SarabunDocument(models.Model):
         if fn:
             fn(*args)
 
+    # === Classification integrity ===
+    @api.constrains("type_id", "origin_model")
+    def _check_manual_creation_allowed(self):
+        """A type flagged not manual-creatable (allow_manual=False — the from_record
+        types, base + consumer-seeded) must arise from an origin record, never be
+        hand-composed. The form already hides such types from the manual-create
+        dropdown; this is the server-side twin that also blocks the import / RPC /
+        default-context back doors. Manual memo/circular (allow_manual=True) carry no
+        origin and are unaffected."""
+        for doc in self:
+            if doc.type_id and not doc.type_id.allow_manual and not doc.origin_model:
+                raise ValidationError(_(
+                    "ประเภทหนังสือ '%(type)s' ต้องสร้างจากเอกสารต้นทางเท่านั้น "
+                    "ไม่สามารถสร้างด้วยตนเองจากหน้าฟอร์มได้\n"
+                    "Document type '%(type)s' can only be created from a source "
+                    "record, not composed manually."
+                ) % {"type": doc.type_id.display_name})
+
     # === Numbering / Register (P3 — ADR-0002 §4) ===
     @api.constrains("numbering_mode", "kind")
     def _check_numbering_mode_scope(self):
