@@ -32,8 +32,8 @@
                         .page { color: #000; font-size: 15pt; line-height: 1.25; }
                         .org-name { text-align: center; font-weight: bold; font-size: 16pt; }
                         .doc-title { text-align: center; font-weight: bold; font-size: 18pt; margin: 6pt 0 12pt 0; line-height: 1.4; }
-                        table.meta { width: 100%; border-collapse: collapse; margin-bottom: 8pt; }
-                        table.meta td { padding: 1pt 4pt; font-size: 15pt; vertical-align: top; }
+                        table.meta { width: 100%; border-collapse: collapse; margin-bottom: 8pt; border: none; }
+                        table.meta td { padding: 1pt 4pt; font-size: 15pt; vertical-align: top; border: none; }
                         table.meta td.k { width: 90pt; color: #333; }
                         table.detail { width: 100%; border-collapse: collapse; margin-bottom: 8pt; }
                         table.detail th, table.detail td { border: 1px solid #000; padding: 3pt 6pt; font-size: 15pt; vertical-align: top; }
@@ -44,8 +44,8 @@
                         .dim { padding-left: 8pt; }
                         .dim-label { font-weight: bold; }
                         tr.total td { font-weight: bold; }
-                        .summary { width: 100%; border-collapse: collapse; margin-bottom: 8pt; }
-                        .summary td { padding: 2pt 4pt; font-size: 15pt; }
+                        .summary { width: 100%; border-collapse: collapse; margin-bottom: 8pt; border: none; }
+                        .summary td { padding: 2pt 4pt; font-size: 15pt; border: none; }
                         .summary td.k { color: #333; }
                         .summary td.v { text-align: right; white-space: nowrap; width: 120pt; }
                         .in-words { text-align: right; font-style: italic; margin-bottom: 18pt; }
@@ -61,7 +61,7 @@
                             ประจำปีงบประมาณ พ.ศ. <span t-out="o.account_fiscal_year_id.name or '............'"/>
                         </div>
 
-                        <table class="meta">
+                        <table class="meta" border="0">
                             <tr>
                                 <td class="k">เลขที่</td>
                                 <td><span t-out="o.name"/></td>
@@ -118,7 +118,7 @@
                             </tr>
                         </table>
 
-                        <table class="summary">
+                        <table class="summary" border="0">
                             <tr>
                                 <td class="k">วงเงินอนุมัติ (จอง)</td>
                                 <td class="v"><span t-out="'{:,.2f}'.format(o.amount)"/> บาท</td>

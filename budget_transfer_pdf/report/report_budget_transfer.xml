@@ -31,8 +31,8 @@
                         .page { color: #000; font-size: 15pt; line-height: 1.25; }
                         .form-code { text-align: right; font-size: 15pt; }
                         .doc-title { text-align: center; font-weight: bold; font-size: 17pt; margin: 6pt 0 12pt 0; line-height: 1.4; }
-                        table.meta { width: 100%; border-collapse: collapse; margin-bottom: 8pt; }
-                        table.meta td { padding: 1pt 4pt; font-size: 15pt; vertical-align: top; }
+                        table.meta { width: 100%; border-collapse: collapse; margin-bottom: 8pt; border: none; }
+                        table.meta td { padding: 1pt 4pt; font-size: 15pt; vertical-align: top; border: none; }
                         table.meta td.k { width: 70pt; color: #333; }
                         .reason { white-space: pre-wrap; }
                         table.detail { width: 100%; border-collapse: collapse; margin-bottom: 8pt; }
@@ -59,7 +59,7 @@
                             ประจำปีงบประมาณ พ.ศ. <span t-out="o.account_fiscal_year_id.name or '............'"/>
                         </div>
 
-                        <table class="meta">
+                        <table class="meta" border="0">
                             <tr>
                                 <td class="k">เลขที่</td>
                                 <td><span t-out="o.name"/></td>
