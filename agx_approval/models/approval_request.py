@@ -680,6 +680,11 @@ class ApprovalRequest(models.Model):
             "target": "current",
         }
 
+    def _get_budget_commitment_extra_kwargs(self):
+        """Extra kwargs forwarded to _create_budget_commitment().
+        Override in bridge modules to inject e.g. operating_unit_id."""
+        return {}
+
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
@@ -745,6 +750,7 @@ class ApprovalRequest(models.Model):
                 description=f"Approval Request: {self.name}",
                 auto_reserve=True,
                 account_fiscal_year_id=self.account_fiscal_year_id.id,
+                **self._get_budget_commitment_extra_kwargs(),
             )
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
