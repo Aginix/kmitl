@@ -8,6 +8,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="kind"/>
+                <field name="allow_manual" widget="boolean_toggle"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
@@ -28,6 +29,7 @@
                             <field name="sequence"/>
                         </group>
                         <group>
+                            <field name="allow_manual" widget="boolean_toggle"/>
                             <field name="active" widget="boolean_toggle"/>
                         </group>
                     </group>

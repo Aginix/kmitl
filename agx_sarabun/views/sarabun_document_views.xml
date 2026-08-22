@@ -72,7 +72,8 @@
                     <group name="classification"
                            attrs="{'invisible': [('state', '=', 'completed')]}">
                       <group>
-                        <field name="type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
+                        <field name="type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection"
+                               domain="['|', ('allow_manual', '=', True), ('id', '=', type_id)]"/>
                       </group>
                     </group>
                     <!-- Header laid out to mirror the หนังสือ (cf. report/sarabun_reports):
