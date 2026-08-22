@@ -18,10 +18,11 @@
         }
     }
 
-    // Secondary metadata (assignee, created-ago) — smaller and quieter than the
-    // rest of the card; column-gap keeps it tidy when it wraps.
+    // Secondary metadata (assignee, created-ago) — quieter than the rest of
+    // the card but still legible; 0.8125rem (13 px) instead of 0.75 rem (12 px)
+    // prevents the muted colour + tiny size from making the line unreadable.
     .o_DiscussTodoView_meta {
-        font-size: 0.75rem;
+        font-size: 0.8125rem;
         column-gap: 0.25rem;
     }
 
