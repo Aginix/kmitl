@@ -1248,6 +1248,35 @@ class SarabunDocument(models.Model):
                     return origin._get_sarabun_report_action()
         return False
 
+    def _get_origin_record(self):
+        """The origin record as a sudo recordset, or ``False``. Sudo for the same
+        reason as :meth:`_get_delegated_report_action` — rendering the official PDF
+        is gated by the หนังสือ's own read access, not the origin's (ADR-0007)."""
+        self.ensure_one()
+        if not (self.origin_model and self.origin_res_id):
+            return False
+        model = self.env.get(self.origin_model)
+        if model is None:
+            return False
+        origin = model.sudo().browse(self.origin_res_id)
+        return origin if origin.exists() else False
+
+    def _render_origin_body(self):
+        """Markup of the origin's live body fragment for the no-source report
+        (ADR-0015), or ``""``. The origin supplies the template via
+        :meth:`_get_sarabun_body_template`; it is rendered live with the origin as
+        ``o`` (in Thai), so authoritative numbers always match the record."""
+        self.ensure_one()
+        origin = self._get_origin_record()
+        if not origin or not hasattr(origin, "_get_sarabun_body_template"):
+            return ""
+        template = origin._get_sarabun_body_template()
+        if not template:
+            return ""
+        return self.env["ir.qweb"].sudo()._render(
+            template, {"o": origin.with_context(lang="th_TH")}
+        )
+
     def _get_report_base_filename(self):
         self.ensure_one()
         name = (self.name or "").replace("/", "-") or "sarabun"
