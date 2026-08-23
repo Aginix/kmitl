@@ -31,7 +31,7 @@
                             />
                         </div>
                         <div style="position: absolute; top: 0px; right: 0px">
-                            <div>แบบ พจ.1</div>
+                            <div>พจ.1</div>
                         </div>
                         <div class="oe_structure" />
                         <div style="height: 1px" />
@@ -44,6 +44,13 @@
                             </h3>
                         </div>
                         <div class="row">
+                            <div class="col"> หน่วยงาน <span
+                                    class="ms-2"
+                                    t-out="o.active_sarabun_document_id.sender_department_id.display_name"
+                                />
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-8"> เลขที่ <span
                                     class="ms-2 fw-normal"
                                     t-out="o.active_sarabun_document_id.name"
@@ -52,13 +59,6 @@
                             <div class="col"> วันที่ <span
                                     class="ms-2 fw-normal"
                                     t-esc="o.format_date_thai(o.active_sarabun_document_id.date)"
-                                />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col"> หน่วยงาน <span
-                                    class="ms-2"
-                                    t-out="o.active_sarabun_document_id.sender_department_id.display_name"
                                 />
                             </div>
                         </div>
@@ -124,7 +124,7 @@
                                     <th class="text-center" style="width: 8%">ลำดับ</th>
                                     <th class="text-center">รายละเอียด</th>
                                     <th class="text-center">จำนวน</th>
-                                    <th class="text-end">ราคาต่อหน่วย</th>
+                                    <th class="text-end">ราคา</th>
                                     <th class="text-end">จำนวนเงิน</th>
                                 </tr>
                             </thead>
@@ -142,7 +142,9 @@
                                             <span
                                                 t-out="'{0:,.0f}'.format(line.product_qty)"
                                             />
-                                            <span t-field="line.product_uom_id" />
+                                            <span
+                                                t-out="line.uom_text or line.product_uom_id.name or ''"
+                                            />
                                         </td>
                                         <td
                                             class="text-end"

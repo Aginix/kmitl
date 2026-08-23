@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_finance_assignment_rule_user,finance.assignment.rule user,model_finance_assignment_rule,finance_kmitl.group_finance_kmitl_user_out,1,0,0,0
+access_finance_assignment_rule_manager,finance.assignment.rule manager,model_finance_assignment_rule,finance_kmitl.group_finance_kmitl_manager,1,1,1,1
+access_finance_assign_officer_wizard,finance.assign.officer.wizard,model_finance_assign_officer_wizard,finance_kmitl.group_finance_kmitl_user_out,1,1,1,1

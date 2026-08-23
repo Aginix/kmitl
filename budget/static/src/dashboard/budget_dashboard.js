@@ -71,6 +71,8 @@ export class BudgetDashboard extends Component {
             rows: [],
             collapsed: {},
             hideZero: true,
+            // Free-text search on the budget-account code/name (feedback: not autocomplete).
+            accountSearch: "",
             breakdownDims: {
                 department_analytic_id: true,
                 activity_analytic_id: true,
@@ -251,6 +253,29 @@ export class BudgetDashboard extends Component {
         this.state.hideZero = !this.state.hideZero;
     }
 
+    onAccountSearchInput(ev) {
+        this.state.accountSearch = ev.target.value;
+    }
+
+    // Keep every row matching `predicate` plus its ancestor (dimension) rows so
+    // the full hierarchy down to each match still shows; ignores collapse/
+    // hide-zero so a match is never hidden.
+    _rowsWithAncestors(predicate) {
+        const byKey = this.rowsByKey;
+        const keep = new Set();
+        for (const row of this.state.rows) {
+            if (predicate(row)) {
+                keep.add(row.key);
+                let pk = row.parent_key;
+                while (pk && !keep.has(pk)) {
+                    keep.add(pk);
+                    pk = byKey[pk] ? byKey[pk].parent_key : false;
+                }
+            }
+        }
+        return this.state.rows.filter((row) => keep.has(row.key));
+    }
+
     // Toggle one breakdown dimension: the budget-account tree is nested under the
     // enabled dimensions (in fixed order). Drop stale collapse state (keys differ
     // between breakdown shapes).
@@ -287,6 +312,17 @@ export class BudgetDashboard extends Component {
     }
 
     get visibleRows() {
+        // Free-text search (on code or name) takes precedence: show every matching
+        // budget-account row plus its dimension ancestors, ignoring collapse/hide-zero.
+        const query = (this.state.accountSearch || "").trim().toLowerCase();
+        if (query) {
+            return this._rowsWithAncestors(
+                (row) =>
+                    row.row_type === "account" &&
+                    ((row.code || "").toLowerCase().includes(query) ||
+                        (row.name || "").toLowerCase().includes(query))
+            );
+        }
         const byKey = this.rowsByKey;
         const collapsed = this.state.collapsed;
         const hiddenByCollapse = (row) => {

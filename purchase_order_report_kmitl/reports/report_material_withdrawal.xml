@@ -114,7 +114,7 @@
                             <td class="text-center" t-out="row_no"/>
                             <td t-out="line.product_id.name or line.name or ''"/>
                             <td class="text-center"
-                                t-out="line.product_uom.name or ''"/>
+                                t-out="line.uom_text or line.product_uom.name or ''"/>
                             <td class="text-center"
                                 t-out="'{0:,.0f}'.format(line.product_qty)"/>
                             <td class="text-center"

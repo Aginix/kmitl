@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Demo",
-    "version": "16.0.0.0.0",
+    "version": "16.0.0.0.1",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

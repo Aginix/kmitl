@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Budget Transfer subtree — parent root stays in the core budget module. -->
+    <menuitem id="budget_transfer_management" name="Budget Transfer"
+              parent="budget.budget_root_menu" sequence="50">
+        <menuitem id="budget_transfer_menu" name="Budget Transfer" sequence="1">
+            <menuitem
+                id="action_my_budget_transfers_menu"
+                name="My Transfer Requests"
+                action="action_my_budget_transfers"
+                sequence="1"
+            />
+            <menuitem
+                id="action_budget_transfers_pending_menu"
+                name="Pending Approval"
+                action="action_budget_transfers_pending"
+                sequence="2"
+            />
+            <menuitem
+                id="action_budget_transfer_menu"
+                name="All Transfer Requests"
+                action="action_budget_transfer"
+                sequence="3"
+            />
+        </menuitem>
+    </menuitem>
+</odoo>

@@ -38,8 +38,22 @@
                     <div style="height: 1px" />
                     <div class="page-header mt-5 mb-5">
                         <h3 class="text-center fw-bolder" style="line-height: 1.575">
-                            บันทึกขอซื้อขอจ้าง
+                            บันทึกขอให้จัดหา
                         </h3>
+                    </div>
+                    <!-- บันทึกนำ — optional covering note above the origin body;
+                         prints only when the drafter ticked แนบเนื้อหา. -->
+                    <t t-call="agx_sarabun.sarabun_covering_note">
+                        <t t-set="doc" t-value="o.active_sarabun_document_id" />
+                    </t>
+                    <div class="row">
+                        <div class="col">
+                            หน่วยงาน
+                            <span
+                                class="ms-2"
+                                t-out="o.active_sarabun_document_id.sender_department_id.display_name"
+                            />
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-8">
@@ -54,15 +68,6 @@
                             <span
                                 class="ms-2 fw-normal"
                                 t-esc="o.format_date_thai(o.active_sarabun_document_id.date)"
-                            />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            หน่วยงาน
-                            <span
-                                class="ms-2"
-                                t-out="o.active_sarabun_document_id.sender_department_id.display_name"
                             />
                         </div>
                     </div>
@@ -146,7 +151,7 @@
                                 <th>ลำดับ</th>
                                 <th class="text-center">รายละเอียด</th>
                                 <th class="text-center">จำนวน</th>
-                                <th class="text-end">ราคาต่อหน่วย</th>
+                                <th class="text-end">ราคา</th>
                                 <th class="text-end">จำนวนเงิน</th>
                             </tr>
                         </thead>
@@ -160,7 +165,9 @@
                                         <span
                                             t-out="'{0:,.0f}'.format(line.product_qty)"
                                         />
-                                        <span t-field="line.product_uom_id" />
+                                        <span
+                                            t-out="line.uom_text or line.product_uom_id.name or ''"
+                                        />
                                     </td>
                                     <td
                                         class="text-end"

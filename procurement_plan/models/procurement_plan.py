@@ -1,8 +1,7 @@
 import logging
 
-from odoo.tools.misc import format_amount
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -33,8 +32,7 @@ class ProcurementPlan(models.Model):
     _order = "name desc"
 
     READONLY_STATES = {
-        "new": [("readonly", True)],
-        "on_hold": [("readonly", True)],
+        "to_verify": [("readonly", True)],
         "in_progress": [("readonly", True)],
         "done": [("readonly", True)],
         "cancel": [("readonly", True)],
@@ -48,7 +46,6 @@ class ProcurementPlan(models.Model):
     )
     name = fields.Char(
         string="รหัสเอกสาร",
-        compute="_compute_name",
         readonly=False,
         store=True,
         copy=False,
@@ -82,13 +79,12 @@ class ProcurementPlan(models.Model):
     )
     state = fields.Selection(
         [
-            ("draft", "Draft"),
-            ("new", "New"),
-            ("on_hold", "On Hold"),
-            ("ready", "Ready"),
-            ("in_progress", "In progress"),
-            ("done", "Done"),
-            ("cancel", "Cancelled"),
+            ("draft", "แบบร่าง"),
+            ("to_verify", "รอตรวจสอบข้อมูล"),
+            ("verified", "รอดำเนินการ"),
+            ("in_progress", "อยู่ในระหว่างดำเนินการ"),
+            ("done", "จัดซื้อจัดจ้างเสร็จสิ้น"),
+            ("cancel", "ยกเลิก"),
         ],
         string="Status",
         readonly=True,
@@ -119,7 +115,7 @@ class ProcurementPlan(models.Model):
         tracking=True,
     )
     payment_ids = fields.One2many(
-        comodel_name="procurement.plan.payment", inverse_name="procurement_plan_id"
+        comodel_name="procurement.plan.payment", inverse_name="procurement_plan_id", copy=True
     )
     user_id = fields.Many2one(
         string="User",
@@ -153,10 +149,7 @@ class ProcurementPlan(models.Model):
     @api.depends("state")
     def _compute_can_edit_description(self):
         for record in self:
-            if record.state in ("draft", "new"):
-                record.can_edit_description = True
-            else:
-                record.can_edit_description = False
+            record.can_edit_description = record.state in ("draft", "to_verify", "verified", "in_progress")
 
     analytic_account_id = fields.Many2one(
         "account.analytic.account",
@@ -171,6 +164,27 @@ class ProcurementPlan(models.Model):
     )
     analytic_account_balance = fields.Monetary(related="analytic_account_id.balance")
 
+    def copy(self, default=None):
+        default = dict(default or {})
+        # analytic_account_id has copy=False, but analytic_distribution (JSON) is
+        # copied as-is and still contains the old minted account's id.  Strip it so
+        # the duplicate starts clean; a fresh account is minted on action_send_to_verify.
+        if self.analytic_account_id:
+            dist = dict(self.analytic_distribution or {})
+            dist.pop(str(self.analytic_account_id.id), None)
+            default["analytic_distribution"] = dist or False
+        # Keep ชื่อรายการ unique on duplicate: append " (copy)" until it no longer
+        # collides with an existing plan (repeat so copying a copy doesn't clash).
+        if "description" not in default and self.description:
+            copy_name = self.description
+            while self.with_context(active_test=False).search_count(
+                [("description", "=", copy_name)]
+            ):
+                copy_name = _("%s (copy)") % copy_name
+            if copy_name != self.description:
+                default["description"] = copy_name
+        return super().copy(default)
+
     def unlink(self):
         # Delete the empty related analytic account
         analytic_accounts_to_delete = self.env["account.analytic.account"]
@@ -180,6 +194,21 @@ class ProcurementPlan(models.Model):
         result = super().unlink()
         analytic_accounts_to_delete.unlink()
         return result
+
+    def write(self, vals):
+        res = super().write(vals)
+        # Keep the plan's analytic account label in step with its description —
+        # the description is minted onto the analytic at ส่งเข้ารอจัดสรรงบประมาณ
+        # and stays editable in draft/to_verify, so a later rename must follow
+        # through to the dimension.
+        if vals.get("description"):
+            for record in self:
+                if (
+                    record.analytic_account_id
+                    and record.analytic_account_id.name != record.description
+                ):
+                    record.analytic_account_id.name = record.description
+        return res
 
     @api.model
     def _create_analytic_account_from_values(self, values):
@@ -197,60 +226,47 @@ class ProcurementPlan(models.Model):
         )
         return analytic_account
 
-    def write(self, vals):
-        res = super().write(vals)
-        if (
-            "state" in vals
-            and vals["state"] not in ("draft", "cancel")
-            and not self.analytic_account_id
-        ):
-            analytic_account = self._create_analytic_account_from_values(
-                {
-                    "name": self.description,
-                    "code": self.name,
-                }
-            )
-            self.analytic_account_id = analytic_account.id
-        return res
-
-    @api.depends("state", "name")
-    def _compute_name(self):
-        self = self.sorted(lambda m: m.id)
-
-        for record in self:
-            if record.state == "cancel":
-                continue
-
-            record_has_name = record.name and record.name != _("New")
-            if not record_has_name:
-                record.name = self.env["ir.sequence"].next_by_code(
-                    "procurement.plan"
+    def action_send_to_verify(self):
+        """draft → to_verify: assign the sequence number and mint the plan's
+        analytic account. Sequence is consumed here (not on save) so draft
+        records that are deleted never waste a number."""
+        for record in self.sorted("id"):
+            if not record.name or record.name == _("New"):
+                # The document number's year must come from the ปีงบประมาณ, not
+                # today. In the use_date_range path %(year_be)s reads the
+                # effective date from the ``ir_sequence_date`` context (the
+                # date_range only drives the per-year counter reset), so pin both
+                # to the fiscal year's end date — its Gregorian year + 543 is the
+                # BE fiscal-year number (e.g. FY 2570 ends 2027 → 2570).
+                fiscal_date = record.account_fiscal_year_id.date_to
+                record.name = self.env["ir.sequence"].with_context(
+                    ir_sequence_date=fiscal_date
+                ).next_by_code(
+                    "procurement.plan",
+                    sequence_date=fiscal_date,
                 ) or _("New")
+        self.write({"state": "to_verify"})
+        for record in self:
+            if not record.analytic_account_id:
+                analytic_account = record._create_analytic_account_from_values(
+                    {
+                        "name": record.description,
+                        "code": record.name,
+                    }
+                )
+                record.analytic_account_id = analytic_account.id
 
-    def action_reset_to_draft(self):
-        self._release_plan_commitment()
-        self.write({"state": "draft"})
+    def action_verify(self):
+        """to_verify → verified: plain "ยืนยัน" at the core level. The budget
+        layer overrides ``_on_verify`` to reserve the plan's budget instead."""
+        if self.state not in ("to_verify",):
+            raise UserError(_("Record must be in to_verify state to be verified."))
+        self._on_verify()
+        self.write({"state": "verified"})
 
-    def action_new(self):
-        self.write({"state": "new"})
-
-    def action_ready(self):
-        if self.state not in ("new"):
-            raise UserError(_("Record must be in new state to be set to ready."))
-        if (
-            not self.purchase_request_eta
-            or not self.procurement_announcement_eta
-            or not self.approval_signing_eta
-            or not self.contract_order_signing_eta
-            or not self.acceptance_eta
-        ):
-            raise UserError(_("กรุณาระบุแผนการดำเนินงานให้เสร็จสิ้นทั้งหมด"))
-        self._reserve_plan_commitment()
-        self.write({"state": "ready"})
-
-    def action_on_hold(self):
-        self._release_plan_commitment()
-        self.write({"state": "on_hold"})
+    def _on_verify(self):
+        """No-op hook. Budget layer reserves the plan's budget here."""
+        return
 
     def action_in_progress(self):
         self.write({"state": "in_progress"})
@@ -258,124 +274,31 @@ class ProcurementPlan(models.Model):
     def action_done(self):
         self.write({"state": "done"})
 
-    def _reserve_plan_commitment(self):
-        """Reserve one shared budget.commitment for the plan when it is made
-        ready (D1). Idempotent: skips when an active (non-cancelled) commitment
-        already exists. Blocks on insufficient budget unless budget.allow_negative
-        is set. Downstream PR/PO/DR draw this single commitment down."""
-        self.ensure_one()
-        if self.budget_commitment_ids.filtered(lambda c: c.state != "cancel"):
-            return
-        if not self.budget_account_id:
-            raise UserError(
-                _("กรุณาระบุรหัสงบประมาณก่อนตั้งสถานะรอดำเนินการ")
-            )
-        if self.total_price <= 0:
-            raise UserError(
-                _("กรุณาระบุวงเงินรวมให้มากกว่า 0 ก่อนจองงบประมาณ")
-            )
-        analytic_data = {
-            "account_id": self.budget_account_id.id,
-            "activity_analytic_id": self.activity_analytic_id.id or False,
-            "department_analytic_id": self.department_analytic_id.id or False,
-            "fund_analytic_id": self.fund_analytic_id.id or False,
-            "source_analytic_id": self.source_analytic_id.id or False,
-            # The source appropriation is tagged with this plan's own
-            # procurement_plan dimension; the check must carry it too, otherwise
-            # the engine pins procurement_plan empty and excludes the very
-            # appropriation being drawn from (→ false "insufficient budget").
-            "procurement_plan_analytic_id": self.analytic_account_id.id or False,
-        }
-        allow_negative = (
-            self.env["ir.config_parameter"]
-            .sudo()
-            .get_param("budget.allow_negative", False)
-        )
-        if not allow_negative:
-            self.env["budget.controller"].check_budget_availability(
-                analytic_data,
-                self.total_price,
-                self.account_fiscal_year_id.id,
-                self.company_id.id,
-            )
-        commitment = self.env["budget.commitment"].create(
-            self._prepare_plan_commitment_vals()
-        )
-        commitment.action_reserve()
-        self.message_post(
-            body=_("จองงบประมาณ %s จำนวน %s")
-            % (
-                commitment.name,
-                format_amount(self.env, self.total_price, self.currency_id),
-            )
+    def action_reset_to_draft(self):
+        self._on_reset()
+        self.write({"state": "draft"})
+        # Revive the plan's analytic dimension that action_cancel archived, so a
+        # cancelled plan brought back to draft carries its account with it.
+        self.analytic_account_id.filtered(lambda a: not a.active).write(
+            {"active": True}
         )
 
-    def _prepare_plan_commitment_vals(self):
-        """Build the create vals for the plan's shared reservation commitment.
-        Split out of ``_reserve_plan_commitment`` so bridge modules can enrich the
-        commitment — e.g. stamp the plan's operating unit so the reservation lands
-        in the same OU as the plan/appropriation — without re-implementing the
-        whole reservation flow."""
-        self.ensure_one()
-        dist = dict(self.analytic_distribution or {})
-        return {
-            "account_id": self.budget_account_id.id,
-            "amount": self.total_price,
-            "analytic_distribution": dist or False,
-            "account_fiscal_year_id": self.account_fiscal_year_id.id,
-            "company_id": self.company_id.id,
-            "date": fields.Date.context_today(self),
-            "ref": self.name,
-            # ชื่อรายการของแผน = ชื่อใบจอง (budget.commitment._rec_name shows it
-            # next to the number, so a drawing document can tell reservations apart).
-            "title": self.description,
-            "description": self.description,
-            "procurement_plan_id": self.id,
-            "user_id": self.env.user.id,
-            "line_ids": [
-                (
-                    0,
-                    0,
-                    {
-                        "move_type": "reserve",
-                        "account_id": self.budget_account_id.id,
-                        "analytic_distribution": dist or False,
-                        "amount": self.total_price,
-                        "name": _("Initial reservation"),
-                    },
-                )
-            ],
-        }
+    def _on_reset(self):
+        """No-op hook. Budget layer releases an untouched reservation here."""
+        return
 
-    def _release_plan_commitment(self):
-        """Release the plan's reservation when it leaves the active band
-        (on hold / reset to draft). Cancels the commitment only while it is still
-        untouched AND usage has not started; once the plan is in progress (a
-        downstream document has linked the reservation) or any obligate/consume
-        draw-down exists, the commitment is kept and a note is posted so in-flight
-        spending is never stranded (D3)."""
-        for plan in self:
-            in_use = plan.state == "in_progress"
-            for commitment in plan.budget_commitment_ids.filtered(
-                lambda c: c.state in ("reserved", "partial")
-            ):
-                if (
-                    in_use
-                    or commitment.total_obligated
-                    or commitment.total_consumed
-                ):
-                    plan.message_post(
-                        body=_(
-                            "งบประมาณที่จองไว้ (%s) มีการใช้งานแล้ว "
-                            "จึงไม่ยกเลิกการจอง"
-                        )
-                        % commitment.name
-                    )
-                    continue
-                commitment.action_cancel()
-                plan.message_post(
-                    body=_("ยกเลิกการจองงบประมาณ %s") % commitment.name
-                )
+    def action_cancel(self):
+        self._on_cancel()
+        self.write({"state": "cancel"})
+        # Archive the plan's analytic dimension so a cancelled plan's account
+        # stops showing up as a selectable มิติ; action_reset_to_draft revives it.
+        self.analytic_account_id.filtered(lambda a: a.active).write(
+            {"active": False}
+        )
+
+    def _on_cancel(self):
+        """No-op hook. Budget layer releases an untouched reservation here."""
+        return
 
     can_edit = fields.Boolean(compute="_compute_can_edit")
 
@@ -404,27 +327,11 @@ class ProcurementPlan(models.Model):
             )
         return res
 
-    budget_commitment_ids = fields.One2many(
-        "budget.commitment", "procurement_plan_id", string="ผูกพันงบประมาณ", readonly=True
-    )
-    budget_commitment_count = fields.Integer(
-        string="จำนวนผูกพันงบประมาณ", compute="_compute_budget_commitment_count"
-    )
-
-    budget_account_id = fields.Many2one(
-        comodel_name="budget.account",
-        string="รหัสงบประมาณ",
-        required=True,
-        index=True,
-        tracking=True,
-        domain="[('budgetable', '=', True), ('budget_type', '=', 'expense')]",
-        states=READONLY_STATES,
-    )
-
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กิจกรรม",
         compute="_compute_analytic_id",
+        inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
         store=True,
         tracking=True,
@@ -435,6 +342,7 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="ส่วนงาน",
         compute="_compute_analytic_id",
+        inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
         store=True,
         tracking=True,
@@ -445,8 +353,10 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="กองทุน",
         compute="_compute_analytic_id",
+        inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
-        store=True,
+        store=False,
+        compute_sudo=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -455,6 +365,7 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="แหล่งเงิน",
         compute="_compute_analytic_id",
+        inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
         store=True,
         tracking=True,
@@ -469,34 +380,27 @@ class ProcurementPlan(models.Model):
         "procurement_plan": "analytic_account_id",
     }
 
+    def _inverse_activity_analytic(self):
+        """Update distribution when activity changes"""
+        for line in self:
+            line._update_analytic_distribution("activities")
+
+    def _inverse_department_analytic(self):
+        """Update distribution when department changes"""
+        for line in self:
+            line._update_analytic_distribution("departments")
+
+    def _inverse_fund_analytic(self):
+        """Update distribution when fund changes"""
+        for line in self:
+            line._update_analytic_distribution("funds")
+
+    def _inverse_source_analytic(self):
+        """Update distribution when fund changes"""
+        for line in self:
+            line._update_analytic_distribution("sources")
+
     def _inverse_analytic_account_id(self):
         """Update distribution when source changes"""
         for line in self:
             line._update_analytic_distribution("procurement_plan")
-
-    def _compute_budget_commitment_count(self):
-        for rec in self:
-            rec.budget_commitment_count = len(rec.budget_commitment_ids)
-
-    def action_view_budget_commitment(self):
-        self.ensure_one()
-        action = (
-            self.env.ref(
-                "procurement_plan_budget.action_budget_commitment_procurement_plan"
-            )
-            .sudo()
-            .read()[0]
-        )
-        action["domain"] = [("procurement_plan_id", "=", self.id)]
-        action["context"] = {"default_procurement_plan_id": self.id}
-        return action
-
-    def action_open_budget_commitments(self):
-        self.ensure_one()
-        return {
-            "name": "Budget Commitments",
-            "type": "ir.actions.act_window",
-            "res_model": "budget.commitment",
-            "view_mode": "tree,form",
-            "domain": [("procurement_plan_id", "=", self.id)],
-        }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Fires on the *bill*, not on the handover: the handover sets its own
+         cash_revenue_handover_request_id and leaves disbursement_request_id
+         empty, so it never trips its own rule.
+
+         Non-blocking (is_blocking = False) because posting the bill first is
+         wrong but not invalid — accounting may have a reason, and the request
+         must not become unbillable. Surfaced at Submit, one step before
+         Approve = post, which is the last moment doing the handover first is
+         still free. -->
+    <record id="excep_handover_not_posted" model="exception.rule">
+        <field
+            name="name"
+        >ใบโอนเงินและรายได้ยังไม่ได้ลงบัญชี</field>
+        <field
+            name="description"
+        >ใบตั้งหนี้นี้มาจากใบขอเบิกที่มีใบโอนเงินและรายได้รออยู่ ถ้าลงบัญชีใบตั้งหนี้ก่อน ส่วนงานจะมีค่าใช้จ่ายโดยไม่มีเงินและรายได้มารองรับ กรุณาลงบัญชีใบโอนเงินและรายได้ก่อน (ปุ่ม "โอนเงินและรายได้" บนใบขอเบิก)</field>
+        <field name="sequence">60</field>
+        <field name="model">account.move</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+request = obj.disbursement_request_id
+if request:
+    handovers = request.cash_revenue_handover_move_ids.filtered(
+        lambda m: m.state != 'cancel'
+    )
+    if handovers and any(m.state != 'posted' for m in handovers):
+        failed = True
+        </field>
+        <field name="active" eval="True" />
+        <field name="is_blocking" eval="False" />
+    </record>
+</odoo>

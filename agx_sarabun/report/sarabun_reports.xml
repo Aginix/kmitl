@@ -30,16 +30,33 @@
                         <img t-att-src="image_data_uri(sig_image)" style="max-height:60px;"/>
                     </div>
                     <div t-else="" style="height:60px;"/>
+                    <div t-if="sig.note" style="font-size:0.9em; color:#555;">
+                        <span t-out="sig.note"/>
+                    </div>
                     <div>(<span t-out="sig.signed_name or sig.acted_by_id.employee_id.name or sig.acted_by_id.name"/>)</div>
                     <!-- capacity/position only (never the person name, already shown
                          above): snapshot → signed capacity → targeted Position → blank. -->
                     <div t-out="sig.signed_position_name or sig.signed_as_position_id.name or sig.position_id.name"/>
                     <div t-if="sig.acted_date"
                          t-out="doc.format_datetime_thai_sign(sig.acted_date)"/>
-                    <div t-if="sig.note" style="font-size:0.9em; color:#555;">
-                        <span t-out="sig.note"/>
-                    </div>
                 </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================
+         Covering note (บันทึกนำ) — the optional เนื้อหา a from_record
+         หนังสือ carries above its origin's report. A delegated (has-source)
+         report t-calls this at the TOP of its page, mirroring how it
+         t-calls the endorsement block at the tail. Expects `doc` in
+         context; renders nothing unless the drafter ticked แนบเนื้อหา
+         (include_content) AND wrote a body — so a plain from_record
+         document adds nothing.
+         ============================================================ -->
+    <template id="sarabun_covering_note">
+        <t t-if="doc and doc.include_content and doc.content">
+            <div style="margin-bottom:12px;">
+                <div t-field="doc.content"/>
             </div>
         </t>
     </template>
@@ -67,52 +84,140 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.basic_layout">
-                    <div class="page" style="font-family: 'Sarabun','THSarabunNew',sans-serif;">
-                        <h3 class="text-center" style="margin-bottom:4px;">บันทึกข้อความ</h3>
-                        <table style="width:100%; margin-bottom:8px;">
-                            <tr>
-                                <td style="width:75%;">
-                                    <strong>ส่วนราชการ</strong>
-                                    <span t-out="doc.sender_department_id.complete_name or doc.sender_department_id.name"/>
-                                    <span t-if="doc.sender_suffix" t-out="' ' + doc.sender_suffix"/>
-                                </td>
-                                <td style="width:25%;">
-                                    <strong>ที่</strong> <span t-field="doc.name"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <strong>วันที่</strong> <span t-field="doc.date"/>
-                                </td>
-                            </tr>
-                            <tr><td colspan="2"><strong>เรื่อง</strong> <span t-field="doc.subject"/></td></tr>
-                            <tr>
-                                <td colspan="2">
-                                    <strong t-out="doc.addressee_prefix_id.name or 'เรียน'"/>
-                                    <span t-out="doc.addressee"/>
-                                </td>
-                            </tr>
-                        </table>
+                    <t t-set="doc" t-value="doc.with_context({'lang': 'th_TH'})"/>
+                    <style>
+                        * { font-family: "THSarabunNew", Arial, sans-serif; }
+                        .page { color: #000; font-size: 15pt; line-height: 1.25; }
+                        h3 { font-size: 26pt; margin: 0; font-weight: bold; }
+                        .doc-title td {
+                            border: none;
+                        }
+                        .doc-title table {
+                            width: 100%;
+                        }
+                        p, span, strong, em {
+                            line-height: 1.3;
+                        }
+                        .oe-tabs {
+                            display: inline-block;
+                            white-space: pre-wrap;
+                            max-width: 40px;
+                            width: 40px;
+                        }
+                        .doc-content h1, .doc-content h2, .doc-content h3, .doc-content h4, .doc-content h5, .doc-content h6 {
+                            maring: 0;
+                        }
+                        .doc-content table td, .doc-content table th, .doc-content table tr {
+                            border-color: #000;
+                            padding: 2px 4px;
+                        }
+                        .doc-content table td p, .doc-content table th p {
+                            margin-bottom: 0;
+                        }
+                    </style>
+                    <div class="page">
+                        <div class="doc-title">
+                            <table style="width:100%; margin-bottom:4px; border:none;">
+                                <tr>
+                                    <td style="width:80px; vertical-align:middle; border:none;">
+                                        <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" style="max-height:60pt; max-width:72pt;"/>
+                                    </td>
+                                    <td style="text-align:center; vertical-align:middle; border:none;">
+                                        <h3>บันทึกข้อความ</h3>
+                                    </td>
+                                    <td style="width:80px; border:none;"/>
+                                </tr>
+                            </table>
+                            <table style="width:100%;">
+                                <tr>
+                                    <td style="width: 64pt; vertical-align:top;">
+                                        <strong>หน่วยงาน</strong>
+                                    </td>
+                                    <td>
+                                        <span t-out="doc.sender_department_id.complete_name or doc.sender_department_id.name"/>
+                                        <span t-if="doc.sender_suffix" t-out="' ' + doc.sender_suffix"/>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table>
+                                <tr>
+                                    <td style="width: 24pt; vertical-align:top;">
+                                        <strong>ที่</strong>
+                                    </td>
+                                    <td style="width: 240pt;">
+                                        <span t-field="doc.name"/>
+                                    </td>
+                                    <td style="width: 24pt; vertical-align:top;">
+                                        <strong>วันที่</strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="doc.date"/>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table>
+                                <tr>
+                                    <td style="width: 24pt; vertical-align:top;">
+                                        <strong>เรื่อง</strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="doc.subject"/>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table>
+                                <tr>
+                                    <!-- TODO: Compute the width dynamically to fit the length of the addressee name -->
+                                    <td style="width: 36pt; vertical-align:top;">
+                                        <strong t-out="doc.addressee_prefix_id.name or 'เรียน'"/>
+                                    </td>
+                                    <td>
+                                        <span t-out="doc.addressee"/>
+                                    </td>
+                                </tr>
+                            </table>
 
-                        <!-- อ้างถึง / สิ่งที่ส่งมาด้วย -->
-                        <div t-if="doc.reference_document_ids or doc.reference_line_ids" style="margin-bottom:6px;">
-                            <strong>อ้างถึง</strong>
-                            <ul style="margin:0;">
-                                <li t-foreach="doc.reference_document_ids" t-as="r"><span t-out="r.display_name"/></li>
-                                <li t-foreach="doc.reference_line_ids" t-as="rl"><span t-out="rl.text"/></li>
-                            </ul>
-                        </div>
-                        <div t-if="doc.enclosure_ids" style="margin-bottom:6px;">
-                            <strong>สิ่งที่ส่งมาด้วย</strong>
-                            <ol style="margin:0;">
-                                <li t-foreach="doc.enclosure_ids" t-as="e"><span t-out="e.description"/></li>
-                            </ol>
+                            <table t-if="doc.reference_document_ids or doc.reference_line_ids">
+                                <tr>
+                                    <td style="width: 96pt; vertical-align:top;">
+                                        <strong>อ้างถึง</strong>
+                                    </td>
+                                    <td>
+                                        <ul style="margin:0;">
+                                            <li t-foreach="doc.reference_document_ids" t-as="r"><span t-out="r.display_name"/></li>
+                                            <li t-foreach="doc.reference_line_ids" t-as="rl"><span t-out="rl.text"/></li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table t-if="doc.enclosure_attachment_ids">
+                                <tr>
+                                    <td style="width: 86pt; vertical-align:top;">
+                                        <strong>สิ่งที่ส่งมาด้วย</strong>
+                                    </td>
+                                    <td>
+                                        <ol style="margin:0;">
+                                            <li t-foreach="doc.enclosure_attachment_ids" t-as="e"><span t-out="e.name"/></li>
+                                        </ol>
+                                    </td>
+                                </tr>
+                            </table>
+
                         </div>
 
-                        <!-- เนื้อหา (body) — the composed content (no-source only). -->
-                        <div t-if="doc.content" style="margin:8px 0;">
+                        <!-- เนื้อหา (body) — the composed content / บันทึกนำ. -->
+                        <div t-if="doc.include_content and doc.content" style="margin:8px 0;" class="doc-content">
                             <div t-field="doc.content"/>
                         </div>
+
+                        <!-- เนื้อจากต้นเรื่อง (origin body fragment) — ADR-0015: a
+                             from-record document's LIVE data body (tables), rendered
+                             between the เนื้อหา and the signatures. Empty for a
+                             composed (no-origin) document or an origin without a body
+                             template. -->
+                        <t t-set="origin_body" t-value="doc._render_origin_body()"/>
+                        <div t-if="origin_body" style="margin:8px 0;" class="doc-content" t-out="origin_body"/>
 
                         <!-- เกษียน trail + signature block(s) -->
                         <t t-call="agx_sarabun.sarabun_endorsement_block"/>

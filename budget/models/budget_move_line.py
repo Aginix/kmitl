@@ -141,23 +141,37 @@ class BudgetMoveLine(models.Model):
         string="กองทุน",
         domain=[("root_plan_id.code", "=", "funds")],
     )
-    # Stored mirrors of analytic_distribution for the two dimensions that have no
-    # dedicated column upstream (kmitl_project / procurement_plan). Read-only —
-    # they exist only so the availability engine can match these dimensions with
-    # set-based read_group/child_of. The JSON distribution stays the source of truth.
+    # Stored columns for the two dimensions that have no dedicated column upstream
+    # (kmitl_project / procurement_plan). Folded into ``_analytic_keys`` below so
+    # they round-trip with analytic_distribution exactly like the base four dims —
+    # editable by the user and readable by the availability engine (set-based
+    # read_group/child_of). The JSON distribution stays the source of truth.
     kmitl_project_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="โครงการ/กิจกรรม",
-        compute="_compute_extra_dim_analytic",
+        compute="_compute_analytic_distribution",
         store=True,
+        readonly=False,
         domain=[("root_plan_id.code", "=", "kmitl_project")],
     )
     procurement_plan_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="แผนจัดซื้อจัดจ้าง",
-        compute="_compute_extra_dim_analytic",
+        compute="_compute_analytic_distribution",
         store=True,
+        readonly=False,
         domain=[("root_plan_id.code", "=", "procurement_plan")],
+    )
+    # Account-type flags — drive conditional visibility of the two extra dims in
+    # the move-line form. Both come from optional modules (kmitl_project /
+    # procurement_plan); guard against missing fields so budget installs standalone.
+    account_is_project = fields.Boolean(
+        string="Is Project Account",
+        compute="_compute_account_type_flags",
+    )
+    account_is_procurement = fields.Boolean(
+        string="Is Procurement Account",
+        compute="_compute_account_type_flags",
     )
     hide_unallocated_balance = fields.Boolean(
         compute="_compute_hide_unallocated_balance", readonly=True
@@ -195,25 +209,26 @@ class BudgetMoveLine(models.Model):
                 line.department_analytic_id = line.move_id.department_analytic_id
             # สำหรับ move types อื่น ให้ผู้ใช้เลือกเอง
 
-    @api.depends("analytic_distribution")
-    def _compute_extra_dim_analytic(self):
-        """Mirror kmitl_project / procurement_plan out of analytic_distribution.
-
-        These two dimensions have no upstream convenience column; the engine
-        needs them as stored columns to match set-based. Derived read-only from
-        the JSON (the source of truth) with a single browse per line.
+    def _analytic_keys(self):
+        """Extend the base 4-dim mapping with the two extra dims so
+        analytic_distribution round-trips all six dimensions (kmitl_project /
+        procurement_plan become editable convenience fields, not read-only mirrors).
         """
+        keys = super()._analytic_keys()
+        keys["kmitl_project"] = "kmitl_project_analytic_id"
+        keys["procurement_plan"] = "procurement_plan_analytic_id"
+        return keys
+
+    @api.depends("account_id")
+    def _compute_account_type_flags(self):
+        has_project = "is_project" in self.env["budget.account"]._fields
+        has_proc = "procurement_plan" in self.env["budget.account"]._fields
         for line in self:
-            project = plan = False
-            account_ids = [int(raw_id) for raw_id in (line.analytic_distribution or {})]
-            for account in self.env["account.analytic.account"].browse(account_ids):
-                code = account.plan_id.code
-                if code == "kmitl_project":
-                    project = account.id
-                elif code == "procurement_plan":
-                    plan = account.id
-            line.kmitl_project_analytic_id = project
-            line.procurement_plan_analytic_id = plan
+            acc = line.account_id
+            line.account_is_project = bool(acc and has_project and acc.is_project)
+            line.account_is_procurement = bool(
+                acc and has_proc and acc.procurement_plan
+            )
 
     def _compute_hide_unallocated_balance(self):
         for line in self:

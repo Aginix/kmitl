@@ -7,7 +7,6 @@
     <data noupdate="1">
         <record id="position_dr_approver" model="sarabun.position">
             <field name="name">ผู้อนุมัติเบิกจ่าย (Disbursement Approver)</field>
-            <field name="code">DR_APPROVER</field>
         </record>
     </data>
 

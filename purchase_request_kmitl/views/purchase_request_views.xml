@@ -82,6 +82,12 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
 
+            <xpath expr="//field[@name='line_ids']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('is_editable', '=', False)]}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='line_ids']" position="before">
                 <group>
                     <group>
@@ -136,8 +142,15 @@
             <xpath expr="//button[@name='button_draft']" position="after">
                 <button
                     name="button_cancel"
-                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress"
+                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress,returned"
                     string="Cancel"
+                    type="object"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
+                />
+                <button
+                    name="button_return"
+                    states="to_verify,to_submit"
+                    string="Return"
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
@@ -153,18 +166,33 @@
                 <attribute name="readonly">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='assigned_to']" position="attributes">
-                <attribute
-                    name="attrs"
-                >{'readonly': [('state','not in', ['to_approve', 'approved', 'in_egp', 'in_approval', 'in_progress'])]}</attribute>
+            <xpath expr="//sheet//field[@name='assigned_to']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
-
 
             <xpath
                 expr="//field[@name='line_ids']//tree/field[@name='name']"
                 position="attributes"
             >
                 <attribute name="required">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='product_qty']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
             </xpath>
 
             <xpath expr="//field[@name='line_ids']//tree" position="attributes">
@@ -195,13 +223,17 @@
                             name="department_id"
                             string="Department"
                             options="{'limit': 50, 'search_more': false, 'create': false, 'create_edit': false}"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            attrs="{'readonly': [('is_editable', '=', False)]}"
                         />
                         <field name="user_id" readonly="1" />
+                        <field
+                            name="assigned_to"
+                            string="Responsible Officer"
+                            attrs="{'readonly': [('state','not in', ['to_approve', 'approved', 'in_egp', 'in_approval', 'in_progress'])]}"
+                            options="{'no_create': True, 'no_open': True}"
+                        />
                     </group>
-                </group>
-                <group string="Purchase Request" name="purchase_request_group">
-                    <group>
+                    <group name="purchase_request_group">
                         <field
                             name="account_fiscal_year_id"
                             attrs="{'readonly': [('is_editable','=', False)]}"
@@ -218,6 +250,7 @@
                             name="procurement_method_id"
                             required="1"
                             attrs="{'readonly': [('is_editable','=', False)]}"
+                            widget="radio"
                         />
                         <field
                             name="payment_type"
@@ -237,9 +270,9 @@
 
             <!-- === Notebook pages === -->
             <xpath expr="//form/sheet/notebook" position="inside">
-                <page name="committee" string="Committee">
+                <page name="committee" string="Committees">
                     <separator
-                        string="TOR Committee"
+                        string="Propose TOR Committee"
                         attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <field
@@ -249,7 +282,7 @@
                         attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <separator
-                        string="Price Determine Committee"
+                        string="Propose Price Determine Committee"
                         attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <field
@@ -259,7 +292,7 @@
                         attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <separator
-                        string="Evaluation Committee"
+                        string="Propose Evaluation Committee"
                         attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
                     <field
@@ -268,7 +301,7 @@
                         context="{'default_committee_type': 'evaluation'}"
                         attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     />
-                    <separator string="Work Acceptance Committee" />
+                    <separator string="Propose Work Acceptance Committee" />
                     <field
                         name="work_acceptance_committee_ids"
                         nolabel="1"
@@ -297,6 +330,13 @@
                     </field>
                 </page>
                 <page name="document" string="Attachment">
+                    <div class="alert alert-info" role="alert">
+                        <b>ตัวอย่างเอกสารแนบ</b>
+                        <ul class="mb-0">
+                            <li>รายละเอียดและคุณลักษณะพัสดุ</li>
+                            <li>ใบเสนอราคาพัสดุ</li>
+                        </ul>
+                    </div>
                     <group name="attachment" string="Attachment">
                         <field
                             name="attachment_ids"
@@ -340,10 +380,22 @@
             </xpath>
 
             <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='product_uom_id']"
+                expr="//field[@name='line_ids']//tree/field[@name='product_uom_id'][@groups='uom.group_uom']"
                 position="attributes"
             >
-                <attribute name="invisible">0</attribute>
+                <attribute name="invisible">1</attribute>
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
+                position="after"
+            >
+                <field
+                    name="uom_text"
+                    required="1"
+                    attrs="{'readonly': [('parent.state', '!=', 'draft')]}"
+                />
             </xpath>
 
             <xpath

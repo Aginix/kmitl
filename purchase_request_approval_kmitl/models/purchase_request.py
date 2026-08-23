@@ -34,10 +34,10 @@ class PurchaseRequest(models.Model):
 
     @api.depends("state")
     def _compute_is_editable(self):
-        res = super()._compute_is_editable()
+        super()._compute_is_editable()
+        editable_states = ("draft", "to_verify", "to_submit", "returned")
         for record in self:
-            if record.state != "draft":
-                record.is_editable = False
+            record.is_editable = record.state in editable_states
 
     @api.depends("requested_by")
     def _compute_can_request(self):
@@ -62,3 +62,5 @@ class PurchaseRequest(models.Model):
         for rec in self:
             if rec.state == "to_verify" and can_edit:
                 rec.is_budget_editable = True
+            elif rec.state == "to_submit":
+                rec.is_budget_editable = False

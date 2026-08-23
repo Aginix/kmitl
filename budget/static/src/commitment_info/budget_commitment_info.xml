@@ -32,8 +32,8 @@
                         <div t-foreach="info.data.rows" t-as="row" t-key="row_index"
                             class="col-12 col-md-6">
                             <small class="d-block text-muted lh-1" t-esc="row.label"/>
-                            <span class="d-block text-truncate" t-att-title="row.value"
-                                t-esc="row.value"/>
+                            <span class="o_budget_commitment_info_value"
+                                t-att-title="row.value" t-esc="row.value"/>
                         </div>
                     </div>
 

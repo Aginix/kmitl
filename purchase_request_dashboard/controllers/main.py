@@ -7,14 +7,23 @@ from odoo.http import request
 class PurchaseRequestDashboardController(http.Controller):
 
     SUMMARY_STATES = [
-        ("draft", "ร่าง"),
-        ("to_verify", "รอจองเงิน"),
-        ("to_approve", "รออนุมัติ"),
-        ("approved", "อนุมัติแล้ว"),
-        ("in_progress", "อยู่ระหว่างจัดซื้อ/จ้าง"),
-        ("done", "จัดซื้อ/จ้างเสร็จสิ้น"),
-        ("rejected", "ยกเลิก"),
+        ("draft", "ฉบับร่าง"),
+        ("to_verify", "รอจองงบประมาณ"),
+        ("to_submit", "รอส่งขอความเห็นชอบให้จัดหา"),
+        ("to_approve", "รอพิจารณาให้จัดหา"),
+        ("in_egp", "รอดำเนินการ E-GP"),
+        ("in_approval", "อยู่ระหว่างจัดทำ พจ.1"),
+        ("in_progress", "อยู่ระหว่างจัดซื้อจัดจ้าง"),
+        ("done", "จัดซื้อจัดจ้างเสร็จสิ้น"),
+        ("cancelled", "ยกเลิก"),
+        ("rejected", "ปฎิเสธ"),
     ]
+
+    # States hidden from the dashboard: 'approved' is a transient bucket that
+    # immediately transitions to in_progress, so records shouldn't linger there.
+    HIDDEN_STATES = ("approved",)
+    # States excluded from charts by default (when no state box is selected).
+    DEFAULT_CHART_EXCLUDED_STATES = ("approved", "cancelled", "rejected")
 
     # Thai fiscal year runs Oct → Sep (e.g., FY 2569 = Oct 2025 - Sep 2026)
     FISCAL_MONTHS = [
@@ -81,22 +90,19 @@ class PurchaseRequestDashboardController(http.Controller):
 
         records = request.env["purchase.request"].search(domain)
         records = self._filter_by_source(records, source_id)
+        # 'approved' is a transient hidden bucket — drop it dashboard-wide.
+        records = records.filtered(lambda r: r.state not in self.HIDDEN_STATES)
 
         # Build caches for hierarchy lookups (avoids repeated DB traversal)
         budget_cache = self._build_root_budget_account_map(records)
         dept_cache = self._build_root_department_map(records)
 
-        # State filtering for charts only (summary boxes always show all records).
-        # The UI shows "ร่าง" (draft) as a single status, but internally Odoo uses
-        # both "draft" and "to_examine" states, so selecting "draft" must include both.
         if selected_states:
             state_set = set(selected_states)
-            if "draft" in state_set:
-                state_set.add("to_examine")
             chart_records = records.filtered(lambda r: r.state in state_set)
         else:
-            # Default: exclude rejected from charts (cancelled data shouldn't pollute charts)
-            chart_records = records.filtered(lambda r: r.state != "rejected")
+            excluded = self.DEFAULT_CHART_EXCLUDED_STATES
+            chart_records = records.filtered(lambda r: r.state not in excluded)
 
         return {
             "filter_options": {
@@ -263,25 +269,16 @@ class PurchaseRequestDashboardController(http.Controller):
     # ──────────────────────────────────────────────────────────────────
 
     def _get_summary_boxes(self, records):
-        """Return list of 8 summary box data (7 states + 1 total)."""
+        """Return list of summary box data (10 states + 1 total)."""
         boxes = []
         for state_key, label in self.SUMMARY_STATES:
-            if state_key == "draft":
-                # "draft" box includes both "draft" and "to_examine" states
-                state_recs = records.filtered(
-                    lambda r: r.state in ("draft", "to_examine")
-                )
-            else:
-                state_recs = records.filtered(
-                    lambda r, s=state_key: r.state == s
-                )
+            state_recs = records.filtered(lambda r, s=state_key: r.state == s)
             boxes.append({
                 "label": label,
                 "state": state_key,
                 "count": len(state_recs),
                 "amount": sum(state_recs.mapped("estimated_cost")),
             })
-        # Box 8: total amount across all states
         boxes.append({
             "label": "ยอดเงินรวมทั้งหมด",
             "state": "total",

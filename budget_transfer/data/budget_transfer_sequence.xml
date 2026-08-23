@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- use_date_range: a separate subsequence (counter) per fiscal year,
+             so numbering never runs across years. The effective date fed to the
+             sequence is the fiscal year's date_to (see budget.transfer
+             _compute_name), and each fiscal year ends in a distinct calendar
+             year, so each gets its own subsequence restarting at 0001. -->
+        <record id="seq_budget_transfer" model="ir.sequence">
+            <field name="name">Budget Transfer</field>
+            <field name="code">budget.transfer</field>
+            <field name="prefix">BTR/%(year_be)s/</field>
+            <field name="suffix"></field>
+            <field name="use_date_range" eval="True"/>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

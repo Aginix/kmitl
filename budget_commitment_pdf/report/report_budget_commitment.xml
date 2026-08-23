@@ -1,0 +1,183 @@
+<odoo>
+    <!--
+        ใบจองงบประมาณ (Budget Commitment) — printable document for external use
+        and as a reference/attachment in the e-Saraban (สารบรรณ) system.
+        Plain style (no Bootstrap grid/utilities): all layout comes from the
+        <style> block below so the document reads cleanly on paper.
+    -->
+
+    <!-- Helper: render one dimension as "label : code complete-name" with the
+         hierarchical " / " slashes stripped out (complete name, no slash). -->
+    <template id="dim_row">
+        <div class="dim">
+            <span class="dim-label"><t t-out="label"/> :</span>
+            <span t-if="acc">
+                <t t-out="'[' + acc.code + ']' + ' ' + acc.complete_name"/>
+            </span>
+            <span t-if="not acc">-</span>
+        </div>
+    </template>
+
+    <template id="report_budget_commitment">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})"/>
+                    <t t-set="currency" t-value="o.currency_id"/>
+                    <t t-set="date_str" t-value="o.date and (o.date.strftime('%d/%m/') + str(o.date.year + 543)) or '-'"/>
+                    <t t-set="print_dt" t-value="context_timestamp(datetime.datetime.now())"/>
+                    <t t-set="state_labels" t-value="{'draft': 'ร่าง', 'reserved': 'จองแล้ว', 'partial': 'อยู่ระหว่างดำเนินการ', 'done': 'เสร็จสิ้น', 'cancel': 'ยกเลิก'}"/>
+                    <t t-set="posted_lines" t-value="o.line_ids.filtered(lambda l: l.state == 'posted')"/>
+                    <!-- ถัวจ่าย = reserve lines span more than one budget code (see budget.commitment.line._check_cross_charge) -->
+                    <t t-set="is_cross_charge" t-value="len(posted_lines.filtered(lambda l: l.move_type == 'reserve').mapped('account_id')) &gt; 1"/>
+                    <style>
+                        * { font-family: "THSarabunNew", Arial, sans-serif; }
+                        .page { color: #000; font-size: 15pt; line-height: 1.25; position: relative; }
+                        .logo { position: absolute; top: 0; left: 0; max-height: 60pt; max-width: 160pt; }
+                        .org-name { text-align: center; font-weight: bold; font-size: 16pt; }
+                        .doc-title { text-align: center; font-weight: bold; font-size: 18pt; margin: 6pt 0 12pt 0; line-height: 1.4; }
+                        table.meta { width: 100%; border-collapse: collapse; margin-bottom: 8pt; border: none; }
+                        table.meta td { padding: 1pt 4pt; font-size: 15pt; vertical-align: top; border: none; }
+                        table.meta td.k { width: 90pt; color: #333; }
+                        table.detail { width: 100%; border-collapse: collapse; margin-bottom: 8pt; }
+                        table.detail th, table.detail td { border: 1px solid #000; padding: 3pt 6pt; font-size: 15pt; vertical-align: top; }
+                        table.detail th { text-align: center; font-weight: bold; background: #e9e9e9; }
+                        .seq { width: 26pt; text-align: center; }
+                        .ttype { width: 70pt; }
+                        .amt { width: 100pt; text-align: right; white-space: nowrap; }
+                        .dim { padding-left: 8pt; }
+                        .dim-label { font-weight: bold; }
+                        tr.total td { font-weight: bold; }
+                        .summary { width: 100%; border-collapse: collapse; margin-bottom: 8pt; border: none; }
+                        .summary td { padding: 2pt 4pt; font-size: 15pt; border: none; }
+                        .summary td.k { color: #333; }
+                        .summary td.v { text-align: right; white-space: nowrap; width: 120pt; }
+                        .in-words { text-align: right; font-style: italic; margin-bottom: 18pt; }
+                        table.sign { width: 100%; border-collapse: collapse; margin-top: 28pt; }
+                        table.sign td { width: 50%; text-align: center; padding: 6pt; font-size: 15pt; vertical-align: top; }
+                        .print-date { text-align: right; font-size: 12pt; color: #555; margin-top: 12pt; }
+                    </style>
+
+                    <div class="page">
+                        <img class="logo" t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"/>
+                        <div class="org-name" t-out="o.company_id.name"/>
+
+                        <div class="doc-title">
+                            ใบจองงบประมาณ<br/>
+                            ประจำปีงบประมาณ พ.ศ. <span t-out="o.account_fiscal_year_id.name or '............'"/>
+                        </div>
+
+                        <table class="meta" border="0">
+                            <tr>
+                                <td class="k">เลขที่</td>
+                                <td><span t-out="o.name"/></td>
+                                <td class="k">วันที่</td>
+                                <td><span t-out="date_str"/></td>
+                            </tr>
+                            <tr>
+                                <td class="k">ชื่อรายการจอง</td>
+                                <td colspan="3"><span t-out="o.title or '-'"/></td>
+                            </tr>
+                            <tr>
+                                <td class="k">ผู้รับผิดชอบ</td>
+                                <td><span t-out="o.user_id.name or '-'"/></td>
+                                <td class="k">สถานะ</td>
+                                <td><span t-out="state_labels.get(o.state, o.state)"/></td>
+                            </tr>
+                        </table>
+
+                        <table class="detail">
+                            <tr>
+                                <th colspan="2">มิติงบประมาณ</th>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <t t-call="budget_commitment_pdf.dim_row">
+                                        <t t-set="label" t-value="'ส่วนงาน'"/>
+                                        <t t-set="acc" t-value="o.department_analytic_id"/>
+                                    </t>
+                                    <t t-call="budget_commitment_pdf.dim_row">
+                                        <t t-set="label" t-value="'แหล่งเงิน'"/>
+                                        <t t-set="acc" t-value="o.source_analytic_id"/>
+                                    </t>
+                                    <t t-call="budget_commitment_pdf.dim_row">
+                                        <t t-set="label" t-value="'กองทุน'"/>
+                                        <t t-set="acc" t-value="o.fund_analytic_id"/>
+                                    </t>
+                                    <t t-call="budget_commitment_pdf.dim_row">
+                                        <t t-set="label" t-value="'ด้าน/แผนงาน/กิจกรรม'"/>
+                                        <t t-set="acc" t-value="o.activity_analytic_id"/>
+                                    </t>
+                                    <t t-call="budget_commitment_pdf.dim_row">
+                                        <t t-set="label" t-value="'รหัสงบประมาณ'"/>
+                                        <t t-set="acc" t-value="o.account_id"/>
+                                    </t>
+                                    <t t-if="o.kmitl_project_analytic_id" t-call="budget_commitment_pdf.dim_row">
+                                        <t t-set="label" t-value="'โครงการ/กิจกรรม'"/>
+                                        <t t-set="acc" t-value="o.kmitl_project_analytic_id"/>
+                                    </t>
+                                    <t t-if="o.procurement_plan_analytic_id" t-call="budget_commitment_pdf.dim_row">
+                                        <t t-set="label" t-value="'แผนจัดซื้อจัดจ้าง'"/>
+                                        <t t-set="acc" t-value="o.procurement_plan_analytic_id"/>
+                                    </t>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="summary" border="0">
+                            <tr>
+                                <td class="k">วงเงินอนุมัติ (จอง)</td>
+                                <td class="v"><span t-out="'{:,.2f}'.format(o.amount)"/> บาท</td>
+                                <td class="k">ยอดผูกพัน</td>
+                                <td class="v"><span t-out="'{:,.2f}'.format(o.total_obligated)"/> บาท</td>
+                            </tr>
+                            <tr>
+                                <td class="k">ยอดเบิกจ่าย (ตัดงบ)</td>
+                                <td class="v"><span t-out="'{:,.2f}'.format(o.total_consumed)"/> บาท</td>
+                                <td class="k">คงเหลือ</td>
+                                <td class="v"><span t-out="'{:,.2f}'.format(o.available_to_obligate)"/> บาท</td>
+                            </tr>
+                        </table>
+
+                        <div class="in-words" t-if="o.amount">
+                            (<t t-out="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount)"/>)
+                        </div>
+
+                        <table class="detail" t-if="is_cross_charge">
+                            <thead>
+                                <tr>
+                                    <th class="seq">ที่</th>
+                                    <th>วันที่</th>
+                                    <th class="ttype">ประเภท</th>
+                                    <th>รายการ</th>
+                                    <th class="amt">จำนวนเงิน (บาท)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="posted_lines" t-as="line">
+                                    <td class="seq" t-out="line_index + 1"/>
+                                    <td><span t-out="line.date and (line.date.strftime('%d/%m/') + str(line.date.year + 543)) or '-'"/></td>
+                                    <td class="ttype"><span t-field="line.move_type"/></td>
+                                    <td>
+                                        <span t-out="line.account_id.display_name"/>
+                                        <div t-if="line.name" style="color:#555;"><t t-out="line.name"/></div>
+                                    </td>
+                                    <td class="amt" t-out="'{:,.2f}'.format(line.amount)"/>
+                                </tr>
+                                <tr t-if="not posted_lines">
+                                    <td class="seq">-</td>
+                                    <td colspan="3">ไม่มีรายการ</td>
+                                    <td class="amt"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="print-date">
+                            พิมพ์เอกสารเมื่อ <t t-out="print_dt.strftime('%d/%m/') + str(print_dt.year + 543) + ' ' + print_dt.strftime('%H:%M:%S') + ' น.'"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

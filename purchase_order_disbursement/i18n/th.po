@@ -110,3 +110,8 @@ msgstr "หมายเหตุการแก้ไข"
 #: model:ir.model.fields,field_description:purchase_order_disbursement.field_purchase_order__disbursement_return_bank_id
 msgid "Correction Bank Account"
 msgstr "บัญชีธนาคารที่แก้ไข"
+
+#. module: purchase_order_disbursement
+#: model:ir.model.fields.selection,name:purchase_order_disbursement.selection__purchase_order__state__returned
+msgid "Returned"
+msgstr "ตีกลับ"

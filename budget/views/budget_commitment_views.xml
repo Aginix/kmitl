@@ -37,9 +37,6 @@
         <field name="arch" type="xml">
             <form string="Budget Commitment">
                 <header>
-                    <button name="action_open_reservation_picker" string="เลือกงบประมาณ"
-                        type="object" class="oe_highlight"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_reserve" string="จองงบประมาณ" type="object"
                         class="oe_highlight"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"/>

@@ -126,6 +126,32 @@
             <field name="domain_force">[(1, '=', 1)]</field>
         </record>
 
+        <!-- project.budget.line -->
+        <record id="project_budget_line_user_rule" model="ir.rule">
+            <field name="name">Project Budget Line: User Access</field>
+            <field name="model_id" ref="model_project_budget_line"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('project_id.manager_id.user_id', '=', user.id),
+                ('project_id.creating_user_id', '=', user.id)
+            ]</field>
+        </record>
+
+        <record id="project_budget_line_officer_rule" model="ir.rule">
+            <field name="name">Project Budget Line: Officer Access</field>
+            <field name="model_id" ref="model_project_budget_line"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_user_all'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <record id="project_budget_line_manager_rule" model="ir.rule">
+            <field name="name">Project Budget Line: Manager Access</field>
+            <field name="model_id" ref="model_project_budget_line"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
         <!-- project.target -->
         <record id="project_target_user_rule" model="ir.rule">
             <field name="name">Project Target: User Access</field>

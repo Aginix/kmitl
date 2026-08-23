@@ -81,6 +81,8 @@ class PurchaseRequest(models.Model):
     def _compute_can_edit_egp(self):
         user_in_group = self.env.user.has_group(
             "purchase_request_kmitl.group_purchase_request_user_all"
+        ) or self.env.user.has_group(
+            "purchase.group_purchase_user"
         )
         for record in self:
             record.can_edit_egp = bool(user_in_group and record.egp_status in ("waiting", "in_progress"))
@@ -109,7 +111,7 @@ class PurchaseRequest(models.Model):
         for record in self:
             if record.is_egp:
                 if not record.egp_project_id:
-                    raise UserError(_("กรุณากรอกเลขที่โครงการ e-GP ก่อนดำเนินการ"))
+                    raise UserError(_("กรุณากรอกเลขที่โครงการ e-GP ที่แท็บ e-GP ก่อนดำเนินการ"))
                 record.write({"egp_status": "in_progress"})
                 record.button_in_progress()
 

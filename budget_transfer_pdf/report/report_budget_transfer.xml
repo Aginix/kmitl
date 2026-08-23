@@ -1,0 +1,166 @@
+<odoo>
+    <!--
+        แบบ งปม. 303 — แบบประกอบการขออนุมัติโอนเงิน/เปลี่ยนแปลง/ปรับเพิ่ม-ลด
+        Plain style (no Bootstrap grid/utilities): all layout comes from the
+        <style> block below so the document reads cleanly on paper.
+    -->
+
+    <!-- Helper: render one dimension as "label : code complete-name" with the
+         hierarchical " / " slashes stripped out (complete name, no slash). -->
+    <template id="dim_row">
+        <div class="dim">
+            <span class="dim-label"><t t-out="label"/> :</span>
+            <span t-if="acc">
+                <t t-out="(acc.code and acc.code + ' ' or '') + (acc.complete_name or acc.name or '')"/>
+            </span>
+            <span t-if="not acc">-</span>
+        </div>
+    </template>
+
+    <template id="report_budget_transfer">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})"/>
+                    <t t-set="currency" t-value="o.company_id.currency_id"/>
+                    <t t-set="from_total" t-value="sum(o.from_line_ids.mapped('amount'))"/>
+                    <t t-set="to_total" t-value="sum(o.to_line_ids.mapped('amount'))"/>
+                    <t t-set="date_str" t-value="o.date and (o.date.strftime('%d/%m/') + str(o.date.year + 543)) or '-'"/>
+                    <style>
+                        * { font-family: "THSarabunNew", Arial, sans-serif; }
+                        .page { color: #000; font-size: 15pt; line-height: 1.25; position: relative; }
+                        .logo { position: absolute; top: 0; left: 0; max-height: 60pt; max-width: 160pt; }
+                        .form-code { text-align: right; font-size: 15pt; }
+                        .doc-title { text-align: center; font-weight: bold; font-size: 17pt; margin: 6pt 0 12pt 0; line-height: 1.4; }
+                        table.meta { width: 100%; border-collapse: collapse; margin-bottom: 8pt; border: none; }
+                        table.meta td { padding: 1pt 4pt; font-size: 15pt; vertical-align: top; border: none; }
+                        table.meta td.k { width: 70pt; color: #333; }
+                        .reason { white-space: pre-wrap; }
+                        table.detail { width: 100%; border-collapse: collapse; margin-bottom: 8pt; }
+                        table.detail th, table.detail td { border: 1px solid #000; padding: 3pt 6pt; font-size: 15pt; vertical-align: top; }
+                        table.detail th { text-align: center; font-weight: bold; }
+                        .seq { width: 26pt; text-align: center; }
+                        .amt { width: 95pt; text-align: right; white-space: nowrap; }
+                        .group td { background: #e9e9e9; font-weight: bold; }
+                        .acct { font-weight: bold; }
+                        .dim { padding-left: 8pt; }
+                        .dim-label { font-weight: bold; }
+                        tr.total td { font-weight: bold; }
+                        .in-words { text-align: right; font-style: italic; margin-bottom: 18pt; }
+                        table.sign { width: 100%; border-collapse: collapse; margin-top: 24pt; }
+                        table.sign td { width: 50%; text-align: center; padding: 6pt; font-size: 15pt; vertical-align: top; }
+                    </style>
+
+                    <div class="page">
+                        <img class="logo" t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"/>
+                        <div class="form-code">แบบ งปม. 303</div>
+
+                        <div class="doc-title">
+                            แบบประกอบการขออนุมัติโอนเงิน/เปลี่ยนแปลง/ปรับเพิ่ม-ลด
+                            <span t-out="o.source_analytic_id.name or '.........................'"/><br/>
+                            ประจำปีงบประมาณ พ.ศ. <span t-out="o.account_fiscal_year_id.name or '............'"/>
+                        </div>
+
+                        <table class="meta" border="0">
+                            <tr>
+                                <td class="k">เลขที่</td>
+                                <td><span t-out="o.name"/></td>
+                                <td class="k">วันที่</td>
+                                <td><span t-out="date_str"/></td>
+                            </tr>
+                            <tr>
+                                <td class="k">แหล่งเงิน</td>
+                                <td>
+                                    <span t-if="o.source_analytic_id" t-out="o.source_analytic_id.complete_name.replace(' / ', ' ')"/>
+                                    <span t-if="not o.source_analytic_id">-</span>
+                                </td>
+                                <td class="k">ประเภทงบ</td>
+                                <td><span t-field="o.budget_type"/></td>
+                            </tr>
+                            <tr>
+                                <td class="k">หน่วยงาน</td>
+                                <td><span t-out="o.department_analytic_id.complete_name.replace(' / ', ' ')"/></td>
+                                <td class="k">ผู้รับผิดชอบ</td>
+                                <td><span t-out="o.user_id.name"/></td>
+                            </tr>
+                            <tr>
+                              <td class="k">จำนวนเงิน</td>
+                              <td colspan="3"><span t-out="'{:,.2f}'.format(o.amount)"/> บาท</td>
+                            </tr>
+                            <tr>
+                              <td class="k">เหตุผล/รายละเอียด</td>
+                              <td colspan="3"><t t-out="o.reason or '-'"/></td>
+                            </tr>
+                        </table>
+                        <table class="detail">
+                            <thead>
+                                <tr>
+                                    <th class="seq">ที่</th>
+                                    <th>รายการ</th>
+                                    <th class="amt">ปรับลด (บาท)</th>
+                                    <th class="amt">ปรับเพิ่ม (บาท)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="sections" t-value="[('รายการปรับลด (โอนออก)', o.from_line_ids, 'from'), ('รายการปรับเพิ่ม (โอนเข้า)', o.to_line_ids, 'to')]"/>
+                                <t t-foreach="sections" t-as="section">
+                                    <tr class="group">
+                                        <td colspan="4" t-out="section[0]"/>
+                                    </tr>
+                                    <tr t-foreach="section[1]" t-as="line">
+                                        <td class="seq" t-out="line_index + 1"/>
+                                        <td>
+                                            <t t-call="budget_transfer_pdf.dim_row">
+                                                <t t-set="label" t-value="'ส่วนงาน'"/>
+                                                <t t-set="acc" t-value="line.department_analytic_id"/>
+                                            </t>
+                                            <t t-call="budget_transfer_pdf.dim_row">
+                                                <t t-set="label" t-value="'กองทุน'"/>
+                                                <t t-set="acc" t-value="line.fund_analytic_id"/>
+                                            </t>
+                                            <t t-call="budget_transfer_pdf.dim_row">
+                                                <t t-set="label" t-value="'ด้าน/แผนงาน/กิจกรรม'"/>
+                                                <t t-set="acc" t-value="line.activity_analytic_id"/>
+                                            </t>
+                                            <t t-call="budget_transfer_pdf.dim_row">
+                                                <t t-set="label" t-value="'รหัสงบประมาณ'"/>
+                                                <t t-set="acc" t-value="line.account_id"/>
+                                            </t>
+                                            <t t-if="line.kmitl_project_analytic_id" t-call="budget_transfer_pdf.dim_row">
+                                                <t t-set="label" t-value="'โครงการ/กิจกรรม'"/>
+                                                <t t-set="acc" t-value="line.kmitl_project_analytic_id"/>
+                                            </t>
+                                            <t t-if="line.procurement_plan_analytic_id" t-call="budget_transfer_pdf.dim_row">
+                                                <t t-set="label" t-value="'แผนจัดซื้อจัดจ้าง'"/>
+                                                <t t-set="acc" t-value="line.procurement_plan_analytic_id"/>
+                                            </t>
+                                            <div t-if="line.note" class="dim" style="color:#555;">หมายเหตุ : <t t-out="line.note"/></div>
+                                        </td>
+                                        <td class="amt" t-out="section[2] == 'from' and '{:,.2f}'.format(line.amount) or ''"/>
+                                        <td class="amt" t-out="section[2] == 'to' and '{:,.2f}'.format(line.amount) or ''"/>
+                                    </tr>
+                                    <tr t-if="not section[1]">
+                                        <td class="seq">-</td>
+                                        <td>ไม่มีรายการ</td>
+                                        <td class="amt"/>
+                                        <td class="amt"/>
+                                    </tr>
+                                </t>
+                                <tr class="total">
+                                    <td colspan="2" style="text-align:right;">รวมทั้งสิ้น</td>
+                                    <td class="amt" t-out="'{:,.2f}'.format(from_total)"/>
+                                    <td class="amt" t-out="'{:,.2f}'.format(to_total)"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="in-words" t-if="o.amount">
+                            (<t t-out="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount)"/>)
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -56,22 +56,22 @@ class PurchaseRequest(models.Model):
         # code (read-only), so the domain never blocks them.
         return super()._domain_budget_account_id() + [("is_project", "=", False)]
 
-    def _domain_reservation_commitment_id(self):
-        # A project's shared commitment is drawn only through the project's own
-        # create-from-project flow (capped at budget_amount, ADR-0007) — keep it
-        # out of the generic reservation picker.
-        return super()._domain_reservation_commitment_id() + [
-            ("kmitl_project_id", "=", False)
-        ]
-
     def _check_drawable_commitment(self, commitment):
+        # A project's shared commitment sits on an ``is_project`` budget code this
+        # PR may not *reserve new* on (ADR-0007), so the base gate — which mirrors
+        # the full reserve-new field domain — would reject it. Drawing it down is
+        # allowed, but the code must still be a purchasable, product-backed PR
+        # budget code just like a directly selected one: check it against the base
+        # domain (purchase_ok + product), lifting only the ``is_project`` exclusion.
         if commitment.kmitl_project_id:
-            raise UserError(
-                _(
-                    "ใบจองงบประมาณของโครงการต้องหยิบผ่านการสร้าง"
-                    "ใบขอซื้อจากโครงการเท่านั้น"
+            if not self.env["budget.account"].search_count(
+                super()._domain_budget_account_id()
+                + [("id", "=", commitment.account_id.id)]
+            ):
+                raise UserError(
+                    _("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้")
                 )
-            )
+            return True
         return super()._check_drawable_commitment(commitment)
 
     @api.depends("state", "use_project", "kmitl_project_id")
@@ -132,10 +132,6 @@ class PurchaseRequest(models.Model):
                     )
                 )
             self.budget_commitment_id = commitment.id
-            if project.state == "new":
-                # Purchasing/budget staff have read — not write — on the project;
-                # advancing it is a system side-effect of reserving, so elevate it.
-                project.sudo().button_in_progress()
             self.button_to_approve()
             return {
                 "type": "ir.actions.act_window",
@@ -166,9 +162,11 @@ class PurchaseRequest(models.Model):
 
     def _link_to_project(self):
         """A project-driven PR links the project's already-reserved shared
-        commitment and starts the project. Unlike a procurement plan, a project may
-        hold many PRs against the one commitment (ADR-0007), so there is no
-        one-active-PR constraint.
+        commitment. Unlike a procurement plan, a project may hold many PRs against
+        the one commitment (ADR-0007), so there is no one-active-PR constraint. The
+        PR never advances the project's state: since kmitl_project ADR-0005 a
+        project only reaches ``in_progress`` when its ขออนุมัติ หนังสือ is signed,
+        and a พ.1 can only be raised from there.
 
         The project's budget context — budget account, fiscal year, the full
         analytic distribution (4 financial dimensions + the project's own
@@ -196,11 +194,6 @@ class PurchaseRequest(models.Model):
             self.line_ids.write(
                 {"analytic_distribution": project.analytic_distribution}
             )
-        if project.state == "new":
-            # The PR creator (purchase request user) has read — not write — on the
-            # project; advancing it to in_progress is a system side-effect of
-            # creating the พ.1, so elevate just this state write.
-            project.sudo().button_in_progress()
 
 
 class KmitlProject(models.Model):
@@ -232,9 +225,9 @@ class KmitlProject(models.Model):
         "purchase_request_ids.line_ids.estimated_cost",
     )
     def _compute_can_create_purchase_request(self):
-        """Show the create-PR button once the project has reserved its budget
-        (state new/in_progress with an active commitment) and headroom remains
-        under the reserved amount."""
+        """Show the create-PR button once the project is approved and executing
+        (``in_progress`` with an active commitment — kmitl_project ADR-0005) and
+        headroom remains under the reserved amount."""
         for rec in self:
             has_commitment = bool(
                 rec.budget_commitment_ids.filtered(
@@ -243,9 +236,7 @@ class KmitlProject(models.Model):
             )
             remaining = rec.budget_amount - rec._project_pr_total()
             rec.can_create_purchase_request = (
-                rec.state in ("new", "in_progress")
-                and has_commitment
-                and remaining > 0
+                rec.state == "in_progress" and has_commitment and remaining > 0
             )
 
     def _project_pr_total(self):
@@ -284,9 +275,9 @@ class KmitlProject(models.Model):
         commitment = self.budget_commitment_ids.filtered(
             lambda c: c.state in ("reserved", "partial")
         )[:1]
-        if self.state not in ("new", "in_progress") or not commitment:
+        if self.state != "in_progress" or not commitment:
             raise UserError(
-                _("สร้างใบขอซื้อได้เฉพาะโครงการที่จองงบประมาณแล้วเท่านั้น")
+                _("สร้างใบขอซื้อได้เฉพาะโครงการที่ได้รับอนุมัติและกำลังดำเนินการเท่านั้น")
             )
         if self.budget_amount - self._project_pr_total() <= 0:
             raise UserError(

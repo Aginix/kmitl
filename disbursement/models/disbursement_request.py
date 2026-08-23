@@ -43,6 +43,12 @@ class DisbursementRequest(models.Model):
         "verified": [("readonly", True)],
         "approved": [("readonly", True)],
         "bills_posted": [("readonly", True)],
+        # Post-bill payment-execution phase (disbursement_finance_kmitl):
+        # the request is fully locked once it enters this phase.
+        "payment_audited": [("readonly", True)],
+        "payment_authorized": [("readonly", True)],
+        "paid": [("readonly", True)],
+        "cleared": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
 
@@ -373,6 +379,7 @@ class DisbursementRequest(models.Model):
         inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
         store=False,
+        compute_sudo=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -384,6 +391,7 @@ class DisbursementRequest(models.Model):
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
         store=True,
+        compute_sudo=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -395,6 +403,7 @@ class DisbursementRequest(models.Model):
         inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
         store=False,
+        compute_sudo=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -406,6 +415,7 @@ class DisbursementRequest(models.Model):
         inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
         store=False,
+        compute_sudo=True,
         tracking=True,
         search="_search_source_analytic_id",
         states=READONLY_STATES,

@@ -5,6 +5,19 @@ from odoo.http import request
 from odoo.addons.portal.controllers import portal
 from odoo.addons.portal.controllers.portal import pager as portal_pager
 
+# A project is published only once its ขออนุมัติ หนังสือ has been signed: the whole
+# approval band (and a rejected project) is internal, exactly as the pre-ADR-0005
+# draft was. Kept as a state list rather than a positive one so a future state is
+# public by default only when deliberately left out of here.
+NON_PUBLIC_STATES = [
+    "draft",
+    "to_verify",
+    "to_send",
+    "sent",
+    "returned",
+    "rejected",
+]
+
 
 class KmitlProjectPortal(portal.CustomerPortal):
 
@@ -73,11 +86,11 @@ class KmitlProjectPortal(portal.CustomerPortal):
 
     @http.route(['/projects', '/projects/page/<int:page>'], type='http', auth="public", website=True)
     def portal_public_projects(self, page=1, **kw):
-        """Public list of KMITL Projects (excludes draft)"""
+        """Public list of KMITL Projects (approved ones only)"""
         KmitlProject = request.env['kmitl.project'].sudo()
 
-        # Exclude draft state
-        domain = [("state", "!=", "draft")]
+        # Exclude everything that is not through its approval yet
+        domain = [("state", "not in", NON_PUBLIC_STATES)]
         projects_count = KmitlProject.search_count(domain)
 
         pager = portal_pager(
@@ -103,11 +116,11 @@ class KmitlProjectPortal(portal.CustomerPortal):
 
     @http.route(['/project/<int:project_id>'], type='http', auth="public", website=True)
     def portal_public_project(self, project_id=None, **kw):
-        """Public detail view (excludes draft)"""
+        """Public detail view (approved projects only)"""
         project_sudo = request.env['kmitl.project'].sudo().browse(project_id)
 
-        # Block access to non-existent or draft projects
-        if not project_sudo.exists() or project_sudo.state == 'draft':
+        # Block access to non-existent or not-yet-approved projects
+        if not project_sudo.exists() or project_sudo.state in NON_PUBLIC_STATES:
             return request.redirect('/projects')
 
         values = {'kmitl_project': project_sudo, 'page_name': 'public_project'}

@@ -273,7 +273,7 @@
                     <div class="o_bo_panel">
                         <div class="o_bo_panel_head">
                             <span class="o_bo_panel_title">การโอนงบประมาณ</span>
-                            <a class="o_bo_viewall" t-on-click="() => this.openList('budget.action_budget_transfer')">
+                            <a class="o_bo_viewall" t-on-click="() => this.openList('budget_transfer.action_budget_transfer')">
                                 ดูทั้งหมด <i class="fa fa-arrow-right"/>
                             </a>
                         </div>

@@ -41,6 +41,11 @@
             width: 100%;
         }
 
+        // Budget-account code search — match the dimension filters' width.
+        &.o_brp_search input {
+            min-width: 200px;
+        }
+
         &.o_bd_check {
             justify-content: flex-end;
 

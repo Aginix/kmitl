@@ -7,7 +7,6 @@
     <data noupdate="1">
         <record id="position_pr_approver" model="sarabun.position">
             <field name="name">ผู้อนุมัติคำขอซื้อ (PR Approver)</field>
-            <field name="code">PR_APPROVER</field>
         </record>
     </data>
 

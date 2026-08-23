@@ -1,0 +1,250 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_cash_revenue_handover
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-08-18 00:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model,name:disbursement_cash_revenue_handover.model_kmitl_central_funding
+msgid "Central Funding Profile"
+msgstr "ผังเงินงบประมาณส่วนกลาง"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.actions.act_window,name:disbursement_cash_revenue_handover.action_central_funding
+#: model:ir.ui.menu,name:disbursement_cash_revenue_handover.menu_config_central_funding
+msgid "Central Funding Profiles"
+msgstr "ผังเงินงบประมาณส่วนกลาง"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__source_analytic_id
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_search
+msgid "Source of Funds"
+msgstr "แหล่งเงิน"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,help:disbursement_cash_revenue_handover.field_kmitl_central_funding__source_analytic_id
+msgid ""
+"The source of funds this profile describes. Only disbursements carrying this "
+"source are handed over, and a handover never crosses from one source to "
+"another."
+msgstr ""
+"แหล่งเงินที่ผังนี้อธิบาย ใบขอเบิกที่ใช้แหล่งเงินนี้เท่านั้นที่จะมีการโอนเงินและรายได้ "
+"และการโอนจะไม่ข้ามแหล่งเงินไปหาแหล่งเงินอื่น"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__bank_account_id
+msgid "Cash/Bank Account"
+msgstr "บัญชีเงินสด/เงินฝากธนาคาร"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,help:disbursement_cash_revenue_handover.field_kmitl_central_funding__bank_account_id
+msgid ""
+"GL account the money physically sits in. A handover credits it at central's "
+"dimensions and debits it at the spending unit's — the same account on both "
+"sides, because the cash itself does not move."
+msgstr ""
+"บัญชีแยกประเภทที่เงินอยู่จริง ใบโอนจะเครดิตบัญชีนี้ที่มิติของส่วนกลาง "
+"และเดบิตบัญชีเดียวกันที่มิติของส่วนงานที่ใช้เงิน — ใช้บัญชีเดียวกันทั้งสองฝั่ง "
+"เพราะตัวเงินไม่ได้เคลื่อนไปไหน"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__revenue_account_id
+msgid "Revenue Account"
+msgstr "บัญชีรายได้"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,help:disbursement_cash_revenue_handover.field_kmitl_central_funding__revenue_account_id
+msgid ""
+"GL account the money was recognised as revenue under when it arrived. A "
+"handover reverses that recognition at central and makes it again at the "
+"spending unit."
+msgstr ""
+"บัญชีแยกประเภทที่ใช้รับรู้เป็นรายได้ตอนเงินเข้ามา "
+"ใบโอนจะกลับรายการรับรู้นั้นที่ส่วนกลาง แล้วรับรู้ใหม่ที่ส่วนงานที่ใช้เงิน"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__central_department_analytic_id
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_search
+msgid "Central Department"
+msgstr "ส่วนงานส่วนกลาง"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,help:disbursement_cash_revenue_handover.field_kmitl_central_funding__central_department_analytic_id
+msgid ""
+"The department holding the money. A disbursement whose own department is this "
+"one — or sits under it — is already spending where the money is held, so it "
+"gets no handover."
+msgstr ""
+"ส่วนงานที่ถือเงินไว้ ใบขอเบิกที่ส่วนงานเป็นตัวนี้ — หรือเป็นหน่วยงานลูกใต้ตัวนี้ — "
+"ถือว่าใช้เงินตรงที่เงินอยู่แล้ว จึงไม่มีการโอน"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__central_fund_analytic_id
+msgid "Central Fund"
+msgstr "กองทุนส่วนกลาง"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,help:disbursement_cash_revenue_handover.field_kmitl_central_funding__central_fund_analytic_id
+msgid ""
+"The fund the money is held under centrally. The spending unit's side of a "
+"handover uses the fund on the disbursement instead, which is usually a "
+"different one."
+msgstr ""
+"กองทุนที่ส่วนกลางถือเงินไว้ ฝั่งส่วนงานที่ใช้เงินจะใช้กองทุนที่ระบุบนใบขอเบิกแทน "
+"ซึ่งปกติเป็นกองทุนคนละตัว"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__central_activity_analytic_id
+msgid "Central Activity"
+msgstr "กิจกรรมส่วนกลาง"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,help:disbursement_cash_revenue_handover.field_kmitl_central_funding__central_activity_analytic_id
+msgid ""
+"The activity the money is recognised under when it arrives centrally. It is a "
+"fixed value, not derived from the disbursement: central parks every receipt of "
+"this source on the one activity, while the spending unit's side of a handover "
+"uses the activity on the disbursement."
+msgstr ""
+"กิจกรรมที่ใช้รับรู้เงินตอนเข้ามาที่ส่วนกลาง เป็นค่าคงที่ ไม่ได้คำนวณจากใบขอเบิก — "
+"ส่วนกลางพักเงินที่รับมาจากแหล่งเงินนี้ไว้ที่กิจกรรมเดียวตลอด "
+"ขณะที่ฝั่งส่วนงานที่ใช้เงินจะใช้กิจกรรมที่ระบุบนใบขอเบิก"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__journal_id
+msgid "Journal"
+msgstr "สมุดรายวัน"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,help:disbursement_cash_revenue_handover.field_kmitl_central_funding__journal_id
+msgid "Journal the handover entry is booked in."
+msgstr "สมุดรายวันที่ใช้บันทึกใบโอนเงินและรายได้"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__company_id
+msgid "Company"
+msgstr "บริษัท"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_kmitl_central_funding__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.constraint,message:disbursement_cash_revenue_handover.constraint_kmitl_central_funding_source_company_unique
+msgid "A central funding profile already exists for this source of funds."
+msgstr "มีผังเงินงบประมาณส่วนกลางของแหล่งเงินนี้อยู่แล้ว"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_account_move__cash_revenue_handover_request_id
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_account_move_form_inherit_handover
+msgid "Handover For"
+msgstr "โอนเงินและรายได้ให้ใบขอเบิก"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,help:disbursement_cash_revenue_handover.field_account_move__cash_revenue_handover_request_id
+msgid "The disbursement request this handover entry funds."
+msgstr "ใบขอเบิกที่ใบโอนนี้จัดเงินให้"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_account_move__cash_revenue_handover_request_name
+msgid "Handover For Number"
+msgstr "เลขที่ใบขอเบิกที่โอนให้"
+
+#. module: disbursement_cash_revenue_handover
+#: code:addons/disbursement_cash_revenue_handover/models/disbursement_request.py:0
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_disbursement_request__cash_revenue_handover_move_ids
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_disbursement_request_form_inherit_handover
+#, python-format
+msgid "Cash & Revenue Handover"
+msgstr "โอนเงินและรายได้"
+
+#. module: disbursement_cash_revenue_handover
+#: model:ir.model.fields,field_description:disbursement_cash_revenue_handover.field_disbursement_request__cash_revenue_handover_count
+msgid "Handover Count"
+msgstr "จำนวนใบโอน"
+
+#. module: disbursement_cash_revenue_handover
+#: code:addons/disbursement_cash_revenue_handover/models/disbursement_request.py:0
+#, python-format
+msgid "Cash & revenue handover: %s"
+msgstr "โอนเงินและรายได้: %s"
+
+#. module: disbursement_cash_revenue_handover
+#: code:addons/disbursement_cash_revenue_handover/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Cash &amp; revenue handover of %(amount)s <a href=\"%(link)s\" "
+"target=\"_blank\">drafted</a> for %(unit)s."
+msgstr ""
+"<a href=\"%(link)s\" target=\"_blank\">ร่างใบโอนเงินและรายได้</a> จำนวน "
+"%(amount)s ให้ %(unit)s แล้ว"
+
+#. module: disbursement_cash_revenue_handover
+#: code:addons/disbursement_cash_revenue_handover/models/account_move.py:0
+#, python-format
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_cash_revenue_handover
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_form
+msgid "Money Held Centrally"
+msgstr "เงินที่ส่วนกลางถือไว้"
+
+#. module: disbursement_cash_revenue_handover
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_form
+msgid "Central Dimensions"
+msgstr "มิติของส่วนกลาง"
+
+#. module: disbursement_cash_revenue_handover
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_form
+msgid "Bookkeeping"
+msgstr "การบันทึกบัญชี"
+
+#. module: disbursement_cash_revenue_handover
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_form
+msgid ""
+"A disbursement carrying this source of funds, raised by any department other "
+"than the central one, is funded by a draft handover entry when its vendor bill "
+"is created. Central's side of that entry uses the three dimensions above; the "
+"spending unit's side uses the ones on the disbursement."
+msgstr ""
+"ใบขอเบิกที่ใช้แหล่งเงินนี้ และออกโดยส่วนงานอื่นที่ไม่ใช่ส่วนกลาง "
+"จะได้รับเงินผ่านร่างใบโอนเงินและรายได้ที่สร้างขึ้นตอนตั้งเจ้าหนี้ "
+"ฝั่งส่วนกลางของใบโอนใช้สามมิติข้างบนนี้ ส่วนฝั่งส่วนงานที่ใช้เงินใช้มิติที่ระบุบนใบขอเบิก"
+
+#. module: disbursement_cash_revenue_handover
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_form
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_search
+msgid "Archived"
+msgstr "เก็บถาวรแล้ว"
+
+#. module: disbursement_cash_revenue_handover
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_revenue_handover.view_central_funding_search
+msgid "Group By"
+msgstr "จัดกลุ่มตาม"
+
+#. module: disbursement_cash_revenue_handover
+#: model_terms:ir.actions.act_window,help:disbursement_cash_revenue_handover.action_central_funding
+msgid "Set up a central funding profile"
+msgstr "ตั้งค่าผังเงินงบประมาณส่วนกลาง"
+
+#. module: disbursement_cash_revenue_handover
+#: model_terms:ir.actions.act_window,help:disbursement_cash_revenue_handover.action_central_funding
+msgid ""
+"One row per source of funds, saying where the money is held and under which "
+"dimensions. A source with no row here is never handed over."
+msgstr ""
+"หนึ่งแถวต่อแหล่งเงิน ระบุว่าเงินอยู่ที่ไหนและอยู่ภายใต้มิติใด "
+"แหล่งเงินที่ไม่มีแถวที่นี่จะไม่มีการโอนเงินและรายได้"

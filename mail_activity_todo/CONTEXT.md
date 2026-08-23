@@ -27,8 +27,8 @@ A Todo cleared by the user **marking it read** ("Mark as Read" — per-person an
 _Avoid_: FYI (folded into Acknowledgement); treating Mark as Read as completing the work
 
 **Inbox (กล่องขาเข้า)**:
-The unified page — every open activity assigned to the current user (and, with the role-in-unit layer, to their role-in-unit groups), gathered from every module into one place. Membership is "assigned to me and still open", **not** "carries a category": built-in, OCA, and hand-scheduled activities all belong here too. The category only refines how a Todo is flagged and cleared, it does not decide whether it is in the inbox. The one place to find incoming work, modelled as an incoming queue, not an email client.
-_Avoid_: dashboard (the inbox lists actionable items, not analytics)
+The unified page — every open activity assigned to the current user (and, with the role-in-unit layer, to their role-in-unit groups), gathered from every module into one place. Membership is "assigned to me and still open", **not** "carries a category": built-in, OCA, and hand-scheduled activities all belong here too. The category only refines how a Todo is flagged and cleared, it does not decide whether it is in the inbox. The one place to find incoming work, modelled as an incoming queue, not an email client. With ADR-0007 the Inbox surfaces the *primary* Todos only (personal + group Todos in notification scope); anything the user could see but is not being notified for lives in the sibling **Oversight** page.
+_Avoid_: dashboard (the inbox lists actionable items, not analytics); conflating Inbox with Oversight (the badge follows Inbox alone)
 
 **Mark as Read (อ่านแล้ว)**:
 A *per-user* dismissal of any Todo that is **not** an Execution Todo — an Acknowledgement Todo *or* an uncategorised built-in / hand-scheduled activity — removes it from *your* inbox only, leaving it for everyone else in the group. Recorded in `todo.read`; never deletes the shared activity. It is the single user-driven clear gesture (there is no "Mark Done" button); only Execution Todos are excluded, because they clear by acting on the source.
@@ -53,3 +53,19 @@ _Avoid_: using a bare `res.groups` to mean "the people responsible"
 **Operating Unit (OU, คณะ/หน่วยงาน)**:
 The organizational unit a source record belongs to, and the second half of a role-in-unit assignment. The only org axis that carries a user mapping (`operating.unit.user_ids`); the analytic `departments` dimension does not.
 _Avoid_: department (the analytic `departments` dimension is a different thing with no users)
+
+**View scope**:
+Every OU the user *can see data for*, exposed as `res.users.operating_unit_ids`. Wide by design for oversight roles — the OCA `operating_unit` module expands it to *all* OUs for anyone holding `group_manager_operating_unit`, and `*_operating_unit_access_all` add-ons layer further per-model bypasses on top. This is the "who is allowed to look" scope — separate from **notification scope**.
+_Avoid_: conflating view scope with who receives the Todo (that is notification scope)
+
+**Notification scope**:
+The subset of view scope the user has opted to be *pinged* for on group Todos, stored on `res.users.todo_notify_operating_unit_ids`. Empty = fall back to the full view scope (backward-compatible default). Configured per user in Preferences; keeps a wide-access manager's inbox from mirroring every OU's chatter while leaving their view scope untouched (ADR-0007).
+_Avoid_: mixing this with view scope — a filter here never removes access, only badges/pings
+
+**Todo Notification Rule**:
+A per-user override on a specific `mail.activity.type` (`res.users.todo.notify.rule`). Two modes: `all_ous` widens back to every OU in view scope regardless of notification scope (e.g. a manager who wants sarabun confirmations from anywhere), `mute` drops the type from the primary inbox entirely (still surfaced under Oversight if the user could see it). No rule for a type = follow notification scope.
+_Avoid_: treating a rule as a routing decision — routing still runs role ∩ view scope; rules only reshape the primary/oversight split
+
+**Oversight Todo**:
+A group Todo the user can *see* (inside view scope) but that falls *outside* their notification scope — a manager glancing at team activity, not their own next action. Surfaced under a separate "อื่นๆ ที่เกี่ยวข้อง" tab (visible only when there is one to show); does not count toward the systray badge (ADR-0007).
+_Avoid_: acting on an Oversight Todo as if it were assigned to you (Claim converts it to personal first)

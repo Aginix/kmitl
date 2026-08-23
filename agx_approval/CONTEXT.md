@@ -10,6 +10,10 @@ Approval itself is **routed through e-Saraban**: a submitted request spawns a �
 The `approval.request` document. Spans two moments of one activity: the **plan** (approved before the money is spent) and the **actual expense record** (filled after the mission, before billing). Reserves budget on approval.
 _Avoid_: expense request, claim, bill
 
+**Approval Category (ประเภทคำขออนุมัติ)**:
+The kind of request (`approval.category`) — travel, honorarium, etc. Not a mere label: it **scopes** what a request of that kind may use — its allowed expenses, allowed people, and its **budget code**. When it pins a budget code that code becomes the request's constraint (not just a default); when it leaves the code blank the request selects freely from the non-procurement expense codes.
+_Avoid_: request type, template, budget preset
+
 **Expense Plan (แผนค่าใช้จ่าย)**:
 The planned spending captured while filling the form — the purpose of the entry stage. What is approved and what budget is reserved against.
 _Avoid_: budget, estimate, quotation

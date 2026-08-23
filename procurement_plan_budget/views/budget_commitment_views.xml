@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+    <record id="view_budget_commitment_form" model="ir.ui.view">
+        <field name="name">view.budget.commitment.form</field>
+        <field name="model">budget.commitment</field>
+        <field name="inherit_id" ref="budget.budget_commitment_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <field name="procurement_plan_id" invisible="1" />
+                <button
+                    name="action_view_procurement_plan"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-list-alt"
+                    attrs="{'invisible': [('procurement_plan_id', '=', False)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">แผนจัดซื้อจัดจ้าง</span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='ref']" position="after">
+                <field name="procurement_plan_id" string="แผนจัดซื้อจัดจ้าง" options="{'no_open': True}" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Budget Commitment action, scoped to a single procurement plan -->
+    <record id="action_budget_commitment_procurement_plan" model="ir.actions.act_window">
+        <field name="name">ผูกพันงบประมาณ</field>
+        <field name="res_model">budget.commitment</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+  </odoo>

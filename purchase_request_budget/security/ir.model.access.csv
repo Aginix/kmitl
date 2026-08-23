@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_budget_commitment_pr_user,budget.commitment purchase request user (read),budget.model_budget_commitment,purchase_request.group_purchase_request_user,1,0,0,0
+access_budget_commitment_line_pr_user,budget.commitment.line purchase request user (read),budget.model_budget_commitment_line,purchase_request.group_purchase_request_user,1,0,0,0

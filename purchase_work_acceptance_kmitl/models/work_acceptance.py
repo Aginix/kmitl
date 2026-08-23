@@ -30,12 +30,16 @@ class WorkAcceptance(models.Model):
         "If not checked, WA will be approved by paper outside Odoo, "
         "and the result of WA will be filled in by procurement officer",
     )
-    attachment_ids = fields.One2many(
+    # attachment_ids is the "regular" documents tab on the paper-WA flow.
+    # Kept separate from supporting_document_ids by excluding the m2m set
+    # at compute time — do NOT distinguish via ir.attachment.res_field: any
+    # value there triggers AccessError for non-system users in Odoo core
+    # (see odoo/addons/base/models/ir_attachment.py — check()).
+    attachment_ids = fields.Many2many(
         "ir.attachment",
-        "res_id",
         string="Document Attachments",
-        domain=[("res_model", "=", "work.acceptance"), ("res_field", "=", False)],
-        tracking=True,
+        compute="_compute_attachment_ids",
+        inverse="_inverse_attachment_ids",
     )
     supporting_document_ids = fields.Many2many(
         "ir.attachment",
@@ -44,6 +48,34 @@ class WorkAcceptance(models.Model):
         "attachment_id",
         string="Supporting Documents",
     )
+
+    @api.depends("supporting_document_ids")
+    def _compute_attachment_ids(self):
+        # Filter ("res_field", "=", False) is defensive: legacy rows still
+        # carry res_field='supporting_document_ids' from PR #1026, and any
+        # read on them raises AccessError for non-system users. Even after
+        # the SQL cleanup that resets them, the filter also guards against
+        # future stray res_field values leaking into this list.
+        Attachment = self.env["ir.attachment"]
+        for rec in self:
+            if not isinstance(rec.id, int):
+                rec.attachment_ids = Attachment
+                continue
+            atts = Attachment.search([
+                ("res_model", "=", "work.acceptance"),
+                ("res_id", "=", rec.id),
+                ("res_field", "=", False),
+            ])
+            rec.attachment_ids = atts - rec.supporting_document_ids
+
+    def _inverse_attachment_ids(self):
+        for rec in self:
+            for att in rec.attachment_ids:
+                if att.res_model != "work.acceptance" or att.res_id != rec.id:
+                    att.write({
+                        "res_model": "work.acceptance",
+                        "res_id": rec.id,
+                    })
 
     work_acceptance_committee_ids = fields.One2many(
         comodel_name="work.acceptance.committee",
@@ -101,6 +133,11 @@ class WorkAcceptance(models.Model):
     po_work_end_original = fields.Date(
         string="PO Work End Original",
         related='purchase_id.work_end_original',
+    )
+    contract_number = fields.Char(
+        string="Contract No.",
+        related="purchase_id.contract_number",
+        store=False,
     )
 
     # Late Fines
@@ -196,28 +233,6 @@ class WorkAcceptance(models.Model):
 
     def _default_start_date(self):
         return fields.Date.today()
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        records = super().create(vals_list)
-        records._set_supporting_doc_res_field()
-        return records
-
-    def write(self, vals):
-        res = super().write(vals)
-        if "supporting_document_ids" in vals:
-            self._set_supporting_doc_res_field()
-        return res
-
-    def _set_supporting_doc_res_field(self):
-        for record in self:
-            attachments = record.supporting_document_ids.filtered(
-                lambda a: a.res_field != "supporting_document_ids"
-            )
-            if attachments:
-                attachments.sudo().write(
-                    {"res_field": "supporting_document_ids"}
-                )
 
     @api.depends("requested_delivery_date", "date_due")
     def _compute_is_delivery_late(self):
@@ -465,3 +480,4 @@ class WorkAcceptanceLine(models.Model):
     date_receive = fields.Date(
         related="wa_id.date_receive", string="Received Date", readonly=True
     )
+    uom_text = fields.Char(string="หน่วยนับ")

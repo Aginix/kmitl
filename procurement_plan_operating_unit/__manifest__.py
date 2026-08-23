@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Procurement Plan with Operating Units",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": [
         "operating_unit",
+        "analytic_operating_unit",
         "procurement_plan",
     ],
     "data": [

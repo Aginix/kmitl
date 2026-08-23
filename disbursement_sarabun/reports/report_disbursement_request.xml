@@ -11,4 +11,16 @@
             </t>
         </xpath>
     </template>
+
+    <!-- บันทึกนำ — the optional covering note the หนังสือ carries above the
+         origin's report (rendered just below its title). Nothing prints unless
+         the drafter ticked แนบเนื้อหา and wrote a body. -->
+    <template id="report_disbursement_request_sarabun_covering_note"
+              inherit_id="disbursement.report_disbursement_request" priority="99">
+        <xpath expr="//div[contains(@class,'page-header')]" position="after">
+            <t t-call="agx_sarabun.sarabun_covering_note">
+                <t t-set="doc" t-value="o.active_sarabun_document_id"/>
+            </t>
+        </xpath>
+    </template>
 </odoo>

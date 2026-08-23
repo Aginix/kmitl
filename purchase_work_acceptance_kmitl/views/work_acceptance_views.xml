@@ -41,6 +41,9 @@
             <xpath expr="//field[@name='partner_id']" position="before">
                 <field name="wa_tier_validation" />
             </xpath>
+            <xpath expr="//field[@name='purchase_id']" position="before">
+                <field name="contract_number" readonly="1" />
+            </xpath>
             <xpath expr="//header/button[@name='button_draft']" position="attributes">
                 <attribute name="groups">purchase.group_purchase_user</attribute>
             </xpath>
@@ -92,26 +95,14 @@
                 </page>
                 <page name="document" string="Attachment"
                       attrs="{'invisible': [('wa_tier_validation', '=', True)]}">
-                    <field name="attachment_ids"
-                           attrs="{'readonly': [('state', '!=', 'draft')]}"
-                           context="{'default_res_model': 'work.acceptance'}">
-                        <tree default_order="sequence">
-                            <field name="sequence" widget="handle"/>
-                            <field name="name" string="File Name" required="1"/>
-                            <field name="description"/>
-                        </tree>
-                        <form>
-                            <sheet>
-                                <group>
-                                    <field name="res_model" invisible="1" readonly="0"/>
-                                    <field name="res_id" invisible="1" readonly="0"/>
-                                    <field name="name" required="1" invisible="1"/>
-                                    <field name="datas" filename="name" required="1"/>
-                                    <field name="description" placeholder="Description"/>
-                                </group>
-                            </sheet>
-                        </form>
-                    </field>
+                    <group>
+                        <field name="attachment_ids"
+                               widget="many2many_binary"
+                               colspan="2"
+                               nolabel="1"
+                               attrs="{'readonly': [('state', '!=', 'draft')]}"
+                               context="{'default_res_model': 'work.acceptance', 'default_res_id': active_id}"/>
+                    </group>
                 </page>
             </xpath>
         </field>
@@ -355,6 +346,21 @@
                 position="attributes"
             >
                 <attribute name="optional">hide</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='wa_line_ids']/tree/field[@name='product_uom']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='wa_line_ids']/tree/field[@name='product_qty']"
+                position="after"
+            >
+                <field name="uom_text"/>
             </xpath>
 
             <xpath expr="//field[@name='invoice_ref']" position="attributes">
