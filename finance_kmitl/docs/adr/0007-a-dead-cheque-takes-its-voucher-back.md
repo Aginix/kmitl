@@ -50,7 +50,7 @@ single obligation and read, to anyone counting vouchers, as a second thing owed.
   replacement, because that is what is nearly always meant, but a disbursement that is
   being unwound entirely needs the cheque dead and no successor.
 - **A cross-month replacement moves the withholding.** The certificate is dated from the
-  cheque (ADR-0005), so a cheque dated 30 September replaced by one dated 3 October moves
+  cheque (ADR-0006), so a cheque dated 30 September replaced by one dated 3 October moves
   that payee's withholding from the September ภ.ง.ด. to October's. If September was already
   filed, the finance office files an amendment. The system's job here is only to stop
   saying a date that is no longer true.

@@ -59,8 +59,8 @@
     <menuitem
         id="menu_finance_assignment_rule"
         name="Assignment Rules"
-        parent="finance_kmitl.menu_payment_settings"
+        parent="finance_kmitl.menu_settings_payment_data"
         action="action_finance_assignment_rule"
-        sequence="8"
+        sequence="40"
     />
 </odoo>

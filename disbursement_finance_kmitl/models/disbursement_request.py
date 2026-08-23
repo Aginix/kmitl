@@ -114,6 +114,34 @@ class DisbursementRequest(models.Model):
         copy=False,
     )
 
+    # Who performed each round-2 step, and when. Round 1 stamps its two approvals
+    # the same way (``finance_approver_id`` / ``rector_approver_id``); round 2 used
+    # to leave the answer in the chatter alone, which is not something a list can
+    # be built on. The authorizer's history list stands on the stamp rather than on
+    # the state, so a request stays in it once it is paid and cleared.
+    payment_auditor_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Payment Auditor",
+        copy=False,
+        readonly=True,
+    )
+    payment_audit_date = fields.Datetime(
+        string="Payment Audited On",
+        copy=False,
+        readonly=True,
+    )
+    payment_authorizer_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Payment Authorizer",
+        copy=False,
+        readonly=True,
+    )
+    payment_authorize_date = fields.Datetime(
+        string="Payment Authorized On",
+        copy=False,
+        readonly=True,
+    )
+
     # One2many via the stored back-reference on account.payment, so payment
     # progress recomputes reactively (no search() inside computes).
     payment_ids = fields.One2many(
@@ -406,7 +434,13 @@ class DisbursementRequest(models.Model):
                 raise UserError(_("Only bills-posted requests can be audited."))
             record._ensure_payment_lines()
             record._check_payment_classification()
-            record.state = "payment_audited"
+            record.write(
+                {
+                    "state": "payment_audited",
+                    "payment_auditor_id": self.env.user.id,
+                    "payment_audit_date": fields.Datetime.now(),
+                }
+            )
             record.activity_feedback([TO_AUDIT_ACTIVITY])
             record._schedule_payment_todo(TO_AUTHORIZE_ACTIVITY, AUTHORIZER_GROUP)
         return True
@@ -425,7 +459,13 @@ class DisbursementRequest(models.Model):
                 raise UserError(
                     _("Only audited requests can be authorized for payment.")
                 )
-            record.state = "payment_authorized"
+            record.write(
+                {
+                    "state": "payment_authorized",
+                    "payment_authorizer_id": self.env.user.id,
+                    "payment_authorize_date": fields.Datetime.now(),
+                }
+            )
             record.activity_feedback([TO_AUTHORIZE_ACTIVITY])
             record._schedule_payment_todo(TO_PAY_ACTIVITY, FINANCE_GROUP)
             record._try_create_payments()

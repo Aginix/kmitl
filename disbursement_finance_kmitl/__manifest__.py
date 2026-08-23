@@ -22,8 +22,10 @@
         "security/ir.model.access.csv",
         "data/mail_activity_type.xml",
         "data/disbursement_payment_line_tracking.xml",
-        "views/disbursement_request_views.xml",
+        # Queue views first: they define the Approver (ผู้อนุมัติ) menu that the
+        # request views hang the authorized-history menu off.
         "views/disbursement_queue_views.xml",
+        "views/disbursement_request_views.xml",
         "views/bank_payment_export_views.xml",
     ],
     "assets": {

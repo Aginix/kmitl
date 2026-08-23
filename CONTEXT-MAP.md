@@ -143,10 +143,10 @@ upfront.
   single จ่ายครบ confirmation. **How** a payee is settled decides which record carries the
   finance office's work between confirming and paying — an **ไฟล์ e-Payment** for a
   transfer, a **เช็ค** (`cheque.register`, one per voucher) for a cheque, and nothing at
-  all for cash (`finance_kmitl` ADR-0005). A cheque is also the one thing that can fail
+  all for cash (`finance_kmitl` ADR-0006). A cheque is also the one thing that can fail
   after the payee holds it, so cancelling one takes its voucher back to `confirmed` while
   the request stays `paid` — the only way backwards in the whole phase
-  (`finance_kmitl` ADR-0006).
+  (`finance_kmitl` ADR-0007).
 - **Disbursement → Approval (return)**: returning a `disbursement.request` at `signed`
   keeps it untouched (still `signed`, budget unchanged) and bounces the linked
   `approval.request` to `returned`; the requester corrects only the payee bank,

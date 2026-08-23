@@ -37,7 +37,7 @@ printed, handed over, or died.
 - **One voucher has at most one *live* cheque, not at most one cheque.** A cheque that
   died leaves its row behind holding the number it spent, so a voucher accumulates as
   many rows as it took pieces of paper. The constraint is on the ones that are not
-  cancelled. See ADR-0006.
+  cancelled. See ADR-0007.
 - **`draft → issued → paid` and not `draft → paid`**, for the reason ADR-0004 gives for
   the e-payment file: a cheque that is printed and signed can wait days in a drawer for
   the payee to collect it, and "the paper exists" is not "the payee has their money". The

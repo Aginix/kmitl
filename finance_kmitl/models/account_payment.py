@@ -475,7 +475,7 @@ class AccountPayment(models.Model):
         never written for — the paper can die *after* the payee took it, and then
         the money never left at all. So the claim is withdrawn rather than
         corrected, and the voucher goes back to being the finance office's to
-        settle with another piece of paper. See ADR-0006.
+        settle with another piece of paper. See ADR-0007.
 
         Only while the entry is unposted, which is where a dead cheque is almost
         always caught: the voucher sits in the accounting office's queue for as

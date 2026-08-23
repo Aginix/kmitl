@@ -2,7 +2,7 @@
 
 {
     "name": "Finance Assignment KMITL",
-    "version": "16.0.1.3.0",
+    "version": "16.0.1.4.0",
     "category": "KMITL/Finance",
     "summary": "Auto-assign a responsible finance officer to payment vouchers by rules",
     "author": "KMITL",
@@ -20,7 +20,6 @@
         "wizards/assign_officer_wizard_views.xml",
         "views/account_payment_views.xml",
         "views/assignment_rule_views.xml",
-        "views/finance_assignment_menus.xml",
     ],
     "installable": True,
     "auto_install": False,

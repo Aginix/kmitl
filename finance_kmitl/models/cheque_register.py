@@ -34,7 +34,7 @@ class ChequeRegister(models.Model):
 
     What is genuinely the cheque's own is the paper — its number, the cheque book
     it was torn from, the date written on it, and whether it was printed, handed
-    over, or died. See ADR-0005.
+    over, or died. See ADR-0006.
 
     **A number is spent, not held.** Nothing here reserves or allocates numbers:
     the cheque book is pre-printed and the paper is what decides. ``cheque_number``
@@ -534,7 +534,7 @@ class ChequeRegister(models.Model):
         can no longer be posted. What does *not* move is the obligation — the same
         bill, payee, amount and dimensions — so the replacement is another cheque
         on the same voucher rather than a new voucher, which would claim a new
-        obligation had arisen. See ADR-0006.
+        obligation had arisen. See ADR-0007.
         """
         replacements = self.browse()
         for cheque in self:

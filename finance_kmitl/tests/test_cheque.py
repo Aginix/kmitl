@@ -389,7 +389,7 @@ class TestCheque(TransactionCase):
         self.assertEqual(payment.finance_state, "paid")
 
     # ------------------------------------------------------------------
-    # A dead cheque takes its voucher back (ADR-0006)
+    # A dead cheque takes its voucher back (ADR-0007)
     # ------------------------------------------------------------------
     def test_a_cheque_that_dies_before_it_is_collected_leaves_the_voucher_alone(self):
         """Nothing was asserted yet: the voucher is still confirmed."""

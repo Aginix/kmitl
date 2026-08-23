@@ -15,7 +15,9 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   Held by the two offices **in turn**, not shared: the finance office prepares it, sends
   it to the bank and vouches for the outcome; the accounting office books it. A
   **รายการ**จ่ายเงิน is not one of these — that is the payee-level row on a disbursement
-  request. Never call a voucher "รายการจ่ายเงิน".
+  request. Never call a voucher "รายการจ่ายเงิน". The **menu** that opens the list of
+  them is spelled **ใบสำคัญจ่าย**, because that is what the office calls the list;
+  a document is still an ใบจ่ายเงิน, and its number is still a ใบสำคัญจ่าย number.
 
 - **ฝั่งเงิน / Money side**: the facts the bank acted on — amount, payee, the payee's
   bank account, the paying account (หัวจ่าย), currency, payment and partner type,
@@ -92,7 +94,7 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   covers one payee, so it holds none of them and reads them off the voucher. What is its
   own is the paper — the number, the book, the date on it, and whether it was printed,
   collected, or died. See
-  [ADR-0005](./docs/adr/0005-a-cheque-is-the-e-payment-file-of-one-voucher.md). _Avoid_:
+  [ADR-0006](./docs/adr/0006-a-cheque-is-the-e-payment-file-of-one-voucher.md). _Avoid_:
   "ทะเบียนคุมเช็ค" for a single cheque — that names the list, not the document.
 
 - **เล่มเช็ค / Cheque book** (`account.payment.method.line.bank_account_id`): the
@@ -129,7 +131,7 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   every death is the same fact. The number stays spent. A cheque that had already been
   handed over takes its voucher back to `confirmed` with it, and a replacement is written
   on that **same** voucher: only the instrument died, not the obligation. See
-  [ADR-0006](./docs/adr/0006-a-dead-cheque-takes-its-voucher-back.md).
+  [ADR-0007](./docs/adr/0007-a-dead-cheque-takes-its-voucher-back.md).
 
 - **ประเภทผู้รับเงิน / Payee type** (`account.payment.payee_type_id` →
   `res.partner.type`): what kind of counterparty the payee is — the category that
@@ -151,7 +153,8 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   request whose payees span four paying accounts produces four files. _Avoid_:
   "ส่งออกรายการจ่ายเงิน" — it steps on **รายการจ่ายเงิน**, which names the row on a
   disbursement request. Also avoid "PE": that is the prefix its number happens to carry,
-  not a name for the thing.
+  not a name for the thing. The **menu** is **ทะเบียน e-Payment**: the register is the
+  list, a file is one record in it — the same pair as ทะเบียนคุมเช็ค and a cheque.
 
 - **สถานะของไฟล์ e-Payment** (`bank.payment.export.state`), and what each one actually
   claims — the distinction matters because none of them is told by a bank:
@@ -216,7 +219,7 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   phase is otherwise forward-only. A cheque is the one instrument that can fail after the
   payee is holding it, so its death withdraws the assertion that they were paid instead
   of being corrected downstream. Once the accounting office has posted, the money has
-  left the books too, and only their reversal can undo it (ADR-0006).
+  left the books too, and only their reversal can undo it (ADR-0007).
 - **Naming a dimension names everything under it.** A voucher filtered by a faculty, a
   fund or a programme is any voucher on that account _or on any account beneath it_.
   This is the same reading the routing rules use to decide who carries a voucher
