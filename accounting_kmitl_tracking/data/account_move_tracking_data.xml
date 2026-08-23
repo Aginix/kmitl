@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Enable OCA tracking_manager on account.move.
+
+    tracking_manager tracks a model when its ir.model.active_custom_tracking is
+    True, and tracks the individual fields whose ir.model.fields.custom_tracking
+    is True. One2many fields flagged here register their child model
+    (account.move.line) so line create/write/unlink are summarised on the move
+    chatter. All records are noupdate="1" so admins can later re-tune tracking
+    from Settings > Technical > Models without a module upgrade resetting them.
+
+    account.move / account.move.line and their fields are owned by the `account`
+    module, hence the `account.` prefix on every external id.
+-->
+<odoo noupdate="1">
+
+    <!-- ============================================================
+         account.move: master switch + tracked scalar fields + o2m
+         ============================================================ -->
+    <record id="account.model_account_move" model="ir.model">
+        <field name="active_custom_tracking" eval="True" />
+    </record>
+
+    <!-- Business lines (invoice_line_ids = product / section / note lines,
+         which for a plain journal entry is every line). Flagging this o2m is
+         what registers account.move.line as tracked-by-o2m. line_ids is left
+         untracked on purpose so auto-generated tax / receivable / payment-term
+         lines do not spam the chatter. -->
+    <record id="account.field_account_move__invoice_line_ids" model="ir.model.fields">
+        <field name="custom_tracking" eval="True" />
+    </record>
+
+    <!-- Header -->
+    <record id="account.field_account_move__journal_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__company_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__invoice_date" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__invoice_date_due" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__invoice_payment_term_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__fiscal_position_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__reversed_entry_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__invoice_incoterm_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__invoice_cash_rounding_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__partner_shipping_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__commercial_partner_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__invoice_partner_display_name" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__auto_post" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__auto_post_until" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__auto_post_origin_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__qr_code_method" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+
+    <!-- Amounts -->
+    <record id="account.field_account_move__amount_tax" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__amount_total" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__amount_residual" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__quick_edit_total_amount" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__amount_untaxed_signed" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__amount_tax_signed" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__amount_total_signed" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__amount_total_in_currency_signed" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__amount_residual_signed" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+
+    <!-- Technical / system-managed -->
+    <record id="account.field_account_move__is_storno" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__posted_before" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__always_tax_exigible" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__payment_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__statement_line_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__tax_cash_basis_rec_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move__tax_cash_basis_origin_move_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+
+    <!-- ============================================================
+         account.move.line: activating custom tracking here bounds WHICH
+         line fields appear in the o2m note to the list below. Without it,
+         tracking_manager falls back to every stored writable non-o2m line
+         field (very noisy).
+         ============================================================ -->
+    <record id="account.model_account_move_line" model="ir.model">
+        <field name="active_custom_tracking" eval="True" />
+    </record>
+    <record id="account.field_account_move_line__account_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move_line__name" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move_line__product_id" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move_line__quantity" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move_line__price_unit" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move_line__price_subtotal" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move_line__debit" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move_line__credit" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move_line__tax_ids" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+    <record id="account.field_account_move_line__analytic_distribution" model="ir.model.fields"><field name="custom_tracking" eval="True" /></record>
+
+</odoo>

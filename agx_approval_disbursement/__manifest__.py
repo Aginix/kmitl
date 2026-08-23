@@ -11,6 +11,11 @@
         "views/approval_request_views.xml",
         "views/disbursement_request_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "agx_approval_disbursement/static/src/js/many2many_binary_disbursement.js",
+        ],
+    },
     "installable": True,
     "license": "LGPL-3",
 }
