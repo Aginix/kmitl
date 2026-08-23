@@ -1,7 +1,7 @@
 from odoo import _, models
 
 # Execution Todo raised while the request sits at to_verify (รอตรวจสอบ /
-# จองงบประมาณ). Routed to the จองงบประมาณ role within the requester's operating
+# จองงบประมาณ). Routed to the จองงบประมาณ role within the request's operating
 # unit (role-in-unit, mail_activity_todo_role_unit ADR-0002).
 RESERVE_BUDGET_ACTIVITY = "agx_approval_todo.mail_activity_reserve_budget"
 BUDGET_COMMITMENT_ROLE = "budget_role.role_budget_commitment"
@@ -10,11 +10,70 @@ BUDGET_COMMITMENT_ROLE = "budget_role.role_budget_commitment"
 class ApprovalRequest(models.Model):
     _inherit = "approval.request"
 
+    # =====================================================================
+    # โครงสร้าง Lifecycle-Todo (base) — ใช้ร่วมโดยทุกโมดูล *_todo ของสายอนุมัติ
+    #
+    # base.automation เป็นเพียง trigger (ประกาศบน state, แอดมินเปิด/ปิดได้) แล้ว
+    # delegate เข้าเมธอด _notify_* / _clear_* ซึ่งเรียก helper กลางด้านล่าง.
+    # =====================================================================
+    def _schedule_todo(
+        self,
+        activity_xmlid,
+        summary,
+        user=None,
+        role=None,
+        operating_unit=None,
+        group=None,
+        dedupe=True,
+    ):
+        """สร้าง Todo จาก activity type (xmlid) ตามโหมดผู้รับ:
+
+        - ``role`` + ``operating_unit`` → group Todo แบบ role-in-unit
+          (mail_activity_todo_role_unit) ไม่มีผู้รับเดี่ยว.
+        - ``group`` (res.groups) → fan-out เป็น Todo ส่วนบุคคลให้สมาชิก internal
+          ทุกคน (ใช้กรณีหน่วยกลางที่ไม่มี role-in-unit เช่น การเงิน).
+        - ``user`` → Todo ส่วนบุคคลรายคน.
+
+        ``dedupe`` = True → ข้าม record ที่มี Todo ชนิดนี้ค้างอยู่แล้ว. คืน
+        recordset ของ ``mail.activity`` ที่สร้าง เพื่อให้ override/เทสต์ต่อยอดได้."""
+        act_type = self.env.ref(activity_xmlid, raise_if_not_found=False)
+        activities = self.env["mail.activity"]
+        if not act_type:
+            return activities
+        for rec in self:
+            if dedupe and rec.activity_ids.filtered(
+                lambda a: a.activity_type_id == act_type
+            ):
+                continue
+            if role and operating_unit:
+                activities += rec.activity_schedule(
+                    activity_xmlid,
+                    summary=summary,
+                    responsible_role_id=role.id,
+                    operating_unit_id=operating_unit.id,
+                )
+            elif group:
+                members = group.sudo().users.filtered(
+                    lambda u: u.active and not u.share
+                )
+                for member in members:
+                    activities += rec.activity_schedule(
+                        activity_xmlid, summary=summary, user_id=member.id
+                    )
+            elif user:
+                activities += rec.activity_schedule(
+                    activity_xmlid, summary=summary, user_id=user.id
+                )
+        return activities
+
+    def _clear_todo(self, activity_xmlids):
+        """ล้าง Todo ตาม activity type (xmlid เดียวหรือ list) บน record."""
+        if not isinstance(activity_xmlids, (list, tuple)):
+            activity_xmlids = [activity_xmlids]
+        self.activity_unlink(activity_xmlids)
+
     # ---------------------------------------------------------------------
-    # Reserve-budget Todo — driven by base.automation on the state field, so it
-    # fires on every path that lands the request at to_verify (button, bridge,
-    # Sarabun) and clears on every path that leaves it (reserve → to_send,
-    # ดึงกลับ → draft, ยกเลิก → rejected).
+    # Reserve-budget Todo (เข้า to_verify → จองงบ)
     # ---------------------------------------------------------------------
     def _reserve_budget_todo_summary(self):
         """ข้อความบน Todo — ระบุเลขที่คำขอเพื่อให้ผู้รับเห็นว่าเป็นเอกสารใด."""
@@ -40,31 +99,22 @@ class ApprovalRequest(models.Model):
 
         กรณีไม่มีหน่วยงาน/ไม่พบ role ก็ตกลงมาเป็น Todo ส่วนบุคคลของผู้ขอ
         เพื่อไม่ให้งานค้างเงียบ (แนวเดียวกับ purchase_request_todo)."""
-        act_type = self.env.ref(RESERVE_BUDGET_ACTIVITY, raise_if_not_found=False)
         role = self.env.ref(BUDGET_COMMITMENT_ROLE, raise_if_not_found=False)
-        if not act_type:
-            return
         for rec in self:
-            # เข้า to_verify ผ่าน base.automation จึงยิงครั้งเดียวต่อการเปลี่ยน
-            # สถานะ — กันซ้ำเผื่อกลับเข้าสถานะเดิมโดยยังไม่ถูกล้าง.
-            if rec.activity_ids.filtered(lambda a: a.activity_type_id == act_type):
-                continue
             summary = rec._reserve_budget_todo_summary()
             operating_unit = rec._reserve_budget_operating_unit()
             if role and operating_unit:
-                rec.activity_schedule(
+                rec._schedule_todo(
                     RESERVE_BUDGET_ACTIVITY,
-                    summary=summary,
-                    responsible_role_id=role.id,
-                    operating_unit_id=operating_unit.id,
+                    summary,
+                    role=role,
+                    operating_unit=operating_unit,
                 )
-            elif rec.user_id:
-                rec.activity_schedule(
-                    RESERVE_BUDGET_ACTIVITY,
-                    summary=summary,
-                    user_id=rec.user_id.id,
+            else:
+                rec._schedule_todo(
+                    RESERVE_BUDGET_ACTIVITY, summary, user=rec.user_id
                 )
 
     def _clear_reserve_budget_todo(self):
         """ออกจาก to_verify (จองแล้ว / ดึงกลับ / ยกเลิก) → ล้าง Todo จองงบประมาณ."""
-        self.activity_unlink([RESERVE_BUDGET_ACTIVITY])
+        self._clear_todo(RESERVE_BUDGET_ACTIVITY)
