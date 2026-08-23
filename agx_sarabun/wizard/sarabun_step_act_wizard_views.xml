@@ -22,7 +22,8 @@
                 <group attrs="{'invisible': [('is_sign', '=', False)]}">
                     <field name="signed_as_position_id" string="Sign in capacity"
                            attrs="{'readonly': [('step_target_mode', '=', 'position')]}"
-                           domain="[('holder_ids.user_id', '=', uid)]"/>
+                           domain="[('holder_ids.user_id', '=', uid)]"
+                           options="{'no_open': True}"/>
                 </group>
                 <group string="Target" attrs="{'invisible': [('needs_target', '=', False)]}">
                     <field name="target_mode"/>
