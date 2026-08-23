@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_cheque_register_assign_numbers_form" model="ir.ui.view">
+        <field name="name">cheque.register.assign.numbers.form</field>
+        <field name="model">cheque.register.assign.numbers</field>
+        <field name="arch" type="xml">
+            <form string="Number the Cheques">
+                <field name="cheque_ids" invisible="1" />
+                <div class="alert alert-info" role="alert">
+                    Say where the run starts and the rest are counted on from it,
+                    in the order the cheques were made. The paper decides — check
+                    the last number below against the book in your hand.
+                </div>
+                <group>
+                    <field name="cheque_book_id" />
+                    <field name="first_number" placeholder="e.g. 0512007" />
+                    <field name="last_number" />
+                </group>
+                <footer>
+                    <button
+                        name="action_assign"
+                        string="Number Them"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Discard" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

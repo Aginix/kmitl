@@ -166,6 +166,23 @@ class AccountPayment(models.Model):
         related="cheque_id.cheque_number",
         string="Cheque Number",
     )
+    finance_state_cheque = fields.Selection(
+        selection=[
+            ("draft", "Draft"),
+            ("confirmed", "Ready to Write the Cheque"),
+            ("issued", "Cheque Issued"),
+            ("paid", "Cheque Handed Over"),
+        ],
+        string="Finance Status",
+        compute="_compute_finance_state_cheque",
+        help="The same lifecycle as Finance Status, in the words that fit a "
+        "cheque. A voucher settled on paper goes to no bank, so 'Confirmed for "
+        "the Bank' names an errand nobody runs for it — and its Confirmed covers "
+        "two different situations, one where the cheque has still to be written "
+        "and one where it is written and waiting to be collected. Read-only and "
+        "unstored: it says nothing finance_state and the cheque do not already "
+        "say between them.",
+    )
 
     @api.depends("move_id.line_ids.wht_tax_id", "move_id.line_ids.balance", "amount")
     def _compute_amount_wht(self):
@@ -574,6 +591,22 @@ class AccountPayment(models.Model):
             payment.cheque_id = payment.cheque_ids.filtered(
                 lambda cheque: cheque.state != "cancelled"
             )[:1]
+
+    @api.depends("finance_state", "cheque_id.state")
+    def _compute_finance_state_cheque(self):
+        """Fold the cheque's own step into the voucher's, for the statusbar.
+
+        The voucher has one value, ``confirmed``, for two situations a cheque
+        officer keeps apart: no cheque written yet, and a cheque written and
+        signed that the payee has not come for. Both are the voucher's money side
+        frozen and nothing paid, so they are rightly one state — but a bar that
+        cannot tell them apart is a bar that cannot show the work.
+        """
+        for payment in self:
+            state = payment.finance_state
+            if state == "confirmed" and payment.cheque_id.state == "issued":
+                state = "issued"
+            payment.finance_state_cheque = state
 
     def _search_cheque_id(self, operator, value):
         """Let the live cheque be searched, so what reads through it can be

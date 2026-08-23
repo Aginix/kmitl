@@ -266,6 +266,12 @@ msgstr ""
 "เลขที่ถูกใช้ไปแล้วไม่นำกลับมาจ่ายให้ผู้รับรายที่สอง"
 
 #. module: finance_kmitl
+#: code:addons/finance_kmitl/wizards/cheque_register_assign_numbers.py:0
+#, python-format
+msgid "A cheque number is digits only — %s is not."
+msgstr "เลขที่เช็คต้องเป็นตัวเลขล้วน — %s ไม่ใช่"
+
+#. module: finance_kmitl
 #: code:addons/finance_kmitl/models/cheque_register.py:0
 #, python-format
 msgid "A cheque number is required before the cheque is issued."
@@ -479,6 +485,7 @@ msgstr "เช็ค"
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_tree
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register_assign_numbers__cheque_book_id
 msgid "Cheque Book"
 msgstr "เล่มเช็ค"
 
@@ -486,6 +493,16 @@ msgstr "เล่มเช็ค"
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__cheque_date
 msgid "Cheque Date"
 msgstr "วันที่หน้าเช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__account_payment__finance_state_cheque__paid
+msgid "Cheque Handed Over"
+msgstr "มอบเช็คแล้ว"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__account_payment__finance_state_cheque__issued
+msgid "Cheque Issued"
+msgstr "ออกเช็คแล้ว"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_res_bank__cheque_layout_id
@@ -519,6 +536,7 @@ msgstr "รูปแบบการพิมพ์เช็ค"
 #: model:ir.ui.menu,name:finance_kmitl.menu_cheque_register
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_tree
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register_assign_numbers__cheque_ids
 #, python-format
 msgid "Cheques"
 msgstr "เช็ค"
@@ -789,8 +807,15 @@ msgstr "การเงิน"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__finance_state
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__finance_state_cheque
 msgid "Finance Status"
 msgstr "สถานะฝั่งการเงิน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register_assign_numbers__first_number
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_assign_numbers_form
+msgid "First Cheque Number"
+msgstr "เลขที่เช็คใบแรก"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export__account_fiscal_year_id
@@ -899,6 +924,12 @@ msgstr "ประเภทการจ่ายเงิน (KMITL)"
 #: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
 msgid "Label"
 msgstr "คำอธิบาย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register_assign_numbers__last_number
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_assign_numbers_form
+msgid "Last Cheque Number"
+msgstr "เลขที่เช็คใบสุดท้าย"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
@@ -1012,6 +1043,35 @@ msgstr "หมายเหตุ"
 #: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
 msgid "Number"
 msgstr "เลขที่"
+
+#. module: finance_kmitl
+#: model:ir.model,name:finance_kmitl.model_cheque_register_assign_numbers
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_tree
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_assign_numbers_form
+#, python-format
+msgid "Number a Run of Cheques"
+msgstr "ไล่เลขเช็คทั้งชุด"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_tree
+#, python-format
+msgid "Number the Cheques"
+msgstr "ไล่เลขเช็ค"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_assign_numbers_form
+msgid "Number Them"
+msgstr "ไล่เลขให้"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#, python-format
+msgid ""
+"Numbers run within one cheque book. This selection spans %s, so number "
+"them one book at a time."
+msgstr "เลขเช็คไล่กันภายในเล่มเดียว รายการที่เลือกคร่อม %s กรุณาไล่เลขทีละเล่ม"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/bank_payment_export.py:0
@@ -1234,6 +1294,11 @@ msgid "Put them in"
 msgstr "นำเข้า"
 
 #. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__account_payment__finance_state_cheque__confirmed
+msgid "Ready to Write the Cheque"
+msgstr "พร้อมออกเช็ค"
+
+#. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register_cancel__reason
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_cancel_form
 msgid "Reason"
@@ -1264,6 +1329,16 @@ msgstr "จำนวนแถว"
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_create_line__payment_export_count
 msgid "Rows already in it"
 msgstr "แถวที่มีอยู่แล้ว"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_assign_numbers_form
+msgid ""
+"Say where the run starts and the rest are counted on from it,\n           "
+"         in the order the cheques were made. The paper decides — check\n  "
+"                  the last number below against the book in your hand."
+msgstr ""
+"ระบุว่าชุดนี้เริ่มที่เลขอะไร ที่เหลือจะไล่ต่อให้ตามลำดับที่สร้าง "
+"กระดาษเป็นตัวตัดสิน — ตรวจเลขใบสุดท้ายด้านล่างกับเล่มเช็คในมือก่อนกด"
 
 #. module: finance_kmitl
 #: model:ir.ui.menu,name:finance_kmitl.menu_payment_settings
@@ -1417,6 +1492,25 @@ msgid ""
 msgstr ""
 "ค่าเหล่านี้ได้จากการวัดกับกระดาษเช็คจริง ไม่ใช่อ่านจากสเปก "
 "ให้ลองพิมพ์เช็คหนึ่งใบ วัดด้วยไม้บรรทัด แล้วมาแก้ระยะที่นี่"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#, python-format
+msgid ""
+"These cheques have already been issued, so their numbers are printed on "
+"paper and cannot be reassigned: %s."
+msgstr "เช็คเหล่านี้ออกไปแล้ว เลขที่จึงพิมพ์อยู่บนกระดาษและกำหนดใหม่ไม่ได้: %s"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/wizards/cheque_register_assign_numbers.py:0
+#, python-format
+msgid ""
+"These numbers have already been spent out of this book: %s. A spent "
+"number is never handed to a second payee, so start the run somewhere else."
+msgstr ""
+"เลขเหล่านี้ถูกใช้ไปแล้วจากเล่มนี้: %s "
+"เลขที่ถูกใช้แล้วไม่นำกลับมาจ่ายให้ผู้รับรายที่สอง "
+"กรุณาเริ่มไล่เลขจากจุดอื่น"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/account_payment.py:0
@@ -1647,6 +1741,11 @@ msgstr ""
 "ไม่ได้บอกว่าใครเป็นผู้รับเงิน"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "ยืนยันพร้อมออกเช็ค"
+msgstr ""
+
+#. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__inbound
 #: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_inbound
 msgid "รับเงิน"
@@ -1698,4 +1797,3 @@ msgid ""
 "— a guess from the last one used. Overtype it if the\n                    "
 "        paper says otherwise."
 msgstr "— เดาจากเลขล่าสุดที่ใช้ไป ถ้ากระดาษไม่ตรง ให้พิมพ์ทับได้เลย"
-

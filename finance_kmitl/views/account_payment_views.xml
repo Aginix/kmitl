@@ -47,9 +47,20 @@
                     string="ยืนยันพร้อมส่งธนาคาร"
                     type="object"
                     class="oe_highlight"
-                    attrs="{'invisible': [('finance_state', '!=', 'draft')]}"
+                    attrs="{'invisible': ['|', ('finance_state', '!=', 'draft'), ('is_cheque_payment', '=', True)]}"
                     groups="finance_kmitl.group_finance_kmitl_user_out"
                     data-hotkey="v"
+                />
+                <!-- The same press, said without the bank. It freezes the money
+                     side and numbers the voucher exactly as above; what follows it
+                     is a cheque rather than a file. -->
+                <button
+                    name="action_confirm_for_bank"
+                    string="ยืนยันพร้อมออกเช็ค"
+                    type="object"
+                    class="oe_highlight"
+                    attrs="{'invisible': ['|', ('finance_state', '!=', 'draft'), ('is_cheque_payment', '=', False)]}"
+                    groups="finance_kmitl.group_finance_kmitl_user_out"
                 />
                 <!-- Cash only, by the time the other two are accounted for: a
                      transfer is confirmed by closing the file that carried it and
@@ -140,12 +151,26 @@
 
             <!-- The status bar on this form is the finance office's own lifecycle.
                  The accounting office's status is shown beside it, read-only: their
-                 work happens on the journal entry, not here. -->
+                 work happens on the journal entry, not here.
+
+                 Two bars over one lifecycle, because a cheque goes to no bank and
+                 "Confirmed for the Bank" names an errand nobody runs for it. The
+                 cheque bar also splits Confirmed in two — the cheque still to be
+                 written, and the cheque written and waiting to be collected — which
+                 the voucher rightly holds as one state and an officer working the
+                 paper rightly keeps apart. -->
             <xpath expr="//field[@name='state'][@widget='statusbar']" position="before">
                 <field
                     name="finance_state"
                     widget="statusbar"
                     statusbar_visible="draft,confirmed,paid"
+                    attrs="{'invisible': [('is_cheque_payment', '=', True)]}"
+                />
+                <field
+                    name="finance_state_cheque"
+                    widget="statusbar"
+                    statusbar_visible="draft,confirmed,issued,paid"
+                    attrs="{'invisible': [('is_cheque_payment', '=', False)]}"
                 />
             </xpath>
             <xpath

@@ -184,6 +184,98 @@ class TestCheque(TransactionCase):
             "the next guess is past the dead one, not back onto it",
         )
 
+    def test_a_cheque_started_by_hand_is_offered_the_guess_too(self):
+        """The batch button numbered its run and the form offered nothing, so a
+        cheque made from the cheque screen was retyped for no reason."""
+        self._issued(number="0512007")
+        later = self._make_payment()
+
+        fresh = self.Cheque.new({"payment_id": later.id})
+        fresh._onchange_payment_id()
+
+        self.assertEqual(fresh.cheque_number, "0512008")
+
+    def test_the_guess_does_not_overwrite_a_number_already_typed(self):
+        self._issued(number="0512007")
+        later = self._make_payment()
+
+        fresh = self.Cheque.new(
+            {"payment_id": later.id, "cheque_number": "0600001"}
+        )
+        fresh._onchange_payment_id()
+
+        self.assertEqual(fresh.cheque_number, "0600001")
+
+    # ------------------------------------------------------------------
+    # Numbering a whole run at once
+    # ------------------------------------------------------------------
+    def _drafts(self, count=3, paying_account=None):
+        payments = self.Payment.browse()
+        for _index in range(count):
+            payments |= self._make_payment(paying_account)
+        payments.action_create_cheques()
+        return self.Cheque.search([("payment_id", "in", payments.ids)], order="id")
+
+    def test_a_fresh_book_leaves_the_whole_run_blank(self):
+        """Nothing to guess from, which is exactly the case the run-numbering
+        wizard exists for. Asserted so the wizard's reason for being does not
+        quietly disappear."""
+        cheques = self._drafts()
+
+        self.assertEqual(cheques.mapped("cheque_number"), [False, False, False])
+
+    def test_numbering_a_run_counts_on_from_the_first(self):
+        cheques = self._drafts()
+        wizard = self.env["cheque.register.assign.numbers"].create(
+            {"cheque_ids": [(6, 0, cheques.ids)], "first_number": "0512007"}
+        )
+
+        wizard.action_assign()
+
+        self.assertEqual(
+            cheques.sorted("id").mapped("cheque_number"),
+            ["0512007", "0512008", "0512009"],
+        )
+
+    def test_the_wizard_starts_from_the_guess_when_there_is_one(self):
+        self._issued(number="0512007")
+        cheques = self._drafts(count=2)
+
+        wizard = self.env["cheque.register.assign.numbers"].create(
+            {"cheque_ids": [(6, 0, cheques.ids)]}
+        )
+
+        self.assertEqual(wizard.first_number, "0512008")
+        self.assertEqual(wizard.last_number, "0512009")
+
+    def test_a_run_may_not_land_on_a_number_already_spent(self):
+        """Caught before anything is written, and named, rather than left to the
+        database to refuse one row in from the start."""
+        self._issued(number="0512008")
+        cheques = self._drafts(count=3)
+        wizard = self.env["cheque.register.assign.numbers"].create(
+            {"cheque_ids": [(6, 0, cheques.ids)], "first_number": "0512007"}
+        )
+
+        with self.assertRaises(UserError) as caught:
+            wizard.action_assign()
+
+        self.assertIn("0512008", str(caught.exception))
+        self.assertFalse(any(cheques.mapped("cheque_number")))
+
+    def test_an_issued_cheque_is_not_renumbered(self):
+        issued = self._issued(number="0512007")
+
+        with self.assertRaises(UserError):
+            issued.action_open_assign_numbers()
+
+    def test_a_run_is_numbered_one_book_at_a_time(self):
+        first = self._drafts(count=1)
+        second = self._drafts(count=1, paying_account=self.book_two)
+
+        with self.assertRaises(UserError):
+            (first | second).action_open_assign_numbers()
+
     # ------------------------------------------------------------------
     # What may be written for, and how many
     # ------------------------------------------------------------------
@@ -361,6 +453,30 @@ class TestCheque(TransactionCase):
 
         with self.assertRaises(UserError):
             cheque._cancel("bounced")
+
+    # ------------------------------------------------------------------
+    # What the statusbar says
+    # ------------------------------------------------------------------
+    def test_the_cheque_statusbar_splits_what_the_voucher_holds_as_one(self):
+        """A cheque voucher is `confirmed` both before the paper is written and
+        while it sits signed in a drawer. The voucher is right to hold those as
+        one state; a bar an officer works from is not."""
+        payment = self._make_payment()
+        self.assertEqual(payment.finance_state_cheque, "confirmed")
+
+        cheque = self._write_cheque(payment)
+        self.assertEqual(
+            payment.finance_state_cheque,
+            "confirmed",
+            "a cheque made but not yet written on is still 'to be written'",
+        )
+
+        cheque.action_issue()
+        self.assertEqual(payment.finance_state, "confirmed")
+        self.assertEqual(payment.finance_state_cheque, "issued")
+
+        cheque.action_hand_over()
+        self.assertEqual(payment.finance_state_cheque, "paid")
 
     # ------------------------------------------------------------------
     # Withholding tax

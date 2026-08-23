@@ -17,11 +17,22 @@
                 decoration-success="state == 'paid'"
             >
                 <header>
+                    <!-- First, because it is the first thing done to a fresh run:
+                         the guess chains off the last number spent, so it has
+                         nothing to offer the first cheque out of a new book — and
+                         therefore nothing to offer any of them, that first time. -->
+                    <button
+                        name="action_open_assign_numbers"
+                        type="object"
+                        string="Number the Cheques"
+                        class="btn-primary"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"
+                    />
                     <button
                         name="action_issue"
                         type="object"
                         string="Issue"
-                        class="btn-primary"
+                        class="btn-secondary"
                         groups="finance_kmitl.group_finance_kmitl_user_out"
                     />
                     <button
@@ -47,7 +58,7 @@
                     name="cheque_number"
                     attrs="{'readonly': [('state', '!=', 'draft')]}"
                 />
-                <field name="next_cheque_number" readonly="1" optional="hide" />
+                <field name="next_cheque_number" readonly="1" optional="show" />
                 <field
                     name="cheque_date"
                     attrs="{'readonly': [('state', '!=', 'draft')]}"

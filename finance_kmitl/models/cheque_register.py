@@ -264,6 +264,61 @@ class ChequeRegister(models.Model):
                 cheque.cheque_book_id
             )
 
+    @api.onchange("payment_id")
+    def _onchange_payment_id(self):
+        """Offer the guess on a cheque somebody is filling in by hand.
+
+        ``action_create_cheques`` numbers the run it makes, but a cheque started
+        from this form got nothing, so the officer retyped a number the system
+        could have proposed. A book nothing has been drawn on yet still proposes
+        nothing — there is no paper to guess from, and that first number is what
+        the run-numbering wizard is for.
+        """
+        for cheque in self:
+            if cheque.cheque_number:
+                continue
+            cheque.cheque_number = self._next_number_for_book(cheque.cheque_book_id)
+
+    def action_open_assign_numbers(self):
+        """Number a whole run from one starting number.
+
+        The guess chains off the last number spent, so it has nothing to say
+        about the first cheque out of a fresh book — and therefore nothing to say
+        about any of them, the first time. This is where the officer says where
+        the run starts, once.
+        """
+        self._check_numberable()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Number the Cheques"),
+            "res_model": "cheque.register.assign.numbers",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_cheque_ids": [(6, 0, self.ids)]},
+        }
+
+    def _check_numberable(self):
+        """A run is numbered while it is still paper nobody has written on."""
+        issued = self.filtered(lambda cheque: cheque.state != "draft")
+        if issued:
+            raise UserError(
+                _(
+                    "These cheques have already been issued, so their numbers are "
+                    "printed on paper and cannot be reassigned: %s."
+                )
+                % ", ".join(issued.mapped("display_name"))
+            )
+        books = self.mapped("cheque_book_id")
+        if len(books) > 1:
+            raise UserError(
+                _(
+                    "Numbers run within one cheque book. This selection spans "
+                    "%s, so number them one book at a time."
+                )
+                % ", ".join(books.mapped("display_name"))
+            )
+        return True
+
     # ------------------------------------------------------------------
     # Housekeeping
     # ------------------------------------------------------------------
