@@ -28,12 +28,15 @@
                 <group string="Target" attrs="{'invisible': [('needs_target', '=', False)]}">
                     <field name="target_mode"/>
                     <field name="target_position_id"
-                           attrs="{'invisible': [('target_mode', '!=', 'position')]}"/>
+                           attrs="{'invisible': [('target_mode', '!=', 'position')]}"
+                           options="{'no_open': True, 'no_create': True, 'no_edit': True}"/>
                     <field name="target_employee_id"
-                           attrs="{'invisible': [('target_mode', '!=', 'person')]}"/>
+                           attrs="{'invisible': [('target_mode', '!=', 'person')]}"
+                           options="{'no_open': True, 'no_create': True, 'no_edit': True}"/>
                     <field name="target_department_id"
-                           attrs="{'invisible': [('target_mode', '!=', 'unit')]}"/>
-                    <field name="new_verb" attrs="{'invisible': [('disposition', '!=', 'direct')]}"/>
+                           attrs="{'invisible': [('target_mode', '!=', 'unit')]}"
+                           options="{'no_open': True, 'no_create': True, 'no_edit': True}"/>
+                    <field name="new_verb" widget="selection" attrs="{'invisible': [('disposition', '!=', 'direct')]}"/>
                     <field name="new_for_info" attrs="{'invisible': [('disposition', '!=', 'direct')]}"/>
                 </group>
                 <group string="Return to" attrs="{'invisible': [('is_return', '=', False)]}">
