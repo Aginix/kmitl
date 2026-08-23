@@ -303,6 +303,11 @@ msgid "Banks"
 msgstr "รายชื่อธนาคาร"
 
 #. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_banking
+msgid "Banking"
+msgstr "ธนาคาร"
+
+#. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__cheque_register__state__bounced
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
@@ -587,6 +592,11 @@ msgstr "ทิศทาง"
 #: model:ir.model.fields.selection,name:l10n_th_bank_payment_export.selection__bank_payment_export__state__draft
 msgid "Draft"
 msgstr "ร่าง"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_document_templates
+msgid "Document Templates"
+msgstr "รูปแบบเอกสาร"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_create_line__payment_export_id
@@ -1057,13 +1067,25 @@ msgid "Payment Subjects"
 msgstr "เรื่องที่จ่าย"
 
 #. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_data
+msgid "Payment Data"
+msgstr "ข้อมูลการจ่าย"
+
+#. module: finance_kmitl
 #: model:ir.actions.act_window,name:finance_kmitl.action_kmitl_payment_type
 #: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_types
 msgid "Payment Types (KMITL)"
 msgstr "ประเภทการจ่ายเงิน (KMITL)"
 
 #. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_finance_payment_out
+msgid "Payment Out"
+msgstr "การเงินจ่าย"
+
+#. module: finance_kmitl
+#: model:ir.actions.act_window,name:finance_kmitl.action_account_payment_outbound
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_create_line__payment_ids
+#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_outbound
 msgid "Payment Vouchers"
 msgstr "ใบสำคัญจ่าย"
 
@@ -1143,6 +1165,11 @@ msgid "Rejected"
 msgstr "ตีกลับ"
 
 #. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_finance_reports
+msgid "Reports"
+msgstr "รายงาน"
+
+#. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
 msgid "Reset to Draft"
 msgstr "กลับเป็นร่าง"
@@ -1166,7 +1193,7 @@ msgstr "กรุณาเลือกสมุดเช็ค (สมุดร�
 #. module: finance_kmitl
 #: model:ir.ui.menu,name:finance_kmitl.menu_payment_settings
 msgid "Settings"
-msgstr "ตั้งค่า"
+msgstr "การตั้งค่า"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
@@ -1395,7 +1422,7 @@ msgstr "หัก ณ ที่จ่าย"
 #. module: finance_kmitl
 #: model:ir.ui.menu,name:finance_kmitl.menu_withholding_tax_cert
 msgid "Withholding Tax Certificates"
-msgstr "หนังสือรับรองหัก ณ ที่จ่าย (ทวิ 50)"
+msgstr "หนังสือรับรองหัก ณ ที่จ่าย"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
@@ -1438,10 +1465,14 @@ msgstr "ไฟล์ e-Payment"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/bank_payment_export.py:0
-#: model:ir.ui.menu,name:finance_kmitl.menu_bank_payment_export
 #, python-format
 msgid "e-Payment Files"
 msgstr "ไฟล์ e-Payment"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_bank_payment_export
+msgid "e-Payment Register"
+msgstr "ทะเบียน e-Payment"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_confirm_view_form
@@ -1450,7 +1481,6 @@ msgstr "เช่น PV/2026/00014 โอนไม่สำเร็จ บั�
 
 #. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__outbound
-#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_outbound
 msgid "จ่ายเงิน"
 msgstr ""
 
@@ -1472,7 +1502,6 @@ msgstr ""
 
 #. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__inbound
-#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_inbound
 msgid "รับเงิน"
 msgstr ""
 

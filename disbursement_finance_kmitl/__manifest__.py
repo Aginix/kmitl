@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement ↔ KMITL Finance Bridge",
-    "version": "16.0.5.2.0",
+    "version": "16.0.5.3.0",
     "category": "KMITL/Finance",
     "summary": "DR ↔ Payment: post-bill payment-execution workflow "
     "(audit → authorize → pay → clear), payee-level paying account, WHT, "
@@ -22,8 +22,10 @@
         "security/ir.model.access.csv",
         "data/mail_activity_type.xml",
         "data/disbursement_payment_line_tracking.xml",
-        "views/disbursement_request_views.xml",
+        # Queue views first: they define the Approver (ผู้อนุมัติ) menu that the
+        # request views hang the authorized-history menu off.
         "views/disbursement_queue_views.xml",
+        "views/disbursement_request_views.xml",
         "views/bank_payment_export_views.xml",
     ],
     "assets": {

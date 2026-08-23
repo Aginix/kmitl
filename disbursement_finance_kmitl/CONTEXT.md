@@ -17,6 +17,14 @@ They use different vocabulary and different security groups.
 Round 2 deliberately uses the verbs **audit** and **authorize** so it never collides
 with round 1's verify/approve.
 
+The two rounds also live in **different apps**: round 1 in **การขอเบิก**, which is the
+requesting unit's, and round 2 in **การเงิน**, which is the treasury office's. An app
+here answers _whose desk is this_, not _which document is this_ — see
+[`finance_kmitl` ADR-0005](../finance_kmitl/docs/adr/0005-the-finance-app-is-the-treasury-offices-house.md).
+Within การเงิน the two round-2 steps are separated the same way: the audit is a clerk's
+step in the paying run and sits with it under **การเงินจ่าย**, while the authorisation
+gets its own **ผู้อนุมัติ** heading.
+
 ## Words that describe a payment, and which one means what
 
 Five records sit near a payment and three of them have "type" or "subject" in their
@@ -74,6 +82,12 @@ overwrite the account the person just picked.
   เรื่องที่จ่าย that gives every payee its paying account. It is the **only** checkpoint
   on the banking coordinates — the finance office has none of its own, so a coordinate
   that is wrong after this is corrected on the voucher itself.
+- **ตราผู้กระทำรอบ 2 / Round-2 stamps** (`payment_auditor_id`, `payment_audit_date`,
+  `payment_authorizer_id`, `payment_authorize_date`): who took each round-2 step and
+  when, recorded the way round 1 records its two approvals. Round 2 left the answer in
+  the chatter alone, which is not something a list can be built on — and the
+  authorizer's own history (**รายการที่อนุมัติแล้ว**) has to stand on the stamp rather
+  than the state, or a request would drop out of it the moment it is paid.
 - **Payment Authorization** (`action_authorize`,
   `payment_audited → payment_authorized`): the rector's delegate authorises the money to
   be paid, and that press is also what **raises the vouchers** — one `account.payment`

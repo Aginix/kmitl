@@ -14,7 +14,9 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   Held by the two offices **in turn**, not shared: the finance office prepares it, sends
   it to the bank and vouches for the outcome; the accounting office books it. A
   **รายการ**จ่ายเงิน is not one of these — that is the payee-level row on a disbursement
-  request. Never call a voucher "รายการจ่ายเงิน".
+  request. Never call a voucher "รายการจ่ายเงิน". The **menu** that opens the list of
+  them is spelled **ใบสำคัญจ่าย**, because that is what the office calls the list;
+  a document is still an ใบจ่ายเงิน, and its number is still a ใบสำคัญจ่าย number.
 
 - **ฝั่งเงิน / Money side**: the facts the bank acted on — amount, payee, the payee's
   bank account, the paying account (หัวจ่าย), currency, payment and partner type,
@@ -99,7 +101,8 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   request whose payees span four paying accounts produces four files. _Avoid_:
   "ส่งออกรายการจ่ายเงิน" — it steps on **รายการจ่ายเงิน**, which names the row on a
   disbursement request. Also avoid "PE": that is the prefix its number happens to carry,
-  not a name for the thing.
+  not a name for the thing. The **menu** is **ทะเบียน e-Payment**: the register is the
+  list, a file is one record in it — the same pair as ทะเบียนคุมเช็ค and a cheque.
 
 - **สถานะของไฟล์ e-Payment** (`bank.payment.export.state`), and what each one actually
   claims — the distinction matters because none of them is told by a bank:

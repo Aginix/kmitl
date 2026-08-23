@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <!-- DR action for finance queue (requests authorized and awaiting payment) -->
+    <!-- Every request the accounting office has billed, whatever stage it has
+         reached since. Not a queue — the two steps that are work have queues of
+         their own (ตรวจสอบการเบิกจ่าย, อนุมัติเบิกจ่าย). This is where the finance
+         office looks a request up and follows it, so it opens unfiltered and
+         stops at the point the request became theirs. -->
     <record id="action_disbursement_request_finance" model="ir.actions.act_window">
         <field name="name">Disbursement Requests</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{"search_default_payment_authorized": 1}</field>
+        <field
+            name="domain"
+        >[('state', 'in', ('bills_posted', 'payment_audited', 'payment_authorized', 'paid', 'cleared'))]</field>
+        <field name="context">{'create': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                ไม่มีใบขอเบิกที่รอทำการจ่ายเงิน
+                ยังไม่มีใบขอเบิกที่ตั้งหนี้แล้ว
             </p>
             <p>
-                ใบขอเบิกที่ได้รับอนุมัติเบิกจ่ายแล้ว รอเจ้าหน้าที่การเงินสร้างใบจ่าย/ส่งธนาคาร
+                ใบขอเบิกจะมาปรากฏที่นี่เมื่อบัญชีตั้งหนี้เสร็จ และอยู่ต่อไปตลอดจนล้างหนี้
             </p>
         </field>
     </record>
@@ -21,9 +28,44 @@
     <menuitem
         id="menu_finance_disbursement_request"
         name="Disbursement Requests"
-        parent="finance_kmitl.menu_payment_root"
+        parent="finance_kmitl.menu_finance_payment_out"
         action="action_disbursement_request_finance"
-        sequence="5"
+        sequence="10"
+        groups="finance_kmitl.group_finance_kmitl_user_out"
+    />
+
+    <!-- The authorizer's own history. Keyed off the stamp rather than the state,
+         so a request stays here after it is paid and cleared, and so "ที่ฉันอนุมัติ"
+         can be asked at all. The state leg covers the requests authorized before
+         the stamp existed. -->
+    <record
+        id="action_disbursement_payment_authorized"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Authorized for Payment</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field
+            name="domain"
+        >['|', ('payment_authorizer_id', '!=', False), ('state', 'in', ('payment_authorized', 'paid', 'cleared'))]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ยังไม่มีใบขอเบิกที่อนุมัติเบิกจ่ายแล้ว
+            </p>
+            <p>
+                รายการนี้เก็บประวัติใบขอเบิกที่ผ่านการอนุมัติเบิกจ่าย และอยู่ต่อไปหลังจ่ายเงินและล้างหนี้แล้ว
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_finance_payment_authorized"
+        name="รายการที่อนุมัติแล้ว"
+        parent="menu_finance_approver"
+        action="action_disbursement_payment_authorized"
+        sequence="20"
+        groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"
     />
 
     <!-- Tree: colour the badge for the new payment-execution states -->
@@ -69,6 +111,20 @@
                     name="cleared"
                     domain="[('state', '=', 'cleared')]"
                 />
+                <separator />
+                <filter
+                    string="Audited by Me"
+                    name="my_payment_audits"
+                    domain="[('payment_auditor_id', '=', uid)]"
+                />
+                <filter
+                    string="Authorized by Me"
+                    name="my_payment_authorizations"
+                    domain="[('payment_authorizer_id', '=', uid)]"
+                />
+            </xpath>
+            <xpath expr="//field[@name='source_analytic_id']" position="after">
+                <field name="payment_authorizer_id" />
             </xpath>
         </field>
     </record>
@@ -263,6 +319,27 @@
                                 }"
                             />
                             <field name="payment_auto_match" readonly="1" />
+                        </group>
+                        <!-- Who took each round-2 step. Shown only once taken, so
+                             the group stays out of the way while the request is
+                             still being audited. -->
+                        <group>
+                            <field
+                                name="payment_auditor_id"
+                                attrs="{'invisible': [('payment_auditor_id', '=', False)]}"
+                            />
+                            <field
+                                name="payment_audit_date"
+                                attrs="{'invisible': [('payment_auditor_id', '=', False)]}"
+                            />
+                            <field
+                                name="payment_authorizer_id"
+                                attrs="{'invisible': [('payment_authorizer_id', '=', False)]}"
+                            />
+                            <field
+                                name="payment_authorize_date"
+                                attrs="{'invisible': [('payment_authorizer_id', '=', False)]}"
+                            />
                         </group>
                     </group>
                     <field name="payment_line_ids" nolabel="1">
