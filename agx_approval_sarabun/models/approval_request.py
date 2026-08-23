@@ -62,7 +62,8 @@ class ApprovalRequest(models.Model):
         return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):
-        # อนุมัติ → คำขอได้รับอนุมัติแล้ว
+        # อนุมัติ → คำขอได้รับอนุมัติแล้ว. สถานะ approved คือช่วงบันทึกผลค่าใช้จ่ายจริง
+        # ในตัว (is_actual_editable) — ผู้สร้างกรอกได้เลยทันที ไม่มีปุ่มคั่น
         self.state = "approved"
         return super()._on_sarabun_completed(document)
 
