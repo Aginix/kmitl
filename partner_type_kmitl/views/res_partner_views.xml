@@ -17,7 +17,7 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//span[@name='address_name']" position="after">
-                <span class="o_form_label o_td_label" name="address_name_aginix">
+                <span class="o_form_label o_td_label" name="address_name_kmitl">
                     <field name="type" invisible="1"/>
                     <b>Address</b>
                 </span>
@@ -25,7 +25,7 @@
             <xpath expr="//span[@name='address_name']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//notebook" position="before">            
+            <xpath expr="//notebook" position="before">
                 <group name="attachment" string="Attachment for Vendor">
                     <field name="attachment_ids" widget="many2many_binary" />
                 </group>

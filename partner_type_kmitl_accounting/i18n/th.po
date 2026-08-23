@@ -1,0 +1,28 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* partner_type_kmitl_accounting
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: partner_type_kmitl_accounting
+#: model:ir.model.fields,field_description:partner_type_kmitl_accounting.field_res_partner_type__property_account_payable_id
+msgid "Account Payable"
+msgstr "บัญชีเจ้าหนี้"
+
+#. module: partner_type_kmitl_accounting
+#: model:ir.model.fields,field_description:partner_type_kmitl_accounting.field_res_partner_type__property_account_receivable_id
+msgid "Account Receivable"
+msgstr "บัญชีลูกหนี้"
+
+#. module: partner_type_kmitl_accounting
+#: model_terms:ir.ui.view,arch_db:partner_type_kmitl_accounting.res_partner_type_form_accounting
+msgid "Accounting Settings"
+msgstr "รายการบัญชี"

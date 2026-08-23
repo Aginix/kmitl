@@ -46,10 +46,10 @@ class ApprovalRequestParticipant(models.Model):
             category = record.request_id.category_id
             types = self.env["res.partner.type"]
             if category.allow_internal_partner:
-                types |= self.env.ref("partner_type_aginix.partner_type_employee")
+                types |= self.env.ref("partner_type_kmitl.partner_type_employee")
             if category.allow_external_partner:
-                types |= self.env.ref("partner_type_aginix.partner_type_other")
-                types |= self.env.ref("partner_type_aginix.partner_type_company")
+                types |= self.env.ref("partner_type_kmitl.partner_type_other")
+                types |= self.env.ref("partner_type_kmitl.partner_type_company")
             if category.allow_student_partner:
-                types |= self.env.ref("partner_type_aginix.partner_type_student")
+                types |= self.env.ref("partner_type_kmitl.partner_type_student")
             record.allowed_partner_type_ids = types

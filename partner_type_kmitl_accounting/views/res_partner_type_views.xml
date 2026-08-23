@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_partner_type_form_accounting" model="ir.ui.view">
+        <field name="name">res.partner.type.form.accounting</field>
+        <field name="model">res.partner.type</field>
+        <field name="inherit_id" ref="partner_type_kmitl.res_partner_type_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group name="accounting_settings" string="Accounting Settings">
+                    <group>
+                        <field name="property_account_receivable_id"/>
+                        <field name="property_account_payable_id"/>
+                        <field name="wht_tax_id"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_res_partner_type_accounting"
+        name="Partner Type"
+        parent="account.menu_finance_configuration"
+        action="partner_type_kmitl.action_res_partner_type"
+        sequence="50"
+    />
+
+</odoo>

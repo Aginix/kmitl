@@ -30,13 +30,6 @@
                             <field name="company_type"/>
                         </group>
                     </group>
-                    <group name="accounting_settings" string="Accounting Settings">
-                        <group>
-                            <field name="property_account_receivable_id"/>
-                            <field name="property_account_payable_id"/>
-                            <field name="wht_tax_id"/>
-                        </group>
-                    </group>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
@@ -79,7 +72,7 @@
     <menuitem
         id="menu_res_partner_type"
         name="Partner Type"
-        parent="purchase.menu_purchase_config"
+        parent="base.menu_custom"
         action="action_res_partner_type"
         sequence="10"
     />
