@@ -10,6 +10,7 @@
     "installable": True,
     "assets": {
         "web.assets_backend": [
+            "web_richtext_sticky_toolbar/static/src/js/wysiwyg_patch.js",
             "web_richtext_sticky_toolbar/static/src/js/html_field_patch.js",
             "web_richtext_sticky_toolbar/static/src/scss/sticky_toolbar.scss",
         ],

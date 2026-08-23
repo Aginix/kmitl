@@ -10,6 +10,7 @@ HtmlField.extractProps = (args) => {
     if (attrs.options.stickyToolbar) {
         props.wysiwygOptions.autohideToolbar = false;
         props.wysiwygOptions.stickyToolbar = true;
+        props.wysiwygOptions.allowCommandJustify = true;
     }
     return props;
 };
