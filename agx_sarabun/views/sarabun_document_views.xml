@@ -111,7 +111,7 @@
                         </group>
                     </group>
                     <group name="header"
-                           attrs="{'invisible': [('state', '=', 'completed')]}">
+                           attrs="{'invisible': [('state', '!=', 'draft')]}">
                         <field name="subject" placeholder="เรื่อง..."
                                attrs="{'readonly': [('is_editable', '=', False)]}"/>
                         <field name="addressee_prefix_id" nolabel="1" widget="selection" required="1"
@@ -135,10 +135,10 @@
                     <field name="include_content"
                            attrs="{'invisible': ['|', ('origin_model', '=', False), ('state', '!=', 'draft')], 'readonly': [('is_editable', '=', False)]}"/>
                     <separator string="เนื้อหา (Content)"
-                               attrs="{'invisible': [('include_content', '=', False)]}"/>
+                               attrs="{'invisible': ['|', ('include_content', '=', False), ('state', '!=', 'draft')]}"/>
                     <field name="content" nolabel="1" class="o_sarabun_content"
                            placeholder="พิมพ์เนื้อหาหนังสือ..."
-                           attrs="{'invisible': [('include_content', '=', False)], 'readonly': [('is_editable', '=', False)]}"/>
+                           attrs="{'invisible': ['|', ('include_content', '=', False), ('state', '!=', 'draft')], 'readonly': [('is_editable', '=', False)]}"/>
                     <group>
                       <field name="remark" placeholder="หมายเหตุภายใน (ไม่บังคับ)..." attrs="{'readonly': [('is_editable', '=', False)]}"/>
                     </group>

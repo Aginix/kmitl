@@ -32,6 +32,11 @@ class SarabunRoutingStep(models.Model):
     _order = "order, id"
     _inherit = ["mail.thread"]
 
+    name = fields.Char(
+        compute="_compute_name", store=True,
+        help="Human-readable label used in dropdowns (e.g. resume_step_id picker).",
+    )
+
     document_id = fields.Many2one(
         "sarabun.document", required=True, ondelete="cascade", index=True
     )
@@ -244,6 +249,16 @@ class SarabunRoutingStep(models.Model):
         return super().unlink()
 
     # ------------------------------------------------------------------ computes
+    @api.depends("order", "verb.name", "target_name")
+    def _compute_name(self):
+        for step in self:
+            parts = [p for p in (
+                str(step.order) if step.order else None,
+                step.verb.name,
+                step.target_name,
+            ) if p]
+            step.name = " — ".join(parts) if parts else _("Step")
+
     @api.depends("verb.gating", "for_info")
     def _compute_gating(self):
         for step in self:
