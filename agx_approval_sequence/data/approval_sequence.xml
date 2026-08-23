@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <!-- Reconfigure agx_approval's existing sequence (code "approval.request")
+             to AR/{ปีงบ พ.ศ. 4 หลัก}/{เลขที่}, reset per fiscal year. Same record,
+             same code — only the format changes; the timing change (minted at
+             submission, not creation) lives in models/approval_request.py. -->
+        <record id="agx_approval.seq_approval_request" model="ir.sequence">
+            <field name="prefix">AR/%(year_be)s/</field>
+            <field name="padding">4</field>
+            <field name="implementation">no_gap</field>
+            <field name="use_date_range" eval="True"/>
+        </record>
+    </data>
+</odoo>

@@ -705,7 +705,7 @@ class ApprovalRequest(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if vals.get("name", "/") == "/":
+            if vals.get("name", "/") == "/" and self._mint_name_on_create():
                 vals["name"] = self.env["ir.sequence"].next_by_code(
                     "approval.request"
                 ) or "/"
@@ -715,6 +715,13 @@ class ApprovalRequest(models.Model):
             if rec.budget_commitment_id:
                 rec._log_budget_commitment_linked()
         return records
+
+    @api.model
+    def _mint_name_on_create(self):
+        """No-op hook: by default the running number is minted at creation.
+        agx_approval_sequence overrides this to mint the number at submission
+        (action_to_verify) instead, so it can stamp it with the ปีงบประมาณ."""
+        return True
 
     def _log_budget_commitment_linked(self):
         link = f"/web#id={self.id}&model={self._name}&view_type=form"
