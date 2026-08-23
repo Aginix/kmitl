@@ -34,6 +34,18 @@
                         class="btn-primary"
                         groups="finance_kmitl.group_finance_kmitl_user_out"
                     />
+                    <!-- The same move for the payees settled on paper. Beside the
+                         e-payment button and not behind a filter, because a run of
+                         cheques is picked out of this one list exactly as a run of
+                         transfers is, and which vouchers may be picked is the
+                         button's own business to say. -->
+                    <button
+                        name="action_create_cheques"
+                        type="object"
+                        string="Write Cheques"
+                        class="btn-secondary"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"
+                    />
                 </header>
                 <field name="name" string="เลขที่ใบสำคัญ" />
                 <field name="date" />

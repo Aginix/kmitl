@@ -1,7 +1,8 @@
 # CONTEXT — KMITL Finance
 
 The finance office's side of paying money out: the payment voucher, the account it is
-paid from, and the file the bank is sent.
+paid from, and the instrument that carries the money — the file the bank is sent, or the
+cheque the payee collects.
 
 Where this context ends is the point the accounting office's begins. That boundary has a
 name — the **Hand-over** — and it is documented with the phase that crosses it, in
@@ -79,7 +80,58 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
 - **ยืนยันจ่ายสำเร็จ / Confirm paid** (`confirmed → paid`): the finance office's
   assertion that the money reached the payee. It is the **Hand-over**, and it is the
   only human confirmation in the whole payment stretch — the bank's result file never
-  enters Odoo, so nothing else in the system knows.
+  enters Odoo, so nothing else in the system knows. Each way of paying makes it in the
+  place that knows: a transfer when its **ไฟล์ e-Payment** is closed, a cheque when the
+  cheque is **มอบ**, and cash on the voucher itself, which is what the press of that
+  name is left for. _Avoid_: reading it as one button on the voucher — for two of the
+  three it is not.
+
+- **เช็คจ่าย / Cheque** (`cheque.register`): one cheque, written for one voucher. What
+  the **ไฟล์ e-Payment** is to a transfer, this is to a cheque — the thing that stands
+  between the voucher being confirmed and the voucher being paid, and that carries what
+  the office does in between. The difference is arity: a file is one instruction to one
+  bank covering many payees, so it holds payees, amounts and dates of its own; a cheque
+  covers one payee, so it holds none of them and reads them off the voucher. What is its
+  own is the paper — the number, the book, the date on it, and whether it was printed,
+  collected, or died. See
+  [ADR-0006](./docs/adr/0006-a-cheque-is-the-e-payment-file-of-one-voucher.md). _Avoid_:
+  "ทะเบียนคุมเช็ค" for a single cheque — that names the list, not the document.
+
+- **เล่มเช็ค / Cheque book** (`account.payment.method.line.bank_account_id`): the
+  institute's own bank account a cheque is drawn on. Cheque numbers run without
+  repeating **within one book** and mean nothing across books, so the book is what
+  scopes both the uniqueness of a number and the guess at the next one. _Avoid_:
+  `account.journal` — a journal is a **ใบสำคัญ**, a document type, and holds no bank
+  account at all (ADR-0001).
+
+- **เลขที่เช็ค / Cheque number**: read off the pre-printed paper, never issued by Odoo.
+  What the system offers is a **guess** — one past the highest already spent in the same
+  book — and a guess that is wrong is overtyped. Nothing counts and nothing is reserved,
+  which is why a page torn out and thrown away needs no record: it costs the next guess
+  one keystroke. _Avoid_: calling it a sequence.
+
+- **ออกเช็ค / Issue** (`draft → issued`): the paper now exists, with its number and its
+  date on it. It says nothing about who has it. _Avoid_: reading it as payment.
+
+- **มอบเช็ค / Hand over** (`issued → paid`): the payee has the cheque, so the money has
+  reached them. This is the **Hand-over** for a cheque payee, and it is what closing an
+  e-payment file is for a transfer payee.
+
+- **วันที่บนเช็ค / Cheque date** (`cheque.register.cheque_date`): the day the payee may
+  present the cheque, which is the day the Revenue Department treats the income as paid —
+  so the **withholding-tax certificate is dated from it**, exactly as it is dated from an
+  e-payment file's effective date for a transfer. Frozen once the cheque is issued,
+  because it is printed on paper this system no longer controls. _Avoid_: confusing it
+  with the handover date, which has no tax effect at all: a cheque dated the 25th and
+  collected on the 30th is September's withholding either way.
+
+- **ยกเลิกเช็ค / Cancel a cheque** (`→ cancelled`): the paper is dead and this number
+  will never pay anyone. Bounced, lost, uncashed until it went out of date, drawn wrong,
+  spoiled in the printer — one state and a reason beside it, because to the register
+  every death is the same fact. The number stays spent. A cheque that had already been
+  handed over takes its voucher back to `confirmed` with it, and a replacement is written
+  on that **same** voucher: only the instrument died, not the obligation. See
+  [ADR-0007](./docs/adr/0007-a-dead-cheque-takes-its-voucher-back.md).
 
 - **ประเภทผู้รับเงิน / Payee type** (`account.payment.payee_type_id` →
   `res.partner.type`): what kind of counterparty the payee is — the category that
@@ -156,7 +208,18 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   account and never from the journal — a KMITL journal is a voucher type (ใบสำคัญ) and
   holds no bank account at all.
 - **Nothing here is told by a bank.** No result file is imported; every outcome in this
-  context is a person's word, and the exceptions are settled outside the system.
+  context is a person's word, and the exceptions are settled outside the system. This is
+  also why nothing here follows a cheque after it is handed over: which cheques are still
+  outstanding is a line in the **bank reconciliation**, and that is the accounting
+  office's paper.
+- **A cheque number, once spent, is never handed to a second payee.** A cancelled cheque
+  keeps the number it was torn off with, which is why cancelling one leaves its row
+  behind and why a voucher can end up with several — at most one of them not cancelled.
+- **The way back exists only for a cheque, and only while the entry is unposted.** The
+  phase is otherwise forward-only. A cheque is the one instrument that can fail after the
+  payee is holding it, so its death withdraws the assertion that they were paid instead
+  of being corrected downstream. Once the accounting office has posted, the money has
+  left the books too, and only their reversal can undo it (ADR-0007).
 - **Naming a dimension names everything under it.** A voucher filtered by a faculty, a
   fund or a programme is any voucher on that account _or on any account beneath it_.
   This is the same reading the routing rules use to decide who carries a voucher

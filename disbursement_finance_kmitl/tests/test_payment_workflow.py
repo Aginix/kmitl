@@ -624,11 +624,12 @@ class TestPaymentWorkflow(TransactionCase):
         with self.assertRaises(UserError):
             request.payment_ids.action_confirm_paid()
 
-    def test_a_cheque_payee_on_a_request_is_confirmed_on_itself(self):
-        """It enters no file, so there is nothing else to close. Before this, such a
-        payee had no reachable press at all once the request's own button went to
-        developer mode, and its request sat at payment_authorized forever."""
-        request = self._authorized_with_payments(self.cheque_account)
+    def test_a_cash_payee_on_a_request_is_confirmed_on_itself(self):
+        """It enters no file, so there is nothing else to close, and nothing in
+        the system records money crossing a counter. Before this, such a payee had
+        no reachable press at all once the request's own button went to developer
+        mode, and its request sat at payment_authorized forever."""
+        request = self._authorized_with_payments(self.cash_account)
         payment = request.payment_ids
         self.assertFalse(payment.needs_bank_export)
 
@@ -639,6 +640,56 @@ class TestPaymentWorkflow(TransactionCase):
         # The request handed over, and the voucher did not do it a second time.
         self.assertTrue(self._book_todos(request))
         self.assertFalse(payment.move_id.activity_ids)
+
+    def test_a_cheque_payee_on_a_request_crosses_when_the_cheque_is_handed_over(self):
+        """A cheque enters no file either, but it is not confirmed on the voucher:
+        it has a record of its own, and มอบเช็ค is that press. The request crosses
+        on the same write, through the last-voucher-paid hook (ADR-0007)."""
+        request = self._authorized_with_payments(self.cheque_account)
+        payment = request.payment_ids
+        self.assertFalse(payment.needs_bank_export)
+        with self.assertRaises(UserError):
+            payment.action_confirm_paid()
+
+        payment.action_create_cheques()
+        cheque = payment.cheque_id
+        cheque.cheque_number = "0512007"
+        cheque.action_issue()
+        # Written and printed is not collected: nothing has been asserted yet.
+        self.assertEqual(payment.finance_state, "confirmed")
+        self.assertEqual(request.state, "payment_authorized")
+
+        cheque.action_hand_over()
+
+        self.assertEqual(payment.finance_state, "paid")
+        self.assertEqual(request.state, "paid")
+        # The request handed over, and the voucher did not do it a second time.
+        self.assertTrue(self._book_todos(request))
+        self.assertFalse(payment.move_id.activity_ids)
+
+    def test_a_bounced_cheque_takes_its_voucher_back_but_not_its_request(self):
+        """The claim that this payee was paid is withdrawn; the other payees'
+        booking is not taken back off the accounting office (finance_kmitl
+        ADR-0006)."""
+        request = self._billed_request([self.payee_ktb, self.payee_other])
+        request.payment_subject_id = self.subject_fixed
+        request.action_audit()
+        request.payment_line_ids.paying_account_id = self.cheque_account
+        request.action_authorize()
+        cheques = self.env["cheque.register"]
+        for index, payment in enumerate(request.payment_ids):
+            payment.action_create_cheques()
+            payment.cheque_id.cheque_number = "05120%02d" % (index + 1)
+            payment.cheque_id.action_issue()
+            payment.cheque_id.action_hand_over()
+            cheques |= payment.cheque_id
+        self.assertEqual(request.state, "paid")
+
+        cheques[0]._cancel("bounced", replace=True)
+
+        self.assertEqual(cheques[0].payment_id.finance_state, "confirmed")
+        self.assertEqual(request.state, "paid", "the other payee still needs booking")
+        self.assertIn("1/2", request.payment_status_display)
 
     def test_the_request_crosses_when_the_last_voucher_is_cancelled(self):
         """The condition is "nothing left unpaid", and a voucher can stop being

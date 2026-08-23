@@ -142,10 +142,17 @@
             ref="finance_kmitl.view_account_payment_form_inherit"
         />
         <field name="arch" type="xml">
+            <!-- On a request, a transfer is confirmed by closing the e-payment
+                 file that carried it — one press for every payee in the file, not
+                 one press per payee. A cheque is already hidden a level up, being
+                 confirmed by the cheque's own hand-over. What is left showing here
+                 is cash, which nothing else records, and which had no reachable
+                 press at all while this was hidden for every voucher on a
+                 request. -->
             <xpath expr="//button[@name='action_confirm_paid']" position="attributes">
                 <attribute
                     name="attrs"
-                >{'invisible': ['|', ('finance_state', '!=', 'confirmed'), ('disbursement_request_id', '!=', False)]}</attribute>
+                >{'invisible': ['|', '|', ('finance_state', '!=', 'confirmed'), ('is_cheque_payment', '=', True), '&amp;', ('disbursement_request_id', '!=', False), ('needs_bank_export', '=', True)]}</attribute>
             </xpath>
             <xpath expr="//button[@name='action_confirm_paid']" position="before">
                 <field name="disbursement_request_id" invisible="1" />

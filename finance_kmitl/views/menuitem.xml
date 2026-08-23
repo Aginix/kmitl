@@ -84,6 +84,21 @@
         <field name="active" eval="False" />
     </record>
 
+    <!-- Cheques, beside the e-payment register because the two are the same job
+         for payees settled two different ways — one instruction to a bank, one
+         piece of paper to a payee. It sat at the app's root while it spanned both
+         directions; a cheque KMITL *receives* is a receipt, which receipt_kmitl
+         models with a payment method of its own, so what is left here is money
+         out and it belongs with the rest of it. -->
+    <menuitem
+        id="menu_cheque_register"
+        name="Cheques"
+        parent="menu_finance_payment_out"
+        action="action_cheque_register"
+        sequence="45"
+        groups="finance_kmitl.group_finance_kmitl_user_out"
+    />
+
     <!-- Withholding Tax Certificates: the document handed to the payee, not the
          tax and not a ภ.ง.ด. filing report. -->
     <menuitem
@@ -100,31 +115,6 @@
          queues, and which depends on this module rather than the other way
          round. -->
 
-    <!-- Cheque Control Register. Spans both directions, so it sits beside the two
-         sides rather than inside either. -->
-    <menuitem
-        id="menu_cheque_register_root"
-        name="Cheque Register"
-        parent="menu_payment_root"
-        sequence="40"
-        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_user_in"
-    />
-    <menuitem
-        id="menu_cheque_register_outbound"
-        name="Issued Cheques"
-        parent="menu_cheque_register_root"
-        action="action_cheque_register_outbound"
-        sequence="10"
-        groups="finance_kmitl.group_finance_kmitl_user_out"
-    />
-    <menuitem
-        id="menu_cheque_register_inbound"
-        name="Received Cheques"
-        parent="menu_cheque_register_root"
-        action="action_cheque_register_inbound"
-        sequence="20"
-        groups="finance_kmitl.group_finance_kmitl_user_in"
-    />
 
     <!-- Empty on purpose: Odoo hides a parent with no reachable child, so this
          stays invisible until a reporting module hangs its menus off it — the

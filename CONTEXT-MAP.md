@@ -79,8 +79,9 @@ upfront.
   them back onto the disbursement.
 - [KMITL Finance](./finance_kmitl/CONTEXT.md) — the finance office's side of paying money
   out: the **ใบจ่ายเงิน** (which _is_ an `account.move`), its **money side** / **booking
-  side** split, the finance office's own `finance_state`, and the **ไฟล์ e-Payment** one
-  bank is sent. Ends at the **Hand-over**.
+  side** split, the finance office's own `finance_state`, and the instrument that carries
+  the money — the **ไฟล์ e-Payment** one bank is sent, or the **เช็ค** one payee collects.
+  Ends at the **Hand-over**.
 - [Disbursement ↔ KMITL Finance](./disbursement_finance_kmitl/CONTEXT.md) — the
   post-bill payment-execution phase of a disbursement request (audit → authorize → pay →
   clear); owns the payee-level **รายการจ่ายเงิน** and keeps apart the several records
@@ -139,7 +140,13 @@ upfront.
   ยืนยันพร้อมส่งธนาคาร, the maker correcting the booking on the journal entry instead
   (`finance_kmitl` ADR-0002). The bank's result
   file is never imported: exceptions are settled outside the system and vouched for by the
-  single จ่ายครบ confirmation.
+  single จ่ายครบ confirmation. **How** a payee is settled decides which record carries the
+  finance office's work between confirming and paying — an **ไฟล์ e-Payment** for a
+  transfer, a **เช็ค** (`cheque.register`, one per voucher) for a cheque, and nothing at
+  all for cash (`finance_kmitl` ADR-0006). A cheque is also the one thing that can fail
+  after the payee holds it, so cancelling one takes its voucher back to `confirmed` while
+  the request stays `paid` — the only way backwards in the whole phase
+  (`finance_kmitl` ADR-0007).
 - **Disbursement → Approval (return)**: returning a `disbursement.request` at `signed`
   keeps it untouched (still `signed`, budget unchanged) and bounces the linked
   `approval.request` to `returned`; the requester corrects only the payee bank,

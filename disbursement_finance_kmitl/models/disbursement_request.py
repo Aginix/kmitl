@@ -403,6 +403,25 @@ class DisbursementRequest(models.Model):
                 )
                 % ", ".join(set(blind.mapped("paying_account_id.display_name")))
             )
+        # A cheque needs the same bank account for a different reason: it is the
+        # cheque book the paper is torn from, and it is what keeps cheque numbers
+        # from repeating. Checked here because this is the only checkpoint on the
+        # banking coordinates — after it the vouchers are raised and the finance
+        # office has nothing to fix it with but the voucher itself.
+        bookless = lines.filtered(
+            lambda line: (
+                line.payment_method_id.code == "kmitl_cheque"
+                and not line.paying_account_id.bank_account_id
+            )
+        )
+        if bookless:
+            raise UserError(
+                _(
+                    "%s names no bank account, so there is no cheque book to "
+                    "draw on. Set it in Finance ▸ Settings ▸ Paying Accounts."
+                )
+                % ", ".join(set(bookless.mapped("paying_account_id.display_name")))
+            )
         return True
 
     # ------------------------------------------------------------------
