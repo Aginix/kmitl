@@ -1,6 +1,6 @@
 import base64
 
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests.common import TransactionCase, tagged
 
 
@@ -66,11 +66,21 @@ class TestAdvancePayment(TransactionCase):
                 ],
             }
         )
+        cls.viewer = Users.create(
+            {
+                "name": "AP Viewer",
+                "login": "viewer_ap",
+                "email": "viewer@test.local",
+                "groups_id": [
+                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_viewer").id])
+                ],
+            }
+        )
         cls.loan_type = cls.env["advance.payment.loan.type"].create(
             {"name": "Test Loan Type"}
         )
         cls.banks = {}
-        for rec in (cls.manager, cls.user, cls.user2, cls.officer):
+        for rec in (cls.manager, cls.user, cls.user2, cls.officer, cls.viewer):
             cls.banks[rec.id] = cls.env["res.partner.bank"].create(
                 {"acc_number": "x-%s" % rec.id, "partner_id": rec.partner_id.id}
             )
@@ -444,3 +454,35 @@ class TestAdvancePayment(TransactionCase):
     def test_requested_by_partner_computed(self):
         ap = self._make(requested_by=self.user)
         self.assertEqual(ap.requested_by_partner_id, self.user.partner_id)
+
+    # ------------------------------------------------------------------ #
+    # record rules / ACL                                                   #
+    # ------------------------------------------------------------------ #
+
+    def test_own_cannot_read_other_borrower(self):
+        ap = self._make(self.user)
+        with self.assertRaises(AccessError):
+            ap.with_user(self.user2).read(["name"])
+        result = self.env["advance.payment"].with_user(self.user2).search(
+            [("id", "=", ap.id)]
+        )
+        self.assertFalse(result)
+
+    def test_viewer_reads_all(self):
+        ap = self._make(self.user)
+        result = ap.with_user(self.viewer).read(["name"])
+        self.assertEqual(result[0]["id"], ap.id)
+
+    def test_viewer_cannot_write_other_records(self):
+        ap = self._make(self.user)
+        with self.assertRaises(AccessError):
+            ap.with_user(self.viewer).write({"loan_reason": "x"})
+
+    def test_viewer_can_create_own(self):
+        ap = self._make(self.viewer, as_user=self.viewer)
+        self.assertEqual(ap.state, "draft")
+
+    def test_user_tier_writes_other_records(self):
+        ap = self._make(self.user)
+        ap.with_user(self.officer).write({"loan_reason": "updated by officer"})
+        self.assertEqual(ap.loan_reason, "updated by officer")

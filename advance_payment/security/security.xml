@@ -41,10 +41,10 @@
     </record>
 
     <!-- Standalone role for return-line approval (ผู้รับผิดชอบเงินยืม).
-         Independent of the tier dropdown. -->
+         No category_id → renders as an independent checkbox under "Other",
+         not part of the tier dropdown. -->
     <record id="group_advance_payment_responsible" model="res.groups">
         <field name="name">ผู้รับผิดชอบเงินยืม</field>
-        <field name="category_id" ref="module_category_advance_payment"/>
     </record>
 
     <!-- Record Rules -->
