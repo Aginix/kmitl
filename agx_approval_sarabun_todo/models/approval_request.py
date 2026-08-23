@@ -1,55 +1,23 @@
 from odoo import _, models
 
+# Todo activity types — สายสารบรรณ. helper _schedule_todo / _clear_todo และ hook
+# แบบ _<todo>_activity / _recipient / _summary สืบทอดมาจาก agx_approval_todo.
+CREATE_ENDORSEMENT_ACTIVITY = (
+    "agx_approval_sarabun_todo.mail_activity_create_endorsement"
+)
+APPROVED_FYI_ACTIVITY = "agx_approval_sarabun_todo.mail_activity_approved_fyi"
+RETURNED_ACTIVITY = "agx_approval_sarabun_todo.mail_activity_returned_edit"
+REJECTED_FYI_ACTIVITY = "agx_approval_sarabun_todo.mail_activity_rejected_fyi"
+
 
 class ApprovalRequest(models.Model):
     _inherit = "approval.request"
 
-    # =====================================================================
-    # โครงสร้าง Lifecycle-Todo (จุดต่อยอด/ทดสอบ)
-    #
-    # base.automation เป็นเพียง trigger (ประกาศบน state, แอดมินเปิด/ปิดได้) แล้ว
-    # delegate มาที่เมธอด _notify_* / _clear_* ด้านล่าง ซึ่งเป็น "ผิวสัมผัส" จริง
-    # สำหรับการทดสอบและ override. เมธอด orchestrator เรียก helper กลาง
-    # (_schedule_todo / _clear_todo) ผ่าน hook ย่อย 3 ตัวต่อ Todo หนึ่งชนิด:
-    #
-    #   _<todo>_activity()   → xmlid ของ mail.activity.type   (สลับชนิดกิจกรรม)
-    #   _<todo>_recipient()  → res.users ผู้รับ                (เปลี่ยนผู้รับมอบหมาย)
-    #   _<todo>_summary()    → ข้อความบน Todo                  (เปลี่ยนถ้อยคำ)
-    #
-    # โมดูลภายหลังจึง override เฉพาะ hook ที่ต้องการได้ โดยไม่ต้องเขียน
-    # orchestrator หรือแตะ base.automation ใหม่.
-    # =====================================================================
-
-    # -- helper กลาง -------------------------------------------------------
-    def _schedule_todo(self, activity_xmlid, summary, user=None, dedupe=True):
-        """สร้าง Todo ส่วนบุคคลจาก activity type (xmlid) ให้ ``user``.
-
-        ``dedupe`` = True → ข้าม record ที่มี Todo ชนิดนี้ค้างอยู่แล้ว (กันซ้ำ
-        เมื่อกลับเข้าสถานะเดิม). คืน recordset ของ ``mail.activity`` ที่สร้าง
-        เพื่อให้เมธอดที่ override ต่อยอด และเทสต์ assert ได้สะดวก."""
-        act_type = self.env.ref(activity_xmlid, raise_if_not_found=False)
-        activities = self.env["mail.activity"]
-        if not act_type:
-            return activities
-        for rec in self:
-            if not user:
-                continue
-            if dedupe and rec.activity_ids.filtered(
-                lambda a: a.activity_type_id == act_type
-            ):
-                continue
-            activities += rec.activity_schedule(
-                activity_xmlid, summary=summary, user_id=user.id
-            )
-        return activities
-
-    def _clear_todo(self, activity_xmlid):
-        """ล้าง Todo ชนิดนี้ทั้งหมดบน record (ทั้งที่มี/ไม่มีผู้รับ)."""
-        self.activity_unlink([activity_xmlid])
-
-    # -- 1) สร้างหนังสือเพื่อส่งขออนุมัติ (จองงบเสร็จ → to_send) -------------
+    # ---------------------------------------------------------------------
+    # สร้างหนังสือเพื่อส่งขออนุมัติ (จองงบเสร็จ → to_send)
+    # ---------------------------------------------------------------------
     def _create_endorsement_activity(self):
-        return "agx_approval_sarabun_todo.mail_activity_create_endorsement"
+        return CREATE_ENDORSEMENT_ACTIVITY
 
     def _create_endorsement_recipient(self):
         """ผู้รับ Todo สร้างหนังสือ — ค่าเริ่มต้น = ผู้สร้างคำขอ (user_id)."""
@@ -64,7 +32,7 @@ class ApprovalRequest(models.Model):
         ) % (self.name or "")
 
     def _notify_create_endorsement_todo(self):
-        """เข้าสู่ to_send → แจ้งผู้สร้างให้เข้ามาสร้างหนังสือ."""
+        """เข้าสู่ to_send → แจ้ง Todo ส่วนบุคคลให้ผู้สร้าง (user_id) สร้างหนังสือ."""
         for rec in self:
             rec._schedule_todo(
                 rec._create_endorsement_activity(),
@@ -76,12 +44,13 @@ class ApprovalRequest(models.Model):
         """ออกจาก to_send (ส่งหนังสือแล้ว → sent / ดึงกลับ / ยกเลิก) → ล้าง Todo."""
         self._clear_todo(self._create_endorsement_activity())
 
-    # -- 2) FYI เมื่อได้รับอนุมัติ (→ approved) ----------------------------
+    # ---------------------------------------------------------------------
+    # แจ้ง FYI เมื่อคำขอได้รับอนุมัติจริง (→ approved จาก to_send/sent)
+    # ---------------------------------------------------------------------
     def _approved_fyi_activity(self):
-        return "agx_approval_sarabun_todo.mail_activity_approved_fyi"
+        return APPROVED_FYI_ACTIVITY
 
     def _approved_fyi_recipient(self):
-        """ผู้รับ FYI — ค่าเริ่มต้น = ผู้สร้างคำขอ (user_id)."""
         self.ensure_one()
         return self.user_id
 
@@ -90,15 +59,72 @@ class ApprovalRequest(models.Model):
         return _("คำขออนุมัติเลขที่ %s ได้รับอนุมัติแล้ว") % (self.name or "")
 
     def _notify_approved_fyi(self):
-        """เข้าสู่ approved → แจ้ง FYI (Acknowledgement) กลับผู้สร้าง.
+        """เข้าสู่ approved จากการอนุมัติจริง → แจ้ง FYI กลับผู้สร้าง.
 
-        dedupe=False: แต่ละครั้งที่ได้รับอนุมัติ (รวมกรณีตีกลับแล้วอนุมัติใหม่)
-        ถือเป็นเหตุการณ์ที่ควรแจ้ง — และเป็น Acknowledgement จึงปิดได้ด้วย
-        'Mark as Read' รายคน ไม่ต้องมี automation ล้างให้."""
+        base.automation รัด filter_pre ไว้ที่ (to_send, sent) เท่านั้น จึงไม่ยิง
+        ตอนการเงินตีกลับจาก to_disburse กลับมา approved (นั่นเป็นคนละเรื่อง —
+        จัดการโดย agx_approval_disbursement_todo)."""
         for rec in self:
             rec._schedule_todo(
                 rec._approved_fyi_activity(),
                 rec._approved_fyi_summary(),
                 user=rec._approved_fyi_recipient(),
+                dedupe=False,
+            )
+
+    # ---------------------------------------------------------------------
+    # ตีกลับจากสารบรรณ (sent → returned): แก้ไข + ส่งหนังสือใหม่
+    # ---------------------------------------------------------------------
+    def _returned_activity(self):
+        return RETURNED_ACTIVITY
+
+    def _returned_recipient(self):
+        self.ensure_one()
+        return self.user_id
+
+    def _returned_summary(self):
+        self.ensure_one()
+        return _(
+            "คำขออนุมัติเลขที่ %s ถูกตีกลับจากการพิจารณา "
+            "กรุณาแก้ไขและส่งหนังสือใหม่"
+        ) % (self.name or "")
+
+    def _notify_returned_todo(self):
+        """เข้าสู่ returned จากการตีกลับหนังสือ (สารบรรณ) → แจ้งผู้สร้างแก้ไข.
+
+        base.automation รัด filter_pre = sent จึงไม่ชนกับกรณีตีกลับใบเบิก
+        (billed → returned) ที่ agx_approval_disbursement จัดการอยู่แล้ว."""
+        for rec in self:
+            rec._schedule_todo(
+                rec._returned_activity(),
+                rec._returned_summary(),
+                user=rec._returned_recipient(),
+            )
+
+    def _clear_returned_todo(self):
+        """ออกจาก returned (ส่งใหม่ / ยกเลิก) → ล้าง Todo."""
+        self._clear_todo(self._returned_activity())
+
+    # ---------------------------------------------------------------------
+    # แจ้ง FYI เมื่อคำขอถูกปฏิเสธ (→ rejected)
+    # ---------------------------------------------------------------------
+    def _rejected_fyi_activity(self):
+        return REJECTED_FYI_ACTIVITY
+
+    def _rejected_fyi_recipient(self):
+        self.ensure_one()
+        return self.user_id
+
+    def _rejected_fyi_summary(self):
+        self.ensure_one()
+        return _("คำขออนุมัติเลขที่ %s ถูกปฏิเสธ") % (self.name or "")
+
+    def _notify_rejected_fyi(self):
+        """เข้าสู่ rejected → แจ้ง FYI (Acknowledgement) กลับผู้สร้าง."""
+        for rec in self:
+            rec._schedule_todo(
+                rec._rejected_fyi_activity(),
+                rec._rejected_fyi_summary(),
+                user=rec._rejected_fyi_recipient(),
                 dedupe=False,
             )
