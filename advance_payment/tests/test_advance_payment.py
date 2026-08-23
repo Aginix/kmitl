@@ -42,7 +42,7 @@ class TestAdvancePayment(TransactionCase):
                 "login": "borrower_a_ap",
                 "email": "a@test.local",
                 "groups_id": [
-                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_user").id])
+                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_own").id])
                 ],
             }
         )
@@ -52,7 +52,7 @@ class TestAdvancePayment(TransactionCase):
                 "login": "borrower_b_ap",
                 "email": "b@test.local",
                 "groups_id": [
-                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_user").id])
+                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_own").id])
                 ],
             }
         )
@@ -62,7 +62,7 @@ class TestAdvancePayment(TransactionCase):
                 "login": "officer_ap",
                 "email": "officer@test.local",
                 "groups_id": [
-                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_officer").id])
+                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_user").id])
                 ],
             }
         )

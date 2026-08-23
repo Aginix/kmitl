@@ -5,47 +5,81 @@
         <field name="sequence">50</field>
     </record>
 
-    <record id="group_advance_payment_user" model="res.groups">
-        <field name="name">User</field>
+    <!-- Tier 1: borrowers who manage only their own agreements.
+         Lowest level in the own → user → manager dropdown chain. -->
+    <record id="group_advance_payment_own" model="res.groups">
+        <field name="name">Own Requests Only</field>
         <field name="category_id" ref="module_category_advance_payment"/>
         <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
     </record>
 
-    <record id="group_advance_payment_officer" model="res.groups">
-        <field name="name">Officer</field>
+    <!-- Tier 2: sees all agreements but can only write their own.
+         Implies own so the dropdown chain is Own → Viewer → User → Manager.
+         The viewer record rule below applies to perm_read only, so write/create
+         are still governed by the inherited own-only rule. -->
+    <record id="group_advance_payment_viewer" model="res.groups">
+        <field name="name">Viewer</field>
         <field name="category_id" ref="module_category_advance_payment"/>
-        <field name="implied_ids" eval="[(4, ref('group_advance_payment_user'))]"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('group_advance_payment_own')])]"/>
     </record>
 
+    <!-- Tier 3: finance staff who manage all agreements (verify, correct
+         protected fields, set bank details). Implies viewer. -->
+    <record id="group_advance_payment_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="category_id" ref="module_category_advance_payment"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('group_advance_payment_viewer')])]"/>
+    </record>
+
+    <!-- Tier 4: managers who approve, configure loan types, and cancel
+         agreements. Implies user. -->
     <record id="group_advance_payment_manager" model="res.groups">
         <field name="name">Manager</field>
         <field name="category_id" ref="module_category_advance_payment"/>
-        <field name="implied_ids" eval="[(4, ref('group_advance_payment_officer'))]"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('group_advance_payment_user')])]"/>
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
+    <!-- Standalone role for return-line approval (ผู้รับผิดชอบเงินยืม).
+         Independent of the tier dropdown. -->
     <record id="group_advance_payment_responsible" model="res.groups">
         <field name="name">ผู้รับผิดชอบเงินยืม</field>
         <field name="category_id" ref="module_category_advance_payment"/>
     </record>
 
     <!-- Record Rules -->
-    <record id="advance_payment_user_rule" model="ir.rule">
-        <field name="name">Advance Payment: User sees own records</field>
+
+    <!-- own: each borrower sees only their own agreements. -->
+    <record id="advance_payment_own_rule" model="ir.rule">
+        <field name="name">Advance Payment: own sees own records only</field>
         <field name="model_id" ref="model_advance_payment"/>
-        <field name="groups" eval="[(4, ref('group_advance_payment_user'))]"/>
+        <field name="groups" eval="[(4, ref('group_advance_payment_own'))]"/>
         <field name="domain_force">[('requested_by', '=', user.id)]</field>
     </record>
 
-    <record id="advance_payment_officer_rule" model="ir.rule">
-        <field name="name">Advance Payment: Officer sees all</field>
+    <!-- viewer: sees all records for READ; write/create/unlink remain governed
+         by the inherited own-only rule so viewers can only edit their own. -->
+    <record id="advance_payment_viewer_rule" model="ir.rule">
+        <field name="name">Advance Payment: viewer sees all (read only)</field>
         <field name="model_id" ref="model_advance_payment"/>
-        <field name="groups" eval="[(4, ref('group_advance_payment_officer'))]"/>
+        <field name="groups" eval="[(4, ref('group_advance_payment_viewer'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- user: overrides the own-only rule that user inherits via implied own. -->
+    <record id="advance_payment_user_rule" model="ir.rule">
+        <field name="name">Advance Payment: user sees all</field>
+        <field name="model_id" ref="model_advance_payment"/>
+        <field name="groups" eval="[(4, ref('group_advance_payment_user'))]"/>
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 
     <record id="advance_payment_manager_rule" model="ir.rule">
-        <field name="name">Advance Payment: Manager sees all</field>
+        <field name="name">Advance Payment: manager sees all</field>
         <field name="model_id" ref="model_advance_payment"/>
         <field name="groups" eval="[(4, ref('group_advance_payment_manager'))]"/>
         <field name="domain_force">[(1, '=', 1)]</field>

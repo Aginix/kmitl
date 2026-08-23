@@ -54,7 +54,7 @@
                     <field name="return_amount" class="oe_inline" /> บาท </div>
                 <header>
                     <field name="is_requester" invisible="1" />
-                    <field name="is_officer" invisible="1" />
+                    <field name="is_user" invisible="1" />
                     <field name="excess_amount" invisible="1" />
                     <button name="action_submit" string="ส่งคำขอ" type="object"
                         class="btn-primary"
@@ -65,10 +65,10 @@
                     <button name="action_verify" string="ยืนยันการตรวจสอบ" type="object"
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'to_verify')]}"
-                        groups="advance_payment.group_advance_payment_officer" />
+                        groups="advance_payment.group_advance_payment_user" />
                     <button name="action_reset_to_draft" string="ส่งกลับแก้ไข" type="object"
                         attrs="{'invisible': [('state', '!=', 'to_verify')]}"
-                        groups="advance_payment.group_advance_payment_officer" />
+                        groups="advance_payment.group_advance_payment_user" />
                     <button name="action_approve" string="อนุมัติ" type="object"
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'to_approve')]}"
@@ -79,7 +79,7 @@
                     <button name="action_accept_report" string="ตรวจรับรายงาน" type="object"
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'to_verify_report')]}"
-                        groups="advance_payment.group_advance_payment_officer" />
+                        groups="advance_payment.group_advance_payment_user" />
                     <button name="action_open_return_wizard" string="แจ้งคืนเงิน" type="object"
                         attrs="{'invisible': ['|', ('state', '!=', 'to_reconcile'), ('is_requester', '=', False)]}" />
                     <button name="action_confirm_donation" string="ยืนยันบริจาคส่วนเกิน"
@@ -104,7 +104,7 @@
                         <button name="action_view_payments" type="object"
                             class="oe_stat_button" icon="fa-credit-card"
                             attrs="{'invisible': [('payment_count', '=', 0)]}"
-                            groups="advance_payment.group_advance_payment_officer">
+                            groups="advance_payment.group_advance_payment_user">
                             <field name="payment_count" string="Payments" widget="statinfo" />
                         </button>
                         <button name="action_view_return_lines" type="object"
@@ -134,7 +134,7 @@
                             <field name="bank_id"
                                 domain="[('partner_id', '=', requested_by_partner_id)]"
                                 widget="selection"
-                                attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer']), '&amp;', ('state', '!=', 'draft'), ('is_officer', '=', False)]}" />
+                                attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer']), '&amp;', ('state', '!=', 'draft'), ('is_user', '=', False)]}" />
                             <field name="use_attachment_bank"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}" />
                             <field name="book_bank_filename" invisible="1" />
@@ -158,7 +158,7 @@
                             <field name="return_due_date"
                                 attrs="{
                                     'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve'])],
-                                    'readonly': ['|', ('is_officer', '=', False), ('state', 'in', ['done', 'cancel'])]
+                                    'readonly': ['|', ('is_user', '=', False), ('state', 'in', ['done', 'cancel'])]
                                 }" />
                         </group>
                         <group name="attachments" string="เอกสารแนบ">
@@ -174,7 +174,7 @@
                             attrs="{'readonly': [('state', '!=', 'in_progress')]}" />
                         <field name="return_amount" />
                         <field name="return_installment"
-                            attrs="{'readonly': ['|', ('state', 'in', ['done', 'cancel']), '&amp;', ('state', '!=', 'in_progress'), ('is_officer', '=', False)]}" />
+                            attrs="{'readonly': ['|', ('state', 'in', ['done', 'cancel']), '&amp;', ('state', '!=', 'in_progress'), ('is_user', '=', False)]}" />
                     </group>
                     <group name="amount_summary" string="สรุปยอดเงิน"
                         attrs="{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve'])]}">

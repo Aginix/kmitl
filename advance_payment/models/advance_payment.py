@@ -134,19 +134,19 @@ class AdvancePayment(models.Model):
 
     is_requester = fields.Boolean(compute="_compute_is_requester")
 
-    is_officer = fields.Boolean(compute="_compute_is_officer")
+    is_user = fields.Boolean(compute="_compute_is_user")
 
     @api.depends("requested_by")
     def _compute_is_requester(self):
         for rec in self:
             rec.is_requester = rec.requested_by == self.env.user
 
-    def _compute_is_officer(self):
-        is_officer = self.env.user.has_group(
-            "advance_payment.group_advance_payment_officer"
+    def _compute_is_user(self):
+        is_user = self.env.user.has_group(
+            "advance_payment.group_advance_payment_user"
         )
         for rec in self:
-            rec.is_officer = is_officer
+            rec.is_user = is_user
 
     reference = fields.Reference(
         selection=[("purchase.request", "Purchase Request")],
@@ -556,19 +556,19 @@ class AdvancePayment(models.Model):
         protected = self._PROTECTED_FIELDS & set(vals)
         if protected:
             is_admin = self.env.user.has_group("base.group_system")
-            is_officer = self.env.user.has_group(
-                "advance_payment.group_advance_payment_officer"
+            is_user = self.env.user.has_group(
+                "advance_payment.group_advance_payment_user"
             )
             for rec in self:
                 if rec.state == "draft" or is_admin:
                     continue
-                # Finance officer may still correct fields (ADR-0005):
+                # Finance user may still correct fields (ADR-0005):
                 #  - all material fields while in to_verify
                 #  - bank_id up to the transfer
                 editable = set()
-                if is_officer and rec.state == "to_verify":
+                if is_user and rec.state == "to_verify":
                     editable |= self._PROTECTED_FIELDS
-                if is_officer and rec.state in (
+                if is_user and rec.state in (
                     "to_verify",
                     "to_approve",
                     "waiting_transfer",
