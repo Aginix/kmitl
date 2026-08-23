@@ -222,7 +222,7 @@ class ApprovalRequest(models.Model):
         ("to_send", "รอส่งขออนุมัติ"),
         ("sent", "ส่งขออนุมัติแล้ว"),
         ("approved", "คำขอได้รับอนุมัติแล้ว"),
-        ("actual", "บันทึกค่าใช้จ่ายจริง"),
+        ("to_disburse", "รอการเงินตรวจสอบ/ส่งเบิก"),
         ("billed", "เบิกแล้ว"),
         ("returned", "ตีกลับ"),
         ("rejected", "ปฏิเสธ"),
@@ -289,7 +289,7 @@ class ApprovalRequest(models.Model):
         """
         self.ensure_one()
         if self.category_id:
-            return self.category_id.name
+            return f"[{self.name}] {self.category_id.name}"
         return super()._get_commitment_title()
 
     budget_commitment_state = fields.Selection(
@@ -454,19 +454,6 @@ class ApprovalRequest(models.Model):
         self.line_ids = False
         self.participant_ids = False
         self.description = self.category_id.default_description
-        if self.category_id:
-            self.budget_account_id = self.category_id.budget_account_id
-            distribution = {}
-            for field_name in (
-                "activity_analytic_id",
-                "department_analytic_id",
-                "fund_analytic_id",
-                "source_analytic_id",
-            ):
-                analytic = self.category_id[field_name]
-                if analytic:
-                    distribution[str(analytic.id)] = 100
-            self.analytic_distribution = distribution or False
 
     @api.model
     def _search_source_analytic_id(self, operator, value):
@@ -552,7 +539,11 @@ class ApprovalRequest(models.Model):
     def action_approve(self):
         """Internal approval fallback for installations without the Sarabun
         bridge. When agx_approval_sarabun is installed the request is approved
-        by the Sarabun document outcome instead (see _on_sarabun_completed)."""
+        by the Sarabun document outcome instead (see _on_sarabun_completed).
+
+        Once approved the request rests in ``approved``, which is itself the
+        actual-expense recording phase (is_actual_editable) — the creator fills
+        ผลค่าใช้จ่ายจริง immediately, no separate 'บันทึกค่าใช้จ่ายจริง' step."""
         for record in self:
             if record.state not in ("to_send", "sent"):
                 raise UserError(
@@ -561,22 +552,99 @@ class ApprovalRequest(models.Model):
             record.state = "approved"
         return True
 
-    def action_record_actual(self):
-        """Approved → actual: the requester comes back from the mission and
-        records the actual expense allocation before billing."""
+    def action_open_submit_finance_wizard(self):
+        """เปิด confirmation wizard สรุปข้อมูลค่าใช้จ่ายจริงให้ตรวจทานก่อนส่งให้การเงิน
+        (approved → to_disburse ผ่าน wizard.action_confirm)."""
+        self.ensure_one()
+        if self.state != "approved":
+            raise UserError(_("ส่งให้การเงินได้เฉพาะสถานะ 'คำขอได้รับอนุมัติแล้ว'"))
+        if not self.allocation_ids:
+            raise UserError(
+                _("กรุณาบันทึกค่าใช้จ่ายจริงอย่างน้อย 1 รายการก่อนส่งให้การเงิน")
+            )
+        wizard = self.env["approval.request.finance.submit.confirm"].create(
+            {"request_id": self.id}
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ส่งให้การเงินตรวจสอบ"),
+            "res_model": "approval.request.finance.submit.confirm",
+            "view_mode": "form",
+            "res_id": wizard.id,
+            "target": "new",
+        }
+
+    def action_submit_to_finance(self):
+        """approved → to_disburse: ผู้สร้างบันทึกผลค่าใช้จ่ายจริงเสร็จแล้ว ส่งต่อให้
+        การเงินเข้ามาตรวจสอบและตั้งเบิก. เมื่อพ้นสถานะ approved การแก้ไขผลค่าใช้จ่าย
+        ของผู้สร้างจะถูกปิด (ดู _compute_is_actual_editable) และเปิดปุ่มฝั่งการเงิน
+        (ตั้งเบิก/สร้างใบเบิก). เรียกผ่าน confirmation wizard."""
         for record in self:
             if record.state != "approved":
                 raise UserError(
-                    _("Only approved requests can record actual expenses.")
+                    _("Only approved requests can be sent to finance.")
                 )
-            record.state = "actual"
+            if not record.allocation_ids:
+                raise UserError(
+                    _("กรุณาบันทึกค่าใช้จ่ายจริงอย่างน้อย 1 รายการก่อนส่งให้การเงิน")
+                )
+            record.state = "to_disburse"
+        return True
+
+    def action_pull_back_from_finance(self):
+        """to_disburse → approved: ผู้สร้าง 'ดึงกลับ' คำขอจากการเงินเพื่อแก้ไข
+        ผลค่าใช้จ่ายจริงก่อนตั้งเบิก (ยังไม่มีการสร้างใบเบิก)."""
+        for record in self:
+            if record.state != "to_disburse":
+                raise UserError(
+                    _("ดึงกลับได้เฉพาะสถานะ 'รอการเงินตรวจสอบ/ส่งเบิก'")
+                )
+            record._track_set_log_message(
+                tools.plaintext2html(_("ดึงกลับจากการเงินเพื่อแก้ไขค่าใช้จ่าย"))
+            )
+            record.state = "approved"
+        return True
+
+    def action_open_finance_return_wizard(self):
+        """เปิด confirmation wizard บังคับกรอกเหตุผลก่อนตีกลับ (to_disburse →
+        approved) สำหรับฝั่งการเงิน/ผู้จัดการ."""
+        self.ensure_one()
+        if self.state != "to_disburse":
+            raise UserError(
+                _("ตีกลับได้เฉพาะสถานะ 'รอการเงินตรวจสอบ/ส่งเบิก'")
+            )
+        wizard = self.env["approval.request.finance.return.confirm"].create(
+            {"request_id": self.id}
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ตีกลับเพื่อให้แก้ไข"),
+            "res_model": "approval.request.finance.return.confirm",
+            "view_mode": "form",
+            "res_id": wizard.id,
+            "target": "new",
+        }
+
+    def _finance_return_for_edit(self, reason):
+        """to_disburse → approved: การเงิน/ผู้จัดการตีกลับให้ผู้สร้างแก้ไขผลค่าใช้จ่าย
+        ก่อนตั้งเบิก. เหตุผลถูกแนบไปกับ tracking message ของการเปลี่ยนสถานะ (ข้อความ
+        เดียวกัน) ผ่าน _track_set_log_message."""
+        self.ensure_one()
+        if self.state != "to_disburse":
+            raise UserError(
+                _("Only requests awaiting disbursement can be returned for editing.")
+            )
+        self._track_set_log_message(
+            tools.plaintext2html(_("ตีกลับเพื่อให้แก้ไข: %s") % reason)
+        )
+        self.state = "approved"
         return True
 
     def action_bill(self):
         for record in self:
-            if record.state != "actual":
+            if record.state != "to_disburse":
                 raise UserError(
-                    _("Only requests with recorded actuals can be billed.")
+                    _("Only requests awaiting disbursement can be billed.")
                 )
             record.state = "billed"
         return True
@@ -910,8 +978,11 @@ class ApprovalRequest(models.Model):
 
     @api.depends("state")
     def _compute_is_actual_editable(self):
+        # ``approved`` is the actual-expense recording phase: the creator fills
+        # ผลค่าใช้จ่ายจริง as soon as the request is approved, until it is handed
+        # to finance (to_disburse).
         for rec in self:
-            rec.is_actual_editable = rec.state == "actual"
+            rec.is_actual_editable = rec.state == "approved"
 
     def _compute_is_correction(self):
         # Base has no return-correction mode; bridges override this.

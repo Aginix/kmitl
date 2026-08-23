@@ -21,6 +21,7 @@
         "security/ir.model.access.csv",
         "wizard/approval_request_exception_confirm_view.xml",
         "wizard/pull_back_confirm_views.xml",
+        "wizard/finance_confirm_views.xml",
         "reports/paperformat_approval_request.xml",
         "reports/report_disbursement_voucher.xml",
         "views/approval_category_views.xml",
