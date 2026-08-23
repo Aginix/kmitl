@@ -99,6 +99,7 @@
                             <!-- เล่มทะเบียน — which of the unit's registers issues the
                                  number (ADR-0012). Prefilled from the unit's default;
                                  pinned at send, so read-only afterwards. -->
+                            <field name="sequence_department_ids" invisible="1"/>
                             <field name="sequence_id" string="เล่มทะเบียน"
                                    attrs="{'readonly': [('is_editable', '=', False)]}"
                                    options="{'no_create': True, 'no_open': True}"/>
@@ -110,7 +111,7 @@
                         </group>
                     </group>
                     <group name="header"
-                           attrs="{'invisible': [('state', '=', 'completed')]}">
+                           attrs="{'invisible': [('state', '!=', 'draft')]}">
                         <field name="subject" placeholder="เรื่อง..."
                                attrs="{'readonly': [('is_editable', '=', False)]}"/>
                         <field name="addressee_prefix_id" nolabel="1" widget="selection" required="1"
@@ -134,10 +135,10 @@
                     <field name="include_content"
                            attrs="{'invisible': ['|', ('origin_model', '=', False), ('state', '!=', 'draft')], 'readonly': [('is_editable', '=', False)]}"/>
                     <separator string="เนื้อหา (Content)"
-                               attrs="{'invisible': [('include_content', '=', False)]}"/>
+                               attrs="{'invisible': ['|', ('include_content', '=', False), ('state', '!=', 'draft')]}"/>
                     <field name="content" nolabel="1" class="o_sarabun_content"
                            placeholder="พิมพ์เนื้อหาหนังสือ..."
-                           attrs="{'invisible': [('include_content', '=', False)], 'readonly': [('is_editable', '=', False)]}"/>
+                           attrs="{'invisible': ['|', ('include_content', '=', False), ('state', '!=', 'draft')], 'readonly': [('is_editable', '=', False)]}"/>
                     <group>
                       <field name="remark" placeholder="หมายเหตุภายใน (ไม่บังคับ)..." attrs="{'readonly': [('is_editable', '=', False)]}"/>
                     </group>
@@ -152,13 +153,20 @@
                     <field name="has_signed" invisible="1"/>
                     <field name="can_withdraw" invisible="1"/>
                     <field name="my_active_step_id" invisible="1"/>
-                    <field name="next_step_order" invisible="1"/>
                     <notebook>
                         <page string="การเดินเรื่อง (Routing)" name="routing">
                             <group>
                                 <group>
                                     <field name="route_template_id"
                                            attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                                    <button name="action_seed_route_from_template"
+                                            type="object"
+                                            string="โหลดเส้นทางจากแม่แบบ"
+                                            icon="fa-refresh"
+                                            class="btn-link"
+                                            confirm="แทนที่เส้นทางปัจจุบันทั้งหมดด้วยแม่แบบที่เลือก? (ขั้นตอนที่มีอยู่จะถูกลบ)"
+                                            colspan="2"
+                                            attrs="{'invisible': ['|', ('is_editable', '=', False), ('route_template_id', '=', False)]}" />
                                 </group>
                                 <group>
                                     <field name="routing_progress" widget="progressbar"/>
@@ -166,10 +174,10 @@
                                 </group>
                             </group>
                             <!-- Add เส้นทางเอกสาร via a modal form (non-editable tree).
-                                 default_order auto-increments the ลำดับ of a new step
-                                 (max existing + 1) instead of always starting at 1. -->
+                                 A new step's ลำดับ auto-increments to the next free Stage
+                                 via _onchange_document_default_order (survives Save & New,
+                                 which strips context default_*). -->
                             <field name="routing_step_ids"
-                                   context="{'default_order': next_step_order}"
                                    attrs="{'readonly': [('is_editable', '=', False)]}">
                                 <tree decoration-muted="state == 'skipped'"
                                       decoration-success="state == 'done' and disposition in ('complete','direct')"

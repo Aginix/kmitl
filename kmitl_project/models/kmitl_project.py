@@ -496,6 +496,7 @@ class KmitlProject(models.Model):
         inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
         store=False,
+        compute_sudo=True,
         tracking=True,
     )
 
@@ -507,6 +508,7 @@ class KmitlProject(models.Model):
         domain=[("root_plan_id.code", "=", "departments")],
         # Stored so the project dashboard can search/group by department dimension.
         store=True,
+        compute_sudo=True,
         tracking=True,
     )
 
@@ -517,6 +519,7 @@ class KmitlProject(models.Model):
         inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
         store=False,
+        compute_sudo=True,
         tracking=True,
     )
 
@@ -527,6 +530,7 @@ class KmitlProject(models.Model):
         inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
         store=False,
+        compute_sudo=True,
         tracking=True,
     )
 
@@ -1048,11 +1052,12 @@ class KmitlProject(models.Model):
                 "analytic_distribution": dist or False,
                 "account_fiscal_year_id": self.account_fiscal_year_id.id,
                 "company_id": self.company_id.id,
+                "operating_unit_id": self.operating_unit_id.id or False,
                 "date": fields.Date.context_today(self),
                 "ref": self.key or self.name,
                 # ชื่อโครงการ = ชื่อใบจอง (shown next to the number wherever a
                 # reservation is offered, so it can be told apart from others).
-                "title": self.name,
+                "title": "[%s] %s" % (self.key, self.name) if self.key else self.name,
                 "description": self.name,
                 "kmitl_project_id": self.id,
                 "user_id": self.env.user.id,

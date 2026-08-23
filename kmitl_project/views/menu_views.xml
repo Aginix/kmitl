@@ -3,12 +3,12 @@
         <!-- Top menu item -->
         <menuitem name="Project"
             id="menu_main_project"
-            groups="project.group_project_manager,project.group_project_user"
+            groups="kmitl_project.group_kmitl_project_user"
             web_icon="kmitl_project,static/description/icon.png"
             sequence="40"/>
 
         <menuitem id="menu_project_config" name="Configuration" parent="menu_main_project"
-            sequence="100" groups="project.group_project_manager"/>
+            sequence="100" groups="kmitl_project.group_kmitl_project_manager"/>
 
         <!-- Hide Original Project App -->
         <record id="project.menu_main_pm" model="ir.ui.menu">

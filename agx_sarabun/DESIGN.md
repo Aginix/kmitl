@@ -1440,7 +1440,7 @@ ACL is the coarse gate; record rules are the fine gate.
 
 | Model | Group | read | write | create | unlink |
 |---|---|---|---|---|---|
-| `sarabun.document` | user | 1 | 1 | 1 | 0 |
+| `sarabun.document` | user | 1 | 1 | 1 | 1 |
 | `sarabun.document` | manager | 1 | 1 | 1 | 1 |
 | `sarabun.routing.step` | user | 1 | 1 | 1 | 0 |
 | `sarabun.routing.step` | manager | 1 | 1 | 1 | 1 |
@@ -1458,6 +1458,21 @@ ACL is the coarse gate; record rules are the fine gate.
 > may change. The over-broad `perm_write=True` recipient *record rule* of the old
 > model is what we remove. Dropped entirely: `sarabun.document.recipient`,
 > `sarabun.routing.line`, `sarabun.reference`, `sarabun.role`.
+
+> ACL also grants `unlink=1` on `sarabun.document` to User so a sender can throw away
+> a หนังสือ that should never have existed. The *narrowing* lives in two places, not in
+> the ACL: the sender **record rule** scopes it to their own หนังสือ, and
+> `SarabunDocument.unlink()` refuses **(a)** any state outside `draft` / `cancelled` —
+> ร่าง that never went out and a voided send are the only disposable shapes; anything
+> live or already on record (`circulating` / `returned` / `rejected` / `completed`) must
+> go through **ยกเลิกการส่ง** first, the audited way out of circulation — and **(b)** any
+> document carrying a `register_number_id`, because neither state implies *unnumbered*:
+> `agx_sarabun_reset` returns a signed / completed หนังสือ to draft while keeping its
+> number (ADR-0011), and the reserved/manual path voids a number on cancel without
+> dropping its document link. `sarabun.document.number.document_id` is
+> `ondelete=restrict` — a used number keeps its Document link for audit (§4.7).
+> `sarabun.routing.step` keeps `unlink=0`: steps die with their parent by DB cascade,
+> never on their own.
 
 ### 6.5 Fields the rules depend on
 
@@ -1491,13 +1506,17 @@ flowchart LR
     M[Manager] --> ALL[READ all v1 manager-see-all]
 ```
 
-**Rule 1 — Sender (read + manage own draft).**
+**Rule 1 — Sender (read + manage own draft, incl. delete).**
 
 ```python
 # id="sarabun_document_sender_rule", group=group_sarabun_user
-# perm_read, perm_write, perm_create = True ; perm_unlink = False
+# perm_read, perm_write, perm_create, perm_unlink = True
 [('sender_user_id', '=', user.id)]
 ```
+
+> `perm_unlink=True` lets the sender delete their **own** หนังสือ; `unlink()` then
+> restricts that to an *unnumbered* `draft` or `cancelled` document (§6.4 note) — a live
+> หนังสือ leaves circulation through ยกเลิกการส่ง, and only then may be deleted.
 
 > **State-aware caveat (documented):** this rule has no state filter, so it would
 > permit the sender to write a `circulating` document at the rule level — but
@@ -1650,7 +1669,7 @@ additive: it tightens, never restructures.
 
 | Model | Rule id | Group | Domain (read unless noted) |
 |---|---|---|---|
-| `sarabun.document` | `sarabun_document_sender_rule` | user | `[('sender_user_id','=',user.id)]` (R/W/C, no unlink) |
+| `sarabun.document` | `sarabun_document_sender_rule` | user | `[('sender_user_id','=',user.id)]` (R/W/C/U — unlink narrowed by `unlink()` to an unnumbered `draft` / `cancelled` doc) |
 | `sarabun.document` | `sarabun_document_actor_rule` | user | `[('routing_step_ids.recipient_ids.user_id','=',user.id)]` (read-only — reached via a per-person recipient row; same predicate as the Incoming box) |
 | `sarabun.document` | `sarabun_document_manager_rule` | manager | `[(1,'=',1)]` |
 | `sarabun.document` | `sarabun_document_company_rule` | (global) | `['|',('company_id','=',False),('company_id','in',company_ids)]` |

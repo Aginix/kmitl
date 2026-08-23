@@ -78,7 +78,12 @@ msgstr "เสร็จสิ้น"
 #: model:ir.model.fields,field_description:purchase_request_egp.field_purchase_request__is_egp
 #: model_terms:ir.ui.view,arch_db:purchase_request_egp.view_purchase_request_form
 msgid "e-GP"
-msgstr ""
+msgstr "จัดซื้อผ่านระบบ e-GP"
+
+#. module: purchase_request_egp
+#: model_terms:ir.ui.view,arch_db:purchase_request_egp.view_purchase_request_form_ux
+msgid "If e-GP procurement is selected, an internal Purchase Request approval (พจ.1) is not required."
+msgstr "ถ้าเลือกจัดซื้อผ่านระบบ e-GP จะไม่ต้องเสนอขออนุมัติจัดซื้อจัดจ้าง (พจ.1) ภายในระบบ"
 
 #. module: purchase_request_egp
 #: model:ir.model.fields,field_description:purchase_request_egp.field_purchase_request__egp_status

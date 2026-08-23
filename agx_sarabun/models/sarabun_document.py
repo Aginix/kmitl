@@ -283,13 +283,6 @@ class SarabunDocument(models.Model):
     routing_progress = fields.Float(
         compute="_compute_routing_progress", string="Routing Progress",
     )
-    next_step_order = fields.Integer(
-        compute="_compute_next_step_order",
-        help="Default ลำดับ (Stage) for the next routing step added on the form — "
-        "max(existing) + 1 so new steps auto-increment instead of always starting at "
-        "1. Fed to routing_step_ids' context as default_order.",
-    )
-
     # === Inbox (per current user — from the step that reached them) ===
     my_received_date = fields.Datetime(
         compute="_compute_my_inbox", string="วันที่ได้รับ",
@@ -312,6 +305,14 @@ class SarabunDocument(models.Model):
     )
 
     # === Numbering / Register (P3 — ADR-0002 §4) ===
+    sequence_department_ids = fields.Many2many(
+        comodel_name="hr.department",
+        compute="_compute_sequence_department_ids",
+        store=False,
+        string="Valid Sequence Departments",
+        help="The document's sender department and all its ancestor departments — "
+        "used as domain to show inherited register books in the dropdown.",
+    )
     sequence_id = fields.Many2one(
         comodel_name="sarabun.document.sequence",
         string="เล่มทะเบียน (Register Book)",
@@ -319,7 +320,7 @@ class SarabunDocument(models.Model):
         store=True,
         readonly=False,
         copy=False,
-        domain="[('sender_department_id', '=', sender_department_id), ('active', '=', True)]",
+        domain="[('sender_department_id', 'in', sequence_department_ids), ('active', '=', True)]",
         help="เล่มทะเบียนที่จะใช้ออกเลขหนังสือฉบับนี้ (ADR-0012) — ตั้งต้นจากเล่มทะเบียนหลัก "
         "ของหน่วยงาน เปลี่ยนได้ก่อนส่ง และถูกตรึงไว้ตอนส่ง.",
     )
@@ -420,6 +421,18 @@ class SarabunDocument(models.Model):
             record.include_content = not record.origin_model
 
     @api.depends("sender_department_id")
+    def _compute_sequence_department_ids(self):
+        """Collect the document's sender department and all ancestor departments so
+        that register books defined at any parent level appear in the dropdown."""
+        for record in self:
+            dept = record.sender_department_id
+            ancestors = self.env["hr.department"]
+            while dept:
+                ancestors |= dept
+                dept = dept.parent_id
+            record.sequence_department_ids = ancestors
+
+    @api.depends("sender_department_id")
     def _compute_sequence_id(self):
         """Default the เล่มทะเบียน from the unit (its เล่มทะเบียนหลัก, or its only book)
         — so the drafter never has to pick when the unit keeps a single register.
@@ -437,9 +450,17 @@ class SarabunDocument(models.Model):
     def _check_sequence_department(self):
         for record in self:
             seq = record.sequence_id
-            if seq and seq.sender_department_id != record.sender_department_id:
+            if not seq or not record.sender_department_id:
+                continue
+            # Walk up the department hierarchy; a sequence owned by any ancestor is valid.
+            dept = record.sender_department_id
+            while dept:
+                if seq.sender_department_id == dept:
+                    break
+                dept = dept.parent_id
+            else:
                 raise ValidationError(_(
-                    "เล่มทะเบียน '%(book)s' ไม่ใช่ของหน่วยงาน '%(unit)s'."
+                    "เล่มทะเบียน '%(book)s' ไม่ใช่ของหน่วยงาน '%(unit)s' หรือหน่วยงานต้นสังกัด."
                 ) % {
                     "book": seq.display_name,
                     "unit": record.sender_department_id.display_name,
@@ -579,15 +600,6 @@ class SarabunDocument(models.Model):
             recipients.write({"read_date": fields.Datetime.now()})
         return True
 
-    @api.depends("routing_step_ids.order")
-    def _compute_next_step_order(self):
-        """The Stage a freshly-added step should default to: one past the highest
-        existing order (the originator sits at row 1), so the ลำดับ auto-increments
-        instead of every new step landing on 1."""
-        for record in self:
-            orders = record.routing_step_ids.mapped("order")
-            record.next_step_order = (max(orders) + 1) if orders else 1
-
     @api.depends("routing_step_ids.state", "routing_step_ids.gating")
     def _compute_routing_progress(self):
         for record in self:
@@ -662,6 +674,46 @@ class SarabunDocument(models.Model):
                     "label": label, "who": waiting,
                 }
         return label
+
+    def unlink(self):
+        # ร่าง that never went out, and a send that was voided (ยกเลิกการส่ง), are the
+        # only two disposable shapes: nothing is in flight and no one downstream is
+        # holding the หนังสือ. Everything else — circulating / returned / rejected /
+        # completed — must go through ยกเลิกการส่ง first, the audited way out of
+        # circulation.
+        undeletable = self.filtered(lambda r: r.state not in ("draft", "cancelled"))
+        if undeletable:
+            raise UserError(
+                _(
+                    "ลบได้เฉพาะหนังสือที่เป็นร่าง หรือที่ยกเลิกการส่งแล้วเท่านั้น "
+                    "กรุณายกเลิกการส่งก่อนลบ\n"
+                    "Only a draft or a cancelled document can be deleted. "
+                    "Cancel the send (ยกเลิกการส่ง) first.\n\n"
+                    "Documents: %s"
+                )
+                % ", ".join(undeletable.mapped("display_name"))
+            )
+        # Neither state implies "never numbered": agx_sarabun_reset returns a signed /
+        # completed หนังสือ to draft while deliberately KEEPING its register number
+        # (ADR-0011), and the reserved/manual path voids a number on cancel without
+        # dropping its document link. Deleting either would sever the ledger's audit
+        # link — which sarabun.document.number.document_id (ondelete=restrict) refuses
+        # anyway, with the ORM's generic FK message — and cascade away the archived
+        # steps of an officially signed record. Refuse it with a message that says why.
+        numbered = self.filtered("register_number_id")
+        if numbered:
+            raise UserError(
+                _(
+                    "ไม่สามารถลบหนังสือที่ออกเลขที่แล้วได้ "
+                    "เลขที่ต้องคงคู่กับหนังสือไว้ในทะเบียนเพื่อการตรวจสอบ\n"
+                    "Cannot delete a document that has already been assigned a "
+                    "register number — the number must keep its document link "
+                    "for audit.\n\n"
+                    "Documents: %s"
+                )
+                % ", ".join(numbered.mapped("display_name"))
+            )
+        return super().unlink()
 
     def action_view_origin(self):
         """Open the linked origin record (kept from the old API; harmless in P1)."""
@@ -798,15 +850,16 @@ class SarabunDocument(models.Model):
 
     def action_pull_back(self, reason=None):
         """ดึงกลับ (recall) — circulating → returned, KEEPING the register number
-        (ADR-0006). Archives the current chain and restarts on re-send: a
-        self-initiated ตีกลับ-to-sender, so the หนังสือ becomes editable and can be
-        revised and re-sent on the same number. Fires ``_on_sarabun_recalled``."""
+        (ADR-0006). Archives the current attempt as history, then recreates the SAME
+        เส้นทาง verbatim (see ``_recreate_chain_verbatim``): the sender only wants to
+        pull back and re-send on the identical route, so the approval path must not be
+        wiped or re-seeded from the template. Fires ``_on_sarabun_recalled``."""
         self.ensure_one()
         self._check_sender_withdraw_allowed()
         if not reason:
             raise UserError(_("A reason is required to ดึงกลับ (pull back)."))
         self.routing_step_ids._clear_activities()
-        self._restart_chain()
+        self._recreate_chain_verbatim()
         self.state = "returned"
         self.message_post(body=_("Document pulled back (ดึงกลับ). Reason: %s") % reason)
         self._call_origin("_on_sarabun_recalled", self)
@@ -884,6 +937,26 @@ class SarabunDocument(models.Model):
             (0, 0, dict(line._seed_vals(), attempt_seq=self.attempt_seq or 1))
             for line in template.line_ids
         ]
+
+    def action_seed_route_from_template(self):
+        """Button (draft/returned): (re)load the Route from ``route_template_id``.
+
+        Selecting a template alone is inert — the seed only materialises at ส่ง.
+        This gives the composer an explicit "apply now" so the chosen template's
+        steps appear immediately, wiping the current live เส้นทาง first (the locked
+        ผู้จัดทำ/originator step is preserved) so it truly *replaces* the route
+        rather than appending to it."""
+        self.ensure_one()
+        if self.state not in ("draft", "returned"):
+            raise UserError(_(
+                "The route can only be seeded on a draft or returned document."
+            ))
+        if not self.route_template_id:
+            raise UserError(_("Select a route template (แม่แบบเส้นทาง) first."))
+        self._ensure_originator_step()
+        self.routing_step_ids.filtered(lambda s: not s.is_originator).unlink()
+        self._seed_route_from_template()
+        return True
 
     def _shift_stages_from(self, order):
         """Make room for an inserted stage (เกษียนสั่งการ) at `order`."""
@@ -1001,6 +1074,28 @@ class SarabunDocument(models.Model):
             ]
         # The archived attempt's originator is now inactive — re-add it (unless the
         # recreated seeds already carried one) so the new attempt keeps its row 1.
+        self._ensure_originator_step()
+
+    def _recreate_chain_verbatim(self):
+        """Archive the current attempt and recreate the SAME เส้นทาง exactly (ดึงกลับ —
+        ADR-0006, revised per UAT). Unlike ``_restart_chain`` it NEVER re-seeds from the
+        route template: every live step is recreated in order with its exact target /
+        verb / for_info / provenance — including runtime เกษียนสั่งการ ('direct')
+        insertions and delegated targets — so a pull-back-and-re-send keeps the identical
+        approval path. History survives on the archived attempt (feeding the เกษียน trail
+        and the reached-user read ledger — ADR-0013)."""
+        self.ensure_one()
+        seeds = [
+            dict(
+                step._resume_seed_vals(),
+                created_by_disposition=step.created_by_disposition,
+            )
+            for step in self.routing_step_ids.sorted("order")
+        ]
+        self._bump_attempt_and_archive()
+        new_seq = self.attempt_seq or 1
+        self.routing_step_ids = [(0, 0, dict(v, attempt_seq=new_seq)) for v in seeds]
+        # Defensive: seeds already carry the originator row, so this is normally a no-op.
         self._ensure_originator_step()
 
     # === Origin adapter dispatch (ADR-0004: same txn, no swallow) ===
@@ -1152,6 +1247,35 @@ class SarabunDocument(models.Model):
                 if origin.exists() and hasattr(origin, "_get_sarabun_report_action"):
                     return origin._get_sarabun_report_action()
         return False
+
+    def _get_origin_record(self):
+        """The origin record as a sudo recordset, or ``False``. Sudo for the same
+        reason as :meth:`_get_delegated_report_action` — rendering the official PDF
+        is gated by the หนังสือ's own read access, not the origin's (ADR-0007)."""
+        self.ensure_one()
+        if not (self.origin_model and self.origin_res_id):
+            return False
+        model = self.env.get(self.origin_model)
+        if model is None:
+            return False
+        origin = model.sudo().browse(self.origin_res_id)
+        return origin if origin.exists() else False
+
+    def _render_origin_body(self):
+        """Markup of the origin's live body fragment for the no-source report
+        (ADR-0015), or ``""``. The origin supplies the template via
+        :meth:`_get_sarabun_body_template`; it is rendered live with the origin as
+        ``o`` (in Thai), so authoritative numbers always match the record."""
+        self.ensure_one()
+        origin = self._get_origin_record()
+        if not origin or not hasattr(origin, "_get_sarabun_body_template"):
+            return ""
+        template = origin._get_sarabun_body_template()
+        if not template:
+            return ""
+        return self.env["ir.qweb"].sudo()._render(
+            template, {"o": origin.with_context(lang="th_TH")}
+        )
 
     def _get_report_base_filename(self):
         self.ensure_one()

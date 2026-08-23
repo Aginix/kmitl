@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The requester (ผู้ขออนุมัติ) creates and sends the Sarabun document to
+         route their own request for approval, so own-request users need
+         e-Sarabun User access (create/send documents, routing steps, send
+         wizard). This propagates up the Own ⊂ User ⊂ Manager chain, making
+         every Approval participant an e-Sarabun user. Sarabun's own record
+         rules keep visibility scoped to documents they sent or were reached
+         by. -->
+    <record id="agx_approval.group_approval_own" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('agx_sarabun.group_sarabun_user'))]"/>
+    </record>
+</odoo>

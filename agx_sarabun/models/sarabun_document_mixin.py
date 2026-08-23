@@ -116,9 +116,10 @@ class SarabunDocumentMixin(models.AbstractModel):
 
         **Owned by the mixin — do not override.** Customise via the hooks instead:
         ``_get_sarabun_subject`` (เรื่อง), ``_get_sarabun_document_type`` (type →
-        sequence/route/template) and ``_get_sarabun_sender_department`` (issuing
-        ส่วนงาน). This keeps the origin link (origin_model/origin_res_id) and the
-        number-assigned-at-send invariant impossible to break by accident.
+        sequence/route/template), ``_get_sarabun_sender_department`` (issuing
+        ส่วนงาน) and ``_get_sarabun_content`` (seeded เนื้อหา). This keeps the origin
+        link (origin_model/origin_res_id) and the number-assigned-at-send invariant
+        impossible to break by accident.
 
         Returns:
             dict: Values for sarabun.document create()
@@ -131,6 +132,13 @@ class SarabunDocumentMixin(models.AbstractModel):
             "origin_model": self._name,
             "origin_res_id": self.id,
         }
+        # Seeded เนื้อหา (opt-in): a consumer that supplies a body also opts the
+        # หนังสือ into printing it — include_content defaults OFF for from_record
+        # documents, so both must be set together.
+        content = self._get_sarabun_content()
+        if content:
+            vals["content"] = content
+            vals["include_content"] = True
         # The official number is NOT assigned at create — only the issuing ส่วนงาน
         # is supplied; ลงทะเบียน happens atomically at completion, when the final
         # approver signs (ADR-0010). Omit when unresolved so the document's own
@@ -159,6 +167,23 @@ class SarabunDocumentMixin(models.AbstractModel):
         Override this for custom subject formatting.
         """
         return self.display_name
+
+    def _get_sarabun_content(self):
+        """Html seeding the หนังสือ's editable เนื้อหา (บันทึกนำ / บรรยาย), or
+        ``False`` (default — the origin's report or body fragment IS the body).
+
+        Seeded **once**, at create: the drafter owns it from then on, so it must not
+        carry authoritative numbers — put those in the live fragment returned by
+        :meth:`_get_sarabun_body_template`. Returning a value also switches
+        ``include_content`` on, which defaults OFF for a from_record document.
+
+        Example:
+            def _get_sarabun_content(self):
+                return self.env["ir.qweb"]._render(
+                    "my_module.report_my_model_narrative", {"o": self}
+                )
+        """
+        return False
 
     def action_create_sarabun_document(self):
         """Create a sarabun document from this record"""
@@ -317,5 +342,23 @@ class SarabunDocumentMixin(models.AbstractModel):
         Example:
             def _get_sarabun_report_action(self):
                 return self.env.ref("my_module.action_report_my_model")
+        """
+        return False
+
+    def _get_sarabun_body_template(self):
+        """XML id of a QWeb fragment rendering this origin's **live** body — its
+        data/tables — or ``False`` (default).
+
+        Used only on the **no-source layout** path (ADR-0015): when a from-record
+        Document opts out of the delegated report (``_get_sarabun_report_action`` →
+        ``False``), :meth:`sarabun.document._render_origin_body` renders this
+        fragment between the ``content`` (บันทึกนำ / เนื้อหา) and the endorsement
+        block. The origin record is passed in as ``o``. Rendered live so the
+        official หนังสือ always reflects the current record — keep authoritative
+        numbers here (not in the editable ``content``).
+
+        Example:
+            def _get_sarabun_body_template(self):
+                return "my_module.report_my_model_body"
         """
         return False

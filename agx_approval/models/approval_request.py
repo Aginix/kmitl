@@ -1,6 +1,5 @@
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.osv import expression
 
 
 class ApprovalRequest(models.Model):
@@ -84,9 +83,13 @@ class ApprovalRequest(models.Model):
 
     date = fields.Date(
         string="Request Date",
-        required=True,
-        default=fields.Date.context_today,
+        copy=False,
         tracking=True,
+        help="วันที่ส่งคำขอ — stamped when the request is submitted for verification "
+        "(draft → รอตรวจสอบ), and re-stamped on every re-submit after a reset to "
+        "draft or a ดึงกลับ. Empty until the request is first submitted: a draft "
+        "has not been sent anywhere yet, so it has no submit date. NOT the "
+        "creation date (that is create_date) and NOT the หนังสือ's ลงวันที่.",
     )
 
     owner_id = fields.Many2one(
@@ -105,8 +108,33 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
+    @api.constrains("owner_id")
+    def _check_owner_is_self_for_own_group(self):
+        """"Own only" users may file requests in their own name only: the
+        requester (ผู้ขออนุมัติ) must be themselves. Full Users, Managers and
+        superuser are unaffected."""
+        if self.env.su:
+            return
+        user = self.env.user
+        if not user.has_group(
+            "agx_approval.group_approval_own"
+        ) or user.has_group("agx_approval.group_approval_user"):
+            return
+        for rec in self:
+            if rec.owner_id != user.employee_id:
+                raise ValidationError(
+                    _("You can only submit approval requests in your own name.")
+                )
+
     description = fields.Text(
         string="Description",
+        tracking=True,
+    )
+
+    period_type = fields.Selection(
+        [("range", "หลายวัน"), ("single", "วันเดียว")],
+        string="ลักษณะระยะเวลา",
+        default="range",
         tracking=True,
     )
 
@@ -119,6 +147,23 @@ class ApprovalRequest(models.Model):
         string="Date End",
         tracking=True,
     )
+
+    day_portion = fields.Selection(
+        [("full", "เต็มวัน"), ("half", "ครึ่งวัน")],
+        string="ช่วงเวลา (วันเดียว)",
+        default="full",
+        tracking=True,
+    )
+
+    @api.onchange("period_type")
+    def _onchange_period_type(self):
+        """Clear the companion input that the chosen mode doesn't use (Odoo
+        convention): a single-day request has no end date, a multi-day one has no
+        day portion. Keeps the narrative unambiguous about which one applies."""
+        if self.period_type == "single":
+            self.date_end = False
+        else:
+            self.day_portion = False
 
     city = fields.Char(
         string="City",
@@ -211,17 +256,27 @@ class ApprovalRequest(models.Model):
     )
 
     def _domain_budget_account_id(self):
-        return [("purchase_ok", "=", True), ("product_id", "!=", False)]
+        # An approval is not a procurement (ADR-0004): reserve against
+        # non-procurement expense codes, not product-backed purchase codes.
+        return [
+            ("budgetable", "=", True),
+            ("budget_type", "=", "expense"),
+            ("purchase_ok", "=", False),
+        ]
 
     def _reservation_account_domain(self):
         """Budget codes selectable in the reservation picker for this request.
 
-        Mirror the budget_account_id field domain (purchasable, product-backed
-        codes) on top of the mixin's budgetable/expense baseline, so the picker
-        cannot offer — and apply_reservation_selection cannot write — a code the
-        request rejects.
+        Non-procurement expense codes (ADR-0004) on top of the mixin's
+        budgetable/expense baseline, so the picker cannot offer — and
+        apply_reservation_selection cannot write — a code the request rejects.
+        When the category pins a budget code, that code is the request's hard
+        constraint (single choke point for picker, write-back, and draw-down).
         """
-        return super()._reservation_account_domain() + self._domain_budget_account_id()
+        domain = super()._reservation_account_domain() + self._domain_budget_account_id()
+        if self.category_id.budget_account_id:
+            domain += [("id", "=", self.category_id.budget_account_id.id)]
+        return domain
 
     def _get_commitment_title(self):
         """ชื่อรายการจอง of a commitment this request reserves = its ประเภทคำขออนุมัติ.
@@ -262,7 +317,6 @@ class ApprovalRequest(models.Model):
     reservation_commitment_id = fields.Many2one(
         "budget.commitment",
         string="ใบจองงบประมาณ",
-        domain=lambda self: self._domain_reservation_commitment_id(),
         copy=False,
         tracking=True,
         help=(
@@ -271,6 +325,18 @@ class ApprovalRequest(models.Model):
             "ใช้เมื่อเลือกวิธี 'หยิบจากใบจองงบประมาณที่มีอยู่'."
         ),
     )
+
+    allowed_reservation_commitment_ids = fields.Many2many(
+        "budget.commitment",
+        compute="_compute_allowed_reservation_commitment_ids",
+    )
+
+    @api.depends("category_id", "state")
+    def _compute_allowed_reservation_commitment_ids(self):
+        for rec in self:
+            rec.allowed_reservation_commitment_ids = self.env["budget.commitment"].search(
+                rec._domain_reservation_commitment_id()
+            )
 
     def _domain_reservation_commitment_id(self):
         """Reservations this request may draw down (phase-1 dropdown). OU
@@ -287,7 +353,21 @@ class ApprovalRequest(models.Model):
         for fname in ("procurement_plan_id", "kmitl_project_id"):
             if fname in Commitment._fields:
                 domain.append((fname, "=", False))
+        account_ids = (
+            self.env["budget.account"].search(self._reservation_account_domain()).ids
+        )
+        domain.append(("account_id", "in", account_ids))
         return domain
+
+    def action_open_reservation_picker(self):
+        """Browse the picker in only-selectable mode: the requester may pick only
+        codes this request accepts (a category-pinned code, else the
+        non-procurement baseline), so the picker collapses the ประเภทงบ chart to
+        those codes and the dimension path to them instead of showing every code
+        of the root category with only one clickable."""
+        action = super().action_open_reservation_picker()
+        action["context"] = dict(action.get("context") or {}, only_selectable=True)
+        return action
 
     def apply_reservation_selection(self, selections, dims=None):
         """Picker write-back: set the budget code + dimensions, then push the
@@ -346,11 +426,21 @@ class ApprovalRequest(models.Model):
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
+        required=True,
         tracking=True,
-        store=True,
-        compute="_compute_date_range_fy",
-        search="_search_date_range_fy",
+        default=lambda self: self._default_account_fiscal_year_id(),
+        help="ปีงบประมาณที่คำขอนี้จะใช้งบ — chosen by the user, never derived from "
+        "the document date. A request drafted late in ปีงบ N to spend ปีงบ N+1 "
+        "money simply picks N+1 up front and waits. The budget reservation checks "
+        "and books against this year (see action_reserve_budget), so it is the "
+        "request's single statement of which year's money it is spending.",
     )
+
+    @api.model
+    def _default_account_fiscal_year_id(self):
+        """Today's ปีงบประมาณ — a convenience starting point, not a constraint;
+        the user overrides it to file ahead for the coming year."""
+        return self.env.company.find_daterange_fy(fields.Date.context_today(self))
 
     _analytic_keys = {
         "activities": "activity_analytic_id",
@@ -410,41 +500,6 @@ class ApprovalRequest(models.Model):
             )
         ]
 
-    @api.depends("date", "company_id")
-    def _compute_date_range_fy(self):
-        for rec in self:
-            date = fields.Date.to_date(rec.date)
-            company = rec.company_id
-            rec.account_fiscal_year_id = (
-                company and company.find_daterange_fy(date) or False
-            )
-
-    @api.model
-    def _search_date_range_fy(self, operator, value):
-        if operator in ("=", "!=", "in", "not in"):
-            date_range_domain = [("id", operator, value)]
-        else:
-            date_range_domain = [("name", operator, value)]
-
-        date_ranges = self.env["account.fiscal.year"].search(date_range_domain)
-
-        domain = [("id", "=", -1)]
-        for date_range in date_ranges:
-            domain = expression.OR(
-                [
-                    domain,
-                    [
-                        "&",
-                        ("date", ">=", date_range.date_from),
-                        ("date", "<=", date_range.date_to),
-                        "|",
-                        ("company_id", "=", False),
-                        ("company_id", "=", date_range.company_id.id),
-                    ],
-                ]
-            )
-        return domain
-
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):
         """When change analytic_distribution set analytic distribution on all order lines"""
@@ -480,7 +535,11 @@ class ApprovalRequest(models.Model):
             return self.with_context(
                 agx_exception_action="action_to_verify"
             )._popup_exceptions()
-        self.state = "to_verify"
+        # วันที่ส่งคำขอ is stamped here, not at creation: a draft has not been sent
+        # anywhere. Re-stamped on every pass through this transition, so a request
+        # reset to draft (or ดึงกลับ) and re-submitted carries the date it was
+        # actually submitted, not the first attempt's.
+        self.write({"state": "to_verify", "date": fields.Date.context_today(self)})
         return True
 
     def action_submit(self):
@@ -621,6 +680,11 @@ class ApprovalRequest(models.Model):
             "target": "current",
         }
 
+    def _get_budget_commitment_extra_kwargs(self):
+        """Extra kwargs forwarded to _create_budget_commitment().
+        Override in bridge modules to inject e.g. operating_unit_id."""
+        return {}
+
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
@@ -686,6 +750,7 @@ class ApprovalRequest(models.Model):
                 description=f"Approval Request: {self.name}",
                 auto_reserve=True,
                 account_fiscal_year_id=self.account_fiscal_year_id.id,
+                **self._get_budget_commitment_extra_kwargs(),
             )
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
@@ -711,7 +776,7 @@ class ApprovalRequest(models.Model):
         commitment, and submits the request exactly like the reserve-new path. No
         new reservation and no availability re-check: the money is already locked;
         obligate/consume happen downstream at the disbursement (ADR-0010). The
-        request keeps its own computed fiscal year; the shared commitment carries
+        request keeps the ปีงบประมาณ the user chose; the shared commitment carries
         the fiscal year it was reserved in."""
         self.ensure_one()
         commitment = self.reservation_commitment_id
@@ -752,7 +817,7 @@ class ApprovalRequest(models.Model):
         """Block drawing a reservation this request must not use: a plan/project
         shared commitment (drawn only through their create-from-source flows,
         ADR-0006/0007) or a budget code this request could not itself select
-        (must be purchasable + product-backed)."""
+        (non-procurement expense code, ADR-0004)."""
         for fname, label in (
             ("procurement_plan_id", _("แผนจัดซื้อจัดจ้าง")),
             ("kmitl_project_id", _("โครงการ")),

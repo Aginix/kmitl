@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: keep admin-toggleable (enable/disable) without upgrades
+         resetting it. The linking logic lives in Python, not in this string. -->
+    <data noupdate="1">
+        <record id="automation_link_user_employee" model="base.automation">
+            <field name="name">KMITL: link new user to employee by work email</field>
+            <field name="model_id" ref="base.model_res_users"/>
+            <field name="trigger">on_create</field>
+            <field name="state">code</field>
+            <!-- Only internal users; the method guards this too. -->
+            <field name="filter_domain">[('share', '=', False)]</field>
+            <field name="code">records._kmitl_link_employee_by_email()</field>
+        </record>
+    </data>
+</odoo>

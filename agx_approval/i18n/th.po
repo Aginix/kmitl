@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-31 07:24+0000\n"
-"PO-Revision-Date: 2026-07-31 07:24+0000\n"
+"POT-Creation-Date: 2026-08-22 08:54+0000\n"
+"PO-Revision-Date: 2026-08-22 08:54+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -23,32 +23,13 @@ msgstr "'ใบขออนุมัติค่าใช้จ่าย - %s' %
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 msgid ""
-"<i class=\"fa fa-check-circle me-1\" title=\"Budget Reserved\"/>\n"
-"                            <strong>Budget Reserved:</strong>"
-msgstr ""
-"<i class=\"fa fa-check-circle me-1\" title=\"จองงบประมาณแล้ว\"/>\n"
-"                            <strong>จองงบประมาณแล้ว:</strong>"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid ""
 "<i class=\"fa fa-long-arrow-right mx-2\" aria-label=\"Arrow icon\" "
 "title=\"Arrow\"/>"
 msgstr ""
 
 #. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "<span class=\"ms-1\">฿</span>"
-msgstr ""
-
-#. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
 msgid "<span class=\"ms-2\">สังกัด</span>"
-msgstr ""
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "<span class=\"mx-1\">—</span>"
 msgstr ""
 
 #. module: agx_approval
@@ -176,6 +157,11 @@ msgstr "รายการสินค้าที่อนุญาต"
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__allowed_recipient_ids
 msgid "Allowed Recipients"
 msgstr "ผู้รับเงินที่อนุญาต"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__allowed_reservation_commitment_ids
+msgid "Allowed Reservation Commitment"
+msgstr ""
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__analytic_distribution
@@ -425,6 +411,11 @@ msgid "Created by"
 msgstr "สร้างโดย"
 
 #. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Created by Me"
+msgstr "สร้างโดยฉัน"
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__create_date
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__create_date
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__create_date
@@ -466,7 +457,7 @@ msgstr "รายละเอียดเริ่มต้น"
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__description
 msgid "Description"
-msgstr "เหตุผล/ความจำเป็น"
+msgstr "รายละเอียดการขออนุมัติ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__display_name
@@ -733,8 +724,14 @@ msgid "My Approvals"
 msgstr "รายการคำขอ"
 
 #. module: agx_approval
+#: model:ir.actions.act_window,name:agx_approval.action_approval_my_request
 #: model:ir.ui.menu,name:agx_approval.approval_my_request_menu
 msgid "My Request"
+msgstr "คำขอของฉัน"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "My Requests"
 msgstr "คำขอของฉัน"
 
 #. module: agx_approval
@@ -742,7 +739,7 @@ msgstr "คำขอของฉัน"
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__name
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__name
 msgid "Name"
-msgstr "ประเภทคำขอ"
+msgstr "ชื่อ"
 
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_new_request_menu
@@ -831,6 +828,11 @@ msgid "Outstanding exceptions to manage"
 msgstr "ข้อยกเว้นที่รอดำเนินการ"
 
 #. module: agx_approval
+#: model:res.groups,name:agx_approval.group_approval_own
+msgid "Own Requests Only"
+msgstr "เฉพาะคำขอของตนเอง"
+
+#. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 msgid "Participants"
 msgstr "รายชื่อ"
@@ -899,7 +901,7 @@ msgstr "คำขอ"
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__date
 msgid "Request Date"
-msgstr "วันที่จัดทำคำขอ"
+msgstr "วันที่ส่งคำขอ"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
@@ -952,11 +954,6 @@ msgstr "ตีกลับ"
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr "ข้อผิดพลาดการส่ง SMS"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Select Budget from Chart (view balance)"
-msgstr "เลือกงบจากผังงบประมาณ (ดูยอดคงเหลือ)"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
@@ -1075,6 +1072,13 @@ msgstr "ประวัติการสื่อสารทางเว็บ
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
+msgid "You can only submit approval requests in your own name."
+msgstr "คุณสามารถส่งคำขออนุมัติได้เฉพาะในชื่อของคุณเองเท่านั้น"
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
 msgid "cancelled"
 msgstr "ยกเลิกแล้ว"
 
@@ -1090,6 +1094,13 @@ msgstr "รีเซ็ตเป็นร่าง"
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
 msgid "กรุณาระบุข้อมูลงบประมาณให้ครบก่อนจองงบประมาณ: %s"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"
 msgstr ""
 
 #. module: agx_approval
@@ -1273,6 +1284,11 @@ msgid "ประเภทการจ่ายเงิน"
 msgstr ""
 
 #. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "ปีงบประมาณปัจจุบัน"
+msgstr ""
+
+#. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
 msgid "ผู้ขออนุมัติ"
 msgstr ""
@@ -1339,8 +1355,16 @@ msgstr ""
 #. module: agx_approval
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 #, python-format
 msgid "รหัสงบประมาณ"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้"
 msgstr ""
 
 #. module: agx_approval
@@ -1427,8 +1451,18 @@ msgid ""
 msgstr ""
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__budget_selection_mode
+msgid "วิธีเลือกงบประมาณ"
+msgstr ""
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__state
 msgid "สถานะ"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__budget_commitment_state
+msgid "สถานะใบจอง"
 msgstr ""
 
 #. module: agx_approval
@@ -1454,6 +1488,18 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_budget
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
 msgid "หน่วยงาน"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__budget_selection_mode__reservation
+msgid "หยิบจากใบจองงบประมาณที่มีอยู่"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "หยิบใบจองงบประมาณ %s มาใช้ (draw down)"
 msgstr ""
 
 #. module: agx_approval
@@ -1494,8 +1540,45 @@ msgid "เลขที่ใบจองงบประมาณ"
 msgstr ""
 
 #. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__budget_selection_mode__chart
+msgid "เลือกจากผังงบประมาณ (จองงบใหม่)"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__budget_selection_mode
+msgid ""
+"เลือกว่าจะจองงบใหม่โดยเลือกมิติจากผังงบประมาณ "
+"หรือหยิบใบจองงบประมาณที่หน่วยงานอื่นจองไว้ให้แล้วไปใช้"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "เลือกใบจองงบประมาณที่จะหยิบไปใช้"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__reservation_commitment_id
+msgid ""
+"เลือกใบจองงบประมาณที่มีอยู่แล้วเพื่อหยิบไปใช้ (draw down) แทนการจองใหม่ — "
+"เอกสารจะสืบทอดรหัสงบ/มิติจากใบจองแบบล็อก และไม่จองซ้ำ. ใช้เมื่อเลือกวิธี "
+"'หยิบจากใบจองงบประมาณที่มีอยู่'."
+msgstr ""
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_pull_back_confirm__reason
 msgid "เหตุผล"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "แผนจัดซื้อจัดจ้าง"
 msgstr ""
 
 #. module: agx_approval
@@ -1509,8 +1592,41 @@ msgid "แหล่งเงิน"
 msgstr ""
 
 #. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "โครงการ"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__budget_commitment_state
+msgid ""
+"ใช้ในฟอร์มเพื่อแยก 'มีใบจองที่ยังใช้งานอยู่' ออกจาก 'ใบจองถูกยกเลิกแล้ว' — "
+"การยกเลิกใบจองไม่ล้างค่า budget_commitment_id จึงต้องดูสถานะประกอบ"
+msgstr ""
+
+#. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
 msgid "ใบขออนุมัติ"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__reservation_commitment_id
+msgid "ใบจองงบประมาณ"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "ใบจองงบประมาณ %s ไม่อยู่ในสถานะที่หยิบไปใช้ได้"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "ใบจองงบประมาณของ%sต้องหยิบผ่านเอกสารต้นทางเท่านั้น"
 msgstr ""
 
 #. module: agx_approval

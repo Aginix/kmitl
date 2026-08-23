@@ -18,6 +18,7 @@
                     string="Request approval"
                     type="object"
                     class="oe_highlight"
+                    groups="purchase_request.group_purchase_request_user"
                 />
             </button>
             <button name="button_approved" position="attributes">
