@@ -67,7 +67,7 @@ class DisbursementRequest(models.Model):
     # and its expense account on every line at ORM level. A code with no bound
     # product leaves the line blank and is refused on submit by the
     # excep_disbursement_project_no_product rule.
-    @api.depends("budget_account_id")
+    @api.depends("budget_account_id.is_project")
     def _compute_is_budget_account_product_expense(self):
         super()._compute_is_budget_account_product_expense()
         for rec in self.filtered("is_project_expense"):

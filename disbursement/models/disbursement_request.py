@@ -787,8 +787,10 @@ class DisbursementRequest(models.Model):
     # ``_budget_account_line_product``; the stamping itself lives here and runs
     # at ORM level, so it also lands on requests created programmatically and on
     # fields the interactive onchange cannot reach (the product column is hidden).
-    # An overriding bridge must re-declare ``@api.depends`` — Odoo reads them off
-    # the MRO-resolved method, so an override without them drops the invalidation.
+    # A bridge overriding the compute declares the dependency it actually reads
+    # (its own budget-code flag); Odoo merges ``@api.depends`` across every class
+    # in the MRO that defines the method, so the base dependency below always
+    # holds on top of it.
     @api.depends("budget_account_id")
     def _compute_is_budget_account_product_expense(self):
         for rec in self:
@@ -813,12 +815,13 @@ class DisbursementRequest(models.Model):
                 line.product_id = product
                 if not line.name:
                     line.name = product.display_name
-                # The account follows the product unconditionally: budget_product
-                # binds the budget code's own GL account to its product, so a
-                # stale account from the previous code would book the expense
-                # against the wrong account.
-                if account:
-                    line.account_id = account
+                # The account follows the product unconditionally, blank
+                # included: budget_product binds the budget code's own GL account
+                # to its product, and the product column is hidden for these
+                # codes — so keeping the previous code's account would silently
+                # book the expense against the wrong account with no way for the
+                # user to correct it. An empty account is visible and fixable.
+                line.account_id = account
 
     @api.onchange("budget_account_id", "line_ids")
     def _onchange_fill_budget_account_product(self):
