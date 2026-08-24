@@ -3,6 +3,10 @@ import base64
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_compare
+
+
+_PA_OPEN_STATES_FOR_BUDGET_CAP = ("draft", "to_approve", "approved")
 
 
 class PurchaseRequestApproval(models.Model):
@@ -216,6 +220,12 @@ class PurchaseRequestApproval(models.Model):
     source_analytic_id = fields.Many2one(related="request_id.source_analytic_id")
     budget_account_id = fields.Many2one(related="request_id.budget_account_id")
     budget_commitment_id = fields.Many2one(related="request_id.budget_commitment_id")
+    budget_commitment_amount = fields.Monetary(
+        related="request_id.budget_commitment_id.amount",
+        string="จำนวนเงินที่จองงบไว้",
+        currency_field="currency_id",
+        readonly=True,
+    )
     analytic_distribution = fields.Json(related="request_id.analytic_distribution")
     attachment_ids = fields.One2many(
         comodel_name="ir.attachment",
@@ -279,6 +289,42 @@ class PurchaseRequestApproval(models.Model):
                 [x._convert_to_tax_base_line_dict() for x in line_ids],
                 record.currency_id or record.company_id.currency_id,
             )
+
+    @api.constrains(
+        "amount_total",
+        "line_ids",
+        "line_ids.product_qty",
+        "line_ids.price_unit",
+        "state",
+    )
+    def _check_amount_within_commitment(self):
+        for rec in self:
+            if rec.state != "draft":
+                continue
+            commitment = rec.budget_commitment_id
+            if not commitment:
+                continue
+            siblings = self.search(
+                [
+                    ("state", "in", list(_PA_OPEN_STATES_FOR_BUDGET_CAP)),
+                    ("request_id.budget_commitment_id", "=", commitment.id),
+                ]
+            )
+            total_pa = sum(siblings.mapped("amount_total"))
+            rounding = (commitment.currency_id or rec.currency_id).rounding
+            if float_compare(total_pa, commitment.amount, precision_rounding=rounding) > 0:
+                raise ValidationError(
+                    _(
+                        "แก้ไข พจ.1 เกินจำนวนเงินที่จองงบไว้: "
+                        "ยอดรวม พจ.1 ทั้งหมดในใบจองงบ %(cmt)s = %(total).2f บาท "
+                        "เกินจำนวนที่จองไว้ %(cap).2f บาท"
+                    )
+                    % {
+                        "cmt": commitment.display_name,
+                        "total": total_pa,
+                        "cap": commitment.amount,
+                    }
+                )
 
     def button_draft(self):
         return self.write({"state": "draft"})
