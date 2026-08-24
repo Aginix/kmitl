@@ -176,7 +176,7 @@
                     <group>
                         <group name="main_info" string="Main Information">
                             <field name="name" placeholder="Approval Reference..." readonly="1"/>
-                            <field name="title" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="title" required="1" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <field name="description" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <field name="date_start" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <field name="requested_by" widget="many2one_avatar_user" attrs="{'readonly': [('is_editable', '=', False)]}" />
