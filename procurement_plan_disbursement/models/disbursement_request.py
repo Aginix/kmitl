@@ -46,12 +46,40 @@ class DisbursementRequest(models.Model):
     # is the product bound to the budget account (budget_product). Stamp it on any
     # change; a code with no bound product leaves the line blank and is refused on
     # submit by the excep_disbursement_procurement_no_product rule.
+    #
+    # NOTE: the product column is column_invisible when is_procurement_plan_expense
+    # is True, which means Odoo's client does NOT track that field in the o2m and
+    # silently drops any onchange-returned changes for it.  The actual stamping must
+    # therefore happen at the ORM level (create/write).  The onchange is kept only
+    # as a best-effort UX hint for the edge case where the column is visible.
     @api.onchange("budget_account_id", "line_ids")
     def _onchange_fill_procurement_plan_product(self):
+        self._fill_procurement_plan_product_on_lines()
+
+    def _fill_procurement_plan_product_on_lines(self):
         for rec in self.filtered("is_procurement_plan_expense"):
             product = rec.budget_account_id.product_id
             if not product:
                 continue
-            lines = rec.line_ids.filtered(lambda l: l.product_id != product)
-            if lines:
-                lines.product_id = product.id
+            account = (
+                product.property_account_expense_id
+                or product.categ_id.property_account_expense_categ_id
+            )
+            for line in rec.line_ids.filtered(lambda l: l.product_id != product):
+                line.product_id = product
+                if not line.name:
+                    line.name = product.display_name
+                if account and not line.account_id:
+                    line.account_id = account
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._fill_procurement_plan_product_on_lines()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "budget_account_id" in vals or "line_ids" in vals:
+            self._fill_procurement_plan_product_on_lines()
+        return res
