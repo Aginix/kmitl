@@ -2274,7 +2274,7 @@ msgstr "แบบขอให้จัดหา (พ.1)"
 msgid ""
 "When payment type is Prepaid, please select the advance\n"
 "                            payer's name in the Vendor field."
-msgstr "กรณีเลือกประเภทการจ่ายเงินเป็นสำรองจ่ายให้เลือกชื่อผู้สำรองจ่าย"
+msgstr "กรณีสำรองจ่ายให้เลือกชื่อผู้สำรองจ่าย"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form

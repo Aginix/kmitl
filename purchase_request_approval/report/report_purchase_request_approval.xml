@@ -217,7 +217,7 @@
                                     t-out="len(o.request_id.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_tor')))"
                                 />
                                 ชุด
-                            </li> -->
+                            </li>
                         </ol>
                         <div class="my-4" />
                         <p style="text-indent: 6em"> 1.1 ตาม อนุมัติให้จัดซื้อ <span

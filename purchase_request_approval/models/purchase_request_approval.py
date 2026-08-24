@@ -119,7 +119,7 @@ class PurchaseRequestApproval(models.Model):
     )
 
     # == Own fields (copied from purchase.request on creation) ==
-    title = fields.Char(string="Title")
+    title = fields.Char(string="Title", default="รายงานขอซื้อ/จ้าง")
     description = fields.Text(string="Description")
     procurement_type_id = fields.Many2one(
         comodel_name="procurement.type",
