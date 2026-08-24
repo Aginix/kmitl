@@ -11,6 +11,7 @@ PR_ENDORSEMENT_APPROVED_ACTIVITY = (
     "purchase_request_todo.mail_activity_pr_endorsement_approved"
 )
 BUDGET_COMMITMENT_ROLE = "budget_role.role_budget_commitment"
+PROCUREMENT_ROLE = "purchase_user_role.purchase_role_procurement"
 
 
 class PurchaseRequestApproval(models.Model):
@@ -66,9 +67,9 @@ class PurchaseRequestApproval(models.Model):
         ) % {"sender": sender_name}
 
     def _schedule_awaiting_manager_todo(self):
-        """Route to the จองงบประมาณ role of the PA's operating unit; fall
-        back to ``assigned_to`` when the unit or role is unknown."""
-        role = self.env.ref(BUDGET_COMMITMENT_ROLE, raise_if_not_found=False)
+        """Route to the เจ้าหน้าที่พัสดุหน่วยงาน role of the PA's operating unit;
+        fall back to ``assigned_to`` when the unit or role is unknown."""
+        role = self.env.ref(PROCUREMENT_ROLE, raise_if_not_found=False)
         for rec in self:
             summary = rec._awaiting_manager_todo_summary()
             if role and rec.operating_unit_id:
@@ -97,9 +98,9 @@ class PurchaseRequestApproval(models.Model):
         )
 
     def _schedule_record_contract_todo(self):
-        """Route to the จองงบประมาณ role of the PA's operating unit; fall
-        back to ``request_id.assigned_to`` when the unit or role is unknown."""
-        role = self.env.ref(BUDGET_COMMITMENT_ROLE, raise_if_not_found=False)
+        """Route to the เจ้าหน้าที่พัสดุหน่วยงาน role of the PA's operating unit;
+        fall back to ``request_id.assigned_to`` when the unit or role is unknown."""
+        role = self.env.ref(PROCUREMENT_ROLE, raise_if_not_found=False)
         for rec in self:
             summary = rec._record_contract_todo_summary()
             if role and rec.operating_unit_id:
@@ -118,6 +119,28 @@ class PurchaseRequestApproval(models.Model):
                         summary=summary,
                         user_id=fallback.id,
                     )
+
+    # ---------------------------------------------------------------------
+    # Awaiting PO creation (PA approved → PR)
+    # ---------------------------------------------------------------------
+    def _activity_awaiting_create_purchase_order(self):
+        """Route to the เจ้าหน้าที่พัสดุหน่วยงาน role of the PR's operating unit;
+        fall back to ``request_id.assigned_to`` when the unit or role is unknown."""
+        role = self.env.ref(PROCUREMENT_ROLE, raise_if_not_found=False)
+        pr = self.request_id
+        if not pr:
+            return
+        if role and pr.operating_unit_id:
+            pr.activity_schedule(
+                "purchase_request_activity_kmitl.mail_activity_create_purchase_order",
+                responsible_role_id=role.id,
+                operating_unit_id=pr.operating_unit_id.id,
+            )
+        elif pr.assigned_to:
+            pr.activity_schedule(
+                "purchase_request_activity_kmitl.mail_activity_create_purchase_order",
+                user_id=pr.assigned_to.id,
+            )
 
     # ---------------------------------------------------------------------
     # State-transition hooks

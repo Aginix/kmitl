@@ -8,13 +8,18 @@ AWAITING_SIGNER_ACTIVITY = "purchase_request_todo.mail_activity_pr_awaiting_sign
 ENDORSEMENT_APPROVED_ACTIVITY = (
     "purchase_request_todo.mail_activity_pr_endorsement_approved"
 )
+EGP_NUMBER_ENTRY_ACTIVITY = (
+    "purchase_request_todo.mail_activity_pr_egp_number_entry"
+)
 BUDGET_COMMITMENT_ROLE = "budget_role.role_budget_commitment"
+PROCUREMENT_ROLE = "purchase_user_role.purchase_role_procurement"
 
 PR_LIFECYCLE_ACTIVITIES = [
     RESERVE_BUDGET_ACTIVITY,
     AWAITING_ENDORSEMENT_LETTER_ACTIVITY,
     AWAITING_SIGNER_ACTIVITY,
     ENDORSEMENT_APPROVED_ACTIVITY,
+    EGP_NUMBER_ENTRY_ACTIVITY,
 ]
 
 
@@ -87,24 +92,16 @@ class PurchaseRequest(models.Model):
         ) % (self.name or "")
 
     def _schedule_endorsement_letter_todo(self):
-        """Route to the จองงบประมาณ role of the พ.1's operating unit; fall
-        back to ``requested_by`` when the unit or role is unknown."""
-        role = self.env.ref(BUDGET_COMMITMENT_ROLE, raise_if_not_found=False)
+        """Personal Todo assigned to the user who created the พ.1."""
         for rec in self:
+            if not rec.create_uid:
+                continue
             summary = rec._endorsement_letter_todo_summary()
-            if role and rec.operating_unit_id:
-                rec.activity_schedule(
-                    AWAITING_ENDORSEMENT_LETTER_ACTIVITY,
-                    summary=summary,
-                    responsible_role_id=role.id,
-                    operating_unit_id=rec.operating_unit_id.id,
-                )
-            elif rec.requested_by:
-                rec.activity_schedule(
-                    AWAITING_ENDORSEMENT_LETTER_ACTIVITY,
-                    summary=summary,
-                    user_id=rec.requested_by.id,
-                )
+            rec.activity_schedule(
+                AWAITING_ENDORSEMENT_LETTER_ACTIVITY,
+                summary=summary,
+                user_id=rec.create_uid.id,
+            )
 
     # ---------------------------------------------------------------------
     # Awaiting authorized signer (to_submit → to_approve, Sarabun routing)
@@ -137,15 +134,13 @@ class PurchaseRequest(models.Model):
     # Endorsement approved (to_approve → in_approval / in_egp)
     # ---------------------------------------------------------------------
     def _endorsement_approved_todo_summary(self):
-        """Body differs by procurement path: EGP recording vs standard PA
-        (พจ.1) drafting."""
+        """Body differs by procurement path: EGP path vs standard PA (พจ.1) drafting."""
         self.ensure_one()
         if self.is_egp:
             return _(
                 "แบบขอให้จัดหา (พ.1) เลขที่ %s "
                 "ได้รับความเห็นชอบให้ดำเนินการจัดหาแล้ว "
-                "กรุณาตรวจสอบเพื่อ บันทึกเลขที่โครงการจากระบบ EGP "
-                "และบันทึกข้อมูลสัญญา/ใบสั่งซื้อ/จ้างภายในระบบ"
+                "กรุณาดำเนินการต่อในระบบ e-GP"
             ) % (self.name or "")
         return _(
             "แบบขอให้จัดหา (พ.1) เลขที่ %s "
@@ -172,6 +167,45 @@ class PurchaseRequest(models.Model):
                     summary=summary,
                     user_id=rec.assigned_to.id,
                 )
+
+    # ---------------------------------------------------------------------
+    # E-GP number entry (in_egp — waiting for e-GP project number)
+    # ---------------------------------------------------------------------
+    def _egp_number_entry_todo_summary(self):
+        self.ensure_one()
+        return _(
+            "แบบขอให้จัดหา (พ.1) เลขที่ %s "
+            "กรุณาดำเนินการกรอกเลขที่โครงการ e-GP และกด ดำเนินการ e-GP เพื่อดำเนินการต่อ"
+        ) % (self.name or "")
+
+    def _schedule_egp_todo(self):
+        """Route to the เจ้าหน้าที่พัสดุหน่วยงาน role of the พ.1's operating unit;
+        fall back to ``assigned_to`` when the unit or role is unknown."""
+        role = self.env.ref(PROCUREMENT_ROLE, raise_if_not_found=False)
+        for rec in self:
+            summary = rec._egp_number_entry_todo_summary()
+            if role and rec.operating_unit_id:
+                rec.activity_schedule(
+                    EGP_NUMBER_ENTRY_ACTIVITY,
+                    summary=summary,
+                    responsible_role_id=role.id,
+                    operating_unit_id=rec.operating_unit_id.id,
+                )
+            elif rec.assigned_to:
+                rec.activity_schedule(
+                    EGP_NUMBER_ENTRY_ACTIVITY,
+                    summary=summary,
+                    user_id=rec.assigned_to.id,
+                )
+
+    def action_egp_in_progress(self):
+        """Close the E-GP number entry Todo when the officer confirms the project
+        number and transitions to in_progress."""
+        res = super().action_egp_in_progress()
+        self.filtered(
+            lambda r: r.egp_status == "in_progress"
+        ).activity_feedback([EGP_NUMBER_ENTRY_ACTIVITY])
+        return res
 
     # ---------------------------------------------------------------------
     # State-transition hooks
@@ -209,6 +243,8 @@ class PurchaseRequest(models.Model):
         # ผู้มีอำนาจลงนาม signed → close their Todo.
         landed.activity_feedback([AWAITING_SIGNER_ACTIVITY])
         landed._schedule_endorsement_approved_todo()
+        # EGP path: additional Todo to record the e-GP project number.
+        landed.filtered(lambda r: r.is_egp)._schedule_egp_todo()
         return res
 
     def _on_sarabun_rejected(self, document, step):
