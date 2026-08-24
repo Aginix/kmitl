@@ -1241,6 +1241,14 @@ class DisbursementRequest(models.Model):
                         subtype_xmlid="mail.mt_note",
                     )
             record.state = "cancel"
+            # A cancelled request no longer has budget obligated/consumed on
+            # its behalf (the lines above already reversed or cancelled the
+            # commitment side); clearing these keeps every reader that
+            # branches on "did this request commit budget" correct without
+            # having to also check state, and hides the leftover-return
+            # button, which depends on budget_consumed_amount.
+            record.budget_consumed_amount = 0.0
+            record.budget_consumed_date = False
         self._reset_approval()
         return True
 

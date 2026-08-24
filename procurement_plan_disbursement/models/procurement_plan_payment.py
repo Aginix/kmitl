@@ -34,15 +34,12 @@ class ProcurementPlanPayment(models.Model):
         "(ใบขอเบิกที่ยังไม่อนุมัติถือเป็น 'กำลังดำเนินการ' ไม่นับ)",
     )
 
-    @api.depends(
-        "disbursement_request_id.state",
-        "disbursement_request_id.budget_consumed_amount",
-    )
+    @api.depends("disbursement_request_id.budget_consumed_amount")
     def _compute_amount_actual(self):
         for rec in self:
             dr = rec.disbursement_request_id
-            # Only an approved DR has obligated+consumed the plan's budget; a
-            # cancelled DR keeps a stale budget_consumed_amount, so gate on state.
-            rec.amount_actual = (
-                dr.budget_consumed_amount if dr and dr.state == "approved" else 0.0
-            )
+            # budget_consumed_amount is only set once a DR obligates+consumes
+            # the plan's budget (at approval) and is cleared again if the DR
+            # is later cancelled, so it can be read directly without also
+            # checking state — see disbursement.request.action_cancel.
+            rec.amount_actual = dr.budget_consumed_amount if dr else 0.0
