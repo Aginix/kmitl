@@ -128,6 +128,9 @@
                             <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
                             <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
                             <field name="budget_account_id" invisible="1" />
+                            <!-- Loaded (hidden) so the line list can hide the
+                                 product column via parent. -->
+                            <field name="is_budget_account_product_expense" invisible="1" />
                             <field name="analytic_distribution" invisible="1"/>
                             <field name="budget_consumed_amount" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}" />
                             <field name="budget_consumed_date" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}" />
@@ -159,7 +162,10 @@
                                     <field name="sequence" widget="handle" />
                                     <field name="partner_id" required="1" />
                                     <field name="partner_bank_id" optional="hide" />
-                                    <field name="product_id" />
+                                    <!-- Budget codes that carry their own product stamp it
+                                         automatically, so the whole column is hidden and only
+                                         ordinary disbursements pick a product by hand. -->
+                                    <field name="product_id" attrs="{'column_invisible': [('parent.is_budget_account_product_expense', '=', True)], 'required': [('parent.is_budget_account_product_expense', '=', False)]}" />
                                     <field name="name" optional="show" />
                                     <field name="quantity" />
                                     <field name="price_unit" />

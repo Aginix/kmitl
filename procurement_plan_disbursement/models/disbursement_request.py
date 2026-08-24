@@ -12,7 +12,7 @@ class DisbursementRequest(models.Model):
     _inherit = "disbursement.request"
 
     # True when this DR draws an investment budget code. Lives on the request so
-    # the line list can hide the whole product column with ``column_invisible``.
+    # the form can key the procurement-plan dimension on it.
     is_procurement_plan_expense = fields.Boolean(
         related="budget_account_id.procurement_plan",
         string="Is Procurement Plan Expense",
@@ -43,47 +43,18 @@ class DisbursementRequest(models.Model):
             rec._update_analytic_distribution("procurement_plan")
 
     # For procurement-plan expenses the line product is not chosen by hand — it
-    # is the product bound to the budget account (budget_product). Stamp it on any
-    # change; a code with no bound product leaves the line blank and is refused on
-    # submit by the excep_disbursement_procurement_no_product rule.
-    #
-    # NOTE: the product column is column_invisible when is_procurement_plan_expense
-    # is True, which means Odoo's client does NOT track that field in the o2m and
-    # silently drops any onchange-returned changes for it.  The actual stamping must
-    # therefore happen at the ORM level (create/write).  The onchange is kept only
-    # as a best-effort UX hint for the edge case where the column is visible.
-    @api.onchange("budget_account_id", "line_ids")
-    def _onchange_fill_procurement_plan_product(self):
-        self._fill_procurement_plan_product_on_lines()
-
-    def _fill_procurement_plan_product_on_lines(self):
+    # is the product bound to the budget account (budget_product). Hand both to
+    # the disbursement hooks, which hide the product column and stamp the product
+    # and its expense account on every line at ORM level. A code with no bound
+    # product leaves the line blank and is refused on submit by the
+    # excep_disbursement_procurement_no_product rule.
+    @api.depends("budget_account_id")
+    def _compute_is_budget_account_product_expense(self):
+        super()._compute_is_budget_account_product_expense()
         for rec in self.filtered("is_procurement_plan_expense"):
-            product = rec.budget_account_id.product_id
-            if not product:
-                continue
-            account = (
-                product.property_account_expense_id
-                or product.categ_id.property_account_expense_categ_id
-            )
-            for line in rec.line_ids.filtered(lambda l: l.product_id != product):
-                line.product_id = product
-                if not line.name:
-                    line.name = product.display_name
-                # The account follows the product unconditionally: budget_product
-                # binds the budget code's own GL account to its product, so a
-                # stale account from the previously stamped code would book the
-                # expense against the wrong account.
-                if account:
-                    line.account_id = account
+            rec.is_budget_account_product_expense = True
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        records = super().create(vals_list)
-        records._fill_procurement_plan_product_on_lines()
-        return records
-
-    def write(self, vals):
-        res = super().write(vals)
-        if "budget_account_id" in vals or "line_ids" in vals:
-            self._fill_procurement_plan_product_on_lines()
-        return res
+    def _budget_account_line_product(self):
+        if self.is_procurement_plan_expense:
+            return self.budget_account_id.product_id
+        return super()._budget_account_line_product()
