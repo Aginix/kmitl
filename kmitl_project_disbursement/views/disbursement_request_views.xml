@@ -10,8 +10,6 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='activity_analytic_id']" position="after">
                 <field name="kmitl_project_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" attrs="{'invisible': [('kmitl_project_analytic_id', '=', False)]}"/>
-                <!-- Loaded (hidden) so the line list can reference it via parent. -->
-                <field name="is_project_expense" invisible="1"/>
             </xpath>
             <!-- Smart button: link back to the project this disbursement is raised under. -->
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
@@ -21,12 +19,6 @@
                         <span class="o_stat_text">โครงการ/กิจกรรม</span>
                     </div>
                 </button>
-            </xpath>
-            <!-- Project expenses: the product (รหัสบัญชี) is derived from the project
-                 budget account, so hide the whole column (column_invisible, keyed on
-                 the parent) and keep it required only for ordinary disbursements. -->
-            <xpath expr="//field[@name='line_ids']/tree/field[@name='product_id']" position="attributes">
-                <attribute name="attrs">{'column_invisible': [('parent.is_project_expense', '=', True)], 'required': [('parent.is_project_expense', '=', False)]}</attribute>
             </xpath>
         </field>
     </record>
