@@ -84,3 +84,6 @@ docs/_build/
 !static/lib/
 
 .Identifier
+
+# oca-gen-addon-readme pre-commit hook downloads a pandoc installer here
+pandoc-*.pkg

@@ -106,6 +106,7 @@ class DisbursementRequest(models.Model):
         store=True,
         readonly=False,
         tracking=True,
+        index=True,
         states=READONLY_STATES,
     )
 
@@ -257,6 +258,7 @@ class DisbursementRequest(models.Model):
         readonly=True,
         copy=False,
         tracking=True,
+        index=True,
         default="draft",
     )
 
@@ -270,6 +272,7 @@ class DisbursementRequest(models.Model):
         store=True,
         readonly=True,
         copy=False,
+        index=True,
         default="pre_approval",
     )
 
@@ -287,6 +290,7 @@ class DisbursementRequest(models.Model):
         store=True,
         readonly=True,
         copy=False,
+        index=True,
         default="draft",
     )
 
@@ -307,6 +311,7 @@ class DisbursementRequest(models.Model):
         readonly=True,
         copy=False,
         tracking=True,
+        index=True,
     )
 
     finance_approver_id = fields.Many2one(
@@ -337,6 +342,8 @@ class DisbursementRequest(models.Model):
         domain=[("state", "not in", ["draft", "done", "cancel"])],
         tracking=True,
         copy=False,
+        index=True,
+        ondelete="restrict",
         states=READONLY_STATES,
     )
 
@@ -346,6 +353,8 @@ class DisbursementRequest(models.Model):
         domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
         tracking=True,
         copy=False,
+        index=True,
+        ondelete="restrict",
         states=READONLY_STATES,
     )
 
@@ -393,6 +402,7 @@ class DisbursementRequest(models.Model):
         store=True,
         compute_sudo=True,
         tracking=True,
+        index=True,
         states=READONLY_STATES,
     )
 
@@ -434,6 +444,7 @@ class DisbursementRequest(models.Model):
         string="Fiscal Year",
         tracking=True,
         store=True,
+        index=True,
         compute="_compute_date_range_fy",
         search="_search_date_range_fy",
     )
