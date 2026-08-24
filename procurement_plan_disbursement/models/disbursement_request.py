@@ -69,7 +69,11 @@ class DisbursementRequest(models.Model):
                 line.product_id = product
                 if not line.name:
                     line.name = product.display_name
-                if account and not line.account_id:
+                # The account follows the product unconditionally: budget_product
+                # binds the budget code's own GL account to its product, so a
+                # stale account from the previously stamped code would book the
+                # expense against the wrong account.
+                if account:
                     line.account_id = account
 
     @api.model_create_multi
