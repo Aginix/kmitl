@@ -38,8 +38,9 @@ Roles
 * ``Viewer`` — read-only access to receipts, remittances, payment methods
 * ``User`` (เจ้าหน้าที่หน่วยงาน) — creates/confirms/cancels receipts; creates,
   submits, and detaches remittances. Cannot post accounting.
-* ``Manager`` — configures payment methods, the walk-in partner, and exception
-  rules. Implies Treasury Officer.
+* ``Manager`` — configures payment methods and the walk-in partner.
+  Implies Treasury Officer. Exception rules require the separate
+  ``base_exception.group_exception_rule_manager`` group.
 * ``Treasury Officer`` (เจ้าหน้าที่กองคลัง) — an independent capability (not a
   tier) that may mark a remittance ``done``, creating the accounting entries.
 

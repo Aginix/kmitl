@@ -37,8 +37,10 @@ Both `kmitl.receipt` and `kmitl.receipt.remittance` (the renamed deposit).
   `activity_analytic_id`, `department_analytic_id`, `fund_analytic_id`,
   `source_analytic_id`, `kmitl_project_analytic_id`, `procurement_plan_analytic_id`.
   Each: `compute="_compute_analytic_id"`, `inverse="_inverse_<x>_analytic"`,
-  `domain=[("root_plan_id.code","=","<code>")]`, `store=False`
-  **except `department_analytic_id` → `store=True`**.
+  `domain=[("root_plan_id.code","=","<code>")]`, **all `store=False`**
+  (including `department_analytic_id` — no search/group_by/report consumes it,
+  and `store=True` causes `compute_sudo` inconsistency warnings in the registry
+  plus stale values when `analytic_distribution` is cleared).
 - `_analytic_keys = { "activities":"activity_analytic_id",
   "departments":"department_analytic_id", "funds":"fund_analytic_id",
   "sources":"source_analytic_id", "kmitl_project":"kmitl_project_analytic_id",
@@ -158,7 +160,8 @@ Replace the three role groups entirely.
 
 **Base hook prerequisite** (do in base `receipt_kmitl`): refactor `_create_move()`
 so per-line vals go through `_prepare_move_line_vals(line)` (and a debit-line
-helper), giving the OU module a clean override point.
+helper), and the header dict goes through `_prepare_move_vals(line_vals)`, giving
+the OU module clean override points for both header and line stamping.
 
 **`receipt_kmitl_operating_unit`** — `depends = ["receipt_kmitl","operating_unit",
 "account_operating_unit"]`. Pattern: `procurement_plan_operating_unit`.
@@ -182,15 +185,18 @@ helper), giving the OU module a clean override point.
 ## Testing checklist
 
 - [ ] Line: set `analytic_distribution` via default context → all 6 dimension
-      fields populate; edit a field → JSON updates. (`store=False` except dept.)
+      fields populate; edit a field → JSON updates; clear distribution → field
+      resets (all `store=False`).
 - [ ] Receipt confirm mints `RC/<dept>/<fy2>/nnnn`; remittance submit mints
-      `RM/<fy4>/nnnn` and stamps today's date.
+      `RM/<fy4>/nnnn` and stamps today's date; `date` is readonly after submit.
 - [ ] Remittance pull/submit gather receipts from a **parent** department's whole
       subtree (`child_of`).
 - [ ] Detach one receipt from a submitted remittance → remittance stays submitted,
-      receipt returns to the confirmable pool; "แก้ไขใบเสร็จ" reopens it.
+      receipt returns to the confirmable pool; "แก้ไขใบเสร็จ" reopens it. Detach
+      is blocked on `draft` and `done` remittances.
 - [ ] Cancel a submitted remittance releases all receipts; `done` cannot be cancelled;
       `submitted` cannot reset to draft.
+- [ ] Cancel/Reset to Draft buttons are hidden from Viewer (require `group_user`).
 - [ ] Walk-in partner cannot be deleted (config-param target); menu opens it; archive
       still allowed.
 - [ ] viewer read-only + sees app; user does everything but `done`; only treasury

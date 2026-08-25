@@ -46,11 +46,13 @@
                     <button name="action_cancel"
                             type="object"
                             string="Cancel"
-                            attrs="{'invisible': [('state', 'in', ['done', 'cancelled'])]}"/>
+                            attrs="{'invisible': [('state', 'in', ['done', 'cancelled'])]}"
+                            groups="receipt_kmitl.group_receipt_kmitl_user"/>
                     <button name="action_draft"
                             type="object"
                             string="Reset to Draft"
-                            attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+                            attrs="{'invisible': [('state', '!=', 'cancelled')]}"
+                            groups="receipt_kmitl.group_receipt_kmitl_user"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,submitted,done"/>
                 </header>
@@ -62,7 +64,8 @@
                     </div>
                     <group>
                         <group>
-                            <field name="date"/>
+                            <field name="date"
+                                   attrs="{'readonly': [('state','!=','draft')]}"/>
                             <field name="department_analytic_id"
                                    options="{'no_create': True}"
                                    attrs="{'readonly': [('state','!=','draft')]}"/>
@@ -92,7 +95,8 @@
                                             type="object"
                                             string="Detach"
                                             icon="fa-chain-broken"
-                                            groups="receipt_kmitl.group_receipt_kmitl_user"/>
+                                            groups="receipt_kmitl.group_receipt_kmitl_user"
+                                            attrs="{'column_invisible': [('parent.state', '!=', 'submitted')]}"/>
                                 </tree>
                             </field>
                         </page>

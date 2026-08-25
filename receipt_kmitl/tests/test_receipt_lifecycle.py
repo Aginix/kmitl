@@ -89,6 +89,10 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
             line.analytic_distribution, {str(self.dept_b.id): 100.0}
         )
 
+        # clear distribution -> field resets
+        line.analytic_distribution = False
+        self.assertFalse(line.department_analytic_id)
+
     def test_action_correct_reopens_detached_receipt(self):
         receipt = self._make_receipt()
         receipt.action_confirm()

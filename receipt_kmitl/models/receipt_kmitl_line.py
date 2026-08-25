@@ -62,7 +62,7 @@ class ReceiptKmitlLine(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
-        store=True,
+        store=False,
     )
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",

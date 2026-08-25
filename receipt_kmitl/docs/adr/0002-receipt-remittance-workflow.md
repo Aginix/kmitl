@@ -19,11 +19,13 @@ and an error usually affects only a few.
 ## Error correction — detach, not reject
 
 - Both the owning department and central finance may **detach** individual
-  receipts from a `submitted` remittance (a per-row button; logged to chatter on
-  both sides). A detached receipt drops back to the unremitted `confirmed` pool,
-  keeping its number, and is corrected (reset → edit → re-confirm) then remitted
-  in a **later** remittance. The original remittance proceeds to `done` with the
-  receipts that remain.
+  receipts from a `submitted` remittance (a per-row button, guarded in code;
+  logged to chatter on both sides). Detach is only allowed when the remittance
+  is in the `submitted` state — not `draft` (use the o2m to remove rows instead)
+  and not `done` (posted receipts are immutable). A detached receipt drops back
+  to the unremitted `confirmed` pool, keeping its number, and is corrected
+  (reset → edit → re-confirm) then remitted in a **later** remittance. The
+  original remittance proceeds to `done` with the receipts that remain.
 - The only whole-document escape hatch is `cancel` (allowed from `draft`/
   `submitted`, not `done`), which releases every receipt back to the pool.
 

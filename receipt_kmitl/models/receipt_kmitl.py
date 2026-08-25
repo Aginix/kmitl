@@ -292,6 +292,18 @@ class ReceiptKmitl(models.Model):
             "analytic_distribution": line.analytic_distribution,
         }
 
+    def _prepare_move_vals(self, line_vals):
+        """Header vals for the receipt's journal entry. Override point for
+        add-ons (e.g. Operating Unit) that need to stamp extra fields."""
+        self.ensure_one()
+        return {
+            "ref": self.name,
+            "date": self.date,
+            "journal_id": self.payment_method_id.journal_id.id,
+            "company_id": self.company_id.id,
+            "line_ids": line_vals,
+        }
+
     def _create_move(self):
         self.ensure_one()
         method = self.payment_method_id
@@ -302,15 +314,7 @@ class ReceiptKmitl(models.Model):
         line_vals = [(0, 0, self._prepare_debit_line_vals())]
         for line in self.line_ids:
             line_vals.append((0, 0, self._prepare_move_line_vals(line)))
-        move = self.env["account.move"].create(
-            {
-                "ref": self.name,
-                "date": self.date,
-                "journal_id": method.journal_id.id,
-                "company_id": self.company_id.id,
-                "line_ids": line_vals,
-            }
-        )
+        move = self.env["account.move"].create(self._prepare_move_vals(line_vals))
         move.action_post()
         return move
 
@@ -356,6 +360,10 @@ class ReceiptKmitl(models.Model):
         for rec in self:
             if not rec.remittance_id:
                 raise UserError(_("This receipt is not in any remittance."))
+            if rec.remittance_id.state != "submitted":
+                raise UserError(
+                    _("Only receipts in a submitted remittance can be detached.")
+                )
             remittance = rec.remittance_id
             rec.remittance_id = False
             remittance.message_post(

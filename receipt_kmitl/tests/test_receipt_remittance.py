@@ -144,6 +144,46 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         with self.assertRaises(UserError):
             remittance.action_draft()
 
+    def test_detach_blocked_on_done_remittance(self):
+        r1 = self._make_receipt()
+        r1.action_confirm()
+        remittance = self.env["kmitl.receipt.remittance"].create(
+            {
+                "department_analytic_id": self.dept_a.id,
+                "receipt_ids": [(6, 0, [r1.id])],
+            }
+        )
+        remittance.action_submit()
+        remittance.action_done()
+        with self.assertRaises(UserError):
+            r1.action_detach()
+        self.assertTrue(r1.remittance_id)
+
+    def test_detach_blocked_on_draft_remittance(self):
+        r1 = self._make_receipt()
+        r1.action_confirm()
+        self.env["kmitl.receipt.remittance"].create(
+            {
+                "department_analytic_id": self.dept_a.id,
+                "receipt_ids": [(6, 0, [r1.id])],
+            }
+        )
+        with self.assertRaises(UserError):
+            r1.action_detach()
+
+    def test_submitted_remittance_date_is_submission_date(self):
+        r1 = self._make_receipt()
+        r1.action_confirm()
+        remittance = self.env["kmitl.receipt.remittance"].create(
+            {
+                "department_analytic_id": self.dept_a.id,
+                "receipt_ids": [(6, 0, [r1.id])],
+            }
+        )
+        remittance.action_submit()
+        fy_be = str(r1._get_fiscal_year_be(remittance.date))
+        self.assertTrue(remittance.name.startswith("RM/%s/" % fy_be))
+
     def test_submit_rejects_receipt_outside_subtree(self):
         r_other = self._make_receipt(department=self.dept_b)
         r_other.action_confirm()
