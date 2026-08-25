@@ -19,12 +19,12 @@ for employee in records:
             'name': employee.name,
             'company_type': 'person',
         })
-        employee.sudo().work_contact_id = partner.id
+        employee.sudo().write({'work_contact_id': partner.id})
     employee_type = env.ref(
         'partner_type_kmitl.partner_type_employee', raise_if_not_found=False
     )
     if employee_type:
-        partner.sudo().partner_type_id = employee_type.id
+        partner.sudo().write({'partner_type_id': employee_type.id})
     else:
         log(
             "hr_partner_type_kmitl: partner_type_kmitl.partner_type_employee "
