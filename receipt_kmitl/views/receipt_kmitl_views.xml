@@ -155,6 +155,19 @@
         </field>
     </record>
 
+    <record id="view_receipt_kmitl_pivot" model="ir.ui.view">
+        <field name="name">kmitl.receipt.pivot</field>
+        <field name="model">kmitl.receipt</field>
+        <field name="arch" type="xml">
+            <pivot string="Receipts">
+                <field name="department_analytic_id" type="row"/>
+                <field name="payment_method_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="amount_total" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
     <record id="view_receipt_kmitl_search" model="ir.ui.view">
         <field name="name">kmitl.receipt.search</field>
         <field name="model">kmitl.receipt</field>
@@ -165,6 +178,12 @@
                 <field name="department_analytic_id"/>
                 <field name="customer_name"/>
                 <field name="payment_method_id"/>
+                <field name="account_fiscal_year_id"/>
+                <field name="user_id"/>
+                <field name="remittance_id"/>
+                <separator/>
+                <filter string="My Receipts" name="my_receipts"
+                        domain="[('user_id','=',uid)]"/>
                 <separator/>
                 <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
                 <filter string="Confirmed" name="confirmed" domain="[('state','=','confirmed')]"/>
@@ -175,9 +194,12 @@
                         domain="[('state','=','confirmed'),('remittance_id','=',False)]"/>
                 <group expand="0" name="group_by" string="Group By">
                     <filter string="Department" name="group_department" context="{'group_by':'department_analytic_id'}"/>
+                    <filter string="Fiscal Year" name="group_fiscal_year" context="{'group_by':'account_fiscal_year_id'}"/>
                     <filter string="State" name="group_state" context="{'group_by':'state'}"/>
-                    <filter string="Date" name="group_date" context="{'group_by':'date'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by':'date:month'}"/>
                     <filter string="Payment Method" name="group_method" context="{'group_by':'payment_method_id'}"/>
+                    <filter string="Issued By" name="group_user" context="{'group_by':'user_id'}"/>
+                    <filter string="Partner" name="group_partner" context="{'group_by':'partner_id'}"/>
                 </group>
             </search>
         </field>
@@ -186,7 +208,7 @@
     <record id="action_receipt_kmitl" model="ir.actions.act_window">
         <field name="name">Receipts</field>
         <field name="res_model">kmitl.receipt</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,pivot</field>
         <field name="search_view_id" ref="view_receipt_kmitl_search"/>
     </record>
 </odoo>

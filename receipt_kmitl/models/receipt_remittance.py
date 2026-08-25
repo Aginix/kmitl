@@ -80,6 +80,16 @@ class ReceiptRemittance(models.Model):
     done_by = fields.Many2one("res.users", readonly=True, copy=False)
     done_date = fields.Datetime(readonly=True, copy=False)
 
+    receipt_count = fields.Integer(
+        compute="_compute_receipt_count",
+        string="# Receipts",
+    )
+
+    @api.depends("receipt_ids")
+    def _compute_receipt_count(self):
+        for rec in self:
+            rec.receipt_count = len(rec.receipt_ids)
+
     @api.onchange("receipt_to_add_id")
     def _onchange_receipt_to_add_id(self):
         if self.receipt_to_add_id:
