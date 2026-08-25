@@ -11,3 +11,6 @@ Configuration
 
 Manage exception rules from the generic ``exception.rule`` model (model
 ``kmitl.receipt``). One example rule ships disabled (``active=False``).
+
+The **Configuration → Exception Rules** menu is restricted to users in the
+``base_exception.group_exception_rule_manager`` group.

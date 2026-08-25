@@ -13,5 +13,6 @@
               name="Exception Rules"
               parent="receipt_kmitl.menu_receipt_kmitl_configuration"
               action="action_receipt_kmitl_exception_rule"
-              sequence="40"/>
+              sequence="40"
+              groups="base_exception.group_exception_rule_manager"/>
 </odoo>
