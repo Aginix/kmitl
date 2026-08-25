@@ -20,11 +20,8 @@
         <mxCell id="lg_have" value="✅ มีแล้ว (เส้นขอบเขียว)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;strokeWidth=2;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="660" y="70" width="200" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="lg_gap" value="⛔ เสนอเพิ่ม (ขอบแดงประ)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="880" y="70" width="220" height="30" as="geometry" />
-        </mxCell>
         <mxCell id="lg_ext" value="⚠️ จัดการโดยโมดูลอื่น" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="1120" y="70" width="200" height="30" as="geometry" />
+          <mxGeometry x="880" y="70" width="200" height="30" as="geometry" />
         </mxCell>
 
         <!-- ==================== STATE CHAIN (happy path) ==================== -->
@@ -105,22 +102,22 @@
         <mxCell id="nc_appr_fyi" value="🔔 → ผู้สร้าง&lt;br&gt;&lt;b&gt;[FYI]&lt;/b&gt; คำขอได้รับอนุมัติแล้ว&lt;br&gt;✅ agx_approval_sarabun_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#e1d5e7;strokeColor=#82b366;strokeWidth=2;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1140" y="440" width="250" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="nc_appr_exec" value="🔔 → ผู้สร้าง&lt;br&gt;&lt;b&gt;[EXEC]&lt;/b&gt; บันทึกค่าใช้จ่ายจริง แล้วส่งให้การเงิน&lt;br&gt;⛔ เสนอเพิ่ม" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#dae8fc;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="nc_appr_exec" value="🔔 → ผู้สร้าง&lt;br&gt;&lt;b&gt;[EXEC]&lt;/b&gt; บันทึกค่าใช้จ่ายจริง แล้วส่งให้การเงิน&lt;br&gt;✅ agx_approval_disbursement_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=2;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1140" y="560" width="250" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="nc_disb" value="🔔 → เจ้าหน้าที่การเงิน&lt;br&gt;&lt;b&gt;[EXEC]&lt;/b&gt; ตรวจสอบและตั้งเบิก&lt;br&gt;⛔ เสนอเพิ่ม" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#dae8fc;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="nc_disb" value="🔔 → เจ้าหน้าที่การเงิน&lt;br&gt;&lt;b&gt;[EXEC]&lt;/b&gt; ตรวจสอบและตั้งเบิก&lt;br&gt;✅ agx_approval_disbursement_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=2;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1450" y="440" width="250" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="nc_bill" value="🔔 → ผู้สร้าง&lt;br&gt;&lt;b&gt;[FYI]&lt;/b&gt; เบิกจ่ายเรียบร้อยแล้ว&lt;br&gt;⛔ เสนอเพิ่ม (optional)" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#e1d5e7;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="nc_bill" value="🔔 → ผู้สร้าง&lt;br&gt;&lt;b&gt;[FYI]&lt;/b&gt; เบิกจ่ายเรียบร้อยแล้ว&lt;br&gt;✅ agx_approval_disbursement_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#e1d5e7;strokeColor=#82b366;strokeWidth=2;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1740" y="440" width="250" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="nc_returned" value="🔔 → ผู้สร้าง&lt;br&gt;&lt;b&gt;[EXEC]&lt;/b&gt; ตีกลับสารบรรณ: แก้ไข+ส่งหนังสือใหม่ — ⛔ เสนอเพิ่ม&lt;br&gt;&lt;b&gt;[EXEC]&lt;/b&gt; ตีกลับใบเบิก (DR): แก้ไข bank/หลักฐาน — ✅ agx_approval_disbursement" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#dae8fc;strokeColor=#d6b656;strokeWidth=2;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="nc_returned" value="🔔 → ผู้สร้าง&lt;br&gt;&lt;b&gt;[EXEC]&lt;/b&gt; ตีกลับสารบรรณ: แก้ไข+ส่งหนังสือใหม่ — ✅ agx_approval_sarabun_todo&lt;br&gt;&lt;b&gt;[EXEC]&lt;/b&gt; ตีกลับใบเบิก (DR): แก้ไข bank/หลักฐาน — ✅ agx_approval_disbursement" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=2;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="540" y="560" width="300" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="nc_fin_return" value="🔔 → ผู้สร้าง&lt;br&gt;&lt;b&gt;[EXEC]&lt;/b&gt; การเงินตีกลับ: แก้ไขค่าใช้จ่ายจริง (พร้อมเหตุผล) แล้วส่งใหม่&lt;br&gt;⛔ เสนอเพิ่ม" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#dae8fc;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="nc_fin_return" value="🔔 → ผู้สร้าง&lt;br&gt;&lt;b&gt;[EXEC]&lt;/b&gt; การเงินตีกลับ: แก้ไขค่าใช้จ่ายจริง (พร้อมเหตุผล) แล้วส่งใหม่&lt;br&gt;✅ agx_approval_disbursement_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=2;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1450" y="560" width="250" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="nc_rejected" value="🔔 → ผู้สร้าง&lt;br&gt;&lt;b&gt;[FYI]&lt;/b&gt; คำขอถูกปฏิเสธ&lt;br&gt;⛔ เสนอเพิ่ม" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#e1d5e7;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="nc_rejected" value="🔔 → ผู้สร้าง&lt;br&gt;&lt;b&gt;[FYI]&lt;/b&gt; คำขอถูกปฏิเสธ&lt;br&gt;✅ agx_approval_sarabun_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=6;fillColor=#e1d5e7;strokeColor=#82b366;strokeWidth=2;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1740" y="560" width="250" height="90" as="geometry" />
         </mxCell>
 
@@ -191,11 +188,8 @@
         <mxCell id="b_lg_have" value="✅ มีแล้ว" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;strokeWidth=2;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="930" y="60" width="110" height="28" as="geometry" />
         </mxCell>
-        <mxCell id="b_lg_gap" value="⛔ เสนอเพิ่ม" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=10;" vertex="1" parent="1">
-          <mxGeometry x="1050" y="60" width="130" height="28" as="geometry" />
-        </mxCell>
         <mxCell id="b_lg_ext" value="⚠️ โมดูลอื่น" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=10;" vertex="1" parent="1">
-          <mxGeometry x="1190" y="60" width="120" height="28" as="geometry" />
+          <mxGeometry x="1050" y="60" width="120" height="28" as="geometry" />
         </mxCell>
 
         <!-- ==================== LANES (visual bands) ==================== -->
@@ -259,20 +253,20 @@
         <mxCell id="b_m_appr_fyi" value="✉ [FYI] คำขอได้รับอนุมัติแล้ว · ✅ agx_approval_sarabun_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#e1d5e7;strokeColor=#82b366;strokeWidth=2;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="1040" y="128" width="210" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="b_m_reject" value="✉ [FYI] คำขอถูกปฏิเสธ · ⛔ เสนอเพิ่ม" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#e1d5e7;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=10;" vertex="1" parent="1">
+        <mxCell id="b_m_reject" value="✉ [FYI] คำขอถูกปฏิเสธ · ✅ agx_approval_sarabun_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#e1d5e7;strokeColor=#82b366;strokeWidth=2;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="1320" y="128" width="210" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="b_m_bill" value="✉ [FYI] เบิกจ่ายเรียบร้อยแล้ว · ⛔ เสนอเพิ่ม (optional)" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#e1d5e7;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=10;" vertex="1" parent="1">
+        <mxCell id="b_m_bill" value="✉ [FYI] เบิกจ่ายเรียบร้อยแล้ว · ✅ agx_approval_disbursement_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#e1d5e7;strokeColor=#82b366;strokeWidth=2;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="1980" y="128" width="220" height="54" as="geometry" />
         </mxCell>
         <!-- Creator row B (y=190) -->
-        <mxCell id="b_m_returned" value="✉ [EXEC] ตีกลับสารบรรณ: แก้ไข+ส่งหนังสือใหม่ · ⛔ เสนอเพิ่ม" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#dae8fc;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=10;" vertex="1" parent="1">
+        <mxCell id="b_m_returned" value="✉ [EXEC] ตีกลับสารบรรณ: แก้ไข+ส่งหนังสือใหม่ · ✅ agx_approval_sarabun_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=2;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="540" y="190" width="210" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="b_m_actual" value="✉ [EXEC] บันทึกค่าใช้จ่ายจริง แล้วส่งการเงิน · ⛔ เสนอเพิ่ม" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#dae8fc;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=10;" vertex="1" parent="1">
+        <mxCell id="b_m_actual" value="✉ [EXEC] บันทึกค่าใช้จ่ายจริง แล้วส่งการเงิน · ✅ agx_approval_disbursement_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=2;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="1040" y="190" width="220" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="b_m_finret" value="✉ [EXEC] การเงินตีกลับ: แก้ไขค่าใช้จ่าย · ⛔ เสนอเพิ่ม" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#dae8fc;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=10;" vertex="1" parent="1">
+        <mxCell id="b_m_finret" value="✉ [EXEC] การเงินตีกลับ: แก้ไขค่าใช้จ่าย · ✅ agx_approval_disbursement_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=2;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="1560" y="190" width="220" height="54" as="geometry" />
         </mxCell>
         <mxCell id="b_m_dr" value="✉ [EXEC] ตีกลับใบเบิก (DR): แก้ bank/หลักฐาน · ✅ agx_approval_disbursement" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=2;fontSize=10;" vertex="1" parent="1">
@@ -287,7 +281,7 @@
           <mxGeometry x="830" y="503" width="240" height="44" as="geometry" />
         </mxCell>
         <!-- Finance notification -->
-        <mxCell id="b_m_disburse" value="✉ [EXEC] ตรวจสอบและตั้งเบิก · ⛔ เสนอเพิ่ม" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#dae8fc;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=10;" vertex="1" parent="1">
+        <mxCell id="b_m_disburse" value="✉ [EXEC] ตรวจสอบและตั้งเบิก · ✅ agx_approval_disbursement_todo" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacing=4;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=2;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="1600" y="683" width="240" height="44" as="geometry" />
         </mxCell>
 
