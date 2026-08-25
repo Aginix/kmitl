@@ -12,12 +12,20 @@ class ReceiptKmitl(models.Model):
         default=lambda self: self.env["res.users"].operating_unit_default_get(),
     )
 
+    def _prepare_move_vals(self, line_vals):
+        vals = super()._prepare_move_vals(line_vals)
+        if self.operating_unit_id:
+            vals["operating_unit_id"] = self.operating_unit_id.id
+        return vals
+
     def _prepare_debit_line_vals(self):
         vals = super()._prepare_debit_line_vals()
-        vals["operating_unit_id"] = self.operating_unit_id.id
+        if self.operating_unit_id:
+            vals["operating_unit_id"] = self.operating_unit_id.id
         return vals
 
     def _prepare_move_line_vals(self, line):
         vals = super()._prepare_move_line_vals(line)
-        vals["operating_unit_id"] = self.operating_unit_id.id
+        if self.operating_unit_id:
+            vals["operating_unit_id"] = self.operating_unit_id.id
         return vals

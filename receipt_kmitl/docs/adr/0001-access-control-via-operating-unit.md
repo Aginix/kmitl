@@ -1,10 +1,10 @@
-# Access control for receipts/deposits via Operating Unit, not department
+# Access control for receipts/remittances via Operating Unit, not department
 
-Row-level access to `kmitl.receipt` and `kmitl.cash.deposit` is scoped by
+Row-level access to `kmitl.receipt` and `kmitl.receipt.remittance` is scoped by
 **Operating Unit**, not by the issuing department. The base module therefore
 carries no row-level record rules and no `res.users.kmitl_department_ids` field —
 the department (`department_analytic_id`) is kept purely as a business dimension
-(fiscal-year running number, deposit bundling, analytics).
+(fiscal-year running number, remittance bundling, analytics).
 
 ## Considered Options
 
@@ -24,5 +24,10 @@ the department (`department_analytic_id`) is kept purely as a business dimension
   OU add-on is always installed in this deployment, matching every other module.
 - The generated `account.move` inherits the receipt's `operating_unit_id` (the
   OU module depends on `account_operating_unit`), so OU-based accounting reports
-  stay correct. `_create_move()` in the base exposes a `_prepare_move_line_vals()`
-  hook for this injection.
+  stay correct. `_create_move()` in the base exposes `_prepare_move_vals()`
+  (header) and `_prepare_move_line_vals()` / `_prepare_debit_line_vals()` (lines)
+  as override hooks. The OU bridge stamps the `operating_unit_id` on all three.
+- **Note:** `account_operating_unit`'s `_check_journal_operating_unit` constraint
+  will raise if a journal's `operating_unit_id` differs from the move's. No
+  journal in this deployment sets `operating_unit_id`, so this is not triggered.
+  If journals are later OU-scoped, payment method configuration must match.
