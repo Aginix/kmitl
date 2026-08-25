@@ -394,6 +394,16 @@ class ReceiptKmitl(models.Model):
             )
         return True
 
+    def action_view_move(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "account.move",
+            "res_id": self.move_id.id,
+            "view_mode": "form",
+            "views": [(False, "form")],
+        }
+
     def action_preview_receipt(self):
         self.ensure_one()
         html = self.env["ir.actions.report"].with_context(

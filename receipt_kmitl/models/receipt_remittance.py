@@ -67,11 +67,24 @@ class ReceiptRemittance(models.Model):
         string="ปีงบประมาณ",
         tracking=True,
     )
+    receipt_to_add_id = fields.Many2one(
+        "kmitl.receipt",
+        string="Add Receipt",
+        domain="[('state', '=', 'confirmed'), ('remittance_id', '=', False),"
+               " ('company_id', '=', company_id),"
+               " ('department_analytic_id', 'child_of', department_analytic_id)]",
+    )
     note = fields.Text()
     submitted_by = fields.Many2one("res.users", readonly=True, copy=False)
     submitted_date = fields.Datetime(readonly=True, copy=False)
     done_by = fields.Many2one("res.users", readonly=True, copy=False)
     done_date = fields.Datetime(readonly=True, copy=False)
+
+    @api.onchange("receipt_to_add_id")
+    def _onchange_receipt_to_add_id(self):
+        if self.receipt_to_add_id:
+            self.receipt_ids = [(4, self.receipt_to_add_id.id)]
+            self.receipt_to_add_id = False
 
     @api.depends("receipt_ids.amount_total")
     def _compute_amount_total(self):
@@ -200,6 +213,11 @@ class ReceiptRemittance(models.Model):
         for rec in self:
             if rec.state != "submitted":
                 raise UserError(_("Only submitted remittances can be posted."))
+            if not rec.receipt_ids:
+                raise UserError(
+                    _("Cannot post a remittance with no receipts. "
+                      "All receipts have been detached.")
+                )
             for receipt in rec.receipt_ids:
                 if receipt.state != "confirmed":
                     raise ValidationError(
@@ -213,6 +231,40 @@ class ReceiptRemittance(models.Model):
                     "done_date": fields.Datetime.now(),
                 }
             )
+
+    def action_recall(self):
+        """Creator recalls a submitted remittance back to draft."""
+        for rec in self:
+            if rec.state != "submitted":
+                raise UserError(
+                    _("Only submitted remittances can be recalled.")
+                )
+            if rec.submitted_by != self.env.user:
+                raise UserError(
+                    _("Only the person who submitted this remittance can recall it.")
+                )
+            rec.message_post(
+                body=_("Remittance recalled by %s.") % self.env.user.name
+            )
+            rec.write(
+                {
+                    "state": "draft",
+                    "submitted_by": False,
+                    "submitted_date": False,
+                }
+            )
+
+    def action_reject(self):
+        """Treasury officer opens the reject wizard to provide a reason."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Reject Remittance"),
+            "res_model": "kmitl.receipt.remittance.reject",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_remittance_id": self.id},
+        }
 
     def action_cancel(self):
         for rec in self:

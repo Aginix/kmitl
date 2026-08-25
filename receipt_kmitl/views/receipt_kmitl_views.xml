@@ -64,6 +64,16 @@
                 </header>
                 <sheet>
                     <field name="remittance_id" invisible="1"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_move"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-book"
+                                attrs="{'invisible': [('move_id', '=', False)]}"
+                                groups="receipt_kmitl.group_receipt_kmitl_treasury_officer">
+                            <field name="move_id" widget="statinfo" string="Journal Entry"/>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" readonly="1"/>

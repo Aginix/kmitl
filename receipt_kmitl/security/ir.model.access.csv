@@ -10,4 +10,5 @@ access_receipt_kmitl_user,kmitl.receipt user,model_kmitl_receipt,group_receipt_k
 access_receipt_kmitl_line_user,kmitl.receipt.line user,model_kmitl_receipt_line,group_receipt_kmitl_user,1,1,1,1
 access_receipt_remittance_user,kmitl.receipt.remittance user,model_kmitl_receipt_remittance,group_receipt_kmitl_user,1,1,1,1
 access_payment_method_manager,kmitl.payment.method manager,model_kmitl_payment_method,group_receipt_kmitl_manager,1,1,1,1
+access_remittance_reject_wizard,kmitl.receipt.remittance.reject user,model_kmitl_receipt_remittance_reject,group_receipt_kmitl_user,1,1,1,1
 access_kmitl_receipt_preview_user,kmitl.receipt.preview,model_kmitl_receipt_preview,base.group_user,1,1,1,0

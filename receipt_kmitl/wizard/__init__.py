@@ -1,3 +1,4 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from . import receipt_preview
+from . import receipt_remittance_reject
