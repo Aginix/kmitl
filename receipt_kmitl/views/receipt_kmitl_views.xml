@@ -29,6 +29,9 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <button name="action_preview_receipt"
+                            type="object"
+                            string="ดูตัวอย่างใบเสร็จ"/>
                     <button name="action_confirm"
                             type="object"
                             string="Confirm"

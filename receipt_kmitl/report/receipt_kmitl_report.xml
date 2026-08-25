@@ -23,6 +23,14 @@
                         ยกเลิก / CANCELLED
                     </div>
                 </t>
+                <t t-if="o.env.context.get('receipt_preview')">
+                    <div style="position: fixed; top: 45%; left: 50%;
+                                transform: translate(-50%, -50%) rotate(-30deg);
+                                font-size: 100px; color: #808080; opacity: 0.20;
+                                z-index: 1000; white-space: nowrap;">
+                        ตัวอย่างใบเสร็จ
+                    </div>
+                </t>
 
                 <!-- Top: crest / No. -->
                 <div class="row">

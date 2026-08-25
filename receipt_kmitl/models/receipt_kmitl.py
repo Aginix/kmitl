@@ -394,6 +394,36 @@ class ReceiptKmitl(models.Model):
             )
         return True
 
+    def action_preview_receipt(self):
+        self.ensure_one()
+        html = self.env["ir.actions.report"].with_context(
+            receipt_preview=True
+        )._render_qweb_html(
+            "receipt_kmitl.action_report_receipt_kmitl", self.ids
+        )[0]
+        wizard = self.env["kmitl.receipt.preview"].create(
+            {
+                "receipt_id": self.id,
+                "preview_html": html.decode("utf-8")
+                if isinstance(html, bytes)
+                else html,
+            }
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ตัวอย่างใบเสร็จ"),
+            "res_model": "kmitl.receipt.preview",
+            "res_id": wizard.id,
+            "view_mode": "form",
+            "target": "new",
+            "views": [
+                (
+                    self.env.ref("receipt_kmitl.view_receipt_preview_form").id,
+                    "form",
+                )
+            ],
+        }
+
     def unlink(self):
         for rec in self:
             if rec.state not in ("draft", "cancelled"):
