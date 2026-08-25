@@ -18,9 +18,8 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
         # No journal entry at confirm time
         self.assertFalse(receipt.move_id)
         # Sequence assigned per fiscal year: RC/<fy4>/nnnn
-        self.assertTrue(
-            receipt.name.startswith("RC/%s/" % receipt.fiscal_year_be)
-        )
+        fy_be = str(receipt._get_fy_be())
+        self.assertTrue(receipt.name.startswith("RC/%s/" % fy_be))
 
     def test_post_creates_move(self):
         receipt = self._make_receipt(

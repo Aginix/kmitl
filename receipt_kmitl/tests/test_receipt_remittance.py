@@ -181,7 +181,7 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
             }
         )
         remittance.action_submit()
-        fy_be = str(r1._get_fiscal_year_be(remittance.date))
+        fy_be = str(remittance._get_fy_be())
         self.assertTrue(remittance.name.startswith("RM/%s/" % fy_be))
 
     def test_submit_rejects_receipt_outside_subtree(self):

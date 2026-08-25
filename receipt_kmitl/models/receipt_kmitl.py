@@ -46,10 +46,11 @@ class ReceiptKmitl(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    fiscal_year_be = fields.Char(
+    account_fiscal_year_id = fields.Many2one(
+        "account.fiscal.year",
         string="ปีงบประมาณ",
-        compute="_compute_fiscal_year_be",
-        store=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -92,7 +93,8 @@ class ReceiptKmitl(models.Model):
         string="Branch Code (snapshot)",
         states=READONLY_STATES,
     )
-    note = fields.Text(states=READONLY_STATES)
+    description = fields.Text(states=READONLY_STATES)
+    note = fields.Text()
     line_ids = fields.One2many(
         "kmitl.receipt.line",
         "receipt_id",
@@ -159,12 +161,19 @@ class ReceiptKmitl(models.Model):
         for rec in self:
             rec.amount_total = sum(rec.line_ids.mapped("amount"))
 
-    @api.depends("date")
-    def _compute_fiscal_year_be(self):
-        for rec in self:
-            rec.fiscal_year_be = (
-                str(rec._get_fiscal_year_be(rec.date)) if rec.date else False
+    @api.onchange("date")
+    def _onchange_date(self):
+        if self.date:
+            fiscal_year = self.env["account.fiscal.year"].search(
+                [
+                    ("date_from", "<=", self.date),
+                    ("date_to", ">=", self.date),
+                    ("company_id", "=", self.company_id.id),
+                ],
+                limit=1,
             )
+            if fiscal_year:
+                self.account_fiscal_year_id = fiscal_year
 
     @api.onchange("partner_id")
     def _onchange_partner_id(self):
@@ -195,17 +204,28 @@ class ReceiptKmitl(models.Model):
     # -------------------------------------------------------------------------
     # Sequence
     # -------------------------------------------------------------------------
-    def _get_fiscal_year_be(self, date):
+    @staticmethod
+    def _get_fiscal_year_be(date):
         """Thai fiscal year as the full Buddhist Era budget year.
         FY runs Oct → Sep, so Oct-Dec belong to the next budget year
-        (e.g. 2025-10 → 2569)."""
+        (e.g. 2025-10 → 2569).  Kept as a static utility for callers
+        that don't have an ``account.fiscal.year`` record handy."""
         budget_year_ce = date.year + (1 if date.month >= 10 else 0)
         return budget_year_ce + 543
 
-    def _get_receipt_sequence(self, date):
+    def _get_fy_be(self):
+        """Return the 4-digit Buddhist-era fiscal year for this receipt,
+        derived from ``account_fiscal_year_id.date_to`` when available,
+        else falling back to the receipt date calculation."""
+        self.ensure_one()
+        if self.account_fiscal_year_id:
+            return self.account_fiscal_year_id.date_to.year + 543
+        return self._get_fiscal_year_be(self.date)
+
+    def _get_receipt_sequence(self):
         """Lazy-create the per-fiscal-year ir.sequence for receipt numbers
         (e.g. ``RC/2569/0001``)."""
-        fy_be = self._get_fiscal_year_be(date)
+        fy_be = self._get_fy_be()
         seq_code = "kmitl.receipt.%s" % fy_be
         IrSeq = self.env["ir.sequence"].sudo()
         seq = IrSeq.search([("code", "=", seq_code)], limit=1)
@@ -247,7 +267,7 @@ class ReceiptKmitl(models.Model):
             if not rec.customer_name and rec.partner_id:
                 rec._sync_customer_snapshot()
             if rec.name == "/" or not rec.name:
-                seq = rec._get_receipt_sequence(rec.date)
+                seq = rec._get_receipt_sequence()
                 rec.name = seq.next_by_id()
             rec.state = "confirmed"
         return True

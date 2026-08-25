@@ -5,6 +5,7 @@ access_receipt_remittance_viewer,kmitl.receipt.remittance viewer,model_kmitl_rec
 access_payment_method_viewer,kmitl.payment.method viewer,model_kmitl_payment_method,group_receipt_kmitl_viewer,1,0,0,0
 access_account_analytic_account_viewer,account.analytic.account viewer,analytic.model_account_analytic_account,group_receipt_kmitl_viewer,1,0,0,0
 access_account_account_viewer,account.account viewer,account.model_account_account,group_receipt_kmitl_viewer,1,0,0,0
+access_account_fiscal_year_viewer,account.fiscal.year viewer,account_fiscal_year.model_account_fiscal_year,group_receipt_kmitl_viewer,1,0,0,0
 access_receipt_kmitl_user,kmitl.receipt user,model_kmitl_receipt,group_receipt_kmitl_user,1,1,1,1
 access_receipt_kmitl_line_user,kmitl.receipt.line user,model_kmitl_receipt_line,group_receipt_kmitl_user,1,1,1,1
 access_receipt_remittance_user,kmitl.receipt.remittance user,model_kmitl_receipt_remittance,group_receipt_kmitl_user,1,1,1,1

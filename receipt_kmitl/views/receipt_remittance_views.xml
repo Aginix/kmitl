@@ -66,6 +66,8 @@
                         <group>
                             <field name="date"
                                    attrs="{'readonly': [('state','!=','draft')]}"/>
+                            <field name="account_fiscal_year_id"
+                                   attrs="{'readonly': [('state','!=','draft')]}"/>
                             <field name="department_analytic_id"
                                    options="{'no_create': True}"
                                    attrs="{'readonly': [('state','!=','draft')]}"/>

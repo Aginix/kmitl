@@ -9,6 +9,7 @@
     "summary": "Cash receipting and central posting workflow for KMITL",
     "depends": [
         "account",
+        "account_fiscal_year",
         "mail",
         "account_analytic_kmitl",
         "l10n_th_amount_to_text",

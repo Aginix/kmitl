@@ -69,17 +69,20 @@
                     <group>
                         <group name="header" string="Header">
                             <field name="date"/>
-                            <field name="fiscal_year_be" readonly="1"/>
+                            <field name="account_fiscal_year_id"/>
                             <field name="department_analytic_id"
                                    options="{'no_create': True}"/>
-                            <field name="payment_method_id"/>
+                            <field name="payment_method_id"
+                                   widget="selection"/>
                             <field name="user_id" readonly="1"
                                    groups="!receipt_kmitl.group_receipt_kmitl_manager"/>
                             <field name="user_id" readonly="0"
                                    groups="receipt_kmitl.group_receipt_kmitl_manager"/>
+                            <field name="description"/>
                         </group>
                         <group name="customer" string="Customer">
-                            <field name="partner_id"/>
+                            <field name="partner_id"
+                                   options="{'no_create': True, 'no_edit': True}"/>
                             <field name="customer_name"/>
                             <field name="customer_tax_id"/>
                             <field name="customer_branch_code"/>
@@ -113,9 +116,12 @@
                                 <field name="amount_total" widget="monetary"/>
                                 <field name="currency_id" invisible="1"/>
                             </group>
-                        </page>
-                        <page string="Notes" name="notes">
-                            <field name="note"/>
+                            <group name="footer">
+                              <group>
+                                <label for="note" string="Notes"/>
+                                <field name="note" nolabel="1" colspan="2" placeholder="หมายเหตุ" />
+                              </group>
+                            </group>
                         </page>
                         <page string="Accounting" name="accounting"
                               groups="receipt_kmitl.group_receipt_kmitl_treasury_officer"
