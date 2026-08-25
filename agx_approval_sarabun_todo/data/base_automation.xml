@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: ให้แอดมินเปิด/ปิดกฎได้โดยไม่ถูก upgrade รีเซ็ต. code เป็นเพียง
+         trigger บาง ๆ ที่ delegate เข้าเมธอดในโมเดล (approval.request) ซึ่งเป็น
+         จุดทดสอบ/override จริง. -->
+    <data noupdate="1">
+
+        <!-- จองงบประมาณแล้ว (เข้าสู่ to_send) → แจ้งผู้สร้างให้สร้างหนังสือ. -->
+        <record id="automation_notify_create_endorsement" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้งผู้สร้างให้สร้างหนังสือเมื่อจองงบประมาณแล้ว (to_send)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '!=', 'to_send')]</field>
+            <field name="filter_domain">[('state', '=', 'to_send')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records._notify_create_endorsement_todo()</field>
+        </record>
+
+        <!-- ออกจาก to_send (ส่งหนังสือแล้ว → sent / ดึงกลับ / ยกเลิก) → ล้าง Todo. -->
+        <record id="automation_clear_create_endorsement" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: ล้าง Todo สร้างหนังสือเมื่อออกจากสถานะรอส่งขออนุมัติ</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'to_send')]</field>
+            <field name="filter_domain">[('state', '!=', 'to_send')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records._clear_create_endorsement_todo()</field>
+        </record>
+
+        <!-- อนุมัติจริง (to_send/sent → approved) → แจ้ง FYI ผู้สร้าง.
+             filter_pre รัดที่ (to_send, sent) เท่านั้น จึงไม่ยิงตอนการเงินตีกลับ
+             (to_disburse → approved). -->
+        <record id="automation_notify_approved_fyi" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้ง FYI ผู้สร้างเมื่อได้รับอนุมัติจริง (approved)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field
+                name="filter_pre_domain"
+            >[('state', 'in', ('to_send', 'sent'))]</field>
+            <field name="filter_domain">[('state', '=', 'approved')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records._notify_approved_fyi()</field>
+        </record>
+
+        <!-- ตีกลับจากการพิจารณา (sent → returned) → แจ้งผู้สร้างแก้ไข+ส่งใหม่.
+             filter_pre = sent จึงไม่ชนกับการตีกลับใบเบิก (billed → returned). -->
+        <record id="automation_notify_returned" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้งผู้สร้างแก้ไขเมื่อถูกตีกลับจากการพิจารณา (returned)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'sent')]</field>
+            <field name="filter_domain">[('state', '=', 'returned')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records._notify_returned_todo()</field>
+        </record>
+
+        <!-- ออกจาก returned (ส่งใหม่ / ยกเลิก) → ล้าง Todo แก้ไข. -->
+        <record id="automation_clear_returned" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: ล้าง Todo แก้ไขเมื่อออกจากสถานะตีกลับ (returned)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'returned')]</field>
+            <field name="filter_domain">[('state', '!=', 'returned')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records._clear_returned_todo()</field>
+        </record>
+
+        <!-- คำขอถูกปฏิเสธ (เข้าสู่ rejected) → แจ้ง FYI ผู้สร้าง. -->
+        <record id="automation_notify_rejected_fyi" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้ง FYI ผู้สร้างเมื่อคำขอถูกปฏิเสธ (rejected)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '!=', 'rejected')]</field>
+            <field name="filter_domain">[('state', '=', 'rejected')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records._notify_rejected_fyi()</field>
+        </record>
+
+    </data>
+</odoo>

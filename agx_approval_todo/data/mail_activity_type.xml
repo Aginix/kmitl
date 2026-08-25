@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- Execution Todo: ตรวจสอบและจองงบประมาณ ขณะคำขออยู่ที่ to_verify
+         (รอตรวจสอบ / จองงบประมาณ). Execution → ล้างที่ต้นทางเท่านั้น
+         (ปิดด้วยการจอง/ดึงกลับ/ยกเลิก ผ่าน base.automation) กด Mark as Read ไม่ได้. -->
+    <record id="mail_activity_reserve_budget" model="mail.activity.type">
+        <field name="name">จองงบประมาณ (คำขออนุมัติ)</field>
+        <field name="summary">ตรวจสอบและจองงบประมาณสำหรับคำขออนุมัติ</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">approval.request</field>
+        <field name="icon">fa-money</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: ให้แอดมินเปิด/ปิดกฎได้โดยไม่ถูก upgrade รีเซ็ต. code เป็นเพียง
+         trigger บาง ๆ ที่ delegate เข้าเมธอดในโมเดล (approval.request). -->
+    <data noupdate="1">
+
+        <!-- อนุมัติจริง (to_send/sent → approved) → แจ้งผู้สร้างบันทึกค่าใช้จ่ายจริง. -->
+        <record id="automation_notify_record_actual" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้งผู้สร้างบันทึกค่าใช้จ่ายจริงเมื่อได้รับอนุมัติ (approved)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field
+                name="filter_pre_domain"
+            >[('state', 'in', ('to_send', 'sent'))]</field>
+            <field name="filter_domain">[('state', '=', 'approved')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records._notify_record_actual_todo()</field>
+        </record>
+
+        <!-- กลับมาแก้ (to_disburse → approved) → แจ้งผู้สร้างแก้ไขค่าใช้จ่ายจริง.
+             ครอบทั้งการเงินตีกลับ (_finance_return_for_edit) และผู้สร้างดึงกลับเอง
+             (action_pull_back_from_finance) — ทั้งคู่เป็น transition เดียวกัน. -->
+        <record id="automation_notify_finance_return" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้งผู้สร้างแก้ไขค่าใช้จ่ายเมื่อกลับมาจากการเงิน (to_disburse → approved)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'to_disburse')]</field>
+            <field name="filter_domain">[('state', '=', 'approved')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records._notify_finance_return_todo()</field>
+        </record>
+
+        <!-- ออกจาก approved (ส่งการเงิน / ดึงกลับ / ยกเลิก) → ล้าง Todo บันทึกจริง. -->
+        <record id="automation_clear_record_actual" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: ล้าง Todo บันทึกค่าใช้จ่ายจริงเมื่อออกจากสถานะอนุมัติ (approved)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'approved')]</field>
+            <field name="filter_domain">[('state', '!=', 'approved')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records._clear_record_actual_todo()</field>
+        </record>
+
+        <!-- ส่งให้การเงิน (เข้าสู่ to_disburse) → แจ้งการเงินตรวจสอบและตั้งเบิก. -->
+        <record id="automation_notify_finance_verify" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้งการเงินตรวจสอบและตั้งเบิก (to_disburse)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '!=', 'to_disburse')]</field>
+            <field name="filter_domain">[('state', '=', 'to_disburse')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records._notify_finance_verify_todo()</field>
+        </record>
+
+        <!-- ออกจาก to_disburse (ตั้งเบิกแล้ว → billed / ตีกลับ / ดึงกลับ) → ล้าง Todo การเงิน. -->
+        <record id="automation_clear_finance_verify" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: ล้าง Todo การเงินเมื่อออกจากสถานะรอตั้งเบิก (to_disburse)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'to_disburse')]</field>
+            <field name="filter_domain">[('state', '!=', 'to_disburse')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records._clear_finance_verify_todo()</field>
+        </record>
+
+        <!-- เบิกจ่ายแล้ว (to_disburse → billed) → แจ้ง FYI ผู้สร้าง.
+             filter_pre ตัด returned ออกด้วย: การตีกลับใบเบิก (DR) วนคำขอ
+             billed → returned → billed (action_confirm_correction) ซึ่งเป็นแค่รอบ
+             แก้ไขข้อมูล ไม่ใช่การเบิกจ่ายรอบใหม่ จึงต้องไม่ยิง FYI ซ้ำ. -->
+        <record id="automation_notify_billed_fyi" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้ง FYI ผู้สร้างเมื่อเบิกจ่ายแล้ว (billed)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field
+                name="filter_pre_domain"
+            >[('state', 'not in', ('billed', 'returned'))]</field>
+            <field name="filter_domain">[('state', '=', 'billed')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records._notify_billed_fyi()</field>
+        </record>
+
+    </data>
+</odoo>
