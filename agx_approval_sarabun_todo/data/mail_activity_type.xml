@@ -12,10 +12,11 @@
         <field name="delay_count">0</field>
     </record>
 
-    <!-- Execution Todo: ตีกลับจากการพิจารณา (สารบรรณ) — ผู้สร้างแก้ไขและส่งหนังสือใหม่. -->
+    <!-- Execution Todo: หนังสือกลับมาแก้ (ตีกลับโดยผู้พิจารณา หรือผู้ส่งดึงกลับเอง)
+         — ผู้สร้างแก้ไขและส่งหนังสือใหม่. -->
     <record id="mail_activity_returned_edit" model="mail.activity.type">
-        <field name="name">ตีกลับ: แก้ไขและส่งหนังสือใหม่ (คำขออนุมัติ)</field>
-        <field name="summary">คำขอถูกตีกลับ กรุณาแก้ไขและส่งหนังสือใหม่</field>
+        <field name="name">กลับมาแก้ไข: แก้ไขและส่งหนังสือใหม่ (คำขออนุมัติ)</field>
+        <field name="summary">คำขอกลับมาแก้ไข กรุณาแก้ไขและส่งหนังสือใหม่</field>
         <field name="todo_category">execution</field>
         <field name="res_model">approval.request</field>
         <field name="icon">fa-reply</field>

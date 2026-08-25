@@ -83,14 +83,18 @@ class ApprovalRequest(models.Model):
         return self.user_id
 
     def _returned_summary(self):
+        """ครอบทั้งผู้พิจารณาตีกลับ และผู้ส่งดึงกลับหนังสือเอง: agx_sarabun
+        delegate _on_sarabun_recalled (ดึงกลับ) เข้า _on_sarabun_returned จึงได้
+        sent → returned เหมือนกัน แยกไม่ได้ที่ระดับ state — ไม่ระบุว่าใครส่งกลับ
+        ส่วนเหตุผล (ถ้ามี) อยู่ใน chatter ของหนังสือแล้ว."""
         self.ensure_one()
         return _(
-            "คำขออนุมัติเลขที่ %s ถูกตีกลับจากการพิจารณา "
+            "คำขออนุมัติเลขที่ %s กลับมาแก้ไข "
             "กรุณาแก้ไขและส่งหนังสือใหม่"
         ) % (self.name or "")
 
     def _notify_returned_todo(self):
-        """เข้าสู่ returned จากการตีกลับหนังสือ (สารบรรณ) → แจ้งผู้สร้างแก้ไข.
+        """เข้าสู่ returned จากฝั่งสารบรรณ (ตีกลับ / ดึงกลับ) → แจ้งผู้สร้างแก้ไข.
 
         base.automation รัด filter_pre = sent จึงไม่ชนกับกรณีตีกลับใบเบิก
         (billed → returned) ที่ agx_approval_disbursement จัดการอยู่แล้ว."""
