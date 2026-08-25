@@ -20,7 +20,7 @@ class ApprovalRequest(models.Model):
     #
     # activity type เดียว (record_actual) แต่มี 2 ทางเข้า → 2 ข้อความ:
     #   - อนุมัติจริง (to_send/sent → approved): บันทึกค่าใช้จ่ายจริง
-    #   - การเงินตีกลับ (to_disburse → approved): แก้ไขค่าใช้จ่ายจริง
+    #   - ส่งกลับมาแก้ (to_disburse → approved): แก้ไขค่าใช้จ่ายจริง
     # ใช้ type เดียวกันเพื่อให้ automation "ออกจาก approved" ล้างได้ครอบทั้งคู่.
     # ---------------------------------------------------------------------
     def _record_actual_activity(self):
@@ -39,10 +39,14 @@ class ApprovalRequest(models.Model):
         ) % (self.name or "")
 
     def _finance_return_summary(self):
+        """ข้อความของทางเข้า to_disburse → approved. ครอบทั้งการเงินตีกลับ
+        (_finance_return_for_edit) และผู้สร้างดึงกลับเอง
+        (action_pull_back_from_finance) — สองกรณีนี้แยกกันไม่ได้ที่ระดับ state
+        จึงไม่ระบุว่าใครเป็นคนส่งกลับ ส่วนเหตุผล (ถ้ามี) อยู่ใน chatter แล้ว."""
         self.ensure_one()
         return _(
-            "คำขออนุมัติเลขที่ %s ถูกการเงินตีกลับ "
-            "กรุณาแก้ไขค่าใช้จ่ายจริงแล้วส่งให้การเงินใหม่"
+            "คำขออนุมัติเลขที่ %s กลับมาที่ขั้นบันทึกค่าใช้จ่ายจริง "
+            "กรุณาตรวจสอบ/แก้ไขค่าใช้จ่ายจริงแล้วส่งให้การเงินใหม่"
         ) % (self.name or "")
 
     def _notify_record_actual_todo(self):
@@ -55,7 +59,8 @@ class ApprovalRequest(models.Model):
             )
 
     def _notify_finance_return_todo(self):
-        """การเงินตีกลับ (to_disburse → approved) → แจ้งผู้สร้างแก้ไขค่าใช้จ่ายจริง.
+        """to_disburse → approved (การเงินตีกลับ หรือผู้สร้างดึงกลับเอง) →
+        แจ้งผู้สร้างแก้ไขค่าใช้จ่ายจริง.
         ใช้ activity type เดียวกับ record_actual (ล้างที่เดียวกัน)."""
         for rec in self:
             rec._schedule_todo(
