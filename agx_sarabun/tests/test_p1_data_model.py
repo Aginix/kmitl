@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """P1 — core data model: kind/type split, position holders, references, enclosures."""
 from odoo.exceptions import ValidationError
-from odoo.tests.common import tagged
+from odoo.tests.common import Form, tagged
 
 from odoo.addons.agx_sarabun.tests.common import SarabunCommon
 
@@ -70,3 +70,44 @@ class TestP1DataModel(SarabunCommon):
         doc = self._make_doc(content="<p>เรียนเพื่อโปรดพิจารณาอนุมัติ</p>")
         self.assertIn("โปรดพิจารณา", doc.content)
         self.assertTrue(doc.is_editable)  # draft is editable
+
+    def test_origin_model_id_only_for_from_record_type(self):
+        """origin_model_id is meaningless outside kind = from_record."""
+        origin_model = self.env["ir.model"]._get("test.sarabun.origin")
+        with self.assertRaises(ValidationError):
+            self.env["sarabun.document.type"].create({
+                "name": "ประเภททดสอบ", "kind": "memo", "origin_model_id": origin_model.id,
+            })
+
+    def test_route_template_origin_model_must_match_type(self):
+        """A template bound to a type with a declared origin model can't point elsewhere."""
+        origin_model = self.env["ir.model"]._get("test.sarabun.origin")
+        typed = self.env["sarabun.document.type"].create({
+            "name": "ประเภทผูกโมเดล", "kind": "from_record", "origin_model_id": origin_model.id,
+        })
+        with self.assertRaises(ValidationError):
+            self.Template.create({
+                "name": "แม่แบบผิดโมเดล",
+                "document_type_id": typed.id,
+                "origin_model": "res.partner",
+            })
+
+    def test_route_template_origin_model_autofills_from_type(self):
+        """Picking a type that declares a model fills the template's origin_model."""
+        origin_model = self.env["ir.model"]._get("test.sarabun.origin")
+        typed = self.env["sarabun.document.type"].create({
+            "name": "ประเภทผูกโมเดล 2", "kind": "from_record", "origin_model_id": origin_model.id,
+        })
+        with Form(self.Template) as form:
+            form.name = "แม่แบบเติมอัตโนมัติ"
+            form.document_type_id = typed
+        self.assertEqual(form.origin_model, "test.sarabun.origin")
+
+    def test_document_origin_model_must_match_type(self):
+        """A หนังสือ's origin_model must agree with its type's declared origin model."""
+        origin_model = self.env["ir.model"]._get("test.sarabun.origin")
+        typed = self.env["sarabun.document.type"].create({
+            "name": "ประเภทผูกโมเดล 3", "kind": "from_record", "origin_model_id": origin_model.id,
+        })
+        with self.assertRaises(ValidationError):
+            self._make_doc(doc_type=typed, origin_model="res.partner", origin_res_id=1)

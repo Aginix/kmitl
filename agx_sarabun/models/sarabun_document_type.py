@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 # === Document kind — the fixed, dev-extensible behaviour axis ===
 # A หนังสือ's kind drives its report template, numbering and routing rules.
@@ -37,6 +38,26 @@ class SarabunDocumentType(models.Model):
     active = fields.Boolean(default=True)
     sequence = fields.Integer(default=10)
     description = fields.Text(string="Description")
+    origin_model_id = fields.Many2one(
+        comodel_name="ir.model",
+        string="Origin Model",
+        ondelete="cascade",
+        help="เฉพาะ kind = from_record — ระบบงานต้นทางที่ประเภทนี้ผูกไว้ตายตัว "
+        "(ว่าง = ใช้ได้ทุกระบบงาน). แม่แบบเส้นทางที่เลือกประเภทนี้จะถูกบังคับให้ตรงกัน.",
+    )
+
+    @api.onchange("kind")
+    def _onchange_kind(self):
+        if self.kind != "from_record":
+            self.origin_model_id = False
+
+    @api.constrains("kind", "origin_model_id")
+    def _check_origin_model_id_kind(self):
+        for doc_type in self:
+            if doc_type.origin_model_id and doc_type.kind != "from_record":
+                raise ValidationError(_(
+                    "Origin Model is only meaningful for kind = จากระบบงาน (From Record)."
+                ))
 
     # Seed route (P2). Numbering sequence (P3) and report template (P5) bindings
     # are added in their phases.

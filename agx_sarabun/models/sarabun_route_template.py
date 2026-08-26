@@ -5,7 +5,8 @@ A template *seeds* a Document's Route at send time; it never owns or constrains
 the flow once seeded. Each template line materialises into one
 ``sarabun.routing.step`` (state ``waiting``).
 """
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
 
 # Keep in sync with sarabun_routing_step.py
@@ -29,6 +30,12 @@ class SarabunRouteTemplate(models.Model):
     # Scope (for from_record auto-matching)
     department_id = fields.Many2one("hr.department", string="Department")
     document_type_id = fields.Many2one("sarabun.document.type", string="Document Type")
+    type_origin_model_id = fields.Many2one(
+        related="document_type_id.origin_model_id",
+        string="Type Origin Model",
+        help="ไม่ store — ใช้ขับ attrs และอ่านใน constrains เท่านั้น "
+        "(ระบบงานต้นทางที่ประเภทเอกสารบังคับไว้ ถ้ามี).",
+    )
     # origin_model (the technical name) stays the source of truth — the bridge seed
     # data (purchase_request_sarabun, disbursement_sarabun, …) sets it as a Char and
     # find_matching_templates keys off it — while origin_model_id is a convenience
@@ -66,6 +73,17 @@ class SarabunRouteTemplate(models.Model):
         # origin_model) re-targets the moment a model is picked, before save.
         self.origin_model = self.origin_model_id.model or False
 
+    @api.onchange("document_type_id")
+    def _onchange_document_type_id(self):
+        # A type that declares its origin model wins over whatever the template had —
+        # set both fields directly rather than relying on chaining from
+        # _onchange_origin_model_id above. A type with no declared model leaves the
+        # template's own choice untouched (still model-agnostic).
+        type_model = self.document_type_id.origin_model_id
+        if type_model:
+            self.origin_model_id = type_model
+            self.origin_model = type_model.model
+
     line_ids = fields.One2many(
         "sarabun.route.template.line", "template_id", string="Steps", copy=True
     )
@@ -80,6 +98,20 @@ class SarabunRouteTemplate(models.Model):
         for record in self:
             orders = record.line_ids.mapped("order")
             record.next_line_order = (max(orders) + 1) if orders else 1
+
+    @api.constrains("document_type_id", "origin_model")
+    def _check_document_type_origin_model(self):
+        for template in self:
+            type_model = template.document_type_id.origin_model_id
+            if type_model and template.origin_model and template.origin_model != type_model.model:
+                raise ValidationError(_(
+                    'แม่แบบเส้นทาง "%(template)s" ผูกประเภทเอกสาร "%(doc_type)s" ซึ่งบังคับระบบงานต้นทางเป็น '
+                    '"%(model)s" — Origin Model ของแม่แบบต้องตรงกัน.'
+                ) % {
+                    "template": template.name,
+                    "doc_type": template.document_type_id.name,
+                    "model": type_model.model,
+                })
 
     def match_origin_record(self, origin_record):
         self.ensure_one()

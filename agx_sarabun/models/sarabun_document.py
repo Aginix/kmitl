@@ -135,6 +135,12 @@ class SarabunDocument(models.Model):
         string="Sender Suffix",
         help="Sub-unit name or extension (e.g. 'สำนักงานคณบดี', 'ต่อ 1234').",
     )
+    sender_master_department_id = fields.Many2one(
+        comodel_name="hr.department",
+        related="sender_department_id.master_department_id",
+        string="ส่วนงาน (Master Department)",
+        help="ส่วนงานระดับบนสุดของหน่วยงานผู้ส่ง — ใช้จำกัดแม่แบบเส้นทางให้เห็นเฉพาะของส่วนงานตัวเอง.",
+    )
 
     # === Lifecycle (state field; the state MACHINE is P2 — ADR-0002) ===
     state = fields.Selection(
@@ -1126,6 +1132,21 @@ class SarabunDocument(models.Model):
                     "from_record documents register automatically; "
                     "reserved numbering is for manual compose only."
                 ))
+
+    @api.constrains("type_id", "origin_model")
+    def _check_type_origin_model(self):
+        # เฉพาะกรณี "ขัดกันจริง" — ประเภทประกาศโมเดลไว้ และหนังสือมี origin คนละโมเดล
+        # ไม่บังคับกรณี origin_model ว่าง เพื่อไม่ให้ฟอร์มพังตอนผู้ใช้เลือกประเภทก่อนมี origin
+        for doc in self:
+            type_model = doc.type_id.origin_model_id
+            if type_model and doc.origin_model and doc.origin_model != type_model.model:
+                raise ValidationError(_(
+                    'ประเภทเอกสาร "%(doc_type)s" บังคับระบบงานต้นทางเป็น "%(model)s" '
+                    "— หนังสือฉบับนี้มีระบบงานต้นทางไม่ตรงกัน."
+                ) % {
+                    "doc_type": doc.type_id.name,
+                    "model": type_model.model,
+                })
 
     def _resolve_sequence(self):
         """Resolve the เล่มทะเบียน this หนังสือ issues from (ADR-0012): the book chosen
