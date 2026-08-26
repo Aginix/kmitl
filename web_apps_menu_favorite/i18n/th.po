@@ -18,3 +18,17 @@ msgstr ""
 #, python-format
 msgid "Favorite"
 msgstr "รายการโปรด"
+
+#. module: web_apps_menu_favorite
+#. odoo-javascript
+#: code:addons/web_apps_menu_favorite/static/src/apps_menu_favorite_patch.xml:0
+#, python-format
+msgid "Add to favorites"
+msgstr "เพิ่มในรายการโปรด"
+
+#. module: web_apps_menu_favorite
+#. odoo-javascript
+#: code:addons/web_apps_menu_favorite/static/src/apps_menu_favorite_patch.xml:0
+#, python-format
+msgid "Remove from favorites"
+msgstr "นำออกจากรายการโปรด"

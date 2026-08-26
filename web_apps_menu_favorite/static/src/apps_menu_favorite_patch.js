@@ -11,11 +11,12 @@ patch(NavBar.prototype, "web_apps_menu_favorite.navbar", {
         this.appsMenuFavoriteOrm = useService("orm");
     },
 
-    // Prepends a pinned "Favorite" bucket on top of web_apps_menu_group's
-    // own grouping (this._super).
+    // Pins favorites into their own bucket on top of web_apps_menu_group's
+    // grouping; they are removed from the regular buckets so an app never
+    // shows up twice in the grid.
     getGroupedApps(apps) {
-        const groups = this._super(apps);
         const favorites = apps.filter((app) => app.isFavorite);
+        const groups = this._super(apps.filter((app) => !app.isFavorite));
         if (favorites.length) {
             groups.unshift({
                 id: "favorite",
