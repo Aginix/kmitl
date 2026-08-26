@@ -8,6 +8,7 @@
     "the requester on status changes (UC3), and route lifecycle Todos "
     "to the actors of every พ.1 / พจ.1 state transition",
     "depends": [
+        "base_automation",
         "mail_activity_todo_role_unit",
         "purchase_request_approval",
         "purchase_request_activity_kmitl",
@@ -20,6 +21,7 @@
     "data": [
         "data/mail_activity_type.xml",
         "data/mail_activity_type_update.xml",
+        "data/base_automation.xml",
     ],
     "installable": True,
     "auto_install": False,

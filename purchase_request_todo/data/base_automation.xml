@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+
+    <!-- draft → to_verify: schedule reserve-budget Todo -->
+    <record id="automation_pr_draft_to_verify" model="base.automation">
+        <field name="name">[TODO] พ.1 draft → รอจองงบประมาณ</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "=", "draft")]</field>
+        <field name="filter_domain">[("state", "=", "to_verify")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+role = env.ref("budget_role.role_budget_commitment", raise_if_not_found=False)
+act_type = env.ref("purchase_request_todo.mail_activity_pr_reserve_budget", raise_if_not_found=False)
+if not act_type:
+    return
+for rec in records:
+    if rec.activity_ids.filtered(lambda a: a.activity_type_id == act_type):
+        continue
+    summary = "ท่านได้รับ แบบขอให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ จองเงินงบประมาณ" % (rec.name or "")
+    if role and rec.operating_unit_id:
+        rec.activity_schedule(
+            "purchase_request_todo.mail_activity_pr_reserve_budget",
+            summary=summary,
+            responsible_role_id=role.id,
+            operating_unit_id=rec.operating_unit_id.id,
+        )
+    elif rec.requested_by:
+        rec.activity_schedule(
+            "purchase_request_todo.mail_activity_pr_reserve_budget",
+            summary=summary,
+            user_id=rec.requested_by.id,
+        )
+]]></field>
+    </record>
+
+    <!-- to_verify → to_submit: feedback reserve-budget + schedule endorsement-letter Todo -->
+    <record id="automation_pr_verify_to_submit" model="base.automation">
+        <field name="name">[TODO] พ.1 รอจองงบประมาณ → อยู่ระหว่างการจัดเตรียม</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "=", "to_verify")]</field>
+        <field name="filter_domain">[("state", "=", "to_submit")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_feedback(["purchase_request_todo.mail_activity_pr_reserve_budget"])
+for rec in records:
+    if not rec.create_uid:
+        continue
+    summary = "ท่านได้รับ แบบขอให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ สร้างหนังสือขอความเห็นชอบให้จัดหา" % (rec.name or "")
+    rec.activity_schedule(
+        "purchase_request_todo.mail_activity_pr_awaiting_endorsement_letter",
+        summary=summary,
+        user_id=rec.create_uid.id,
+    )
+]]></field>
+    </record>
+
+    <!-- any → draft: unlink all lifecycle activities -->
+    <record id="automation_pr_to_draft_cleanup" model="base.automation">
+        <field name="name">[TODO] พ.1 → draft (ล้าง activity)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "!=", "draft")]</field>
+        <field name="filter_domain">[("state", "=", "draft")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_unlink([
+    "purchase_request_todo.mail_activity_pr_reserve_budget",
+    "purchase_request_todo.mail_activity_pr_awaiting_endorsement_letter",
+    "purchase_request_todo.mail_activity_pr_awaiting_signer",
+    "purchase_request_todo.mail_activity_pr_endorsement_approved",
+    "purchase_request_todo.mail_activity_pr_egp_number_entry",
+])
+]]></field>
+    </record>
+
+    <!-- any → cancelled: unlink all lifecycle activities -->
+    <record id="automation_pr_to_cancelled_cleanup" model="base.automation">
+        <field name="name">[TODO] พ.1 → cancelled (ล้าง activity)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "!=", "cancelled")]</field>
+        <field name="filter_domain">[("state", "=", "cancelled")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_unlink([
+    "purchase_request_todo.mail_activity_pr_reserve_budget",
+    "purchase_request_todo.mail_activity_pr_awaiting_endorsement_letter",
+    "purchase_request_todo.mail_activity_pr_awaiting_signer",
+    "purchase_request_todo.mail_activity_pr_endorsement_approved",
+    "purchase_request_todo.mail_activity_pr_egp_number_entry",
+])
+]]></field>
+    </record>
+
+</odoo>
