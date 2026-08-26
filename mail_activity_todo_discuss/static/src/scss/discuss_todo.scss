@@ -26,6 +26,17 @@
         column-gap: 0.25rem;
     }
 
+    .o_DiscussTodoView_itemActions {
+        .o_DiscussTodoView_markRead,
+        .o_DiscussTodoView_markUnread {
+            cursor: pointer;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
     .o_DiscussTodoView_item:hover {
         background-color: $gray-200;
     }
