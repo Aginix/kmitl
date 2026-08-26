@@ -8,6 +8,7 @@
     "and PA (พจ.1) workflow Todos (status FYI, manager consideration, "
     "record contract, PO creation)",
     "depends": [
+        "base_automation",
         "mail_activity_todo_role_unit",
         "purchase_request_approval",
         "purchase_request_activity_kmitl",
@@ -19,6 +20,7 @@
     "data": [
         "data/mail_activity_type.xml",
         "data/mail_activity_type_update.xml",
+        "data/base_automation.xml",
     ],
     "installable": True,
     "auto_install": False,

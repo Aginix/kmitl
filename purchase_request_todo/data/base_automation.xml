@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+
+    <!-- any → in_approval: FYI acknowledgement to user_id that พ.1 has been endorsed -->
+    <record id="automation_pr_to_in_approval_fyi" model="base.automation">
+        <field name="name">[TODO] พ.1 → in_approval (แจ้งเตือนรับทราบ user_id)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "!=", "in_approval")]</field>
+        <field name="filter_domain">[("state", "=", "in_approval")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+for rec in records:
+    if not rec.user_id:
+        continue
+    summary = "แบบขอให้จัดหา (พ.1) เลขที่ %s ได้รับความเห็นชอบแล้ว" % (rec.name or "")
+    rec.activity_schedule(
+        "purchase_request_todo.mail_activity_pr_in_approval_fyi",
+        summary=summary,
+        user_id=rec.user_id.id,
+    )
+]]></field>
+    </record>
+
+    <!-- any → in_progress: notify procurement role to create PO -->
+    <record id="automation_pr_to_in_progress_create_po" model="base.automation">
+        <field name="name">[TODO] พ.1 → in_progress (แจ้งเตือนพัสดุหน่วยงานสร้าง PO)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "!=", "in_progress")]</field>
+        <field name="filter_domain">[("state", "=", "in_progress")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+role = env.ref("purchase_user_role.purchase_role_procurement", raise_if_not_found=False)
+for rec in records:
+    summary = "แบบขอให้จัดหา (พ.1) เลขที่ %s กรุณาดำเนินการสร้างสัญญา/ใบสั่งซื้อ (PO)" % (rec.name or "")
+    if role and rec.operating_unit_id:
+        rec.activity_schedule(
+            "purchase_request_activity_kmitl.mail_activity_create_purchase_order",
+            summary=summary,
+            responsible_role_id=role.id,
+            operating_unit_id=rec.operating_unit_id.id,
+        )
+    elif rec.assigned_to:
+        rec.activity_schedule(
+            "purchase_request_activity_kmitl.mail_activity_create_purchase_order",
+            summary=summary,
+            user_id=rec.assigned_to.id,
+        )
+]]></field>
+    </record>
+
+</odoo>
