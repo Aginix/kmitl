@@ -16,6 +16,10 @@
                     class="o_apps_menu_group_header"
                     t-esc="group.name"
                 />
+                <div
+                    t-elif="!group_first"
+                    class="o_apps_menu_group_break"
+                />
                 <DropdownItem
                     t-foreach="group.apps"
                     t-as="app"
