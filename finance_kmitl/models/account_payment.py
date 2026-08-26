@@ -1,6 +1,9 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
+from odoo.addons.l10n_th_account_tax.models.withholding_tax_cert import (
+    WHT_CERT_INCOME_TYPE,
+)
 from odoo.exceptions import UserError
 
 # The facts the bank acted on. Frozen the moment the voucher is confirmed for the
@@ -19,6 +22,8 @@ from odoo.exceptions import UserError
 # office has a maker step. See ``disbursement_finance_kmitl`` ADR-0005.
 MONEY_FIELDS = (
     "amount",
+    "wht_tax_id",
+    "wht_amount_base",
     "partner_id",
     "payment_method_line_id",
     "currency_id",
@@ -27,6 +32,15 @@ MONEY_FIELDS = (
     "journal_id",
     "date",
 )
+
+# The withholding a voucher declares itself, which is what the net amount is
+# derived from. Touching either re-derives ``amount``; neither may be touched
+# once the voucher is confirmed, because both move the entry.
+#
+# ``wht_cert_income_type`` is deliberately not one of them: it says nothing to
+# the books and nothing to the bank, only to the certificate handed to the
+# payee, so it stays correctable until that certificate is issued.
+WHT_INPUT_FIELDS = ("wht_tax_id", "wht_amount_base")
 
 # The payee's bank account is money side too, but it closes later than the rest,
 # so it has a guard of its own. Everything above moves the books — the amount, the
@@ -78,20 +92,56 @@ class AccountPayment(models.Model):
         string="Lines to Reconcile",
         copy=False,
     )
-    amount_wht = fields.Monetary(
+    wht_tax_id = fields.Many2one(
+        comodel_name="account.withholding.tax",
         string="Withholding Tax",
+        check_company=True,
+        copy=False,
+        help="ภาษีหัก ณ ที่จ่าย — the rate withheld on a voucher the finance "
+        "office fills in by hand. Empty on a voucher raised from a disbursement: "
+        "that one's withholding was decided on the bill and already sits on the "
+        "entry, and a rate here as well would withhold twice. Proposed from the "
+        "payee's category when a payee is picked on the form, which is the only "
+        "place it is ever set — never on a voucher another document creates.",
+    )
+    wht_amount_base = fields.Monetary(
+        string="Withholding Base",
+        currency_field="currency_id",
+        copy=False,
+        help="ฐานเงินได้ — the income the rate is applied to, and on a voucher "
+        "the finance office fills in by hand this is **the figure that is "
+        "typed**: the amount paid is the base less the withholding, and follows "
+        "from it. KMITL charges no VAT and a voucher withholds one thing, so the "
+        "base is the whole of what the payee is owed.",
+    )
+    wht_cert_income_type = fields.Selection(
+        selection=WHT_CERT_INCOME_TYPE,
+        string="Type of Income",
+        copy=False,
+        help="ประเภทเงินได้ — what the payee was paid for, in the Revenue "
+        "Department's own categories. It is what the certificate and the ภ.ง.ด. "
+        "filing are about, and it books nothing, so it stays correctable after "
+        "the money side has frozen.",
+    )
+    amount_wht = fields.Monetary(
+        string="Withholding Tax Amount",
         compute="_compute_amount_wht",
         currency_field="currency_id",
-        help="Total withholding tax withheld on this payment. Derived from the "
-        "payment move lines carrying a WHT tax, so it is visible in every state "
-        "(the native withholding moves are only created on posting).",
+        help="Total withholding tax withheld on this payment. Read from the "
+        "voucher's own rate and base when it has them, and otherwise from the "
+        "payment move lines carrying a WHT tax — which is how a voucher raised "
+        "from a bill carries it. Either way it is visible in every state (the "
+        "native withholding moves are only created on posting).",
     )
     amount_before_wht = fields.Monetary(
         string="Amount Before Withholding",
-        compute="_compute_amount_wht",
+        compute="_compute_amount_before_wht",
         currency_field="currency_id",
-        help="Gross amount before withholding tax (net amount paid plus the "
-        "withholding tax).",
+        help="ยอดก่อนหัก ณ ที่จ่าย — the gross the payee is owed, read back from "
+        "the amount paid and what was withheld from it. This is the figure a "
+        "voucher raised from a bill is read by: nobody types it there, because "
+        "the bill decided both halves. On a voucher filled in by hand the typed "
+        "figure is the withholding base, which this then equals.",
     )
 
     finance_state = fields.Selection(
@@ -184,12 +234,197 @@ class AccountPayment(models.Model):
         "say between them.",
     )
 
-    @api.depends("move_id.line_ids.wht_tax_id", "move_id.line_ids.balance", "amount")
+    def _wht_currency(self):
+        """The currency the withholding figures are rounded in.
+
+        Falls all the way back to the environment's company, because these run on
+        a record still being filled in on screen — where the journal, and with it
+        the currency, may not have been picked yet.
+        """
+        self.ensure_one()
+        return (
+            self.currency_id
+            or self.company_id.currency_id
+            or self.env.company.currency_id
+        )
+
+    @api.depends(
+        "wht_tax_id",
+        "wht_tax_id.amount",
+        "wht_amount_base",
+        "move_id.line_ids.wht_tax_id",
+        "move_id.line_ids.balance",
+    )
     def _compute_amount_wht(self):
+        """What is withheld, read from whichever of the two records knows.
+
+        A voucher the finance office filled in says so itself, on a rate and a
+        base of its own — and it has to be answered from those rather than from
+        the entry, because the entry is built *from* this figure and would not
+        have the line yet.
+
+        A voucher raised from a bill carries no rate here: its withholding was
+        settled on the bill and reached the entry as a write-off line, so the
+        entry is what knows. Reading the lines also keeps the figure visible
+        while the entry is still draft, which the native withholding moves are
+        not — those are only created on posting.
+        """
         for payment in self:
+            if payment.wht_tax_id:
+                currency = payment._wht_currency()
+                payment.amount_wht = currency.round(
+                    payment.wht_amount_base * payment.wht_tax_id.amount / 100
+                )
+                continue
             wht_lines = payment.move_id.line_ids.filtered("wht_tax_id")
             payment.amount_wht = sum(abs(line.balance) for line in wht_lines)
+
+    @api.depends("amount", "amount_wht")
+    def _compute_amount_before_wht(self):
+        """The gross, read back rather than stored.
+
+        Deliberately not an input, even though on a hand-filled voucher the gross
+        *is* what an officer types: there the typed figure is the withholding
+        base, and a second stored copy of the same number would be one more thing
+        to keep in step — and would be recomputed, from a half-updated pair,
+        every time the base moved. One number, in one field, whichever end of the
+        document filled it in.
+        """
+        for payment in self:
             payment.amount_before_wht = payment.amount + payment.amount_wht
+
+    # -------------------------------------------------------------------------
+    # Withholding tax keyed in on the voucher
+    # -------------------------------------------------------------------------
+    @api.onchange("partner_id", "payment_type")
+    def _onchange_partner_id_wht(self):
+        """Propose the payee's own rate, on the form and nowhere else.
+
+        The payee's category is where KMITL keeps its rates
+        (``res.partner.type.wht_tax_id``), and it is the same source the
+        disbursement line reads — so a voucher typed by hand and a voucher billed
+        through a request withhold the same on the same payee.
+
+        This is an onchange rather than a compute on purpose. Every voucher
+        raised from a disbursement request is created in Python, where onchanges
+        do not run, so a rate can never appear on one of those: their withholding
+        already sits on the entry, and a rate here as well would withhold twice.
+        A compute would reach them and do exactly that.
+        """
+        for payment in self:
+            if payment.payment_type != "outbound":
+                payment.wht_tax_id = False
+                continue
+            payment.wht_tax_id = payment.partner_id.partner_type_id.wht_tax_id
+
+    @api.onchange("wht_tax_id")
+    def _onchange_wht_tax_id(self):
+        """Follow the rate with the things it decides.
+
+        The base is seeded from whatever amount has been typed so far, because
+        that is what the officer meant by it: a voucher that withholds is filled
+        in gross-first, and the number already in the amount box was the gross
+        before anyone said a rate applied to it. Taking the rate away is the same
+        move backwards, and ``_undo_withholding`` makes it.
+        """
+        for payment in self:
+            if not payment.wht_tax_id:
+                payment._undo_withholding()
+                continue
+            payment.wht_cert_income_type = payment.wht_tax_id.wht_cert_income_type
+            if not payment.wht_amount_base:
+                payment.wht_amount_base = payment.amount
+            payment._apply_wht_to_amount()
+
+    @api.onchange("wht_amount_base")
+    def _onchange_wht_amount_base(self):
+        """Keep the form's figures in step while they are being typed.
+
+        The same derivation runs on save (``_apply_wht_to_amount``), which is what
+        makes it true for a voucher made through the API; this is what makes the
+        officer see it happen as they type, in the one screen where a voucher is
+        filled in by hand.
+        """
+        for payment in self:
+            payment._apply_wht_to_amount()
+
+    def _apply_wht_to_amount(self):
+        """Derive the amount paid from the base and the rate applied to it.
+
+        The base is the input and the amount paid is what follows, so this runs on
+        every save that touched either. On save it runs *after* the write rather
+        than by rewriting the values: the amount is one of core's own
+        synchronisation triggers, so writing it is what rebuilds the entry around
+        the new figures, and having one derivation means the interactive form and
+        an API call end up at the same numbers.
+
+        Vouchers with no rate of their own are left alone — that is a voucher
+        raised from a bill, whose amount was settled where its withholding was.
+        The move backwards is ``_undo_withholding``.
+        """
+        for payment in self:
+            if not payment.wht_tax_id:
+                continue
+            currency = payment._wht_currency()
+            if currency.is_zero(payment.wht_amount_base):
+                continue
+            net = currency.round(payment.wht_amount_base - payment.amount_wht)
+            if currency.compare_amounts(payment.amount, net):
+                payment.amount = net
+        return True
+
+    def _undo_withholding(self):
+        """Hand back what a withholding that has just been taken away withheld.
+
+        The base standing on the voucher is what the payee was owed all along, so
+        removing the rate owes them the whole of it — and the base, with nothing
+        left to be a base of, goes with the type of income. Only ever reached by a
+        voucher that *had* a rate, because only such a voucher has a base.
+        """
+        for payment in self:
+            if payment.wht_tax_id or payment._wht_currency().is_zero(
+                payment.wht_amount_base
+            ):
+                continue
+            payment.amount = payment.wht_amount_base
+            payment.wht_amount_base = 0.0
+            payment.wht_cert_income_type = False
+        return True
+
+    def _wht_write_off_line_vals(self):
+        """The withholding line of a voucher that declares its own.
+
+        Same shape as the one a disbursement builds from its bill
+        (``disbursement.payment.line._payment_amount_vals``), because it has to
+        carry the same two fields: ``wht_tax_id`` and ``tax_base_amount`` are what
+        the withholding moves, the certificate and the ภ.ง.ด. filing are all made
+        of. Empty for a voucher without a rate of its own, which leaves the
+        preserved write-off path (``_synchronize_to_moves``) to answer for the
+        ones raised from a bill.
+        """
+        self.ensure_one()
+        tax = self.wht_tax_id
+        currency = self._wht_currency()
+        if not tax or currency.is_zero(self.amount_wht):
+            return []
+        company_currency = self.company_id.currency_id or self.env.company.currency_id
+        date = self.date or fields.Date.context_today(self)
+        return [
+            {
+                "name": tax.display_name,
+                "account_id": tax.account_id.id,
+                "partner_id": self.partner_id.id,
+                "currency_id": currency.id,
+                "amount_currency": -self.amount_wht,
+                "balance": currency._convert(
+                    -self.amount_wht, company_currency, self.company_id, date
+                ),
+                "tax_base_amount": currency._convert(
+                    self.wht_amount_base, company_currency, self.company_id, date
+                ),
+                "wht_tax_id": tax.id,
+            }
+        ]
 
     @api.depends("payment_type", "payment_method_line_id.payment_method_id.code")
     def _compute_settlement(self):
@@ -255,6 +490,25 @@ class AccountPayment(models.Model):
         """
         return super()._get_method_codes_needing_bank_account() + ["kmitl_transfer"]
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Derive the amount paid on a voucher created with a withholding tax.
+
+        Only ever a voucher of the finance office's own: nothing else sets a rate
+        here (see ``_onchange_partner_id_wht``). The entry core has just built is
+        rebuilt by the amount write, which is also what puts the withholding line
+        on it.
+        """
+        payments = super().create(vals_list)
+        with_wht = payments.filtered("wht_tax_id")
+        if with_wht:
+            with_wht.with_context(kmitl_wht_deriving=True)._apply_wht_to_amount()
+        return payments
+
+    def _clears_the_withholding(self, vals):
+        """Whether this write is taking a voucher's withholding away."""
+        return "wht_tax_id" in vals and not vals["wht_tax_id"]
+
     def write(self, vals):
         """Guard the money side, and repoint the money line when the paying
         account changes.
@@ -291,6 +545,17 @@ class AccountPayment(models.Model):
             lines = liquidity_lines.get(payment.id)
             if lines and payment.outstanding_account_id:
                 lines.write({"account_id": payment.outstanding_account_id.id})
+        # The base and the rate are inputs; the amount paid follows from them.
+        # Guarded against its own write, which lands here again with only
+        # ``amount`` in it.
+        if not self.env.context.get("kmitl_wht_deriving") and any(
+            name in vals for name in WHT_INPUT_FIELDS
+        ):
+            deriving = self.with_context(kmitl_wht_deriving=True)
+            if self._clears_the_withholding(vals):
+                deriving._undo_withholding()
+            else:
+                deriving._apply_wht_to_amount()
         return res
 
     def _check_money_side_open(self, what):
@@ -417,10 +682,51 @@ class AccountPayment(models.Model):
                 )
             if payment.currency_id.is_zero(payment.amount) or payment.amount < 0:
                 raise UserError(_("The amount must be greater than zero."))
+            payment._check_wht_complete()
             payment.finance_state = "confirmed"
             move = payment.move_id
             if move.date and (not move.name or move.name == "/"):
                 move._set_next_sequence()
+        return True
+
+    def _check_wht_complete(self):
+        """A withholding a voucher declares has to be a withholding it can state.
+
+        Checked at the confirmation for the same reason the amount is: a monetary
+        field cannot be made required (zero is a value), and a draft an officer is
+        still filling in must be allowed to be incomplete. This is the moment it
+        stops being one — from here the voucher is numbered, the money side is
+        frozen, and the certificate handed to the payee is written from exactly
+        these three figures.
+        """
+        self.ensure_one()
+        if not self.wht_tax_id:
+            return True
+        currency = self._wht_currency()
+        if currency.is_zero(self.wht_amount_base) or self.wht_amount_base < 0:
+            raise UserError(
+                _(
+                    "Fill in the income the withholding on %s is calculated from "
+                    "(ฐานเงินได้)."
+                )
+                % self.display_name
+            )
+        if not self.wht_cert_income_type:
+            raise UserError(
+                _(
+                    "Choose the type of income withheld on %s: it is what the "
+                    "certificate and the ภ.ง.ด. filing are about."
+                )
+                % self.display_name
+            )
+        if currency.compare_amounts(self.amount_wht, self.wht_amount_base) >= 0:
+            raise UserError(
+                _(
+                    "The withholding on %s is not less than the amount before "
+                    "withholding, so there would be nothing left to pay the payee."
+                )
+                % self.display_name
+            )
         return True
 
     def action_unconfirm(self):
@@ -749,6 +1055,89 @@ class AccountPayment(models.Model):
             action["view_mode"] = "tree,form"
         return action
 
+    # -------------------------------------------------------------------------
+    # The payee's withholding-tax certificate
+    # -------------------------------------------------------------------------
+    def action_create_wht_cert(self):
+        """Issue the payee's หนังสือรับรองการหักภาษี ณ ที่จ่าย (50 ทวิ).
+
+        The finance office issues it, because they are the ones facing the payee
+        — the paper goes out with the transfer or in the payee's hand with the
+        cheque, weeks before the accounting office books the voucher. Upstream
+        only offers it on a *posted* entry, which for KMITL is after the
+        Hand-over and far too late.
+
+        The certificate is therefore bound to the **voucher** and not to the
+        entry: ``account.move._post`` unlinks every certificate hanging off the
+        entry it posts, and one already in the payee's hands must survive that.
+        See ADR-0008.
+        """
+        self.ensure_one()
+        if not self.wht_tax_id:
+            raise UserError(
+                _("%s withholds nothing, so there is nothing to certify.")
+                % self.display_name
+            )
+        if self.finance_state == "draft":
+            raise UserError(
+                _(
+                    "Confirm %s first: a certificate states what was withheld, "
+                    "and until the voucher is confirmed that figure can still "
+                    "change."
+                )
+                % self.display_name
+            )
+        self._check_wht_complete()
+        live = self.wht_cert_ids.filtered(lambda cert: cert.state != "cancel")
+        if live:
+            raise UserError(
+                _(
+                    "%(payment)s already has a withholding-tax certificate "
+                    "(%(cert)s). Cancel it before issuing another, so the payee is "
+                    "never holding two."
+                )
+                % {"payment": self.display_name, "cert": live[:1].display_name}
+            )
+        cert = self.env["withholding.tax.cert"].create(self._prepare_wht_cert_vals())
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Withholding Tax Certificate"),
+            "res_model": "withholding.tax.cert",
+            "view_mode": "form",
+            "res_id": cert.id,
+            "target": "current",
+        }
+
+    def _prepare_wht_cert_vals(self):
+        """One certificate, one line — a voucher withholds one thing.
+
+        ``move_id`` is left empty on purpose (ADR-0008), and neither ``name`` nor
+        ``date`` is passed: both are computed from the payment, and the date is
+        the day the money actually left rather than the voucher's own (see
+        ``withholding_tax_cert.py``).
+        """
+        self.ensure_one()
+        descriptions = dict(WHT_CERT_INCOME_TYPE)
+        return {
+            "payment_id": self.id,
+            "partner_id": self.partner_id.id,
+            "income_tax_form": self.wht_tax_id.income_tax_form,
+            "tax_payer": "withholding",
+            "wht_line": [
+                Command.create(
+                    {
+                        "wht_cert_income_type": self.wht_cert_income_type,
+                        "wht_cert_income_desc": descriptions.get(
+                            self.wht_cert_income_type
+                        ),
+                        "base": self.wht_amount_base,
+                        "amount": self.amount_wht,
+                        "wht_tax_id": self.wht_tax_id.id,
+                    }
+                )
+            ],
+        }
+
     def _reconcile_source_invoice_lines(self):
         """Reconcile payment lines with stored source invoice lines."""
         domain = [
@@ -851,7 +1240,10 @@ class AccountPayment(models.Model):
         ):
             return super()._synchronize_to_moves(changed_fields)
         preserved = {}
-        for payment in self:
+        # Only the vouchers whose withholding lives on the entry. One that
+        # declares its own is rebuilt from its stored rate and base instead, in
+        # ``_prepare_move_line_default_vals``, so there is nothing to salvage.
+        for payment in self.filtered(lambda voucher: not voucher.wht_tax_id):
             write_off_lines = payment._seek_for_lines()[2].filtered("wht_tax_id")
             if write_off_lines:
                 preserved[payment.id] = [
@@ -874,10 +1266,17 @@ class AccountPayment(models.Model):
         through _synchronize_to_moves and therefore must be pushed to lines here.
 
         This is also where the write-off values a rebuild would have flattened are
-        put back (see ``_synchronize_to_moves``).
+        put back (see ``_synchronize_to_moves``), and where the withholding line
+        of a voucher that declares its own withholding is put *on*. The two are
+        exclusive by construction: a voucher either says what it withholds
+        (filled in here) or carries it from a bill (preserved from the entry),
+        never both — that is what keeps a payee from being withheld twice.
         """
+        own_wht = self._wht_write_off_line_vals()
         preserved = self.env.context.get("kmitl_preserved_write_off") or {}
-        if preserved.get(self.id):
+        if own_wht:
+            write_off_line_vals = own_wht
+        elif preserved.get(self.id):
             write_off_line_vals = preserved[self.id]
         line_vals_list = super()._prepare_move_line_default_vals(write_off_line_vals)
         if self.analytic_distribution:
@@ -898,4 +1297,11 @@ class AccountPayment(models.Model):
         return (
             *super()._get_trigger_fields_to_synchronize(),
             "kmitl_payment_type_id",
+            # The voucher's own withholding: it is one line of the entry, so a
+            # change to the rate or the base has to reach it. Safe to rebuild
+            # from here for the reason the preserved values exist at all — this
+            # line is regenerated from stored fields rather than salvaged from
+            # the entry, so nothing about it can be lost in the rebuild.
+            "wht_tax_id",
+            "wht_amount_base",
         )

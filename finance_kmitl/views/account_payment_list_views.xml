@@ -60,6 +60,7 @@
                     optional="hide"
                 />
                 <field name="amount_before_wht" optional="hide" />
+                <field name="wht_tax_id" optional="hide" />
                 <field name="amount_wht" optional="hide" />
                 <field name="amount" string="จำนวนเงิน" sum="Total" />
                 <!-- The two offices, side by side: whose turn it is, and how far

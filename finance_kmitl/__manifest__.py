@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Finance",
-    "version": "16.0.4.7.0",
+    "version": "16.0.4.8.0",
     "category": "KMITL/Finance",
     "summary": "งานการเงิน KMITL: จ่ายเงิน, bank export, WHT, ทะเบียนคุมเช็ค, รายรับ/ใบเสร็จ",
     "license": "LGPL-3",
@@ -20,6 +20,10 @@
         "thai_date_utils",
         "l10n_th_fonts",
         "l10n_th_amount_to_text",
+        # The withholding tax itself, its income-type vocabulary and the
+        # certificate — all of which this module now reads, writes and puts a
+        # screen on, so it is named rather than reached through the cert form.
+        "l10n_th_account_tax",
         "l10n_th_account_wht_cert_form",
         # The payee's category carries their payable account and their WHT rate,
         # both of which are this office's business — and it is what the finance

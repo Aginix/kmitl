@@ -63,6 +63,18 @@ msgid "Attachment Count"
 msgstr ""
 
 #. module: partner_type_aginix
+#: model_terms:ir.ui.view,arch_db:partner_type_aginix.view_res_partner_form
+msgid "Attachment for Vendor"
+msgstr "เอกสารประกอบคู่ค้า"
+
+#. module: partner_type_aginix
+#. odoo-python
+#: code:addons/partner_type_aginix/models/res_partner_type.py:0
+#, python-format
+msgid "Cannot delete partner type in used."
+msgstr "ไม่สามารถลบประเภทคู่ค้าที่ใช้แล้วได้"
+
+#. module: partner_type_aginix
 #: model:ir.model.fields.selection,name:partner_type_aginix.selection__res_partner_type__company_type__company
 #: model_terms:ir.ui.view,arch_db:partner_type_aginix.res_partner_type_search
 msgid "Company"
@@ -92,6 +104,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:partner_type_aginix.field_res_partner_type__display_name
 msgid "Display Name"
 msgstr ""
+
+#. module: partner_type_aginix
+#: model:ir.model.fields,field_description:partner_type_aginix.field_res_partner__attachment_ids
+msgid "Document Attachments"
+msgstr "เอกสารแนบ"
 
 #. module: partner_type_aginix
 #: model:ir.model.fields,field_description:partner_type_aginix.field_res_partner_type__message_follower_ids
@@ -211,6 +228,11 @@ msgid "Next Activity Type"
 msgstr ""
 
 #. module: partner_type_aginix
+#: model_terms:ir.actions.act_window,help:partner_type_aginix.action_res_partner_type
+msgid "No payee type yet. Click here to add one."
+msgstr "ยังไม่มีประเภทผู้รับเงิน กดที่นี่เพื่อเพิ่ม"
+
+#. module: partner_type_aginix
 #: model:ir.model.fields,field_description:partner_type_aginix.field_res_partner_type__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""
@@ -246,8 +268,8 @@ msgstr "ประเภทคู่ค้า"
 
 #. module: partner_type_aginix
 #: model:ir.actions.act_window,name:partner_type_aginix.action_res_partner_type
-msgid "Res Partner Type"
-msgstr ""
+msgid "Payee Types"
+msgstr "ประเภทผู้รับเงิน"
 
 #. module: partner_type_aginix
 #: model:ir.model,name:partner_type_aginix.model_res_partner_type
@@ -274,11 +296,6 @@ msgid ""
 msgstr ""
 
 #. module: partner_type_aginix
-#: model_terms:ir.actions.act_window,help:partner_type_aginix.action_res_partner_type
-msgid "There is no examples click here to add new Res Partner Type."
-msgstr ""
-
-#. module: partner_type_aginix
 #: model:ir.model.fields,help:partner_type_aginix.field_res_partner_type__property_account_payable_id
 msgid ""
 "This account will be used instead of the default one as the payable account "
@@ -297,6 +314,19 @@ msgstr ""
 msgid "Type of the exception activity on record."
 msgstr ""
 
+#. module: account
+#: model:ir.actions.act_window,name:account.res_partner_action_supplier
+#: model:ir.ui.menu,name:account.menu_account_supplier
+#: model:ir.ui.menu,name:account.menu_finance_payables
+#: model_terms:ir.ui.view,arch_db:account.view_account_invoice_report_search
+msgid "Vendors"
+msgstr "คู่ค้า"
+
+#. module: partner_type_aginix
+#: model:ir.model.fields,field_description:partner_type_aginix.field_res_partner_type__wht_tax_id
+msgid "WHT"
+msgstr "ภาษีหัก ณ ที่จ่าย"
+
 #. module: partner_type_aginix
 #: model:ir.model.fields,field_description:partner_type_aginix.field_res_partner_type__website_message_ids
 msgid "Website Messages"
@@ -311,28 +341,3 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:partner_type_aginix.res_partner_type_form
 msgid "e.g., Retail Customer"
 msgstr ""
-
-#. module: partner_type_aginix
-#. odoo-python
-#: code:addons/partner_type_aginix/models/res_partner_type.py:0
-#, python-format
-msgid "Cannot delete partner type in used."
-msgstr "ไม่สามารถลบประเภทคู่ค้าที่ใช้แล้วได้"
-
-#. module: account
-#: model:ir.actions.act_window,name:account.res_partner_action_supplier
-#: model:ir.ui.menu,name:account.menu_account_supplier
-#: model:ir.ui.menu,name:account.menu_finance_payables
-#: model_terms:ir.ui.view,arch_db:account.view_account_invoice_report_search
-msgid "Vendors"
-msgstr "คู่ค้า"
-
-#. module: partner_type_aginix
-#: model_terms:ir.ui.view,arch_db:partner_type_aginix.view_res_partner_form
-msgid "Attachment for Vendor"
-msgstr "เอกสารประกอบคู่ค้า"
-
-#. module: partner_type_aginix
-#: model:ir.model.fields,field_description:partner_type_aginix.field_res_partner__attachment_ids
-msgid "Document Attachments"
-msgstr "เอกสารแนบ"

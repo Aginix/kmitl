@@ -16,8 +16,8 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   it to the bank and vouches for the outcome; the accounting office books it. A
   **รายการ**จ่ายเงิน is not one of these — that is the payee-level row on a disbursement
   request. Never call a voucher "รายการจ่ายเงิน". The **menu** that opens the list of
-  them is spelled **ใบสำคัญจ่าย**, because that is what the office calls the list;
-  a document is still an ใบจ่ายเงิน, and its number is still a ใบสำคัญจ่าย number.
+  them is spelled **ใบสำคัญจ่าย**, because that is what the office calls the list; a
+  document is still an ใบจ่ายเงิน, and its number is still a ใบสำคัญจ่าย number.
 
 - **ฝั่งเงิน / Money side**: the facts the bank acted on — amount, payee, the payee's
   bank account, the paying account (หัวจ่าย), currency, payment and partner type,
@@ -118,9 +118,9 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   e-payment file is for a transfer payee.
 
 - **วันที่บนเช็ค / Cheque date** (`cheque.register.cheque_date`): the day the payee may
-  present the cheque, which is the day the Revenue Department treats the income as paid —
-  so the **withholding-tax certificate is dated from it**, exactly as it is dated from an
-  e-payment file's effective date for a transfer. Frozen once the cheque is issued,
+  present the cheque, which is the day the Revenue Department treats the income as paid
+  — so the **withholding-tax certificate is dated from it**, exactly as it is dated from
+  an e-payment file's effective date for a transfer. Frozen once the cheque is issued,
   because it is printed on paper this system no longer controls. _Avoid_: confusing it
   with the handover date, which has no tax effect at all: a cheque dated the 25th and
   collected on the 30th is September's withholding either way.
@@ -129,8 +129,8 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   will never pay anyone. Bounced, lost, uncashed until it went out of date, drawn wrong,
   spoiled in the printer — one state and a reason beside it, because to the register
   every death is the same fact. The number stays spent. A cheque that had already been
-  handed over takes its voucher back to `confirmed` with it, and a replacement is written
-  on that **same** voucher: only the instrument died, not the obligation. See
+  handed over takes its voucher back to `confirmed` with it, and a replacement is
+  written on that **same** voucher: only the instrument died, not the obligation. See
   [ADR-0007](./docs/adr/0007-a-dead-cheque-takes-its-voucher-back.md).
 
 - **ประเภทผู้รับเงิน / Payee type** (`account.payment.payee_type_id` →
@@ -141,6 +141,48 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   which is exactly why this one is not called `partner_type_id` the way it is on
   `res.partner` and on `finance.assignment.rule` — on those models there is nothing for
   it to collide with. _Avoid_: "partner type" unqualified, on a payment.
+
+- **ภาษีหัก ณ ที่จ่ายบนใบจ่ายเงิน** (`account.payment.wht_tax_id`, `wht_amount_base`,
+  `wht_cert_income_type`): what a voucher the finance office **filled in by hand**
+  withholds. Three facts, and they do not all fall on the same side: the rate and the
+  **ฐานเงินได้** are money side, because between them they decide what the bank was told
+  to pay; the **ประเภทเงินได้** is not — it moves no entry and appears in no
+  instruction, being what the certificate is _about_. A voucher raised from a
+  disbursement has none of the three: its withholding was settled on the bill and
+  reached the entry as a line, and a rate here as well would withhold the payee twice.
+  That is why the rate is proposed by an **onchange** from the payee's ประเภทผู้รับเงิน
+  and never by a compute — a voucher another document raises is created in Python, where
+  no onchange runs, so the mistake is not guarded against so much as unreachable.
+  _Avoid_: reading `amount_wht` as an input; it is worked out from these.
+
+- **ฐานเงินได้ / Withholding base** (`account.payment.wht_amount_base`): the income the
+  rate is applied to — and on a hand-filled voucher **the one figure that is typed**.
+  The amount paid follows from it (base less withholding) and closes to editing, because
+  a form offering both would let the two disagree, and it is the amount that must give
+  way: what the payee is owed is the base, and what leaves the bank is whatever is left
+  of it. KMITL charges no VAT and a voucher withholds one thing, so the base is the
+  whole of what is owed. _Avoid_: "ยอดเต็ม", and avoid treating it as a second copy of
+  the gross — see below.
+
+- **ยอดก่อนหัก ณ ที่จ่าย** (`account.payment.amount_before_wht`): the gross the payee is
+  owed, **read back** as the amount paid plus what was withheld from it. Never typed and
+  never stored: on a hand-filled voucher the typed figure is the base and this equals
+  it, and on a voucher raised from a disbursement both halves were settled with the
+  bill. One number, arrived at from whichever end filled the document in, which is why
+  the form shows the base on the one and this on the other and never both.
+
+- **หนังสือรับรองการหักภาษี ณ ที่จ่าย / WHT certificate** (`withholding.tax.cert`): the
+  50 ทวิ the payee files with the Revenue Department. It is the **voucher's**, not the
+  journal entry's — created with `payment_id` and no `move_id` — because the finance
+  office hands it over with the money, weeks before the accounting office books the
+  voucher, and because posting an entry deletes every certificate hanging off it. It may
+  be issued from **ยืนยันพร้อมส่งธนาคาร** onwards, that being the first moment what it
+  states can no longer change, and it is dated from the day the money actually left (the
+  e-payment file's effective date, or the date on the cheque) rather than the voucher's
+  own date. See
+  [ADR-0008](./docs/adr/0008-the-wht-certificate-belongs-to-the-voucher.md). _Avoid_:
+  calling it a ภ.ง.ด. — that is the monthly filing, a different paper made from the same
+  withholding.
 
 - **ผลการจ่าย** (`account.payment.bank_result_status`): the outcome as the finance
   office recorded it. Historically the gate everything downstream read; `finance_state`
@@ -209,23 +251,29 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   holds no bank account at all.
 - **Nothing here is told by a bank.** No result file is imported; every outcome in this
   context is a person's word, and the exceptions are settled outside the system. This is
-  also why nothing here follows a cheque after it is handed over: which cheques are still
-  outstanding is a line in the **bank reconciliation**, and that is the accounting
+  also why nothing here follows a cheque after it is handed over: which cheques are
+  still outstanding is a line in the **bank reconciliation**, and that is the accounting
   office's paper.
 - **A cheque number, once spent, is never handed to a second payee.** A cancelled cheque
   keeps the number it was torn off with, which is why cancelling one leaves its row
   behind and why a voucher can end up with several — at most one of them not cancelled.
 - **The way back exists only for a cheque, and only while the entry is unposted.** The
-  phase is otherwise forward-only. A cheque is the one instrument that can fail after the
-  payee is holding it, so its death withdraws the assertion that they were paid instead
-  of being corrected downstream. Once the accounting office has posted, the money has
-  left the books too, and only their reversal can undo it (ADR-0007).
+  phase is otherwise forward-only. A cheque is the one instrument that can fail after
+  the payee is holding it, so its death withdraws the assertion that they were paid
+  instead of being corrected downstream. Once the accounting office has posted, the
+  money has left the books too, and only their reversal can undo it (ADR-0007).
 - **Naming a dimension names everything under it.** A voucher filtered by a faculty, a
   fund or a programme is any voucher on that account _or on any account beneath it_.
   This is the same reading the routing rules use to decide who carries a voucher
   (`finance.assignment.rule`), and it has to stay the same reading: a rule set on a
   faculty that routes a department's vouchers, beside a list filter on that faculty that
   finds none of them, would be one word meaning two things.
+- **A payee is withheld from in exactly one place.** A voucher either says what it
+  withholds — filled in on the voucher itself, in the Finance app — or carries a
+  withholding decided on the bill it pays, which reaches its entry as a line. Never
+  both: the entry is built from whichever of the two applies, and nothing merges them.
+  This is a rule that is hard to break rather than one that is checked, because the rate
+  on the voucher is only ever set by hand on the form.
 - **A ใบสำคัญจ่าย number, once issued, never changes** — and because Odoo binds the
   number to the voucher's date, that pins the date with it. Anything that has to say
   when the money actually left says it with the e-payment file's effective date instead
