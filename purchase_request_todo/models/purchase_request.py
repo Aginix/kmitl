@@ -124,15 +124,6 @@ class PurchaseRequest(models.Model):
                     user_id=rec.assigned_to.id,
                 )
 
-    def action_egp_in_progress(self):
-        """Close the E-GP number entry Todo when the officer confirms the project
-        number and transitions to in_progress."""
-        res = super().action_egp_in_progress()
-        self.filtered(
-            lambda r: r.egp_status == "in_progress"
-        ).activity_feedback([EGP_NUMBER_ENTRY_ACTIVITY])
-        return res
-
     # ---------------------------------------------------------------------
     # Sarabun hooks (require document parameter — cannot be base.automation)
     # ---------------------------------------------------------------------
