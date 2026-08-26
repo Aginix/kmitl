@@ -40,8 +40,4 @@ class KmitlReceiptPreview(models.TransientModel):
             body=_("Receipt printed."),
             attachment_ids=[attachment.id],
         )
-        return {
-            "type": "ir.actions.act_url",
-            "url": "/web/content/%s?download=true" % attachment.id,
-            "target": "new",
-        }
+        return {"type": "ir.actions.act_window_close"}

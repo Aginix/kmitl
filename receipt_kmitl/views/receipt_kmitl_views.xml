@@ -113,7 +113,7 @@
                             </div>
                             <field name="partner_id"
                                    options="{'no_create': True, 'no_edit': True}"
-                                   attrs="{'readonly': [('is_walkin', '=', True)]}"/>
+                                   attrs="{'readonly': ['|', ('is_walkin', '=', True), ('state', '!=', 'draft')]}"/>
                             <field name="customer_name"/>
                             <field name="customer_tax_id"
                                    attrs="{'invisible': [('is_walkin', '=', True)]}"/>

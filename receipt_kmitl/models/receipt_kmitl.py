@@ -284,6 +284,9 @@ class ReceiptKmitl(models.Model):
             if walkin_id:
                 self.partner_id = walkin_id
                 self._sync_customer_snapshot()
+            self.customer_tax_id = False
+            self.customer_branch_code = False
+            self.customer_address = False
 
     @api.onchange("partner_id")
     def _onchange_partner_id(self):
