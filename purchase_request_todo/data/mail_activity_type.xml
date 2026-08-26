@@ -10,43 +10,6 @@
         <field name="delay_count">0</field>
     </record>
 
-    <!-- Execution Todo: reserve the budget commitment while the พ.1 sits at to_verify (รอจองงบประมาณ) -->
-    <record id="mail_activity_pr_reserve_budget" model="mail.activity.type">
-        <field name="name">Reserve budget (พ.1)</field>
-        <field
-            name="summary"
-        >Reserve the budget commitment for the purchase request</field>
-        <field name="todo_category">execution</field>
-        <field name="res_model">purchase.request</field>
-        <field name="icon">fa-money</field>
-        <field name="delay_count">0</field>
-    </record>
-
-    <!-- Execution Todo: create the endorsement letter (หนังสือขอความเห็นชอบให้จัดหา) at to_submit -->
-    <record
-        id="mail_activity_pr_awaiting_endorsement_letter"
-        model="mail.activity.type"
-    >
-        <field name="name">Awaiting endorsement letter (พ.1)</field>
-        <field
-            name="summary"
-        >Create the endorsement letter for the purchase request</field>
-        <field name="todo_category">execution</field>
-        <field name="res_model">purchase.request</field>
-        <field name="icon">fa-file-text-o</field>
-        <field name="delay_count">0</field>
-    </record>
-
-    <!-- Execution Todo: authorized signer must sign the circulating Sarabun document at to_approve -->
-    <record id="mail_activity_pr_awaiting_signer" model="mail.activity.type">
-        <field name="name">Awaiting authorized signer (พ.1)</field>
-        <field name="summary">Sign the endorsement letter for the purchase request</field>
-        <field name="todo_category">execution</field>
-        <field name="res_model">purchase.request</field>
-        <field name="icon">fa-pencil-square-o</field>
-        <field name="delay_count">0</field>
-    </record>
-
     <!-- Execution Todo: PR endorsed — proceed with PA creation (non-EGP) or EGP recording -->
     <record id="mail_activity_pr_endorsement_approved" model="mail.activity.type">
         <field name="name">Endorsement approved — proceed (พ.1)</field>
@@ -81,16 +44,6 @@
         <field name="todo_category">execution</field>
         <field name="res_model">purchase.request.approval</field>
         <field name="icon">fa-file-text</field>
-        <field name="delay_count">0</field>
-    </record>
-
-    <!-- Execution Todo: EGP path — record the e-GP project number so procurement can proceed -->
-    <record id="mail_activity_pr_egp_number_entry" model="mail.activity.type">
-        <field name="name">Enter e-GP project number (พ.1)</field>
-        <field name="summary">Enter the e-GP project number to proceed with procurement</field>
-        <field name="todo_category">execution</field>
-        <field name="res_model">purchase.request</field>
-        <field name="icon">fa-globe</field>
         <field name="delay_count">0</field>
     </record>
 </odoo>

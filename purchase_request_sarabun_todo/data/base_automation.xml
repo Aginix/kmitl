@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+
+    <!-- to_verify → to_submit: schedule endorsement-letter Todo -->
+    <record id="automation_pr_verify_to_submit" model="base.automation">
+        <field name="name">[TODO] พ.1 to_verify → to_submit (สร้างหนังสือขอความเห็นชอบ)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "=", "to_verify")]</field>
+        <field name="filter_domain">[("state", "=", "to_submit")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+for rec in records:
+    if not rec.create_uid:
+        continue
+    summary = "ท่านได้รับ แบบขอให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ สร้างหนังสือขอความเห็นชอบให้จัดหา" % (rec.name or "")
+    rec.activity_schedule(
+        "purchase_request_sarabun_todo.mail_activity_pr_awaiting_endorsement_letter",
+        summary=summary,
+        user_id=rec.create_uid.id,
+    )
+]]></field>
+    </record>
+
+    <!-- any → draft: unlink sarabun-related activities -->
+    <record id="automation_pr_to_draft_cleanup" model="base.automation">
+        <field name="name">[TODO] พ.1 → draft (ล้าง sarabun activities)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "!=", "draft")]</field>
+        <field name="filter_domain">[("state", "=", "draft")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_unlink([
+    "purchase_request_sarabun_todo.mail_activity_pr_awaiting_endorsement_letter",
+    "purchase_request_sarabun_todo.mail_activity_pr_awaiting_signer",
+    "purchase_request_todo.mail_activity_pr_endorsement_approved",
+])
+]]></field>
+    </record>
+
+    <!-- any → cancelled: unlink sarabun-related activities -->
+    <record id="automation_pr_to_cancelled_cleanup" model="base.automation">
+        <field name="name">[TODO] พ.1 → cancelled (ล้าง sarabun activities)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "!=", "cancelled")]</field>
+        <field name="filter_domain">[("state", "=", "cancelled")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_unlink([
+    "purchase_request_sarabun_todo.mail_activity_pr_awaiting_endorsement_letter",
+    "purchase_request_sarabun_todo.mail_activity_pr_awaiting_signer",
+    "purchase_request_todo.mail_activity_pr_endorsement_approved",
+])
+]]></field>
+    </record>
+
+</odoo>

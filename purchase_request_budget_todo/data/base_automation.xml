@@ -14,7 +14,7 @@
         <field name="state">code</field>
         <field name="code"><![CDATA[
 role = env.ref("budget_role.role_budget_commitment", raise_if_not_found=False)
-act_type = env.ref("purchase_request_todo.mail_activity_pr_reserve_budget", raise_if_not_found=False)
+act_type = env.ref("purchase_request_budget_todo.mail_activity_pr_reserve_budget", raise_if_not_found=False)
 if act_type:
     for rec in records:
         if rec.activity_ids.filtered(lambda a: a.activity_type_id == act_type):
@@ -22,23 +22,23 @@ if act_type:
         summary = "ท่านได้รับ แบบขอให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ จองเงินงบประมาณ" % (rec.name or "")
         if role and rec.operating_unit_id:
             rec.activity_schedule(
-                "purchase_request_todo.mail_activity_pr_reserve_budget",
+                "purchase_request_budget_todo.mail_activity_pr_reserve_budget",
                 summary=summary,
                 responsible_role_id=role.id,
                 operating_unit_id=rec.operating_unit_id.id,
             )
         elif rec.requested_by:
             rec.activity_schedule(
-                "purchase_request_todo.mail_activity_pr_reserve_budget",
+                "purchase_request_budget_todo.mail_activity_pr_reserve_budget",
                 summary=summary,
                 user_id=rec.requested_by.id,
             )
 ]]></field>
     </record>
 
-    <!-- to_verify → to_submit: feedback reserve-budget + schedule endorsement-letter Todo -->
-    <record id="automation_pr_verify_to_submit" model="base.automation">
-        <field name="name">[TODO] พ.1 รอจองงบประมาณ → อยู่ระหว่างการจัดเตรียม</field>
+    <!-- to_verify → to_submit: feedback reserve-budget (budget step complete) -->
+    <record id="automation_pr_verify_to_submit_feedback" model="base.automation">
+        <field name="name">[TODO] พ.1 จองงบเสร็จ (to_verify → to_submit)</field>
         <field name="model_id" ref="purchase_request.model_purchase_request"/>
         <field name="trigger">on_write</field>
         <field name="trigger_field_ids" eval="[
@@ -48,22 +48,13 @@ if act_type:
         <field name="filter_domain">[("state", "=", "to_submit")]</field>
         <field name="state">code</field>
         <field name="code"><![CDATA[
-records.activity_feedback(["purchase_request_todo.mail_activity_pr_reserve_budget"])
-for rec in records:
-    if not rec.create_uid:
-        continue
-    summary = "ท่านได้รับ แบบขอให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ สร้างหนังสือขอความเห็นชอบให้จัดหา" % (rec.name or "")
-    rec.activity_schedule(
-        "purchase_request_todo.mail_activity_pr_awaiting_endorsement_letter",
-        summary=summary,
-        user_id=rec.create_uid.id,
-    )
+records.activity_feedback(["purchase_request_budget_todo.mail_activity_pr_reserve_budget"])
 ]]></field>
     </record>
 
-    <!-- any → draft: unlink all lifecycle activities -->
+    <!-- any → draft: unlink reserve-budget activity -->
     <record id="automation_pr_to_draft_cleanup" model="base.automation">
-        <field name="name">[TODO] พ.1 → draft (ล้าง activity)</field>
+        <field name="name">[TODO] พ.1 → draft (ล้าง budget activity)</field>
         <field name="model_id" ref="purchase_request.model_purchase_request"/>
         <field name="trigger">on_write</field>
         <field name="trigger_field_ids" eval="[
@@ -73,19 +64,13 @@ for rec in records:
         <field name="filter_domain">[("state", "=", "draft")]</field>
         <field name="state">code</field>
         <field name="code"><![CDATA[
-records.activity_unlink([
-    "purchase_request_todo.mail_activity_pr_reserve_budget",
-    "purchase_request_todo.mail_activity_pr_awaiting_endorsement_letter",
-    "purchase_request_todo.mail_activity_pr_awaiting_signer",
-    "purchase_request_todo.mail_activity_pr_endorsement_approved",
-    "purchase_request_todo.mail_activity_pr_egp_number_entry",
-])
+records.activity_unlink(["purchase_request_budget_todo.mail_activity_pr_reserve_budget"])
 ]]></field>
     </record>
 
-    <!-- any → cancelled: unlink all lifecycle activities -->
+    <!-- any → cancelled: unlink reserve-budget activity -->
     <record id="automation_pr_to_cancelled_cleanup" model="base.automation">
-        <field name="name">[TODO] พ.1 → cancelled (ล้าง activity)</field>
+        <field name="name">[TODO] พ.1 → cancelled (ล้าง budget activity)</field>
         <field name="model_id" ref="purchase_request.model_purchase_request"/>
         <field name="trigger">on_write</field>
         <field name="trigger_field_ids" eval="[
@@ -95,30 +80,7 @@ records.activity_unlink([
         <field name="filter_domain">[("state", "=", "cancelled")]</field>
         <field name="state">code</field>
         <field name="code"><![CDATA[
-records.activity_unlink([
-    "purchase_request_todo.mail_activity_pr_reserve_budget",
-    "purchase_request_todo.mail_activity_pr_awaiting_endorsement_letter",
-    "purchase_request_todo.mail_activity_pr_awaiting_signer",
-    "purchase_request_todo.mail_activity_pr_endorsement_approved",
-    "purchase_request_todo.mail_activity_pr_egp_number_entry",
-])
-]]></field>
-    </record>
-
-
-    <!-- egp_status: any → in_progress: feedback E-GP number entry Todo -->
-    <record id="automation_pr_egp_status_in_progress" model="base.automation">
-        <field name="name">[TODO] พ.1 egp_status → in_progress (ปิด E-GP Todo)</field>
-        <field name="model_id" ref="purchase_request.model_purchase_request"/>
-        <field name="trigger">on_write</field>
-        <field name="trigger_field_ids" eval="[
-            Command.link(ref('purchase_request_egp.field_purchase_request__egp_status')),
-        ]"/>
-        <field name="filter_pre_domain">[("egp_status", "!=", "in_progress")]</field>
-        <field name="filter_domain">[("egp_status", "=", "in_progress")]</field>
-        <field name="state">code</field>
-        <field name="code"><![CDATA[
-records.activity_feedback(["purchase_request_todo.mail_activity_pr_egp_number_entry"])
+records.activity_unlink(["purchase_request_budget_todo.mail_activity_pr_reserve_budget"])
 ]]></field>
     </record>
 

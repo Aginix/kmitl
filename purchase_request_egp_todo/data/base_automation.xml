@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+
+    <!-- egp_status: any → in_progress: feedback E-GP number entry Todo -->
+    <record id="automation_pr_egp_status_in_progress" model="base.automation">
+        <field name="name">[TODO] พ.1 egp_status → in_progress (ปิด E-GP Todo)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request_egp.field_purchase_request__egp_status')),
+        ]"/>
+        <field name="filter_pre_domain">[("egp_status", "!=", "in_progress")]</field>
+        <field name="filter_domain">[("egp_status", "=", "in_progress")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_feedback(["purchase_request_egp_todo.mail_activity_pr_egp_number_entry"])
+]]></field>
+    </record>
+
+    <!-- any → draft: unlink E-GP activity -->
+    <record id="automation_pr_to_draft_cleanup" model="base.automation">
+        <field name="name">[TODO] พ.1 → draft (ล้าง E-GP activity)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "!=", "draft")]</field>
+        <field name="filter_domain">[("state", "=", "draft")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_unlink(["purchase_request_egp_todo.mail_activity_pr_egp_number_entry"])
+]]></field>
+    </record>
+
+    <!-- any → cancelled: unlink E-GP activity -->
+    <record id="automation_pr_to_cancelled_cleanup" model="base.automation">
+        <field name="name">[TODO] พ.1 → cancelled (ล้าง E-GP activity)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "!=", "cancelled")]</field>
+        <field name="filter_domain">[("state", "=", "cancelled")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_unlink(["purchase_request_egp_todo.mail_activity_pr_egp_number_entry"])
+]]></field>
+    </record>
+
+</odoo>

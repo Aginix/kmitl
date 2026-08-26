@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- Execution Todo: EGP path — record the e-GP project number so procurement can proceed -->
+    <record id="mail_activity_pr_egp_number_entry" model="mail.activity.type">
+        <field name="name">Enter e-GP project number (พ.1)</field>
+        <field name="summary">Enter the e-GP project number to proceed with procurement</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">purchase.request</field>
+        <field name="icon">fa-globe</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>
