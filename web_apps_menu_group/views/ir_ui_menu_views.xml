@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Standalone view, deliberately NOT inheriting core's edit_menu /
+         submenus tree (that view is reused elsewhere and shouldn't gain
+         this field). Scoped to root/app menus only via the action domain. -->
+    <record id="view_ir_ui_menu_apps_group_assign_tree" model="ir.ui.view">
+        <field name="name">ir.ui.menu.apps.group.assign.tree</field>
+        <field name="model">ir.ui.menu</field>
+        <field name="arch" type="xml">
+            <tree string="Apps Menu Group Assignment" editable="bottom" create="0">
+                <field name="sequence" widget="handle" />
+                <field name="name" readonly="1" />
+                <field name="apps_menu_group_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_ir_ui_menu_apps_group_assign" model="ir.actions.act_window">
+        <field name="name">Apps Menu Group Assignment</field>
+        <field name="res_model">ir.ui.menu</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_ir_ui_menu_apps_group_assign_tree" />
+        <field name="domain">[('parent_id', '=', False)]</field>
+    </record>
+
+    <menuitem
+        id="menu_ir_ui_menu_apps_group_assign"
+        name="Apps Menu Group Assignment"
+        parent="base.next_id_2"
+        action="action_ir_ui_menu_apps_group_assign"
+        sequence="16"
+    />
+
+</odoo>
