@@ -34,10 +34,6 @@
                 <header>
                     <button name="action_preview_receipt"
                             type="object"
-                            string="ดูตัวอย่างใบเสร็จ"
-                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_preview_receipt"
-                            type="object"
                             string="พิมพ์ใบเสร็จ"
                             class="btn-primary"
                             icon="fa-print"
@@ -93,9 +89,9 @@
                     <group>
                         <group name="header" string="ข้อมูลใบเสร็จ">
                             <field name="date"/>
-                            <field name="account_fiscal_year_id"/>
+                            <field name="account_fiscal_year_id" widget="selection" />
                             <field name="department_analytic_id"
-                                   options="{'no_create': True}"/>
+                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
                             <field name="payment_method_id"
                                    widget="selection"/>
                             <field name="user_id" readonly="1"
@@ -126,17 +122,17 @@
                     <group name="analytic_dimensions" string="มิติทางบัญชี">
                         <group>
                             <field name="fund_analytic_id"
-                                   options="{'no_create': True}"/>
+                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
                             <field name="source_analytic_id"
-                                   options="{'no_create': True}"/>
+                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
                             <field name="activity_analytic_id"
-                                   options="{'no_create': True}"/>
+                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
                         </group>
                         <group>
                             <field name="kmitl_project_analytic_id"
-                                   options="{'no_create': True}"/>
+                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
                             <field name="procurement_plan_analytic_id"
-                                   options="{'no_create': True}"/>
+                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
                         </group>
                     </group>
                     <notebook>
