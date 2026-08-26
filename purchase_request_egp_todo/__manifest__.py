@@ -7,8 +7,8 @@
     "summary": "Route E-GP number entry Todos for พ.1 in the e-GP procurement path",
     "depends": [
         "base_automation",
+        "purchase_request_todo",
         "purchase_request_egp",
-        "purchase_request_sarabun",
         "mail_activity_todo_role_unit",
         "purchase_user_role",
     ],

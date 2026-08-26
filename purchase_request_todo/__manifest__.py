@@ -13,6 +13,7 @@
         "purchase_request_activity_kmitl",
         "purchase_request_approval_kmitl",
         "purchase_request_sarabun",
+        "budget_role",
         "purchase_user_role",
     ],
     "data": [
