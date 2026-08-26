@@ -1,37 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="1">
-    <!-- FYI: แจ้งผู้ขอเมื่อ พจ.1 เปลี่ยนสถานะ (อนุมัติ/ปฏิเสธ) -->
-    <record id="mail_activity_pa_status_fyi" model="mail.activity.type">
-        <field name="name">สถานะ พจ.1 เปลี่ยน (FYI)</field>
-        <field name="summary">แจ้งสถานะแบบรายงานขอให้จัดซื้อจัดจ้าง (พจ.1)</field>
+    <!-- ข้อ 1, 3: แจ้งเจ้าหน้าที่พัสดุหน่วยงาน (บน พจ.1) -->
+    <record id="mail_activity_pa_notify_procurement" model="mail.activity.type">
+        <field name="name">แจ้งเจ้าหน้าที่พัสดุ (พจ.1)</field>
+        <field name="summary">แจ้งเจ้าหน้าที่พัสดุหน่วยงาน</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">purchase.request.approval</field>
+        <field name="icon">fa-bell</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- ข้อ 4, 5: FYI ผู้ขอ (บน พ.1) -->
+    <record id="mail_activity_pr_pa_status_fyi" model="mail.activity.type">
+        <field name="name">แจ้งสถานะ พจ.1 (FYI)</field>
+        <field name="summary">แจ้งผู้ขอเรื่องสถานะ พจ.1</field>
         <field name="todo_category">acknowledgement</field>
-        <field name="res_model">purchase.request.approval</field>
+        <field name="res_model">purchase.request</field>
         <field name="icon">fa-info-circle</field>
-        <field name="delay_count">0</field>
-    </record>
-
-    <!-- Execution: รอผู้มีอำนาจพิจารณา พจ.1 -->
-    <record id="mail_activity_pa_awaiting_manager" model="mail.activity.type">
-        <field name="name">รอพิจารณา (พจ.1)</field>
-        <field name="summary">พิจารณาแบบรายงานขอให้จัดซื้อจัดจ้าง (พจ.1)</field>
-        <field name="todo_category">execution</field>
-        <field name="res_model">purchase.request.approval</field>
-        <field name="icon">fa-gavel</field>
-        <field name="delay_count">0</field>
-    </record>
-
-    <!-- Execution: พจ.1 อนุมัติแล้ว รอบันทึกข้อมูลสัญญา/ใบสั่งซื้อ -->
-    <record
-        id="mail_activity_pa_approved_record_contract"
-        model="mail.activity.type"
-    >
-        <field name="name">บันทึกข้อมูลสัญญา (พจ.1 อนุมัติ)</field>
-        <field
-            name="summary"
-        >บันทึกข้อมูลสัญญา/ใบสั่งซื้อ/จ้างหลัง พจ.1 อนุมัติ</field>
-        <field name="todo_category">execution</field>
-        <field name="res_model">purchase.request.approval</field>
-        <field name="icon">fa-file-text</field>
         <field name="delay_count">0</field>
     </record>
 </odoo>

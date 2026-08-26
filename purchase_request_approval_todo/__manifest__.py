@@ -8,7 +8,7 @@
     "depends": [
         "purchase_request_approval",
         "mail_activity_todo_role_unit",
-        "budget_role",
+        "purchase_user_role",
         "base_automation",
     ],
     "data": [
