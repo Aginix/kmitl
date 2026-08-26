@@ -29,6 +29,25 @@
     .o_DiscussTodoView_item:hover {
         background-color: $gray-200;
     }
+
+    // Leave room for the leading search icon (position-absolute, ms-2) so the
+    // placeholder/text does not sit under it.
+    .o_DiscussTodoView_search .fa-search {
+        left: 0;
+        pointer-events: none;
+    }
+
+    // Activity-type group header: sticky so the current type stays labelled
+    // while its rows scroll, sits above the rows, and reacts to hover like the
+    // items do.
+    .o_DiscussTodoView_groupHeader {
+        top: 0;
+        z-index: 1;
+
+        &:hover {
+            background-color: $gray-200 !important;
+        }
+    }
 }
 
 .o_DiscussTodoSidebar {
