@@ -81,16 +81,15 @@ for record in records:
             <field name="state">code</field>
             <field name="code">
 group = env.ref("disbursement.group_disbursement_officer", raise_if_not_found=False)
-if not group:
-    return
-users = group.users.filtered(lambda u: u.active and not u.share)
-for record in records:
-    for user in users:
-        record.activity_schedule(
-            "agx_approval_disbursement_todo.mail_activity_finance_verify",
-            summary="คำขออนุมัติเลขที่ %s ส่งให้การเงินแล้ว กรุณาตรวจสอบและตั้งเบิก" % (record.name or ""),
-            user_id=user.id,
-        )
+if group:
+    users = group.users.filtered(lambda u: u.active and not u.share)
+    for record in records:
+        for user in users:
+            record.activity_schedule(
+                "agx_approval_disbursement_todo.mail_activity_finance_verify",
+                summary="คำขออนุมัติเลขที่ %s ส่งให้การเงินแล้ว กรุณาตรวจสอบและตั้งเบิก" % (record.name or ""),
+                user_id=user.id,
+            )
 </field>
         </record>
 

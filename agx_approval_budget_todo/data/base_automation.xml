@@ -17,18 +17,17 @@
             <field name="state">code</field>
             <field name="code">
 role = env.ref("budget_role.role_budget_commitment", raise_if_not_found=False)
-if not role:
-    return
-for record in records:
-    ou = record.operating_unit_id
-    if not ou:
-        continue
-    record.activity_schedule(
-        "agx_approval_budget_todo.mail_activity_reserve_budget",
-        summary="คำขออนุมัติเลขที่ %s รอตรวจสอบและจองงบประมาณ" % (record.name or ""),
-        responsible_role_id=role.id,
-        operating_unit_id=ou.id,
-    )
+if role:
+    for record in records:
+        ou = record.operating_unit_id
+        if not ou:
+            continue
+        record.activity_schedule(
+            "agx_approval_budget_todo.mail_activity_reserve_budget",
+            summary="คำขออนุมัติเลขที่ %s รอตรวจสอบและจองงบประมาณ" % (record.name or ""),
+            responsible_role_id=role.id,
+            operating_unit_id=ou.id,
+        )
 </field>
         </record>
 
