@@ -59,4 +59,17 @@
         </field>
     </record>
 
+    <record id="approval_request_view_tree" model="ir.ui.view">
+        <field name="name">approval.request.view.tree.disbursement</field>
+        <field name="model">approval.request</field>
+        <field
+            name="inherit_id"
+            ref="agx_approval.approval_request_view_tree"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="disbursement_request_ids" optional="show" />
+            </xpath>
+        </field>
+    </record>
 </odoo>
