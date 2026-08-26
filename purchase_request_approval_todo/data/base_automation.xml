@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- เข้าสถานะ to_approve → แจ้ง Todo ให้ผู้มีอำนาจพิจารณา -->
+        <record id="automation_pa_enter_to_approve" model="base.automation">
+            <field name="name">[TODO] พจ.1 → รอพิจารณา</field>
+            <field
+                name="model_id"
+                ref="purchase_request_approval.model_purchase_request_approval"
+            />
+            <field name="trigger">on_write</field>
+            <field name="trigger_field_ids" eval="[
+                Command.link(ref('purchase_request_approval.field_purchase_request_approval__state')),
+            ]"/>
+            <field name="filter_pre_domain">[("state", "!=", "to_approve")]</field>
+            <field name="filter_domain">[("state", "=", "to_approve")]</field>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+role = env.ref("budget_role.role_budget_commitment", raise_if_not_found=False)
+act_type = env.ref("purchase_request_approval_todo.mail_activity_pa_awaiting_manager", raise_if_not_found=False)
+if act_type:
+    for rec in records:
+        if rec.activity_ids.filtered(lambda a: a.activity_type_id == act_type):
+            continue
+        pr = rec.request_id
+        sender = pr.assigned_to if pr else env["res.users"]
+        if not sender:
+            sender = rec.user_id
+        sender_name = sender.name if sender else "เจ้าหน้าที่พัสดุ"
+        summary = "ท่านได้รับ แบบรายงานขอให้จัดซื้อจัดจ้าง (พจ.1) จาก %s เพื่อให้ท่านดำเนินการ พิจารณา" % sender_name
+        ou = rec.operating_unit_id if "operating_unit_id" in rec._fields else False
+        if role and ou:
+            rec.activity_schedule(
+                "purchase_request_approval_todo.mail_activity_pa_awaiting_manager",
+                summary=summary,
+                responsible_role_id=role.id,
+                operating_unit_id=ou.id,
+            )
+        elif rec.assigned_to:
+            rec.activity_schedule(
+                "purchase_request_approval_todo.mail_activity_pa_awaiting_manager",
+                summary=summary,
+                user_id=rec.assigned_to.id,
+            )
+]]></field>
+        </record>
+
+        <!-- เข้าสถานะ approved → FYI ผู้ขอ + feedback Todo พิจารณา + แจ้ง Todo บันทึกสัญญา -->
+        <record id="automation_pa_enter_approved" model="base.automation">
+            <field name="name">[TODO] พจ.1 รอพิจารณา → อนุมัติ</field>
+            <field
+                name="model_id"
+                ref="purchase_request_approval.model_purchase_request_approval"
+            />
+            <field name="trigger">on_write</field>
+            <field name="trigger_field_ids" eval="[
+                Command.link(ref('purchase_request_approval.field_purchase_request_approval__state')),
+            ]"/>
+            <field name="filter_pre_domain">[("state", "=", "to_approve")]</field>
+            <field name="filter_domain">[("state", "=", "approved")]</field>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+# --- FYI ผู้ขอ: อนุมัติแล้ว ---
+fyi_xmlid = "purchase_request_approval_todo.mail_activity_pa_status_fyi"
+fyi_type = env.ref(fyi_xmlid, raise_if_not_found=False)
+if fyi_type:
+    for rec in records:
+        if not rec.requested_by:
+            continue
+        rec.activity_ids.filtered(
+            lambda a: a.activity_type_id == fyi_type and a.user_id.id == rec.requested_by.id
+        ).unlink()
+        rec.activity_schedule(
+            fyi_xmlid,
+            summary="แบบรายงานขอให้จัดซื้อจัดจ้าง (พจ.1) %s ได้รับอนุมัติแล้ว" % (rec.display_name or ""),
+            user_id=rec.requested_by.id,
+        )
+
+# --- Feedback Todo พิจารณา (completed) ---
+records.activity_feedback(["purchase_request_approval_todo.mail_activity_pa_awaiting_manager"])
+
+# --- Schedule Todo บันทึกสัญญา ---
+contract_xmlid = "purchase_request_approval_todo.mail_activity_pa_approved_record_contract"
+contract_type = env.ref(contract_xmlid, raise_if_not_found=False)
+role = env.ref("budget_role.role_budget_commitment", raise_if_not_found=False)
+if contract_type:
+    for rec in records:
+        summary = "แบบรายงานขอให้จัดซื้อจัดจ้าง (พจ.1) ได้รับอนุมัติให้จัดซื้อจัดจ้างแล้ว กรุณาตรวจสอบเพื่อบันทึกข้อมูลสัญญา/ใบสั่งซื้อ/จ้างภายในระบบ"
+        ou = rec.operating_unit_id if "operating_unit_id" in rec._fields else False
+        if role and ou:
+            rec.activity_schedule(
+                contract_xmlid,
+                summary=summary,
+                responsible_role_id=role.id,
+                operating_unit_id=ou.id,
+            )
+        else:
+            pr = rec.request_id
+            fallback = pr.assigned_to if pr else rec.user_id
+            if fallback:
+                rec.activity_schedule(
+                    contract_xmlid,
+                    summary=summary,
+                    user_id=fallback.id,
+                )
+]]></field>
+        </record>
+
+        <!-- เข้าสถานะ rejected → FYI ผู้ขอ + ล้าง Todo พิจารณา -->
+        <record id="automation_pa_enter_rejected" model="base.automation">
+            <field name="name">[TODO] พจ.1 รอพิจารณา → ปฏิเสธ</field>
+            <field
+                name="model_id"
+                ref="purchase_request_approval.model_purchase_request_approval"
+            />
+            <field name="trigger">on_write</field>
+            <field name="trigger_field_ids" eval="[
+                Command.link(ref('purchase_request_approval.field_purchase_request_approval__state')),
+            ]"/>
+            <field name="filter_pre_domain">[("state", "=", "to_approve")]</field>
+            <field name="filter_domain">[("state", "=", "rejected")]</field>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+# --- FYI ผู้ขอ: ถูกปฏิเสธ ---
+fyi_xmlid = "purchase_request_approval_todo.mail_activity_pa_status_fyi"
+fyi_type = env.ref(fyi_xmlid, raise_if_not_found=False)
+if fyi_type:
+    for rec in records:
+        if not rec.requested_by:
+            continue
+        rec.activity_ids.filtered(
+            lambda a: a.activity_type_id == fyi_type and a.user_id.id == rec.requested_by.id
+        ).unlink()
+        rec.activity_schedule(
+            fyi_xmlid,
+            summary="แบบรายงานขอให้จัดซื้อจัดจ้าง (พจ.1) %s ถูกปฏิเสธ" % (rec.display_name or ""),
+            user_id=rec.requested_by.id,
+        )
+
+# --- ล้าง Todo พิจารณา ---
+records.activity_unlink(["purchase_request_approval_todo.mail_activity_pa_awaiting_manager"])
+]]></field>
+        </record>
+
+        <!-- เข้าสถานะ cancelled → ล้าง Todo ทั้งหมด -->
+        <record id="automation_pa_enter_cancelled" model="base.automation">
+            <field name="name">[TODO] พจ.1 → ยกเลิก</field>
+            <field
+                name="model_id"
+                ref="purchase_request_approval.model_purchase_request_approval"
+            />
+            <field name="trigger">on_write</field>
+            <field name="trigger_field_ids" eval="[
+                Command.link(ref('purchase_request_approval.field_purchase_request_approval__state')),
+            ]"/>
+            <field name="filter_pre_domain">[("state", "!=", "cancelled")]</field>
+            <field name="filter_domain">[("state", "=", "cancelled")]</field>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+records.activity_unlink([
+    "purchase_request_approval_todo.mail_activity_pa_awaiting_manager",
+    "purchase_request_approval_todo.mail_activity_pa_approved_record_contract",
+])
+]]></field>
+        </record>
+
+        <!-- เข้าสถานะ sarabun_returned → ล้าง Todo พิจารณา -->
+        <record id="automation_pa_enter_sarabun_returned" model="base.automation">
+            <field name="name">[TODO] พจ.1 รอพิจารณา → สารบรรณตีกลับ</field>
+            <field
+                name="model_id"
+                ref="purchase_request_approval.model_purchase_request_approval"
+            />
+            <field name="trigger">on_write</field>
+            <field name="trigger_field_ids" eval="[
+                Command.link(ref('purchase_request_approval.field_purchase_request_approval__state')),
+            ]"/>
+            <field name="filter_pre_domain">[("state", "=", "to_approve")]</field>
+            <field name="filter_domain">[("state", "=", "sarabun_returned")]</field>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+records.activity_unlink(["purchase_request_approval_todo.mail_activity_pa_awaiting_manager"])
+]]></field>
+        </record>
+
+    </data>
+</odoo>
