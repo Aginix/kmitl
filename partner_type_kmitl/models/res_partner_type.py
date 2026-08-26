@@ -20,6 +20,6 @@ class ResPartnerType(models.Model):
 
     def unlink(self):
         for record in self:
-            if record.partner_ids:
+            if record.with_context(active_test=False).partner_ids:
                 raise UserError(_("Cannot delete partner type in use."))
         return super().unlink()

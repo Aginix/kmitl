@@ -12,6 +12,17 @@
                         <field name="property_account_receivable_id"/>
                         <field name="property_account_payable_id"/>
                         <field name="wht_tax_id"/>
+                        <button
+                            name="action_apply_accounts_to_partners"
+                            type="object"
+                            string="Apply to existing partners"
+                            class="btn-link"
+                            icon="fa-refresh"
+                            colspan="2"
+                            groups="account.group_account_manager"
+                            attrs="{'invisible': [('property_account_receivable_id', '=', False), ('property_account_payable_id', '=', False)]}"
+                            confirm="Overwrite the receivable and payable accounts of every partner of this type, including partners whose accounts were changed by hand? Journal entries already recorded are not affected."
+                        />
                     </group>
                 </group>
             </xpath>

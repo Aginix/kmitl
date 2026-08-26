@@ -26,3 +26,40 @@ msgstr "บัญชีลูกหนี้"
 #: model_terms:ir.ui.view,arch_db:partner_type_kmitl_accounting.res_partner_type_form_accounting
 msgid "Accounting Settings"
 msgstr "รายการบัญชี"
+
+#. module: partner_type_kmitl_accounting
+#: model_terms:ir.ui.view,arch_db:partner_type_kmitl_accounting.res_partner_type_form_accounting
+msgid "Apply to existing partners"
+msgstr "นำไปใช้กับคู่ค้าที่มีอยู่"
+
+#. module: partner_type_kmitl_accounting
+#: model_terms:ir.ui.view,arch_db:partner_type_kmitl_accounting.res_partner_type_form_accounting
+msgid "Overwrite the receivable and payable accounts of every partner of this type, including partners whose accounts were changed by hand? Journal entries already recorded are not affected."
+msgstr "เขียนทับบัญชีลูกหนี้และเจ้าหนี้ของคู่ค้าทุกรายในประเภทนี้ รวมถึงคู่ค้าที่มีการแก้ไขบัญชีด้วยตนเองด้วยหรือไม่? รายการบัญชีที่บันทึกไว้แล้วจะไม่ได้รับผลกระทบ"
+
+#. module: partner_type_kmitl_accounting
+#: model:ir.model.fields,field_description:partner_type_kmitl_accounting.field_res_partner_type__wht_tax_id
+msgid "WHT"
+msgstr "ภาษีหัก ณ ที่จ่าย"
+
+#. module: partner_type_kmitl_accounting
+#: code:addons/partner_type_kmitl_accounting/models/res_partner_type.py:0
+msgid "No account is configured on this partner type."
+msgstr "ยังไม่ได้กำหนดบัญชีสำหรับประเภทคู่ค้านี้"
+
+#. module: partner_type_kmitl_accounting
+#: code:addons/partner_type_kmitl_accounting/models/res_partner_type.py:0
+msgid "No partner uses this type yet."
+msgstr "ยังไม่มีคู่ค้าที่ใช้ประเภทนี้"
+
+#. module: partner_type_kmitl_accounting
+#: code:addons/partner_type_kmitl_accounting/models/res_partner_type.py:0
+#, python-format
+msgid "All %(total)s partner(s) already use these accounts."
+msgstr "คู่ค้าทั้ง %(total)s รายใช้บัญชีเหล่านี้อยู่แล้ว"
+
+#. module: partner_type_kmitl_accounting
+#: code:addons/partner_type_kmitl_accounting/models/res_partner_type.py:0
+#, python-format
+msgid "%(updated)s of %(total)s partner(s) updated."
+msgstr "อัปเดตคู่ค้า %(updated)s จาก %(total)s ราย"
