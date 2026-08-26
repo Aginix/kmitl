@@ -15,25 +15,24 @@
         <field name="code"><![CDATA[
 role = env.ref("budget_role.role_budget_commitment", raise_if_not_found=False)
 act_type = env.ref("purchase_request_todo.mail_activity_pr_reserve_budget", raise_if_not_found=False)
-if not act_type:
-    return
-for rec in records:
-    if rec.activity_ids.filtered(lambda a: a.activity_type_id == act_type):
-        continue
-    summary = "ท่านได้รับ แบบขอให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ จองเงินงบประมาณ" % (rec.name or "")
-    if role and rec.operating_unit_id:
-        rec.activity_schedule(
-            "purchase_request_todo.mail_activity_pr_reserve_budget",
-            summary=summary,
-            responsible_role_id=role.id,
-            operating_unit_id=rec.operating_unit_id.id,
-        )
-    elif rec.requested_by:
-        rec.activity_schedule(
-            "purchase_request_todo.mail_activity_pr_reserve_budget",
-            summary=summary,
-            user_id=rec.requested_by.id,
-        )
+if act_type:
+    for rec in records:
+        if rec.activity_ids.filtered(lambda a: a.activity_type_id == act_type):
+            continue
+        summary = "ท่านได้รับ แบบขอให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ จองเงินงบประมาณ" % (rec.name or "")
+        if role and rec.operating_unit_id:
+            rec.activity_schedule(
+                "purchase_request_todo.mail_activity_pr_reserve_budget",
+                summary=summary,
+                responsible_role_id=role.id,
+                operating_unit_id=rec.operating_unit_id.id,
+            )
+        elif rec.requested_by:
+            rec.activity_schedule(
+                "purchase_request_todo.mail_activity_pr_reserve_budget",
+                summary=summary,
+                user_id=rec.requested_by.id,
+            )
 ]]></field>
     </record>
 
