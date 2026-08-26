@@ -33,8 +33,6 @@
                 decoration-danger="state in ('cancelled', 'rejected')"
                 optional="show"
             />
-            <field name="account_fiscal_year_id" optional="show"/>
-            <field name="department_id" optional="show"/>
             <field
                 name="requested_by"
                 widget="many2one_avatar_user"
@@ -296,9 +294,6 @@
                     domain="[('state', '=', 'approved')]"
                 />
                 <separator />
-                <filter name="filter_by_fy" string="Fiscal Year" domain="[('account_fiscal_year_id', '!=', False)]"/>
-                <filter name="filter_by_dept" string="Department" domain="[('requesting_department_id', '!=', False)]"/>
-                <separator />
                 <filter
                     name="today"
                     string="Today"
@@ -334,27 +329,12 @@
                 />
                 <group expand="1" name="group_by" string="Group By">
                     <filter
-                        name="group_by_account_fiscal_year_id"
-                        string="Fiscal Year"
-                        domain="[]"
-                        context="{'group_by':'account_fiscal_year_id'}"
-                    />
-                    <filter
-                        name="group_by_department_id"
-                        string="Department"
-                        domain="[]"
-                        context="{'group_by':'department_id'}"
-                    />
-                    <filter
                         name="group_by_state"
                         string="Status"
                         domain="[]"
                         context="{'group_by':'state'}"
                     />
                 </group>
-                <searchpanel>
-                    <field name="department_id" icon="fa-book" enable_counters="1" />
-                </searchpanel>
             </search>
         </field>
     </record>

@@ -26,9 +26,7 @@
             <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-            <xpath expr="//field[@name='department_id']" position="attributes">
-                <attribute name="optional">show</attribute>
-            </xpath>
+            <xpath expr="//field[@name='department_id']" position="replace" />
             <xpath expr="//field[@name='requested_by']" position="attributes">
                 <attribute name="optional">show</attribute>
             </xpath>
@@ -219,12 +217,6 @@
                             widget="employee_detail_many2one"
                             attrs="{'readonly': [('is_editable','=', False)]}"
                         />
-                        <field
-                            name="department_id"
-                            string="Department"
-                            options="{'limit': 50, 'search_more': false, 'create': false, 'create_edit': false}"
-                            attrs="{'readonly': [('is_editable', '=', False)]}"
-                        />
                         <field name="user_id" readonly="1" />
                         <field
                             name="assigned_to"
@@ -236,7 +228,7 @@
                     <group name="purchase_request_group">
                         <field
                             name="account_fiscal_year_id"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            attrs="{'readonly': [('state','!=', 'draft')]}"
                             required="1"
                             widget="selection"
                         />
@@ -504,5 +496,25 @@
             search="[('id', '=', ref('purchase_request.purchase_request_form_action'))]"
         />
         <value eval="{'context': '{}'}" />
+    </function>
+
+    <record id="view_purchase_request_pivot" model="ir.ui.view">
+        <field name="name">purchase.request.pivot (KMITL)</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <pivot string="Purchase Request" sample="1">
+                <field name="account_fiscal_year_id" type="row" />
+                <field name="state" type="col" />
+                <field name="estimated_cost" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <function name="write" model="ir.actions.act_window">
+        <value
+            model="ir.actions.act_window"
+            search="[('id', '=', ref('purchase_request.purchase_request_form_action'))]"
+        />
+        <value eval="{'view_mode': 'tree,kanban,form,pivot'}" />
     </function>
 </odoo>

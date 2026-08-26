@@ -326,11 +326,23 @@
         </field>
     </record>
 
+    <record id="approval_request_view_pivot" model="ir.ui.view">
+        <field name="name">approval.request.view.pivot</field>
+        <field name="model">approval.request</field>
+        <field name="arch" type="xml">
+            <pivot string="Approval Request" sample="1">
+                <field name="category_id" type="row" />
+                <field name="account_fiscal_year_id" type="col" />
+                <field name="total_amount" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
     <record id="action_approval_request" model="ir.actions.act_window">
         <field name="name">Approval Request</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">approval.request</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,pivot</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
     </record>
