@@ -74,23 +74,15 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
         with self.assertRaises(UserError):
             receipt.unlink()
 
-    def test_line_analytic_mixin_both_directions(self):
+    def test_header_analytic_syncs_to_lines(self):
         receipt = self._make_receipt()
         line = receipt.line_ids[0]
+        self.assertTrue(line.analytic_distribution)
+        self.assertIn(str(self.dept_a.id), line.analytic_distribution)
 
-        # distribution -> fields
-        line.analytic_distribution = {str(self.dept_a.id): 100.0}
-        self.assertEqual(line.department_analytic_id, self.dept_a)
-
-        # field -> distribution
-        line.department_analytic_id = self.dept_b
-        self.assertEqual(
-            line.analytic_distribution, {str(self.dept_b.id): 100.0}
-        )
-
-        # clear distribution -> field resets
-        line.analytic_distribution = False
-        self.assertFalse(line.department_analytic_id)
+        receipt.write({"department_analytic_id": self.dept_b.id})
+        self.assertIn(str(self.dept_b.id), line.analytic_distribution)
+        self.assertNotIn(str(self.dept_a.id), line.analytic_distribution)
 
     def test_action_correct_reopens_detached_receipt(self):
         receipt = self._make_receipt()

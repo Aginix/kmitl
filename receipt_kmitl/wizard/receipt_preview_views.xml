@@ -6,9 +6,15 @@
         <field name="arch" type="xml">
             <form string="ตัวอย่างใบเสร็จ">
                 <sheet>
+                    <field name="receipt_id" invisible="1"/>
                     <field name="preview_html" nolabel="1" colspan="2"/>
                 </sheet>
                 <footer>
+                    <button name="action_confirm_print"
+                            type="object"
+                            string="ยืนยันพิมพ์ใบเสร็จ"
+                            class="btn-primary"
+                            icon="fa-print"/>
                     <button string="Close" special="cancel" class="btn-secondary"/>
                 </footer>
             </form>

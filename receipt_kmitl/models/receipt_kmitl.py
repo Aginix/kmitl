@@ -7,6 +7,15 @@ from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
+ANALYTIC_DIMENSION_FIELDS = [
+    "department_analytic_id",
+    "fund_analytic_id",
+    "source_analytic_id",
+    "activity_analytic_id",
+    "kmitl_project_analytic_id",
+    "procurement_plan_analytic_id",
+]
+
 
 class ReceiptKmitl(models.Model):
     _name = "kmitl.receipt"
@@ -69,6 +78,45 @@ class ReceiptKmitl(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
+
+    # --- Analytic dimensions (header-level, synced to lines) ---
+    fund_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กองทุน",
+        domain=[("root_plan_id.code", "=", "funds")],
+        states=READONLY_STATES,
+    )
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        domain=[("root_plan_id.code", "=", "sources")],
+        states=READONLY_STATES,
+    )
+    activity_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ด้าน/แผนงาน/กิจกรรม",
+        domain=[("root_plan_id.code", "=", "activities")],
+        states=READONLY_STATES,
+    )
+    kmitl_project_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="โครงการ",
+        domain=[("root_plan_id.code", "=", "kmitl_project")],
+        states=READONLY_STATES,
+    )
+    procurement_plan_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แผนจัดซื้อจัดจ้าง",
+        domain=[("root_plan_id.code", "=", "procurement_plan")],
+        states=READONLY_STATES,
+    )
+
+    # --- Customer ---
+    is_walkin = fields.Boolean(
+        string="ลูกค้าขาจร (Walk-in)",
+        default=True,
+        states=READONLY_STATES,
+    )
     partner_id = fields.Many2one(
         "res.partner",
         string="Partner",
@@ -93,6 +141,7 @@ class ReceiptKmitl(models.Model):
         string="Branch Code (snapshot)",
         states=READONLY_STATES,
     )
+
     description = fields.Text(states=READONLY_STATES)
     note = fields.Text()
     line_ids = fields.One2many(
@@ -140,7 +189,17 @@ class ReceiptKmitl(models.Model):
         readonly=True,
         copy=False,
     )
+    is_printed = fields.Boolean(
+        string="พิมพ์ใบเสร็จแล้ว",
+        default=False,
+        copy=False,
+        tracking=True,
+        readonly=True,
+    )
 
+    # -------------------------------------------------------------------------
+    # Defaults & computes
+    # -------------------------------------------------------------------------
     @api.model
     def _default_partner_id(self):
         param = self.env["ir.config_parameter"].sudo().get_param(
@@ -161,6 +220,49 @@ class ReceiptKmitl(models.Model):
         for rec in self:
             rec.amount_total = sum(rec.line_ids.mapped("amount"))
 
+    # -------------------------------------------------------------------------
+    # Analytic dimension sync (header → lines)
+    # -------------------------------------------------------------------------
+    def _build_analytic_distribution(self):
+        self.ensure_one()
+        dist = {}
+        for fname in ANALYTIC_DIMENSION_FIELDS:
+            account = self[fname]
+            if account:
+                dist[str(account.id)] = 100.0
+        return dist or False
+
+    def _sync_analytic_to_lines(self):
+        for rec in self:
+            dist = rec._build_analytic_distribution()
+            if rec.line_ids:
+                rec.line_ids.write({"analytic_distribution": dist})
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._sync_analytic_to_lines()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if any(f in vals for f in ANALYTIC_DIMENSION_FIELDS):
+            self._sync_analytic_to_lines()
+        return res
+
+    @api.onchange(
+        "department_analytic_id", "fund_analytic_id", "source_analytic_id",
+        "activity_analytic_id", "kmitl_project_analytic_id",
+        "procurement_plan_analytic_id",
+    )
+    def _onchange_analytic_dimensions(self):
+        dist = self._build_analytic_distribution()
+        for line in self.line_ids:
+            line.analytic_distribution = dist
+
+    # -------------------------------------------------------------------------
+    # Onchanges
+    # -------------------------------------------------------------------------
     @api.onchange("date")
     def _onchange_date(self):
         if self.date:
@@ -175,13 +277,19 @@ class ReceiptKmitl(models.Model):
             if fiscal_year:
                 self.account_fiscal_year_id = fiscal_year
 
+    @api.onchange("is_walkin")
+    def _onchange_is_walkin(self):
+        if self.is_walkin:
+            walkin_id = self._default_partner_id()
+            if walkin_id:
+                self.partner_id = walkin_id
+                self._sync_customer_snapshot()
+
     @api.onchange("partner_id")
     def _onchange_partner_id(self):
         self._sync_customer_snapshot()
 
     def _sync_customer_snapshot(self):
-        """Copy the partner's identity onto the receipt snapshot fields so the
-        printed receipt stays stable even if the partner record changes later."""
         for rec in self:
             if not rec.partner_id:
                 continue
@@ -206,25 +314,16 @@ class ReceiptKmitl(models.Model):
     # -------------------------------------------------------------------------
     @staticmethod
     def _get_fiscal_year_be(date):
-        """Thai fiscal year as the full Buddhist Era budget year.
-        FY runs Oct → Sep, so Oct-Dec belong to the next budget year
-        (e.g. 2025-10 → 2569).  Kept as a static utility for callers
-        that don't have an ``account.fiscal.year`` record handy."""
         budget_year_ce = date.year + (1 if date.month >= 10 else 0)
         return budget_year_ce + 543
 
     def _get_fy_be(self):
-        """Return the 4-digit Buddhist-era fiscal year for this receipt,
-        derived from ``account_fiscal_year_id.date_to`` when available,
-        else falling back to the receipt date calculation."""
         self.ensure_one()
         if self.account_fiscal_year_id:
             return self.account_fiscal_year_id.date_to.year + 543
         return self._get_fiscal_year_be(self.date)
 
     def _get_receipt_sequence(self):
-        """Lazy-create the per-fiscal-year ir.sequence for receipt numbers
-        (e.g. ``RC/2569/0001``)."""
         fy_be = self._get_fy_be()
         seq_code = "kmitl.receipt.%s" % fy_be
         IrSeq = self.env["ir.sequence"].sudo()
@@ -245,8 +344,6 @@ class ReceiptKmitl(models.Model):
     # Actions
     # -------------------------------------------------------------------------
     def action_confirm(self):
-        """Issued by the department: validate, assign number, allow printing.
-        No journal entry is created here — central finance posts later."""
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft receipts can be confirmed."))
@@ -273,8 +370,6 @@ class ReceiptKmitl(models.Model):
         return True
 
     def action_post(self):
-        """Posted by central finance (typically via a cash deposit batch).
-        Creates the journal entry: Dr payment-method account / Cr income."""
         for rec in self:
             if rec.state != "confirmed":
                 raise UserError(
@@ -286,7 +381,6 @@ class ReceiptKmitl(models.Model):
         return True
 
     def _prepare_debit_line_vals(self):
-        """Dr line on the payment-method account for the receipt total."""
         self.ensure_one()
         method = self.payment_method_id
         return {
@@ -299,8 +393,6 @@ class ReceiptKmitl(models.Model):
         }
 
     def _prepare_move_line_vals(self, line):
-        """Cr line for a single receipt line. Override point for add-ons
-        (e.g. Operating Unit) that need to stamp extra fields on JE lines."""
         self.ensure_one()
         return {
             "name": line.name or self.name,
@@ -313,8 +405,6 @@ class ReceiptKmitl(models.Model):
         }
 
     def _prepare_move_vals(self, line_vals):
-        """Header vals for the receipt's journal entry. Override point for
-        add-ons (e.g. Operating Unit) that need to stamp extra fields."""
         self.ensure_one()
         return {
             "ref": self.name,
@@ -361,9 +451,6 @@ class ReceiptKmitl(models.Model):
         return True
 
     def action_correct(self):
-        """One-click "แก้ไขใบเสร็จ": reopen a detached confirmed receipt for
-        editing (cancel then draft in one step) without touching its number,
-        so it can be re-confirmed and pulled into a later remittance."""
         for rec in self:
             if rec.state != "confirmed" or rec.remittance_id:
                 raise UserError(
@@ -374,9 +461,6 @@ class ReceiptKmitl(models.Model):
         return True
 
     def action_detach(self):
-        """Per-row action in the remittance's receipts tree: release this
-        receipt back to the unremitted confirmed pool without disturbing the
-        rest of the remittance."""
         for rec in self:
             if not rec.remittance_id:
                 raise UserError(_("This receipt is not in any remittance."))
