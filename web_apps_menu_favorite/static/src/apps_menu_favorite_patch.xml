@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <!-- A fourth extension of the same template (chained after
+         web_apps_menu_group's own extension). Appends a star toggle
+         inside each app's DropdownItem; `//AppsMenu//DropdownItem`
+         (descendant, not direct child) since the group module nests it
+         inside a `t-foreach` over groups. -->
+    <t t-inherit="web.NavBar.AppsMenu" t-inherit-mode="extension" owl="1">
+        <xpath expr="//AppsMenu//DropdownItem" position="inside">
+            <span
+                class="o_app_favorite_toggle"
+                t-att-class="{ o_favorited: app.isFavorite }"
+                role="button"
+                tabindex="0"
+                t-att-title="app.isFavorite ? env._t('Remove from favorites') : env._t('Add to favorites')"
+                t-on-click.stop.prevent="() => this.toggleFavoriteApp(app)"
+            >
+                <i class="fa fa-star" />
+            </span>
+        </xpath>
+    </t>
+</templates>
