@@ -60,35 +60,19 @@ for rec in records:
 ]]></field>
     </record>
 
-    <!-- any → draft: unlink reserve-budget activity -->
-    <record id="automation_pr_to_draft_cleanup" model="base.automation">
-        <field name="name">[TODO] พ.1 → draft (ล้าง budget activity)</field>
+    <!-- to_submit → any: unlink awaiting-endorsement-letter activity -->
+    <record id="automation_pr_leave_to_submit_cleanup" model="base.automation">
+        <field name="name">[TODO] พ.1 ออกจาก to_submit (ล้าง endorsement letter activity)</field>
         <field name="model_id" ref="purchase_request.model_purchase_request"/>
         <field name="trigger">on_write</field>
         <field name="trigger_field_ids" eval="[
             Command.link(ref('purchase_request.field_purchase_request__state')),
         ]"/>
-        <field name="filter_pre_domain">[("state", "!=", "draft")]</field>
-        <field name="filter_domain">[("state", "=", "draft")]</field>
+        <field name="filter_pre_domain">[("state", "=", "to_submit")]</field>
+        <field name="filter_domain">[("state", "!=", "to_submit")]</field>
         <field name="state">code</field>
         <field name="code"><![CDATA[
-records.activity_unlink(["purchase_request_budget_todo.mail_activity_pr_reserve_budget"])
-]]></field>
-    </record>
-
-    <!-- any → cancelled: unlink reserve-budget activity -->
-    <record id="automation_pr_to_cancelled_cleanup" model="base.automation">
-        <field name="name">[TODO] พ.1 → cancelled (ล้าง budget activity)</field>
-        <field name="model_id" ref="purchase_request.model_purchase_request"/>
-        <field name="trigger">on_write</field>
-        <field name="trigger_field_ids" eval="[
-            Command.link(ref('purchase_request.field_purchase_request__state')),
-        ]"/>
-        <field name="filter_pre_domain">[("state", "!=", "cancelled")]</field>
-        <field name="filter_domain">[("state", "=", "cancelled")]</field>
-        <field name="state">code</field>
-        <field name="code"><![CDATA[
-records.activity_unlink(["purchase_request_budget_todo.mail_activity_pr_reserve_budget"])
+records.activity_unlink(["purchase_request_todo.mail_activity_pr_awaiting_endorsement_letter"])
 ]]></field>
     </record>
 
