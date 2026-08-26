@@ -11,6 +11,11 @@
     on the first). Odoo validates those domains against the view for every field
     an editable list or a form can write, so a missing one is a load error, not
     just an empty dropdown.
+
+    ``payment_method_code`` and ``company_partner_id`` are carried for the same
+    reason from the other side: an ``attrs``, a ``domain`` or a ``context`` in a
+    view cannot follow a relation, so the method's code and the institute's
+    partner have to be fields on the record itself.
 -->
 <odoo>
 
@@ -22,13 +27,22 @@
                 <field name="company_id" invisible="1" />
                 <field name="payment_type" invisible="1" />
                 <field name="available_payment_method_ids" invisible="1" />
+                <field name="payment_method_code" invisible="1" />
+                <field name="company_partner_id" invisible="1" />
                 <field name="sequence" widget="handle" />
                 <field name="journal_id" />
                 <field name="payment_method_id" />
                 <field name="name" />
+                <!-- Deliberately not ``optional``: it can be required, and a
+                     required column the officer has hidden fails the save with
+                     nothing on screen to fix. -->
+                <field
+                    name="bank_account_id"
+                    context="{'default_partner_id': company_partner_id}"
+                    attrs="{'invisible': [('payment_method_code', '=', 'kmitl_cash')], 'required': [('payment_method_code', 'in', ['kmitl_transfer', 'kmitl_cheque'])]}"
+                />
                 <field name="bank_id" optional="show" />
                 <field name="acc_number" optional="show" />
-                <field name="bank_account_id" optional="hide" />
                 <field name="payment_account_id" />
             </tree>
         </field>
@@ -44,6 +58,7 @@
                     <field name="payment_type" invisible="1" />
                     <field name="available_payment_method_ids" invisible="1" />
                     <field name="payment_method_code" invisible="1" />
+                    <field name="company_partner_id" invisible="1" />
                     <div class="oe_title">
                         <label for="name" />
                         <h1><field name="name" /></h1>
@@ -55,10 +70,23 @@
                             <field name="sequence" />
                         </group>
                         <group>
-                            <!-- Cash leaves no bank, only the ledger. -->
+                            <!-- Cash leaves no bank, only the ledger; the other
+                                 two cannot be saved without one. The bank and
+                                 the number are the picked account's own, shown
+                                 to confirm the right one was picked — correct
+                                 them in Finance ▸ Settings ▸ Bank Accounts. -->
                             <field
                                 name="bank_account_id"
-                                attrs="{'invisible': [('payment_method_code', '=', 'kmitl_cash')]}"
+                                context="{'default_partner_id': company_partner_id}"
+                                attrs="{'invisible': [('payment_method_code', '=', 'kmitl_cash')], 'required': [('payment_method_code', 'in', ['kmitl_transfer', 'kmitl_cheque'])]}"
+                            />
+                            <field
+                                name="bank_id"
+                                attrs="{'invisible': [('bank_account_id', '=', False)]}"
+                            />
+                            <field
+                                name="acc_number"
+                                attrs="{'invisible': [('bank_account_id', '=', False)]}"
                             />
                             <field name="payment_account_id" string="GL Account" />
                         </group>
@@ -100,7 +128,18 @@
             name="domain"
         >[('payment_type', '=', 'outbound'), ('payment_account_id', '!=', False)]</field>
         <field name="context">{'search_default_group_by_journal': 1}</field>
-        <field name="view_id" ref="kmitl_paying_account_view_tree" />
+        <!-- Both views are bound by hand. ``accounting_kmitl`` also ships a
+             form for this model and neither sets a priority, so the default
+             lookup (``ir.ui.view._order`` = priority, name, id) picked
+             ``account.payment.method.line.form`` over
+             ``account.payment.method.line.paying.account.form`` on the
+             name: a form with no bank account on it at all. -->
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'sequence': 1, 'view_mode': 'tree', 'view_id': ref('kmitl_paying_account_view_tree')}),
+                   (0, 0, {'sequence': 2, 'view_mode': 'form', 'view_id': ref('kmitl_paying_account_view_form')})]"
+        />
         <field name="search_view_id" ref="kmitl_paying_account_view_search" />
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">No paying account yet</p>

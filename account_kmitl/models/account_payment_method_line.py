@@ -25,13 +25,21 @@ class AccountPaymentMethodLine(models.Model):
     the same account hit the same GL, because money leaving one bank account
     leaves one ledger account however it is paid. Hence the constraint below.
 
-    **Where the "a bank method needs a bank account" rule lives.** Not here: the
-    install seeds every bank journal with the KMITL methods and points them at
-    the journal's default account before the paying accounts are shaped, so a
-    model-level constraint would fire on rows that are not paying accounts at
-    all. It is enforced where it can be acted on instead — the disbursement audit
-    refuses a payee routed through a bank-less paying account, and the bank export
-    refuses a file with no sending account. This form warns as soon as it can.
+    **Where the "a bank method needs a bank account" rule lives.** Not in a
+    ``@api.constrains``: the install seeds every bank journal with the KMITL
+    methods and points them at the journal's default account before the paying
+    accounts are shaped, so a model-level constraint would fire on rows that are
+    not paying accounts at all — and abort the install. It is enforced where it
+    can be acted on instead:
+
+    - the หัวจ่าย screen itself makes it ``required`` in ``attrs``, which binds
+      the officer editing one and leaves the install's ORM writes alone
+      (``finance_kmitl/views/kmitl_paying_account_views.xml``);
+    - the onchange below warns, with the reason, the moment a bank method is
+      picked;
+    - the disbursement audit refuses a payee routed through a bank-less paying
+      account, and the bank export refuses a file with no sending account — the
+      two backstops for a row that got past the screen.
     """
 
     _inherit = "account.payment.method.line"
@@ -39,6 +47,7 @@ class AccountPaymentMethodLine(models.Model):
     bank_account_id = fields.Many2one(
         comodel_name="res.partner.bank",
         string="Bank Account",
+        domain="[('partner_id', '=', company_partner_id)]",
         help="The institute's own bank account the money leaves from. Read by "
         "the bank payment export as the sending account and by the cheque "
         "register as the cheque book. Empty for cash.",
@@ -60,6 +69,15 @@ class AccountPaymentMethodLine(models.Model):
         string="Method Code",
         readonly=True,
         help="Exposed for the form's attrs, which cannot follow a relation.",
+    )
+    company_partner_id = fields.Many2one(
+        related="company_id.partner_id",
+        string="Institute",
+        readonly=True,
+        help="Exposed for the bank account's domain and quick-create context, "
+        "which cannot follow a relation. Keeps the field to the institute's own "
+        "accounts: a payee's account is where money goes, never where it comes "
+        "from.",
     )
 
     @api.onchange("bank_account_id")
