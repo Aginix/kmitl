@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- Execution Todo: สร้างหนังสือเพื่อส่งขออนุมัติ ขณะคำขออยู่ที่ to_send
+         (จองงบประมาณแล้ว). Execution → ล้างที่ต้นทางเท่านั้น (ส่งหนังสือ/ยกเลิก
+         ผ่าน base.automation) กด Mark as Read ไม่ได้. -->
+    <record id="mail_activity_create_endorsement" model="mail.activity.type">
+        <field name="name">สร้างหนังสือเพื่อส่งขออนุมัติ (คำขออนุมัติ)</field>
+        <field name="summary">สร้างหนังสือเพื่อส่งคำขออนุมัติเข้าสู่ระบบสารบรรณ</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">approval.request</field>
+        <field name="icon">fa-file-text-o</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- Execution Todo: หนังสือกลับมาแก้ (ตีกลับโดยผู้พิจารณา หรือผู้ส่งดึงกลับเอง)
+         — ผู้สร้างแก้ไขและส่งหนังสือใหม่. -->
+    <record id="mail_activity_returned_edit" model="mail.activity.type">
+        <field name="name">กลับมาแก้ไข: แก้ไขและส่งหนังสือใหม่ (คำขออนุมัติ)</field>
+        <field name="summary">คำขอกลับมาแก้ไข กรุณาแก้ไขและส่งหนังสือใหม่</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">approval.request</field>
+        <field name="icon">fa-reply</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- Acknowledgement (FYI): คำขอได้รับอนุมัติแล้ว — แจ้งกลับผู้สร้าง.
+         Acknowledgement → ปิดได้ด้วย 'Mark as Read' รายคน. -->
+    <record id="mail_activity_approved_fyi" model="mail.activity.type">
+        <field name="name">คำขออนุมัติได้รับอนุมัติแล้ว</field>
+        <field name="summary">คำขออนุมัติของท่านได้รับอนุมัติแล้ว</field>
+        <field name="todo_category">acknowledgement</field>
+        <field name="res_model">approval.request</field>
+        <field name="icon">fa-check-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- Acknowledgement (FYI): คำขอถูกปฏิเสธ — แจ้งกลับผู้สร้าง. -->
+    <record id="mail_activity_rejected_fyi" model="mail.activity.type">
+        <field name="name">คำขออนุมัติถูกปฏิเสธ</field>
+        <field name="summary">คำขออนุมัติของท่านถูกปฏิเสธ</field>
+        <field name="todo_category">acknowledgement</field>
+        <field name="res_model">approval.request</field>
+        <field name="icon">fa-times-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

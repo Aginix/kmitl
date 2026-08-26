@@ -2,18 +2,19 @@
 
 {
     "name": "Disbursement",
-    "version": "16.0.6.0.0",
+    "version": "16.0.9.0.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
     "depends": [
         "account",
         "budget",
+        "account_analytic_kmitl",
         "account_fiscal_year_enhance",
-        "finance_kmitl",
         "base_exception",
         "l10n_th_account_tax",
         "l10n_th_amount_to_text",
+        "l10n_th_fonts",
         "base_fontawesome",
         "partner_type_aginix",
         "mail_activity_todo",

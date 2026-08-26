@@ -91,7 +91,7 @@
                                     attrs="{'invisible': [('period_type', '!=', 'range')]}"
                                     aria-label="Arrow icon" title="Arrow" />
                                 <field name="date_end" nolabel="1" class="oe_inline"
-                                    attrs="{'invisible': [('period_type', '!=', 'range')], 'required': [('period_type', '=', 'range')], 'readonly': [('is_plan_editable', '=', False)]}" />
+                                    attrs="{'invisible': [('period_type', '!=', 'range')], 'readonly': [('is_plan_editable', '=', False)], 'required': [('period_type', '=', 'range'), ('has_period', '=', True)]}" />
                                 <field name="day_portion" widget="radio"
                                     options="{'horizontal': True}" nolabel="1"
                                     class="oe_inline ms-3"

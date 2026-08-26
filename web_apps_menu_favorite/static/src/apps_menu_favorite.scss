@@ -1,0 +1,35 @@
+.dropdown-menu-custom .o_app {
+    // Anchor point for the absolutely-positioned favorite toggle below.
+    position: relative;
+
+    .o_app_favorite_toggle {
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: 50%;
+        color: rgba($white, 0.5);
+        opacity: 0;
+        transition: opacity 150ms ease, color 150ms ease, background-color 150ms ease;
+
+        &:hover {
+            color: $white;
+            background-color: rgba($black, 0.25);
+        }
+
+        &.o_favorited {
+            color: gold;
+            opacity: 1;
+        }
+    }
+
+    &:hover .o_app_favorite_toggle,
+    &:focus .o_app_favorite_toggle,
+    &:focus-within .o_app_favorite_toggle {
+        opacity: 1;
+    }
+}
