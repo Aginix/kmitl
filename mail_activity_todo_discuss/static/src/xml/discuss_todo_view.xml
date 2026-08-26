@@ -69,7 +69,7 @@
                     <div class="o_DiscussTodoView_list flex-grow-1 overflow-auto">
                         <t t-if="state.grouped">
                             <t t-foreach="todoGroups" t-as="group" t-key="group.label">
-                                <button class="o_DiscussTodoView_groupHeader btn d-flex align-items-center w-100 text-start px-4 py-2 border-0 border-bottom rounded-0 bg-view sticky-top"
+                                <button class="o_DiscussTodoView_groupHeader btn d-flex align-items-center w-100 text-start px-4 py-2 border-0 border-bottom rounded-0 sticky-top"
                                     t-on-click="() => this.toggleGroup(group.label)"
                                 >
                                     <i class="fa fa-fw me-2 text-muted" t-att-class="group.collapsed ? 'fa-chevron-right' : 'fa-chevron-down'"/>
