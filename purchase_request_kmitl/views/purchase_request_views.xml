@@ -236,7 +236,7 @@
                     <group name="purchase_request_group">
                         <field
                             name="account_fiscal_year_id"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
                             required="1"
                             widget="selection"
                         />
