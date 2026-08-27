@@ -55,13 +55,6 @@
                     />
                 </searchpanel>
             </field>
-            <xpath expr="//filter[@name='my_requests']" position="after">
-                <filter
-                    name="created_by_me"
-                    domain="[('user_id','=', uid)]"
-                    help="Created by me"
-                />
-            </xpath>
             <group position="inside">
                 <filter
                     string="Procurement Method"
