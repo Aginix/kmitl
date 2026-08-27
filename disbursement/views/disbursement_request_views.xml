@@ -140,6 +140,8 @@
                             <field name="company_id" groups="base.group_multi_company" />
                             <field name="user_id" groups="disbursement.group_disbursement_manager" />
                             <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
+                            <field name="verifier_id" attrs="{'invisible': [('verifier_id', '=', False)]}" />
+                            <field name="verify_date" attrs="{'invisible': [('verifier_id', '=', False)]}" />
                             <field name="finance_approver_id" attrs="{'invisible': [('finance_approver_id', '=', False)]}" />
                             <field name="finance_approve_date" attrs="{'invisible': [('finance_approver_id', '=', False)]}" />
                             <field name="rector_approver_id" attrs="{'invisible': [('rector_approver_id', '=', False)]}" />
@@ -203,6 +205,25 @@
                                 <field name="amount_wht" />
                             </group>
                             <div class="oe_clear" />
+                        </page>
+                        <!-- Read-only: rows are frozen snapshots written by the
+                             workflow, so the officer can check the block before
+                             printing but nobody can edit a signature. -->
+                        <page string="Signatures" name="signatures"
+                              attrs="{'invisible': [('signature_ids', '=', [])]}">
+                            <field name="signature_ids" nolabel="1">
+                                <tree create="0" delete="0" edit="0">
+                                    <field name="step"/>
+                                    <field name="signed_by_id"/>
+                                    <field name="signed_name"/>
+                                    <field name="signed_position_name"/>
+                                    <field name="signed_date"/>
+                                    <!-- signature_image, not the raw snapshot: this
+                                         is exactly what the PDF will print. -->
+                                    <field name="signature_image" widget="image"
+                                           options="{'size': [0, 40]}"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
