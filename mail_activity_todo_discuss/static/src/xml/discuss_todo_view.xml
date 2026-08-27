@@ -36,51 +36,60 @@
                 </div>
             </t>
             <t t-else="">
-                <div class="o_DiscussTodoView_list flex-grow-1 overflow-auto">
-                    <t t-foreach="state.todos" t-as="todo" t-key="todo.key or todo.id">
-                        <t t-set="deadline" t-value="deadlineInfo(todo)"/>
-                        <button class="o_DiscussTodoView_item btn d-flex align-items-start w-100 text-start px-4 py-2 border-0 border-bottom rounded-0"
-                            t-on-click="() => this.onTodoClick(todo)"
-                            t-att-title="todo.summary"
+                <!-- Toolbar: search box + group-by-activity-type toggle. -->
+                <div class="o_DiscussTodoView_toolbar d-flex align-items-center gap-2 px-4 py-2 border-bottom">
+                    <div class="o_DiscussTodoView_search position-relative flex-grow-1">
+                        <i class="fa fa-search position-absolute top-50 translate-middle-y ms-2 text-muted small"/>
+                        <input type="text" class="form-control form-control-sm ps-4"
+                            placeholder="Search todos..."
+                            t-att-value="state.search"
+                            t-on-input="ev => state.search = ev.target.value"
+                        />
+                        <button t-if="state.search" class="btn btn-link btn-sm position-absolute top-50 end-0 translate-middle-y p-0 me-2 text-muted"
+                            title="Clear" t-on-click="clearSearch"
                         >
-                            <img t-if="todo.icon" t-att-src="todo.icon" class="o_DiscussTodoView_icon me-3 mt-1" alt=""/>
-                            <i t-else="" class="fa fa-fw fa-check-square-o me-3 mt-1"/>
-                            <div class="o_DiscussTodoView_text flex-grow-1">
-                                <div class="d-flex align-items-center">
-                                    <small class="text-truncate flex-grow-1" t-if="todo.activity_type" t-esc="todo.activity_type"/>
-                                    <span class="flex-grow-1" t-if="!todo.activity_type"/>
-                                    <small t-if="todo.kind === 'done'" class="badge text-bg-success ms-2">Done</small>
-                                    <span t-if="deadline"
-                                        class="o_DiscussTodoView_deadline ms-2 text-nowrap small"
-                                        t-att-class="deadline.className"
-                                        t-att-title="deadline.exact"
-                                    >
-                                        <i class="fa fa-fw me-1" t-att-class="deadline.icon"/><t t-esc="deadline.label"/>
-                                    </span>
-                                </div>
-                                <div class="fw-medium text-truncate" t-esc="todo.summary"/>
-                                <small class="text-truncate d-block">
-                                    <span t-if="todo.app" t-esc="todo.app"/>
-                                    <t t-if="todo.res_name"> · <t t-esc="todo.res_name"/></t>
-                                </small>
-                                <span class="text-sm fst-italic text-truncate d-block" t-if="todo.note" t-out="todo.note"/>
-                                <small class="o_DiscussTodoView_meta text-muted d-flex align-items-center flex-wrap mt-1">
-                                    <span t-if="todo.assigned" class="me-2 text-truncate">
-                                        <i class="fa fa-user-o me-1"/><t t-esc="todo.assigned"/>
-                                    </span>
-                                    <span t-if="todo.create_date" class="text-truncate" t-att-title="createdTooltip(todo)">
-                                        <i class="fa fa-clock-o me-1"/>created <t t-esc="createdAgo(todo)"/>
-                                        <t t-if="todo.create_uid"> by <t t-esc="todo.create_uid"/></t>
-                                    </span>
-                                    <span t-if="todo.completed_date" class="text-truncate" t-att-title="completedTooltip(todo)">
-                                        <i class="fa fa-check me-1"/>completed <t t-esc="completedAgo(todo)"/>
-                                        <t t-if="todo.completed_by"> by <t t-esc="todo.completed_by"/></t>
-                                    </span>
-                                </small>
-                            </div>
+                            <i class="fa fa-times-circle"/>
                         </button>
-                    </t>
+                    </div>
+                    <button class="o_DiscussTodoView_groupToggle btn btn-sm text-nowrap"
+                        t-att-class="state.grouped ? 'btn-primary' : 'btn-outline-secondary'"
+                        t-on-click="toggleGrouped"
+                        title="Group by activity type"
+                    >
+                        <i class="fa fa-object-group me-1"/>Group
+                    </button>
                 </div>
+                <t t-if="filteredTodos.length === 0">
+                    <div class="o_DiscussTodoView_empty d-flex flex-column flex-grow-1 align-items-center justify-content-center text-muted">
+                        <i class="fa fa-search fa-3x mb-2"/>
+                        <h4>No todos match your search</h4>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="o_DiscussTodoView_list flex-grow-1 overflow-auto">
+                        <t t-if="state.grouped">
+                            <t t-foreach="todoGroups" t-as="group" t-key="group.label">
+                                <button class="o_DiscussTodoView_groupHeader btn d-flex align-items-center w-100 text-start px-4 py-2 border-0 border-bottom rounded-0 sticky-top"
+                                    t-on-click="() => this.toggleGroup(group.label)"
+                                >
+                                    <i class="fa fa-fw me-2 text-muted" t-att-class="group.collapsed ? 'fa-chevron-right' : 'fa-chevron-down'"/>
+                                    <span class="fw-bold text-truncate flex-grow-1" t-esc="group.label"/>
+                                    <span class="badge rounded-pill text-bg-secondary ms-2" t-esc="group.todos.length"/>
+                                </button>
+                                <t t-if="!group.collapsed">
+                                    <t t-foreach="group.todos" t-as="todo" t-key="todo.key or todo.id">
+                                        <t t-call="mail_activity_todo_discuss.DiscussTodoItem"/>
+                                    </t>
+                                </t>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <t t-foreach="filteredTodos" t-as="todo" t-key="todo.key or todo.id">
+                                <t t-call="mail_activity_todo_discuss.DiscussTodoItem"/>
+                            </t>
+                        </t>
+                    </div>
+                </t>
                 <div class="o_DiscussTodoView_footer border-top px-4 py-2 text-center" t-if="state.totalCount > state.todos.length">
                     <!-- The Todo app opens on the unread inbox, so the "view all"
                          link only makes sense for the inbox; History shows a plain
@@ -94,6 +103,52 @@
                 </div>
             </t>
         </div>
+    </t>
+
+    <!-- One Todo row. Rendered inside a t-foreach that binds `todo`; shared by
+         the flat and the grouped-by-activity-type lists. -->
+    <t t-name="mail_activity_todo_discuss.DiscussTodoItem" owl="1">
+        <t t-set="deadline" t-value="deadlineInfo(todo)"/>
+        <button class="o_DiscussTodoView_item btn d-flex align-items-start w-100 text-start px-4 py-2 border-0 border-bottom rounded-0"
+            t-on-click="() => this.onTodoClick(todo)"
+            t-att-title="todo.summary"
+        >
+            <img t-if="todo.icon" t-att-src="todo.icon" class="o_DiscussTodoView_icon me-3 mt-1" alt=""/>
+            <i t-else="" class="fa fa-fw fa-check-square-o me-3 mt-1"/>
+            <div class="o_DiscussTodoView_text flex-grow-1">
+                <div class="d-flex align-items-center">
+                    <small class="text-truncate flex-grow-1" t-if="todo.activity_type" t-esc="todo.activity_type"/>
+                    <span class="flex-grow-1" t-if="!todo.activity_type"/>
+                    <small t-if="todo.kind === 'done'" class="badge text-bg-success ms-2">Done</small>
+                    <span t-if="deadline"
+                        class="o_DiscussTodoView_deadline ms-2 text-nowrap small"
+                        t-att-class="deadline.className"
+                        t-att-title="deadline.exact"
+                    >
+                        <i class="fa fa-fw me-1" t-att-class="deadline.icon"/><t t-esc="deadline.label"/>
+                    </span>
+                </div>
+                <div class="fw-medium text-truncate" t-esc="todo.summary"/>
+                <small class="text-truncate d-block">
+                    <span t-if="todo.app" t-esc="todo.app"/>
+                    <t t-if="todo.res_name"> · <t t-esc="todo.res_name"/></t>
+                </small>
+                <span class="text-sm fst-italic text-truncate d-block" t-if="todo.note" t-out="todo.note"/>
+                <small class="o_DiscussTodoView_meta text-muted d-flex align-items-center flex-wrap mt-1">
+                    <span t-if="todo.assigned" class="me-2 text-truncate">
+                        <i class="fa fa-user-o me-1"/><t t-esc="todo.assigned"/>
+                    </span>
+                    <span t-if="todo.create_date" class="text-truncate" t-att-title="createdTooltip(todo)">
+                        <i class="fa fa-clock-o me-1"/>created <t t-esc="createdAgo(todo)"/>
+                        <t t-if="todo.create_uid"> by <t t-esc="todo.create_uid"/></t>
+                    </span>
+                    <span t-if="todo.completed_date" class="text-truncate" t-att-title="completedTooltip(todo)">
+                        <i class="fa fa-check me-1"/>completed <t t-esc="completedAgo(todo)"/>
+                        <t t-if="todo.completed_by"> by <t t-esc="todo.completed_by"/></t>
+                    </span>
+                </small>
+            </div>
+        </button>
     </t>
 
     <!-- Render the Todo view in the Discuss main content pane when active, and
