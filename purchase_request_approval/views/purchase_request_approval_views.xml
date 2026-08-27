@@ -33,6 +33,7 @@
                 decoration-danger="state in ('cancelled', 'rejected')"
                 optional="show"
             />
+            <field name="account_fiscal_year_id" optional="show"/>
             <field
                 name="requested_by"
                 widget="many2one_avatar_user"
@@ -294,6 +295,10 @@
                     domain="[('state', '=', 'approved')]"
                 />
                 <separator />
+                <filter name="current_fy" string="Current Fiscal Year"
+                        domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()),
+                                 ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
+                <separator />
                 <filter
                     name="today"
                     string="Today"
@@ -328,6 +333,12 @@
                                 ('date_start', '&lt;', (context_today() + relativedelta(years=1, month=1, day=1)).strftime('%Y-%m-%d'))]"
                 />
                 <group expand="1" name="group_by" string="Group By">
+                    <filter
+                        name="group_by_account_fiscal_year_id"
+                        string="Fiscal Year"
+                        domain="[]"
+                        context="{'group_by':'account_fiscal_year_id'}"
+                    />
                     <filter
                         name="group_by_state"
                         string="Status"

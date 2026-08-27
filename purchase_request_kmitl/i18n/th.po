@@ -446,6 +446,11 @@ msgstr ""
 msgid "Created by"
 msgstr "สร้างโดย"
 
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
+msgid "Created by me"
+msgstr "สร้างโดยฉัน"
+
 #. modules: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__create_date
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__create_date
