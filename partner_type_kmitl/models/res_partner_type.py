@@ -22,7 +22,9 @@ class ResPartnerType(models.Model):
     )
 
     def _compute_partner_count(self):
-        counts = self.env['res.partner'].read_group(
+        # active_test=False: match unlink()'s check and action_apply_accounts_to_partners's
+        # total, so archived-only types don't show 0 while still blocking deletion.
+        counts = self.env['res.partner'].with_context(active_test=False).read_group(
             [('partner_type_id', 'in', self.ids)],
             ['partner_type_id'],
             ['partner_type_id'],
@@ -39,6 +41,7 @@ class ResPartnerType(models.Model):
             'res_model': 'res.partner',
             'view_mode': 'tree,form',
             'domain': [('partner_type_id', '=', self.id)],
+            'context': {'active_test': False},
         }
 
     def unlink(self):

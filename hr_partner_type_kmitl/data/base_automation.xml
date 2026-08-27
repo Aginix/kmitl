@@ -4,7 +4,9 @@
          resetting it. Unlike hr_ldap_kmitl's res.users automation, the
          logic lives inline in this record's `code` field — this bridge
          defines no Python model. It only fires on_create; pre-existing
-         employees are handled once by hooks.py's post_init_hook. -->
+         employees are handled once by hooks.py's post_init_hook, which
+         duplicates this create-work-contact-then-classify logic. Keep the
+         two in sync when editing either one. -->
     <data noupdate="1">
         <record id="automation_set_employee_partner_type" model="base.automation">
             <field name="name">KMITL: classify new employee's work contact as staff</field>

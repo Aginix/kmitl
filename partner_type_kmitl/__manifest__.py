@@ -7,7 +7,7 @@
     'website': 'https://www.kmitl.ac.th',
     'category': 'KMITL',
     'license': 'LGPL-3',
-    'depends': ['base', 'mail'],
+    'depends': ['base', 'mail', 'contacts'],
     'data': [
         'security/ir.model.access.csv',
         'data/partner_type_data.xml',

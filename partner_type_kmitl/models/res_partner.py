@@ -5,9 +5,6 @@ from odoo import api, fields, models
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    attachment_ids = fields.One2many(
-        "ir.attachment", "res_id", string="Document Attachments", tracking=True,
-    )
     partner_type_id = fields.Many2one(
         comodel_name='res.partner.type', string='Partner Type', tracking=True,
     )

@@ -82,7 +82,7 @@
     <menuitem
         id="menu_res_partner_type"
         name="Partner Type"
-        parent="base.menu_custom"
+        parent="contacts.res_partner_menu_config"
         action="action_res_partner_type"
         sequence="10"
     />
