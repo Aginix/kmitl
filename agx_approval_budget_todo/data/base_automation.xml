@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- noupdate: ให้แอดมินเปิด/ปิดกฎได้โดยไม่ถูก upgrade รีเซ็ต. ตรรกะจริง
-         อยู่ใน Python (โมเดล approval.request) ไม่ได้อยู่ใน string นี้. -->
     <data noupdate="1">
 
-        <!-- เข้าสถานะ to_verify → แจ้ง Todo ให้เจ้าหน้าที่จองงบประมาณ.
-             filter_pre (ก่อนเขียน) = ยังไม่ใช่ to_verify, filter_domain
-             (หลังเขียน) = เป็น to_verify → ยิงเฉพาะ "ตอนเปลี่ยนเข้า" to_verify. -->
         <record id="automation_notify_reserve_budget" model="base.automation">
             <field
                 name="name"
@@ -20,11 +15,22 @@
                 eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
             />
             <field name="state">code</field>
-            <field name="code">records._notify_reserve_budget_todo()</field>
+            <field name="code">
+role = env.ref("budget_role.role_budget_commitment", raise_if_not_found=False)
+if role:
+    for record in records:
+        ou = record.operating_unit_id
+        if not ou:
+            continue
+        record.activity_schedule(
+            "agx_approval_budget_todo.mail_activity_reserve_budget",
+            summary="คำขออนุมัติเลขที่ %s รอตรวจสอบและจองงบประมาณ" % (record.name or ""),
+            responsible_role_id=role.id,
+            operating_unit_id=ou.id,
+        )
+</field>
         </record>
 
-        <!-- ออกจากสถานะ to_verify (จองแล้ว → to_send, ดึงกลับ → draft,
-             ยกเลิก → rejected ฯลฯ) → ล้าง Todo จองงบประมาณ. -->
         <record id="automation_clear_reserve_budget" model="base.automation">
             <field
                 name="name"
@@ -38,7 +44,7 @@
                 eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
             />
             <field name="state">code</field>
-            <field name="code">records._clear_reserve_budget_todo()</field>
+            <field name="code">records.activity_unlink(["agx_approval_budget_todo.mail_activity_reserve_budget"])</field>
         </record>
 
     </data>
