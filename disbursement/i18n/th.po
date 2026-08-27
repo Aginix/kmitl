@@ -436,7 +436,7 @@ msgstr ""
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Group By"
-msgstr ""
+msgstr "จัดกลุ่มตาม"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__has_message
@@ -1005,6 +1005,7 @@ msgstr "ตั้งหนี้แล้ว"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__department_analytic_id
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Department"
 msgstr "ส่วนงาน"
 
@@ -1125,6 +1126,7 @@ msgstr "ลงนามแล้ว"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__source_analytic_id
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Source"
 msgstr "แหล่งเงิน"
 

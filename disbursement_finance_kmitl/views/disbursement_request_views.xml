@@ -123,7 +123,7 @@
                     domain="[('payment_authorizer_id', '=', uid)]"
                 />
             </xpath>
-            <xpath expr="//field[@name='source_analytic_id']" position="after">
+            <xpath expr="//search/field[@name='source_analytic_id']" position="after">
                 <field name="payment_authorizer_id" />
             </xpath>
         </field>

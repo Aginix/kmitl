@@ -265,9 +265,16 @@
                 <group expand="0" name="group_by" string="Group By">
                     <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
                     <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}" />
+                    <filter string="Source" name="group_source" context="{'group_by': 'source_analytic_id'}" />
                     <filter string="Date" name="date" context="{'group_by': 'date'}" />
                     <filter string="State" name="state" context="{'group_by': 'state'}" />
                 </group>
+                <!-- แหล่งเงิน down the left: it is the first cut the finance office
+                     takes on any list of requests, and it is a handful of values,
+                     so it is a click rather than something to type. -->
+                <searchpanel>
+                    <field name="source_analytic_id" icon="fa-money" select="multi" enable_counters="1" />
+                </searchpanel>
             </search>
         </field>
     </record>
