@@ -254,6 +254,18 @@ export class DiscussTodoView extends LegacyComponent {
         });
     }
 
+    async onMarkRead(todo) {
+        await this.orm.call("mail.activity", "action_mark_read", [[todo.id]]);
+        this.env.bus.trigger("mail_activity_todo_updated");
+        await this.fetchData();
+    }
+
+    async onMarkUnread(todo) {
+        await this.orm.call("mail.activity", "action_mark_unread", [[todo.id]]);
+        this.env.bus.trigger("mail_activity_todo_updated");
+        await this.fetchData();
+    }
+
     onViewAllClick() {
         this.action.doAction("mail_activity_todo.action_my_todos");
     }
