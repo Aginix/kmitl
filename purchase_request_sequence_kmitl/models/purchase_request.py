@@ -15,7 +15,7 @@ class PurchaseRequest(models.Model):
     def button_to_verify(self):
         self.ensure_one()
         res = super().button_to_verify()
-        if self.name == "/":
+        if self.state != "draft" and self.name == "/":
             self._assign_document_number()
         return res
 
