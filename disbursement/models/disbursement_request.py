@@ -449,16 +449,18 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    # Stored, like department_analytic_id: the finance office groups its lists by
+    # แหล่งเงิน, and read_group only accepts a database-persisted column.
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Source",
         compute="_compute_analytic_id",
         inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
-        store=False,
+        store=True,
         compute_sudo=True,
         tracking=True,
-        search="_search_source_analytic_id",
+        index=True,
         states=READONLY_STATES,
     )
 
@@ -508,38 +510,6 @@ class DisbursementRequest(models.Model):
                     _("Missing required analytic dimensions: %s")
                     % ", ".join(sorted(missing))
                 )
-
-    @api.model
-    def _search_source_analytic_id(self, operator, value):
-        account_ids = []
-        if type(value) == int:
-            account_ids.append(value)
-        else:
-            account_ids = (
-                self.env["account.analytic.account"]
-                .search(
-                    [
-                        ("root_plan_id.code", "=", "sources"),
-                        "|",
-                        ("name", "ilike", value),
-                        ("complete_name", "ilike", value),
-                    ]
-                )
-                .mapped("id")
-            )
-
-        query = f"""
-            SELECT id
-            FROM {self._table}
-            WHERE analytic_distribution ?| array[%s]
-        """
-        return [
-            (
-                "id",
-                "inselect",
-                (query, [[str(account_id) for account_id in account_ids]]),
-            )
-        ]
 
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
