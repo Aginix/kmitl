@@ -29,6 +29,24 @@ class ResUsers(models.Model):
         "every OU (all_ous), or mute the type entirely.",
     )
 
+    @property
+    def SELF_READABLE_FIELDS(self):
+        # Preferences dialog reads these on the user's own record; without this
+        # override res.users.read() skips sudo and normal ACLs deny non-admins.
+        # operating_unit_ids is read-only here — it feeds the OU-picker domain.
+        return super().SELF_READABLE_FIELDS + [
+            "operating_unit_ids",
+            "todo_notify_operating_unit_ids",
+            "todo_notify_rule_ids",
+        ]
+
+    @property
+    def SELF_WRITEABLE_FIELDS(self):
+        return super().SELF_WRITEABLE_FIELDS + [
+            "todo_notify_operating_unit_ids",
+            "todo_notify_rule_ids",
+        ]
+
     def _my_todo_count_domain(self):
         """Systray badge counts only primary Todos (ADR-0007).
 
