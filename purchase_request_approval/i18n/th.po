@@ -269,6 +269,11 @@ msgid "Contact"
 msgstr "ติดต่อ"
 
 #. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "Current Fiscal Year"
+msgstr "ปีงบประมาณปัจจุบัน"
+
+#. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_form
 msgid "Create Purchase Order"
 msgstr "สร้างสัญญา/ใบสั่งซื้อ/จ้าง"
