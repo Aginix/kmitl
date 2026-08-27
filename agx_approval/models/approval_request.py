@@ -1,5 +1,8 @@
+from markupsafe import Markup
+
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import formatLang
 
 
 class ApprovalRequest(models.Model):
@@ -64,6 +67,14 @@ class ApprovalRequest(models.Model):
         string="รวมยอดเบิกจริง",
         currency_field="currency_id",
         store=True,
+    )
+
+    plan_actual_comparison_html = fields.Html(
+        string="เปรียบเทียบแผน / จ่ายจริง",
+        compute="_compute_plan_actual_comparison_html",
+        sanitize=False,
+        help="สรุปเปรียบเทียบค่าใช้จ่ายตามแผนกับค่าใช้จ่ายจริงแยกตามรายการ "
+        "แสดงบนแท็บค่าใช้จ่ายจริงเพื่อไม่ต้องสลับแท็บไปดูแผน",
     )
 
     category_id = fields.Many2one(
@@ -1004,6 +1015,105 @@ class ApprovalRequest(models.Model):
     def _compute_total_actual_amount(self):
         for rec in self:
             rec.total_actual_amount = sum(rec.allocation_ids.mapped("amount"))
+
+    def _plan_actual_rows(self):
+        """Per-product (planned, actual) totals for the plan-vs-actual
+        comparison, ordered by the plan's sequence with any actual-only products
+        appended. Actual amounts are summed across recipients so a per-product
+        total lines up with the single planned amount."""
+        self.ensure_one()
+        rows = {}
+        order = []
+
+        def bucket(product):
+            if product.id not in rows:
+                rows[product.id] = {"product": product, "plan": 0.0, "actual": 0.0}
+                order.append(product.id)
+            return rows[product.id]
+
+        for line in self.line_ids:
+            bucket(line.product_id)["plan"] += line.total_amount
+        for alloc in self.allocation_ids:
+            bucket(alloc.product_id)["actual"] += alloc.amount
+        return [rows[pid] for pid in order]
+
+    @api.depends(
+        "line_ids.product_id",
+        "line_ids.total_amount",
+        "allocation_ids.product_id",
+        "allocation_ids.amount",
+        "currency_id",
+    )
+    def _compute_plan_actual_comparison_html(self):
+        for rec in self:
+            rec.plan_actual_comparison_html = rec._render_plan_actual_comparison()
+
+    def _render_plan_actual_comparison(self):
+        """Render the per-product plan-vs-actual table as HTML. ผลต่าง = จ่ายจริง −
+        แผน; over-plan rows show red, under-plan green."""
+        self.ensure_one()
+        rows = self._plan_actual_rows()
+        if not rows:
+            return Markup(
+                "<p class='text-muted'>ยังไม่มีรายการค่าใช้จ่ายในแผน</p>"
+            )
+
+        def money(value):
+            return formatLang(self.env, value, currency_obj=self.currency_id)
+
+        def diff_cls(value):
+            if value > 0:
+                return "text-danger"
+            if value < 0:
+                return "text-success"
+            return "text-muted"
+
+        row_tpl = Markup(
+            "<tr>"
+            "<td>{product}</td>"
+            "<td class='text-end'>{plan}</td>"
+            "<td class='text-end'>{actual}</td>"
+            "<td class='text-end {cls}'>{diff}</td>"
+            "</tr>"
+        )
+        body = Markup("")
+        total_plan = total_actual = 0.0
+        for row in rows:
+            diff = row["actual"] - row["plan"]
+            total_plan += row["plan"]
+            total_actual += row["actual"]
+            body += row_tpl.format(
+                product=row["product"].display_name or "",
+                plan=money(row["plan"]),
+                actual=money(row["actual"]),
+                cls=diff_cls(diff),
+                diff=money(diff),
+            )
+
+        total_diff = total_actual - total_plan
+        return Markup(
+            "<table class='table table-sm o_list_table mb-0'>"
+            "<thead><tr>"
+            "<th>รายการ</th>"
+            "<th class='text-end'>แผน</th>"
+            "<th class='text-end'>จ่ายจริง</th>"
+            "<th class='text-end'>ผลต่าง</th>"
+            "</tr></thead>"
+            "<tbody>{body}</tbody>"
+            "<tfoot><tr class='fw-bold'>"
+            "<td>รวม</td>"
+            "<td class='text-end'>{plan}</td>"
+            "<td class='text-end'>{actual}</td>"
+            "<td class='text-end {cls}'>{diff}</td>"
+            "</tr></tfoot>"
+            "</table>"
+        ).format(
+            body=body,
+            plan=money(total_plan),
+            actual=money(total_actual),
+            cls=diff_cls(total_diff),
+            diff=money(total_diff),
+        )
 
     def _voucher_groups(self):
         """งบหน้าใบสำคัญคู่จ่าย data: the disbursed actual allocation — จ่ายตรง /
