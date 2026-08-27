@@ -46,7 +46,7 @@ if act_type:
             <field name="filter_pre_domain">[('status', '=', 'pending')]</field>
             <field
                 name="filter_domain"
-            >[('status', '!=', 'pending'), ('res_model', '=', 'work.acceptance')]</field>
+            >[('status', '!=', 'pending'), ('model', '=', 'work.acceptance')]</field>
             <field
                 name="trigger_field_ids"
                 eval="[(6, 0, [ref('base_tier_validation.field_tier_review__status')])]"
