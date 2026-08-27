@@ -51,6 +51,11 @@ file's effective date or the cheque's date — the day the law treats the income
   never saw it, and the certificate is issued _after_ confirmation — closing it with the
   rest of the form would leave it correctable nowhere. It closes when the certificate is
   issued.
+- **The certificate is built from the entry's withholding lines**, not from the
+  voucher's own rate and base, so one builder serves a voucher typed by hand and one
+  billed through a request. Superseded detail from the first cut of this change, which
+  read the voucher's fields only — see
+  [ADR-0009](./0009-the-certificate-is-raised-by-the-payment.md).
 - **`account.withholding.move` is still created at posting, unchanged.** The certificate
   and the ภ.ง.ด. substrate are two different records with two different owners, and only
   the certificate had to move. `_prepare_withholding_move` is overridden so the

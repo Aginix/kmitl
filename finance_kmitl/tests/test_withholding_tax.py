@@ -93,19 +93,107 @@ class TestWithholdingTaxOnTheVoucher(TransactionCase):
         vals.update(overrides)
         return self.Payment.create(vals)
 
+    def _billed_voucher(self):
+        """The shape ``disbursement.payment.line`` produces: no rate on the
+        voucher, the withholding delivered as a write-off line on its entry."""
+        return self.Payment.create(
+            {
+                "payment_type": "outbound",
+                "partner_type": "supplier",
+                "partner_id": self.payee.id,
+                "amount": 9700.0,
+                "date": "2026-02-10",
+                "journal_id": self.paying_account.journal_id.id,
+                "payment_method_line_id": self.paying_account.id,
+                "kmitl_payment_type_id": self.payment_type.id,
+                "write_off_line_vals": [
+                    {
+                        "name": self.wht_tax.display_name,
+                        "account_id": self.wht_account.id,
+                        "partner_id": self.payee.id,
+                        "currency_id": self.env.company.currency_id.id,
+                        "amount_currency": -300.0,
+                        "balance": -300.0,
+                        "wht_tax_id": self.wht_tax.id,
+                        "tax_base_amount": 10000.0,
+                    }
+                ],
+            }
+        )
+
     def _wht_lines(self, payment):
         return payment.move_id.line_ids.filtered("wht_tax_id")
 
     # ------------------------------------------------------------------
-    # The base is the input; the amount paid follows
+    # The income is the input; the amount paid follows
     # ------------------------------------------------------------------
-    def test_the_base_is_typed_and_the_amount_paid_follows(self):
+    def test_the_income_and_the_rate_decide_the_amount_paid(self):
         payment = self._voucher()
 
         self.assertEqual(payment.amount_wht, 300.0)
         self.assertEqual(payment.amount, 9700.0)
         # The gross reads back as the base, from the other end of the same sum.
         self.assertEqual(payment.amount_before_wht, 10000.0)
+
+    def test_the_amount_box_is_typed_with_the_income(self):
+        """What an officer types is the figure on the invoice in their hand, not
+        the figure that will leave the bank."""
+        payment = self.Payment.new(
+            {
+                "payment_type": "outbound",
+                "partner_type": "supplier",
+                "partner_id": self.payee.id,
+            }
+        )
+        payment._onchange_partner_id_wht()
+
+        payment.amount = 10000.0
+        payment._onchange_amount_wht()
+
+        self.assertEqual(payment.wht_amount_base, 10000.0)
+        self.assertEqual(payment.amount_wht, 300.0)
+        self.assertEqual(payment.amount, 9700.0)
+
+    def test_typing_the_same_income_twice_withholds_once(self):
+        """Odoo re-runs onchange methods until the form settles, so this one sees
+        its own result. Without the equality test in it, each pass would withhold
+        from the previous net: 10,000 -> 9,700 -> 9,409."""
+        payment = self.Payment.new(
+            {
+                "payment_type": "outbound",
+                "partner_type": "supplier",
+                "partner_id": self.payee.id,
+            }
+        )
+        payment._onchange_partner_id_wht()
+        payment.amount = 10000.0
+        payment._onchange_amount_wht()
+
+        # The second pass the web client would make, and a third for good measure.
+        payment._onchange_amount_wht()
+        payment._onchange_amount_wht()
+
+        self.assertEqual(payment.wht_amount_base, 10000.0)
+        self.assertEqual(payment.amount, 9700.0)
+
+    def test_retyping_the_income_moves_both_figures(self):
+        payment = self.Payment.new(
+            {
+                "payment_type": "outbound",
+                "partner_type": "supplier",
+                "partner_id": self.payee.id,
+            }
+        )
+        payment._onchange_partner_id_wht()
+        payment.amount = 10000.0
+        payment._onchange_amount_wht()
+
+        payment.amount = 20000.0
+        payment._onchange_amount_wht()
+
+        self.assertEqual(payment.wht_amount_base, 20000.0)
+        self.assertEqual(payment.amount_wht, 600.0)
+        self.assertEqual(payment.amount, 19400.0)
 
     def test_the_base_seeds_itself_from_the_amount_already_typed(self):
         """A voucher is not filled in in one fixed order: the amount may be typed
@@ -332,6 +420,121 @@ class TestWithholdingTaxOnTheVoucher(TransactionCase):
         self.assertEqual(vals["amount_wht"], 300.0)
 
     # ------------------------------------------------------------------
+    # The Hand-over raises the certificates (ADR-0009)
+    # ------------------------------------------------------------------
+    def test_the_hand_over_raises_the_certificate_as_a_draft(self):
+        payment = self._voucher()
+        payment.action_confirm_for_bank()
+
+        payment._mark_paid()
+
+        cert = payment.wht_cert_ids
+        self.assertEqual(len(cert), 1)
+        self.assertEqual(cert.state, "draft")
+        self.assertFalse(cert.move_id)
+        self.assertEqual(cert.payment_id, payment)
+        self.assertEqual(cert.wht_line.base, 10000.0)
+        self.assertEqual(cert.wht_line.amount, 300.0)
+        self.assertEqual(cert.wht_line.wht_cert_income_type, "5")
+        self.assertEqual(cert.income_tax_form, "pnd53")
+
+    def test_the_hand_over_raises_one_for_a_voucher_billed_through_a_request(self):
+        """The kind KMITL withholds most on. It has no rate of its own — the
+        withholding is on its entry — so the certificate has to be built from
+        there, and the type of income comes from the rate's own default."""
+        payment = self._billed_voucher()
+        payment.action_confirm_for_bank()
+
+        payment._mark_paid()
+
+        cert = payment.wht_cert_ids
+        self.assertEqual(len(cert), 1)
+        self.assertEqual(cert.state, "draft")
+        self.assertEqual(cert.wht_line.base, 10000.0)
+        self.assertEqual(cert.wht_line.amount, 300.0)
+        self.assertEqual(cert.wht_line.wht_cert_income_type, "5")
+
+    def test_a_whole_run_is_raised_in_one_press(self):
+        """Closing one e-payment file pays every payee it carried. Twenty forms
+        and twenty presses is what ADR-0006 took out of this phase."""
+        payments = self.Payment.browse()
+        for _index in range(3):
+            payments |= self._voucher()
+        payments.action_confirm_for_bank()
+
+        payments._mark_paid()
+
+        self.assertEqual(len(payments.wht_cert_ids), 3)
+        for payment in payments:
+            self.assertEqual(len(payment.wht_cert_ids), 1)
+
+    def test_a_voucher_that_already_has_one_is_left_alone(self):
+        payment = self._voucher()
+        payment.action_confirm_for_bank()
+        payment.action_create_wht_cert()
+        first = payment.wht_cert_ids
+
+        payment._mark_paid()
+
+        self.assertEqual(payment.wht_cert_ids, first)
+
+    def test_a_voucher_withholding_nothing_is_given_no_certificate(self):
+        payment = self._voucher(
+            wht_tax_id=False, wht_amount_base=0.0, wht_cert_income_type=False
+        )
+        payment.amount = 9700.0
+        payment.action_confirm_for_bank()
+
+        payment._mark_paid()
+
+        self.assertFalse(payment.wht_cert_ids)
+
+    def test_a_certificate_that_cannot_be_written_does_not_stop_the_hand_over(self):
+        """The money has reached the payee, and no document may contradict that.
+        The reason goes in the chatter instead."""
+        payment = self._voucher()
+        payment.action_confirm_for_bank()
+        # Take away every source of a type of income, which a certificate line
+        # cannot exist without.
+        payment.wht_cert_income_type = False
+        self.wht_tax.wht_cert_income_type = False
+
+        payment._mark_paid()
+
+        self.assertEqual(payment.finance_state, "paid")
+        self.assertFalse(payment.wht_cert_ids)
+        body = payment.message_ids[:1].body or ""
+        self.assertIn("certificate", body)
+
+    # ------------------------------------------------------------------
+    # The filing run
+    # ------------------------------------------------------------------
+    def test_a_month_is_confirmed_for_filing_in_one_press(self):
+        """A certificate still in draft is invisible to the ภ.ง.ด. report, so
+        this press is what puts the month in the return."""
+        payments = self.Payment.browse()
+        for _index in range(2):
+            payments |= self._voucher()
+        payments.action_confirm_for_bank()
+        payments._mark_paid()
+        certs = payments.wht_cert_ids
+        self.assertEqual(set(certs.mapped("state")), {"draft"})
+
+        certs.action_done()
+
+        self.assertEqual(set(certs.mapped("state")), {"done"})
+
+    def test_a_certificate_totals_its_lines_for_the_filing_run(self):
+        payment = self._voucher()
+        payment.action_confirm_for_bank()
+        payment._mark_paid()
+
+        cert = payment.wht_cert_ids
+
+        self.assertEqual(cert.amount_base_total, 10000.0)
+        self.assertEqual(cert.amount_wht_total, 300.0)
+
+    # ------------------------------------------------------------------
     # Where the rate comes from, and where it must never appear
     # ------------------------------------------------------------------
     def test_the_payees_category_proposes_the_rate_on_the_form(self):
@@ -388,33 +591,13 @@ class TestWithholdingTaxOnTheVoucher(TransactionCase):
         """Regression on the other kind of voucher: no rate of its own, the
         withholding delivered as a write-off line the way
         ``disbursement.payment.line`` delivers it."""
-        payment = self.Payment.create(
-            {
-                "payment_type": "outbound",
-                "partner_type": "supplier",
-                "partner_id": self.payee.id,
-                "amount": 9700.0,
-                "date": "2026-02-10",
-                "journal_id": self.paying_account.journal_id.id,
-                "payment_method_line_id": self.paying_account.id,
-                "kmitl_payment_type_id": self.payment_type.id,
-                "write_off_line_vals": [
-                    {
-                        "name": self.wht_tax.display_name,
-                        "account_id": self.wht_account.id,
-                        "partner_id": self.payee.id,
-                        "currency_id": self.env.company.currency_id.id,
-                        "amount_currency": -300.0,
-                        "balance": -300.0,
-                        "wht_tax_id": self.wht_tax.id,
-                        "tax_base_amount": 10000.0,
-                    }
-                ],
-            }
-        )
+        payment = self._billed_voucher()
 
         self.assertFalse(payment.wht_tax_id)
         self.assertEqual(payment.amount_wht, 300.0)
         self.assertEqual(payment.amount_before_wht, 10000.0)
         self.assertEqual(payment.amount, 9700.0)
         self.assertEqual(self._wht_lines(payment).tax_base_amount, 10000.0)
+        # And the type of income is answered from the entry, so the voucher shows
+        # both halves of its withholding before the accounting office posts it.
+        self.assertEqual(payment.wht_cert_income_type, "5")

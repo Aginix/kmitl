@@ -241,19 +241,26 @@
                  added after this patch runs, so it is not what is matched here.
 
                  The third leaf is what makes the withholding work the way the
-                 office thinks: on a voucher that withholds, the *base* is what is
-                 typed and the amount paid is what follows from it, so the amount
-                 stops being an input. Set here rather than on the node in the
-                 group below because readonly is per-node (the model-level
-                 modifiers are the ones a repeated field merges), and this is the
-                 node an officer would otherwise type into. -->
+                 office thinks. This box is where the officer types, and on a
+                 voucher that withholds what they type is the **income** — the
+                 figure on the invoice in their hand. The onchange takes it as the
+                 base and puts the amount paid back here, and from then on the box
+                 is closed: it now shows a derived figure, and typing over a
+                 derived figure would withhold from a net that has already been
+                 withheld from. The gate is the base rather than the rate, so the
+                 box stays open for the first figure to be typed into.
+
+                 Set here and not on the node in the withholding group below,
+                 because readonly is per-node (the model-level modifiers are the
+                 ones a repeated field merges) and this is the node being typed
+                 into. -->
             <xpath
                 expr="//div[@name='amount_div']/field[@name='amount']"
                 position="attributes"
             >
                 <attribute
                     name="attrs"
-                >{'readonly': ['|', '|', ('state', '!=', 'draft'), ('finance_state', '!=', 'draft'), ('wht_tax_id', '!=', False)]}</attribute>
+                >{'readonly': ['|', '|', ('state', '!=', 'draft'), ('finance_state', '!=', 'draft'), ('wht_amount_base', '!=', 0)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='currency_id']" position="attributes">
                 <attribute
@@ -398,15 +405,22 @@
                         options="{'no_create': True, 'no_open': True}"
                         attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('finance_state', '!=', 'draft')]}"
                     />
-                    <!-- The gross, in two fields because it is filled in from two
-                         ends. On a voucher of the office's own the base is what is
-                         typed and the amount paid follows from it; on one raised
-                         from a bill both halves were settled there and the gross is
-                         read back. Only ever one of them on screen, so there is
-                         never a second copy of the same number to disagree. -->
+                    <!-- The income, in two fields because the two kinds of voucher
+                         arrive at it from opposite ends. On a voucher of the
+                         office's own it is the figure typed into the amount box
+                         above, kept here once the amount box has become the net; on
+                         one billed through a request both halves were settled with
+                         the bill and the income is read back from them. Only ever
+                         one of them on screen, so there is never a second copy of
+                         the same number to disagree with the first.
+
+                         Both are read-only: neither is typed. Correcting a
+                         mistyped figure means clearing the rate, which hands the
+                         withholding back and opens the amount box again. -->
                     <field
                         name="wht_amount_base"
-                        attrs="{'invisible': [('wht_tax_id', '=', False)], 'readonly': ['|', ('state', '!=', 'draft'), ('finance_state', '!=', 'draft')]}"
+                        readonly="1"
+                        attrs="{'invisible': [('wht_tax_id', '=', False)]}"
                     />
                     <field
                         name="amount_before_wht"

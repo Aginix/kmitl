@@ -46,6 +46,18 @@ msgstr ""
 "กรุณายกเลิกฉบับเดิมก่อนออกฉบับใหม่ เพื่อไม่ให้ผู้รับเงินถือสองฉบับ"
 
 #. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment.py:0
+#, python-format
+msgid ""
+"%(tax)s names no type of income, so no withholding-tax certificate can be "
+"written for %(payment)s. Set a default type of income on the tax, or choose "
+"one on the voucher."
+msgstr ""
+"%(tax)s ไม่ได้ระบุประเภทเงินได้ จึงออกหนังสือรับรองหัก ณ ที่จ่ายของ "
+"%(payment)s ไม่ได้ กรุณาตั้งประเภทเงินได้เริ่มต้นบนตัวภาษี "
+"หรือเลือกบนใบจ่ายเงิน"
+
+#. module: finance_kmitl
 #: code:addons/finance_kmitl/models/cheque_register.py:0
 #, python-format
 msgid ""
@@ -627,9 +639,29 @@ msgid "Confirm Transfer Succeeded"
 msgstr "ยืนยันการโอนเงินสำเร็จ"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_tree_kmitl
+msgid "Confirm for Filing"
+msgstr "ยืนยันนำส่ง"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_tree_kmitl
+msgid ""
+"Confirm the selected certificates for this month's filing? They can no "
+"longer be corrected afterwards — a wrong one has to be cancelled and "
+"reissued."
+msgstr ""
+"ยืนยันรายการที่เลือกเพื่อนำส่ง ภ.ง.ด.? หลังจากนี้จะแก้ไขไม่ได้ "
+"ถ้าผิดต้องยกเลิกแล้วออกฉบับใหม่"
+
+#. module: finance_kmitl
 #: model:ir.model.fields.selection,name:l10n_th_bank_payment_export.selection__bank_payment_export__state__confirm
 msgid "Confirmed"
 msgstr "ยืนยันแล้ว"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_search_kmitl
+msgid "Confirmed for Filing"
+msgstr "ยืนยันนำส่งแล้ว"
 
 #. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__account_payment__finance_state__confirmed
@@ -913,6 +945,11 @@ msgid "Hide filters"
 msgstr "ซ่อนตัวกรอง"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_search_kmitl
+msgid "Income Tax Form"
+msgstr "ภ.ง.ด."
+
+#. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__is_cheque_payment
 msgid "Is Cheque Payment"
 msgstr "จ่ายด้วยเช็ค"
@@ -976,6 +1013,11 @@ msgid "Last Cheque Number"
 msgstr "เลขที่เช็คใบสุดท้าย"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_search_kmitl
+msgid "Last Month"
+msgstr "เดือนก่อน"
+
+#. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
 msgid "Layout Settings"
 msgstr "ตั้งค่ารูปแบบ"
@@ -1021,6 +1063,11 @@ msgid "Mark All Rows Paid"
 msgstr "ติ๊กทุกแถวเป็นจ่ายสำเร็จ"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_search_kmitl
+msgid "Month"
+msgstr "เดือน"
+
+#. module: finance_kmitl
 #: code:addons/finance_kmitl/static/src/clearing_queue/clearing_queue.js:0
 msgid "More filters"
 msgstr "ตัวกรองเพิ่มเติม"
@@ -1054,6 +1101,11 @@ msgid "Next in this book:"
 msgstr "เลขถัดไปในเล่มนี้:"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_search_kmitl
+msgid "No Income Tax Form"
+msgstr "ยังไม่ระบุ ภ.ง.ด."
+
+#. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
 msgid "No cheques yet"
 msgstr "ยังไม่มีเช็ค"
@@ -1067,6 +1119,11 @@ msgstr "ไม่มีใบล้างเจ้าหนี้ในมุม
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_paying_account_view_form
 msgid "No paying account yet"
 msgstr "ยังไม่มีหัวจ่าย"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_search_kmitl
+msgid "Not Filed Yet"
+msgstr "ยังไม่ยืนยันนำส่ง"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_line_view_tree_inherit
@@ -1193,6 +1250,21 @@ msgid "PIT Rate Table"
 msgstr "ตารางอัตราภาษีเงินได้บุคคลธรรมดา"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_search_kmitl
+msgid "PND1"
+msgstr "ภ.ง.ด.1"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_search_kmitl
+msgid "PND3"
+msgstr "ภ.ง.ด.3"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_search_kmitl
+msgid "PND53"
+msgstr "ภ.ง.ด.53"
+
+#. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__account_payment__finance_state__paid
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__bank_payment_export__state__paid
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_line_view_tree_inherit
@@ -1210,6 +1282,11 @@ msgstr "ผู้รับเงิน"
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
 msgid "Payee Bank Account"
 msgstr "บัญชีธนาคารผู้รับเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_tree_kmitl
+msgid "Payee Tax ID"
+msgstr "เลขผู้เสียภาษีผู้รับเงิน"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__payee_type_id
@@ -1559,6 +1636,16 @@ msgstr ""
 "จึงไม่เหลือเงินจ่ายให้ผู้รับเงิน"
 
 #. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment.py:0
+#, python-format
+msgid ""
+"The withholding-tax certificate could not be issued: %s Correct it, then use"
+" Issue WHT Certificate."
+msgstr ""
+"ออกหนังสือรับรองหัก ณ ที่จ่ายไม่ได้: %s กรุณาแก้ไขแล้วกดออกหนังสือรับรองหัก "
+"ณ ที่จ่าย"
+
+#. module: finance_kmitl
 #: code:addons/finance_kmitl/wizards/bank_payment_export_create.py:0
 #, python-format
 msgid "There is nothing to put in a file."
@@ -1619,6 +1706,11 @@ msgstr ""
 "ให้ออกเช็คแล้วกดมอบเช็คแทน: %s"
 
 #. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_search_kmitl
+msgid "This Month"
+msgstr "เดือนนี้"
+
+#. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_view_form_inherit
 msgid ""
 "This marks every row failed, including any already marked paid. Continue?"
@@ -1660,6 +1752,18 @@ msgstr "บน"
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_create_view_form
 msgid "Total"
 msgstr "ยอดรวม"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_withholding_tax_cert__amount_base_total
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_tree_kmitl
+msgid "Total Income"
+msgstr "ยอดเงินได้รวม"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_withholding_tax_cert__amount_wht_total
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_withholding_tax_cert_tree_kmitl
+msgid "Total Withheld"
+msgstr "ยอดภาษีรวม"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/bank_payment_export.py:0

@@ -156,13 +156,15 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   _Avoid_: reading `amount_wht` as an input; it is worked out from these.
 
 - **ฐานเงินได้ / Withholding base** (`account.payment.wht_amount_base`): the income the
-  rate is applied to — and on a hand-filled voucher **the one figure that is typed**.
-  The amount paid follows from it (base less withholding) and closes to editing, because
-  a form offering both would let the two disagree, and it is the amount that must give
-  way: what the payee is owed is the base, and what leaves the bank is whatever is left
-  of it. KMITL charges no VAT and a voucher withholds one thing, so the base is the
-  whole of what is owed. _Avoid_: "ยอดเต็ม", and avoid treating it as a second copy of
-  the gross — see below.
+  rate is applied to. On a hand-filled voucher it is **what the officer typed into the
+  amount box** — because the figure they have is the one on the invoice in their hand,
+  not the smaller one that will leave the bank. The amount box then shows the amount
+  paid and closes: it holds a derived figure from that moment, and typing over a derived
+  figure would withhold from a net already withheld from. Correcting a mistyped income
+  therefore means **clearing the rate**, which hands the withholding back and opens the
+  box again. KMITL charges no VAT and a voucher withholds one thing, so the base is the
+  whole of what is owed. _Avoid_: "ยอดเต็ม", and avoid calling it a field the office
+  fills in — they fill in the amount, and this is what that means.
 
 - **ยอดก่อนหัก ณ ที่จ่าย** (`account.payment.amount_before_wht`): the gross the payee is
   owed, **read back** as the amount paid plus what was withheld from it. Never typed and
@@ -172,17 +174,43 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   the form shows the base on the one and this on the other and never both.
 
 - **หนังสือรับรองการหักภาษี ณ ที่จ่าย / WHT certificate** (`withholding.tax.cert`): the
-  50 ทวิ the payee files with the Revenue Department. It is the **voucher's**, not the
-  journal entry's — created with `payment_id` and no `move_id` — because the finance
-  office hands it over with the money, weeks before the accounting office books the
-  voucher, and because posting an entry deletes every certificate hanging off it. It may
-  be issued from **ยืนยันพร้อมส่งธนาคาร** onwards, that being the first moment what it
-  states can no longer change, and it is dated from the day the money actually left (the
+  50 ทวิ the payee files with the Revenue Department — **and the record KMITL files its
+  own ภ.ง.ด. from**, because the institute gathers and submits the withholding itself
+  rather than leaving it to a bank. That is what makes it more than a courtesy copy: a
+  payee with no certificate, or with one still in draft, is a payee **missing from the
+  return**. It is the **voucher's**, not the journal entry's — created with `payment_id`
+  and no `move_id` — because the paper goes out with the money, weeks before the
+  accounting office books the voucher, and because posting an entry deletes every
+  certificate hanging off it. It is dated from the day the money actually left (the
   e-payment file's effective date, or the date on the cheque) rather than the voucher's
-  own date. See
-  [ADR-0008](./docs/adr/0008-the-wht-certificate-belongs-to-the-voucher.md). _Avoid_:
-  calling it a ภ.ง.ด. — that is the monthly filing, a different paper made from the same
-  withholding.
+  own date, so it falls in the month it is filed in. See
+  [ADR-0008](./docs/adr/0008-the-wht-certificate-belongs-to-the-voucher.md) and
+  [ADR-0009](./docs/adr/0009-the-certificate-is-raised-by-the-payment.md). _Avoid_:
+  calling it a ภ.ง.ด. — that is the monthly return, footed from these; and avoid reading
+  it as something an officer decides to produce (below).
+
+- **การยกหนังสือรับรอง / Raising the certificate**: it is **the Hand-over that raises
+  it**, not a press of anybody's — one per payee that withheld, made the moment the
+  money reaches them, which is also the day the law dates the withholding from. Each way
+  of paying does it in the place that knows: closing an **ไฟล์ e-Payment** raises them
+  for every transfer payee it carried, **มอบเช็ค** for that cheque's payee, and
+  ยืนยันจ่ายสำเร็จ for cash. The press that remains on the voucher is for the ones the
+  Hand-over could not write — a rate naming no type of income, a certificate cancelled
+  and needing a successor. A certificate that cannot be written **does not stop the
+  Hand-over**: the money reached the payee, and no document may contradict that; the
+  reason goes in the chatter. See
+  [ADR-0009](./docs/adr/0009-the-certificate-is-raised-by-the-payment.md). _Avoid_:
+  "ออกหนังสือรับรอง" as the name of a step in the payment run — there is no such step.
+
+- **การรวบรวมนำส่ง / The filing run** (`withholding.tax.cert.state`, `draft → done`):
+  the finance office's monthly pass over a month's certificates — footed, checked, and
+  confirmed in one press. Confirming is not a formality: the ภ.ง.ด. report reads only
+  certificates that are **no longer draft**, so this is the act that puts a month in the
+  return, and a certificate left in draft is a payee left out of it. This is why
+  certificates are raised as drafts rather than finished: the review that matters
+  happens once a month over the whole return, not once per voucher at the counter.
+  _Avoid_: reading `done` as "printed" or "handed to the payee" — the paper goes out at
+  the Hand-over, long before the month is filed.
 
 - **ผลการจ่าย** (`account.payment.bank_result_status`): the outcome as the finance
   office recorded it. Historically the gate everything downstream read; `finance_state`

@@ -4,7 +4,7 @@ from odoo import Command, _, api, fields, models
 from odoo.addons.l10n_th_account_tax.models.withholding_tax_cert import (
     WHT_CERT_INCOME_TYPE,
 )
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 # The facts the bank acted on. Frozen the moment the voucher is confirmed for the
 # bank: changing any of them afterwards makes the record disagree with what the
@@ -117,11 +117,16 @@ class AccountPayment(models.Model):
     wht_cert_income_type = fields.Selection(
         selection=WHT_CERT_INCOME_TYPE,
         string="Type of Income",
+        compute="_compute_wht_cert_income_type",
+        store=True,
+        readonly=False,
         copy=False,
         help="ประเภทเงินได้ — what the payee was paid for, in the Revenue "
         "Department's own categories. It is what the certificate and the ภ.ง.ด. "
         "filing are about, and it books nothing, so it stays correctable after "
-        "the money side has frozen.",
+        "the money side has frozen. Proposed from the rate withheld — whether "
+        "that rate is on the voucher or on its entry — which is what lets a "
+        "voucher billed through a request answer it too.",
     )
     amount_wht = fields.Monetary(
         string="Withholding Tax Amount",
@@ -293,6 +298,26 @@ class AccountPayment(models.Model):
         for payment in self:
             payment.amount_before_wht = payment.amount + payment.amount_wht
 
+    @api.depends("wht_tax_id", "move_id.line_ids.wht_tax_id")
+    def _compute_wht_cert_income_type(self):
+        """What the payee was paid for, proposed from the rate withheld.
+
+        Two sources, in this order, because the two kinds of voucher know it at
+        different moments. A voucher filled in by hand has the rate on itself, and
+        has it the instant the officer picks a payee — before the entry has a
+        withholding line at all, since that line is built on save. A voucher billed
+        through a request has no rate of its own and never will: its withholding
+        was settled on the bill and reached the entry as a line, so the line is
+        what to ask.
+
+        Overridable, and that is the point: the rate only carries the *default*
+        type of income, and a payee withheld at one rate may have been paid for
+        something the default does not name.
+        """
+        for payment in self:
+            taxes = payment.wht_tax_id or payment.move_id.line_ids.mapped("wht_tax_id")
+            payment.wht_cert_income_type = taxes[:1].wht_cert_income_type
+
     # -------------------------------------------------------------------------
     # Withholding tax keyed in on the voucher
     # -------------------------------------------------------------------------
@@ -321,31 +346,49 @@ class AccountPayment(models.Model):
     def _onchange_wht_tax_id(self):
         """Follow the rate with the things it decides.
 
-        The base is seeded from whatever amount has been typed so far, because
-        that is what the officer meant by it: a voucher that withholds is filled
-        in gross-first, and the number already in the amount box was the gross
-        before anyone said a rate applied to it. Taking the rate away is the same
-        move backwards, and ``_undo_withholding`` makes it.
+        The base is taken from whatever amount has been typed so far, because that
+        is what the officer meant by it: the figure in the amount box was what the
+        payee is owed, before anyone said a rate applied to it. Taking the rate
+        away is the same move backwards, and ``_undo_withholding`` makes it.
+
+        The type of income is not set here — it is computed from the rate
+        (``_compute_wht_cert_income_type``), so that a voucher billed through a
+        request answers it too.
         """
         for payment in self:
             if not payment.wht_tax_id:
                 payment._undo_withholding()
                 continue
-            payment.wht_cert_income_type = payment.wht_tax_id.wht_cert_income_type
             if not payment.wht_amount_base:
                 payment.wht_amount_base = payment.amount
             payment._apply_wht_to_amount()
 
-    @api.onchange("wht_amount_base")
-    def _onchange_wht_amount_base(self):
-        """Keep the form's figures in step while they are being typed.
+    @api.onchange("amount")
+    def _onchange_amount_wht(self):
+        """Read the amount an officer types as the income, not as the payment.
 
-        The same derivation runs on save (``_apply_wht_to_amount``), which is what
-        makes it true for a voucher made through the API; this is what makes the
-        officer see it happen as they type, in the one screen where a voucher is
-        filled in by hand.
+        A voucher that withholds is filled in from the invoice in the officer's
+        hand, and that invoice says 10,000 — not the 9,700 that will actually
+        leave the bank. So the figure typed into the amount box is taken as the
+        **income**, and the amount paid is worked out from it. The box then shows
+        the amount paid and closes, which is what keeps the two from being
+        confused for one another.
+
+        The equality test is what stops it running away. Odoo 16 re-runs onchange
+        methods until the form settles (``models.py``, the ``while todo:`` loop in
+        ``onchange``), so this method sees its own result: the second pass finds
+        ``10,000 - 100 == 9,700``, recognises the amount as already derived, and
+        does nothing. Without that test each pass would withhold from the previous
+        net — 10,000 → 9,700 → 9,409 → …
         """
         for payment in self:
+            if not payment.wht_tax_id:
+                continue
+            currency = payment._wht_currency()
+            derived = currency.round(payment.wht_amount_base - payment.amount_wht)
+            if not currency.compare_amounts(payment.amount, derived):
+                continue
+            payment.wht_amount_base = payment.amount
             payment._apply_wht_to_amount()
 
     def _apply_wht_to_amount(self):
@@ -697,9 +740,30 @@ class AccountPayment(models.Model):
         still filling in must be allowed to be incomplete. This is the moment it
         stops being one — from here the voucher is numbered, the money side is
         frozen, and the certificate handed to the payee is written from exactly
-        these three figures.
+        these figures.
+
+        The last check is about the certificate rather than about the books, and it
+        applies to every voucher that withholds — including one billed through a
+        request, whose rate is on its entry. A certificate line cannot exist
+        without a type of income, so a rate that carries no default would fail at
+        the Hand-over, where the failure is only a note in the chatter (ADR-0009).
+        Better to say so here, to the person who can still fix it.
         """
         self.ensure_one()
+        for line in self._wht_entry_lines():
+            if self.wht_cert_income_type or line.wht_tax_id.wht_cert_income_type:
+                continue
+            raise UserError(
+                _(
+                    "%(tax)s names no type of income, so no withholding-tax "
+                    "certificate can be written for %(payment)s. Set a default "
+                    "type of income on the tax, or choose one on the voucher."
+                )
+                % {
+                    "tax": line.wht_tax_id.display_name,
+                    "payment": self.display_name,
+                }
+            )
         if not self.wht_tax_id:
             return True
         currency = self._wht_currency()
@@ -759,6 +823,9 @@ class AccountPayment(models.Model):
 
         Shared by a payment confirming itself and by a disbursement request
         confirming all of its at once, so the two cannot mean different things.
+        It is also where the payees' withholding-tax certificates are raised, for
+        the same reason: whatever route the money took, this is the one moment that
+        knows it arrived.
         """
         for payment in self:
             if payment.finance_state != "confirmed":
@@ -770,6 +837,12 @@ class AccountPayment(models.Model):
                     % payment.display_name
                 )
         self.write({"finance_state": "paid"})
+        # The payee has their money, so the day the law treats the income as paid
+        # is settled — and that day is what the certificate is dated from and what
+        # decides which ภ.ง.ด. it is filed in. Raising it here rather than leaving
+        # it to a press is what keeps a payee from dropping out of a filing because
+        # somebody forgot: the certificate *is* the filed record. See ADR-0009.
+        self._raise_wht_certs()
         return True
 
     def _unmark_paid(self):
@@ -1058,22 +1131,72 @@ class AccountPayment(models.Model):
     # -------------------------------------------------------------------------
     # The payee's withholding-tax certificate
     # -------------------------------------------------------------------------
-    def action_create_wht_cert(self):
-        """Issue the payee's หนังสือรับรองการหักภาษี ณ ที่จ่าย (50 ทวิ).
+    def _wht_entry_lines(self):
+        """The withholding lines on this voucher's entry.
 
-        The finance office issues it, because they are the ones facing the payee
-        — the paper goes out with the transfer or in the payee's hand with the
-        cheque, weeks before the accounting office books the voucher. Upstream
-        only offers it on a *posted* entry, which for KMITL is after the
-        Hand-over and far too late.
-
-        The certificate is therefore bound to the **voucher** and not to the
-        entry: ``account.move._post`` unlinks every certificate hanging off the
-        entry it posts, and one already in the payee's hands must survive that.
-        See ADR-0008.
+        The one place the certificate is read from, whichever kind of voucher it
+        is: a voucher filled in by hand puts the line there from its own rate and
+        base, and a voucher billed through a request gets it from the bill. Asking
+        the entry rather than either source is what makes one certificate builder
+        serve both.
         """
         self.ensure_one()
-        if not self.wht_tax_id:
+        return self.move_id.line_ids.filtered("wht_tax_id")
+
+    def _wht_certs_live(self):
+        """The certificates that still stand — a cancelled one is not one."""
+        self.ensure_one()
+        return self.wht_cert_ids.filtered(lambda cert: cert.state != "cancel")
+
+    def _raise_wht_certs(self):
+        """Issue the certificate of every voucher here that owes one.
+
+        Called by the Hand-over rather than by a press, so a voucher whose
+        coordinates fail must not take the Hand-over down with it: the money has
+        reached the payee, and that is a fact no document may contradict. Each
+        voucher therefore gets its own savepoint and its own note in the chatter,
+        the way a disbursement raises its vouchers
+        (``disbursement_finance_kmitl._try_create_payments``). See ADR-0009.
+        """
+        Cert = self.env["withholding.tax.cert"]
+        for payment in self:
+            if not payment._wht_entry_lines() or payment._wht_certs_live():
+                continue
+            try:
+                with self.env.cr.savepoint():
+                    # Inside the savepoint so that what it refuses is reported the
+                    # same way a failed write would be, rather than two kinds of
+                    # failure reaching the officer by two different routes.
+                    payment._check_wht_complete()
+                    Cert.create(payment._prepare_wht_cert_vals())
+            except (UserError, ValidationError) as error:
+                self.env.invalidate_all()
+                payment.message_post(
+                    body=_(
+                        "The withholding-tax certificate could not be issued: "
+                        "%s Correct it, then use Issue WHT Certificate.",
+                        error.args and error.args[0] or _("error"),
+                    ),
+                    subtype_xmlid="mail.mt_note",
+                )
+        return True
+
+    def action_create_wht_cert(self):
+        """Issue the payee's หนังสือรับรองการหักภาษี ณ ที่จ่าย (50 ทวิ) by hand.
+
+        The Hand-over normally issues it (ADR-0009), so this press is what is left
+        for the vouchers it could not: a rate with no type of income, a certificate
+        cancelled and needing a successor, a cheque rewritten. Available from the
+        confirmation onwards, that being the first moment what the certificate
+        states can no longer change.
+
+        The certificate is bound to the **voucher** and not to the entry:
+        ``account.move._post`` unlinks every certificate hanging off the entry it
+        posts, and one already in the payee's hands must survive that. See
+        ADR-0008.
+        """
+        self.ensure_one()
+        if not self._wht_entry_lines():
             raise UserError(
                 _("%s withholds nothing, so there is nothing to certify.")
                 % self.display_name
@@ -1088,7 +1211,7 @@ class AccountPayment(models.Model):
                 % self.display_name
             )
         self._check_wht_complete()
-        live = self.wht_cert_ids.filtered(lambda cert: cert.state != "cancel")
+        live = self._wht_certs_live()
         if live:
             raise UserError(
                 _(
@@ -1109,33 +1232,48 @@ class AccountPayment(models.Model):
         }
 
     def _prepare_wht_cert_vals(self):
-        """One certificate, one line — a voucher withholds one thing.
+        """One certificate per voucher, one line per withholding on its entry.
+
+        One voucher pays one payee, so one certificate; it takes several lines only
+        when the entry withholds under more than one rate. Built from the entry
+        (``_wht_entry_lines``) rather than from the voucher's own fields, so the
+        same code serves a voucher typed here and one billed through a request.
+
+        The type of income comes from the voucher when an officer chose one and
+        from the rate otherwise — the same order ``_compute_wht_cert_income_type``
+        reads them in, and the reason a voucher with several rates falls back to
+        each rate's own default.
 
         ``move_id`` is left empty on purpose (ADR-0008), and neither ``name`` nor
-        ``date`` is passed: both are computed from the payment, and the date is
-        the day the money actually left rather than the voucher's own (see
+        ``date`` is passed: both are computed from the payment, and the date is the
+        day the money actually left rather than the voucher's own (see
         ``withholding_tax_cert.py``).
         """
         self.ensure_one()
         descriptions = dict(WHT_CERT_INCOME_TYPE)
+        lines = self._wht_entry_lines()
+        chosen = self.wht_cert_income_type if len(lines.wht_tax_id) == 1 else False
+        cert_lines = []
+        for line in lines:
+            income_type = chosen or line.wht_tax_id.wht_cert_income_type
+            cert_lines.append(
+                Command.create(
+                    {
+                        "wht_cert_income_type": income_type,
+                        "wht_cert_income_desc": descriptions.get(income_type),
+                        "base": line.tax_base_amount,
+                        "amount": abs(line.balance),
+                        "wht_tax_id": line.wht_tax_id.id,
+                    }
+                )
+            )
+        forms = set(lines.wht_tax_id.mapped("income_tax_form")) - {False}
         return {
             "payment_id": self.id,
             "partner_id": self.partner_id.id,
-            "income_tax_form": self.wht_tax_id.income_tax_form,
+            "income_tax_form": forms.pop() if len(forms) == 1 else False,
             "tax_payer": "withholding",
-            "wht_line": [
-                Command.create(
-                    {
-                        "wht_cert_income_type": self.wht_cert_income_type,
-                        "wht_cert_income_desc": descriptions.get(
-                            self.wht_cert_income_type
-                        ),
-                        "base": self.wht_amount_base,
-                        "amount": self.amount_wht,
-                        "wht_tax_id": self.wht_tax_id.id,
-                    }
-                )
-            ],
+            "wht_line": cert_lines,
         }
 
     def _reconcile_source_invoice_lines(self):

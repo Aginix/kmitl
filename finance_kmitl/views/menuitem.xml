@@ -99,13 +99,18 @@
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
 
-    <!-- Withholding Tax Certificates: the document handed to the payee, not the
-         tax and not a ภ.ง.ด. filing report. -->
+    <!-- Withholding Tax Certificates: the document handed to the payee — and,
+         because KMITL files ภ.ง.ด. itself rather than through a bank, the filing
+         record as well. So this is where a month is footed and confirmed for
+         submission, not merely where a copy is looked up; it is bound to this
+         module's own list and search rather than upstream's for that reason
+         (withholding_tax_cert_views.xml). Still not a ภ.ง.ด. *report* — that is a
+         separate screen, and a separate module. -->
     <menuitem
         id="menu_withholding_tax_cert"
         name="Withholding Tax Certificates"
         parent="menu_finance_payment_out"
-        action="l10n_th_account_tax.action_withholding_tax_cert_menu"
+        action="action_withholding_tax_cert_kmitl"
         sequence="50"
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
