@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- Rendered once per dropdown option, inside the autocomplete <a> item.
+         `option` is in scope. Record options carry `option.partnerInfo` (from
+         get_partner_autocomplete_info); action rows (Create…/Search More…) do
+         not — fall back to their plain label. -->
+    <t t-name="agx_partner_autocomplete.Option" owl="1">
+        <t t-if="option.partnerInfo">
+            <div class="o_partner_ac_option">
+                <div class="o_partner_ac_head">
+                    <i class="fa fa-fw"
+                        t-att-class="option.partnerInfo.is_company ? 'fa-building-o' : 'fa-user-o'"/>
+                    <strong class="o_partner_ac_name" t-esc="option.partnerInfo.name"/>
+                    <span t-if="option.partnerInfo.type" class="o_partner_ac_type"
+                        t-esc="option.partnerInfo.type"/>
+                </div>
+                <div class="o_partner_ac_rows">
+                    <span t-foreach="option.partnerInfo.rows" t-as="row" t-key="row_index"
+                        class="o_partner_ac_row">
+                        <i class="fa fa-fw text-muted" t-att-class="row.icon"
+                            t-att-title="row.label"/>
+                        <span t-esc="row.value"/>
+                    </span>
+                </div>
+            </div>
+        </t>
+        <t t-else="">
+            <t t-esc="option.label"/>
+        </t>
+    </t>
+</templates>
