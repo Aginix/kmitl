@@ -14,6 +14,7 @@
         "account_fiscal_year",
         "purchase_order_kmitl",
         "purchase_operating_unit",
+        "purchase_viewer",
         "web_m2x_options",
         "web_attachment_document_type",
     ],
