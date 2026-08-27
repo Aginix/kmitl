@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement",
-    "version": "16.0.9.0.0",
+    "version": "16.0.10.0.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
@@ -18,6 +18,9 @@
         "base_fontawesome",
         "partner_type_aginix",
         "mail_activity_todo",
+        # hr.employee.signature image + job_title for the printed signature block
+        "hr_employee_digitized_signature",
+        "thai_date_utils",
     ],
     "data": [
         "security/security.xml",

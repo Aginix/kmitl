@@ -3,10 +3,15 @@
 
     <!-- Placeholder approving position, seeded with no holder — assign the real
          head-of-department holder in Configuration ▸ Positions before go-live.
-         noupdate="1" so the holder assignment survives module upgrades. -->
+         noupdate="1" so the holder assignment survives module upgrades (which also
+         means a label change here does NOT reach an existing database — rename it
+         once in Configuration ▸ Positions).
+         Deliberately NOT called "ผู้อนุมัติเบิกจ่าย": that term is reserved for the
+         post-bill payment authoriser (disbursement_finance_kmitl), a different
+         authority whose signature now prints on the same page. -->
     <data noupdate="1">
         <record id="position_dr_approver" model="sarabun.position">
-            <field name="name">ผู้อนุมัติเบิกจ่าย (Disbursement Approver)</field>
+            <field name="name">หัวหน้าส่วนงาน (Head of Department)</field>
         </record>
     </data>
 

@@ -373,6 +373,7 @@ msgstr "วันที่ตรวจสอบการเบิกจ่าย
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_auditor_id
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request_signature__step__payment_audit
 msgid "Payment Auditor"
 msgstr "ผู้ตรวจสอบการเบิกจ่าย"
 
@@ -383,6 +384,7 @@ msgstr "วันที่อนุมัติเบิกจ่าย"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_authorizer_id
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request_signature__step__payment_authorize
 msgid "Payment Authorizer"
 msgstr "ผู้อนุมัติเบิกจ่าย"
 
