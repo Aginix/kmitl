@@ -160,7 +160,7 @@
                             <t t-foreach="o.line_ids" t-as="line">
                                 <tr>
                                     <td class="text-center" t-out="row_no" />
-                                    <td t-out="line.name" />
+                                    <td t-out="line.name" style="white-space: pre-line" />
                                     <td class="text-center">
                                         <span
                                             t-out="'{0:,.0f}'.format(line.product_qty)"
