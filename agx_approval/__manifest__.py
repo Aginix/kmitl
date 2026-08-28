@@ -1,6 +1,6 @@
 {
     "name": "Aginix Approval",
-    "version": "16.0.1.3.1",
+    "version": "16.0.1.4.0",
     "category": "Accounting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -13,7 +13,7 @@
         "base_exception",
         "account_fiscal_year_enhance",
         "l10n_th_amount_to_text",
-        "partner_type_aginix",
+        "partner_type_kmitl_accounting",
         "hr_employee_name_detail_kmitl",
     ],
     "data": [

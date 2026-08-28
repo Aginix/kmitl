@@ -16,7 +16,7 @@
         "l10n_th_amount_to_text",
         "l10n_th_fonts",
         "base_fontawesome",
-        "partner_type_aginix",
+        "partner_type_kmitl_accounting",
         "mail_activity_todo",
         # hr.employee.signature image + job_title for the printed signature block
         "hr_employee_digitized_signature",

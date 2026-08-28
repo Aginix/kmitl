@@ -21,10 +21,9 @@
         "l10n_th_fonts",
         "l10n_th_amount_to_text",
         "l10n_th_account_wht_cert_form",
-        # The payee's category carries their payable account and their WHT rate,
-        # both of which are this office's business — and it is what the finance
-        # list filters and the routing rules read.
-        "partner_type_aginix",
+        # The payee's category is what the finance list filters and the
+        # routing rules read (classification only, via a related field).
+        "partner_type_kmitl",
     ],
     "data": [
         "security/security.xml",
