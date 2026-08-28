@@ -30,7 +30,9 @@ export class ReceiptReport extends Component {
             activities: [],
         });
         this.labels = {
-            title: _t("Receipt Report"),
+            title: _t("Receipt Summary Report"),
+            print: _t("Print"),
+            exportExcel: _t("Export Excel"),
             empty: _t("No receipts for the selected criteria."),
             date: _t("Date"),
             number: _t("Receipt No."),
@@ -153,6 +155,17 @@ export class ReceiptReport extends Component {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         });
+    }
+
+    printReport() {
+        window.print();
+    }
+
+    async exportXlsx() {
+        const action = await this.orm.call(REPORT_MODEL, "action_export_xlsx", [
+            this.options,
+        ]);
+        await this.action.doAction(action);
     }
 }
 

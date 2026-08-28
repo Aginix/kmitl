@@ -3,12 +3,18 @@
 
     <t t-name="receipt_kmitl.ReceiptReport" owl="1">
         <div class="o_receipt_report o_action_manager p-3">
-            <div class="d-flex align-items-center mb-3">
+            <div class="o_receipt_report_header d-flex align-items-center mb-3">
                 <h2 class="m-0 flex-grow-1"><t t-esc="labels.title" /></h2>
+                <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
+                    <i class="fa fa-file-excel-o me-1" /><t t-esc="labels.exportExcel" />
+                </button>
+                <button class="btn btn-primary" t-on-click="printReport">
+                    <i class="fa fa-print me-1" /><t t-esc="labels.print" />
+                </button>
             </div>
 
-            <!-- Filter bar -->
-            <div class="mb-3">
+            <!-- Filter bar (hidden when printing) -->
+            <div class="o_receipt_report_filters mb-3">
                 <div class="row g-2">
                     <div class="col-md-3">
                         <label class="o_form_label">Fiscal Year</label>
@@ -108,7 +114,15 @@
                 </div>
             </t>
             <t t-else="">
-                <table class="table table-sm table-hover align-middle mb-0">
+                <!-- Print header (visible only when printing) -->
+                <div class="o_receipt_report_print_header">
+                    <h3 class="text-center mb-1"><t t-esc="labels.title" /></h3>
+                    <p class="text-center text-muted mb-2">
+                        <t t-esc="state.dateFrom" /> — <t t-esc="state.dateTo" />
+                    </p>
+                </div>
+
+                <table class="table table-sm table-hover align-middle mb-0 o_receipt_report_table">
                     <thead class="table-light">
                         <tr>
                             <th style="width: 64px;"><t t-esc="labels.date" /></th>

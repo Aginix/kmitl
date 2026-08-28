@@ -1,6 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import api, models
+from odoo import _, api, fields, models
 
 DIMENSION_FIELDS = [
     ("department_analytic_id", "departments"),
@@ -93,3 +93,104 @@ class ReceiptReport(models.AbstractModel):
             "groups": group_list,
             "grand_total": grand_total,
         }
+
+    @api.model
+    def action_export_xlsx(self, options):
+        options = options or {}
+        carrier = self.env["receipt_kmitl.report.wizard"].create(
+            {
+                "company_id": options.get("company_id") or self.env.company.id,
+                "date_from": options.get("date_from"),
+                "date_to": options.get("date_to"),
+            }
+        )
+        report = self.env.ref("receipt_kmitl.action_report_receipt_summary_xlsx")
+        return report.report_action(carrier, data={"options": options})
+
+
+class ReceiptReportWizard(models.TransientModel):
+    _name = "receipt_kmitl.report.wizard"
+    _description = "Receipt Report Carrier"
+
+    company_id = fields.Many2one("res.company")
+    date_from = fields.Date()
+    date_to = fields.Date()
+
+
+class ReceiptReportXlsx(models.AbstractModel):
+    _name = "report.receipt_kmitl.receipt_summary_xlsx"
+    _description = "Receipt Summary XLSX"
+    _inherit = "report.report_xlsx.abstract"
+
+    def generate_xlsx_report(self, workbook, data, objs):
+        options = (data or {}).get("options") or {}
+        report = self.env["receipt_kmitl.receipt.report"]
+        result = report.get_report_data(options)
+        company = self.env["res.company"].browse(
+            options.get("company_id") or self.env.company.id
+        )
+
+        sheet = workbook.add_worksheet(_("Receipt Summary"))
+        bold = workbook.add_format({"bold": True})
+        head = workbook.add_format(
+            {"bold": True, "bg_color": "#F0F0F0", "border": 1, "align": "center"}
+        )
+        group_fmt = workbook.add_format({"bold": True, "bg_color": "#F7F7F7"})
+        group_num = workbook.add_format(
+            {"bold": True, "bg_color": "#F7F7F7", "num_format": "#,##0.00"}
+        )
+        cell = workbook.add_format({"border": 1})
+        num = workbook.add_format({"border": 1, "num_format": "#,##0.00"})
+        wrap = workbook.add_format({"border": 1, "text_wrap": True})
+        total_fmt = workbook.add_format({"bold": True, "num_format": "#,##0.00"})
+
+        sheet.merge_range(0, 0, 0, 5, company.display_name, bold)
+        sheet.merge_range(1, 0, 1, 5, _("Receipt Summary Report"), bold)
+        sheet.merge_range(
+            2, 0, 2, 5,
+            "%s %s %s %s" % (
+                _("From"), options.get("date_from") or "",
+                _("to"), options.get("date_to") or "",
+            ),
+        )
+
+        headers = [
+            _("Date"), _("Receipt No."), _("Description"),
+            _("Amount"), _("Analytic Dimensions"), _("Note"),
+        ]
+        row = 4
+        for col, label in enumerate(headers):
+            sheet.write(row, col, label, head)
+
+        row = 5
+        for group in result.get("groups", []):
+            sheet.write(row, 0, group["date"], group_fmt)
+            sheet.write(row, 1, "", group_fmt)
+            sheet.write(row, 2, "", group_fmt)
+            sheet.write_number(row, 3, group["total"], group_num)
+            sheet.write(row, 4, "", group_fmt)
+            sheet.write(row, 5, "", group_fmt)
+            row += 1
+            for r in group["rows"]:
+                sheet.write(row, 0, "", cell)
+                sheet.write(row, 1, r["name"], cell)
+                sheet.write(row, 2, r["description"], wrap)
+                amt = r["amount_total"] or 0
+                if abs(amt) >= 0.005:
+                    sheet.write_number(row, 3, amt, num)
+                else:
+                    sheet.write_blank(row, 3, None, num)
+                sheet.write(row, 4, r["dimensions"], wrap)
+                sheet.write(row, 5, r["note"], cell)
+                row += 1
+
+        row += 1
+        sheet.write(row, 2, _("Grand Total"), bold)
+        sheet.write_number(row, 3, result.get("grand_total", 0), total_fmt)
+
+        sheet.set_column(0, 0, 12)
+        sheet.set_column(1, 1, 16)
+        sheet.set_column(2, 2, 35)
+        sheet.set_column(3, 3, 16)
+        sheet.set_column(4, 4, 35)
+        sheet.set_column(5, 5, 25)

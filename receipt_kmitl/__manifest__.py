@@ -13,12 +13,14 @@
         "mail",
         "account_analytic_kmitl",
         "accounting_kmitl_reports",
+        "report_xlsx",
         "l10n_th_amount_to_text",
     ],
     "data": [
         "security/security.xml",
         "security/ir.model.access.csv",
         "data/partner_walkin_data.xml",
+        "data/receipt_report_xlsx_action.xml",
         "wizard/receipt_preview_views.xml",
         "wizard/receipt_remittance_reject_view.xml",
         "views/payment_method_views.xml",
@@ -36,6 +38,7 @@
         "web.assets_backend": [
             "receipt_kmitl/static/src/receipt_report/receipt_report.js",
             "receipt_kmitl/static/src/receipt_report/receipt_report.xml",
+            "receipt_kmitl/static/src/receipt_report/receipt_report.scss",
         ],
     },
     "installable": True,
