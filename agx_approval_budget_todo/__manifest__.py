@@ -1,5 +1,5 @@
 {
-    "name": "Aginix Approval Todos",
+    "name": "Aginix Approval Budget Todos",
     "version": "16.0.1.0.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

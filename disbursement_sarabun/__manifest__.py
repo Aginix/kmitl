@@ -3,7 +3,7 @@
 {
     "name": "Disbursement Sarabun Integration",
     "summary": "Route disbursement requests through Sarabun for head approval",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",

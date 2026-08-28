@@ -52,6 +52,10 @@
                 <field name="partner_id" string="ผู้รับเงิน" />
                 <field name="kmitl_payment_type_id" optional="show" />
                 <field name="kmitl_payment_subject_id" optional="hide" />
+                <!-- Which money it comes out of, ahead of the account it
+                     physically leaves from. Carries its own Thai label from
+                     analytic.distribution.mixin. -->
+                <field name="source_analytic_id" optional="show" />
                 <field name="payment_method_line_id" string="หัวจ่าย" optional="show" />
                 <field name="payment_method_id" string="วิธีจ่าย" optional="hide" />
                 <field
@@ -315,6 +319,17 @@
                         select="multi"
                         groupby="payment_method_id"
                         domain="[('payment_type', '=', 'outbound')]"
+                        enable_counters="1"
+                    />
+                    <!-- แหล่งเงิน beside it, because "what is left to send from KTB"
+                         is nearly always asked of one source at a time — government
+                         budget or revenue budget, never both in the same breath. A
+                         handful of values, so a click rather than something typed
+                         into the dimension field above. -->
+                    <field
+                        name="source_analytic_id"
+                        icon="fa-money"
+                        select="multi"
                         enable_counters="1"
                     />
                 </searchpanel>

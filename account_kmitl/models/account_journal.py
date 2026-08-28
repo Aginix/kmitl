@@ -51,3 +51,28 @@ class AccountJournal(models.Model):
             self._kmitl_default_payment_methods("outbound")
             or super()._default_outbound_payment_methods()
         )
+
+    @api.depends("type")
+    def _compute_payment_sequence(self):
+        """Number a payment PV/… rather than PPV/….
+
+        Core gives bank and cash journals a *dedicated payment sequence* so that
+        payments do not share a running number with the invoices in the same
+        journal: ``account.move._get_starting_sequence`` prefixes a "P" onto the
+        journal code for payment moves whenever this is set.
+
+        A KMITL journal code *is* the voucher type (ใบสำคัญ) and its sequence *is*
+        the voucher number, so a voucher journal keeps one running number. There is
+        nothing to keep the payments apart from anyway — a voucher journal carries
+        payments and nothing else.
+
+        Decided here rather than only in the install hook so that a journal an
+        administrator adds later (a new หัวจ่าย held at another bank) is numbered
+        the same way as the ones the hook creates. The hook still writes the flag on
+        the journals that already exist when this module is installed, which no
+        compute would reach.
+
+        The dependency is restated because overriding a compute replaces the base
+        decorator rather than adding to it.
+        """
+        self.payment_sequence = False

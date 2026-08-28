@@ -3,6 +3,7 @@
 import { registerMessagingComponent } from "@mail/utils/messaging_component";
 import { LegacyComponent } from "@web/legacy/legacy_component";
 import { useService, useBus } from "@web/core/utils/hooks";
+import { browser } from "@web/core/browser/browser";
 import {
     deserializeDate,
     deserializeDateTime,
@@ -12,6 +13,11 @@ import {
 
 const { useState, useEffect } = owl;
 const { DateTime } = luxon;
+
+// Persist the "group by activity type" toggle across sessions so the user's
+// preferred layout sticks. Off by default? No — grouping is the whole point of
+// this view (a long flat inbox is what users complained about), so default on.
+const GROUPED_STORAGE_KEY = "mail_activity_todo_discuss.grouped";
 
 /**
  * The Todo inbox rendered in the Discuss MAIN content pane (when
@@ -29,7 +35,18 @@ export class DiscussTodoView extends LegacyComponent {
         super.setup();
         this.orm = useService("orm");
         this.action = useService("action");
-        this.state = useState({ todos: [], totalCount: 0, loaded: false });
+        this.state = useState({
+            todos: [],
+            totalCount: 0,
+            loaded: false,
+            // Free-text filter applied client-side over the fetched list.
+            search: "",
+            // Group the list by activity type (ประเภทกิจกรรม) when true.
+            grouped: browser.localStorage.getItem(GROUPED_STORAGE_KEY) !== "false",
+            // Per-group collapse state, keyed by group label, so the user can
+            // fold away every type but the one they want to focus on.
+            collapsed: {},
+        });
 
         // Fetch on mount and whenever the source-app filter or the inbox/history
         // mode changes (the deps read discuss.todoResModel / isTodoHistory, which
@@ -59,6 +76,66 @@ export class DiscussTodoView extends LegacyComponent {
         return this.state.todos.length
             ? this.state.todos[0].app
             : this.discuss.todoResModel;
+    }
+
+    /**
+     * The fetched Todos narrowed by the search box (case-insensitive substring
+     * over the fields a user would scan for: activity type, summary, source
+     * record/app, assignee and note). Empty query returns everything.
+     */
+    get filteredTodos() {
+        const query = this.state.search.trim().toLowerCase();
+        if (!query) {
+            return this.state.todos;
+        }
+        return this.state.todos.filter((todo) =>
+            [
+                todo.activity_type,
+                todo.summary,
+                todo.res_name,
+                todo.app,
+                todo.assigned,
+                todo.note,
+            ].some((value) => value && value.toLowerCase().includes(query))
+        );
+    }
+
+    /**
+     * The filtered Todos bucketed by activity type, preserving the incoming
+     * (newest-first) order within each bucket. Todos with no activity type fall
+     * into a trailing "Other" group. Returns an array of
+     * {label, todos, collapsed} for the grouped template.
+     */
+    get todoGroups() {
+        const otherLabel = this.env._t("Other");
+        const byLabel = new Map();
+        for (const todo of this.filteredTodos) {
+            const label = todo.activity_type || otherLabel;
+            if (!byLabel.has(label)) {
+                byLabel.set(label, []);
+            }
+            byLabel.get(label).push(todo);
+        }
+        return [...byLabel.entries()].map(([label, todos]) => ({
+            label,
+            todos,
+            collapsed: !!this.state.collapsed[label],
+        }));
+    }
+
+    /** Toggle grouping and remember the choice for next time. */
+    toggleGrouped() {
+        this.state.grouped = !this.state.grouped;
+        browser.localStorage.setItem(GROUPED_STORAGE_KEY, this.state.grouped);
+    }
+
+    /** Fold/unfold a single activity-type group. */
+    toggleGroup(label) {
+        this.state.collapsed[label] = !this.state.collapsed[label];
+    }
+
+    clearSearch() {
+        this.state.search = "";
     }
 
     /**
@@ -175,6 +252,18 @@ export class DiscussTodoView extends LegacyComponent {
             views: [[false, "form"]],
             target: "current",
         });
+    }
+
+    async onMarkRead(todo) {
+        await this.orm.call("mail.activity", "action_mark_read", [[todo.id]]);
+        this.env.bus.trigger("mail_activity_todo_updated");
+        await this.fetchData();
+    }
+
+    async onMarkUnread(todo) {
+        await this.orm.call("mail.activity", "action_mark_unread", [[todo.id]]);
+        this.env.bus.trigger("mail_activity_todo_updated");
+        await this.fetchData();
     }
 
     onViewAllClick() {

@@ -31,6 +31,8 @@ class DisbursementRequest(models.Model):
         "portal.mixin",
         "budget.commitment.mixin",
         "base.exception",
+        # Thai signature date formatting on the printed signature block.
+        "thai.date.mixin",
     ]
     _order = "main_exception_id asc, date desc, id desc"
 
@@ -314,6 +316,16 @@ class DisbursementRequest(models.Model):
         index=True,
     )
 
+    # Who actually pressed Validate. Distinct from ``assigned_to``
+    # (disbursement_assignment_kmitl), which records who was *assigned* the
+    # verification and may be a different person once takeover is allowed.
+    verifier_id = fields.Many2one(
+        "res.users", string="Verified By", copy=False, readonly=True
+    )
+    verify_date = fields.Datetime(
+        string="Verified On", copy=False, readonly=True
+    )
+
     finance_approver_id = fields.Many2one(
         "res.users", string="Finance Director", copy=False, readonly=True
     )
@@ -328,6 +340,15 @@ class DisbursementRequest(models.Model):
     )
     approval_reject_reason = fields.Text(
         string="Approval Reject Reason", copy=False, readonly=True
+    )
+
+    # Frozen signature snapshots, one per workflow step taken — the source of the
+    # signature block on the printed ใบขอเบิก (ADR-0002).
+    signature_ids = fields.One2many(
+        "disbursement.request.signature",
+        "request_id",
+        string="Signatures",
+        readonly=True,
     )
 
     analytic_distribution = fields.Json(
@@ -428,16 +449,18 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    # Stored, like department_analytic_id: the finance office groups its lists by
+    # แหล่งเงิน, and read_group only accepts a database-persisted column.
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Source",
         compute="_compute_analytic_id",
         inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
-        store=False,
+        store=True,
         compute_sudo=True,
         tracking=True,
-        search="_search_source_analytic_id",
+        index=True,
         states=READONLY_STATES,
     )
 
@@ -487,38 +510,6 @@ class DisbursementRequest(models.Model):
                     _("Missing required analytic dimensions: %s")
                     % ", ".join(sorted(missing))
                 )
-
-    @api.model
-    def _search_source_analytic_id(self, operator, value):
-        account_ids = []
-        if type(value) == int:
-            account_ids.append(value)
-        else:
-            account_ids = (
-                self.env["account.analytic.account"]
-                .search(
-                    [
-                        ("root_plan_id.code", "=", "sources"),
-                        "|",
-                        ("name", "ilike", value),
-                        ("complete_name", "ilike", value),
-                    ]
-                )
-                .mapped("id")
-            )
-
-        query = f"""
-            SELECT id
-            FROM {self._table}
-            WHERE analytic_distribution ?| array[%s]
-        """
-        return [
-            (
-                "id",
-                "inselect",
-                (query, [[str(account_id) for account_id in account_ids]]),
-            )
-        ]
 
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
@@ -932,6 +923,9 @@ class DisbursementRequest(models.Model):
             if record.state != "signed":
                 raise UserError(_("Only signed requests can be validated."))
             record.state = "verified"
+            record.verifier_id = self.env.user
+            record.verify_date = fields.Datetime.now()
+            record._stamp_signature("verify")
             record.approval_state = "pending_finance"
             record._schedule_approval_todo(
                 FINANCE_DIRECTOR_GROUP, DR_APPROVE_FINANCE_ACTIVITY
@@ -952,6 +946,7 @@ class DisbursementRequest(models.Model):
                 )
             record.finance_approver_id = self.env.user
             record.finance_approve_date = fields.Datetime.now()
+            record._stamp_signature("finance_approve")
             record.activity_feedback([DR_APPROVE_FINANCE_ACTIVITY])
             record.approval_state = "pending_rector"
             record._schedule_approval_todo(
@@ -977,6 +972,7 @@ class DisbursementRequest(models.Model):
             record.approval_state = "approved"
             record.rector_approver_id = self.env.user
             record.rector_approve_date = fields.Datetime.now()
+            record._stamp_signature("rector_approve")
             record.activity_feedback([DR_APPROVE_RECTOR_ACTIVITY])
         return True
 
@@ -1085,6 +1081,7 @@ class DisbursementRequest(models.Model):
                 _("Only a rejected request can be re-sent for approval.")
             )
         self.activity_feedback([DR_REJECTED_ACTIVITY])
+        self._archive_signatures(["finance_approve", "rector_approve"])
         self.write({
             "finance_approver_id": False,
             "finance_approve_date": False,
@@ -1098,6 +1095,40 @@ class DisbursementRequest(models.Model):
         )
         return True
 
+    def _stamp_signature(self, step):
+        """Freeze the acting user's rendered identity as the signature for ``step``.
+
+        Mirrors ``sarabun.routing.step._signature_snapshot_vals`` (ADR-0009):
+        ชื่อ / ตำแหน่ง / ลายเซ็น are captured now so a later HR edit never rewrites an
+        already-signed ใบขอเบิก. The source is read under ``sudo`` — capturing the
+        official-record identity must not depend on the actor's hr.employee read
+        grants — and the row itself is created under ``sudo`` because the
+        signature model is read-only to every group.
+        """
+        self.ensure_one()
+        user = self.env.user
+        employee = user.sudo().employee_id
+        return self.env["disbursement.request.signature"].sudo().create({
+            "request_id": self.id,
+            "step": step,
+            "signed_by_id": user.id,
+            "signed_date": fields.Datetime.now(),
+            "signed_name": employee.name or user.name,
+            "signed_position_name": employee.job_title or "",
+            "signed_signature": employee.signature or False,
+        })
+
+    def _archive_signatures(self, steps):
+        """Archive the signature rows for ``steps`` on these requests.
+
+        Called wherever the workflow clears the matching who-did-it stamp, so a
+        superseded round stops printing while its history survives (ADR-0002).
+        """
+        self.env["disbursement.request.signature"].sudo().search([
+            ("request_id", "in", self.ids),
+            ("step", "in", steps),
+        ]).write({"active": False})
+
     def _schedule_approval_todo(self, group_xmlid, act_type_xmlid):
         """Push an execution Todo to every member of ``group_xmlid`` so the
         pending approval surfaces in their Todo inbox (mirrors the
@@ -1110,6 +1141,18 @@ class DisbursementRequest(models.Model):
                     user_id=approver.id,
                     note=record.name or "",
                 )
+
+    def _reset_verification(self):
+        """Drop the Validate stamp and archive its signature.
+
+        Called wherever the request falls back to a state at or before ``signed``,
+        from which the officer must verify again.
+        """
+        to_reset = self.filtered("verifier_id")
+        if not to_reset:
+            return
+        to_reset._archive_signatures(["verify"])
+        to_reset.write({"verifier_id": False, "verify_date": False})
 
     def _reset_approval(self):
         """Reset the two-approver sub-workflow and drop its pending Todos.
@@ -1125,6 +1168,7 @@ class DisbursementRequest(models.Model):
             DR_APPROVE_RECTOR_ACTIVITY,
             DR_REJECTED_ACTIVITY,
         ])
+        to_reset._archive_signatures(["finance_approve", "rector_approve"])
         to_reset.write({
             "approval_state": "none",
             "finance_approver_id": False,
@@ -1327,6 +1371,7 @@ class DisbursementRequest(models.Model):
             record.exception_ids = False
             record.main_exception_id = False
             record.ignore_exception = False
+        self._reset_verification()
         self._reset_approval()
         return True
 
