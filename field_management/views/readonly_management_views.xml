@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_readonly_management_tree" model="ir.ui.view">
+        <field name="name">view.readonly.management.tree</field>
+        <field name="model">readonly.management</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="model_id" />
+                <field name="field_ids" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_readonly_management_form" model="ir.ui.view">
+        <field name="name">view.readonly.management.form</field>
+        <field name="model">readonly.management</field>
+        <field name="arch" type="xml">
+            <form string="Readonly Management">
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="model_id" />
+                    </group>
+                    <notebook>
+                        <page name="domain" string="Domain">
+                            <group>
+                                <field name="model_name" invisible="1" />
+                                <field
+                                    name="apply_on_domain"
+                                    widget="domain"
+                                    options="{'model': 'model_name'}"
+                                />
+                            </group>
+                        </page>
+                        <page name="Field" string="Field">
+                            <separator string="Fields" />
+                            <field
+                                name="field_ids"
+                                nolabel="1"
+                                attrs="{'readonly': [('model_id', '=', False)]}"
+                            />
+                        </page>
+                        <page name="note" string="Note">
+                            <group>
+                                <field name="note" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_readonly_management_search" model="ir.ui.view">
+        <field name="name">view.readonly.management.search</field>
+        <field name="model">readonly.management</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter
+                        string="Name"
+                        name="name"
+                        domain="[]"
+                        context="{'group_by':'name'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_readonly_management" model="ir.actions.act_window">
+        <field name="name">Readonly Management</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">readonly.management</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Readonly Management.
+            </p>
+        </field>
+    </record>
+    <menuitem
+        id="menu_field_management"
+        name="Field Management"
+        parent="base.menu_custom"
+    />
+    <menuitem
+        id="menu_readonly_management_settings"
+        parent="menu_field_management"
+        action="action_readonly_management"
+        sequence="10"
+    />
+</odoo>
