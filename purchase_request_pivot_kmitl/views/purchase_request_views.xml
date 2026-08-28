@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_purchase_request_pivot" model="ir.ui.view">
+        <field name="name">purchase.request.pivot</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <pivot string="Purchase Requests" sample="1">
+                <field name="account_fiscal_year_id" type="row"/>
+                <field name="date_start" type="row" interval="month"/>
+                <field name="state" type="col"/>
+                <field name="estimated_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="purchase_request.purchase_request_form_action" model="ir.actions.act_window">
+        <field name="view_mode">tree,form,pivot,activity</field>
+    </record>
+
+</odoo>
