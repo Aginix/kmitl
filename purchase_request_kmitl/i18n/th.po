@@ -2307,3 +2307,18 @@ msgstr "สำหรับงานก่อสร้าง"
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_submit
 msgid "To Submit"
 msgstr "รอส่งขอความเห็นชอบให้จัดหา"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Sample attachments"
+msgstr "ตัวอย่างเอกสารแนบ"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Item specifications"
+msgstr "รายละเอียดและคุณลักษณะพัสดุ"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Vendor price quotation"
+msgstr "ใบเสนอราคาพัสดุ"
