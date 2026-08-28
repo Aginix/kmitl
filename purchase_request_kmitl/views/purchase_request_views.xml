@@ -510,11 +510,10 @@
         </field>
     </record>
 
-    <function name="write" model="ir.actions.act_window">
-        <value
-            model="ir.actions.act_window"
-            search="[('id', '=', ref('purchase_request.purchase_request_form_action'))]"
-        />
-        <value eval="{'view_mode': 'tree,kanban,form,pivot'}" />
-    </function>
+    <record id="purchase_request_form_action_pivot_view" model="ir.actions.act_window.view">
+        <field name="act_window_id" ref="purchase_request.purchase_request_form_action"/>
+        <field name="view_id" ref="view_purchase_request_pivot"/>
+        <field name="view_mode">pivot</field>
+        <field name="sequence">50</field>
+    </record>
 </odoo>
