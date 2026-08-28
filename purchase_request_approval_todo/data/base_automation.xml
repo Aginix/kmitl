@@ -46,7 +46,7 @@ if act_type:
             <field name="filter_domain">[("state", "=", "to_approve")]</field>
             <field name="state">code</field>
             <field name="code"><![CDATA[
-records.activity_unlink(["purchase_request_approval_todo.mail_activity_pa_notify_procurement"])
+records.activity_feedback(["purchase_request_approval_todo.mail_activity_pa_notify_procurement"])
 ]]></field>
         </record>
 
