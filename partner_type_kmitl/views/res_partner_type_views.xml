@@ -20,6 +20,16 @@
         <field name="arch" type="xml">
             <form string="Partner Type">
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_view_partners"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-users"
+                        >
+                            <field name="partner_count" widget="statinfo" string="คู่ค้า"/>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" placeholder="e.g., Retail Customer"/>
@@ -28,13 +38,6 @@
                     <group>
                         <group>
                             <field name="company_type"/>
-                        </group>
-                    </group>
-                    <group name="accounting_settings" string="Accounting Settings">
-                        <group>
-                            <field name="property_account_receivable_id"/>
-                            <field name="property_account_payable_id"/>
-                            <field name="wht_tax_id"/>
                         </group>
                     </group>
                 </sheet>
@@ -79,7 +82,7 @@
     <menuitem
         id="menu_res_partner_type"
         name="Partner Type"
-        parent="purchase.menu_purchase_config"
+        parent="contacts.res_partner_menu_config"
         action="action_res_partner_type"
         sequence="10"
     />
