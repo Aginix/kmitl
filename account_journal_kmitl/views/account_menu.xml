@@ -1,0 +1,74 @@
+<odoo>
+    <record id="action_move_journal_line_general" model="ir.actions.act_window">
+        <field name="name">General Journal</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('journal_id.type', '=', 'entry')]</field>
+        <field name="context">{'default_journal_type': 'entry'}</field>
+    </record>
+
+    <record id="action_move_journal_line_purchase" model="ir.actions.act_window">
+        <field name="name">Purchase Journal</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('journal_id.type', '=', 'purchase')]</field>
+        <field name="context"
+            >{'default_journal_type': 'purchase', 'create': False}</field
+        >
+    </record>
+
+    <record id="action_move_journal_line_sale" model="ir.actions.act_window">
+        <field name="name">Sale Journal</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('journal_id.type', '=', 'sale')]</field>
+        <field name="context">{'default_journal_type': 'sale', 'create': False}</field>
+    </record>
+
+    <record id="action_move_journal_line_bank" model="ir.actions.act_window">
+        <field name="name">Bank Journal</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('journal_id.type', '=', 'bank')]</field>
+        <field name="context">{'default_journal_type': 'bank', 'create': False}</field>
+    </record>
+
+    <menuitem
+        name="Journals"
+        id="menu_journal_kmitl"
+        parent="account.menu_finance"
+        sequence="30"
+    />
+
+    <menuitem
+        id="menu_journal_kmitl_general"
+        name="General"
+        parent="menu_journal_kmitl"
+        action="action_move_journal_line_general"
+        sequence="1"
+    />
+
+    <menuitem
+        id="menu_journal_kmitl_purchase"
+        name="Purchase"
+        parent="menu_journal_kmitl"
+        action="action_move_journal_line_purchase"
+        sequence="2"
+    />
+
+    <menuitem
+        id="menu_journal_kmitl_sale"
+        name="Sale"
+        parent="menu_journal_kmitl"
+        action="action_move_journal_line_sale"
+        sequence="3"
+    />
+
+    <menuitem
+        id="menu_journal_kmitl_bank"
+        name="Bank"
+        parent="menu_journal_kmitl"
+        action="action_move_journal_line_bank"
+        sequence="4"
+    />
+</odoo>
