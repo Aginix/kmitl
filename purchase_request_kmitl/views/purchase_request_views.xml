@@ -275,6 +275,7 @@
                         colspan="2"
                         class="alert alert-info"
                         role="alert"
+                        attrs="{'invisible': [('is_editable', '=', False)]}"
                     >
                         <b>Sample attachments</b>
                         <ul class="mb-0">
