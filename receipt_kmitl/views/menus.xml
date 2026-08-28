@@ -22,6 +22,18 @@
               action="action_receipt_remittance"
               sequence="20"/>
 
+    <menuitem id="menu_receipt_kmitl_reports"
+              name="Reports"
+              parent="menu_receipt_kmitl_root"
+              sequence="50"
+              groups="receipt_kmitl.group_receipt_kmitl_viewer"/>
+
+    <menuitem id="menu_receipt_kmitl_report_receipts"
+              name="Receipt Report"
+              parent="menu_receipt_kmitl_reports"
+              action="action_receipt_report"
+              sequence="10"/>
+
     <menuitem id="menu_receipt_kmitl_configuration"
               name="Configuration"
               parent="menu_receipt_kmitl_root"

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_receipt_report" model="ir.actions.client">
+        <field name="name">Receipt Report</field>
+        <field name="tag">receipt_kmitl_report</field>
+    </record>
+</odoo>

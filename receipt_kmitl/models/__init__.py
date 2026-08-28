@@ -5,4 +5,5 @@ from . import receipt_kmitl
 from . import receipt_kmitl_line
 from . import receipt_remittance
 from . import res_config_settings
+from . import receipt_report
 from . import res_partner

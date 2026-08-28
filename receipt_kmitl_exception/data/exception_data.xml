@@ -11,4 +11,18 @@ if not self.partner_id:
         </field>
         <field name="active" eval="False"/>
     </record>
+
+    <record id="receipt_excep_backdated" model="exception.rule">
+        <field name="name">Backdated receipt</field>
+        <field name="description">Receipt date is in the past — backdated receipts are not allowed</field>
+        <field name="sequence">5</field>
+        <field name="model">kmitl.receipt</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="code">
+from odoo import fields as _fields
+if self.date and self.date &lt; _fields.Date.context_today(self):
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
 </odoo>

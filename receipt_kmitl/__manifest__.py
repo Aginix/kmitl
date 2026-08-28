@@ -12,6 +12,7 @@
         "account_fiscal_year",
         "mail",
         "account_analytic_kmitl",
+        "accounting_kmitl_reports",
         "l10n_th_amount_to_text",
     ],
     "data": [
@@ -25,11 +26,18 @@
         "views/receipt_remittance_views.xml",
         "views/walkin_partner_action.xml",
         "views/res_config_settings_views.xml",
+        "views/receipt_report_action.xml",
         "views/menus.xml",
         "report/paperformat.xml",
         "report/receipt_kmitl_report.xml",
         "report/receipt_kmitl_action.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "receipt_kmitl/static/src/receipt_report/receipt_report.js",
+            "receipt_kmitl/static/src/receipt_report/receipt_report.xml",
+        ],
+    },
     "installable": True,
     "application": True,
 }
