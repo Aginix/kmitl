@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="1">
-    <!-- UC3: notify the requester when the PR (พ.1) changes status (approved/rejected) -->
-    <record id="mail_activity_pr_status_fyi" model="mail.activity.type">
-        <field name="name">Purchase request status update</field>
-        <field name="summary">The purchase request changed status</field>
-        <field name="todo_category">acknowledgement</field>
-        <field name="res_model">purchase.request.approval</field>
-        <field name="icon">fa-info-circle</field>
-        <field name="delay_count">0</field>
-    </record>
-
     <!-- FYI: พ.1 endorsed — notify user_id that the request has been approved -->
     <record id="mail_activity_pr_in_approval_fyi" model="mail.activity.type">
         <field name="name">Purchase request endorsed (พ.1)</field>
@@ -20,50 +10,15 @@
         <field name="delay_count">0</field>
     </record>
 
-    <!-- Execution Todo: authorized signer must sign the circulating Sarabun document at to_approve -->
-    <record id="mail_activity_pr_awaiting_signer" model="mail.activity.type">
-        <field name="name">Awaiting authorized signer (พ.1)</field>
-        <field name="summary">Sign the endorsement letter for the purchase request</field>
-        <field name="todo_category">execution</field>
-        <field name="res_model">purchase.request</field>
-        <field name="icon">fa-pencil-square-o</field>
-        <field name="delay_count">0</field>
-    </record>
-
     <!-- Execution Todo: PR endorsed — proceed with PA creation (non-EGP) or EGP recording -->
-    <record id="mail_activity_pr_endorsement_approved" model="mail.activity.type">
-        <field name="name">Endorsement approved — proceed (พ.1)</field>
+    <record id="mail_activity_create_purchase_order" model="mail.activity.type">
+        <field name="name">สร้างใบสั่งซื้อ (พ.1)</field>
         <field
             name="summary"
-        >Purchase request endorsement approved — proceed with next step</field>
+        >กรุณาดำเนินการสร้างสัญญา/ใบสั่งซื้อ (PO)</field>
         <field name="todo_category">execution</field>
         <field name="res_model">purchase.request</field>
         <field name="icon">fa-check-circle</field>
-        <field name="delay_count">0</field>
-    </record>
-
-    <!-- Execution Todo: PA (พจ.1) submitted for approval — manager consideration -->
-    <record id="mail_activity_pa_awaiting_manager" model="mail.activity.type">
-        <field name="name">Awaiting manager consideration (พจ.1)</field>
-        <field name="summary">Consider the purchase request approval (พจ.1)</field>
-        <field name="todo_category">execution</field>
-        <field name="res_model">purchase.request.approval</field>
-        <field name="icon">fa-gavel</field>
-        <field name="delay_count">0</field>
-    </record>
-
-    <!-- Execution Todo: PA approved — record contract / purchase order data -->
-    <record
-        id="mail_activity_pa_approved_record_contract"
-        model="mail.activity.type"
-    >
-        <field name="name">Record contract data (พจ.1 approved)</field>
-        <field
-            name="summary"
-        >Record contract / purchase order data after PA approval</field>
-        <field name="todo_category">execution</field>
-        <field name="res_model">purchase.request.approval</field>
-        <field name="icon">fa-file-text</field>
         <field name="delay_count">0</field>
     </record>
 </odoo>
