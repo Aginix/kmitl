@@ -86,7 +86,7 @@ class ApprovalRequest(models.Model):
 
     name = fields.Char(
         string="Name",
-        default="/",
+        default=lambda self: _("New"),
         required=True,
         copy=False,
         tracking=True,
@@ -559,48 +559,30 @@ class ApprovalRequest(models.Model):
         # Mint the official number on first submission only. Once assigned it is
         # permanent — a returned/ดึงกลับ request that comes back through here
         # keeps its number, unlike ``date`` which re-stamps.
-        if not self.name or self.name == "/":
-            vals["name"] = self._get_next_official_number()
+        #
+        # Mirrors procurement_plan.action_send_to_verify: the number's ปีงบ
+        # comes from account_fiscal_year_id, not today — pin both %(year_be)s
+        # interpolation (ir_sequence_date) and the date_range sub-sequence
+        # (sequence_date) to the FY's date_to.
+        if not self.name or self.name in ("/", _("New")):
+            fiscal_date = self.account_fiscal_year_id.date_to
+            vals["name"] = self.env["ir.sequence"].with_context(
+                ir_sequence_date=fiscal_date
+            ).next_by_code(
+                "approval.request",
+                sequence_date=fiscal_date,
+            ) or _("New")
         self.write(vals)
         return True
-
-    def _get_next_official_number(self):
-        """Allocate the next ``AR/<be-year>/####`` number for this request.
-
-        The Buddhist fiscal-year label comes from ``account_fiscal_year_id`` —
-        the user's own statement of which year's money this request spends —
-        not from the calendar clock. A per-year ``ir.sequence`` (code
-        ``approval.request.<be>``) is created on demand so counters reset with
-        each fiscal year without a bespoke ledger.
-        """
-        self.ensure_one()
-        fy = self.account_fiscal_year_id
-        if not fy or not fy.date_to:
-            raise UserError(
-                _("Cannot assign the request number: fiscal year is not set.")
-            )
-        be_year = fy.date_to.year + 543
-        code = "approval.request.%s" % be_year
-        Sequence = self.env["ir.sequence"].sudo()
-        seq = Sequence.search([("code", "=", code)], limit=1)
-        if not seq:
-            seq = Sequence.create({
-                "name": "Approval Request %s" % be_year,
-                "code": code,
-                "prefix": "AR/%s/" % be_year,
-                "padding": 4,
-                "company_id": False,
-            })
-        return seq.next_by_code(code) or "/"
 
     @api.constrains("account_fiscal_year_id")
     def _check_fiscal_year_locked_after_submission(self):
         """Once a request has an official number, its fiscal year is frozen:
-        the number is minted from ``date_to.year + 543`` of that FY, so
+        the number is minted from ``%(year_be)s`` of that FY's ``date_to``, so
         swapping the FY afterwards would silently desync AR/<year>/#### from
         the year the money is actually spent under."""
         for rec in self:
-            if rec.name and rec.name != "/" and rec.state != "draft":
+            if rec.name and rec.name not in ("/", _("New")) and rec.state != "draft":
                 raise ValidationError(
                     _(
                         "Fiscal year cannot be changed after the request has "
@@ -784,9 +766,6 @@ class ApprovalRequest(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        # The official AR/<be-year>/#### number is minted at action_to_verify,
-        # not here: an unsent draft has no place in the register. Records land
-        # with name="/" and stay that way until the user actually submits.
         records = super().create(vals_list)
         for rec in records:
             if rec.budget_commitment_id:
