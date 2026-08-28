@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Match the dropdown badge in the "Search More…" list too: show the KMITL
+         partner type in place of the generic Individual/Company column. -->
+    <record id="res_partner_autocomplete_view_tree" model="ir.ui.view">
+        <field name="name">res.partner.autocomplete.tree.partner.type</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id"
+            ref="agx_partner_autocomplete.res_partner_autocomplete_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="company_type" position="replace">
+                <field name="partner_type_id" string="Type"/>
+            </field>
+        </field>
+    </record>
+</odoo>

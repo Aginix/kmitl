@@ -8,5 +8,8 @@
     "website": "https://github.com/aginix/kmitl",
     "license": "AGPL-3",
     "depends": ["agx_partner_autocomplete", "partner_type_kmitl"],
+    "data": [
+        "views/res_partner_views.xml",
+    ],
     "installable": True,
 }

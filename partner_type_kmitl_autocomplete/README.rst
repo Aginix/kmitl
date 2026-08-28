@@ -10,6 +10,7 @@ module installed the badge shows the contact's KMITL **Partner Type**
 (``partner_type_id``) instead, falling back to Individual/Company only when a
 contact has no type assigned yet.
 
-It overrides a single hook — ``_partner_autocomplete_type`` — and changes
-nothing else: the widget, its views and the rest of the dropdown payload are
-untouched.
+It overrides a single hook — ``_partner_autocomplete_type`` — so the partner
+type flows to both the dropdown badge and the selected-value subtitle, and
+inherits the widget's "Search More…" list to replace the Individual/Company
+column with the KMITL partner type. Nothing else is touched.
