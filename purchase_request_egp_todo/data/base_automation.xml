@@ -54,7 +54,7 @@ records.activity_feedback(["purchase_request_egp_todo.mail_activity_pr_egp_numbe
         <field name="filter_domain">[("state", "=", "draft")]</field>
         <field name="state">code</field>
         <field name="code"><![CDATA[
-records.activity_unlink(["purchase_request_egp_todo.mail_activity_pr_egp_number_entry"])
+records.activity_feedback(["purchase_request_egp_todo.mail_activity_pr_egp_number_entry"])
 ]]></field>
     </record>
 
@@ -70,7 +70,7 @@ records.activity_unlink(["purchase_request_egp_todo.mail_activity_pr_egp_number_
         <field name="filter_domain">[("state", "=", "cancelled")]</field>
         <field name="state">code</field>
         <field name="code"><![CDATA[
-records.activity_unlink(["purchase_request_egp_todo.mail_activity_pr_egp_number_entry"])
+records.activity_feedback(["purchase_request_egp_todo.mail_activity_pr_egp_number_entry"])
 ]]></field>
     </record>
 

@@ -61,7 +61,7 @@ for rec in records:
         <field name="filter_domain">[("state", "!=", "in_approval")]</field>
         <field name="state">code</field>
         <field name="code"><![CDATA[
-records.activity_unlink(["purchase_request_todo.mail_activity_pr_in_approval_fyi"])
+records.activity_feedback(["purchase_request_todo.mail_activity_pr_in_approval_fyi"])
 ]]></field>
     </record>
 
@@ -77,7 +77,7 @@ records.activity_unlink(["purchase_request_todo.mail_activity_pr_in_approval_fyi
         <field name="filter_domain">[("state", "!=", "in_progress")]</field>
         <field name="state">code</field>
         <field name="code"><![CDATA[
-records.activity_unlink(["purchase_request_todo.mail_activity_create_purchase_order"])
+records.activity_feedback(["purchase_request_todo.mail_activity_create_purchase_order"])
 ]]></field>
     </record>
 
