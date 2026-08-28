@@ -66,7 +66,7 @@ class ReceiptReport(models.AbstractModel):
                 "name": r.name or "/",
                 "description": description,
                 "amount_total": r.amount_total,
-                "dimensions": ", ".join(dim_parts),
+                "dimensions": "\n".join(dim_parts),
                 "note": r.note or "",
                 "state": r.state,
                 "payment_method": (

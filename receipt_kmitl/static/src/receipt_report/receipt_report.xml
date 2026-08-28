@@ -111,12 +111,12 @@
                 <table class="table table-sm table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th><t t-esc="labels.date" /></th>
-                            <th><t t-esc="labels.number" /></th>
+                            <th style="width: 64px;"><t t-esc="labels.date" /></th>
+                            <th style="width: 120px;"><t t-esc="labels.number" /></th>
                             <th><t t-esc="labels.description" /></th>
-                            <th class="text-end"><t t-esc="labels.amount" /></th>
+                            <th class="text-end" style="width: 148px;"><t t-esc="labels.amount" /></th>
                             <th><t t-esc="labels.dimensions" /></th>
-                            <th><t t-esc="labels.note" /></th>
+                            <th style="min-width: 164px;"><t t-esc="labels.note" /></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -132,7 +132,7 @@
                                     <td><t t-esc="row.name" /></td>
                                     <td style="white-space: pre-line;"><t t-esc="row.description" /></td>
                                     <td class="text-end"><t t-esc="format(row.amount_total)" /></td>
-                                    <td><t t-esc="row.dimensions" /></td>
+                                    <td style="white-space: pre-line;"><t t-esc="row.dimensions" /></td>
                                     <td><t t-esc="row.note" /></td>
                                 </tr>
                             </t>

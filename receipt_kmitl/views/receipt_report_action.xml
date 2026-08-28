@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <record id="action_receipt_analysis" model="ir.actions.act_window">
+        <field name="name">Receipt Analysis</field>
+        <field name="res_model">kmitl.receipt</field>
+        <field name="view_mode">pivot,tree,form</field>
+        <field name="search_view_id" ref="view_receipt_kmitl_search"/>
+    </record>
+
     <record id="action_receipt_report" model="ir.actions.client">
-        <field name="name">Receipt Report</field>
+        <field name="name">Receipt Summary Report</field>
         <field name="tag">receipt_kmitl_report</field>
     </record>
 </odoo>
