@@ -19,8 +19,7 @@ if not self.partner_id:
         <field name="model">kmitl.receipt</field>
         <field name="is_blocking" eval="True"/>
         <field name="code">
-from odoo import fields as _fields
-if self.date and self.date &lt; _fields.Date.context_today(self):
+if self.date and self.date &lt; today:
     failed = True
         </field>
         <field name="active" eval="True"/>

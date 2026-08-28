@@ -1,11 +1,17 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import api, models
+from odoo import api, fields, models
 
 
 class ReceiptKmitlException(models.Model):
     _name = "kmitl.receipt"
     _inherit = ["kmitl.receipt", "base.exception"]
+
+    @api.model
+    def _exception_rule_eval_context(self, rec):
+        res = super()._exception_rule_eval_context(rec)
+        res["today"] = fields.Date.context_today(rec)
+        return res
 
     @api.model
     def test_all_draft_orders(self):
