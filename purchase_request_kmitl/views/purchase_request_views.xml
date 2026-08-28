@@ -498,22 +498,4 @@
         <value eval="{'context': '{}'}" />
     </function>
 
-    <record id="view_purchase_request_pivot" model="ir.ui.view">
-        <field name="name">purchase.request.pivot (KMITL)</field>
-        <field name="model">purchase.request</field>
-        <field name="arch" type="xml">
-            <pivot string="Purchase Request" sample="1">
-                <field name="account_fiscal_year_id" type="row" />
-                <field name="state" type="col" />
-                <field name="estimated_cost" type="measure" />
-            </pivot>
-        </field>
-    </record>
-
-    <record id="purchase_request_form_action_pivot_view" model="ir.actions.act_window.view">
-        <field name="act_window_id" ref="purchase_request.purchase_request_form_action"/>
-        <field name="view_id" ref="view_purchase_request_pivot"/>
-        <field name="view_mode">pivot</field>
-        <field name="sequence">50</field>
-    </record>
 </odoo>
