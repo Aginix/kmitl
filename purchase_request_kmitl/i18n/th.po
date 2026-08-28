@@ -2310,8 +2310,8 @@ msgstr "รอส่งขอความเห็นชอบให้จัด
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "Sample attachments"
-msgstr "ตัวอย่างเอกสารแนบ"
+msgid "<b>Sample attachments</b>"
+msgstr "<b>ตัวอย่างเอกสารแนบ</b>"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
