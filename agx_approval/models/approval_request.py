@@ -44,6 +44,12 @@ class ApprovalRequest(models.Model):
 
     is_budget_editable = fields.Boolean(compute="_compute_is_budget_editable")
 
+    # True once the official AR/<be>/#### number has been minted. Used by the
+    # view to freeze account_fiscal_year_id — testing ``name != 'New'`` from the
+    # domain would misfire when the default lambda stored the localized
+    # placeholder (e.g. "รายการใหม่") in the DB.
+    is_number_assigned = fields.Boolean(compute="_compute_is_number_assigned")
+
     hide_reserve_budget_button = fields.Boolean(
         compute="_compute_hide_reserve_budget_button"
     )
@@ -564,7 +570,7 @@ class ApprovalRequest(models.Model):
         # comes from account_fiscal_year_id, not today — pin both %(year_be)s
         # interpolation (ir_sequence_date) and the date_range sub-sequence
         # (sequence_date) to the FY's date_to.
-        if not self.name or self.name in ("/", _("New")):
+        if not self.is_number_assigned:
             fiscal_date = self.account_fiscal_year_id.date_to
             vals["name"] = self.env["ir.sequence"].with_context(
                 ir_sequence_date=fiscal_date
@@ -582,7 +588,7 @@ class ApprovalRequest(models.Model):
         swapping the FY afterwards would silently desync AR/<year>/#### from
         the year the money is actually spent under."""
         for rec in self:
-            if rec.name and rec.name not in ("/", _("New")) and rec.state != "draft":
+            if rec.is_number_assigned:
                 raise ValidationError(
                     _(
                         "Fiscal year cannot be changed after the request has "
@@ -1051,6 +1057,18 @@ class ApprovalRequest(models.Model):
         # Base has no return-correction mode; bridges override this.
         for rec in self:
             rec.is_correction = False
+
+    @api.depends("name")
+    def _compute_is_number_assigned(self):
+        # Placeholder sentinels: "/" is the legacy pre-PR default; _("New") is
+        # the current one, and is stored translated in the user's locale — so
+        # we compare against the localized string here rather than the raw
+        # English literal.
+        placeholder = _("New")
+        for rec in self:
+            rec.is_number_assigned = bool(
+                rec.name and rec.name not in ("/", placeholder)
+            )
 
     @api.depends("line_ids.total_amount")
     def _compute_total_amount(self):

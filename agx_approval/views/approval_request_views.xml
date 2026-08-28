@@ -107,8 +107,9 @@
                                  never-submitted draft simply has none to show. -->
                             <field name="date" readonly="1"
                                 attrs="{'invisible': [('date', '=', False)]}" />
+                            <field name="is_number_assigned" invisible="1" />
                             <field name="account_fiscal_year_id" options="{'no_open': True}"
-                                attrs="{'readonly': [('name', '!=', 'New')]}" />
+                                attrs="{'readonly': [('is_number_assigned', '=', True)]}" />
                             <field name="id" invisible="1" />
                             <field name="user_id" readonly="1" />
                             <field name="create_date" readonly="1" />
