@@ -148,10 +148,9 @@
                     <table class="table table-bordered table-sm mb-4">
                         <thead>
                             <tr>
-                                <th
-                                    class="text-center"
-                                    style="width: 1%; white-space: nowrap"
-                                >ลำดับ</th>
+                                <th class="text-center" style="width: 40pt">
+                                    ลำดับ
+                                </th>
                                 <th class="text-center">รายละเอียด</th>
                                 <th class="text-center">จำนวน</th>
                                 <th class="text-end">ราคา</th>
