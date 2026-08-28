@@ -242,6 +242,39 @@ class ReceiptKmitl(models.Model):
             else:
                 rec.report_status = False
 
+    @api.model
+    def get_receipt_dashboard(self):
+        currency_id = self.env.company.currency_id.id
+        dashboard = {
+            "to_report": {
+                "description": _("To Report"),
+                "amount": 0.0,
+                "currency": currency_id,
+            },
+            "under_validation": {
+                "description": _("Under Validation"),
+                "amount": 0.0,
+                "currency": currency_id,
+            },
+            "reported": {
+                "description": _("Reported"),
+                "amount": 0.0,
+                "currency": currency_id,
+            },
+        }
+        groups = self.read_group(
+            [("state", "in", ["confirmed", "posted"]),
+             ("report_status", "in", ["to_report", "under_validation", "reported"])],
+            ["amount_total"],
+            ["report_status"],
+            lazy=False,
+        )
+        for g in groups:
+            status = g["report_status"]
+            if status in dashboard:
+                dashboard[status]["amount"] += g.get("amount_total") or 0.0
+        return dashboard
+
     def action_create_report(self):
         """Create a remittance from selected confirmed, unremitted receipts."""
         receipts = self.filtered(

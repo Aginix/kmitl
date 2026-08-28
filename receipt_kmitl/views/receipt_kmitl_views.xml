@@ -6,13 +6,8 @@
         <field name="arch" type="xml">
             <tree decoration-muted="state == 'cancelled'"
                   decoration-info="state == 'confirmed'"
-                  decoration-success="state == 'posted'">
-                <header>
-                    <button name="action_create_report"
-                            type="object"
-                            string="Create Report"
-                            groups="receipt_kmitl.group_receipt_kmitl_user"/>
-                </header>
+                  decoration-success="state == 'posted'"
+                  js_class="receipt_kmitl_dashboard_tree">
                 <field name="name"/>
                 <field name="date"/>
                 <field name="department_analytic_id"/>

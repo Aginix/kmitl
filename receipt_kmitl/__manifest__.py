@@ -36,6 +36,10 @@
     ],
     "assets": {
         "web.assets_backend": [
+            "receipt_kmitl/static/src/components/*.js",
+            "receipt_kmitl/static/src/components/*.xml",
+            "receipt_kmitl/static/src/views/*.js",
+            "receipt_kmitl/static/src/views/*.xml",
             "receipt_kmitl/static/src/receipt_report/receipt_report.js",
             "receipt_kmitl/static/src/receipt_report/receipt_report.xml",
             "receipt_kmitl/static/src/receipt_report/receipt_report.scss",
