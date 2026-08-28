@@ -22,7 +22,8 @@ class ReceiptRemittance(models.Model):
         [
             ("draft", "Draft"),
             ("submitted", "Submitted"),
-            ("done", "Done"),
+            ("approved", "Approved"),
+            ("posted", "Posted"),
             ("cancelled", "Cancelled"),
         ],
         default="draft",
@@ -70,25 +71,44 @@ class ReceiptRemittance(models.Model):
     receipt_to_add_id = fields.Many2one(
         "kmitl.receipt",
         string="Add Receipt",
-        domain="[('state', '=', 'confirmed'), ('remittance_id', '=', False),"
+        domain="[('state', '=', 'to_submit'), ('remittance_id', '=', False),"
                " ('company_id', '=', company_id),"
                " ('department_analytic_id', 'child_of', department_analytic_id)]",
     )
     note = fields.Text()
+    user_id = fields.Many2one(
+        "res.users",
+        string="Created By",
+        default=lambda self: self.env.user,
+        tracking=True,
+        readonly=True,
+        copy=False,
+    )
     submitted_by = fields.Many2one("res.users", readonly=True, copy=False)
     submitted_date = fields.Datetime(readonly=True, copy=False)
-    done_by = fields.Many2one("res.users", readonly=True, copy=False)
-    done_date = fields.Datetime(readonly=True, copy=False)
+    approved_by = fields.Many2one("res.users", readonly=True, copy=False)
+    approved_date = fields.Datetime(readonly=True, copy=False)
+    posted_by = fields.Many2one("res.users", readonly=True, copy=False)
+    posted_date = fields.Datetime(readonly=True, copy=False)
 
     receipt_count = fields.Integer(
         compute="_compute_receipt_count",
         string="# Receipts",
+    )
+    move_count = fields.Integer(
+        compute="_compute_move_count",
+        string="# Journal Entries",
     )
 
     @api.depends("receipt_ids")
     def _compute_receipt_count(self):
         for rec in self:
             rec.receipt_count = len(rec.receipt_ids)
+
+    @api.depends("receipt_ids.move_id")
+    def _compute_move_count(self):
+        for rec in self:
+            rec.move_count = len(rec.receipt_ids.mapped("move_id"))
 
     @api.onchange("receipt_to_add_id")
     def _onchange_receipt_to_add_id(self):
@@ -139,9 +159,18 @@ class ReceiptRemittance(models.Model):
             )
         return seq
 
+    def _validate_receipts(self, expected_state):
+        self.ensure_one()
+        if not self.receipt_ids:
+            raise ValidationError(_("Add at least one receipt."))
+        for receipt in self.receipt_ids:
+            if receipt.state != expected_state:
+                raise ValidationError(
+                    _("Receipt %s is not in '%s' state.")
+                    % (receipt.name, expected_state)
+                )
+
     def action_pull_pending_receipts(self):
-        """Bundle confirmed, unremitted receipts from the department's whole
-        subtree (the remittance department may be a parent/rollup unit)."""
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Can only pull receipts on draft remittances."))
@@ -153,29 +182,23 @@ class ReceiptRemittance(models.Model):
                         "child_of",
                         rec.department_analytic_id.id,
                     ),
-                    ("state", "=", "confirmed"),
+                    ("state", "=", "to_submit"),
                     ("remittance_id", "=", False),
                     ("date", "<=", rec.date),
                 ]
             )
             if not receipts:
                 raise UserError(
-                    _("No pending confirmed receipts found for this department.")
+                    _("No pending receipts found for this department.")
                 )
             rec.write({"receipt_ids": [(6, 0, receipts.ids)]})
 
     def action_submit(self):
-        """Department submits the remittance to central treasury."""
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft remittances can be submitted."))
-            if not rec.receipt_ids:
-                raise ValidationError(_("Add at least one receipt before submitting."))
+            rec._validate_receipts("to_submit")
             for receipt in rec.receipt_ids:
-                if receipt.state != "confirmed":
-                    raise ValidationError(
-                        _("Receipt %s must be confirmed.") % receipt.name
-                    )
                 if not self.env["account.analytic.account"].search_count(
                     [
                         ("id", "=", receipt.department_analytic_id.id),
@@ -191,11 +214,6 @@ class ReceiptRemittance(models.Model):
                         _("Receipt %s belongs to a different company.")
                         % receipt.name
                     )
-                if receipt.currency_id != rec.currency_id:
-                    raise ValidationError(
-                        _("Receipt %s uses a different currency than the "
-                          "remittance.") % receipt.name
-                    )
             rec.date = fields.Date.context_today(rec)
             fiscal_year = self.env["account.fiscal.year"].search(
                 [
@@ -209,6 +227,7 @@ class ReceiptRemittance(models.Model):
                 rec.account_fiscal_year_id = fiscal_year
             if rec.name == "/" or not rec.name:
                 rec.name = rec._get_sequence().next_by_id()
+            rec.receipt_ids.write({"state": "submitted"})
             rec.write(
                 {
                     "state": "submitted",
@@ -217,86 +236,109 @@ class ReceiptRemittance(models.Model):
                 }
             )
 
-    def action_done(self):
-        """Central treasury reviews and posts: every remaining receipt gets
-        its own journal entry (Dr payment-method account / Cr income)."""
+    def action_approve(self):
         for rec in self:
             if rec.state != "submitted":
-                raise UserError(_("Only submitted remittances can be posted."))
+                raise UserError(_("Only submitted remittances can be approved."))
+            rec._validate_receipts("submitted")
+            rec.receipt_ids.write({"state": "approved"})
+            rec.write(
+                {
+                    "state": "approved",
+                    "approved_by": self.env.user.id,
+                    "approved_date": fields.Datetime.now(),
+                }
+            )
+
+    def action_post(self):
+        for rec in self:
+            if rec.state != "approved":
+                raise UserError(_("Only approved remittances can be posted."))
             if not rec.receipt_ids:
                 raise UserError(
-                    _("Cannot post a remittance with no receipts. "
-                      "All receipts have been detached.")
+                    _("Cannot post a remittance with no receipts.")
                 )
-            for receipt in rec.receipt_ids:
-                if receipt.state != "confirmed":
-                    raise ValidationError(
-                        _("Receipt %s is not in confirmed state.") % receipt.name
-                    )
-            rec.receipt_ids.action_post()
+            rec.receipt_ids._action_post()
             rec.write(
                 {
-                    "state": "done",
-                    "done_by": self.env.user.id,
-                    "done_date": fields.Datetime.now(),
+                    "state": "posted",
+                    "posted_by": self.env.user.id,
+                    "posted_date": fields.Datetime.now(),
                 }
             )
-
-    def action_recall(self):
-        """Creator recalls a submitted remittance back to draft."""
-        for rec in self:
-            if rec.state != "submitted":
-                raise UserError(
-                    _("Only submitted remittances can be recalled.")
-                )
-            if rec.submitted_by != self.env.user:
-                raise UserError(
-                    _("Only the person who submitted this remittance can recall it.")
-                )
-            rec.message_post(
-                body=_("Remittance recalled by %s.") % self.env.user.name
-            )
-            rec.write(
-                {
-                    "state": "draft",
-                    "submitted_by": False,
-                    "submitted_date": False,
-                }
-            )
-
-    def action_reject(self):
-        """Treasury officer opens the reject wizard to provide a reason."""
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Reject Remittance"),
-            "res_model": "kmitl.receipt.remittance.reject",
-            "view_mode": "form",
-            "target": "new",
-            "context": {"default_remittance_id": self.id},
-        }
-
-    def action_cancel(self):
-        for rec in self:
-            if rec.state == "done":
-                raise UserError(_("Done remittances cannot be cancelled."))
-            rec.receipt_ids.write({"remittance_id": False})
-            rec.state = "cancelled"
 
     def action_draft(self):
         for rec in self:
-            if rec.state != "cancelled":
-                raise UserError(_("Only cancelled remittances can reset to draft."))
+            if rec.state == "posted":
+                if not self.env.user.has_group(
+                    "receipt_kmitl.group_receipt_kmitl_manager"
+                ):
+                    raise UserError(
+                        _("Only managers can reset posted remittances to draft.")
+                    )
+                for receipt in rec.receipt_ids:
+                    if receipt.move_id:
+                        receipt.move_id._reverse_moves(
+                            default_values_list=[{
+                                "date": fields.Date.context_today(rec),
+                                "ref": _("Reversal of: %s") % receipt.move_id.name,
+                            }],
+                            cancel=True,
+                        )
+                        receipt.write({"move_id": False})
+            if rec.state in ("draft", "cancelled"):
+                pass
+            elif rec.state not in ("submitted", "approved", "posted"):
+                raise UserError(
+                    _("Cannot reset to draft from this state.")
+                )
+            rec.receipt_ids.write({"state": "to_submit"})
             rec.write(
                 {
                     "state": "draft",
                     "submitted_by": False,
                     "submitted_date": False,
+                    "approved_by": False,
+                    "approved_date": False,
+                    "posted_by": False,
+                    "posted_date": False,
                 }
             )
 
+    def action_cancel(self):
+        for rec in self:
+            if rec.state == "posted":
+                raise UserError(_("Posted remittances cannot be cancelled."))
+            rec.receipt_ids.write({"remittance_id": False, "state": "to_submit"})
+            rec.state = "cancelled"
+
+    def action_view_journal_entries(self):
+        self.ensure_one()
+        move_ids = self.receipt_ids.mapped("move_id").ids
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Journal Entries"),
+            "res_model": "account.move",
+            "view_mode": "tree,form",
+            "views": [(False, "tree"), (False, "form")],
+            "domain": [("id", "in", move_ids)],
+            "target": "current",
+        }
+
+    def action_view_receipts(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Receipts"),
+            "res_model": "kmitl.receipt",
+            "view_mode": "tree,form",
+            "views": [(False, "tree"), (False, "form")],
+            "domain": [("id", "in", self.receipt_ids.ids)],
+            "target": "current",
+        }
+
     def unlink(self):
         for rec in self:
-            if rec.state == "done":
-                raise UserError(_("Done remittances cannot be deleted."))
+            if rec.state == "posted":
+                raise UserError(_("Posted remittances cannot be deleted."))
         return super().unlink()

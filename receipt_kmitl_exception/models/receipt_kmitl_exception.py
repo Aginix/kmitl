@@ -31,10 +31,10 @@ class ReceiptKmitlException(models.Model):
             rec.ignore_exception = False
         return res
 
-    def action_confirm(self):
+    def action_to_submit(self):
         if self.detect_exceptions() and not self.ignore_exception:
             return self._popup_exceptions()
-        return super().action_confirm()
+        return super().action_to_submit()
 
     @api.model
     def _get_popup_action(self):

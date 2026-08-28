@@ -16,18 +16,35 @@ ANALYTIC_DIMENSION_FIELDS = [
     "procurement_plan_analytic_id",
 ]
 
+# Fields readonly from to_submit onwards (most fields).
+READONLY_STATES = {
+    "to_submit": [("readonly", True)],
+    "submitted": [("readonly", True)],
+    "approved": [("readonly", True)],
+    "done": [("readonly", True)],
+    "cancelled": [("readonly", True)],
+}
+
+# Analytic dims editable in draft + to_submit only.
+ANALYTIC_READONLY_STATES = {
+    "submitted": [("readonly", True)],
+    "approved": [("readonly", True)],
+    "done": [("readonly", True)],
+    "cancelled": [("readonly", True)],
+}
+
+# description / payment_method editable in draft → approved.
+FLEX_READONLY_STATES = {
+    "done": [("readonly", True)],
+    "cancelled": [("readonly", True)],
+}
+
 
 class ReceiptKmitl(models.Model):
     _name = "kmitl.receipt"
     _description = "KMITL Cash Receipt"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "date desc, id desc"
-
-    READONLY_STATES = {
-        "confirmed": [("readonly", True)],
-        "posted": [("readonly", True)],
-        "cancelled": [("readonly", True)],
-    }
 
     name = fields.Char(
         string="Receipt Number",
@@ -40,8 +57,10 @@ class ReceiptKmitl(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("confirmed", "Confirmed"),
-            ("posted", "Posted"),
+            ("to_submit", "To Submit"),
+            ("submitted", "Submitted"),
+            ("approved", "Approved"),
+            ("done", "Done"),
             ("cancelled", "Cancelled"),
         ],
         default="draft",
@@ -76,7 +95,7 @@ class ReceiptKmitl(models.Model):
         check_company=True,
         domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]",
         tracking=True,
-        states=READONLY_STATES,
+        states=FLEX_READONLY_STATES,
     )
 
     # --- Analytic dimensions (header-level, synced to lines) ---
@@ -84,31 +103,31 @@ class ReceiptKmitl(models.Model):
         "account.analytic.account",
         string="Fund",
         domain=[("root_plan_id.code", "=", "funds")],
-        states=READONLY_STATES,
+        states=ANALYTIC_READONLY_STATES,
     )
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Source",
         domain=[("root_plan_id.code", "=", "sources")],
-        states=READONLY_STATES,
+        states=ANALYTIC_READONLY_STATES,
     )
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Activity",
         domain=[("root_plan_id.code", "=", "activities")],
-        states=READONLY_STATES,
+        states=ANALYTIC_READONLY_STATES,
     )
     kmitl_project_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="KMITL Project",
         domain=[("root_plan_id.code", "=", "kmitl_project")],
-        states=READONLY_STATES,
+        states=ANALYTIC_READONLY_STATES,
     )
     procurement_plan_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Procurement Plan",
         domain=[("root_plan_id.code", "=", "procurement_plan")],
-        states=READONLY_STATES,
+        states=ANALYTIC_READONLY_STATES,
     )
 
     # --- Customer ---
@@ -142,7 +161,7 @@ class ReceiptKmitl(models.Model):
         states=READONLY_STATES,
     )
 
-    description = fields.Text(states=READONLY_STATES)
+    description = fields.Text(states=FLEX_READONLY_STATES)
     note = fields.Text()
     line_ids = fields.One2many(
         "kmitl.receipt.line",
@@ -189,23 +208,6 @@ class ReceiptKmitl(models.Model):
         readonly=True,
         copy=False,
     )
-    is_printed = fields.Boolean(
-        string="Printed",
-        default=False,
-        copy=False,
-        tracking=True,
-        readonly=True,
-    )
-    report_status = fields.Selection(
-        [
-            ("to_report", "To Report"),
-            ("under_validation", "Under Validation"),
-            ("reported", "Reported"),
-        ],
-        string="Report Status",
-        compute="_compute_report_status",
-        store=True,
-    )
 
     # -------------------------------------------------------------------------
     # Defaults & computes
@@ -230,18 +232,6 @@ class ReceiptKmitl(models.Model):
         for rec in self:
             rec.amount_total = sum(rec.line_ids.mapped("amount"))
 
-    @api.depends("state", "remittance_id", "remittance_id.state")
-    def _compute_report_status(self):
-        for rec in self:
-            if rec.state == "posted":
-                rec.report_status = "reported"
-            elif rec.remittance_id and rec.remittance_id.state == "submitted":
-                rec.report_status = "under_validation"
-            elif rec.state == "confirmed":
-                rec.report_status = "to_report"
-            else:
-                rec.report_status = False
-
     @api.model
     def get_receipt_dashboard(self):
         currency_id = self.env.company.currency_id.id
@@ -263,28 +253,32 @@ class ReceiptKmitl(models.Model):
             },
         }
         groups = self.read_group(
-            [("state", "in", ["confirmed", "posted"]),
-             ("report_status", "in", ["to_report", "under_validation", "reported"])],
+            [("state", "in", ["to_submit", "submitted", "approved", "done"])],
             ["amount_total"],
-            ["report_status"],
+            ["state"],
             lazy=False,
         )
+        state_map = {
+            "to_submit": "to_report",
+            "submitted": "under_validation",
+            "approved": "under_validation",
+            "done": "reported",
+        }
         for g in groups:
-            status = g["report_status"]
-            if status in dashboard:
-                dashboard[status]["amount"] += g.get("amount_total") or 0.0
+            bucket = state_map.get(g["state"])
+            if bucket:
+                dashboard[bucket]["amount"] += g.get("amount_total") or 0.0
         return dashboard
 
     def action_create_report(self):
-        """Create a remittance from selected confirmed, unremitted receipts."""
         receipts = self.filtered(
-            lambda r: r.state == "confirmed"
+            lambda r: r.state == "to_submit"
             and not r.remittance_id
             and r.date <= fields.Date.context_today(r)
         )
         if not receipts:
             raise UserError(
-                _("No confirmed receipts eligible for remittance.")
+                _("No receipts eligible for remittance.")
             )
         departments = receipts.mapped("department_analytic_id")
         if len(departments) > 1:
@@ -433,12 +427,12 @@ class ReceiptKmitl(models.Model):
     # -------------------------------------------------------------------------
     # Actions
     # -------------------------------------------------------------------------
-    def action_confirm(self):
+    def action_to_submit(self):
         for rec in self:
             if rec.state != "draft":
-                raise UserError(_("Only draft receipts can be confirmed."))
+                raise UserError(_("Only draft receipts can be submitted."))
             if not rec.line_ids:
-                raise ValidationError(_("Add at least one line before confirming."))
+                raise ValidationError(_("Add at least one line before submitting."))
             for line in rec.line_ids:
                 if not line.account_id:
                     raise ValidationError(
@@ -456,18 +450,15 @@ class ReceiptKmitl(models.Model):
             if rec.name == "/" or not rec.name:
                 seq = rec._get_receipt_sequence()
                 rec.name = seq.next_by_id()
-            rec.state = "confirmed"
+            rec.state = "to_submit"
         return True
 
-    def action_post(self):
+    # Kept as internal method — called by remittance, not exposed as button.
+    def _action_post(self):
         for rec in self:
-            if rec.state != "confirmed":
-                raise UserError(
-                    _("Only confirmed receipts can be posted (%s).") % rec.name
-                )
             move = rec._create_move()
             rec.move_id = move.id
-            rec.state = "posted"
+            rec.state = "done"
         return True
 
     def _prepare_debit_line_vals(self):
@@ -520,46 +511,41 @@ class ReceiptKmitl(models.Model):
 
     def action_cancel(self):
         for rec in self:
-            if rec.state == "posted":
+            if rec.state != "draft":
                 raise UserError(
-                    _("Posted receipts cannot be cancelled. Use a reversal/credit "
-                      "note from Accounting.")
-                )
-            if rec.remittance_id:
-                raise UserError(
-                    _("Receipt %s is in remittance %s; detach it from the "
-                      "remittance first.") % (rec.name, rec.remittance_id.display_name)
+                    _("Only draft receipts can be cancelled. "
+                      "Reset to draft first.")
                 )
             rec.state = "cancelled"
         return True
 
     def action_draft(self):
         for rec in self:
-            if rec.state != "cancelled":
-                raise UserError(_("Only cancelled receipts can be reset to draft."))
-            rec.state = "draft"
-        return True
-
-    def action_correct(self):
-        for rec in self:
-            if rec.state != "confirmed" or rec.remittance_id:
+            if rec.state not in ("to_submit", "cancelled"):
                 raise UserError(
-                    _("Only a confirmed, unremitted receipt can be corrected.")
+                    _("Only 'To Submit' or cancelled receipts can be "
+                      "reset to draft.")
                 )
-            rec.action_cancel()
-            rec.action_draft()
+            if rec.remittance_id:
+                raise UserError(
+                    _("Receipt %s is in remittance %s; detach it or "
+                      "reset the remittance first.")
+                    % (rec.name, rec.remittance_id.display_name)
+                )
+            rec.state = "draft"
         return True
 
     def action_detach(self):
         for rec in self:
             if not rec.remittance_id:
                 raise UserError(_("This receipt is not in any remittance."))
-            if rec.remittance_id.state != "submitted":
+            if rec.remittance_id.state not in ("draft", "submitted"):
                 raise UserError(
-                    _("Only receipts in a submitted remittance can be detached.")
+                    _("Receipts can only be detached from draft or "
+                      "submitted remittances.")
                 )
             remittance = rec.remittance_id
-            rec.remittance_id = False
+            rec.write({"remittance_id": False, "state": "to_submit"})
             remittance.message_post(
                 body=_("Receipt %s detached from this remittance.") % rec.name
             )
@@ -578,40 +564,36 @@ class ReceiptKmitl(models.Model):
             "views": [(False, "form")],
         }
 
-    def action_preview_receipt(self):
+    def action_view_remittance(self):
         self.ensure_one()
-        html = self.env["ir.actions.report"].with_context(
-            receipt_preview=True
-        )._render_qweb_html(
-            "receipt_kmitl.action_report_receipt_kmitl", self.ids
-        )[0]
-        wizard = self.env["kmitl.receipt.preview"].create(
-            {
-                "receipt_id": self.id,
-                "preview_html": html.decode("utf-8")
-                if isinstance(html, bytes)
-                else html,
-            }
-        )
         return {
             "type": "ir.actions.act_window",
-            "name": _("Receipt Preview"),
-            "res_model": "kmitl.receipt.preview",
-            "res_id": wizard.id,
+            "res_model": "kmitl.receipt.remittance",
+            "res_id": self.remittance_id.id,
             "view_mode": "form",
-            "target": "new",
-            "views": [
-                (
-                    self.env.ref("receipt_kmitl.view_receipt_preview_form").id,
-                    "form",
-                )
-            ],
+            "views": [(False, "form")],
+            "target": "current",
         }
+
+    @api.model
+    def action_print_receipt(self, receipt_id, is_copy=False):
+        receipt = self.browse(receipt_id)
+        receipt.ensure_one()
+        label = _("Copy printed") if is_copy else _("Original printed")
+        receipt.message_post(body=label)
+        html = self.env["ir.actions.report"].with_context(
+            receipt_copy=is_copy,
+        )._render_qweb_html(
+            "receipt_kmitl.action_report_receipt_kmitl", receipt.ids
+        )[0]
+        if isinstance(html, bytes):
+            html = html.decode("utf-8")
+        return {"html": html}
 
     def unlink(self):
         for rec in self:
-            if rec.state not in ("draft", "cancelled"):
+            if rec.state != "cancelled":
                 raise UserError(
-                    _("Only draft or cancelled receipts can be deleted.")
+                    _("Only cancelled receipts can be deleted.")
                 )
         return super().unlink()
