@@ -62,6 +62,79 @@ class AccountMove(models.Model):
                 move.payment_id._check_money_side_open(label)
         return super().write(vals)
 
+    # -------------------------------------------------------------------------
+    # Withholding-tax certificates issued by the finance office (ADR-0008)
+    # -------------------------------------------------------------------------
+    @api.depends("payment_id.wht_cert_ids.state")
+    def _compute_wht_cert_status(self):
+        """Count the certificate the finance office issued on the voucher.
+
+        A certificate raised from the voucher deliberately hangs off the payment
+        and not off this entry, so that posting cannot delete it. The cost is that
+        the entry cannot see it — and the banner offering to create one reads this
+        field, so an accountant opening a voucher whose payee already has their
+        50 ทวิ would be invited to issue a second one.
+
+        The base ``@api.depends`` is not repeated: overriding a compute keeps the
+        method name, and Odoo unions the dependencies declared for it across the
+        inheritance chain.
+        """
+        super()._compute_wht_cert_status()
+        for move in self:
+            if not move.has_wht:
+                continue
+            certs = move.wht_cert_ids | move.payment_id.wht_cert_ids
+            if not certs:
+                continue
+            states = set(certs.mapped("state"))
+            if "draft" in states:
+                move.wht_cert_status = "draft"
+            elif "done" in states:
+                move.wht_cert_status = "done"
+            elif "cancel" in states:
+                move.wht_cert_status = "cancel"
+
+    def create_wht_cert(self):
+        """Refuse a second certificate for a payee who already holds one.
+
+        The accounting office reaches this through the banner on the entry, and
+        the certificate the finance office issued is invisible from there (it
+        belongs to the voucher). Two certificates for one withholding is two
+        different papers the payee could file.
+        """
+        self.ensure_one()
+        live = self.payment_id.wht_cert_ids.filtered(
+            lambda cert: cert.state != "cancel"
+        )
+        if live:
+            raise UserError(
+                _(
+                    "%(payment)s already has a withholding-tax certificate "
+                    "(%(cert)s), issued by the finance office. Cancel it before "
+                    "issuing another."
+                )
+                % {
+                    "payment": self.payment_id.display_name,
+                    "cert": live[:1].display_name,
+                }
+            )
+        return super().create_wht_cert()
+
+    def _prepare_withholding_move(self, wht_move):
+        """Keep the type of income the finance office chose.
+
+        Upstream reads it off the tax, which only ever gives the tax's default —
+        so a voucher withheld under one rate but for a different kind of income
+        would file under the wrong heading. The voucher records the answer
+        (``account.payment.wht_cert_income_type``); this carries it into the
+        withholding move, which is what the ภ.ง.ด. reports are built from.
+        """
+        vals = super()._prepare_withholding_move(wht_move)
+        income_type = self.payment_id.wht_cert_income_type
+        if income_type:
+            vals["wht_cert_income_type"] = income_type
+        return vals
+
     def _post(self, soft=True):
         """Refuse to post a payment the finance office has not finished with.
 

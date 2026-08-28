@@ -99,13 +99,18 @@
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
 
-    <!-- Withholding Tax Certificates: the document handed to the payee, not the
-         tax and not a ภ.ง.ด. filing report. -->
+    <!-- Withholding Tax Certificates: the document handed to the payee — and,
+         because KMITL files ภ.ง.ด. itself rather than through a bank, the filing
+         record as well. So this is where a month is footed and confirmed for
+         submission, not merely where a copy is looked up; it is bound to this
+         module's own list and search rather than upstream's for that reason
+         (withholding_tax_cert_views.xml). Still not a ภ.ง.ด. *report* — that is a
+         separate screen, and a separate module. -->
     <menuitem
         id="menu_withholding_tax_cert"
         name="Withholding Tax Certificates"
         parent="menu_finance_payment_out"
-        action="l10n_th_account_tax.action_withholding_tax_cert_menu"
+        action="action_withholding_tax_cert_kmitl"
         sequence="50"
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
@@ -192,6 +197,63 @@
         parent="menu_settings_payment_data"
         action="action_kmitl_payment_type"
         sequence="30"
+    />
+
+    <!-- Everything a withholding needs before the first baht can be withheld.
+         The screens are upstream's; what this adds is reaching them without
+         leaving the Finance app, because withholding is this office's job — they
+         are the ones who deduct it, hand the payee the certificate and file the
+         ภ.ง.ด.
+
+         Upstream's own menus, under Accounting ▸ Configuration, are deliberately
+         left alone rather than retired the way the duplicate e-payment register
+         was above. A withholding tax holds a GL account, so it is reference data
+         both offices maintain, and unlike that register it is not one office's
+         screen sitting in the wrong app. Nobody meets it twice either: this copy
+         is under Settings, which only a finance manager can see. -->
+    <menuitem
+        id="menu_settings_wht"
+        name="Withholding Tax"
+        parent="menu_payment_settings"
+        sequence="25"
+    />
+    <!-- The taxes themselves: the rate, the liability account it is credited to,
+         and the ภ.ง.ด. form and type of income a certificate defaults to. -->
+    <menuitem
+        id="menu_settings_withholding_tax"
+        name="Withholding Taxes"
+        parent="menu_settings_wht"
+        action="l10n_th_account_tax.action_account_withholding_tax_menu"
+        sequence="10"
+    />
+    <!-- Where a payee's rate actually comes from: their category carries it
+         (res.partner.type.wht_tax_id), and a voucher — typed here or billed
+         through a disbursement — reads it from there. Nothing seeds that link,
+         so without this screen the office cannot start withholding at all. -->
+    <menuitem
+        id="menu_settings_payee_type"
+        name="Payee Types"
+        parent="menu_settings_wht"
+        action="partner_type_aginix.action_res_partner_type"
+        sequence="20"
+    />
+    <!-- The Revenue Department's income codes, for the filing text file. Only
+         ภ.ง.ด.1 ships with data, so ภ.ง.ด.3 and 53 are entered here. -->
+    <menuitem
+        id="menu_settings_wht_income_code"
+        name="WHT Income Codes"
+        parent="menu_settings_wht"
+        action="l10n_th_account_tax.action_account_withholding_tax_income_code_menu"
+        sequence="30"
+    />
+    <!-- Only needed by a tax marked as personal income tax, whose withholding is
+         worked out from this ladder instead of from a flat rate. -->
+    <menuitem
+        id="menu_settings_pit_rate"
+        name="PIT Rate Table"
+        parent="menu_settings_wht"
+        action="l10n_th_account_tax.action_personal_income_tax"
+        sequence="40"
     />
 
     <!-- The layouts a document or a file is produced from. -->

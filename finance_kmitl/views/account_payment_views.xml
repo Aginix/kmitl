@@ -237,15 +237,30 @@
                 >{'readonly': ['|', ('state', '!=', 'draft'), ('finance_state', '!=', 'draft')]}</attribute>
             </xpath>
             <!-- Core's ``amount``, in the amount/currency row. The one in the
-                 withholding-tax summary below belongs to this same view and is
-                 added after this patch runs, so it is not what is matched here. -->
+                 withholding-tax group below belongs to this same view and is
+                 added after this patch runs, so it is not what is matched here.
+
+                 The third leaf is what makes the withholding work the way the
+                 office thinks. This box is where the officer types, and on a
+                 voucher that withholds what they type is the **income** — the
+                 figure on the invoice in their hand. The onchange takes it as the
+                 base and puts the amount paid back here, and from then on the box
+                 is closed: it now shows a derived figure, and typing over a
+                 derived figure would withhold from a net that has already been
+                 withheld from. The gate is the base rather than the rate, so the
+                 box stays open for the first figure to be typed into.
+
+                 Set here and not on the node in the withholding group below,
+                 because readonly is per-node (the model-level modifiers are the
+                 ones a repeated field merges) and this is the node being typed
+                 into. -->
             <xpath
                 expr="//div[@name='amount_div']/field[@name='amount']"
                 position="attributes"
             >
                 <attribute
                     name="attrs"
-                >{'readonly': ['|', ('state', '!=', 'draft'), ('finance_state', '!=', 'draft')]}</attribute>
+                >{'readonly': ['|', '|', ('state', '!=', 'draft'), ('finance_state', '!=', 'draft'), ('wht_amount_base', '!=', 0)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='currency_id']" position="attributes">
                 <attribute
@@ -367,14 +382,61 @@
                 />
             </xpath>
 
-            <!-- Withholding tax breakdown (shown only when the payment has WHT) -->
+            <!-- ภาษีหัก ณ ที่จ่าย. Both a form to fill in and a summary to read,
+                 because on this document they are the same few lines seen from
+                 either end: the rate and the base are typed, the withholding and
+                 the amount paid follow from them.
+
+                 Always open on an outbound draft, so a voucher that *should*
+                 withhold shows somewhere to say so; afterwards only when it
+                 actually withheld. A voucher raised from a disbursement enters
+                 already confirmed and withholds on its entry rather than here, so
+                 what it shows is the summary it always showed. -->
             <xpath expr="//group[@name='group2']/.." position="after">
                 <group
-                    string="Withholding Tax Summary"
+                    string="Withholding Tax"
                     name="wht_summary"
-                    attrs="{'invisible': [('amount_wht', '=', 0)]}"
+                    attrs="{'invisible': ['|', ('payment_type', '!=', 'outbound'), '&amp;', ('finance_state', '!=', 'draft'), ('amount_wht', '=', 0)]}"
                 >
-                    <field name="amount_before_wht" />
+                    <field name="wht_certs_count" invisible="1" />
+                    <field
+                        name="wht_tax_id"
+                        domain="[('company_id', '=', company_id)]"
+                        options="{'no_create': True, 'no_open': True}"
+                        attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('finance_state', '!=', 'draft')]}"
+                    />
+                    <!-- The income, in two fields because the two kinds of voucher
+                         arrive at it from opposite ends. On a voucher of the
+                         office's own it is the figure typed into the amount box
+                         above, kept here once the amount box has become the net; on
+                         one billed through a request both halves were settled with
+                         the bill and the income is read back from them. Only ever
+                         one of them on screen, so there is never a second copy of
+                         the same number to disagree with the first.
+
+                         Both are read-only: neither is typed. Correcting a
+                         mistyped figure means clearing the rate, which hands the
+                         withholding back and opens the amount box again. -->
+                    <field
+                        name="wht_amount_base"
+                        readonly="1"
+                        attrs="{'invisible': [('wht_tax_id', '=', False)]}"
+                    />
+                    <field
+                        name="amount_before_wht"
+                        attrs="{'invisible': [('wht_tax_id', '!=', False)]}"
+                    />
+                    <!-- The one field on this form that stays open after the
+                         voucher is confirmed. It is not money side — it moves no
+                         entry and the bank never saw it — and the certificate it
+                         belongs to is issued *after* confirmation, so closing it
+                         with the rest of the form would leave it correctable
+                         nowhere. It closes when the certificate is issued, which
+                         is the moment it becomes a claim on paper. -->
+                    <field
+                        name="wht_cert_income_type"
+                        attrs="{'invisible': [('wht_tax_id', '=', False)], 'readonly': [('wht_certs_count', '>', 0)]}"
+                    />
                     <field name="amount_wht" />
                     <field
                         name="amount"
@@ -458,6 +520,22 @@
                     icon="fa-credit-card"
                     string="Write a Cheque"
                     attrs="{'invisible': ['|', '|', ('is_cheque_payment', '=', False), ('finance_state', '!=', 'confirmed'), ('cheque_id', '!=', False)]}"
+                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                />
+                <!-- The payee's 50 ทวิ, beside the cheque for the same reason
+                     the cheque is here: both are paper this office produces for
+                     one voucher, and an empty one is the work outstanding. From
+                     the confirmation onwards, because what the certificate states
+                     can no longer change from then on — and well before the
+                     accounting office posts, which is the only moment the stock
+                     l10n_th button offers. See ADR-0008. -->
+                <button
+                    name="action_create_wht_cert"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-file-text-o"
+                    string="Issue WHT Certificate"
+                    attrs="{'invisible': ['|', '|', ('wht_tax_id', '=', False), ('finance_state', '=', 'draft'), ('wht_certs_count', '>', 0)]}"
                     groups="finance_kmitl.group_finance_kmitl_user_out"
                 />
             </xpath>

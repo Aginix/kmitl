@@ -1,10 +1,35 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import api, models
+from odoo import api, fields, models
 
 
 class WithholdingTaxCert(models.Model):
     _inherit = "withholding.tax.cert"
+
+    amount_base_total = fields.Monetary(
+        string="Total Income",
+        compute="_compute_wht_totals",
+        store=True,
+        currency_field="currency_id",
+        help="ยอดเงินได้รวม — what this certificate says the payee was paid, "
+        "across its lines. Stored so that the month being filed can be totalled "
+        "in the list: a filing run is checked by its sum before it is sent, and an "
+        "unstored figure cannot be summed there.",
+    )
+    amount_wht_total = fields.Monetary(
+        string="Total Withheld",
+        compute="_compute_wht_totals",
+        store=True,
+        currency_field="currency_id",
+        help="ยอดภาษีรวม — what this certificate says was withheld, across its "
+        "lines. This is the figure the ภ.ง.ด. is footed on.",
+    )
+
+    @api.depends("wht_line.base", "wht_line.amount")
+    def _compute_wht_totals(self):
+        for cert in self:
+            cert.amount_base_total = sum(cert.wht_line.mapped("base"))
+            cert.amount_wht_total = sum(cert.wht_line.mapped("amount"))
 
     @api.depends(
         "payment_id.payment_export_id.effective_date",
