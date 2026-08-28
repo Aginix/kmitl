@@ -1020,19 +1020,29 @@ class ApprovalRequest(models.Model):
         """Per-product (planned, actual) totals for the plan-vs-actual
         comparison, ordered by the plan's sequence with any actual-only products
         appended. Actual amounts are summed across recipients so a per-product
-        total lines up with the single planned amount."""
+        total lines up with the single planned amount. ``descriptions`` gathers
+        the distinct plan-line details (รายละเอียด) for the product."""
         self.ensure_one()
         rows = {}
         order = []
 
         def bucket(product):
             if product.id not in rows:
-                rows[product.id] = {"product": product, "plan": 0.0, "actual": 0.0}
+                rows[product.id] = {
+                    "product": product,
+                    "plan": 0.0,
+                    "actual": 0.0,
+                    "descriptions": [],
+                }
                 order.append(product.id)
             return rows[product.id]
 
         for line in self.line_ids:
-            bucket(line.product_id)["plan"] += line.total_amount
+            row = bucket(line.product_id)
+            row["plan"] += line.total_amount
+            detail = (line.description or "").strip()
+            if detail and detail not in row["descriptions"]:
+                row["descriptions"].append(detail)
         for alloc in self.allocation_ids:
             bucket(alloc.product_id)["actual"] += alloc.amount
         return [rows[pid] for pid in order]
@@ -1071,6 +1081,7 @@ class ApprovalRequest(models.Model):
         row_tpl = Markup(
             "<tr>"
             "<td>{product}</td>"
+            "<td class='text-muted'>{detail}</td>"
             "<td class='text-end'>{plan}</td>"
             "<td class='text-end'>{actual}</td>"
             "<td class='text-end {cls}'>{diff}</td>"
@@ -1084,6 +1095,7 @@ class ApprovalRequest(models.Model):
             total_actual += row["actual"]
             body += row_tpl.format(
                 product=row["product"].display_name or "",
+                detail="\n".join(row["descriptions"]) or "-",
                 plan=money(row["plan"]),
                 actual=money(row["actual"]),
                 cls=diff_cls(diff),
@@ -1091,17 +1103,18 @@ class ApprovalRequest(models.Model):
             )
 
         total_diff = total_actual - total_plan
-        return Markup(
+        table = Markup(
             "<table class='table table-sm o_list_table mb-0'>"
             "<thead><tr>"
             "<th>รายการ</th>"
+            "<th>รายละเอียด</th>"
             "<th class='text-end'>แผน</th>"
             "<th class='text-end'>จ่ายจริง</th>"
             "<th class='text-end'>ผลต่าง</th>"
             "</tr></thead>"
             "<tbody>{body}</tbody>"
             "<tfoot><tr class='fw-bold'>"
-            "<td>รวม</td>"
+            "<td colspan='2'>รวม</td>"
             "<td class='text-end'>{plan}</td>"
             "<td class='text-end'>{actual}</td>"
             "<td class='text-end {cls}'>{diff}</td>"
@@ -1114,6 +1127,10 @@ class ApprovalRequest(models.Model):
             cls=diff_cls(total_diff),
             diff=money(total_diff),
         )
+        return Markup(
+            "<div style=\"background-color:#f8f9fa;border-radius:8px;padding:16px;"
+            "box-shadow:0 1px 4px rgba(0,0,0,.15);white-space:pre-line;\">{table}</div>"
+        ).format(table=table)
 
     def _voucher_groups(self):
         """งบหน้าใบสำคัญคู่จ่าย data: the disbursed actual allocation — จ่ายตรง /
@@ -1156,4 +1173,36 @@ class ApprovalRequest(models.Model):
                         "ยอดค่าใช้จ่ายจริง (%(actual)s) เกินงบที่อนุมัติ/จองไว้ (%(cap)s)"
                     )
                     % {"actual": rec.total_actual_amount, "cap": cap}
+                )
+
+    @api.constrains("allocation_ids", "line_ids")
+    def _check_actual_not_exceed_plan(self):
+        """ยอดเบิกจ่ายจริงของแต่ละรายการ (product) ต้องไม่เกินยอดที่วางแผนไว้ใน
+        ค่าใช้จ่าย (แผน) สำหรับรายการนั้น."""
+        for rec in self:
+            if not rec.allocation_ids:
+                continue
+            over = []
+            for row in rec._plan_actual_rows():
+                if rec.currency_id.compare_amounts(row["actual"], row["plan"]) > 0:
+                    over.append(
+                        _(
+                            "- %(product)s: เบิกจริง %(actual)s / แผน %(plan)s"
+                        )
+                        % {
+                            "product": row["product"].display_name,
+                            "actual": formatLang(
+                                self.env, row["actual"],
+                                currency_obj=rec.currency_id,
+                            ),
+                            "plan": formatLang(
+                                self.env, row["plan"],
+                                currency_obj=rec.currency_id,
+                            ),
+                        }
+                    )
+            if over:
+                raise ValidationError(
+                    _("ยอดเบิกจ่ายจริงเกินยอดที่วางแผนไว้ในรายการต่อไปนี้:\n%s")
+                    % "\n".join(over)
                 )
