@@ -47,7 +47,7 @@ for rec in records:
         continue
     summary = "ท่านได้รับ แบบขอให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ สร้างหนังสือขอความเห็นชอบให้จัดหา" % (rec.name or "")
     rec.activity_schedule(
-        "purchase_request_todo.mail_activity_pr_awaiting_endorsement_letter",
+        "purchase_request_budget_todo.mail_activity_pr_awaiting_endorsement_letter",
         summary=summary,
         user_id=rec.create_uid.id,
     )
