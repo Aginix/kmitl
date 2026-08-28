@@ -15,7 +15,7 @@
     </record>
 
     <record id="purchase_request.purchase_request_form_action" model="ir.actions.act_window">
-        <field name="view_mode">tree,form,pivot,activity</field>
+        <field name="view_mode">tree,kanban,form,pivot</field>
     </record>
 
 </odoo>
