@@ -196,6 +196,16 @@ class ReceiptKmitl(models.Model):
         tracking=True,
         readonly=True,
     )
+    report_status = fields.Selection(
+        [
+            ("to_report", "To Report"),
+            ("under_validation", "Under Validation"),
+            ("reported", "Reported"),
+        ],
+        string="Report Status",
+        compute="_compute_report_status",
+        store=True,
+    )
 
     # -------------------------------------------------------------------------
     # Defaults & computes
@@ -219,6 +229,49 @@ class ReceiptKmitl(models.Model):
     def _compute_amount_total(self):
         for rec in self:
             rec.amount_total = sum(rec.line_ids.mapped("amount"))
+
+    @api.depends("state", "remittance_id", "remittance_id.state")
+    def _compute_report_status(self):
+        for rec in self:
+            if rec.state == "posted":
+                rec.report_status = "reported"
+            elif rec.remittance_id and rec.remittance_id.state == "submitted":
+                rec.report_status = "under_validation"
+            elif rec.state == "confirmed":
+                rec.report_status = "to_report"
+            else:
+                rec.report_status = False
+
+    def action_create_report(self):
+        """Create a remittance from selected confirmed, unremitted receipts."""
+        receipts = self.filtered(
+            lambda r: r.state == "confirmed"
+            and not r.remittance_id
+            and r.date <= fields.Date.context_today(r)
+        )
+        if not receipts:
+            raise UserError(
+                _("No confirmed receipts eligible for remittance.")
+            )
+        departments = receipts.mapped("department_analytic_id")
+        if len(departments) > 1:
+            raise UserError(
+                _("Selected receipts belong to different departments. "
+                  "Please select receipts from the same department.")
+            )
+        remittance = self.env["kmitl.receipt.remittance"].create(
+            {
+                "department_analytic_id": departments.id,
+                "receipt_ids": [(6, 0, receipts.ids)],
+            }
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "kmitl.receipt.remittance",
+            "res_id": remittance.id,
+            "view_mode": "form",
+            "target": "current",
+        }
 
     # -------------------------------------------------------------------------
     # Analytic dimension sync (header → lines)

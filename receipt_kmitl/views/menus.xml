@@ -5,20 +5,15 @@
               sequence="48"
               groups="receipt_kmitl.group_receipt_kmitl_viewer"/>
 
-    <menuitem id="menu_receipt_kmitl_operations"
-              name="Operations"
-              parent="menu_receipt_kmitl_root"
-              sequence="10"/>
-
     <menuitem id="menu_receipt_kmitl_receipts"
               name="Receipts"
-              parent="menu_receipt_kmitl_operations"
+              parent="menu_receipt_kmitl_root"
               action="action_receipt_kmitl"
               sequence="10"/>
 
     <menuitem id="menu_receipt_kmitl_remittances"
               name="Receipt Remittances"
-              parent="menu_receipt_kmitl_operations"
+              parent="menu_receipt_kmitl_root"
               action="action_receipt_remittance"
               sequence="20"/>
 

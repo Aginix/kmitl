@@ -7,6 +7,12 @@
             <tree decoration-muted="state == 'cancelled'"
                   decoration-info="state == 'confirmed'"
                   decoration-success="state == 'posted'">
+                <header>
+                    <button name="action_create_report"
+                            type="object"
+                            string="Create Report"
+                            groups="receipt_kmitl.group_receipt_kmitl_user"/>
+                </header>
                 <field name="name"/>
                 <field name="date"/>
                 <field name="department_analytic_id"/>
@@ -18,6 +24,11 @@
                 <field name="currency_id" invisible="1"/>
                 <field name="is_printed" widget="boolean" optional="show"/>
                 <field name="remittance_id" optional="show"/>
+                <field name="report_status" widget="badge"
+                       decoration-info="report_status == 'to_report'"
+                       decoration-warning="report_status == 'under_validation'"
+                       decoration-success="report_status == 'reported'"
+                       optional="show"/>
                 <field name="state" widget="badge"
                        decoration-info="state == 'confirmed'"
                        decoration-success="state == 'posted'"
@@ -53,7 +64,7 @@
                             groups="receipt_kmitl.group_receipt_kmitl_treasury_officer"/>
                     <button name="action_correct"
                             type="object"
-                            string="Correct Receipt"
+                            string="Reset to Draft"
                             attrs="{'invisible': ['|', ('state', '!=', 'confirmed'), ('remittance_id', '!=', False)]}"
                             groups="receipt_kmitl.group_receipt_kmitl_user"/>
                     <button name="action_cancel"

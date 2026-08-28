@@ -3,10 +3,8 @@
 }
 
 @media print {
-    // Hide Odoo chrome: navbar, sidebar, control panel, chatter
     .o_navbar,
     .o_main_navbar,
-    .o_action_manager > :not(.o_receipt_report),
     .o_cp_action_menus,
     .o_control_panel,
     .o_receipt_report_header,
@@ -20,6 +18,10 @@
 
     .o_receipt_report {
         padding: 0 !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
     }
 
     .o_receipt_report_table {
