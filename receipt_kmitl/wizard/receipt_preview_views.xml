@@ -4,7 +4,7 @@
         <field name="name">kmitl.receipt.preview.form</field>
         <field name="model">kmitl.receipt.preview</field>
         <field name="arch" type="xml">
-            <form string="ตัวอย่างใบเสร็จ">
+            <form string="Receipt Preview">
                 <sheet>
                     <field name="receipt_id" invisible="1"/>
                     <field name="preview_html" nolabel="1" colspan="2"/>
@@ -12,7 +12,7 @@
                 <footer>
                     <button name="action_confirm_print"
                             type="object"
-                            string="ยืนยันพิมพ์ใบเสร็จ"
+                            string="Confirm Print"
                             class="btn-primary"
                             icon="fa-print"/>
                     <button string="Close" special="cancel" class="btn-secondary"/>

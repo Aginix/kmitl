@@ -64,7 +64,7 @@ class ReceiptRemittance(models.Model):
     )
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
-        string="ปีงบประมาณ",
+        string="Fiscal Year",
         tracking=True,
     )
     receipt_to_add_id = fields.Many2one(

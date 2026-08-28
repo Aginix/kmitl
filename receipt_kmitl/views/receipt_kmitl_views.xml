@@ -34,7 +34,7 @@
                 <header>
                     <button name="action_preview_receipt"
                             type="object"
-                            string="พิมพ์ใบเสร็จ"
+                            string="Print Receipt"
                             class="btn-primary"
                             icon="fa-print"
                             attrs="{'invisible': ['|', ('state', 'not in', ['confirmed', 'posted']), ('is_printed', '=', True)]}"
@@ -53,7 +53,7 @@
                             groups="receipt_kmitl.group_receipt_kmitl_treasury_officer"/>
                     <button name="action_correct"
                             type="object"
-                            string="แก้ไขใบเสร็จ"
+                            string="Correct Receipt"
                             attrs="{'invisible': ['|', ('state', '!=', 'confirmed'), ('remittance_id', '!=', False)]}"
                             groups="receipt_kmitl.group_receipt_kmitl_user"/>
                     <button name="action_cancel"
@@ -87,7 +87,7 @@
                         </h1>
                     </div>
                     <group>
-                        <group name="header" string="ข้อมูลใบเสร็จ">
+                        <group name="header" string="Receipt Info">
                             <field name="date"/>
                             <field name="account_fiscal_year_id" widget="selection" />
                             <field name="department_analytic_id"
@@ -100,12 +100,12 @@
                                    groups="receipt_kmitl.group_receipt_kmitl_manager"/>
                             <field name="description"/>
                         </group>
-                        <group name="customer" string="ผู้ชำระเงิน">
+                        <group name="customer" string="Payer">
                             <field name="is_walkin"/>
                             <div colspan="2" class="alert alert-info mb-0 py-2" role="alert"
                                  attrs="{'invisible': [('is_walkin', '=', False)]}">
                                 <i class="fa fa-info-circle"/>
-                                ลูกค้า Walk-in: ใบเสร็จสำหรับบุคคลทั่วไปที่ไม่ต้องระบุข้อมูลผู้ชำระเงิน
+                                Walk-in customer: receipt for a general customer without specific payer details.
                             </div>
                             <field name="partner_id"
                                    options="{'no_create': True, 'no_edit': True}"
@@ -119,7 +119,7 @@
                                    attrs="{'invisible': [('is_walkin', '=', True)]}"/>
                         </group>
                     </group>
-                    <group name="analytic_dimensions" string="มิติทางบัญชี">
+                    <group name="analytic_dimensions" string="Analytic Dimensions">
                         <group>
                             <field name="fund_analytic_id"
                                    options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
@@ -159,7 +159,7 @@
                             <group name="footer">
                               <group>
                                 <label for="note" string="Notes"/>
-                                <field name="note" nolabel="1" colspan="2" placeholder="หมายเหตุ" />
+                                <field name="note" nolabel="1" colspan="2" placeholder="Notes" />
                               </group>
                             </group>
                         </page>

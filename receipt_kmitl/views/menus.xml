@@ -23,7 +23,7 @@
               sequence="20"/>
 
     <menuitem id="menu_receipt_kmitl_reports"
-              name="รายงาน"
+              name="Reports"
               parent="menu_receipt_kmitl_root"
               sequence="50"
               groups="receipt_kmitl.group_receipt_kmitl_viewer"/>
@@ -53,7 +53,7 @@
               sequence="10"/>
 
     <menuitem id="menu_receipt_kmitl_walkin_partner"
-              name="ลูกค้า Walk-In"
+              name="Walk-In Customer"
               parent="menu_receipt_kmitl_configuration"
               action="action_receipt_kmitl_walkin_partner"
               sequence="20"/>

@@ -57,7 +57,7 @@ class ReceiptKmitl(models.Model):
     )
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
-        string="ปีงบประมาณ",
+        string="Fiscal Year",
         tracking=True,
         states=READONLY_STATES,
     )
@@ -82,38 +82,38 @@ class ReceiptKmitl(models.Model):
     # --- Analytic dimensions (header-level, synced to lines) ---
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="กองทุน",
+        string="Fund",
         domain=[("root_plan_id.code", "=", "funds")],
         states=READONLY_STATES,
     )
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="แหล่งเงิน",
+        string="Source",
         domain=[("root_plan_id.code", "=", "sources")],
         states=READONLY_STATES,
     )
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="ด้าน/แผนงาน/กิจกรรม",
+        string="Activity",
         domain=[("root_plan_id.code", "=", "activities")],
         states=READONLY_STATES,
     )
     kmitl_project_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="โครงการ",
+        string="KMITL Project",
         domain=[("root_plan_id.code", "=", "kmitl_project")],
         states=READONLY_STATES,
     )
     procurement_plan_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="แผนจัดซื้อจัดจ้าง",
+        string="Procurement Plan",
         domain=[("root_plan_id.code", "=", "procurement_plan")],
         states=READONLY_STATES,
     )
 
     # --- Customer ---
     is_walkin = fields.Boolean(
-        string="ลูกค้าขาจร (Walk-in)",
+        string="Walk-in Customer",
         default=True,
         states=READONLY_STATES,
     )
@@ -190,7 +190,7 @@ class ReceiptKmitl(models.Model):
         copy=False,
     )
     is_printed = fields.Boolean(
-        string="พิมพ์ใบเสร็จแล้ว",
+        string="Printed",
         default=False,
         copy=False,
         tracking=True,
@@ -508,7 +508,7 @@ class ReceiptKmitl(models.Model):
         )
         return {
             "type": "ir.actions.act_window",
-            "name": _("ตัวอย่างใบเสร็จ"),
+            "name": _("Receipt Preview"),
             "res_model": "kmitl.receipt.preview",
             "res_id": wizard.id,
             "view_mode": "form",

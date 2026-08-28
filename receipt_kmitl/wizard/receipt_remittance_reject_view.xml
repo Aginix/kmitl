@@ -7,7 +7,7 @@
             <form string="Reject Remittance">
                 <group>
                     <field name="remittance_id"/>
-                    <field name="reason" placeholder="กรุณาระบุเหตุผลที่ตีกลับ"/>
+                    <field name="reason" placeholder="Please specify the rejection reason"/>
                 </group>
                 <footer>
                     <button name="action_confirm"

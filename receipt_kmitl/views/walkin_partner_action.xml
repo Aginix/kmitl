@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="action_receipt_kmitl_walkin_partner" model="ir.actions.server">
-        <field name="name">ลูกค้า Walk-In</field>
+        <field name="name">Walk-In Customer</field>
         <field name="model_id" ref="base.model_res_partner"/>
         <field name="state">code</field>
         <field name="code">
 walkin_id = env["kmitl.receipt"]._default_partner_id()
 if not walkin_id:
-    raise UserError("ยังไม่ได้ตั้งค่าลูกค้า Walk-In")
+    raise UserError("Walk-in customer has not been configured.")
 action = {
     "type": "ir.actions.act_window",
     "res_model": "res.partner",
