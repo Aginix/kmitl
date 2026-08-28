@@ -11,6 +11,18 @@
         "base_automation",
         "mail_activity_todo_role_unit",
         "purchase_request_approval",
+        # FIXME(rebase 2026-09): origin/16.0 dropped these five explicit deps
+        # (2d0c762a2) after rewriting this module's Todo scheduling onto
+        # base.automation + a new purchase_request_budget_todo module — this
+        # branch still needs them because its own models/purchase_request.py
+        # (Python-hook based) references purchase_request_kmitl's states,
+        # purchase_request_sarabun/_egp's callbacks, and budget_role's xmlid
+        # directly. Needs reconciling with the upstream rewrite before merge.
+        "purchase_request_activity_kmitl",
+        "purchase_request_kmitl",
+        "purchase_request_sarabun",
+        "purchase_request_egp",
+        "budget_role",
         "purchase_user_role",
     ],
     "data": [

@@ -187,14 +187,17 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         # Means "budget selection is still open on this request", which is also
         # exactly when a reservation may be picked — so the reservation field
-        # rides on this rather than re-listing states (purchase.request draws its
-        # states from four modules, and three of them override this compute).
-        # Drawing an existing reservation does not close selection: the user must
-        # be able to un-pick. The chart picker is hidden view-side while a
-        # reservation is picked, since dimensions then come from it.
+        # rides on this rather than re-listing states. The chart picker is
+        # hidden view-side while a reservation is picked, since dimensions then
+        # come from it. Drawing an existing reservation does not close
+        # selection: the user must be able to un-pick.
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
-            if rec.state in ("to_verify", "to_approve") and (
+            if rec.state == "to_submit":
+                rec.is_budget_editable = False
+            elif rec.state == "to_verify" and can_edit:
+                rec.is_budget_editable = True
+            elif rec.state == "to_approve" and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
             ):
@@ -210,14 +213,21 @@ class PurchaseRequest(models.Model):
         # ดึงกลับ (Reset) deliberately does *not* reopen this: a recalled
         # project/plan พ.1 keeps its shared commitment and stays on its source,
         # so there is nothing to re-draw in draft (ADR-0015).
+        # FIXME(rebase 2026-09): origin/16.0 (a7866a932) simplified this to a
+        # single `state == "to_approve"` condition, dropping the always-show
+        # branch at to_verify below — needs reconciling with whichever state
+        # naming this branch settles on (see purchase_request_kmitl's own
+        # to_verify ownership, still unabsorbed upstream).
         for rec in self:
-            rec.hide_reserve_budget_button = not (
-                rec.state == "to_approve"
-                and (
-                    not rec.budget_commitment_id
-                    or rec.budget_commitment_id.state == "cancel"
-                )
-            )
+            if rec.state == "to_verify":
+                rec.hide_reserve_budget_button = False
+            elif rec.state == "to_approve" and (
+                rec.budget_commitment_id.state == "cancel"
+                or not rec.budget_commitment_id
+            ):
+                rec.hide_reserve_budget_button = False
+            else:
+                rec.hide_reserve_budget_button = True
 
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
