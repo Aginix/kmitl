@@ -11,4 +11,18 @@
         <field name="icon">fa-money</field>
         <field name="delay_count">0</field>
     </record>
+
+    <record
+        id="mail_activity_pr_awaiting_endorsement_letter"
+        model="mail.activity.type"
+    >
+        <field name="name">Awaiting endorsement letter (พ.1)</field>
+        <field
+            name="summary"
+        >Create the endorsement letter for the purchase request</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">purchase.request</field>
+        <field name="icon">fa-file-text-o</field>
+        <field name="delay_count">0</field>
+    </record>
 </odoo>
