@@ -22,7 +22,6 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Todo Notifications" name="todo_notify">
                     <group>
-                        <field name="operating_unit_ids" invisible="1" />
                         <field
                             name="todo_notify_operating_unit_ids"
                             widget="many2many_tags"
