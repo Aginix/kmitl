@@ -303,6 +303,7 @@ class ReceiptKmitl(models.Model):
             "res_model": "kmitl.receipt.remittance",
             "res_id": remittance.id,
             "view_mode": "form",
+            "views": [(False, "form")],
             "target": "current",
         }
 
