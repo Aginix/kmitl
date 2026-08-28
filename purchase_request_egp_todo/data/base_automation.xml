@@ -23,12 +23,6 @@ for rec in records:
             responsible_role_id=role.id,
             operating_unit_id=rec.operating_unit_id.id,
         )
-    elif rec.assigned_to:
-        rec.activity_schedule(
-            "purchase_request_egp_todo.mail_activity_pr_egp_number_entry",
-            summary=summary,
-            user_id=rec.assigned_to.id,
-        )
 ]]></field>
     </record>
 
