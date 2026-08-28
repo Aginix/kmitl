@@ -27,10 +27,20 @@ being edited)::
         <field name="partner_id" widget="partner_autocomplete"/>
     </tree>
 
-Nothing else changes: selection, quick-create, "Search More…" and the external
-link button all behave exactly like the standard Many2one — only the dropdown
-options are enriched. Applied to a field whose comodel is not ``res.partner``
-the widget silently degrades to the plain dropdown.
+Nothing else changes: selection, quick-create and the external link button all
+behave exactly like the standard Many2one. Applied to a field whose comodel is
+not ``res.partner`` the widget silently degrades to the plain dropdown.
+
+Beyond the dropdown, the widget also:
+
+* **Enriches the "Search More…" dialog** — instead of the bare default partner
+  list it shows a richer list (name, type, tax id, address, contact) so the
+  full search stays as informative as the dropdown. The list view is
+  ``res_partner_autocomplete_view_tree``; inherit it to change the columns.
+* **Keeps a compact subtitle on the selected value** — once a contact is
+  picked the field shows one muted secondary line (type · VAT · locality)
+  under the name, in both form and list, so a chosen contact is never reduced
+  to a bare name. It is deliberately a single line to stay compact.
 
 Extending the payload
 ======================
@@ -39,9 +49,10 @@ The dropdown content comes from
 ``res.partner.get_partner_autocomplete_info()``, which delegates to a handful
 of per-record hooks. Override them to change what each option shows:
 
-* ``_partner_autocomplete_type`` — the classification on the badge (defaults to
-  the Individual/Company label).
+* ``_partner_autocomplete_type`` — the classification on the badge, also reused
+  in the subtitle (defaults to the Individual/Company label).
 * ``_partner_autocomplete_rows`` — the (label, value, icon) detail rows.
+* ``_partner_autocomplete_subtitle`` — the compact line under the selected value.
 * ``_partner_autocomplete_address`` — the one-line address string.
 
 See ``partner_type_kmitl_autocomplete`` for a minimal example that puts the

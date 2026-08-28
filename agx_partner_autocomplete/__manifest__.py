@@ -8,6 +8,9 @@
     "website": "https://github.com/aginix/kmitl",
     "license": "AGPL-3",
     "depends": ["web"],
+    "data": [
+        "views/res_partner_views.xml",
+    ],
     "assets": {
         "web.assets_backend": [
             "agx_partner_autocomplete/static/src/partner_m2o/partner_m2o.js",

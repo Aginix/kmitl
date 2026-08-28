@@ -3,17 +3,86 @@
 import { registry } from "@web/core/registry";
 import { Many2XAutocomplete } from "@web/views/fields/relational_utils";
 import { Many2OneField } from "@web/views/fields/many2one/many2one_field";
+import { useState, onWillStart, onWillUpdateProps } from "@odoo/owl";
 
 // The stock Many2one dropdown shows a single truncated line per option — for a
 // contact that is rarely enough to tell people and companies apart while
 // typing. This widget swaps in a rich, multi-line option template (name, type,
 // VAT, address, e-mail, phone), enriched by one batched
-// res.partner.get_partner_autocomplete_info call per set of options shown.
-// Registered for both form and list so the same widget="partner_autocomplete"
-// renders the rich dropdown in a normal field and inside a tree cell.
+// res.partner.get_partner_autocomplete_info call per set of options shown, and
+// once a contact is picked it keeps a compact muted subtitle under the name so
+// the field doesn't fall back to a bare name. Registered for both form and list
+// so the same widget="partner_autocomplete" works on a normal field and inside
+// an editable tree.
+
+// Rich list view reused by the "Search More…" dialog so it shows the same
+// columns (type, VAT, address…) as the dropdown instead of the bare default
+// partner list. Must be a fully-qualified xmlid (tree_view_ref requirement).
+const SEARCH_MORE_VIEW = "agx_partner_autocomplete.res_partner_autocomplete_view_tree";
+
+// Module-level micro-batcher + cache for the selected-value subtitle: a tree
+// full of partner cells resolves in a single RPC, and re-renders / edit toggles
+// never refetch. Staleness is acceptable — the primary name always comes fresh
+// from the field value; only the muted subtitle is cached.
+const partnerInfoCache = new Map();
+let pendingIds = new Set();
+let pendingResolvers = [];
+let flushScheduled = false;
+
+function loadPartnerInfo(orm, id) {
+    if (partnerInfoCache.has(id)) {
+        return Promise.resolve(partnerInfoCache.get(id));
+    }
+    return new Promise((resolve) => {
+        pendingIds.add(id);
+        pendingResolvers.push({ id, resolve });
+        if (flushScheduled) {
+            return;
+        }
+        flushScheduled = true;
+        // Flush on the next microtask: every partner cell rendered in the same
+        // pass registers its id synchronously first, so they share one call.
+        Promise.resolve().then(async () => {
+            const ids = [...pendingIds];
+            const resolvers = pendingResolvers;
+            pendingIds = new Set();
+            pendingResolvers = [];
+            flushScheduled = false;
+            let byId = {};
+            try {
+                const infos = await orm.call(
+                    "res.partner",
+                    "get_partner_autocomplete_info",
+                    [ids]
+                );
+                for (const info of infos) {
+                    partnerInfoCache.set(info.id, info);
+                }
+                byId = Object.fromEntries(infos.map((i) => [i.id, i]));
+            } catch (e) {
+                byId = {};
+            }
+            for (const r of resolvers) {
+                r.resolve(byId[r.id] || null);
+            }
+        });
+    });
+}
 
 class PartnerM2XAutocomplete extends Many2XAutocomplete {
-    // this.orm is already provided by the base Many2XAutocomplete.setup().
+    setup() {
+        super.setup();
+        // "Search More…" is the only caller of selectCreate, so wrapping it here
+        // is enough to route that dialog to the rich partner list view.
+        if (this.props.resModel === "res.partner") {
+            const selectCreate = this.selectCreate;
+            this.selectCreate = (params) =>
+                selectCreate({
+                    ...params,
+                    context: { ...params.context, tree_view_ref: SEARCH_MORE_VIEW },
+                });
+        }
+    }
 
     get optionsSource() {
         return {
@@ -39,6 +108,10 @@ class PartnerM2XAutocomplete extends Many2XAutocomplete {
                 [ids]
             );
             const byId = Object.fromEntries(infos.map((i) => [i.id, i]));
+            // Pre-warm the subtitle cache so picking an option needs no extra RPC.
+            for (const info of infos) {
+                partnerInfoCache.set(info.id, info);
+            }
             for (const o of options) {
                 const info = o.value && byId[o.value];
                 if (info) {
@@ -53,11 +126,47 @@ class PartnerM2XAutocomplete extends Many2XAutocomplete {
     }
 }
 
-export class PartnerAutocompleteM2oField extends Many2OneField {}
+export class PartnerAutocompleteM2oField extends Many2OneField {
+    setup() {
+        super.setup();
+        this.partnerInfo = useState({ subtitle: "" });
+        // Fire-and-forget so the field (and a whole tree of them) paints
+        // immediately with the name; the muted subtitle pops in once resolved.
+        onWillStart(() => {
+            this._loadSubtitle(this.props.value);
+        });
+        onWillUpdateProps((nextProps) => {
+            this._loadSubtitle(nextProps.value);
+        });
+    }
+
+    async _loadSubtitle(value) {
+        if (this.relation !== "res.partner" || !value) {
+            this.partnerInfo.subtitle = "";
+            return;
+        }
+        const info = await loadPartnerInfo(this.orm, value[0]);
+        this.partnerInfo.subtitle = (info && info.subtitle) || "";
+    }
+
+    get extraLines() {
+        // Render our compact secondary through the standard extra-lines slot
+        // (below the name when read-only, below the input while editing) so no
+        // template surgery is needed. Fall back to the stock multiline-name
+        // behaviour when we have no subtitle.
+        if (this.partnerInfo.subtitle) {
+            return [this.partnerInfo.subtitle];
+        }
+        return super.extraLines;
+    }
+}
 PartnerAutocompleteM2oField.components = {
     ...Many2OneField.components,
     Many2XAutocomplete: PartnerM2XAutocomplete,
 };
+// Guarantee the root gets o_field_partner_autocomplete in every view type so the
+// subtitle styling below can scope to this widget only.
+PartnerAutocompleteM2oField.additionalClasses = ["o_field_partner_autocomplete"];
 
 registry.category("fields").add("partner_autocomplete", PartnerAutocompleteM2oField);
 // Register the list variant too so the rich dropdown works in editable trees;

@@ -24,6 +24,7 @@ class ResPartner(models.Model):
             "name": (self.display_name or self.name or "").split("\n")[0],
             "is_company": self.is_company,
             "type": self._partner_autocomplete_type(),
+            "subtitle": self._partner_autocomplete_subtitle(),
             "rows": self._partner_autocomplete_rows(),
         }
 
@@ -33,6 +34,23 @@ class ResPartner(models.Model):
         return dict(
             self._fields["company_type"]._description_selection(self.env)
         ).get(self.company_type, "")
+
+    def _partner_autocomplete_subtitle(self):
+        """Compact one-line secondary shown under the name once a contact is
+        picked, so the selected value isn't reduced to a bare name. Reuses the
+        same overridable type hook as the badge, so a bridge's classification
+        flows here too; kept short (type · VAT · locality) on purpose."""
+        self.ensure_one()
+        parts = []
+        type_label = self._partner_autocomplete_type()
+        if type_label:
+            parts.append(type_label)
+        if self.vat:
+            parts.append(self.vat)
+        locality = self.city or self.country_id.name
+        if locality:
+            parts.append(locality)
+        return " · ".join(parts)
 
     def _partner_autocomplete_rows(self):
         """(label, value, icon) rows — only the ones that carry a value, so an
