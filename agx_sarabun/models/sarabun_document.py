@@ -944,14 +944,28 @@ class SarabunDocument(models.Model):
             for line in template.line_ids
         ]
 
-    def action_seed_route_from_template(self):
-        """Button (draft/returned): (re)load the Route from ``route_template_id``.
+    def _replace_route_from_template(self):
+        """Wipe the current living เส้นทาง (the locked ผู้จัดทำ/originator step is
+        preserved) and replace it with ``route_template_id``'s steps, so it truly
+        *replaces* the route rather than appending to it."""
+        self.ensure_one()
+        self._ensure_originator_step()
+        self.routing_step_ids.filtered(lambda s: not s.is_originator).unlink()
+        self._seed_route_from_template()
 
-        Selecting a template alone is inert — the seed only materialises at ส่ง.
-        This gives the composer an explicit "apply now" so the chosen template's
-        steps appear immediately, wiping the current live เส้นทาง first (the locked
-        ผู้จัดทำ/originator step is preserved) so it truly *replaces* the route
-        rather than appending to it."""
+    @api.onchange("route_template_id")
+    def _onchange_route_template_id(self):
+        """Picking a template applies it immediately — clear the Route and set it
+        entirely from the newly chosen template (only while draft/returned, which
+        is also when the field itself is editable)."""
+        if not self.route_template_id or self.state not in ("draft", "returned"):
+            return
+        self._replace_route_from_template()
+
+    def action_seed_route_from_template(self):
+        """Button (draft/returned): manually (re)apply ``route_template_id`` — e.g.
+        to reload it after its lines changed elsewhere, since re-picking the same
+        value in the field doesn't re-trigger the onchange above."""
         self.ensure_one()
         if self.state not in ("draft", "returned"):
             raise UserError(_(
@@ -959,9 +973,7 @@ class SarabunDocument(models.Model):
             ))
         if not self.route_template_id:
             raise UserError(_("Select a route template (แม่แบบเส้นทาง) first."))
-        self._ensure_originator_step()
-        self.routing_step_ids.filtered(lambda s: not s.is_originator).unlink()
-        self._seed_route_from_template()
+        self._replace_route_from_template()
         return True
 
     def _shift_stages_from(self, order):
