@@ -575,20 +575,24 @@ class ReceiptKmitl(models.Model):
             "target": "current",
         }
 
-    @api.model
-    def action_print_receipt(self, receipt_id, is_copy=False):
-        receipt = self.browse(receipt_id)
-        receipt.ensure_one()
-        label = _("Copy printed") if is_copy else _("Original printed")
-        receipt.message_post(body=label)
-        html = self.env["ir.actions.report"].with_context(
-            receipt_copy=is_copy,
-        )._render_qweb_html(
-            "receipt_kmitl.action_report_receipt_kmitl", receipt.ids
-        )[0]
-        if isinstance(html, bytes):
-            html = html.decode("utf-8")
-        return {"html": html}
+    def action_print_original(self):
+        self.ensure_one()
+        self.message_post(body=_("Original receipt printed."))
+        return self._action_print_via_browser(is_copy=False)
+
+    def action_print_copy(self):
+        self.ensure_one()
+        self.message_post(body=_("Copy of receipt printed."))
+        return self._action_print_via_browser(is_copy=True)
+
+    def _action_print_via_browser(self, is_copy=False):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": "/report/html/receipt_kmitl.report_receipt_kmitl/%s?copy=%s"
+            % (self.id, "1" if is_copy else "0"),
+            "target": "new",
+        }
 
     def unlink(self):
         for rec in self:
