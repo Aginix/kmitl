@@ -6,6 +6,14 @@ from odoo.exceptions import UserError, ValidationError
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
+    # Untranslated placeholder, like account.move's "/": the number is minted
+    # later (at button_to_verify), so this value sits in the DB and is read back
+    # by users in other locales. Anything translated here (e.g. _("New")) would
+    # compare unequal to _() evaluated in the reader's language — a th_TH draft
+    # storing "รายการใหม่" would look already-numbered to an en_US user, skipping
+    # the mint. The friendly "New" label is rendered by the form view instead.
+    name = fields.Char(default="/")
+
     # True once the PR number has been minted — the fiscal year is then frozen
     # (it drives the number's year), even after a Reset to Draft.
     fiscal_year_locked = fields.Boolean(compute="_compute_fiscal_year_locked")
@@ -13,9 +21,9 @@ class PurchaseRequest(models.Model):
     @api.model
     def _get_default_name(self):
         # Bypass the base's next_by_code("purchase.request") so records keep the
-        # _("New") placeholder until button_to_verify draws our KMITL-format
-        # number below.
-        return _("New")
+        # "/" placeholder until button_to_verify draws our KMITL-format number
+        # below.
+        return "/"
 
     def button_to_verify(self):
         # Hook the mint into the workflow's canonical submission point.
@@ -37,8 +45,7 @@ class PurchaseRequest(models.Model):
         # Gregorian year + 543 is the BE fiscal-year number (e.g. FY 2569 ends
         # 2026 → 2569).
         self.ensure_one()
-        placeholders = {"New", _("New")}
-        if self.name and self.name not in placeholders:
+        if self.name and self.name != "/":
             return
         if not self.account_fiscal_year_id:
             raise ValidationError(
@@ -49,25 +56,21 @@ class PurchaseRequest(models.Model):
             self.env["ir.sequence"]
             .with_context(ir_sequence_date=fiscal_date)
             .next_by_code("purchase.request.kmitl", sequence_date=fiscal_date)
-        ) or _("New")
+        ) or "/"
 
     @api.depends("name")
     def _compute_fiscal_year_locked(self):
-        placeholders = {"New", _("New")}
+        # "/" is the placeholder a request carries until button_to_verify mints
+        # its number. Kept untranslated on purpose — see the ``name`` field.
         for record in self:
-            record.fiscal_year_locked = bool(
-                record.name and record.name not in placeholders
-            )
+            record.fiscal_year_locked = bool(record.name and record.name != "/")
 
     def write(self, vals):
         # Freeze the fiscal year once the PR number has been assigned. The
         # number's year is derived from the fiscal year, so allowing FY changes
         # after minting would make the number inconsistent.
         if "account_fiscal_year_id" in vals:
-            placeholders = {"New", _("New")}
-            numbered = self.filtered(
-                lambda r: r.name and r.name not in placeholders
-            )
+            numbered = self.filtered(lambda r: r.name and r.name != "/")
             if numbered:
                 raise UserError(
                     _(

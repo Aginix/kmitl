@@ -20,9 +20,7 @@ msgid "Fiscal Year is required to generate the document number."
 msgstr "ต้องระบุปีงบประมาณเพื่อสร้างเลขที่เอกสาร"
 
 #. module: purchase_request_sequence_kmitl
-#. odoo-python
-#: code:addons/purchase_request_sequence_kmitl/models/purchase_request.py:0
-#, python-format
+#: model_terms:ir.ui.view,arch_db:purchase_request_sequence_kmitl.view_purchase_request_form_fy_lock
 msgid "New"
 msgstr "รายการใหม่"
 
