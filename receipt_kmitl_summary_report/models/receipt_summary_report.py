@@ -29,7 +29,7 @@ class ReceiptReport(models.AbstractModel):
             ("company_id", "=", company_id),
             ("date", ">=", date_from),
             ("date", "<=", date_to),
-            ("state", "in", ["confirmed", "posted"]),
+            ("state", "in", ["to_submit", "submitted", "approved", "done"]),
         ]
 
         payment_type = options.get("payment_type")
