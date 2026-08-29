@@ -946,12 +946,29 @@ class SarabunDocument(models.Model):
 
     def _replace_route_from_template(self):
         """Wipe the current living เส้นทาง (the locked ผู้จัดทำ/originator step is
-        preserved) and replace it with ``route_template_id``'s steps, so it truly
-        *replaces* the route rather than appending to it."""
+        preserved) and replace it with ``route_template_id``'s steps in a single
+        field assignment, so it truly *replaces* the route rather than appending
+        to it.
+
+        Deliberately NOT ``.unlink()`` then a separate assignment: inside an
+        onchange, ``self.routing_step_ids`` holds NewId-wrapped records, but
+        ``.ids`` unwraps them back to their REAL underlying ids (``origin_ids``)
+        — so calling the imperative ``.unlink()`` method deletes the live rows
+        from the database immediately, before Save/Discard even runs. A plain
+        ``(2, id)`` command assigned via ``=``, by contrast, is staged through
+        the field's cache conversion and only ever persists on an actual write()
+        (i.e. it stays virtual for the duration of an onchange)."""
         self.ensure_one()
         self._ensure_originator_step()
-        self.routing_step_ids.filtered(lambda s: not s.is_originator).unlink()
-        self._seed_route_from_template()
+        template = self.route_template_id or self.type_id.default_route_id
+        if not template:
+            return
+        self.route_template_id = template
+        to_remove = self.routing_step_ids.filtered(lambda s: not s.is_originator)
+        self.routing_step_ids = [(2, step.id) for step in to_remove] + [
+            (0, 0, dict(line._seed_vals(), attempt_seq=self.attempt_seq or 1))
+            for line in template.line_ids
+        ]
 
     @api.onchange("route_template_id")
     def _onchange_route_template_id(self):

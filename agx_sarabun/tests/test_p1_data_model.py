@@ -111,3 +111,30 @@ class TestP1DataModel(SarabunCommon):
         })
         with self.assertRaises(ValidationError):
             self._make_doc(doc_type=typed, origin_model="res.partner", origin_res_id=1)
+
+    def test_reselecting_route_template_does_not_delete_before_save(self):
+        """Regression: re-picking route_template_id (even the SAME value) in a
+        Form must not delete the document's real routing steps outside of an
+        explicit save. Calling ``unlink()`` imperatively inside an onchange
+        resolves the NewId-wrapped records back to their real underlying ids
+        and deletes them from the database immediately — before Save/Discard
+        ever runs — which is the bug this guards against."""
+        template = self.Template.create({
+            "name": "เส้นทางทดสอบ",
+            "line_ids": [(0, 0, {
+                "order": 10, "verb": self._verb("sign_approve").id,
+                "target_mode": "person", "employee_id": self.emp_a.id,
+            })],
+        })
+        doc = self._make_doc(route_template_id=template.id)
+        doc.action_seed_route_from_template()  # persists real template steps now
+        live_step_ids = doc.routing_step_ids.ids
+        self.assertEqual(len(live_step_ids), 2)  # originator + template step
+
+        with Form(doc) as form:
+            form.route_template_id = template  # re-select the SAME template
+            # Must still exist in the DB — no premature real delete mid-onchange.
+            self.assertTrue(self.Step.browse(live_step_ids).exists())
+
+        doc.invalidate_recordset()
+        self.assertEqual(len(doc.routing_step_ids), 2)  # originator + fresh template step
