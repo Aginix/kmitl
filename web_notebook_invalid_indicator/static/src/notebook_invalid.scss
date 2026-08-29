@@ -1,0 +1,16 @@
+.o_notebook_headers .nav-link.o_notebook_page_invalid {
+    color: $danger;
+    border-bottom-color: $danger;
+    font-weight: 600;
+
+    &::before {
+        content: "\f071";
+        font-family: "FontAwesome";
+        margin-right: 4px;
+    }
+
+    &.active {
+        color: $danger;
+        border-color: $danger $danger #fff;
+    }
+}
