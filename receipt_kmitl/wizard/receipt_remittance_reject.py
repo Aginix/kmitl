@@ -26,10 +26,6 @@ class ReceiptRemittanceReject(models.TransientModel):
             body=_("Remittance rejected by %s.<br/>Reason: %s")
             % (self.env.user.name, self.reason),
         )
-        remittance.write(
-            {
-                "state": "draft",
-                "submitted_by": False,
-                "submitted_date": False,
-            }
-        )
+        remittance._cancel_approver_activity()
+        remittance.receipt_ids.write({"state": "to_submit"})
+        remittance.write({"state": "draft"})

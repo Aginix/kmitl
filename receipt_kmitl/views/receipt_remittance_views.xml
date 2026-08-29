@@ -47,6 +47,11 @@
                             class="btn-primary"
                             states="submitted"
                             groups="receipt_kmitl.group_receipt_kmitl_remittance_approver"/>
+                    <button name="action_reject"
+                            type="object"
+                            string="Reject"
+                            states="submitted"
+                            groups="receipt_kmitl.group_receipt_kmitl_remittance_approver"/>
                     <button name="action_post"
                             type="object"
                             string="Post Journal Entries"

@@ -257,6 +257,18 @@ class ReceiptRemittance(models.Model):
                 }
             )
 
+    def action_reject(self):
+        self.ensure_one()
+        if self.state != "submitted":
+            raise UserError(_("Only submitted remittances can be rejected."))
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "kmitl.receipt.remittance.reject",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_remittance_id": self.id},
+        }
+
     def action_post(self):
         for rec in self:
             if rec.state != "approved":
