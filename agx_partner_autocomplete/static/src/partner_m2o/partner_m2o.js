@@ -12,8 +12,15 @@ import { useState, onWillStart, onWillUpdateProps } from "@odoo/owl";
 // res.partner.get_partner_autocomplete_info call per set of options shown, and
 // once a contact is picked it keeps a compact muted subtitle under the name so
 // the field doesn't fall back to a bare name. Registered for both form and list
-// so the same widget="partner_autocomplete" works on a normal field and inside
+// so the same widget="agx_partner_many2one" works on a normal field and inside
 // an editable tree.
+//
+// Which rows/subtitle parts show is configurable per use via widget options,
+// e.g. options="{'show_vat': false, 'show_address': false}" — every row and
+// subtitle part the server sends is tagged with a key (see
+// _partner_autocomplete_rows/_partner_autocomplete_subtitle_parts), and any
+// show_<key> option toggles that key off without code changes on either side,
+// so a future new row/part is togglable for free.
 
 // Rich list view reused by the "Search More…" dialog so it shows the same
 // columns (type, VAT, address…) as the dropdown instead of the bare default
@@ -22,6 +29,17 @@ const SEARCH_MORE_VIEW = "agx_partner_autocomplete.res_partner_autocomplete_view
 // Search view carrying the searchpanel facet (company_type, or partner_type_id
 // once partner_type_kmitl_autocomplete swaps it in).
 const SEARCH_MORE_SEARCH_VIEW = "agx_partner_autocomplete.res_partner_autocomplete_view_search";
+
+// Keeps items whose key isn't explicitly turned off via a show_<key> display
+// option. The cached payload always carries every key; filtering happens here,
+// per widget instance, so the same cache entry serves instances configured
+// differently.
+function filterByDisplayOptions(items, displayOptions) {
+    if (!displayOptions) {
+        return items;
+    }
+    return items.filter((item) => displayOptions[item.key] !== false);
+}
 
 // Module-level micro-batcher + cache for the selected-value subtitle: a tree
 // full of partner cells resolves in a single RPC, and re-renders / edit toggles
@@ -123,7 +141,10 @@ class PartnerM2XAutocomplete extends Many2XAutocomplete {
             for (const o of options) {
                 const info = o.value && byId[o.value];
                 if (info) {
-                    o.partnerInfo = info;
+                    o.partnerInfo = {
+                        ...info,
+                        rows: filterByDisplayOptions(info.rows, this.props.displayOptions),
+                    };
                     // Applied to the <li>; the scss uses it to undo the
                     // single-line clamp the dropdown puts on every item.
                     o.classList = "o_partner_ac_item";
@@ -154,7 +175,11 @@ export class PartnerAutocompleteM2oField extends Many2OneField {
             return;
         }
         const info = await loadPartnerInfo(this.orm, value[0]);
-        this.partnerInfo.subtitle = (info && info.subtitle) || "";
+        const parts = filterByDisplayOptions(
+            (info && info.subtitle_parts) || [],
+            this.props.displayOptions
+        );
+        this.partnerInfo.subtitle = parts.map((part) => part.value).join(" · ");
     }
 
     get extraLines() {
@@ -167,6 +192,15 @@ export class PartnerAutocompleteM2oField extends Many2OneField {
         }
         return super.extraLines;
     }
+
+    get Many2XAutocompleteProps() {
+        // The dropdown's row-filtering lives on PartnerM2XAutocomplete, which
+        // only gets what this getter hands it — thread displayOptions through.
+        return {
+            ...super.Many2XAutocompleteProps,
+            displayOptions: this.props.displayOptions,
+        };
+    }
 }
 PartnerAutocompleteM2oField.components = {
     ...Many2OneField.components,
@@ -175,10 +209,29 @@ PartnerAutocompleteM2oField.components = {
 // Guarantee the root gets o_field_partner_autocomplete in every view type so the
 // subtitle styling below can scope to this widget only.
 PartnerAutocompleteM2oField.additionalClasses = ["o_field_partner_autocomplete"];
+PartnerAutocompleteM2oField.props = {
+    ...Many2OneField.props,
+    displayOptions: { type: Object, optional: true },
+};
 
-registry.category("fields").add("partner_autocomplete", PartnerAutocompleteM2oField);
+PartnerAutocompleteM2oField.extractProps = ({ attrs, field }) => {
+    const props = Many2OneField.extractProps({ attrs, field });
+    // Generic show_<key> -> displayOptions[<key>] mapping: any row/subtitle
+    // part key a hook tags on the server becomes toggleable here for free,
+    // with no change to this widget, e.g. options="{'show_vat': false}".
+    const displayOptions = {};
+    for (const optionName in attrs.options) {
+        const match = /^show_(.+)$/.exec(optionName);
+        if (match) {
+            displayOptions[match[1]] = Boolean(attrs.options[optionName]);
+        }
+    }
+    return { ...props, displayOptions };
+};
+
+registry.category("fields").add("agx_partner_many2one", PartnerAutocompleteM2oField);
 // Register the list variant too so the rich dropdown works in editable trees;
 // mirrors how core pins many2one for list to avoid the legacy fallback.
 registry
     .category("fields")
-    .add("list.partner_autocomplete", PartnerAutocompleteM2oField);
+    .add("list.agx_partner_many2one", PartnerAutocompleteM2oField);

@@ -6,14 +6,17 @@ class ResPartner(models.Model):
     _inherit = "res.partner"
 
     def get_partner_autocomplete_info(self):
-        """Display payload for the ``partner_autocomplete`` m2o widget.
+        """Display payload for the ``agx_partner_many2one`` m2o widget.
 
         One dict per record: identity plus the label/value rows the dropdown
         renders verbatim, so labels, translations and formatting all stay
-        server-side and the widget stays dumb. The partner "type" is a
-        dedicated hook (:meth:`_partner_autocomplete_type`) so a bridge module
-        can swap the generic Individual/Company classification for its own
-        without touching the widget or the rest of the payload.
+        server-side and the widget stays dumb. Rows and subtitle parts each
+        carry a ``key`` so the widget's ``show_<key>`` display options can
+        toggle them on/off without any change here — new keys are toggleable
+        for free the moment a hook starts tagging them. The partner "type" is
+        a dedicated hook (:meth:`_partner_autocomplete_type`) so a bridge
+        module can swap the generic Individual/Company classification for its
+        own without touching the widget or the rest of the payload.
         """
         return [record._partner_autocomplete_info() for record in self]
 
@@ -24,7 +27,7 @@ class ResPartner(models.Model):
             "name": (self.display_name or self.name or "").split("\n")[0],
             "is_company": self.is_company,
             "type": self._partner_autocomplete_type(),
-            "subtitle": self._partner_autocomplete_subtitle(),
+            "subtitle_parts": self._partner_autocomplete_subtitle_parts(),
             "rows": self._partner_autocomplete_rows(),
         }
 
@@ -35,44 +38,45 @@ class ResPartner(models.Model):
             self._fields["company_type"]._description_selection(self.env)
         ).get(self.company_type, "")
 
-    def _partner_autocomplete_subtitle(self):
-        """Compact one-line secondary shown under the name once a contact is
-        picked, so the selected value isn't reduced to a bare name. Reuses the
-        same overridable type hook as the badge, so a bridge's classification
-        flows here too; kept short (type · VAT · locality) on purpose."""
+    def _partner_autocomplete_subtitle_parts(self):
+        """Ordered (key, value) parts for the compact subtitle shown under a
+        selected value. Reuses the same overridable type hook as the badge, so
+        a bridge's classification flows here too. The widget filters by
+        show_<key> and joins what's left with " · "."""
         self.ensure_one()
         parts = []
         type_label = self._partner_autocomplete_type()
         if type_label:
-            parts.append(type_label)
+            parts.append({"key": "type", "value": type_label})
         if self.vat:
-            parts.append(self.vat)
+            parts.append({"key": "vat", "value": self.vat})
         locality = self.city or self.country_id.name
         if locality:
-            parts.append(locality)
-        return " · ".join(parts)
+            parts.append({"key": "address", "value": locality})
+        return parts
 
     def _partner_autocomplete_rows(self):
-        """(label, value, icon) rows — only the ones that carry a value, so an
-        empty contact shows just its name and type rather than blank rows."""
+        """(key, label, value, icon) rows — only the ones that carry a value,
+        so an empty contact shows just its name and type rather than blank
+        rows. The widget filters rows by show_<key>."""
         self.ensure_one()
         rows = []
         if self.vat:
             rows.append(
-                {"label": _("VAT"), "value": self.vat, "icon": "fa-id-card-o"}
+                {"key": "vat", "label": _("VAT"), "value": self.vat, "icon": "fa-id-card-o"}
             )
         address = self._partner_autocomplete_address()
         if address:
             rows.append(
-                {"label": _("Address"), "value": address, "icon": "fa-map-marker"}
+                {"key": "address", "label": _("Address"), "value": address, "icon": "fa-map-marker"}
             )
         if self.email:
             rows.append(
-                {"label": _("Email"), "value": self.email, "icon": "fa-envelope-o"}
+                {"key": "email", "label": _("Email"), "value": self.email, "icon": "fa-envelope-o"}
             )
         phone = self.phone or self.mobile
         if phone:
-            rows.append({"label": _("Phone"), "value": phone, "icon": "fa-phone"})
+            rows.append({"key": "phone", "label": _("Phone"), "value": phone, "icon": "fa-phone"})
         return rows
 
     def _partner_autocomplete_address(self):

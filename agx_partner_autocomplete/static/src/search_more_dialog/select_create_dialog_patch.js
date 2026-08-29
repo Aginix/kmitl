@@ -4,7 +4,7 @@ import { patch } from "@web/core/utils/patch";
 import { SelectCreateDialog } from "@web/views/view_dialogs/select_create_dialog";
 
 // SelectCreateDialog hardcodes display.searchPanel to false for every picker.
-// The partner_autocomplete "Search More…" dialog wants a real searchpanel, so
+// The agx_partner_many2one "Search More…" dialog wants a real searchpanel, so
 // this patch flips it on, but only when the caller opts in via the
 // agx_partner_ac_searchpanel context flag — every other Search More dialog in
 // the app stays untouched.
