@@ -63,11 +63,6 @@ class ReceiptRemittance(models.Model):
         store=True,
         currency_field="currency_id",
     )
-    account_fiscal_year_id = fields.Many2one(
-        "account.fiscal.year",
-        string="Fiscal Year",
-        tracking=True,
-    )
     note = fields.Text()
     user_id = fields.Many2one(
         "res.users",
@@ -108,24 +103,8 @@ class ReceiptRemittance(models.Model):
         for rec in self:
             rec.amount_total = sum(rec.receipt_ids.mapped("amount_total"))
 
-    @api.onchange("date")
-    def _onchange_date(self):
-        if self.date:
-            fiscal_year = self.env["account.fiscal.year"].search(
-                [
-                    ("date_from", "<=", self.date),
-                    ("date_to", ">=", self.date),
-                    ("company_id", "=", self.company_id.id),
-                ],
-                limit=1,
-            )
-            if fiscal_year:
-                self.account_fiscal_year_id = fiscal_year
-
     def _get_fy_be(self):
         self.ensure_one()
-        if self.account_fiscal_year_id:
-            return self.account_fiscal_year_id.date_to.year + 543
         return self.env["kmitl.receipt"]._get_fiscal_year_be(self.date)
 
     def _get_sequence(self):
@@ -202,16 +181,6 @@ class ReceiptRemittance(models.Model):
                         % receipt.name
                     )
             rec.date = fields.Date.context_today(rec)
-            fiscal_year = self.env["account.fiscal.year"].search(
-                [
-                    ("date_from", "<=", rec.date),
-                    ("date_to", ">=", rec.date),
-                    ("company_id", "=", rec.company_id.id),
-                ],
-                limit=1,
-            )
-            if fiscal_year:
-                rec.account_fiscal_year_id = fiscal_year
             if rec.name == "/" or not rec.name:
                 rec.name = rec._get_sequence().next_by_id()
             rec.receipt_ids.write({"state": "submitted"})

@@ -9,7 +9,6 @@
                   decoration-success="state == 'posted'">
                 <field name="name"/>
                 <field name="date"/>
-                <field name="account_fiscal_year_id" optional="hide"/>
                 <field name="department_analytic_id"/>
                 <field name="receipt_count" string="#"/>
                 <field name="amount_total" sum="Total"/>
@@ -98,8 +97,6 @@
                         <group>
                             <field name="date"
                                    attrs="{'readonly': [('state','!=','draft')]}"/>
-                            <field name="account_fiscal_year_id"
-                                   attrs="{'readonly': [('state','!=','draft')]}"/>
                             <field name="department_analytic_id"
                                    options="{'no_create': True}"
                                    attrs="{'readonly': [('state','!=','draft')]}"/>
@@ -168,7 +165,7 @@
             <search>
                 <field name="name"/>
                 <field name="department_analytic_id"/>
-                <field name="account_fiscal_year_id"/>
+
                 <field name="submitted_by"/>
                 <field name="user_id"/>
                 <separator/>
@@ -182,7 +179,7 @@
                 <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
                 <group expand="0" name="group_by" string="Group By">
                     <filter string="Department" name="group_department" context="{'group_by':'department_analytic_id'}"/>
-                    <filter string="Fiscal Year" name="group_fiscal_year" context="{'group_by':'account_fiscal_year_id'}"/>
+
                     <filter string="State" name="group_state" context="{'group_by':'state'}"/>
                     <filter string="Date" name="group_date" context="{'group_by':'date:month'}"/>
                     <filter string="Submitted By" name="group_submitted_by" context="{'group_by':'submitted_by'}"/>
