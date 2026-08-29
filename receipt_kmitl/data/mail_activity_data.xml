@@ -3,9 +3,6 @@
     <record id="mail_activity_type_remittance_approval" model="mail.activity.type">
         <field name="name">Remittance Approval</field>
         <field name="summary">Review and approve receipt remittance</field>
-        <field name="res_model_id" ref="model_kmitl_receipt_remittance"/>
-        <field name="category">default</field>
         <field name="delay_count">0</field>
-        <field name="icon">fa-check-circle</field>
     </record>
 </odoo>
