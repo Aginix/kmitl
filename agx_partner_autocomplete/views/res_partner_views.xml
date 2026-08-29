@@ -22,10 +22,8 @@
         </field>
     </record>
 
-    <!-- Search view for the same dialog: a plain search-bar plus a searchpanel
-         facet on company_type. The facet is generic (Individual/Company);
-         partner_type_kmitl_autocomplete replaces it with the KMITL partner
-         type when that module is installed. -->
+    <!-- Search view for the same dialog: a plain search-bar matching the
+         columns above, no searchpanel. -->
     <record id="res_partner_autocomplete_view_search" model="ir.ui.view">
         <field name="name">res.partner.autocomplete.search</field>
         <field name="model">res.partner</field>
@@ -35,9 +33,6 @@
                 <field name="vat"/>
                 <field name="email"/>
                 <field name="phone"/>
-                <searchpanel>
-                    <field name="company_type" string="Type" select="one" icon="fa-user-o"/>
-                </searchpanel>
             </search>
         </field>
     </record>

@@ -16,7 +16,6 @@
             "agx_partner_autocomplete/static/src/partner_m2o/partner_m2o.js",
             "agx_partner_autocomplete/static/src/partner_m2o/partner_m2o.xml",
             "agx_partner_autocomplete/static/src/partner_m2o/partner_m2o.scss",
-            "agx_partner_autocomplete/static/src/search_more_dialog/select_create_dialog_patch.js",
         ],
     },
     "installable": True,
