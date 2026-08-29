@@ -568,11 +568,17 @@ class ReceiptKmitl(models.Model):
 
     def _action_print_via_browser(self, is_copy=False):
         self.ensure_one()
+        html = self.env["ir.actions.report"].with_context(
+            receipt_copy=is_copy,
+        )._render_qweb_html(
+            "receipt_kmitl.action_report_receipt_kmitl", self.ids
+        )[0]
+        if isinstance(html, bytes):
+            html = html.decode("utf-8")
         return {
-            "type": "ir.actions.act_url",
-            "url": "/report/html/receipt_kmitl.report_receipt_kmitl/%s?copy=%s"
-            % (self.id, "1" if is_copy else "0"),
-            "target": "new",
+            "type": "ir.actions.client",
+            "tag": "receipt_kmitl_print",
+            "params": {"html": html},
         }
 
     def unlink(self):
