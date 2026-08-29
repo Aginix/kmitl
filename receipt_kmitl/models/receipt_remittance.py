@@ -72,8 +72,16 @@ class ReceiptRemittance(models.Model):
         readonly=True,
         copy=False,
     )
-    submitted_by = fields.Many2one("res.users", readonly=True, copy=False)
-    submitted_date = fields.Datetime(readonly=True, copy=False)
+    approver_id = fields.Many2one(
+        "res.users",
+        string="Approver",
+        domain=lambda self: [
+            ("groups_id", "in",
+             [self.env.ref("receipt_kmitl.group_receipt_kmitl_remittance_approver").id])
+        ],
+        default=lambda self: self._default_approver_id(),
+        tracking=True,
+    )
     approved_by = fields.Many2one("res.users", readonly=True, copy=False)
     approved_date = fields.Datetime(readonly=True, copy=False)
     posted_by = fields.Many2one("res.users", readonly=True, copy=False)
@@ -87,6 +95,16 @@ class ReceiptRemittance(models.Model):
         compute="_compute_move_count",
         string="# Journal Entries",
     )
+
+    @api.model
+    def _default_approver_id(self):
+        group = self.env.ref(
+            "receipt_kmitl.group_receipt_kmitl_remittance_approver",
+            raise_if_not_found=False,
+        )
+        if group and group.users:
+            return group.users[0].id
+        return False
 
     @api.depends("receipt_ids")
     def _compute_receipt_count(self):
@@ -159,10 +177,49 @@ class ReceiptRemittance(models.Model):
                 )
             rec.write({"receipt_ids": [(6, 0, receipts.ids)]})
 
+    def _schedule_approver_activity(self):
+        self.ensure_one()
+        activity_type = self.env.ref(
+            "receipt_kmitl.mail_activity_type_remittance_approval",
+            raise_if_not_found=False,
+        )
+        if activity_type and self.approver_id:
+            self.activity_schedule(
+                activity_type_id=activity_type.id,
+                user_id=self.approver_id.id,
+                summary=_("Remittance %s awaiting approval") % self.name,
+            )
+
+    def _complete_approver_activity(self):
+        self.ensure_one()
+        activity_type = self.env.ref(
+            "receipt_kmitl.mail_activity_type_remittance_approval",
+            raise_if_not_found=False,
+        )
+        if activity_type:
+            activities = self.activity_ids.filtered(
+                lambda a: a.activity_type_id == activity_type
+            )
+            activities.action_done()
+
+    def _cancel_approver_activity(self):
+        self.ensure_one()
+        activity_type = self.env.ref(
+            "receipt_kmitl.mail_activity_type_remittance_approval",
+            raise_if_not_found=False,
+        )
+        if activity_type:
+            activities = self.activity_ids.filtered(
+                lambda a: a.activity_type_id == activity_type
+            )
+            activities.unlink()
+
     def action_submit(self):
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft remittances can be submitted."))
+            if not rec.approver_id:
+                raise UserError(_("Please set an approver before submitting."))
             rec._validate_receipts("to_submit")
             for receipt in rec.receipt_ids:
                 if not self.env["account.analytic.account"].search_count(
@@ -184,19 +241,15 @@ class ReceiptRemittance(models.Model):
             if rec.name == "/" or not rec.name:
                 rec.name = rec._get_sequence().next_by_id()
             rec.receipt_ids.write({"state": "submitted"})
-            rec.write(
-                {
-                    "state": "submitted",
-                    "submitted_by": self.env.user.id,
-                    "submitted_date": fields.Datetime.now(),
-                }
-            )
+            rec.state = "submitted"
+            rec._schedule_approver_activity()
 
     def action_approve(self):
         for rec in self:
             if rec.state != "submitted":
                 raise UserError(_("Only submitted remittances can be approved."))
             rec._validate_receipts("submitted")
+            rec._complete_approver_activity()
             rec.receipt_ids.write({"state": "approved"})
             rec.write(
                 {
@@ -248,12 +301,11 @@ class ReceiptRemittance(models.Model):
                 raise UserError(
                     _("Cannot reset to draft from this state.")
                 )
+            rec._cancel_approver_activity()
             rec.receipt_ids.write({"state": "to_submit"})
             rec.write(
                 {
                     "state": "draft",
-                    "submitted_by": False,
-                    "submitted_date": False,
                     "approved_by": False,
                     "approved_date": False,
                     "posted_by": False,

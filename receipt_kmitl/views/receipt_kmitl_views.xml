@@ -82,7 +82,7 @@
                                 class="oe_stat_button"
                                 icon="fa-book"
                                 attrs="{'invisible': [('move_id', '=', False)]}"
-                                groups="receipt_kmitl.group_receipt_kmitl_treasury_officer">
+                                groups="receipt_kmitl.group_receipt_kmitl_remittance_approver">
                             <field name="move_id" widget="statinfo" string="Journal Entry"/>
                         </button>
                     </div>
@@ -169,7 +169,7 @@
                             </group>
                         </page>
                         <page string="Accounting" name="accounting"
-                              groups="receipt_kmitl.group_receipt_kmitl_treasury_officer"
+                              groups="receipt_kmitl.group_receipt_kmitl_remittance_approver"
                               attrs="{'invisible': ['&amp;', ('move_id', '=', False), ('remittance_id', '=', False)]}">
                             <group>
                                 <field name="move_id" readonly="1"/>

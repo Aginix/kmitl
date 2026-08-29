@@ -21,10 +21,10 @@
             <field name="implied_ids" eval="[(4, ref('group_receipt_kmitl_viewer'))]"/>
         </record>
 
-        <!-- Treasury Officer: independent checkbox (no category), implies User.
+        <!-- Remittance Approver: independent checkbox (no category), implies User.
              Carries real accounting rights so action_done is not sudo'd. -->
-        <record id="group_receipt_kmitl_treasury_officer" model="res.groups">
-            <field name="name">Treasury Officer</field>
+        <record id="group_receipt_kmitl_remittance_approver" model="res.groups">
+            <field name="name">Remittance Approver</field>
             <field name="category_id" eval="False"/>
             <field name="implied_ids" eval="[(6, 0, [ref('group_receipt_kmitl_user'), ref('account.group_account_invoice')])]"/>
         </record>
@@ -32,7 +32,7 @@
         <record id="group_receipt_kmitl_manager" model="res.groups">
             <field name="name">Manager</field>
             <field name="category_id" ref="receipt_kmitl.module_category_receipt_kmitl"/>
-            <field name="implied_ids" eval="[(4, ref('group_receipt_kmitl_user')), (4, ref('group_receipt_kmitl_treasury_officer'))]"/>
+            <field name="implied_ids" eval="[(4, ref('group_receipt_kmitl_user')), (4, ref('group_receipt_kmitl_remittance_approver'))]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
     </data>

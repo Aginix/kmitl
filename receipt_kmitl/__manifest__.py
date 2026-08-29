@@ -20,6 +20,7 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "data/partner_walkin_data.xml",
+        "data/mail_activity_data.xml",
         "data/receipt_report_xlsx_action.xml",
         "wizard/receipt_preview_views.xml",
         "wizard/receipt_remittance_reject_view.xml",
