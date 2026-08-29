@@ -11,16 +11,34 @@
         <field name="priority">99</field>
         <field name="arch" type="xml">
             <tree string="Contacts">
-                <field name="display_name" string="Name"/>
                 <field name="company_type" string="Type"/>
+                <field name="display_name" string="Name"/>
                 <field name="email" optional="show"/>
                 <field name="phone" class="o_force_ltr" optional="show"/>
                 <field name="vat" string="Tax ID" optional="show"/>
-                <field name="city" optional="show"/>
-                <field name="state_id" optional="hide"/>
-                <field name="country_id" optional="show"/>
+                <field name="contact_address" string="Address" optional="show"/>
                 <field name="is_company" invisible="1"/>
             </tree>
+        </field>
+    </record>
+
+    <!-- Search view for the same dialog: a plain search-bar plus a searchpanel
+         facet on company_type. The facet is generic (Individual/Company);
+         partner_type_kmitl_autocomplete replaces it with the KMITL partner
+         type when that module is installed. -->
+    <record id="res_partner_autocomplete_view_search" model="ir.ui.view">
+        <field name="name">res.partner.autocomplete.search</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <search string="Contacts">
+                <field name="name" string="Name"/>
+                <field name="vat"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <searchpanel>
+                    <field name="company_type" string="Type" select="one" icon="fa-user-o"/>
+                </searchpanel>
+            </search>
         </field>
     </record>
 </odoo>

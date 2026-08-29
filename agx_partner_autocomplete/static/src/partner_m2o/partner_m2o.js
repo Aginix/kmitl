@@ -19,6 +19,9 @@ import { useState, onWillStart, onWillUpdateProps } from "@odoo/owl";
 // columns (type, VAT, address…) as the dropdown instead of the bare default
 // partner list. Must be a fully-qualified xmlid (tree_view_ref requirement).
 const SEARCH_MORE_VIEW = "agx_partner_autocomplete.res_partner_autocomplete_view_tree";
+// Search view carrying the searchpanel facet (company_type, or partner_type_id
+// once partner_type_kmitl_autocomplete swaps it in).
+const SEARCH_MORE_SEARCH_VIEW = "agx_partner_autocomplete.res_partner_autocomplete_view_search";
 
 // Module-level micro-batcher + cache for the selected-value subtitle: a tree
 // full of partner cells resolves in a single RPC, and re-renders / edit toggles
@@ -79,7 +82,12 @@ class PartnerM2XAutocomplete extends Many2XAutocomplete {
             this.selectCreate = (params) =>
                 selectCreate({
                     ...params,
-                    context: { ...params.context, tree_view_ref: SEARCH_MORE_VIEW },
+                    context: {
+                        ...params.context,
+                        tree_view_ref: SEARCH_MORE_VIEW,
+                        search_view_ref: SEARCH_MORE_SEARCH_VIEW,
+                        agx_partner_ac_searchpanel: true,
+                    },
                 });
         }
     }
