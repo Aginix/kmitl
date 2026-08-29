@@ -209,10 +209,21 @@ PartnerAutocompleteM2oField.components = {
 // Guarantee the root gets o_field_partner_autocomplete in every view type so the
 // subtitle styling below can scope to this widget only.
 PartnerAutocompleteM2oField.additionalClasses = ["o_field_partner_autocomplete"];
-PartnerAutocompleteM2oField.props = {
-    ...Many2OneField.props,
-    displayOptions: { type: Object, optional: true },
-};
+// A getter, not a plain spread-copy: other installed modules (e.g.
+// web_m2x_options) patch Many2OneField.props in place with their own extra
+// keys (searchMore, nodeOptions...) at their own module's load time, which can
+// run after this one. A one-time spread here would freeze a stale schema and
+// make OWL reject those keys as unknown; re-reading Many2OneField.props on
+// every access always picks up whatever it currently is.
+Object.defineProperty(PartnerAutocompleteM2oField, "props", {
+    configurable: true,
+    get() {
+        return {
+            ...Many2OneField.props,
+            displayOptions: { type: Object, optional: true },
+        };
+    },
+});
 
 PartnerAutocompleteM2oField.extractProps = ({ attrs, field }) => {
     const props = Many2OneField.extractProps({ attrs, field });
