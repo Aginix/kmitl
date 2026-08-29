@@ -1,6 +1,6 @@
-==========================================
+============================================
 Tier Validation — Hide Reviewer Menu Systray
-==========================================
+============================================
 
 Removes the OCA ``base_tier_validation`` "Reviewer Menu" bell from the
 systray. Install this in setups where the bell duplicates another
