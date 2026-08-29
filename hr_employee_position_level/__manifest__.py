@@ -2,6 +2,7 @@
     "name": "HR Employee Position Level",
     "version": "16.0.1.1.1",
     "summary": "HR Employee Position Level",
+    "description": "HR Employee Position Level",
     "website": "https://github.com/aginix/kmitl-odoo",
     "author": "Nonpawit, Aginix Technologies",
     "maintainers": ["n3n", "nopparuts"],
