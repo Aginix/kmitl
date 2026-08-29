@@ -32,6 +32,18 @@
                     </div>
                 </t>
 
+                <!-- Original / Copy label -->
+                <div style="position: absolute; top: 10px; right: 10px;
+                            font-size: 14pt; font-weight: bold;
+                            border: 2px solid #333; padding: 2px 12px;">
+                    <t t-if="o.env.context.get('receipt_copy')">
+                        สำเนา / Copy
+                    </t>
+                    <t t-else="">
+                        ต้นฉบับ / Original
+                    </t>
+                </div>
+
                 <!-- Top: crest / No. -->
                 <div class="row">
                     <div class="col-8 text-center offset-2">
