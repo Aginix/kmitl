@@ -13,4 +13,18 @@
             </field>
         </field>
     </record>
+
+    <!-- Same swap in the searchpanel: KMITL partner type instead of the
+         generic Individual/Company facet. -->
+    <record id="res_partner_autocomplete_view_search" model="ir.ui.view">
+        <field name="name">res.partner.autocomplete.search.partner.type</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id"
+            ref="agx_partner_autocomplete.res_partner_autocomplete_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//searchpanel/field[@name='company_type']" position="replace">
+                <field name="partner_type_id" string="Partner Type" select="one" icon="fa-tag"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
