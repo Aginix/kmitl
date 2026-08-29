@@ -215,6 +215,10 @@
                             </group>
                         </page>
                         <page string="Actual Expenses (Disbursement)" name="actual_expenses">
+                            <group string="เปรียบเทียบแผน / จ่ายจริง" name="plan_actual_comparison">
+                                <field name="plan_actual_comparison_html" nolabel="1" colspan="2" />
+                            </group>
+                            <separator string="บันทึกค่าใช้จ่ายจริง" />
                             <field name="allocation_ids" widget="allocation_grouped"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                                 <tree editable="bottom" default_order="partner_id">
