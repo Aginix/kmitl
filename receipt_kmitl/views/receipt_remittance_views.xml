@@ -115,8 +115,6 @@
                                    groups="receipt_kmitl.group_receipt_kmitl_manager"/>
                             <field name="approved_by"
                                    attrs="{'invisible': [('state','not in',['approved','posted'])]}"/>
-                            <field name="posted_by"
-                                   attrs="{'invisible': [('state','!=','posted')]}"/>
                         </group>
                     </group>
                     <field name="receipt_ids" widget="many2many"
@@ -124,11 +122,13 @@
                         <tree edit="false">
                             <field name="name"/>
                             <field name="date"/>
-                            <field name="partner_id"/>
-                            <field name="payment_method_id"/>
+                            <field name="description" optional="show" />
+                            <field name="partner_id" optional="show" />
+                            <field name="payment_method_id" optional="show" />
                             <field name="amount_total" sum="Total"/>
                             <field name="currency_id" invisible="1"/>
-                            <field name="state"/>
+                            <field name="state" optional="show" />
+                            <field name="note" optional="hide" />
                         </tree>
                     </field>
                     <group string="Notes">
@@ -169,6 +169,11 @@
                 <separator/>
                 <filter string="My Remittances" name="my_remittances"
                         domain="[('user_id','=',uid)]"/>
+                <separator/>
+                <filter string="Today" name="today"
+                        domain="[('date','=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Yesterday" name="yesterday"
+                        domain="[('date','=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
                 <separator/>
                 <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
                 <filter string="Submitted" name="submitted" domain="[('state','=','submitted')]"/>

@@ -84,8 +84,6 @@ class ReceiptRemittance(models.Model):
     )
     approved_by = fields.Many2one("res.users", readonly=True, copy=False)
     approved_date = fields.Datetime(readonly=True, copy=False)
-    posted_by = fields.Many2one("res.users", readonly=True, copy=False)
-    posted_date = fields.Datetime(readonly=True, copy=False)
 
     receipt_count = fields.Integer(
         compute="_compute_receipt_count",
@@ -268,13 +266,7 @@ class ReceiptRemittance(models.Model):
                     _("Cannot post a remittance with no receipts.")
                 )
             rec.receipt_ids._action_post()
-            rec.write(
-                {
-                    "state": "posted",
-                    "posted_by": self.env.user.id,
-                    "posted_date": fields.Datetime.now(),
-                }
-            )
+            rec.state = "posted"
 
     def action_draft(self):
         for rec in self:
@@ -308,8 +300,6 @@ class ReceiptRemittance(models.Model):
                     "state": "draft",
                     "approved_by": False,
                     "approved_date": False,
-                    "posted_by": False,
-                    "posted_date": False,
                 }
             )
 

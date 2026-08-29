@@ -219,6 +219,11 @@
                 <filter string="Walk-in" name="walkin"
                         domain="[('is_walkin','=',True)]"/>
                 <separator/>
+                <filter string="Today" name="today"
+                        domain="[('date','=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Yesterday" name="yesterday"
+                        domain="[('date','=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
                 <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
                 <filter string="To Submit" name="to_submit" domain="[('state','=','to_submit')]"/>
                 <filter string="Submitted" name="submitted" domain="[('state','=','submitted')]"/>
@@ -241,8 +246,16 @@
         </field>
     </record>
 
+    <record id="action_receipt_kmitl_my" model="ir.actions.act_window">
+        <field name="name">My Receipts</field>
+        <field name="res_model">kmitl.receipt</field>
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="view_receipt_kmitl_search"/>
+        <field name="context">{'search_default_my_receipts': 1}</field>
+    </record>
+
     <record id="action_receipt_kmitl" model="ir.actions.act_window">
-        <field name="name">Receipts</field>
+        <field name="name">All Receipts</field>
         <field name="res_model">kmitl.receipt</field>
         <field name="view_mode">tree,form,pivot</field>
         <field name="search_view_id" ref="view_receipt_kmitl_search"/>
