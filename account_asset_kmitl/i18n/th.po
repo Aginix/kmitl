@@ -34,7 +34,7 @@ msgstr ""
 #. module: account_asset_number
 #: model:ir.actions.report,print_report_name:account_asset_number.report_account_asset_number
 msgid "'Asset Number - %s' % (object.name)"
-msgstr ""
+msgstr "'เลขทะเบียนครุภัณฑ์ - %s' % (object.name)"
 
 #. module: account_asset_kmitl
 #: model_terms:ir.ui.view,arch_db:account_asset_kmitl.report_simple_asset_number_kmitl
@@ -104,7 +104,7 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__carry_forward_missed_depreciations
 msgid "Accumulate missed depreciations"
-msgstr ""
+msgstr "สะสมค่าเสื่อมราคาที่ขาดไป"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__message_needaction
@@ -150,7 +150,7 @@ msgstr ""
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Add an internal note here..."
-msgstr ""
+msgstr "เพิ่มบันทึกภายในที่นี่..."
 
 #. module: account_asset_management
 #: model:ir.model.fields,help:account_asset_management.field_account_asset_compute__date_end
@@ -165,18 +165,18 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_line__amount
 msgid "Amount"
-msgstr ""
+msgstr "จำนวนเงิน"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_line__depreciated_value
 msgid "Amount Already Depreciated"
-msgstr ""
+msgstr "จำนวนที่คิดค่าเสื่อมแล้ว"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__analytic_distribution
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__analytic_distribution
 msgid "Analytic"
-msgstr ""
+msgstr "บัญชีวิเคราะห์"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__analytic_distribution_search
@@ -203,12 +203,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_th_account_asset_management.account_asset_sub_state_view_form model_terms:ir.ui.view,arch_db:l10n_th_account_asset_management.account_asset_sub_state_view_search
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_location_view_form model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_location_view_search
 msgid "Archived"
-msgstr ""
+msgstr "เก็บถาวรแล้ว"
 
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Are you sure ?"
-msgstr ""
+msgstr "คุณแน่ใจหรือไม่ ?"
 
 #. modules: account_asset_management, l10n_th_gov_account_asset_management
 #: model:ir.model,name:l10n_th_gov_account_asset_management.model_account_asset model:ir.model.fields,field_description:account_asset_management.field_account_asset_line__asset_id
@@ -268,7 +268,7 @@ msgstr "รูปครุภัณฑ์/สินทรัพย์"
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_wiz_asset_move_reverse__line_id model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Asset Line"
-msgstr ""
+msgstr "รายการค่าเสื่อมราคา"
 
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model,name:l10n_th_gov_account_asset_management.model_account_asset_location
@@ -303,7 +303,7 @@ msgstr "รหัสครุภัณฑ์/สินทรัพย์"
 #. module: account_asset_number
 #: model:ir.actions.report,name:account_asset_number.report_account_asset_number
 msgid "Asset Number (PDF)"
-msgstr ""
+msgstr "เลขทะเบียนครุภัณฑ์ (PDF)"
 
 #. module: account_asset_number
 #: model:ir.model.fields,field_description:account_asset_number.field_account_asset_profile__sequence_id
@@ -348,7 +348,7 @@ msgstr ""
 #: code:addons/account_asset_management/report/account_asset_report_xls.py:0 model:ir.model.fields,field_description:account_asset_management.field_account_asset__date_start
 #, python-format
 msgid "Asset Start Date"
-msgstr "วันที่ลงทะเบียน"
+msgstr "วันที่ได้มา"
 
 #. module: l10n_th_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset__asset_sub_state_all
@@ -388,7 +388,7 @@ msgstr "หมวดหมู่สินทรัพย์"
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Asset removal."
-msgstr ""
+msgstr "การจำหน่ายครุภัณฑ์"
 
 #. module: account_asset_management
 #: model:ir.model,name:account_asset_management.model_account_asset_recompute_trigger
@@ -461,7 +461,7 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__days_calc model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__days_calc
 msgid "Calculate by days"
-msgstr ""
+msgstr "คำนวณตามจำนวนวัน"
 
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_compute_view_form model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_compute_view_form_result
@@ -508,7 +508,7 @@ msgstr "ปิด"
 #. modules: account_asset_management, l10n_th_account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_group__code model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset_parent__code
 msgid "Code"
-msgstr ""
+msgstr "รหัส"
 
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model,name:l10n_th_gov_account_asset_management.model_res_company
@@ -542,7 +542,7 @@ msgstr ""
 #: code:addons/account_asset_management/report/account_asset_report_xls.py:0
 #, python-format
 msgid "Comput. Method"
-msgstr ""
+msgstr "วิธีคำนวณ"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__method model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__method
@@ -553,7 +553,7 @@ msgstr "วิธีการคำนวณ"
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_compute_view_form model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Compute"
-msgstr ""
+msgstr "คำนวณ"
 
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_compute_view_form
@@ -603,7 +603,7 @@ msgstr "ยืนยันครุภัณฑ์/สินทรัพย์"
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Create Move"
-msgstr ""
+msgstr "สร้างรายการบัญชี"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__asset_product_item
@@ -666,7 +666,7 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_line__line_days
 msgid "Days"
-msgstr ""
+msgstr "จำนวนวัน"
 
 #. module: account_asset_management
 #: model:ir.model.fields,help:account_asset_management.field_account_account__asset_profile_id
@@ -691,7 +691,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__method_progress_factor
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__method_progress_factor
 msgid "Degressive Factor"
-msgstr ""
+msgstr "อัตราค่าเสื่อมแบบลดน้อยถอยลง"
 
 #. module: account_asset_management
 #. odoo-python
@@ -710,7 +710,7 @@ msgstr ""
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Delete/Reverse Move"
-msgstr ""
+msgstr "ลบ/กลับรายการบัญชี"
 
 #. module: account_asset_kmitl
 #: model:ir.model.fields,field_description:account_asset_kmitl.field_account_asset__department_id
@@ -754,7 +754,7 @@ msgstr "ตารางข้อมูลค่าเสื่อมราคา
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_profile_view_form model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Depreciation Dates"
-msgstr ""
+msgstr "วันที่คิดค่าเสื่อมราคา"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_line__move_id
@@ -764,17 +764,17 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__depreciation_line_ids
 msgid "Depreciation Lines"
-msgstr ""
+msgstr "รายการค่าเสื่อมราคา"
 
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_profile_view_form model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Depreciation Method"
-msgstr ""
+msgstr "วิธีคิดค่าเสื่อมราคา"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_line__name
 msgid "Depreciation Name"
-msgstr ""
+msgstr "ชื่อรายการค่าเสื่อมราคา"
 
 #. module: l10n_th_account_asset_management
 #. odoo-python
@@ -845,12 +845,12 @@ msgstr ""
 #. modules: account_asset_management, l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_wiz_account_asset_report__date_to model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_view_form
 msgid "End Date"
-msgstr ""
+msgstr "วันที่สิ้นสุด"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__method_end
 msgid "Ending Date"
-msgstr ""
+msgstr "วันที่สิ้นสุด"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__account_move_line_ids
@@ -952,15 +952,20 @@ msgstr ""
 msgid "Guarantee"
 msgstr "ระยะเวลารับประกัน"
 
+#. module: account_asset_kmitl
+#: model_terms:ir.ui.view,arch_db:account_asset_kmitl.view_account_asset_form
+msgid "Guarantee"
+msgstr "ระยะเวลารับประกัน"
+
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__asset_guarantee_end
 msgid "Guarantee End"
-msgstr ""
+msgstr "สิ้นสุดประกัน"
 
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__asset_guarantee_start
 msgid "Guarantee Start"
-msgstr "ระยะเวลารับประกัน"
+msgstr "เริ่มประกัน"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__has_message
@@ -970,7 +975,7 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__move_line_check
 msgid "Has accounting entries"
-msgstr ""
+msgstr "มีรายการบัญชีแล้ว"
 
 #. module: account_asset_number
 #: model:ir.model.fields,help:account_asset_number.field_account_asset_profile__barcode_height
@@ -1080,12 +1085,12 @@ msgstr ""
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Init"
-msgstr ""
+msgstr "ตั้งต้น"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_line__init_entry
 msgid "Initial Balance Entry"
-msgstr ""
+msgstr "รายการยอดยกมา"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__message_is_follower
@@ -1095,14 +1100,14 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__journal_id
 msgid "Journal"
-msgstr ""
+msgstr "สมุดรายวัน"
 
 #. module: account_asset_management
 #. odoo-python
 #: code:addons/account_asset_management/models/account_asset.py:0 model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 #, python-format
 msgid "Journal Entries"
-msgstr ""
+msgstr "รายการสมุดรายวัน"
 
 #. modules: account_asset_management, l10n_th_gov_account_asset_management
 #. odoo-python
@@ -1194,12 +1199,12 @@ msgstr ""
 #. module: l10n_th_gov_account_asset_management
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_view_form
 msgid "Maintenance"
-msgstr ""
+msgstr "การบำรุงรักษา"
 
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__maintenance_line_ids model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_view_form
 msgid "Maintenance Lines"
-msgstr ""
+msgstr "รายการบำรุงรักษา"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__message_has_error
@@ -1282,7 +1287,7 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_line__remaining_value
 msgid "Next Period Depreciation"
-msgstr ""
+msgstr "ค่าเสื่อมราคางวดถัดไป"
 
 #. module: account_asset_management
 #. odoo-python
@@ -1329,7 +1334,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__method_number
 #, python-format
 msgid "Number of Years"
-msgstr ""
+msgstr "จำนวนปี"
 
 #. module: account_asset_management
 #. odoo-python
@@ -1356,7 +1361,7 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields.selection,name:account_asset_management.selection__account_asset_recompute_trigger__state__open
 msgid "Open"
-msgstr ""
+msgstr "เปิดใช้งาน"
 
 #. modules: account_asset_management, l10n_th_gov_account_asset_management, account_asset_kmitl
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_view_form
@@ -1369,7 +1374,7 @@ msgstr "ข้อมูลอื่นๆ"
 #: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset__parent_id model:ir.ui.menu,name:l10n_th_account_asset_management.account_asset_parent_menu
 #: model_terms:ir.ui.view,arch_db:l10n_th_account_asset_management.account_asset_parent_view_form model_terms:ir.ui.view,arch_db:l10n_th_account_asset_management.account_asset_parent_view_search
 msgid "Parent Asset"
-msgstr ""
+msgstr "ครุภัณฑ์หลัก"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_group__parent_id
@@ -1408,7 +1413,7 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__method_period model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__method_period
 msgid "Period Length"
-msgstr ""
+msgstr "ความยาวของงวด"
 
 #. module: account_asset_management
 #. odoo-python
@@ -1459,7 +1464,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__prorata
 #, python-format
 msgid "Prorata Temporis"
-msgstr ""
+msgstr "คิดตามสัดส่วนเวลา"
 
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__purchase_id
@@ -1537,7 +1542,7 @@ msgstr ""
 #. modules: account_asset_management, l10n_th_gov_account_asset_management
 #: model:ir.actions.server,name:l10n_th_gov_account_asset_management.action_remove_asset model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Remove"
-msgstr ""
+msgstr "จำหน่าย"
 
 #. modules: account_asset_management, l10n_th_gov_account_asset_management
 #: model:ir.model,name:l10n_th_gov_account_asset_management.model_account_asset_remove model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_remove_view_form
@@ -1556,7 +1561,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset_sub_state__removed
 #: model:ir.model.fields.selection,name:account_asset_management.selection__account_asset__state__removed model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_search
 msgid "Removed"
-msgstr ""
+msgstr "จำหน่ายแล้ว"
 
 #. module: account_asset_management
 #. odoo-python
@@ -1569,7 +1574,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__remove_reason
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset_remove__remove_reason
 msgid "Removed Reason"
-msgstr ""
+msgstr "เหตุผลในการจำหน่าย"
 
 #. module: account_asset_management
 #. odoo-python
@@ -1617,7 +1622,8 @@ msgid "Reverse posted journal entry on depreciation line"
 msgstr ""
 
 #. modules: account_asset_management, l10n_th_account_asset_management
-#: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset_sub_state__open model:ir.model.fields.selection,name:account_asset_management.selection__account_asset__state__open
+#: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset_sub_state__open 
+#: model:ir.model.fields.selection,name:account_asset_management.selection__account_asset__state__open
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_search
 msgid "Running"
 msgstr "กำลังทำงานอยู่"
@@ -1635,7 +1641,7 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__salvage_type
 msgid "Salvage Type"
-msgstr ""
+msgstr "ประเภทมูลค่าซาก"
 
 #. module: account_asset_management
 #. odoo-python
@@ -1643,7 +1649,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__salvage_value
 #, python-format
 msgid "Salvage Value"
-msgstr ""
+msgstr "มูลค่าซาก"
 
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_group_view_search
@@ -1668,7 +1674,7 @@ msgstr ""
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__asset_serial_number
 msgid "Serial Number"
-msgstr ""
+msgstr "หมายเลขเครื่อง"
 
 #. module: account_asset_management
 #: model:ir.model.fields,help:account_asset_management.field_account_asset_line__init_entry
@@ -1714,12 +1720,22 @@ msgstr ""
 #. modules: account_asset_management, l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_wiz_account_asset_report__date_from model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_view_form
 msgid "Start Date"
-msgstr ""
+msgstr "วันที่เริ่มต้น"
+
+#. module: account_asset_kmitl
+#: model_terms:ir.ui.view,arch_db:account_asset_kmitl.view_account_asset_form
+msgid "Start Date"
+msgstr "วันที่เริ่ม"
+
+#. module: account_asset_kmitl
+#: model_terms:ir.ui.view,arch_db:account_asset_kmitl.view_account_asset_form
+msgid "End Date"
+msgstr "วันที่สิ้นสุด"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_recompute_trigger__state
 msgid "State"
-msgstr ""
+msgstr "สถานะ"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_line__parent_state
@@ -1748,7 +1764,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset_remove__asset_sub_state_id
 #: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset_transfer__asset_sub_state_id
 msgid "Sub-Status"
-msgstr ""
+msgstr "สถานะย่อย"
 
 #. module: account_asset_management
 #. odoo-python
@@ -1831,7 +1847,7 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__method_time model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__method_time
 msgid "Time Method"
-msgstr ""
+msgstr "วิธีกำหนดระยะเวลา"
 
 #. module: account_asset_management
 #. odoo-python
@@ -1843,7 +1859,7 @@ msgstr ""
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Total Days"
-msgstr ""
+msgstr "รวมจำนวนวัน"
 
 #. module: account_asset_management
 #. odoo-python
@@ -1882,7 +1898,7 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__use_leap_years model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__use_leap_years
 msgid "Use Leap Years"
-msgstr ""
+msgstr "ใช้ปีอธิกสุรทิน"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_wiz_asset_move_reverse__journal_id
@@ -1892,7 +1908,7 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,help:account_asset_management.field_account_asset__days_calc model:ir.model.fields,help:account_asset_management.field_account_asset_profile__days_calc
 msgid "Use number of days to calculate depreciation amount"
-msgstr ""
+msgstr "ใช้จำนวนวันในการคำนวณค่าเสื่อมราคา"
 
 #. module: l10n_th_account_asset_management
 #: model:ir.model.fields,help:l10n_th_account_asset_management.field_account_asset_sub_state__sequence
@@ -1907,7 +1923,7 @@ msgstr ""
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "View Move"
-msgstr ""
+msgstr "ดูรายการบัญชี"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__website_message_ids

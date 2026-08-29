@@ -12,13 +12,20 @@ class AccountAssetBatch(models.Model):
     _inherit = ['analytic.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'AccountAssetBatch'
 
+    _analytic_keys = {
+        "sources": "source_analytic_id",
+        "departments": "department_analytic_id",
+        "funds": "fund_analytic_id",
+        "activities": "activity_analytic_id",
+    }
+
     name = fields.Char(
         string="Document No.",
         tracking=True,
     )
 
     date = fields.Date(
-        string="Date",
+        string="Acquisition Date",
         tracking=True,
         default=fields.Date.context_today,
     )
@@ -120,9 +127,56 @@ class AccountAssetBatch(models.Model):
         default=lambda self: self.env.context.get('default_source_of_asset'),
     )
     
-    received_from_agency = fields.Char(
+    received_from_agency = fields.Many2one(
+        "res.users",
         string="received from agency",
         tracking=True,
+    )
+
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="Partner",
+        tracking=True,
+    )
+
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        compute="_compute_analytic_id",
+        inverse=lambda self: self._update_analytic_distribution("sources"),
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "sources")],
+    )
+
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        compute="_compute_analytic_id",
+        inverse=lambda self: self._update_analytic_distribution("departments"),
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "departments")],
+    )
+
+    fund_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กองทุน",
+        compute="_compute_analytic_id",
+        inverse=lambda self: self._update_analytic_distribution("funds"),
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "funds")],
+    )
+
+    activity_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ด้าน/แผนงาน/กิจกรรม",
+        compute="_compute_analytic_id",
+        inverse=lambda self: self._update_analytic_distribution("activities"),
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "activities")],
     )
 
     @api.onchange('purchase_id')
@@ -184,7 +238,36 @@ class AccountAssetBatch(models.Model):
             purchase = self.env["purchase.order"].browse(purchase_id)
             if purchase.operating_unit_id:
                 res["operating_unit_id"] = purchase.operating_unit_id.id
+            res["partner_id"] = purchase.partner_id.id
+            res["analytic_distribution"] = self._asset_analytic_distribution(
+                purchase.analytic_distribution
+            )
+            # Populate the convenience dimension fields directly so they display
+            # on the fresh form (the stored compute from analytic_distribution
+            # does not reliably fire for a new record).
+            res.update({
+                "source_analytic_id": purchase.source_analytic_id.id,
+                "department_analytic_id": purchase.department_analytic_id.id,
+                "fund_analytic_id": purchase.fund_analytic_id.id,
+                "activity_analytic_id": purchase.activity_analytic_id.id,
+            })
         return res
+
+    def _asset_analytic_distribution(self, raw_dist):
+        """Filter an analytic_distribution to the plan codes supported by
+        account.asset (sources / departments / funds / activities)."""
+        raw_dist = raw_dist or {}
+        if not raw_dist:
+            return False
+        asset_keys = set(self.env["account.asset"]._analytic_keys)
+        accounts = self.env["account.analytic.account"].browse(
+            [int(k) for k in raw_dist]
+        )
+        return {
+            str(aa.id): raw_dist[str(aa.id)]
+            for aa in accounts
+            if aa.plan_id.code in asset_keys
+        } or False
 
     def action_register_assets(self):
         for batch in self:
@@ -195,19 +278,12 @@ class AccountAssetBatch(models.Model):
                 raise ValidationError(_("Some lines have zero amount. Please correct them before proceeding."))
 
             # Filter analytic_distribution to plan codes supported by account.asset
-            asset_keys = set(self.env["account.asset"]._analytic_keys)
-            raw_dist = batch.purchase_id.analytic_distribution or {}
-            if raw_dist:
-                accounts = self.env["account.analytic.account"].browse(
-                    [int(k) for k in raw_dist]
-                )
-                analytic_distribution = {
-                    str(aa.id): raw_dist[str(aa.id)]
-                    for aa in accounts
-                    if aa.plan_id.code in asset_keys
-                } or False
-            else:
-                analytic_distribution = False
+            raw_dist = (
+                batch.purchase_id.analytic_distribution
+                if batch.purchase_id
+                else batch.analytic_distribution
+            )
+            analytic_distribution = batch._asset_analytic_distribution(raw_dist)
 
             for line in batch.line_ids:
                 for _ in range(line.amount):
@@ -219,6 +295,7 @@ class AccountAssetBatch(models.Model):
                         "operating_unit_id": batch.operating_unit_id.id,
                         "department_id": batch.department_id.id,
                         "purchase_id": batch.purchase_id.id if batch.purchase_id else False,
+                        "partner_id": batch.partner_id.id,
                         "gpsc_id": line.gpsc_id.id,
                         "profile_id": line.profile_id.id,
                         "purchase_value": line.price_per_unit,

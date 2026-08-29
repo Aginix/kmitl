@@ -94,7 +94,6 @@
                     </h1>
                     <group>
                         <field name="is_editable" invisible="1" />
-                        <field name="date" invisible="1" />
                         <field
                             name="source_of_asset"
                             required="1"
@@ -103,12 +102,14 @@
                             options="{'horizontal': true}"
                             force_save="1"
                         />
-                        <field name="account_fiscal_year_id" attrs="{'readonly': [('source_of_asset','not in', ('donation', 'transfer'))]}" force_save="1"/>
-                        <field name="contract_number" attrs="{'invisible': [('source_of_asset', 'in', ('donation', 'transfer'))]}"/>
-                        <field name="purchase_id" readonly="1" attrs="{'invisible': [('source_of_asset', 'in', ('donation', 'transfer'))]}"/>
+                        <field name="date" required="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        <field name="contract_number" attrs="{'invisible': [('purchase_id', '=', False)]}"/>
+                        <field name="purchase_id" readonly="1" attrs="{'invisible': [('purchase_id', '=', False)]}"/>
+                        <field name="partner_id" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field
                             name="received_from_agency"
-                            attrs="{'invisible': [('source_of_asset', 'not in', ('donation', 'transfer'))], 'required': [('source_of_asset', 'in', ('donation', 'transfer'))]}"
+                            attrs="{'invisible': [('source_of_asset', 'not in', ('donation', 'transfer'))], 'required': [('source_of_asset', 'in', ('donation', 'transfer'))], 'readonly': [('is_editable','=', False)]}"
                         />
                         <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
                         <field
@@ -117,6 +118,13 @@
                         />
                         <field name="company_id" groups="base.group_multi_company" />
                         <field name="notes" />
+                    </group>
+                    <group string="Budget Details" >
+                        <field name="analytic_distribution" widget="analytic_distribution" attrs="{'readonly': ['|', ('is_editable','=', False), ('purchase_id','!=', False)]}" groups="account_asset_batch.account_asset_batch_manager"/>
+                        <field name="source_analytic_id" required="1" attrs="{'readonly': ['|', ('is_editable','=', False), ('purchase_id','!=', False)]}"/>
+                        <field name="department_analytic_id" required="1" attrs="{'readonly': ['|', ('is_editable','=', False), ('purchase_id','!=', False)]}"/>
+                        <field name="fund_analytic_id" required="1" attrs="{'readonly': ['|', ('is_editable','=', False), ('purchase_id','!=', False)]}"/>
+                        <field name="activity_analytic_id" required="1" attrs="{'readonly': ['|', ('is_editable','=', False), ('purchase_id','!=', False)]}"/>
                     </group>
                     <notebook>
                         <page string="List">
@@ -185,7 +193,7 @@
         <field name="res_model">account.asset.batch</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('source_of_asset', '=', 'procurement')]</field>
-        <field name="context">{'default_source_of_asset': 'procurement', 'create': False}</field>
+        <field name="context">{'default_source_of_asset': 'procurement', 'create': True}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('view_account_asset_batch_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_account_asset_batch_form')}),
