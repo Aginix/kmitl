@@ -1,3 +1,1 @@
-# -*- coding: utf-8 -*-
-from . import purchase_guarantee
-from . import res_config_settings
+from . import purchase_guarantee  # noqa: F401
