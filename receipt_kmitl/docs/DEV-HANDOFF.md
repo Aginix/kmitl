@@ -207,3 +207,32 @@ the OU module clean override points for both header and line stamping.
       path works; `action_draft` clears it.
 - [ ] OU: a user sees only their OU's receipts/remittances; access-all group sees all;
       posted JE lines carry `operating_unit_id`.
+
+## Deviations from this spec
+
+What actually shipped differs from the plan above in a few places:
+
+- **No detach mechanism.** Item D's per-row detach button and `_get_or_create_dept_fy_sequence`-
+  style per-row unlink were never built. Removing a receipt from a `submitted`
+  remittance is instead done through the standard `many2many`-style widget on
+  `receipt_ids` (the × on a row); `kmitl.receipt.write()` resets the receipt's
+  state back to `to_submit` when `remittance_id` is cleared this way. See
+  ADR-0002 (revised).
+- **Approval stage added.** The workflow gained a `submitted → approved →
+  posted` split (not just `submitted → done` from item D), with an
+  `approver_id`, a mail activity scheduled on submit, and both `action_approve`
+  and `action_reject` (whole-remittance, with a reason, back to `draft`).
+  `posted` replaces the planned `done` state name.
+- **Group renamed.** `group_receipt_kmitl_treasury_officer` from item E shipped
+  as `group_receipt_kmitl_remittance_approver` — same independent-checkbox
+  shape, different name (see CONTEXT.md).
+- **Dimension implementation differs from item B.** The 6 dimension fields
+  (`department_analytic_id`, `fund_analytic_id`, etc.) live as plain Many2one
+  fields on the receipt **header** (`receipt_kmitl.py`), not as compute/inverse
+  fields on the line. `write()`/`_sync_analytic_to_lines()` builds one
+  `analytic_distribution` JSON from the header fields and pushes it onto every
+  line; `receipt_kmitl_line.py` just inherits plain `analytic.mixin` with no
+  per-field declarations of its own.
+- **Receipt numbering is per-FY only.** `RC/<fy4>/nnnn` (e.g. `RC/2569/0001`),
+  matching CONTEXT.md — the testing checklist item above that says
+  `RC/<dept>/<fy2>/nnnn` is stale.

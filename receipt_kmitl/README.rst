@@ -27,22 +27,25 @@ Key features
 * Per-fiscal-year sequence (``RC/{fiscal_year_be}/{####}``, e.g. ``RC/2569/0001``)
 * Confirm assigns the number and allows printing — no journal entry yet
 * ``kmitl.receipt.remittance`` (รายงานนำส่งคลัง) bundles confirmed receipts by
-  department subtree; treasury posts the batch, generating one JE per receipt
-  (Dr payment-method account / Cr income)
-* Per-receipt detach from a submitted remittance for error correction, without
-  tearing down the whole document
+  department subtree; an approver reviews the batch and treasury posts it,
+  generating one JE per receipt (Dr payment-method account / Cr income)
+* Removing a single receipt from a submitted remittance (via the standard
+  widget on the receipts list) returns it to the pending pool for correction,
+  without tearing down the whole document; rejecting the whole remittance is
+  also available for the approver
 
 Roles
 =====
 
 * ``Viewer`` — read-only access to receipts, remittances, payment methods
-* ``User`` (เจ้าหน้าที่หน่วยงาน) — creates/confirms/cancels receipts; creates,
-  submits, and detaches remittances. Cannot post accounting.
+* ``User`` (เจ้าหน้าที่หน่วยงาน) — creates/confirms/cancels receipts; creates and
+  submits remittances. Cannot approve or post accounting.
 * ``Manager`` — configures payment methods and the walk-in partner.
-  Implies Treasury Officer. Exception rules require the separate
+  Implies Remittance Approver. Exception rules require the separate
   ``base_exception.group_exception_rule_manager`` group.
-* ``Treasury Officer`` (เจ้าหน้าที่กองคลัง) — an independent capability (not a
-  tier) that may mark a remittance ``done``, creating the accounting entries.
+* ``Remittance Approver`` (ผู้อนุมัติรายงานนำส่ง) — an independent capability (not
+  a tier) that may approve or reject a submitted remittance and mark it
+  ``posted``, creating the accounting entries.
 
 Row-level access (who sees which department's/OU's records) is provided by
 the ``receipt_kmitl_operating_unit`` add-on, not by the base module.
@@ -70,13 +73,14 @@ Usage
 2. A User creates a ``Receipt Remittance``, clicks **Pull Pending Receipts**,
    then **Submit to Treasury**. The remittance number and submission date are
    assigned at that point.
-3. A Treasury Officer opens the submitted remittance and clicks **Review &
-   Post** — every remaining receipt in it is posted with its own journal
-   entry.
-4. To correct a mistake on one receipt, detach it from the remittance (per-row
-   button) and use **แก้ไขใบเสร็จ** on the receipt to reopen it for editing; it
-   keeps its number and can be remitted again later.
+3. A Remittance Approver opens the submitted remittance and clicks
+   **Approve**, then **Post Journal Entries** — every receipt in it is posted
+   with its own journal entry.
+4. To correct a mistake on one receipt, remove it from the ``receipt_ids`` list
+   on the remittance form and use **แก้ไขใบเสร็จ** on the receipt to reopen it
+   for editing; it keeps its number and can be remitted again later. To send
+   the whole remittance back, the approver can **Reject** it with a reason.
 
-Receipts can be cancelled while still in draft/confirmed and not part of a
+Receipts can only be cancelled while in ``draft`` and not part of a
 remittance; the receipt number is preserved. Posted receipts are reversed via
 a standard Accounting credit note / reversal.

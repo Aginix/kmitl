@@ -1,33 +1,43 @@
-# Receipt Remittance workflow: per-receipt detach instead of batch reject
+# Receipt Remittance workflow: approval stage + two error-correction paths
 
 `kmitl.receipt.remittance` (รายงานนำส่งคลัง — the renamed `kmitl.cash.deposit`)
 is the document a department submits to remit its confirmed receipts to the
-central treasury. It follows an HR-expense-sheet-like flow but deliberately omits
-a whole-document reject/reset, because a remittance can carry hundreds of receipts
-and an error usually affects only a few.
+central treasury. It follows an HR-expense-sheet-like flow.
 
 ## Workflow
 
-- States: `draft → submitted → done` (+ `cancelled`). No approval step.
-- `submitted`: department action; stamps `date` = the actual submission date and
+- States: `draft → submitted → approved → posted` (+ `cancelled`).
+- `submitted`: department action; stamps `date` = the actual submission date,
   mints the number `RM/<FY>/nnnn` where `<FY>` is the 4-digit Buddhist-era fiscal
-  year of that date. Header becomes read-only.
-- `done`: central treasury (finance) action; creates one accounting entry per
-  receipt and marks each receipt `posted`.
-- **Once `submitted`, a remittance can never be reset to `draft`.**
+  year of that date, and schedules a mail activity on the remittance's
+  `approver_id`. Header becomes read-only.
+- `approved`: the `approver_id` (a `group_receipt_kmitl_remittance_approver`
+  user) action; completes the approver's activity.
+- `posted`: central treasury/finance action; creates one accounting entry per
+  receipt and marks each receipt `done`.
+- `action_draft` can reset a remittance back to `draft` from `submitted`,
+  `approved`, or (manager-only) `posted` — this was originally planned as an
+  extension point and has since been implemented, reversing this ADR's original
+  "once submitted, a remittance can never be reset to draft" statement.
 
-## Error correction — detach, not reject
+This adds the approval step this ADR originally described as a future
+extension — the approver reviews before treasury posts.
 
-- Both the owning department and central finance may **detach** individual
-  receipts from a `submitted` remittance (a per-row button, guarded in code;
-  logged to chatter on both sides). Detach is only allowed when the remittance
-  is in the `submitted` state — not `draft` (use the o2m to remove rows instead)
-  and not `done` (posted receipts are immutable). A detached receipt drops back
-  to the unremitted `confirmed` pool, keeping its number, and is corrected
-  (reset → edit → re-confirm) then remitted in a **later** remittance. The
-  original remittance proceeds to `done` with the receipts that remain.
-- The only whole-document escape hatch is `cancel` (allowed from `draft`/
-  `submitted`, not `done`), which releases every receipt back to the pool.
+## Error correction — two mechanisms
+
+1. **Remove one receipt** from a `submitted` remittance using the standard
+   `many2many`-style widget on the `receipt_ids` field (the × on a row). The
+   receipt's `remittance_id` clears and its state automatically returns to
+   `to_submit`, so it re-enters the pending pool and can be corrected and
+   pulled into a later remittance. The remittance itself stays `submitted`.
+   No custom detach button/method is needed — the widget already supports
+   this per-receipt use case.
+2. **Reject the whole remittance** (`action_reject`, approver-only, from
+   `submitted`) with a required reason logged to chatter. All its receipts
+   return to `to_submit` and the remittance itself returns to `draft` for
+   correction and resubmission.
+
+This is a change from the original detach-only design (see "Why" below).
 
 ## Scope of a remittance
 
@@ -38,9 +48,12 @@ and an error usually affects only a few.
 
 ## Why
 
-Whole-batch reject/reset was rejected: with many receipts per remittance it forces
-a unit to re-do good work for one bad receipt. Detach gives receipt-level
-granularity that units and treasury can drive themselves, while keeping the
-submitted document immutable as an audit anchor. Requirements for this process
-are still provisional — this is the minimum viable shape, chosen to be extendable
-(an approval stage can be inserted between `submitted` and `done` later).
+The original design rejected whole-batch reject/reset in favor of a custom
+per-receipt "detach" button, reasoning that a remittance can carry hundreds of
+receipts and an error usually affects only a few. In practice the custom
+detach button was never implemented or wired to the UI — the standard o2m
+widget already gives departments and approvers that exact per-receipt
+granularity for free, so a bespoke detach action was unnecessary. A whole-
+remittance reject was added back on top of that, gated to the approver, for
+the case where the entire batch needs to go back for rework (e.g. wrong
+department or approver) rather than a single bad line.

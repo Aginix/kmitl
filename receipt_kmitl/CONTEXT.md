@@ -15,16 +15,17 @@ _Avoid_: Invoice, bill
 The document a department submits to remit its confirmed receipts to the central
 treasury (`kmitl.receipt.remittance`). Bundles many receipts (like an HR expense
 sheet bundles expenses) — all confirmed receipts under its department **subtree**;
-posting it (`done`) creates each receipt's accounting entry. Numbered `RM/<FY>/nnnn`.
+posting it (`posted`) creates each receipt's accounting entry. Numbered `RM/<FY>/nnnn`.
 _Avoid_: Cash deposit, bank deposit (this is remittance to the treasury, not a
 bank deposit), batch
 
-**Detach** (ถอนใบเสร็จออกจากรายงาน):
-Removing a single receipt from a submitted remittance so it returns to the pool
-of unremitted confirmed receipts — the way an error on one receipt is corrected
-without tearing down the whole remittance. A submitted remittance is never reset
-as a whole (only cancelled, which releases all its receipts).
-_Avoid_: Reject, return, reset
+**Removing a receipt** (นำใบเสร็จออกจากรายงาน):
+Removing a single receipt from a `submitted` remittance via the standard o2m
+widget (×) on `receipt_ids` so it returns to the pool of unremitted receipts —
+the way an error on one receipt is corrected without tearing down the whole
+remittance. **Reject** (whole-document, approver-only) is the way to send the
+entire remittance back to `draft` with a reason.
+_Avoid_: Detach (old term for a custom button that was never built)
 
 **Issuing Department**:
 The organizational unit that issued a receipt or owns a deposit — a `departments`
@@ -52,18 +53,19 @@ transfer / other — carrying the debit GL account and journal used at posting.
 **Viewer / User / Manager**:
 The three permission **tiers** (a single hierarchical dropdown; each implies the
 one below). *Viewer* reads only. *User* (เจ้าหน้าที่หน่วยงาน) manages receipts and
-remittances (create/confirm/submit/detach) but cannot post accounting. *Manager*
-adds configuration (payment methods, walk-in, exception rules). All three see the
-app; sub-menus differ by tier.
+remittances (create/confirm/submit) but cannot approve or post accounting.
+*Manager* adds configuration (payment methods, walk-in, exception rules). All
+three see the app; sub-menus differ by tier.
 _Avoid_: Cashier (old term)
 
-**Treasury Officer** (เจ้าหน้าที่กองคลัง):
-An **independent capability** (a checkbox, not a tier) added on top of a user:
-the only one who may mark a remittance `done` — creating the accounting entries —
-so it carries real accounting rights. Encodes the department-vs-treasury
-segregation of duties (Manager holds it implicitly). Who sees which remittance is
-governed by Operating Unit, not by this group.
-_Avoid_: Central Finance (old term)
+**Remittance Approver** (ผู้อนุมัติรายงานนำส่ง):
+An **independent capability** (a checkbox, not a tier) added on top of a user,
+group `group_receipt_kmitl_remittance_approver`: the one who may `approve` or
+`reject` a `submitted` remittance and the one who may mark it `posted` —
+creating the accounting entries — so it carries real accounting rights. Encodes
+the department-vs-treasury segregation of duties (Manager holds it implicitly).
+Who sees which remittance is governed by Operating Unit, not by this group.
+_Avoid_: Treasury Officer, Central Finance (old terms)
 
 **Operating Unit**:
 The access-control boundary for receipts and deposits (`operating_unit_id`,
