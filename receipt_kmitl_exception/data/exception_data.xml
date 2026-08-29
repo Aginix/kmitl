@@ -22,6 +22,6 @@ if not self.partner_id:
 if self.date and self.date &lt; today:
     failed = True
         </field>
-        <field name="active" eval="True"/>
+        <field name="active" eval="False"/>
     </record>
 </odoo>
