@@ -987,11 +987,12 @@ class ApprovalRequest(models.Model):
 
     @api.depends("state")
     def _compute_is_plan_editable(self):
-        """The plan (expense lines, participants, header) is editable only in
-        draft by default. agx_approval_sarabun widens this to a Sarabun-returned
+        """The plan (expense lines, participants, header) stays editable until
+        the request is sent for approval — i.e. through draft, รอตรวจสอบ and
+        รอส่งขออนุมัติ. agx_approval_sarabun widens this to a Sarabun-returned
         request (edit everything except budget)."""
         for rec in self:
-            rec.is_plan_editable = rec.state == "draft"
+            rec.is_plan_editable = rec.state in ("draft", "to_verify", "to_send")
 
     @api.depends("state")
     def _compute_is_actual_editable(self):

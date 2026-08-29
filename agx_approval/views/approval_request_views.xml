@@ -75,7 +75,7 @@
                             <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}"
                                 options="{'no_open': True}" />
                             <field name="owner_id" widget="employee_detail_many2one"
-                                attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
+                                attrs="{'readonly': [('state', '!=', 'draft')]}" />
 
                             <field name="has_period" invisible="1" />
                             <field name="has_city" invisible="1" />
@@ -108,7 +108,7 @@
                             <field name="date" readonly="1"
                                 attrs="{'invisible': [('date', '=', False)]}" />
                             <field name="account_fiscal_year_id" options="{'no_open': True}"
-                                attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
+                                attrs="{'readonly': [('state', '!=', 'draft')]}" />
                             <field name="id" invisible="1" />
                             <field name="user_id" readonly="1" />
                             <field name="create_date" readonly="1" />
