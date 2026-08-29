@@ -11,6 +11,21 @@
             <xpath expr="//field[@name='account_fiscal_year_id']" position="after">
                 <field name="fiscal_year_locked" invisible="1" />
             </xpath>
+
+            <!-- The number is minted at button_to_verify; until then ``name``
+                 holds the untranslated "/" placeholder, so show a translatable
+                 label instead of the raw sentinel. -->
+            <xpath expr="//h1/field[@name='name']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('is_name_editable', '=', False)], 'invisible': [('fiscal_year_locked', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//h1/field[@name='name']" position="after">
+                <span
+                    class="oe_inline"
+                    attrs="{'invisible': [('fiscal_year_locked', '=', True)]}"
+                >New</span>
+            </xpath>
         </field>
     </record>
 </odoo>
