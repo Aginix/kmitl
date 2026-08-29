@@ -286,11 +286,6 @@ msgid "Cheque"
 msgstr "เช็ค"
 
 #. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_preview_form
-msgid "Close"
-msgstr "ปิด"
-
-#. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__company_id
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__company_id
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__company_id
@@ -313,11 +308,6 @@ msgstr "การตั้งค่า"
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
 msgid "Confirm"
 msgstr "ยืนยัน"
-
-#. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_preview_form
-msgid "Confirm Print"
-msgstr "ยืนยันการพิมพ์"
 
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_reject_form
@@ -352,7 +342,6 @@ msgstr "สร้างโดย"
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__create_uid
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__create_uid
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__create_uid
-#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_preview__create_uid
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance__create_uid
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance_reject__create_uid
 #: model:ir.model.fields,field_description:receipt_kmitl.field_receipt_kmitl_report_wizard__create_uid
@@ -363,7 +352,6 @@ msgstr "สร้างโดย"
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__create_date
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__create_date
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__create_date
-#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_preview__create_date
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance__create_date
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance_reject__create_date
 #: model:ir.model.fields,field_description:receipt_kmitl.field_receipt_kmitl_report_wizard__create_date
@@ -464,7 +452,6 @@ msgstr "รายละเอียด"
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__display_name
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__display_name
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__display_name
-#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_preview__display_name
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance__display_name
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance_reject__display_name
 #: model:ir.model.fields,field_description:receipt_kmitl.field_receipt_kmitl_report_wizard__display_name
@@ -577,7 +564,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__id
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__id
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__id
-#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_preview__id
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance__id
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance_reject__id
 #: model:ir.model.fields,field_description:receipt_kmitl.field_receipt_kmitl_report_wizard__id
@@ -695,7 +681,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method____last_update
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt____last_update
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line____last_update
-#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_preview____last_update
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance____last_update
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance_reject____last_update
 #: model:ir.model.fields,field_description:receipt_kmitl.field_receipt_kmitl_report_wizard____last_update
@@ -706,7 +691,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__write_uid
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__write_uid
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__write_uid
-#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_preview__write_uid
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance__write_uid
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance_reject__write_uid
 #: model:ir.model.fields,field_description:receipt_kmitl.field_receipt_kmitl_report_wizard__write_uid
@@ -717,7 +701,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__write_date
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__write_date
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__write_date
-#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_preview__write_date
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance__write_date
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance_reject__write_date
 #: model:ir.model.fields,field_description:receipt_kmitl.field_receipt_kmitl_report_wizard__write_date
@@ -1063,11 +1046,6 @@ msgid "Posted remittances cannot be deleted."
 msgstr "รายงานนำส่งที่ลงบัญชีแล้ว ไม่สามารถลบได้"
 
 #. module: receipt_kmitl
-#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_preview__preview_html
-msgid "Preview Html"
-msgstr ""
-
-#. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__price_unit
 msgid "Price Unit"
 msgstr "ราคาต่อหน่วย"
@@ -1117,7 +1095,6 @@ msgstr "เหตุผล"
 #. module: receipt_kmitl
 #: model:ir.actions.report,name:receipt_kmitl.action_report_receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__receipt_id
-#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_preview__receipt_id
 msgid "Receipt"
 msgstr "ใบเสร็จรับเงิน"
 
@@ -1193,12 +1170,6 @@ msgid "Receipt Payment Method"
 msgstr "วิธีชำระเงินของใบเสร็จ"
 
 #. module: receipt_kmitl
-#: model:ir.model,name:receipt_kmitl.model_kmitl_receipt_preview
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_preview_form
-msgid "Receipt Preview"
-msgstr ""
-
-#. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__remittance_id
 msgid "Receipt Remittance"
 msgstr "รายงานนำส่งใบเสร็จรับเงิน"
@@ -1247,13 +1218,6 @@ msgstr "รายงานสรุปใบเสร็จรับเงิน
 #: model:ir.model,name:receipt_kmitl.model_report_receipt_kmitl_receipt_summary_xlsx
 msgid "Receipt Summary XLSX"
 msgstr "รายงานสรุปใบเสร็จรับเงิน (XLSX)"
-
-#. module: receipt_kmitl
-#. odoo-python
-#: code:addons/receipt_kmitl/wizard/receipt_preview.py:0
-#, python-format
-msgid "Receipt printed."
-msgstr "พิมพ์ใบเสร็จแล้ว"
 
 #. module: receipt_kmitl
 #. odoo-python

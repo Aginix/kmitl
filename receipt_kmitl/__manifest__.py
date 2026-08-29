@@ -19,7 +19,6 @@
         "security/ir.model.access.csv",
         "data/partner_walkin_data.xml",
         "data/mail_activity_data.xml",
-        "wizard/receipt_preview_views.xml",
         "wizard/receipt_remittance_reject_view.xml",
         "views/payment_method_views.xml",
         "views/receipt_kmitl_views.xml",
