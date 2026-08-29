@@ -123,12 +123,8 @@
                     </group>
                     <notebook>
                         <page string="Receipts" name="receipts">
-                            <field name="receipt_to_add_id"
-                                   attrs="{'invisible': [('state','!=','draft')]}"
-                                   options="{'no_create': True, 'no_open': True}"/>
-                            <field name="receipt_ids"
-                                   options="{'no_open': True}">
-                                <tree create="false" edit="false">
+                            <field name="receipt_ids" widget="many2many" domain="[('state', '=', 'to_submit')]">
+                                <tree edit="false">
                                     <field name="name"/>
                                     <field name="date"/>
                                     <field name="partner_id"/>
@@ -136,12 +132,6 @@
                                     <field name="amount_total" sum="Total"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="state"/>
-                                    <button name="action_detach"
-                                            type="object"
-                                            string="Detach"
-                                            icon="fa-chain-broken"
-                                            groups="receipt_kmitl.group_receipt_kmitl_user"
-                                            attrs="{'column_invisible': [('parent.state', 'not in', ['draft', 'submitted'])]}"/>
                                 </tree>
                             </field>
                         </page>

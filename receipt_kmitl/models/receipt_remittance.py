@@ -68,13 +68,6 @@ class ReceiptRemittance(models.Model):
         string="Fiscal Year",
         tracking=True,
     )
-    receipt_to_add_id = fields.Many2one(
-        "kmitl.receipt",
-        string="Add Receipt",
-        domain="[('state', '=', 'to_submit'), ('remittance_id', '=', False),"
-               " ('company_id', '=', company_id),"
-               " ('department_analytic_id', 'child_of', department_analytic_id)]",
-    )
     note = fields.Text()
     user_id = fields.Many2one(
         "res.users",
@@ -109,12 +102,6 @@ class ReceiptRemittance(models.Model):
     def _compute_move_count(self):
         for rec in self:
             rec.move_count = len(rec.receipt_ids.mapped("move_id"))
-
-    @api.onchange("receipt_to_add_id")
-    def _onchange_receipt_to_add_id(self):
-        if self.receipt_to_add_id:
-            self.receipt_ids = [(4, self.receipt_to_add_id.id)]
-            self.receipt_to_add_id = False
 
     @api.depends("receipt_ids.amount_total")
     def _compute_amount_total(self):

@@ -535,25 +535,6 @@ class ReceiptKmitl(models.Model):
             rec.state = "draft"
         return True
 
-    def action_detach(self):
-        for rec in self:
-            if not rec.remittance_id:
-                raise UserError(_("This receipt is not in any remittance."))
-            if rec.remittance_id.state not in ("draft", "submitted"):
-                raise UserError(
-                    _("Receipts can only be detached from draft or "
-                      "submitted remittances.")
-                )
-            remittance = rec.remittance_id
-            rec.write({"remittance_id": False, "state": "to_submit"})
-            remittance.message_post(
-                body=_("Receipt %s detached from this remittance.") % rec.name
-            )
-            rec.message_post(
-                body=_("Detached from remittance %s.") % remittance.name
-            )
-        return True
-
     def action_view_move(self):
         self.ensure_one()
         return {
