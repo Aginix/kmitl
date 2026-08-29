@@ -4,14 +4,16 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { Component, onWillStart, useState } from "@odoo/owl";
+import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { MultiRecordSelect } from "@accounting_kmitl_reports/trial_balance/multi_record_select";
 
 const REPORT_MODEL = "receipt_kmitl.receipt.report";
 
 const SELECTION_KEYS = ["departments", "sources", "funds", "activities"];
 
-export class ReceiptReport extends Component {
+export class ReceiptSummaryReport extends Component {
     setup() {
+        this.controlPanelDisplay = { "top-left": true, "bottom-right": false };
         this.orm = useService("orm");
         this.action = useService("action");
         this.company = useService("company");
@@ -169,8 +171,10 @@ export class ReceiptReport extends Component {
     }
 }
 
-ReceiptReport.template = "receipt_kmitl.ReceiptReport";
-ReceiptReport.components = { MultiRecordSelect };
-ReceiptReport.props = ["*"];
+ReceiptSummaryReport.template = "receipt_kmitl_summary_report.ReceiptSummaryReport";
+ReceiptSummaryReport.components = { ControlPanel, MultiRecordSelect };
+ReceiptSummaryReport.props = ["*"];
 
-registry.category("actions").add("receipt_kmitl_report", ReceiptReport);
+registry
+    .category("actions")
+    .add("receipt_kmitl_summary_report", ReceiptSummaryReport);

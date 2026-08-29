@@ -1,4 +1,4 @@
-.o_receipt_report_print_header {
+.o_receipt_summary_print_header {
     display: none;
 }
 
@@ -6,17 +6,15 @@
     .o_navbar,
     .o_main_navbar,
     .o_cp_action_menus,
-    .o_control_panel,
-    .o_receipt_report_header,
-    .o_receipt_report_filters {
+    .o_control_panel {
         display: none !important;
     }
 
-    .o_receipt_report_print_header {
+    .o_receipt_summary_print_header {
         display: block !important;
     }
 
-    .o_receipt_report {
+    .receipt_summary_report {
         padding: 0 !important;
         position: absolute;
         top: 0;
@@ -24,7 +22,7 @@
         right: 0;
     }
 
-    .o_receipt_report_table {
+    .o_receipt_summary_table {
         font-size: 11px;
 
         th,

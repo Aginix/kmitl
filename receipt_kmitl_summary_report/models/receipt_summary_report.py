@@ -104,7 +104,9 @@ class ReceiptReport(models.AbstractModel):
                 "date_to": options.get("date_to"),
             }
         )
-        report = self.env.ref("receipt_kmitl.action_report_receipt_summary_xlsx")
+        report = self.env.ref(
+            "receipt_kmitl_summary_report.action_report_receipt_summary_xlsx"
+        )
         return report.report_action(carrier, data={"options": options})
 
 
