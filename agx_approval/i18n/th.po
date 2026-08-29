@@ -779,8 +779,7 @@ msgid "Name"
 msgstr "ชื่อ"
 
 #. module: agx_approval
-#: code:addons/agx_approval/models/approval_request.py:0
-#, python-format
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 msgid "New"
 msgstr "รายการใหม่"
 

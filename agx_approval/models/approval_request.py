@@ -45,9 +45,8 @@ class ApprovalRequest(models.Model):
     is_budget_editable = fields.Boolean(compute="_compute_is_budget_editable")
 
     # True once the official AR/<be>/#### number has been minted. Used by the
-    # view to freeze account_fiscal_year_id — testing ``name != 'New'`` from the
-    # domain would misfire when the default lambda stored the localized
-    # placeholder (e.g. "รายการใหม่") in the DB.
+    # view to freeze account_fiscal_year_id and to swap the title for a "New"
+    # label while the number is still the placeholder.
     is_number_assigned = fields.Boolean(compute="_compute_is_number_assigned")
 
     hide_reserve_budget_button = fields.Boolean(
@@ -92,7 +91,12 @@ class ApprovalRequest(models.Model):
 
     name = fields.Char(
         string="Name",
-        default=lambda self: _("New"),
+        # Untranslated placeholder, like account.move's "/": the number is minted
+        # later (at submit), so this value sits in the DB and is read back by
+        # users in other locales. Anything translated here would compare unequal
+        # to _() evaluated in the reader's language. The friendly "New" label is
+        # rendered by the form view instead.
+        default="/",
         required=True,
         copy=False,
         tracking=True,
@@ -577,7 +581,7 @@ class ApprovalRequest(models.Model):
             ).next_by_code(
                 "approval.request",
                 sequence_date=fiscal_date,
-            ) or _("New")
+            ) or "/"
         self.write(vals)
         return True
 
@@ -1060,15 +1064,10 @@ class ApprovalRequest(models.Model):
 
     @api.depends("name")
     def _compute_is_number_assigned(self):
-        # Placeholder sentinels: "/" is the legacy pre-PR default; _("New") is
-        # the current one, and is stored translated in the user's locale — so
-        # we compare against the localized string here rather than the raw
-        # English literal.
-        placeholder = _("New")
+        # "/" is the placeholder a request carries until action_to_verify mints
+        # its number. Kept untranslated on purpose — see the ``name`` field.
         for rec in self:
-            rec.is_number_assigned = bool(
-                rec.name and rec.name not in ("/", placeholder)
-            )
+            rec.is_number_assigned = bool(rec.name and rec.name != "/")
 
     @api.depends("line_ids.total_amount")
     def _compute_total_amount(self):
