@@ -329,6 +329,14 @@ class ReceiptKmitl(models.Model):
         res = super().write(vals)
         if any(f in vals for f in ANALYTIC_DIMENSION_FIELDS):
             self._sync_analytic_to_lines()
+        if "remittance_id" in vals and not vals.get("remittance_id"):
+            detached = self.filtered(lambda r: r.state in ("submitted", "approved"))
+            if detached:
+                detached.write({"state": "to_submit"})
+                for rec in detached:
+                    rec.message_post(
+                        body=_("Removed from remittance; returned to the pending pool.")
+                    )
         return res
 
     @api.onchange(

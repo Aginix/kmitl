@@ -66,7 +66,7 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
             set(remittance.receipt_ids.ids), {r_parent.id, r_child.id}
         )
 
-    def test_detach_returns_receipt_to_pool(self):
+    def test_removing_receipt_returns_it_to_pool(self):
         r1 = self._make_receipt()
         r1.action_to_submit()
         r2 = self._make_receipt()
@@ -79,7 +79,7 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         )
         remittance.action_submit()
 
-        r1.action_detach()
+        remittance.write({"receipt_ids": [(3, r1.id)]})
         self.assertFalse(r1.remittance_id)
         self.assertEqual(r1.state, "to_submit")
         self.assertEqual(remittance.state, "submitted")
