@@ -9,8 +9,8 @@
                   decoration-success="state == 'posted'">
                 <field name="name"/>
                 <field name="date"/>
-                <field name="department_analytic_id"/>
-                <field name="receipt_count" string="#"/>
+                <field name="department_analytic_id" optional="show"/>
+                <field name="receipt_count" string="Receipt Count" optional="show"/>
                 <field name="amount_total" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="user_id" optional="show"/>
@@ -19,7 +19,8 @@
                        decoration-info="state == 'submitted'"
                        decoration-warning="state == 'approved'"
                        decoration-success="state == 'posted'"
-                       decoration-muted="state == 'cancelled'"/>
+                       decoration-muted="state == 'cancelled'"
+                       optional="show"/>
             </tree>
         </field>
     </record>
