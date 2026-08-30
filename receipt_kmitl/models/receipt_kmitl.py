@@ -109,6 +109,9 @@ class ReceiptKmitl(models.Model):
         "account.analytic.account",
         string="Source",
         domain=[("root_plan_id.code", "=", "sources")],
+        default=lambda self: self.env.ref(
+            "account_analytic_kmitl.source_2", raise_if_not_found=False
+        ),
         states=ANALYTIC_READONLY_STATES,
     )
     activity_analytic_id = fields.Many2one(
