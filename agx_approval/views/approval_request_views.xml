@@ -196,14 +196,35 @@
                                         <field name="total_amount" sum="Total" />
                                     </tree>
                                 </field>
-                                <separator string="Participants" />
-                                <field name="participant_ids" widget="no_open_readonly_x2many" nolabel="1"
+                                <separator string="รายชื่อบุคลากรภายใน" />
+                                <field name="internal_participant_ids" widget="no_open_readonly_x2many" nolabel="1"
                                     colspan="2"
+                                    context="{'default_participant_type': 'internal'}"
                                     attrs="{'readonly': [('is_plan_editable', '=', False)]}">
                                     <tree editable="bottom">
                                         <field name="allowed_partner_type_ids" invisible="1" />
+                                        <field name="participant_type" invisible="1" />
                                         <field name="sequence" widget="handle" />
                                         <field name="partner_id" />
+                                        <field name="employee_department_name" />
+                                        <field name="employee_job_name" />
+                                        <field name="phone" optional="show" />
+                                        <field name="description" />
+                                    </tree>
+                                </field>
+                                <separator string="รายชื่อบุคคลภายนอก" />
+                                <field name="external_participant_ids" widget="no_open_readonly_x2many" nolabel="1"
+                                    colspan="2"
+                                    context="{'default_participant_type': 'external'}"
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                                    <tree editable="bottom">
+                                        <field name="allowed_partner_type_ids" invisible="1" />
+                                        <field name="participant_type" invisible="1" />
+                                        <field name="sequence" widget="handle" />
+                                        <field name="partner_id" />
+                                        <field name="partner_type_id" optional="show" />
+                                        <field name="vat" optional="show" />
+                                        <field name="phone" optional="show" />
                                         <field name="description" />
                                     </tree>
                                 </field>

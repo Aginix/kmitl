@@ -208,6 +208,22 @@ class ApprovalRequest(models.Model):
         copy=True,
     )
 
+    internal_participant_ids = fields.One2many(
+        "approval.request.participant",
+        "request_id",
+        string="รายชื่อบุคลากรภายใน",
+        domain=[("participant_type", "=", "internal")],
+        copy=False,
+    )
+
+    external_participant_ids = fields.One2many(
+        "approval.request.participant",
+        "request_id",
+        string="รายชื่อบุคคลภายนอก",
+        domain=[("participant_type", "=", "external")],
+        copy=False,
+    )
+
     allocation_ids = fields.One2many(
         "approval.request.allocation",
         "request_id",
@@ -464,6 +480,8 @@ class ApprovalRequest(models.Model):
     def _onchange_category_id(self):
         self.line_ids = False
         self.participant_ids = False
+        self.internal_participant_ids = False
+        self.external_participant_ids = False
         self.description = self.category_id.default_description
 
     @api.model
