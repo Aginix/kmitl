@@ -16,6 +16,15 @@ msgstr ""
 #. odoo-python
 #: code:addons/purchase_request_sequence_kmitl/models/purchase_request.py:0
 #, python-format
+msgid ""
+"Document number sequence (purchase.request.kmitl) not found. Please "
+"upgrade the module."
+msgstr "ไม่พบลำดับเลขที่เอกสาร (purchase.request.kmitl) กรุณาอัปเดตโมดูล"
+
+#. module: purchase_request_sequence_kmitl
+#. odoo-python
+#: code:addons/purchase_request_sequence_kmitl/models/purchase_request.py:0
+#, python-format
 msgid "Fiscal Year is required to generate the document number."
 msgstr "ต้องระบุปีงบประมาณเพื่อสร้างเลขที่เอกสาร"
 
