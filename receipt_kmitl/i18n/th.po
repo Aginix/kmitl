@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-30 07:41+0000\n"
-"PO-Revision-Date: 2026-08-30 07:41+0000\n"
+"POT-Creation-Date: 2026-08-30 09:52+0000\n"
+"PO-Revision-Date: 2026-08-30 09:52+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -33,6 +33,11 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-info-circle\"/>\n"
 "                                ลูกค้าขาจร: ใบเสร็จสำหรับลูกค้าทั่วไปโดยไม่มีรายละเอียดผู้ชำระเงินเฉพาะ"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_partner_form_inherit_receipt_kmitl
+msgid "<span class=\"o_stat_text\">Receipts</span>"
+msgstr ""
 
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
@@ -63,11 +68,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
 msgid "<strong>เป็นค่า / PAY FOR</strong>"
 msgstr ""
-
-#. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
-msgid "Accounting"
-msgstr "บัญชี"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__message_needaction
@@ -127,7 +127,7 @@ msgstr "ต้องมีอย่างน้อย 1 ใบเสร็จ"
 #: model:ir.actions.act_window,name:receipt_kmitl.action_receipt_kmitl
 #: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_all_receipts
 msgid "All Receipts"
-msgstr "ใบเสร็จรับเงิน"
+msgstr "ใบเสร็จรับเงินทั้งหมด"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__amount
@@ -198,6 +198,12 @@ msgstr "ถูกจัดเก็บแล้ว"
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__message_attachment_count
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance__message_attachment_count
 msgid "Attachment Count"
+msgstr ""
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__attachment_ids
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
+msgid "Attachments"
 msgstr ""
 
 #. module: receipt_kmitl
@@ -1025,6 +1031,18 @@ msgid "Receipt KMITL"
 msgstr "ใบเสร็จรับเงิน สจล."
 
 #. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_res_partner__receipt_kmitl_count
+#: model:ir.model.fields,field_description:receipt_kmitl.field_res_users__receipt_kmitl_count
+msgid "Receipt Kmitl Count"
+msgstr ""
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_res_partner__receipt_kmitl_total
+#: model:ir.model.fields,field_description:receipt_kmitl.field_res_users__receipt_kmitl_total
+msgid "Receipt Kmitl Total"
+msgstr ""
+
+#. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__name
 msgid "Receipt Number"
 msgstr "เลขที่ใบเสร็จ"
@@ -1049,6 +1067,7 @@ msgstr "รายงานนำส่งใบเสร็จรับเงิ
 #. module: receipt_kmitl
 #. odoo-python
 #: code:addons/receipt_kmitl/models/receipt_remittance.py:0
+#: code:addons/receipt_kmitl/models/res_partner.py:0
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance__receipt_ids
 #: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_receipts
 #: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_root
@@ -1211,6 +1230,11 @@ msgstr "ส่งให้สำนักคลัง"
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_search
 msgid "Submitted"
 msgstr "ส่งรายงานแล้ว"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,help:receipt_kmitl.field_kmitl_receipt__attachment_ids
+msgid "Supporting evidence, e.g. bank transfer slips."
+msgstr ""
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__customer_tax_id
