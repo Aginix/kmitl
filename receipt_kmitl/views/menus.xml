@@ -62,5 +62,5 @@
               name="Settings"
               parent="menu_receipt_kmitl_configuration"
               action="action_receipt_kmitl_config"
-              sequence="30"/>
+              sequence="5"/>
 </odoo>
