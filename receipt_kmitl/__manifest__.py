@@ -23,6 +23,7 @@
         "views/payment_method_views.xml",
         "views/receipt_kmitl_views.xml",
         "views/receipt_remittance_views.xml",
+        "views/res_partner_views.xml",
         "views/walkin_partner_action.xml",
         "views/res_config_settings_views.xml",
         "views/receipt_report_action.xml",

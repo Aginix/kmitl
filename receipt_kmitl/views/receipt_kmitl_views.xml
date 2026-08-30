@@ -172,14 +172,6 @@
                                        widget="many2many_binary"/>
                             </group>
                         </page>
-                        <page string="Accounting" name="accounting"
-                              groups="receipt_kmitl.group_receipt_kmitl_remittance_approver"
-                              attrs="{'invisible': ['&amp;', ('move_id', '=', False), ('remittance_id', '=', False)]}">
-                            <group>
-                                <field name="move_id" readonly="1"/>
-                                <field name="remittance_id" readonly="1"/>
-                            </group>
-                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
