@@ -8,8 +8,7 @@
         <t t-if="option.partnerInfo">
             <div class="o_partner_ac_option">
                 <div class="o_partner_ac_head">
-                    <i class="fa fa-fw"
-                        t-att-class="option.partnerInfo.is_company ? 'fa-building-o' : 'fa-user-o'"/>
+                    <i class="fa fa-fw" t-att-class="option.partnerInfo.icon"/>
                     <strong class="o_partner_ac_name" t-esc="option.partnerInfo.name"/>
                     <span t-if="option.partnerInfo.type" class="o_partner_ac_type"
                         t-esc="option.partnerInfo.type"/>
@@ -17,8 +16,7 @@
                 <div class="o_partner_ac_rows">
                     <span t-foreach="option.partnerInfo.rows" t-as="row" t-key="row_index"
                         class="o_partner_ac_row">
-                        <i class="fa fa-fw text-muted" t-att-class="row.icon"
-                            t-att-title="row.label"/>
+                        <i class="fa fa-fw text-muted" t-att-class="row.icon"/>
                         <span t-esc="row.value"/>
                     </span>
                 </div>

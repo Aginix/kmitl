@@ -27,15 +27,16 @@ import { useState, onWillStart, onWillUpdateProps } from "@odoo/owl";
 // partner list. Must be a fully-qualified xmlid (tree_view_ref requirement).
 const SEARCH_MORE_VIEW = "agx_partner_autocomplete.res_partner_autocomplete_view_tree";
 
-// Keeps items whose key isn't explicitly turned off via a show_<key> display
-// option. The cached payload always carries every key; filtering happens here,
-// per widget instance, so the same cache entry serves instances configured
+// True unless a key is explicitly turned off via a show_<key> display option.
+// The cached payload always carries every key; filtering happens here, per
+// widget instance, so the same cache entry serves instances configured
 // differently.
+function isShown(key, displayOptions) {
+    return !displayOptions || displayOptions[key] !== false;
+}
+
 function filterByDisplayOptions(items, displayOptions) {
-    if (!displayOptions) {
-        return items;
-    }
-    return items.filter((item) => displayOptions[item.key] !== false);
+    return items.filter((item) => isShown(item.key, displayOptions));
 }
 
 // Module-level micro-batcher + cache for the selected-value subtitle: a tree
@@ -138,6 +139,7 @@ class PartnerM2XAutocomplete extends Many2XAutocomplete {
                 if (info) {
                     o.partnerInfo = {
                         ...info,
+                        type: isShown("type", this.props.displayOptions) ? info.type : "",
                         rows: filterByDisplayOptions(info.rows, this.props.displayOptions),
                     };
                     // Applied to the <li>; the scss uses it to undo the

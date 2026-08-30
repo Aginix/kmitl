@@ -33,8 +33,9 @@ not ``res.partner`` the widget silently degrades to the plain dropdown.
 
 Each dropdown row and subtitle part is tagged with a key (``vat``,
 ``address``, ``email``, ``phone``, ``type``…) and can be hidden with a
-``show_<key>`` widget option, e.g. to drop the address and VAT everywhere this
-field is compact::
+``show_<key>`` widget option — ``show_type`` hides both the option badge in
+the dropdown and the type part of the selected-value subtitle — e.g. to drop
+the address and VAT everywhere this field is compact::
 
     <field name="partner_id" widget="agx_partner_many2one"
         options="{'show_address': false, 'show_vat': false}"/>
@@ -63,10 +64,14 @@ of per-record hooks. Override them to change what each option shows:
 
 * ``_partner_autocomplete_type`` — the classification on the badge, also reused
   in the subtitle (defaults to the Individual/Company label).
-* ``_partner_autocomplete_rows`` — the (key, label, value, icon) detail rows.
+* ``_partner_autocomplete_icon`` — the font-awesome class on the option's
+  leading icon, derived from ``company_type``.
+* ``_partner_autocomplete_rows`` — the (key, value, icon) detail rows.
 * ``_partner_autocomplete_subtitle_parts`` — the (key, value) parts joined into
   the compact line under the selected value.
 * ``_partner_autocomplete_address`` — the one-line address string.
 
 See ``partner_type_kmitl_autocomplete`` for a minimal example that puts the
-KMITL partner type on the badge in place of Individual/Company.
+KMITL partner type on the badge in place of Individual/Company — the leading
+icon follows along for free since it's derived from ``company_type``, which
+that bridge already maps.

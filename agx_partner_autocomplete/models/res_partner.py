@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, models
+from odoo import models
 
 
 class ResPartner(models.Model):
@@ -8,15 +8,16 @@ class ResPartner(models.Model):
     def get_partner_autocomplete_info(self):
         """Display payload for the ``agx_partner_many2one`` m2o widget.
 
-        One dict per record: identity plus the label/value rows the dropdown
-        renders verbatim, so labels, translations and formatting all stay
+        One dict per record: identity plus the value rows the dropdown
+        renders verbatim, so translations and formatting all stay
         server-side and the widget stays dumb. Rows and subtitle parts each
         carry a ``key`` so the widget's ``show_<key>`` display options can
         toggle them on/off without any change here — new keys are toggleable
         for free the moment a hook starts tagging them. The partner "type" is
         a dedicated hook (:meth:`_partner_autocomplete_type`) so a bridge
         module can swap the generic Individual/Company classification for its
-        own without touching the widget or the rest of the payload.
+        own without touching the widget or the rest of the payload. The
+        leading icon is its own hook too (:meth:`_partner_autocomplete_icon`).
         """
         return [record._partner_autocomplete_info() for record in self]
 
@@ -25,7 +26,7 @@ class ResPartner(models.Model):
         return {
             "id": self.id,
             "name": (self.display_name or self.name or "").split("\n")[0],
-            "is_company": self.is_company,
+            "icon": self._partner_autocomplete_icon(),
             "type": self._partner_autocomplete_type(),
             "subtitle_parts": self._partner_autocomplete_subtitle_parts(),
             "rows": self._partner_autocomplete_rows(),
@@ -37,6 +38,14 @@ class ResPartner(models.Model):
         return dict(
             self._fields["company_type"]._description_selection(self.env)
         ).get(self.company_type, "")
+
+    def _partner_autocomplete_icon(self):
+        """Font-awesome class for the option's leading icon. Reads
+        ``company_type`` (not ``is_company``) so a module that maps its own
+        classification onto company_type — as ``partner_type_kmitl`` does —
+        gets a matching icon for free. Overridable."""
+        self.ensure_one()
+        return "fa-building-o" if self.company_type == "company" else "fa-user-o"
 
     def _partner_autocomplete_subtitle_parts(self):
         """Ordered (key, value) parts for the compact subtitle shown under a
@@ -56,27 +65,21 @@ class ResPartner(models.Model):
         return parts
 
     def _partner_autocomplete_rows(self):
-        """(key, label, value, icon) rows — only the ones that carry a value,
-        so an empty contact shows just its name and type rather than blank
-        rows. The widget filters rows by show_<key>."""
+        """(key, value, icon) rows — only the ones that carry a value, so an
+        empty contact shows just its name and type rather than blank rows.
+        The widget filters rows by show_<key>."""
         self.ensure_one()
         rows = []
         if self.vat:
-            rows.append(
-                {"key": "vat", "label": _("VAT"), "value": self.vat, "icon": "fa-id-card-o"}
-            )
+            rows.append({"key": "vat", "value": self.vat, "icon": "fa-id-card-o"})
         address = self._partner_autocomplete_address()
         if address:
-            rows.append(
-                {"key": "address", "label": _("Address"), "value": address, "icon": "fa-map-marker"}
-            )
+            rows.append({"key": "address", "value": address, "icon": "fa-map-marker"})
         if self.email:
-            rows.append(
-                {"key": "email", "label": _("Email"), "value": self.email, "icon": "fa-envelope-o"}
-            )
+            rows.append({"key": "email", "value": self.email, "icon": "fa-envelope-o"})
         phone = self.phone or self.mobile
         if phone:
-            rows.append({"key": "phone", "label": _("Phone"), "value": phone, "icon": "fa-phone"})
+            rows.append({"key": "phone", "value": phone, "icon": "fa-phone"})
         return rows
 
     def _partner_autocomplete_address(self):
