@@ -9,7 +9,13 @@ exclude: |
   # Library files can have extraneous formatting (even minimized)
   /static/(src/)?lib/|
   # You don't usually want a bot to modify your legal texts
-  (LICENSE.*|COPYING.*)
+  (LICENSE.*|COPYING.*)|
+  # Bank export fixtures are byte-exact copies of files a bank produced:
+  # fixed-width records whose trailing spaces are load-bearing, CRLF line
+  # endings, TIS-620 bytes and no final newline. trailing-whitespace,
+  # end-of-file-fixer and mixed-line-ending each destroy one of those, and a
+  # fixture a hook has "fixed" no longer proves anything.
+  /tests/fixtures/
 default_language_version:
   python: python3
   node: "18.17.1"
