@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-30 06:30+0000\n"
-"PO-Revision-Date: 2026-08-30 06:30+0000\n"
+"POT-Creation-Date: 2026-08-30 07:41+0000\n"
+"PO-Revision-Date: 2026-08-30 07:41+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -41,6 +41,11 @@ msgstr ""
 
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
+msgid "<span>วันที่ / Date</span>"
+msgstr ""
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
 msgid "<strong>จำนวนเงิน / THE SUM OF</strong>"
 msgstr ""
 
@@ -52,11 +57,6 @@ msgstr ""
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
 msgid "<strong>รับเงินจาก / RECEIVED FROM</strong>"
-msgstr ""
-
-#. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
-msgid "<strong>วันที่ / Date</strong>"
 msgstr ""
 
 #. module: receipt_kmitl
@@ -125,7 +125,7 @@ msgstr "ต้องมีอย่างน้อย 1 ใบเสร็จ"
 
 #. module: receipt_kmitl
 #: model:ir.actions.act_window,name:receipt_kmitl.action_receipt_kmitl
-#: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_receipts
+#: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_all_receipts
 msgid "All Receipts"
 msgstr "ใบเสร็จรับเงิน"
 
@@ -1050,6 +1050,7 @@ msgstr "รายงานนำส่งใบเสร็จรับเงิ
 #. odoo-python
 #: code:addons/receipt_kmitl/models/receipt_remittance.py:0
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_remittance__receipt_ids
+#: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_receipts
 #: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_root
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_pivot
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_form
