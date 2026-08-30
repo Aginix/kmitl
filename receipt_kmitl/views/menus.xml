@@ -4,16 +4,21 @@
               name="Receipts"
               sequence="48"
               groups="receipt_kmitl.group_receipt_kmitl_viewer"/>
+    <menuitem id="menu_receipt_kmitl_receipts"
+              name="Receipts"
+              parent="menu_receipt_kmitl_root"
+              sequence="10"
+              groups="receipt_kmitl.group_receipt_kmitl_viewer"/>
 
     <menuitem id="menu_receipt_kmitl_my_receipts"
               name="My Receipts"
-              parent="menu_receipt_kmitl_root"
+              parent="menu_receipt_kmitl_receipts"
               action="action_receipt_kmitl_my"
               sequence="10"/>
 
-    <menuitem id="menu_receipt_kmitl_receipts"
+    <menuitem id="menu_receipt_kmitl_all_receipts"
               name="All Receipts"
-              parent="menu_receipt_kmitl_root"
+              parent="menu_receipt_kmitl_receipts"
               action="action_receipt_kmitl"
               sequence="15"/>
 
