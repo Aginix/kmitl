@@ -13,6 +13,10 @@ class ResPartnerType(models.Model):
         selection=[('person', 'Individual'), ('company', 'Company')],
         string='Company Type', required=True, tracking=True,
     )
+    is_internal = fields.Boolean(
+        string='Internal Personnel', tracking=True,
+        help='บุคลากรภายใน — has an hr.employee record.',
+    )
     partner_ids = fields.One2many(
         comodel_name='res.partner', inverse_name='partner_type_id',
         string='Partners', readonly=True,
