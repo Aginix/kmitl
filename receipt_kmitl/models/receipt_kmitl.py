@@ -163,6 +163,11 @@ class ReceiptKmitl(models.Model):
 
     description = fields.Text(states=FLEX_READONLY_STATES)
     note = fields.Text()
+    attachment_ids = fields.Many2many(
+        "ir.attachment",
+        string="Attachments",
+        help="Supporting evidence, e.g. bank transfer slips.",
+    )
     line_ids = fields.One2many(
         "kmitl.receipt.line",
         "receipt_id",
