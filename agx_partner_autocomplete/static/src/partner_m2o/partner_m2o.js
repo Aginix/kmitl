@@ -26,9 +26,6 @@ import { useState, onWillStart, onWillUpdateProps } from "@odoo/owl";
 // columns (type, VAT, address…) as the dropdown instead of the bare default
 // partner list. Must be a fully-qualified xmlid (tree_view_ref requirement).
 const SEARCH_MORE_VIEW = "agx_partner_autocomplete.res_partner_autocomplete_view_tree";
-// Search view reused by the same dialog: a plain search-bar matching the
-// tree columns above (no searchpanel).
-const SEARCH_MORE_SEARCH_VIEW = "agx_partner_autocomplete.res_partner_autocomplete_view_search";
 
 // Keeps items whose key isn't explicitly turned off via a show_<key> display
 // option. The cached payload always carries every key; filtering happens here,
@@ -103,7 +100,6 @@ class PartnerM2XAutocomplete extends Many2XAutocomplete {
                     context: {
                         ...params.context,
                         tree_view_ref: SEARCH_MORE_VIEW,
-                        search_view_ref: SEARCH_MORE_SEARCH_VIEW,
                     },
                 });
         }

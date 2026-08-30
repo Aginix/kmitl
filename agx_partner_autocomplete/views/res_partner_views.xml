@@ -21,19 +21,4 @@
             </tree>
         </field>
     </record>
-
-    <!-- Search view for the same dialog: a plain search-bar matching the
-         columns above, no searchpanel. -->
-    <record id="res_partner_autocomplete_view_search" model="ir.ui.view">
-        <field name="name">res.partner.autocomplete.search</field>
-        <field name="model">res.partner</field>
-        <field name="arch" type="xml">
-            <search string="Contacts">
-                <field name="name" string="Name"/>
-                <field name="vat"/>
-                <field name="email"/>
-                <field name="phone"/>
-            </search>
-        </field>
-    </record>
 </odoo>
