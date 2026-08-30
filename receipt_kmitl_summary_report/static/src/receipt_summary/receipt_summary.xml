@@ -114,14 +114,6 @@
                     </div>
                 </t>
                 <t t-else="">
-                    <!-- Print header (visible only when printing) -->
-                    <div class="o_receipt_summary_print_header">
-                        <h3 class="text-center mb-1"><t t-esc="labels.title" /></h3>
-                        <p class="text-center text-muted mb-2">
-                            <t t-esc="state.dateFrom" /> — <t t-esc="state.dateTo" />
-                        </p>
-                    </div>
-
                     <table class="table table-sm table-hover align-middle mb-0 o_receipt_summary_table">
                         <thead class="table-light">
                             <tr>

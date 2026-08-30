@@ -15,13 +15,15 @@
     "data": [
         "security/ir.model.access.csv",
         "data/receipt_summary_xlsx_action.xml",
+        "report/paperformat.xml",
+        "report/receipt_summary_pdf_template.xml",
+        "report/receipt_summary_pdf_action.xml",
         "views/menus.xml",
     ],
     "assets": {
         "web.assets_backend": [
             "receipt_kmitl_summary_report/static/src/receipt_summary/receipt_summary.js",
             "receipt_kmitl_summary_report/static/src/receipt_summary/receipt_summary.xml",
-            "receipt_kmitl_summary_report/static/src/receipt_summary/receipt_summary.scss",
         ],
     },
     "installable": True,

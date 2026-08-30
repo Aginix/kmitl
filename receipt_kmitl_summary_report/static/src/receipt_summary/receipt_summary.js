@@ -32,7 +32,6 @@ export class ReceiptSummaryReport extends Component {
             activities: [],
         });
         this.labels = {
-            title: _t("Receipt Summary Report"),
             print: _t("Print"),
             exportExcel: _t("Export Excel"),
             empty: _t("No receipts for the selected criteria."),
@@ -159,8 +158,11 @@ export class ReceiptSummaryReport extends Component {
         });
     }
 
-    printReport() {
-        window.print();
+    async printReport() {
+        const action = await this.orm.call(REPORT_MODEL, "action_print_pdf", [
+            this.options,
+        ]);
+        await this.action.doAction(action);
     }
 
     async exportXlsx() {

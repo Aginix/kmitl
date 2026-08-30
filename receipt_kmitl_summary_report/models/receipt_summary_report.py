@@ -109,6 +109,68 @@ class ReceiptReport(models.AbstractModel):
         )
         return report.report_action(carrier, data={"options": options})
 
+    @api.model
+    def action_print_pdf(self, options):
+        options = options or {}
+        carrier = self.env["receipt_kmitl.report.wizard"].create(
+            {
+                "company_id": options.get("company_id") or self.env.company.id,
+                "date_from": options.get("date_from"),
+                "date_to": options.get("date_to"),
+            }
+        )
+        report = self.env.ref(
+            "receipt_kmitl_summary_report.action_report_receipt_summary_pdf"
+        )
+        return report.report_action(carrier, data={"options": options})
+
+    @api.model
+    def format_amount(self, value):
+        if not value or abs(value) < 0.005:
+            return ""
+        return "{:,.2f}".format(value)
+
+    @api.model
+    def get_filter_lines(self, options):
+        """Human-readable summary of the applied filters, for the PDF header."""
+        options = options or {}
+        lines = []
+        date_from = options.get("date_from")
+        date_to = options.get("date_to")
+        if date_from and date_to:
+            lines.append(
+                _("Period: %(date_from)s to %(date_to)s")
+                % {"date_from": date_from, "date_to": date_to}
+            )
+
+        payment_type = options.get("payment_type")
+        if payment_type:
+            payment_type_labels = {
+                "cash": _("Cash"),
+                "cheque": _("Cheque"),
+                "transfer": _("Transfer"),
+                "other": _("Other"),
+            }
+            lines.append(
+                _("Payment Type: %s")
+                % payment_type_labels.get(payment_type, payment_type)
+            )
+
+        dims = options.get("dims") or {}
+        dim_titles = {
+            "departments": _("Departments"),
+            "sources": _("Sources"),
+            "funds": _("Funds"),
+            "activities": _("Activities"),
+        }
+        Analytic = self.env["account.analytic.account"]
+        for code, title in dim_titles.items():
+            ids = dims.get(code) or []
+            if ids:
+                names = Analytic.browse(ids).mapped("display_name")
+                lines.append("%s: %s" % (title, ", ".join(names)))
+        return lines
+
 
 class ReceiptReportWizard(models.TransientModel):
     _name = "receipt_kmitl.report.wizard"
@@ -196,3 +258,27 @@ class ReceiptReportXlsx(models.AbstractModel):
         sheet.set_column(3, 3, 16)
         sheet.set_column(4, 4, 35)
         sheet.set_column(5, 5, 25)
+
+
+class ReceiptReportPdf(models.AbstractModel):
+    _name = "report.receipt_kmitl_summary_report.receipt_summary_pdf"
+    _description = "Receipt Summary PDF"
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        options = (data or {}).get("options") or {}
+        report = self.env["receipt_kmitl.receipt.report"]
+        result = report.get_report_data(options)
+        company = self.env["res.company"].browse(
+            options.get("company_id") or self.env.company.id
+        )
+        return {
+            "doc_ids": docids,
+            "doc_model": "receipt_kmitl.report.wizard",
+            "docs": self.env["receipt_kmitl.report.wizard"].browse(docids),
+            "company": company,
+            "groups": result.get("groups", []),
+            "grand_total": result.get("grand_total", 0),
+            "filter_lines": report.get_filter_lines(options),
+            "format_amount": report.format_amount,
+        }
