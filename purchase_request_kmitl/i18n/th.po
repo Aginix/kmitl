@@ -328,6 +328,7 @@ msgstr "ยกเลิก"
 
 #. module: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__cancelled
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Cancelled"
 msgstr "ยกเลิก"
 
@@ -558,10 +559,11 @@ msgstr "จัดซื้อจัดจ้างเสร็จสิ้น"
 msgid "Downstream Moves"
 msgstr ""
 
-#. module: purchase_request
+#. module: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__draft
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Draft"
 msgstr "ฉบับร่าง"
 
@@ -1546,6 +1548,7 @@ msgstr "ตีกลับแก้ไข"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__returned
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Returned"
 msgstr "รอการแก้ไข"
 
@@ -2320,5 +2323,6 @@ msgstr "สำหรับงานก่อสร้าง"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_submit
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "To Submit"
 msgstr "รอส่งขอความเห็นชอบให้จัดหา"

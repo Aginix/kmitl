@@ -879,6 +879,7 @@ msgstr "ตีกลับ"
 #. module: purchase_request_approval
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__rejected
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Rejected"
 msgstr "ปฎิเสธ"
 
@@ -953,6 +954,7 @@ msgstr "ผู้รับผิดชอบ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__sarabun_returned
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Sarabun Returned"
 msgstr "รอการแก้ไข"
 
@@ -1639,5 +1641,6 @@ msgstr "Wizard ตีกลับ/ยกเลิก พจ.1"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__pending_pr
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Pending PR Revision"
 msgstr "รอ พ.1 แก้ไข"
