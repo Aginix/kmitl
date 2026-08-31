@@ -709,9 +709,14 @@ msgid "Number of messages with delivery error"
 msgstr "จำนวนข้อความที่มีข้อผิดพลาดในการส่ง"
 
 #. module: advance_payment
-#: model:res.groups,name:advance_payment.group_advance_payment_officer
-msgid "Officer"
-msgstr "เจ้าหน้าที่"
+#: model:res.groups,name:advance_payment.group_advance_payment_user
+msgid "User"
+msgstr "ผู้ใช้งาน"
+
+#. module: advance_payment
+#: model:res.groups,name:advance_payment.group_advance_payment_loan_officer
+msgid "เจ้าหน้าที่งานเงินยืม"
+msgstr "เจ้าหน้าที่งานเงินยืม"
 
 #. module: advance_payment
 #. odoo-python
@@ -1011,9 +1016,9 @@ msgid "Usage can only be recorded for in-progress agreements."
 msgstr "การบันทึกการใช้เงินทำได้เฉพาะสัญญาที่กำลังดำเนินการเท่านั้น"
 
 #. module: advance_payment
-#: model:res.groups,name:advance_payment.group_advance_payment_user
-msgid "User"
-msgstr "ผู้ใช้งาน"
+#: model:res.groups,name:advance_payment.group_advance_payment_own_only
+msgid "Own Only"
+msgstr "เฉพาะของตนเอง"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__website_message_ids

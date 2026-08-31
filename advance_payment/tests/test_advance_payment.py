@@ -42,7 +42,11 @@ class TestAdvancePayment(TransactionCase):
                 "login": "borrower_a_ap",
                 "email": "a@test.local",
                 "groups_id": [
-                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_user").id])
+                    (
+                        6,
+                        0,
+                        [cls.env.ref("advance_payment.group_advance_payment_own_only").id],
+                    )
                 ],
             }
         )
@@ -52,17 +56,39 @@ class TestAdvancePayment(TransactionCase):
                 "login": "borrower_b_ap",
                 "email": "b@test.local",
                 "groups_id": [
+                    (
+                        6,
+                        0,
+                        [cls.env.ref("advance_payment.group_advance_payment_own_only").id],
+                    )
+                ],
+            }
+        )
+        cls.staff = Users.create(
+            {
+                "name": "Data Entry Staff",
+                "login": "staff_ap",
+                "email": "staff@test.local",
+                "groups_id": [
                     (6, 0, [cls.env.ref("advance_payment.group_advance_payment_user").id])
                 ],
             }
         )
         cls.officer = Users.create(
             {
-                "name": "Finance Officer",
+                "name": "Loan Officer",
                 "login": "officer_ap",
                 "email": "officer@test.local",
                 "groups_id": [
-                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_officer").id])
+                    (
+                        6,
+                        0,
+                        [
+                            cls.env.ref(
+                                "advance_payment.group_advance_payment_loan_officer"
+                            ).id
+                        ],
+                    )
                 ],
             }
         )
@@ -70,7 +96,7 @@ class TestAdvancePayment(TransactionCase):
             {"name": "Test Loan Type"}
         )
         cls.banks = {}
-        for rec in (cls.manager, cls.user, cls.user2, cls.officer):
+        for rec in (cls.manager, cls.user, cls.user2, cls.staff, cls.officer):
             cls.banks[rec.id] = cls.env["res.partner.bank"].create(
                 {"acc_number": "x-%s" % rec.id, "partner_id": rec.partner_id.id}
             )
@@ -148,6 +174,47 @@ class TestAdvancePayment(TransactionCase):
     def test_create_on_behalf_blocked_for_non_admin(self):
         with self.assertRaises(ValidationError):
             self._make(requested_by=self.user2, as_user=self.user)
+
+    # ------------------------------------------------------------------ #
+    # Role tiers: own-only / user / loan officer (ADR-0010)                #
+    # ------------------------------------------------------------------ #
+
+    def test_user_tier_can_draft_on_behalf(self):
+        ap = self._make(requested_by=self.user2, as_user=self.staff)
+        self.assertEqual(ap.requested_by, self.user2)
+        self.assertEqual(ap.create_uid, self.staff)
+
+    def test_user_tier_cannot_submit_drafted_on_behalf(self):
+        ap = self._make(requested_by=self.user2, as_user=self.staff)
+        with self.assertRaises(UserError):
+            ap.with_user(self.staff).action_submit()
+        ap.with_user(self.user2).action_submit()
+        self.assertEqual(ap.state, "to_verify")
+
+    def test_loan_officer_can_verify_and_accept_report(self):
+        ap = self._make(amount=1000)
+        ap.action_submit()
+        ap.with_user(self.officer).action_verify()
+        self.assertEqual(ap.state, "to_approve")
+        ap.write(
+            {
+                "state": "to_verify_report",
+                "expense_description": "all spent",
+                "actual_expense_amount": 1000,
+            }
+        )
+        ap.with_user(self.officer).action_accept_report()
+        self.assertEqual(ap.state, "done")
+
+    def test_own_only_sees_only_own_records(self):
+        ap_own = self._make(requested_by=self.user, as_user=self.user)
+        ap_other = self._make(requested_by=self.user2)
+        visible = (
+            self.env["advance.payment"]
+            .with_user(self.user)
+            .search([("id", "in", (ap_own | ap_other).ids)])
+        )
+        self.assertEqual(visible, ap_own)
 
     # ------------------------------------------------------------------ #
     # One active agreement per borrower (ADR-0001)                         #

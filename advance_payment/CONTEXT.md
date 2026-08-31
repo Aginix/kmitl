@@ -9,8 +9,18 @@ One loan contract for one borrower, funded by a **single** disbursement for the 
 _Avoid_: loan, borrowing, cash advance request, contract (bare)
 
 **Borrower (ผู้ยืม)**:
-The person who takes the loan and personally owes the debt; always the creator of the agreement — no borrowing on behalf of someone else. Stored in `requested_by`.
+The person who takes the loan and personally owes the debt; stored in `requested_by`. Must always **submit** the request personally — no submitting on behalf of someone else — but need not be the record's *creator*: a `user`-tier staffer may draft the request on the borrower's behalf, ready for the borrower to submit (ADR-0010).
 _Avoid_: requester, requestor, applicant
+
+**Role tiers (own-only / user / manager / loan officer)**:
+The implied permission chain `own_only → user → manager`, plus the standalone `loan_officer` and `responsible` groups (ADR-0010):
+- **Own-only (`group_advance_payment_own_only`)**: sees and creates only their own agreements; the default borrower tier.
+- **User (`group_advance_payment_user`)**: sees every agreement and may draft one on behalf of another borrower (data entry only) — cannot submit someone else's draft or perform any workflow action.
+- **เจ้าหน้าที่งานเงินยืม / Loan Officer (`group_advance_payment_loan_officer`)**: the standalone oversight tier that performs the workflow actions — verify, reset-to-draft, accept-report, bank correction, due-date. Implies `user` (sees all) and `responsible` (return-line powers). Normally a single named officer, referenced per-record by `loan_officer_id`.
+- **Manager (`group_advance_payment_manager`)**: approves (the manual fallback) and cancels; implies `user` but not `loan_officer` — a manager does not get the loan officer's workflow buttons.
+- **ผู้รับผิดชอบเงินยืม (`group_advance_payment_responsible`)**: unchanged — approve/reject powers on return lines only.
+The escape hatch for exceptional data fixes stays `base.group_system`, never `manager`.
+_Avoid_: officer (renamed to `loan_officer`; the plain `user` group is now the sees-all data-entry tier, not the borrower's own-only tier)
 
 **ทยอยยืม (serial borrowing)**:
 Covering a multi-activity need with a *sequence* of single-draw agreements (borrow → clear → borrow again), **not** multiple draws on one agreement. Enforced by the one-active-agreement-per-borrower rule.
@@ -33,7 +43,7 @@ The finance officer's check of the submitted request against the real paper docu
 _Avoid_: approve, review, validate
 
 **Approve (อนุมัติ)**:
-The management sign-off at `to_approve` that releases the request to disbursement — today a **single step** by `group_advance_payment_manager`. The multi-tier Endorse → Approve chain routed by org unit (Faculty: Dean endorses → Deputy Rector approves; สนอ.: ผอ.กองคลัง endorses → Deputy Rector approves) is **not implemented**; there is no `rejected` state — a request that does not pass goes back to `draft` (ส่งกลับแก้ไข) or to `cancel`.
+The management sign-off at `to_approve` that releases the request to disbursement — a **single step**, by default a manual click by `group_advance_payment_manager`. With the `advance_payment_sarabun` bridge installed, `to_approve` instead routes an e-Saraban หนังสือ (raised by the loan officer): completion drives the same `waiting_transfer` transition, ตีกลับ returns to `to_verify`, ปฏิเสธ cancels, and ยกเลิกการส่ง/ดึงกลับ stay at `to_approve` for a fresh send (ADR-0011). The multi-tier Endorse → Approve chain routed by org unit (Faculty: Dean endorses → Deputy Rector approves; สนอ.: ผอ.กองคลัง endorses → Deputy Rector approves) is **not implemented** as a hardcoded chain — with the bridge installed it is realizable via a Sarabun route configuration; there is no `rejected` state on the loan itself — a request that does not pass goes back to `draft`/`to_verify` (ส่งกลับแก้ไข) or to `cancel`.
 _Avoid_: verify, confirm, endorse
 
 **Debt (หนี้เงินยืม / ลูกหนี้)**:

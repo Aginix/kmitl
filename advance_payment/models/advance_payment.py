@@ -134,19 +134,39 @@ class AdvancePayment(models.Model):
 
     is_requester = fields.Boolean(compute="_compute_is_requester")
 
-    is_officer = fields.Boolean(compute="_compute_is_officer")
+    is_loan_officer = fields.Boolean(compute="_compute_is_loan_officer")
+
+    # Mirrors _check_submit_permission: only the borrower or an admin may
+    # submit — used to hide the button for a `user`-tier drafter-on-behalf,
+    # who would otherwise hit a UserError on click.
+    can_submit = fields.Boolean(compute="_compute_can_submit")
 
     @api.depends("requested_by")
     def _compute_is_requester(self):
         for rec in self:
             rec.is_requester = rec.requested_by == self.env.user
 
-    def _compute_is_officer(self):
-        is_officer = self.env.user.has_group(
-            "advance_payment.group_advance_payment_officer"
+    @api.depends("requested_by")
+    def _compute_can_submit(self):
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            rec.can_submit = is_admin or rec.requested_by == self.env.user
+
+    def _compute_is_loan_officer(self):
+        is_loan_officer = self.env.user.has_group(
+            "advance_payment.group_advance_payment_loan_officer"
         )
         for rec in self:
-            rec.is_officer = is_officer
+            rec.is_loan_officer = is_loan_officer
+
+    is_manager = fields.Boolean(compute="_compute_is_manager")
+
+    def _compute_is_manager(self):
+        is_manager = self.env.user.has_group(
+            "advance_payment.group_advance_payment_manager"
+        )
+        for rec in self:
+            rec.is_manager = is_manager
 
     reference = fields.Reference(
         selection=[("purchase.request", "Purchase Request")],
@@ -302,6 +322,29 @@ class AdvancePayment(models.Model):
         tracking=True,
         help="Set by the loan officer after approval; drives the weekly "
         "overdue reminders.",
+    )
+
+    @api.model
+    def _default_loan_officer_id(self):
+        officers = self.env.ref(
+            "advance_payment.group_advance_payment_loan_officer"
+        ).users
+        return officers.id if len(officers) == 1 else False
+
+    loan_officer_id = fields.Many2one(
+        comodel_name="res.users",
+        string="เจ้าหน้าที่งานเงินยืม",
+        domain=lambda self: [
+            (
+                "groups_id",
+                "in",
+                self.env.ref(
+                    "advance_payment.group_advance_payment_loan_officer"
+                ).ids,
+            )
+        ],
+        default=_default_loan_officer_id,
+        tracking=True,
     )
 
     effective_date = fields.Date(
@@ -497,9 +540,14 @@ class AdvancePayment(models.Model):
 
     @api.constrains("requested_by")
     def _check_creator_only(self):
-        """No borrowing on behalf: requested_by must be the record creator
-        (ADR-0005). A base.group_system admin is exempt (data / exceptional)."""
-        if self.env.user.has_group("base.group_system"):
+        """No submitting on behalf: outside the `user` data-entry tier,
+        requested_by must be the record creator (ADR-0005, amended by
+        ADR-0010). A base.group_system admin, or a `user`-tier staffer
+        drafting on behalf of a borrower, is exempt — the borrower still has
+        to submit the request personally (_check_submit_permission)."""
+        if self.env.user.has_group(
+            "base.group_system"
+        ) or self.env.user.has_group("advance_payment.group_advance_payment_user"):
             return
         for rec in self:
             if rec.create_uid and rec.requested_by != rec.create_uid:
@@ -556,19 +604,19 @@ class AdvancePayment(models.Model):
         protected = self._PROTECTED_FIELDS & set(vals)
         if protected:
             is_admin = self.env.user.has_group("base.group_system")
-            is_officer = self.env.user.has_group(
-                "advance_payment.group_advance_payment_officer"
+            is_loan_officer = self.env.user.has_group(
+                "advance_payment.group_advance_payment_loan_officer"
             )
             for rec in self:
                 if rec.state == "draft" or is_admin:
                     continue
-                # Finance officer may still correct fields (ADR-0005):
+                # Loan officer may still correct fields (ADR-0005):
                 #  - all material fields while in to_verify
                 #  - bank_id up to the transfer
                 editable = set()
-                if is_officer and rec.state == "to_verify":
+                if is_loan_officer and rec.state == "to_verify":
                     editable |= self._PROTECTED_FIELDS
-                if is_officer and rec.state in (
+                if is_loan_officer and rec.state in (
                     "to_verify",
                     "to_approve",
                     "waiting_transfer",
