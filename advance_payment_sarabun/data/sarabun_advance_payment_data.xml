@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Placeholder approving position, seeded with no holder — assign the
+         real เจ้าหน้าที่งานเงินยืม holder in Configuration ▸ Positions before
+         go-live. noupdate="1" so the holder assignment survives upgrades. -->
+    <data noupdate="1">
+        <record id="position_advance_payment_approver" model="sarabun.position">
+            <field name="name">เจ้าหน้าที่งานเงินยืม (ผู้อนุมัติสัญญายืมเงิน)</field>
+        </record>
+    </data>
+
+    <data noupdate="0">
+        <!-- Single-step route: เรียน/ลงนาม เจ้าหน้าที่งานเงินยืม. An org-routed
+             multi-tier chain is deferred (ADR-0011) and configurable later via
+             Configuration without touching this module. -->
+        <record id="route_template_advance_payment" model="sarabun.route.template">
+            <field name="name">ขออนุมัติสัญญายืมเงิน</field>
+            <field name="description">เส้นทางขออนุมัติสัญญายืมเงิน (single-step)</field>
+            <field name="sequence">10</field>
+            <field name="origin_model">advance.payment</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="route_template_line_advance_payment_approve" model="sarabun.route.template.line">
+            <field name="template_id" ref="route_template_advance_payment"/>
+            <field name="order">10</field>
+            <field name="verb" ref="agx_sarabun.verb_approve"/>
+            <field name="target_mode">position</field>
+            <field name="position_id" ref="position_advance_payment_approver"/>
+        </record>
+
+        <record id="document_type_advance_payment" model="sarabun.document.type">
+            <field name="name">สัญญายืมเงิน</field>
+            <field name="kind">from_record</field>
+            <field name="default_route_id" ref="route_template_advance_payment"/>
+        </record>
+    </data>
+
+</odoo>

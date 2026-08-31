@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The loan officer creates and sends the หนังสือ to route a loan for
+         approval, so they need e-Sarabun User access (create/send documents,
+         routing steps, send wizard). Sarabun's own record rules keep
+         visibility scoped to documents they sent or were reached by. -->
+    <record id="advance_payment.group_advance_payment_loan_officer" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('agx_sarabun.group_sarabun_user'))]"/>
+    </record>
+</odoo>
