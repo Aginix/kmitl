@@ -176,7 +176,7 @@ class ReceiptRemittance(models.Model):
                 raise UserError(
                     _("No pending receipts found for this department.")
                 )
-            rec.write({"receipt_ids": [(6, 0, receipts.ids)]})
+            rec.write({"receipt_ids": [(4, rid) for rid in receipts.ids]})
 
     def _schedule_approver_activity(self):
         self.ensure_one()
