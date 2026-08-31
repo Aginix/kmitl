@@ -62,6 +62,35 @@
                     help="Created by me"
                 />
             </xpath>
+            <xpath expr="//filter[@name='state_draft']" position="after">
+                <filter
+                    name="state_to_verify"
+                    string="To be verified"
+                    domain="[('state','=','to_verify')]"
+                />
+                <filter
+                    name="state_to_examine"
+                    string="To Examine"
+                    domain="[('state','=','to_examine')]"
+                />
+                <filter
+                    name="state_to_submit"
+                    string="To Submit"
+                    domain="[('state','=','to_submit')]"
+                />
+            </xpath>
+            <xpath expr="//filter[@name='state_done']" position="after">
+                <filter
+                    name="state_returned"
+                    string="Returned"
+                    domain="[('state','=','returned')]"
+                />
+                <filter
+                    name="state_cancelled"
+                    string="Cancelled"
+                    domain="[('state','=','cancelled')]"
+                />
+            </xpath>
             <group position="inside">
                 <filter
                     string="Procurement Method"
