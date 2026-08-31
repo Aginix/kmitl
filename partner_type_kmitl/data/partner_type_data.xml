@@ -8,6 +8,7 @@
         <record id="partner_type_employee" model="res.partner.type">
             <field name="name">บุคลากรภายใน</field>
             <field name="company_type">person</field>
+            <field name="is_internal">True</field>
         </record>
         <record id="partner_type_student" model="res.partner.type">
             <field name="name">นักศึกษา</field>

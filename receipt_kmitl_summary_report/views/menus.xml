@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_receipt_summary_report" model="ir.actions.client">
+        <field name="name">Receipt Summary Report</field>
+        <field name="tag">receipt_kmitl_summary_report</field>
+    </record>
+
+    <menuitem id="menu_receipt_summary_report"
+              name="Receipt Summary Report"
+              parent="receipt_kmitl.menu_receipt_kmitl_reports"
+              action="action_receipt_summary_report"
+              sequence="20"/>
+</odoo>

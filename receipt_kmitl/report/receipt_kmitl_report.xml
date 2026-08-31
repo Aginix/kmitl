@@ -23,24 +23,27 @@
                         ยกเลิก / CANCELLED
                     </div>
                 </t>
+                <!-- Original / Copy label -->
+                <div style="position: absolute; top: 10pt; right: 10pt; font-size: 20pt; font-weight: bold; border: 2px solid #333; padding: 2px 12px;">
+                    <t t-if="o.env.context.get('receipt_copy')">
+                        สำเนา / Copy
+                    </t>
+                    <t t-else="">
+                        ต้นฉบับ / Original
+                    </t>
+                </div>
 
                 <!-- Top: crest / No. -->
-                <div class="row">
-                    <div class="col-8 text-center offset-2">
-                        <img t-if="o.company_id.logo"
-                             t-att-src="image_data_uri(o.company_id.logo)"
-                             style="max-height: 70px;"
-                             alt="Logo"/>
-                    </div>
-                    <div class="col-2 text-right">
-                        <div>เลขที่ / No.
-                            <span t-field="o.name"/>
-                        </div>
-                    </div>
+                <div style="position: absolute; top: 52pt; right: 28pt; ">
+                    <div>เลขที่ / No.</div>
+                    <div t-field="o.name"/>
                 </div>
 
                 <!-- Title -->
                 <div class="row">
+                    <div class="col-12 text-center">
+                      <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 70px;" alt="Logo"/>
+                    </div>
                     <div class="col-12 text-center">
                         <h3 style="margin-bottom: 0;">ใบเสร็จรับเงิน</h3>
                         <h4 style="margin-top: 0;">OFFICIAL RECEIPT</h4>
@@ -146,7 +149,7 @@
                         <div>โดย / by</div>
                         <div style="margin-top: 40px;">............................................</div>
                         <div t-esc="o.user_id.name or ''"/>
-                        <div t-esc="o.department_id.display_name or ''"/>
+                        <div t-esc="o.department_analytic_id.display_name or ''"/>
                     </div>
                 </div>
             </div>
