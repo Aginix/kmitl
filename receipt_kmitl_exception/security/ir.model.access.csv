@@ -1,2 +1,1 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_receipt_kmitl_exception_confirm,kmitl.receipt.exception.confirm,model_kmitl_receipt_exception_confirm,receipt_kmitl.group_receipt_kmitl_user,1,1,1,1

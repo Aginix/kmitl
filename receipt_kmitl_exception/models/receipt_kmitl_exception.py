@@ -1,6 +1,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class ReceiptKmitlException(models.Model):
@@ -23,6 +24,41 @@ class ReceiptKmitlException(models.Model):
     def _reverse_field(self):
         return "kmitl_receipt_ids"
 
+    @api.constrains(
+        "date",
+        "partner_id",
+        "is_walkin",
+        "payment_type",
+        "payment_method_id",
+        "department_analytic_id",
+        "fund_analytic_id",
+        "source_analytic_id",
+        "activity_analytic_id",
+        "amount_total",
+        "line_ids",
+        "ignore_exception",
+    )
+    def _check_receipt_blocking_exceptions(self):
+        """Detect exceptions on save and block only for *blocking* rules.
+
+        The receipt no longer has a confirm step (numbers are minted at
+        creation), so exception rules are evaluated whenever the receipt is
+        created or edited. Non-blocking exceptions are still detected and
+        stored on ``exception_ids`` for visibility, but do not prevent
+        saving — only ``is_blocking`` rules raise.
+        """
+        exception_ids = self.detect_exceptions()
+        if not exception_ids:
+            return
+        blocking = (
+            self.env["exception.rule"].browse(exception_ids).filtered("is_blocking")
+        )
+        if blocking:
+            raise ValidationError(
+                _("This receipt cannot be saved due to blocking exception(s):\n%s")
+                % "\n".join("- %s" % name for name in blocking.mapped("name"))
+            )
+
     def action_draft(self):
         res = super().action_draft()
         for rec in self:
@@ -30,14 +66,3 @@ class ReceiptKmitlException(models.Model):
             rec.main_exception_id = False
             rec.ignore_exception = False
         return res
-
-    def action_to_submit(self):
-        if self.detect_exceptions() and not self.ignore_exception:
-            return self._popup_exceptions()
-        return super().action_to_submit()
-
-    @api.model
-    def _get_popup_action(self):
-        return self.env.ref(
-            "receipt_kmitl_exception.action_receipt_kmitl_exception_confirm"
-        )
