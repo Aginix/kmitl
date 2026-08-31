@@ -888,6 +888,11 @@ msgid "Rejected Message"
 msgstr "ข้อความตีกลับ"
 
 #. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "Returned"
+msgstr "ตีกลับ"
+
+#. module: purchase_request_approval
 #. odoo-python
 #: code:addons/purchase_request_approval/models/purchase_request_approval.py:0
 #, python-format

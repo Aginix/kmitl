@@ -299,6 +299,21 @@
                     string="Returned"
                     domain="[('state', '=', 'returned')]"
                 />
+                <filter
+                    name="rejected"
+                    string="Rejected"
+                    domain="[('state', '=', 'rejected')]"
+                />
+                <filter
+                    name="sarabun_returned"
+                    string="Sarabun Returned"
+                    domain="[('state', '=', 'sarabun_returned')]"
+                />
+                <filter
+                    name="pending_pr"
+                    string="Pending PR Revision"
+                    domain="[('state', '=', 'pending_pr')]"
+                />
                 <separator />
                 <filter name="current_fy" string="Current Fiscal Year"
                         domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()),

@@ -62,35 +62,35 @@
                     help="Created by me"
                 />
             </xpath>
-            <xpath expr="//filter[@name='state_draft']" position="after">
-                <filter
-                    name="state_to_verify"
-                    string="To be verified"
-                    domain="[('state','=','to_verify')]"
-                />
-                <filter
-                    name="state_to_examine"
-                    string="To Examine"
-                    domain="[('state','=','to_examine')]"
-                />
-                <filter
-                    name="state_to_submit"
-                    string="To Submit"
-                    domain="[('state','=','to_submit')]"
-                />
+            <xpath expr="//filter[@name='state_draft']" position="replace">
+                <filter name="state_draft" string="Draft"
+                        domain="[('state','=','draft')]" />
+                <filter name="state_to_verify" string="To be verified"
+                        domain="[('state','=','to_verify')]" />
+                <filter name="state_to_submit" string="To Submit"
+                        domain="[('state','=','to_submit')]" />
+                <filter name="state_to_approve" string="To Approve"
+                        domain="[('state','=','to_approve')]" />
+                <filter name="state_in_egp" string="Waiting for e-GP"
+                        domain="[('state','=','in_egp')]" />
+                <filter name="state_in_approval" string="In Approval"
+                        domain="[('state','=','in_approval')]" />
+                <filter name="state_in_progress" string="In Progress"
+                        domain="[('state','=','in_progress')]" />
+                <filter name="state_done" string="Done"
+                        domain="[('state','=','done')]" />
+                <filter name="state_rejected" string="Rejected"
+                        domain="[('state','=','rejected')]" />
+                <filter name="state_cancelled" string="Cancelled"
+                        domain="[('state','=','cancelled')]" />
+                <filter name="state_returned" string="Returned"
+                        domain="[('state','=','returned')]" />
             </xpath>
-            <xpath expr="//filter[@name='state_done']" position="after">
-                <filter
-                    name="state_returned"
-                    string="Returned"
-                    domain="[('state','=','returned')]"
-                />
-                <filter
-                    name="state_cancelled"
-                    string="Cancelled"
-                    domain="[('state','=','cancelled')]"
-                />
-            </xpath>
+            <xpath expr="//filter[@name='state_to_approve']" position="replace" />
+            <xpath expr="//filter[@name='state_approved']" position="replace" />
+            <xpath expr="//filter[@name='state_in_progress']" position="replace" />
+            <xpath expr="//filter[@name='state_rejected']" position="replace" />
+            <xpath expr="//filter[@name='state_done']" position="replace" />
             <group position="inside">
                 <filter
                     string="Procurement Method"
