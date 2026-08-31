@@ -6,12 +6,12 @@
     One template: CashLink models no same-bank / other-bank split the way KTB
     and SCB do, so there is nothing to branch on.
 
-    There is no Sender Name line, and that is the value: the header of the file
-    KMITL sends BAY today leaves that field blank, twenty spaces. A config line
-    cannot say "blank" — ``bank.payment.config.value`` is required — so the
-    line is left out instead, which is the convention this subsystem already
-    uses for a flag that should stay off. It is also the only one of the three
-    fields the ``bay_cashlink`` layout writes into the file at all.
+    There is no Sender Name line, and there is nothing for one to set any more:
+    the twenty characters after the originating account are blank in every file
+    KMITL sends BAY, and the layout now writes them blank outright rather than
+    reading a field. A file with a name written there was refused by Krungsri
+    with "I_PAY128_WEB_UPLD user account product linkage is not available", and
+    it was the only structural difference between it and the bank's own file.
 
     ``kmitl`` is still a placeholder on the Company ID. It comes from BAY when
     the institute is onboarded, we do not have it, and nothing in the sample

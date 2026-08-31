@@ -98,6 +98,8 @@ class TestBankPaymentExportBAY(CommonBankExportFormat):
             {
                 "bank": "AYUDTHBK",
                 "bank_export_format_id": self.bank_export_format.id,
+                # Filled on purpose: the layout must not write it into the file.
+                "bay_sender_name": "KMITL",
                 "effective_date": fields.Date.today(),
             },
             self.payments,
@@ -165,6 +167,20 @@ class TestBankPaymentExportBAY(CommonBankExportFormat):
             self._slice(produced, DETAIL, "Payee Name"),
             self._slice(self.sample[1 + self.overflow_index], DETAIL, "Payee Name"),
         )
+
+    def test_the_twenty_characters_after_the_account_stay_empty(self):
+        """CashLink leaves them empty and Krungsri refuses a file that does not.
+
+        A file with ``KMITL`` written there came back "I_PAY128_WEB_UPLD user
+        account product linkage is not available", and it was the only
+        structural difference between it and the file the bank produced itself.
+        The export still carries a sender name -- the form has always offered
+        one -- so the layout has to ignore it rather than trust it to be empty.
+        """
+        export = self._create_bay_export()
+        self.assertEqual(export.bay_sender_name, "KMITL")
+        _text, records = self._render(export)
+        self.assertEqual(self._slice(records[0], HEADER, "Sender Name"), " " * 20)
 
     def test_every_record_is_128_characters(self):
         """The one thing CashLink gives no leeway on."""

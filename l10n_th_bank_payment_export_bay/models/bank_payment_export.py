@@ -21,6 +21,12 @@ class BankPaymentExport(models.Model):
     bay_sender_name = fields.Char(
         readonly=True,
         states={"draft": [("readonly", False)]},
+        help="Not written into the file. CashLink leaves the twenty characters "
+        "after the originating account empty -- every file KMITL sends the bank "
+        "does -- and a name written there is the only structural difference "
+        "between a file the bank took and one it refused with 'user account "
+        "product linkage is not available'. Kept only because the form has "
+        "always offered it.",
     )
     # filter
     bay_is_editable = fields.Boolean(
@@ -45,7 +51,7 @@ class BankPaymentExport(models.Model):
     @api.depends("bank")
     def _compute_required_effective_date(self):
         res = super()._compute_required_effective_date()
-        for rec in self.filtered(lambda l: l.bank == "AYUDTHBK"):
+        for rec in self.filtered(lambda export: export.bank == "AYUDTHBK"):
             rec.is_required_effective_date = True
         return res
 
