@@ -42,19 +42,20 @@ for review in records:
             />
             <field name="state">code</field>
             <field name="code">
-Activity = env["mail.activity"].sudo()
 act_type = env.ref(
     "purchase_work_acceptance_todo.mail_activity_wa_review_requested",
     raise_if_not_found=False,
 )
 if act_type:
     for review in records:
-        Activity.search([
-            ("res_model", "=", "work.acceptance"),
-            ("res_id", "=", review.res_id),
-            ("activity_type_id", "=", act_type.id),
-            ("user_id", "=", review.done_by.id),
-        ]).unlink()
+        if not review.done_by:
+            continue
+        wa = env["work.acceptance"].browse(review.res_id)
+        if wa.exists():
+            wa.activity_feedback(
+                ["purchase_work_acceptance_todo.mail_activity_wa_review_requested"],
+                user_id=review.done_by.id,
+            )
 </field>
         </record>
 
