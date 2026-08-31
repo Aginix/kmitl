@@ -50,6 +50,25 @@ records.activity_feedback(["purchase_request_approval_todo.mail_activity_pa_noti
 ]]></field>
         </record>
 
+        <!-- ข้อ 2.1 : พจ.1 draft → any → ลบ activity ข้อ 1 -->
+        <record id="automation_pa_draft_any" model="base.automation">
+            <field name="name">[TODO] พจ.1 draft → รออนุมัติ: ลบแจ้งเตือนสร้าง</field>
+            <field
+                name="model_id"
+                ref="purchase_request_approval.model_purchase_request_approval"
+            />
+            <field name="trigger">on_write</field>
+            <field name="trigger_field_ids" eval="[
+                Command.link(ref('purchase_request_approval.field_purchase_request_approval__state')),
+            ]"/>
+            <field name="filter_pre_domain">[("state", "=", "draft")]</field>
+            <field name="filter_domain">[("state", "not in", ["draft", "to_approve"])]</field>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+records.activity_unlink(["purchase_request_approval_todo.mail_activity_pa_notify_procurement"])
+]]></field>
+        </record>
+
         <!-- ข้อ 3: พจ.1 state = approved → แจ้งเจ้าหน้าที่พัสดุหน่วยงาน ตาม OU ของ พ.1 -->
         <record id="automation_pa_approved_notify_procurement" model="base.automation">
             <field name="name">[TODO] พจ.1 อนุมัติ → แจ้งเจ้าหน้าที่พัสดุ</field>
@@ -66,7 +85,7 @@ records.activity_feedback(["purchase_request_approval_todo.mail_activity_pa_noti
             <field name="state">code</field>
             <field name="code"><![CDATA[
 role = env.ref("purchase_user_role.purchase_role_procurement", raise_if_not_found=False)
-act_type = env.ref("purchase_request_approval_todo.mail_activity_pa_notify_procurement", raise_if_not_found=False)
+act_type = env.ref("purchase_request_approval_todo.mail_activity_pa_acknowledgement_notify_procurement", raise_if_not_found=False)
 if act_type:
     for rec in records:
         if rec.activity_ids.filtered(lambda a: a.activity_type_id == act_type):
@@ -76,7 +95,7 @@ if act_type:
         summary = "แบบรายงานขอให้จัดซื้อจัดจ้าง (พจ.1) %s ได้รับอนุมัติแล้ว กรุณาดำเนินการ" % (rec.name or "")
         if role and ou:
             rec.activity_schedule(
-                "purchase_request_approval_todo.mail_activity_pa_notify_procurement",
+                "purchase_request_approval_todo.mail_activity_pa_acknowledgement_notify_procurement",
                 summary=summary,
                 responsible_role_id=role.id,
                 operating_unit_id=ou.id,
