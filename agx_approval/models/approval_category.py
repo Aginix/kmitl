@@ -58,22 +58,12 @@ class ApprovalCategory(models.Model):
         comodel_name="product.product",
     )
 
-    allow_internal_partner = fields.Boolean(
-        string="Allow Internal Personnel",
-        help="Allow selecting internal personnel (บุคลากรภายใน) as the payee "
-        "on request lines of this category.",
-    )
-
-    allow_external_partner = fields.Boolean(
-        string="Allow External Person",
-        help="Allow selecting external persons (บุคคลภายนอก) — companies and "
-        "others — as the payee on request lines of this category.",
-    )
-
-    allow_student_partner = fields.Boolean(
-        string="Allow Student",
-        help="Allow selecting students (นักศึกษา) as the payee on request "
-        "lines of this category.",
+    allowed_partner_type_ids = fields.Many2many(
+        "res.partner.type",
+        string="Allowed Partner Types",
+        help="Partner types (ประเภทคู่ค้า) selectable as a participant "
+        "(รายชื่อ) on requests of this category. Leave empty to allow any "
+        "type.",
     )
 
     budget_account_id = fields.Many2one(

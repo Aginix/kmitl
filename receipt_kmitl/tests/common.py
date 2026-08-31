@@ -127,17 +127,13 @@ class ReceiptKmitlCommon(TransactionCase):
         if not cls.walkin:
             cls.walkin = cls.env["res.partner"].create({"name": "Walk-in (test)"})
 
-        cls.env.user.write(
-            {"kmitl_department_ids": [(6, 0, [cls.dept_a.id, cls.dept_b.id])]}
-        )
-
     def _make_receipt(self, department=None, method=None, lines=None):
         department = department or self.dept_a
         method = method or self.pm_cash
         lines = lines or [(self.product_tuition, 1, 5000.0)]
         return self.env["kmitl.receipt"].create(
             {
-                "department_id": department.id,
+                "department_analytic_id": department.id,
                 "payment_method_id": method.id,
                 "partner_id": self.walkin.id,
                 "line_ids": [

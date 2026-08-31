@@ -1,6 +1,6 @@
-============================
+=============================
 Budget Commitment Rich Picker
-============================
+=============================
 
 A reservation (ใบจองงบประมาณ) is picked by *what it is for*, but the stock
 Many2one dropdown shows only one line of plain text per option while
