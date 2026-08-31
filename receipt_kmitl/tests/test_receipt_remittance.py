@@ -56,6 +56,21 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         self.assertTrue(r2.move_id)
         self.assertNotEqual(r1.move_id, r2.move_id)
 
+    def test_pull_appends_to_existing_set(self):
+        r1 = self._make_receipt()
+        remittance = self.env["kmitl.receipt.remittance"].create(
+            {"department_analytic_id": self.dept_a.id}
+        )
+        remittance.action_pull_pending_receipts()
+        self.assertEqual(set(remittance.receipt_ids.ids), {r1.id})
+
+        # A receipt that becomes pending afterwards is added to the batch,
+        # not swapped in to replace the ones already pulled.
+        r2 = self._make_receipt()
+        remittance.action_pull_pending_receipts()
+        self.assertEqual(set(remittance.receipt_ids.ids), {r1.id, r2.id})
+        self.assertEqual(r1.remittance_id, remittance)
+
     def test_pull_gathers_subtree(self):
         r_parent = self._make_receipt(department=self.dept_a)
         r_child = self._make_receipt(department=self.dept_a_child)
