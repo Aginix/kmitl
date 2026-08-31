@@ -53,7 +53,7 @@ if act_type:
             ("res_model", "=", "work.acceptance"),
             ("res_id", "=", review.res_id),
             ("activity_type_id", "=", act_type.id),
-            ("user_id", "in", review.reviewer_ids.ids),
+            ("user_id", "=", review.done_by.id),
         ]).unlink()
 </field>
         </record>
