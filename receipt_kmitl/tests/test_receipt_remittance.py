@@ -1,9 +1,17 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+import base64
+
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests.common import tagged
 
 from .common import ReceiptKmitlCommon
+
+# 1x1 transparent PNG, used to exercise the image-to-PDF attachment path.
+TEST_PNG_B64 = (
+    b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk"
+    b"+A8AAQUBAScY42YAAAAASUVORK5CYII="
+)
 
 
 @tagged("post_install", "-at_install")
@@ -22,9 +30,7 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
 
     def test_full_flow(self):
         r1 = self._make_receipt()
-        r1.action_to_submit()
         r2 = self._make_receipt()
-        r2.action_to_submit()
 
         remittance = self.env["kmitl.receipt.remittance"].create(
             {"department_analytic_id": self.dept_a.id}
@@ -52,11 +58,8 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
 
     def test_pull_gathers_subtree(self):
         r_parent = self._make_receipt(department=self.dept_a)
-        r_parent.action_to_submit()
         r_child = self._make_receipt(department=self.dept_a_child)
-        r_child.action_to_submit()
         r_other = self._make_receipt(department=self.dept_b)
-        r_other.action_to_submit()
 
         remittance = self.env["kmitl.receipt.remittance"].create(
             {"department_analytic_id": self.dept_a.id}
@@ -65,12 +68,11 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         self.assertEqual(
             set(remittance.receipt_ids.ids), {r_parent.id, r_child.id}
         )
+        self.assertNotIn(r_other.id, remittance.receipt_ids.ids)
 
     def test_removing_receipt_returns_it_to_pool(self):
         r1 = self._make_receipt()
-        r1.action_to_submit()
         r2 = self._make_receipt()
-        r2.action_to_submit()
         remittance = self.env["kmitl.receipt.remittance"].create(
             {
                 "department_analytic_id": self.dept_a.id,
@@ -81,12 +83,11 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
 
         remittance.write({"receipt_ids": [(3, r1.id)]})
         self.assertFalse(r1.remittance_id)
-        self.assertEqual(r1.state, "to_submit")
+        self.assertEqual(r1.state, "draft")
         self.assertEqual(remittance.state, "submitted")
 
     def test_cancel_releases_receipts(self):
         r1 = self._make_receipt()
-        r1.action_to_submit()
         remittance = self.env["kmitl.receipt.remittance"].create(
             {
                 "department_analytic_id": self.dept_a.id,
@@ -97,11 +98,10 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         remittance.action_cancel()
         self.assertEqual(remittance.state, "cancelled")
         self.assertFalse(r1.remittance_id)
-        self.assertEqual(r1.state, "to_submit")
+        self.assertEqual(r1.state, "draft")
 
     def test_posted_cannot_be_cancelled(self):
         r1 = self._make_receipt()
-        r1.action_to_submit()
         remittance = self.env["kmitl.receipt.remittance"].create(
             {
                 "department_analytic_id": self.dept_a.id,
@@ -116,7 +116,6 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
 
     def test_reset_to_draft_from_submitted(self):
         r1 = self._make_receipt()
-        r1.action_to_submit()
         remittance = self.env["kmitl.receipt.remittance"].create(
             {
                 "department_analytic_id": self.dept_a.id,
@@ -126,11 +125,10 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         remittance.action_submit()
         remittance.action_draft()
         self.assertEqual(remittance.state, "draft")
-        self.assertEqual(r1.state, "to_submit")
+        self.assertEqual(r1.state, "draft")
 
     def test_submit_rejects_receipt_outside_subtree(self):
         r_other = self._make_receipt(department=self.dept_b)
-        r_other.action_to_submit()
         remittance = self.env["kmitl.receipt.remittance"].create(
             {
                 "department_analytic_id": self.dept_a.id,
@@ -139,3 +137,44 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         )
         with self.assertRaises(ValidationError):
             remittance.action_submit()
+
+    def test_build_attachments_pdf_no_attachments(self):
+        r1 = self._make_receipt()
+        remittance = self.env["kmitl.receipt.remittance"].create(
+            {
+                "department_analytic_id": self.dept_a.id,
+                "receipt_ids": [(6, 0, [r1.id])],
+            }
+        )
+        pdf_content = remittance._build_attachments_pdf()
+        self.assertTrue(pdf_content)
+
+    def test_build_attachments_pdf_with_attachments(self):
+        r1 = self._make_receipt()
+        r2 = self._make_receipt()
+        image_attachment = self.env["ir.attachment"].create(
+            {
+                "name": "slip.png",
+                "datas": TEST_PNG_B64,
+                "mimetype": "image/png",
+            }
+        )
+        skipped_attachment = self.env["ir.attachment"].create(
+            {
+                "name": "notes.docx",
+                "datas": base64.b64encode(b"not really a docx"),
+                "mimetype": (
+                    "application/vnd.openxmlformats-officedocument"
+                    ".wordprocessingml.document"
+                ),
+            }
+        )
+        r1.attachment_ids = [(6, 0, [image_attachment.id, skipped_attachment.id])]
+        remittance = self.env["kmitl.receipt.remittance"].create(
+            {
+                "department_analytic_id": self.dept_a.id,
+                "receipt_ids": [(6, 0, [r1.id, r2.id])],
+            }
+        )
+        pdf_content = remittance._build_attachments_pdf()
+        self.assertTrue(pdf_content)

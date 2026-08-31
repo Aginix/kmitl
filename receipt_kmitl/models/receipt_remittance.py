@@ -1,7 +1,10 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+import io
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.pdf import PdfFileReader, PdfFileWriter, to_pdf_stream
 
 
 class ReceiptRemittance(models.Model):
@@ -164,7 +167,7 @@ class ReceiptRemittance(models.Model):
                         "child_of",
                         rec.department_analytic_id.id,
                     ),
-                    ("state", "=", "to_submit"),
+                    ("state", "=", "draft"),
                     ("remittance_id", "=", False),
                     ("date", "<=", rec.date),
                 ]
@@ -218,7 +221,7 @@ class ReceiptRemittance(models.Model):
                 raise UserError(_("Only draft remittances can be submitted."))
             if not rec.approver_id:
                 raise UserError(_("Please set an approver before submitting."))
-            rec._validate_receipts("to_submit")
+            rec._validate_receipts("draft")
             for receipt in rec.receipt_ids:
                 if not self.env["account.analytic.account"].search_count(
                     [
@@ -306,7 +309,7 @@ class ReceiptRemittance(models.Model):
                     _("Cannot reset to draft from this state.")
                 )
             rec._cancel_approver_activity()
-            rec.receipt_ids.write({"state": "to_submit"})
+            rec.receipt_ids.write({"state": "draft"})
             rec.write(
                 {
                     "state": "draft",
@@ -319,7 +322,7 @@ class ReceiptRemittance(models.Model):
         for rec in self:
             if rec.state == "posted":
                 raise UserError(_("Posted remittances cannot be cancelled."))
-            rec.receipt_ids.write({"remittance_id": False, "state": "to_submit"})
+            rec.receipt_ids.write({"remittance_id": False, "state": "draft"})
             rec.state = "cancelled"
 
     def action_view_journal_entries(self):
@@ -346,6 +349,66 @@ class ReceiptRemittance(models.Model):
             "domain": [("id", "in", self.receipt_ids.ids)],
             "target": "current",
         }
+
+    def action_view_attachments(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": "/receipt_kmitl/remittance/%s/attachments" % self.id,
+            "target": "new",
+        }
+
+    def _build_attachments_pdf(self):
+        self.ensure_one()
+        receipts = self.receipt_ids.sorted(key=lambda r: r.name or "")
+        # force_report_rendering: get real PDF bytes even under the test
+        # runner, which otherwise short-circuits to HTML (see
+        # ir.actions.report._render_qweb_pdf).
+        report = self.env["ir.actions.report"].with_context(
+            force_report_rendering=True
+        ).sudo()
+
+        if not any(receipt.attachment_ids for receipt in receipts):
+            pdf_content, _report_type = report._render_qweb_pdf(
+                "receipt_kmitl.action_report_receipt_kmitl_no_attachments",
+                [self.id],
+            )
+            return pdf_content
+
+        attachment_streams = {}
+        skipped_map = {}
+        for receipt in receipts:
+            streams = []
+            skipped = []
+            for attachment in receipt.attachment_ids.sudo():
+                stream = to_pdf_stream(attachment)
+                if stream is None:
+                    skipped.append(attachment.name)
+                else:
+                    streams.append(stream)
+            attachment_streams[receipt.id] = streams
+            if skipped:
+                skipped_map[str(receipt.id)] = skipped
+
+        separator_pdf, _report_type = report._render_qweb_pdf(
+            "receipt_kmitl.action_report_receipt_kmitl_attachments_separator",
+            receipts.ids,
+            data={"skipped_map": skipped_map},
+        )
+        separator_reader = PdfFileReader(io.BytesIO(separator_pdf), strict=False)
+
+        writer = PdfFileWriter()
+        for index, receipt in enumerate(receipts):
+            writer.addPage(separator_reader.getPage(index))
+            for stream in attachment_streams[receipt.id]:
+                stream.seek(0)
+                attachment_reader = PdfFileReader(stream, strict=False)
+                for page in range(attachment_reader.getNumPages()):
+                    writer.addPage(attachment_reader.getPage(page))
+
+        buffer = io.BytesIO()
+        writer.write(buffer)
+        return buffer.getvalue()
 
     def unlink(self):
         for rec in self:

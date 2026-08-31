@@ -414,9 +414,7 @@ msgid "Done"
 msgstr "เสร็จสิ้น"
 
 #. module: receipt_kmitl
-#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__state__draft
 #: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt_remittance__state__draft
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_search
 msgid "Draft"
 msgstr "ร่าง"
@@ -425,12 +423,6 @@ msgstr "ร่าง"
 #: model:ir.model.fields,help:receipt_kmitl.field_kmitl_payment_method__payment_type
 msgid "Drives which box is ticked on the printed official receipt."
 msgstr ""
-
-#. module: receipt_kmitl
-#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__account_fiscal_year_id
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
-msgid "Fiscal Year"
-msgstr "ปีงบประมาณ"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__message_follower_ids
@@ -846,11 +838,6 @@ msgid "Original receipt printed."
 msgstr "พิมพ์ใบเสร็จรับเงินต้นฉบับ"
 
 #. module: receipt_kmitl
-#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__other
-msgid "Other"
-msgstr "อื่นๆ"
-
-#. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__partner_id
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
 msgid "Partner"
@@ -1249,7 +1236,7 @@ msgid "To Report"
 msgstr "รอนำส่ง"
 
 #. module: receipt_kmitl
-#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__state__to_submit
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__state__draft
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
 msgid "To Submit"
 msgstr "รอนำส่ง"

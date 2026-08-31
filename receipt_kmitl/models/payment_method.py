@@ -16,7 +16,6 @@ class ReceiptPaymentMethod(models.Model):
             ("cash", "Cash"),
             ("cheque", "Cheque"),
             ("transfer", "Money Transfer"),
-            ("other", "Other"),
         ],
         string="Payment Type",
         required=True,

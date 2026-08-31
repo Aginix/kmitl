@@ -7,9 +7,13 @@ posts the accounting entries.
 ## Language
 
 **Cash Receipt**:
-A record of money received at a department counter (`kmitl.receipt`). Issued
-(confirmed) by a cashier, printed, then posted to accounting by central finance.
-_Avoid_: Invoice, bill
+A record of money received at a department counter (`kmitl.receipt`). Numbered
+`RC/<FY>/nnnn` the moment it is created — there is no separate "confirm" step.
+Lifecycle: `draft` (รอนำส่ง / To Submit, still editable by the issuing department)
+→ `submitted` (locked, once pulled into a remittance and submitted) →
+`approved` → `done` (posted to accounting by central finance), plus `cancelled`.
+_Avoid_: Invoice, bill, Confirm (old action, removed — receipts are numbered at
+creation, not on a separate confirm step)
 
 **Receipt Remittance** (รายงานนำส่งคลัง):
 The document a department submits to remit its confirmed receipts to the central
@@ -46,9 +50,19 @@ from the header Issuing Department, though usually the same value.
 The default partner used on a receipt when no specific customer is named.
 _Avoid_: Anonymous, cash customer
 
+**Payment Type** (ประเภทการชำระเงิน):
+The 3-way choice — cash / cheque / transfer — selected first on the receipt
+header (`kmitl.receipt.payment_type`), before the specific `payment_method_id`
+(which is domain-filtered to methods of that type). Cheque adds required
+`cheque_number` + `cheque_date`; transfer adds required `transfer_date`;
+switching type clears the other type's fields and the payment method.
+_Avoid_: Other (removed as a payment type — every receipt is cash, cheque, or
+transfer)
+
 **Payment Method**:
 A named way money was received (`kmitl.payment.method`) — cash / cheque /
-transfer / other — carrying the debit GL account and journal used at posting.
+transfer — carrying the debit GL account and journal used at posting. Filtered
+on the receipt form by the header's Payment Type.
 
 **Viewer / User / Manager**:
 The three permission **tiers** (a single hierarchical dropdown; each implies the

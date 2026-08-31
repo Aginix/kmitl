@@ -216,7 +216,7 @@ What actually shipped differs from the plan above in a few places:
   style per-row unlink were never built. Removing a receipt from a `submitted`
   remittance is instead done through the standard `many2many`-style widget on
   `receipt_ids` (the × on a row); `kmitl.receipt.write()` resets the receipt's
-  state back to `to_submit` when `remittance_id` is cleared this way. See
+  state back to `draft` when `remittance_id` is cleared this way. See
   ADR-0002 (revised).
 - **Approval stage added.** The workflow gained a `submitted → approved →
   posted` split (not just `submitted → done` from item D), with an
@@ -236,3 +236,42 @@ What actually shipped differs from the plan above in a few places:
 - **Receipt numbering is per-FY only.** `RC/<fy4>/nnnn` (e.g. `RC/2569/0001`),
   matching CONTEXT.md — the testing checklist item above that says
   `RC/<dept>/<fy2>/nnnn` is stale.
+
+## Revision 2 — user-feedback grill (state/numbering/payment)
+
+A second grill session on live user feedback removed the receipt's separate
+`to_submit` state and reworked payment entry. `action_confirm` in the sections
+above never shipped under that name (it shipped as `action_to_submit`/
+"Confirm") and is now gone entirely:
+
+- **`to_submit` merged into `draft`.** `kmitl.receipt` mints its
+  `RC/<FY>/nnnn` number in `create()`, not on a confirm step; there is no
+  `action_to_submit`/"Confirm" button any more. The header stays editable
+  through `draft` and only locks once pulled into a remittance and submitted
+  (`kmitl.receipt.remittance.action_submit`, unchanged). See ADR-0002's
+  "Revision — receipt-side `to_submit` collapsed into `draft`" section.
+- **Line validation is a model constraint**, not a submit-time check:
+  `kmitl.receipt._check_lines` requires ≥1 line, every line to carry an
+  `account_id`, and `amount_total > 0` (a single line's `amount` may be 0).
+- **`account_fiscal_year_id` is gone.** `_get_fy_be()` always derives the
+  Buddhist-era fiscal year from `date` via `_get_fiscal_year_be`; the
+  `account_fiscal_year` module dependency was dropped from the manifest.
+- **Payment entry redesigned.** `kmitl.payment.method.payment_type` dropped
+  `other` (cash/cheque/transfer only). The receipt header now carries its own
+  `payment_type` (selected before `payment_method_id`, which is domain-filtered
+  to that type) plus `cheque_number`/`cheque_date`/`transfer_date`, required by
+  type via `_check_payment_type_fields` and cleared on type switch via
+  `_onchange_payment_type`. See CONTEXT.md's "Payment Type" entry.
+- **`description`/`fund_analytic_id`/`source_analytic_id`/`activity_analytic_id`
+  required only at the form view**, not on the model — so imports/API writes
+  aren't blocked by them.
+- **Remittance attachments can be downloaded as one combined PDF.**
+  `kmitl.receipt.remittance._build_attachments_pdf()` interleaves a QWeb
+  separator page per receipt with its `attachment_ids` (PDFs appended as-is,
+  images converted via `odoo.tools.pdf.to_pdf_stream`, other mimetypes skipped
+  and noted on the separator page); served by
+  `GET /receipt_kmitl/remittance/<id>/attachments` (`controllers/main.py`).
+- **Dashboard cards follow the list's active search filter.** 
+  `get_receipt_dashboard(self, domain=None)` ANDs the caller's domain into each
+  bucket; `receipt_dashboard.js` reads `env.searchModel.domain` and refetches
+  on the search model's `update` event — no `search_default_*` added anywhere.

@@ -127,28 +127,29 @@ class ReceiptKmitlCommon(TransactionCase):
         if not cls.walkin:
             cls.walkin = cls.env["res.partner"].create({"name": "Walk-in (test)"})
 
-    def _make_receipt(self, department=None, method=None, lines=None):
+    def _make_receipt(self, department=None, method=None, lines=None, extra_vals=None):
         department = department or self.dept_a
         method = method or self.pm_cash
         lines = lines or [(self.product_tuition, 1, 5000.0)]
-        return self.env["kmitl.receipt"].create(
-            {
-                "department_analytic_id": department.id,
-                "payment_method_id": method.id,
-                "partner_id": self.walkin.id,
-                "line_ids": [
-                    (
-                        0,
-                        0,
-                        {
-                            "product_id": product.id,
-                            "name": product.name,
-                            "account_id": product.property_account_income_id.id,
-                            "quantity": qty,
-                            "price_unit": price,
-                        },
-                    )
-                    for (product, qty, price) in lines
-                ],
-            }
-        )
+        vals = {
+            "department_analytic_id": department.id,
+            "payment_method_id": method.id,
+            "partner_id": self.walkin.id,
+            "line_ids": [
+                (
+                    0,
+                    0,
+                    {
+                        "product_id": product.id,
+                        "name": product.name,
+                        "account_id": product.property_account_income_id.id,
+                        "quantity": qty,
+                        "price_unit": price,
+                    },
+                )
+                for (product, qty, price) in lines
+            ],
+        }
+        if extra_vals:
+            vals.update(extra_vals)
+        return self.env["kmitl.receipt"].create(vals)

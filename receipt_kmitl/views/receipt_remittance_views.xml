@@ -74,6 +74,11 @@
                             string="Reset to Draft"
                             states="cancelled"
                             groups="receipt_kmitl.group_receipt_kmitl_user"/>
+                    <button name="action_view_attachments"
+                            type="object"
+                            string="ดูไฟล์แนบทั้งหมด"
+                            icon="fa-files-o"
+                            attrs="{'invisible': [('receipt_count', '=', 0)]}"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,submitted,approved,posted"/>
                 </header>
@@ -124,7 +129,7 @@
                         </group>
                     </group>
                     <field name="receipt_ids" widget="many2many"
-                           domain="[('state', '=', 'to_submit')]"
+                           domain="[('state', '=', 'draft')]"
                            attrs="{'readonly': [('state', 'not in', ['draft', 'submitted'])]}">
                         <tree edit="false">
                             <field name="name"/>
