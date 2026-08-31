@@ -551,6 +551,7 @@ msgstr "เอกสารแนบ"
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__done
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Done"
 msgstr "จัดซื้อจัดจ้างเสร็จสิ้น"
 
@@ -748,6 +749,7 @@ msgstr "อยู่ระหว่างจัดทำ พจ.1"
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "In Progress"
 msgstr "อยู่ระหว่างจัดซื้อจัดจ้าง"
 
@@ -1468,6 +1470,7 @@ msgstr "ตีกลับ"
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__rejected
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Rejected"
 msgstr "ปฏิเสธ"
 
@@ -1818,6 +1821,7 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "To Approve"
 msgstr "รอพิจารณาให้จัดหา"
 
