@@ -1,19 +1,18 @@
 # Copyright 2024 Ecosoft Co., Ltd. (http://ecosoft.co.th)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-"""The BAY CashLink layout, against the file KMITL sends the bank.
+"""The BAY CashLink layout, against a whole file KMITL sent the bank.
 
-``tests/fixtures/bay_cashlink_sample.txt`` is that file. Every byte position,
-every field width and every fill character is the bank's; what was replaced is
-the identities -- account numbers keep their length and leading digits, payee
-names are Thai strings of exactly the byte length the originals had, so no
-record changes width. Amounts, dates, counts and totals are the bank's own,
-which is what lets the satang arithmetic and the trailer relationships be
-checked here at all.
+``tests/fixtures/bay_cashlink_sample.txt`` is that file: a header and all 46 of
+its details, nothing trimmed, every record 128 characters. Because it is whole,
+its header's detail count and grand total are the ones its own body adds up to,
+so the test reproduces them rather than skipping over them.
 
-Two repairs to the sample, both from the trimming that cut it from 117 details
-down to two: the second detail was 127 characters because its amount had lost a
-leading zero (both details carry the same 10,000.00, and the first proves the
-width), and there were two empty lines at the end.
+What was replaced is the identities: account numbers keep their length and their
+branch prefix, and every payee name is a synthetic Thai string of exactly the
+byte length the original had. That last part matters more here than anywhere
+else -- fifteen of the forty-six names fill all twenty characters of the field
+because the bank's own file cut them there, and a name that arrived one byte
+longer used to push the rest of the record out and make it 129.
 """
 
 from odoo import fields
@@ -53,15 +52,16 @@ DETAIL = (
     ("Filler (tail)", 48, BLANK),
 )
 
-# The sample was trimmed, so its counts and totals describe a body that is not
-# in it; and its date is in the past, which the export refuses.
-HEADER_VARIABLE = ("File Date", "Value Period", "Detail Count", "Grand Total")
+# Only the dates: the export refuses an effective date in the past, and the
+# file's is May 2026. Everything else, counts and total included, is ours to
+# reproduce.
+HEADER_VARIABLE = ("File Date", "Value Period")
 DETAIL_VARIABLE = ("Value Period (detail)",)
 
-PAYEES = (
-    ("6580000001", "ทดสอบ  ระบบจ่ายเงิน", 10000.00),
-    ("5070000002", "สมศรี  ทดสอบระบบโอน", 10000.00),
-)
+SENDING_ACCOUNT = "5070000001"
+# Appended to one payee whose name already fills the field, so the render has to
+# cut it back to exactly what the bank's file holds.
+OVERFLOW = "เกินความกว้างของช่อง"
 
 
 @tagged("post_install", "-at_install")
@@ -73,14 +73,25 @@ class TestBankPaymentExportBAY(CommonBankExportFormat):
             "l10n_th_bank_payment_export_bay.bay_cashlink"
         )
         cls.bank_bay = cls._thai_bank("AYUDTHBK", "002", "Bank of Ayudhya")
-        cls.journal_bay = cls._paying_journal(cls.bank_bay, "5070000001", "TBAY")
-        cls.payments = cls.env["account.payment"]
-        for acc_number, name, amount in PAYEES:
-            payee = cls._payee(name, cls.bank_bay, acc_number)
-            cls.payments |= cls._posted_payment(cls.journal_bay, payee, amount)
+        cls.journal_bay = cls._paying_journal(cls.bank_bay, SENDING_ACCOUNT, "TBAY")
         cls.sample = cls._load_fixture(
             "l10n_th_bank_payment_export_bay", "bay_cashlink_sample.txt"
         )
+        details = cls.sample[1:]
+        # The first payee whose name already fills the field is the one given a
+        # longer name than the field can hold.
+        cls.overflow_index = next(
+            idx for idx, rec in enumerate(details) if rec[35] != " "
+        )
+        cls.payments = cls.env["account.payment"]
+        for idx, record in enumerate(details):
+            name = record[16:36].rstrip(" ")
+            if idx == cls.overflow_index:
+                name += OVERFLOW
+            payee = cls._payee(name, cls.bank_bay, record[6:16])
+            cls.payments |= cls._posted_payment(
+                cls.journal_bay, payee, int(record[36:47]) / 100.0
+            )
 
     def _create_bay_export(self):
         return self._export_with_lines(
@@ -94,11 +105,22 @@ class TestBankPaymentExportBAY(CommonBankExportFormat):
 
     def test_the_sample_still_matches_the_layout(self):
         """Guards the evidence: a re-trimmed fixture proves nothing."""
-        header, details = self.sample[0], self.sample[1:]
-        self.assertRecordShape(header, HEADER, "sample header")
-        self.assertEqual(len(details), 2)
-        for idx, detail in enumerate(details):
-            self.assertRecordShape(detail, DETAIL, "sample detail %s" % (idx + 1))
+        self.assertEqual(len(self.sample), 47)
+        self.assertRecordShape(self.sample[0], HEADER, "sample header")
+        for idx, record in enumerate(self.sample[1:]):
+            self.assertRecordShape(record, DETAIL, "sample detail %s" % (idx + 1))
+
+    def test_the_header_adds_up_to_the_details(self):
+        details = self.sample[1:]
+        total = sum(int(self._slice(rec, DETAIL, "Amount")) for rec in details)
+        self.assertEqual(
+            self._slice(self.sample[0], HEADER, "Grand Total"),
+            str(total).rjust(15, "0"),
+        )
+        self.assertEqual(
+            self._slice(self.sample[0], HEADER, "Detail Count"),
+            str(len(details)).rjust(7, "0"),
+        )
 
     def test_the_export_matches_the_bank_file(self):
         export = self._create_bay_export()
@@ -111,26 +133,38 @@ class TestBankPaymentExportBAY(CommonBankExportFormat):
         self.assertRecordMatches(
             header, self.sample[0], HEADER, HEADER_VARIABLE, "header"
         )
-        self.assertEqual(len(details), len(self.payments))
-        for produced, expected, idx in zip(details, self.sample[1:], range(2)):
+        self.assertEqual(len(details), len(self.sample) - 1)
+        for idx, (produced, expected) in enumerate(zip(details, self.sample[1:])):
             self.assertRecordMatches(
                 produced, expected, DETAIL, DETAIL_VARIABLE, "detail %s" % (idx + 1)
             )
 
-        # What the sample cannot speak for, checked against this file instead.
         period = export.effective_date.strftime("%m%y")
         self.assertEqual(
             self._slice(header, HEADER, "File Date"),
             export.effective_date.strftime("%d%m%y"),
         )
         self.assertEqual(self._slice(header, HEADER, "Value Period"), period)
-        self.assertEqual(self._slice(header, HEADER, "Detail Count"), "0000002")
-        self.assertEqual(self._slice(header, HEADER, "Grand Total"), "000000002000000")
         for detail in details:
             self.assertEqual(
                 self._slice(detail, DETAIL, "Value Period (detail)"), period
             )
         self.assertSingleByteEncoding(export)
+
+    def test_a_name_longer_than_the_field_is_cut_to_it(self):
+        """One payee is deliberately given more name than CashLink allows.
+
+        The record still has to come out 128 characters, with the name cut to
+        exactly what the bank's own file holds.
+        """
+        export = self._create_bay_export()
+        _text, records = self._render(export)
+        produced = records[1 + self.overflow_index]
+        self.assertEqual(len(produced), 128)
+        self.assertEqual(
+            self._slice(produced, DETAIL, "Payee Name"),
+            self._slice(self.sample[1 + self.overflow_index], DETAIL, "Payee Name"),
+        )
 
     def test_every_record_is_128_characters(self):
         """The one thing CashLink gives no leeway on."""
