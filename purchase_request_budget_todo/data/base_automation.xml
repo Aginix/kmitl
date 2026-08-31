@@ -70,19 +70,35 @@ records.activity_feedback(["purchase_request_budget_todo.mail_activity_pr_awaiti
 ]]></field>
     </record>
 
-    <!-- to_submit → any: unlink awaiting-endorsement-letter activity -->
-    <record id="automation_pr_leave_to_verify_cleanup" model="base.automation">
-        <field name="name">[TODO] พ.1 ออกจาก To_verify (ล้าง reserve budget)</field>
+    <!-- to_verify → to_submit: feedback reserve-budget (จองงบสำเร็จ) -->
+    <record id="automation_pr_verify_to_submit_feedback" model="base.automation">
+        <field name="name">[TODO] พ.1 to_verify → to_submit (จองงบสำเร็จ)</field>
         <field name="model_id" ref="purchase_request.model_purchase_request"/>
         <field name="trigger">on_write</field>
         <field name="trigger_field_ids" eval="[
             Command.link(ref('purchase_request.field_purchase_request__state')),
         ]"/>
         <field name="filter_pre_domain">[("state", "=", "to_verify")]</field>
-        <field name="filter_domain">[("state", "!=", "to_verify")]</field>
+        <field name="filter_domain">[("state", "=", "to_submit")]</field>
         <field name="state">code</field>
         <field name="code"><![CDATA[
 records.activity_feedback(["purchase_request_budget_todo.mail_activity_pr_reserve_budget"])
+]]></field>
+    </record>
+
+    <!-- to_verify → other (ไม่ใช่ to_submit): unlink reserve-budget (ยกเลิก/ไม่สำเร็จ) -->
+    <record id="automation_pr_leave_to_verify_cleanup" model="base.automation">
+        <field name="name">[TODO] พ.1 ออกจาก to_verify ไม่สำเร็จ (ล้าง reserve budget)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "=", "to_verify")]</field>
+        <field name="filter_domain">[("state", "not in", ["to_verify", "to_submit"])]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_unlink(["purchase_request_budget_todo.mail_activity_pr_reserve_budget"])
 ]]></field>
     </record>
 

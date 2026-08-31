@@ -2,7 +2,7 @@
 <odoo noupdate="1">
     <!-- Execution Todo: reserve the budget commitment while the พ.1 sits at to_verify (รอจองงบประมาณ) -->
     <record id="mail_activity_pr_reserve_budget" model="mail.activity.type">
-        <field name="name">Reserve budget (พ.1)</field>
+        <field name="name">จองงบประมาณ (พ.1)</field>
         <field
             name="summary"
         >Reserve the budget commitment for the purchase request</field>
@@ -16,7 +16,7 @@
         id="mail_activity_pr_awaiting_endorsement_letter"
         model="mail.activity.type"
     >
-        <field name="name">Awaiting endorsement letter (พ.1)</field>
+        <field name="name">รอจดหมายรับรอง (พ.1)</field>
         <field
             name="summary"
         >Create the endorsement letter for the purchase request</field>
