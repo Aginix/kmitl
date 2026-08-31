@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_receipt_report_wizard,receipt_kmitl.report.wizard viewer,model_receipt_kmitl_report_wizard,receipt_kmitl.group_receipt_kmitl_viewer,1,1,1,1
