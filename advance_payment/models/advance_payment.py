@@ -325,13 +325,13 @@ class AdvancePayment(models.Model):
     )
 
     @api.model
-    def _default_loan_officer_id(self):
+    def _default_loan_verifier_id(self):
         officers = self.env.ref(
             "advance_payment.group_advance_payment_loan_officer"
         ).users
         return officers.id if len(officers) == 1 else False
 
-    loan_officer_id = fields.Many2one(
+    loan_verifier_id = fields.Many2one(
         comodel_name="res.users",
         string="เจ้าหน้าที่งานเงินยืม",
         domain=lambda self: [
@@ -343,7 +343,7 @@ class AdvancePayment(models.Model):
                 ).ids,
             )
         ],
-        default=_default_loan_officer_id,
+        default=_default_loan_verifier_id,
         tracking=True,
     )
 

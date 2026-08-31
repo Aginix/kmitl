@@ -35,13 +35,13 @@
                         type="object"
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'pending_review')]}"
-                        groups="advance_payment.group_advance_payment_responsible"/>
+                        groups="advance_payment.group_advance_payment_loan_officer"/>
                     <button name="action_reject"
                         string="ตีกลับ"
                         type="object"
                         class="btn-danger"
                         attrs="{'invisible': [('state', '!=', 'pending_review')]}"
-                        groups="advance_payment.group_advance_payment_responsible"/>
+                        groups="advance_payment.group_advance_payment_loan_officer"/>
                     <button name="action_reset_to_draft"
                         string="แก้ไข"
                         type="object"

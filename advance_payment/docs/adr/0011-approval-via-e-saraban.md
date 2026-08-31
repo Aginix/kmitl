@@ -1,6 +1,6 @@
 # Approval at `to_approve` routes through e-Saraban when `advance_payment_sarabun` is installed
 
-Status: accepted (2026-08; UAT-only) — amends ADR-0006
+Status: parked (2026-09) — the `advance_payment_sarabun` bridge was removed for now; approval reverts to the single manual manager step of ADR-0006. This ADR is retained for when the e-Saraban route is revisited.
 
 ## Context & Decision
 
