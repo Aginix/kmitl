@@ -13,16 +13,9 @@
         "base_user_role",
     ],
     "data": [
-        "data/ir_actions_client.xml",
         "data/ir_config_parameter.xml",
+        "views/no_role_templates.xml",
     ],
-    "assets": {
-        "web.assets_backend": [
-            "iam_no_role_landing/static/src/js/no_role_landing.js",
-            "iam_no_role_landing/static/src/xml/no_role_landing.xml",
-            "iam_no_role_landing/static/src/scss/no_role_landing.scss",
-        ],
-    },
     "installable": True,
     "application": False,
 }

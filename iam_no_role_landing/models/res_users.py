@@ -1,6 +1,6 @@
 # Copyright 2026 Aginix Technologies
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
-from odoo import api, models
+from odoo import models
 
 
 class ResUsers(models.Model):
@@ -13,32 +13,13 @@ class ResUsers(models.Model):
         base.group_system (full Settings access). Only system administrators
         are exempt; IAM Managers without a role are gated like everyone else.
         Superuser context is always exempt.
+
+        Uses sudo() to read role_line_ids because a gated user typically has
+        no groups at all (base_user_role clears groups_id when role_line_ids
+        is empty) and therefore cannot read the field under normal ACL.
         """
         if self.env.su:
             return False
-        return not self.role_line_ids and not self.has_group(
+        return not self.sudo().role_line_ids and not self.has_group(
             "base.group_system"
         )
-
-    def _get_home_action(self):
-        if self._is_role_gated():
-            return self.env.ref("iam_no_role_landing.action_no_role_landing")
-        return super()._get_home_action()
-
-    @api.model
-    def get_no_role_landing_info(self):
-        """Return landing page content for the current user."""
-        ICP = self.env["ir.config_parameter"].sudo()
-        contact_message = ICP.get_param(
-            "iam_no_role_landing.contact_message",
-            default="กรุณาติดต่อผู้ดูแลระบบ (IAM Manager) เพื่อขอกำหนดสิทธิ์การใช้งาน",
-        )
-        return {
-            "contact_message": contact_message,
-            "user_name": self.env.user.name,
-        }
-
-    @api.model
-    def check_role_status(self):
-        """Check whether the current user still has no role."""
-        return {"has_role": not self.env.user._is_role_gated()}

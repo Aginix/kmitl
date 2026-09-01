@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="no_role_page" name="No-Role Landing Page">
+        <t t-call="web.login_layout">
+            <div class="oe_single_form_container">
+                <div class="oe_login_form">
+                    <div class="card shadow-sm mx-auto" style="max-width: 460px;">
+                        <div class="card-body p-4 text-center">
+                            <div class="mb-3">
+                                <i class="fa fa-lock fa-3x text-muted" />
+                            </div>
+                            <h4 class="mb-2">บัญชีของคุณยังไม่ได้กำหนดสิทธิ์การใช้งาน</h4>
+                            <p class="text-muted mb-1">
+                                ยินดีต้อนรับ, <strong t-esc="user_name" />
+                            </p>
+                            <p
+                                class="text-muted mb-4"
+                                style="white-space: pre-line;"
+                                t-esc="contact_message"
+                            />
+                            <div class="d-grid gap-2">
+                                <button
+                                    type="button"
+                                    class="btn btn-primary"
+                                    id="btn_check_role"
+                                >
+                                    ตรวจสอบสิทธิ์
+                                </button>
+                                <a
+                                    href="/web/session/logout"
+                                    class="btn btn-secondary"
+                                >
+                                    ออกจากระบบ
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                document.getElementById('btn_check_role').addEventListener('click', function () {
+                    var btn = this;
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> ตรวจสอบสิทธิ์';
+                    fetch('/iam/check-role', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {}}),
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        if (data.result &amp;&amp; data.result.has_role) {
+                            window.location = '/web';
+                        } else {
+                            btn.disabled = false;
+                            btn.textContent = 'ตรวจสอบสิทธิ์';
+                            alert('ยังไม่ได้รับสิทธิ์ กรุณาติดต่อผู้ดูแลระบบ');
+                        }
+                    })
+                    .catch(function () {
+                        btn.disabled = false;
+                        btn.textContent = 'ตรวจสอบสิทธิ์';
+                        alert('ไม่สามารถตรวจสอบได้ กรุณาลองใหม่อีกครั้ง');
+                    });
+                });
+            </script>
+        </t>
+    </template>
+
+</odoo>
