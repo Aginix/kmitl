@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Loan type that pins the source reference to an Approval Request, so
+             the borrower gets the request picker instead of the generic
+             Reference widget (advance_payment ADR-0007). -->
+        <record id="loan_type_approval_request" model="advance.payment.loan.type">
+            <field name="name">ตามใบขออนุมัติค่าใช้จ่าย</field>
+            <field name="reference_model">approval.request</field>
+        </record>
+    </data>
+
+    <!-- Not noupdate: the cap is policy and should follow the module. -->
+    <record id="excep_ar_borrowing_headroom" model="exception.rule">
+        <field name="name">วงเงินยืมของใบขออนุมัติไม่พอ</field>
+        <field name="description">ยอดยืมรวมของใบขออนุมัตินี้เกินวงเงินที่อนุมัติ/จองงบไว้ กรุณาลดยอดยืม</field>
+        <field name="sequence">33</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">[('exceeds_ar_headroom', '=', True)]</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

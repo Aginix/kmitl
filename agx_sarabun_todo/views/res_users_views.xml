@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The independent e-Saraban notification-sound toggle in the user's own
+         Preferences. Anchored on a core-stable node so it loads whether or not the
+         mail_activity_todo_sound add-on (which carries the general toggle) is
+         installed; it only takes effect when that add-on is present. -->
+    <record id="view_users_form_simple_modif_sarabun_sound" model="ir.ui.view">
+        <field name="name">res.users.preferences.sarabun.sound</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='preference_contact']" position="after">
+                <group name="todo_notifications_sarabun" string="e-Saraban Notifications">
+                    <field name="todo_sound_sarabun_enabled" readonly="0"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

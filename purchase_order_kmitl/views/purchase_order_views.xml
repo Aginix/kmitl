@@ -65,11 +65,24 @@
             <xpath expr="//field[@name='product_id']" position="attributes">
                 <attribute name="optional">show</attribute>
             </xpath>
+            <xpath
+                expr="//field[@name='order_line']/tree/field[@name='product_uom'][@groups='uom.group_uom']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='order_line']/tree/field[@name='product_qty']"
+                position="after"
+            >
+                <field name="uom_text"/>
+            </xpath>
             <xpath expr="//field[@name='state']" position="replace">
                 <field
                     name="state"
                     widget="statusbar"
-                    statusbar_visible="draft,purchase,done,cancel"
+                    statusbar_visible="draft,purchase,done"
                     readonly="1"
                 />
             </xpath>
@@ -88,34 +101,9 @@
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <page name="document" string="Attachment">
-                    <field
-                        name="attachment_ids"
-                        context="{'default_res_model': 'purchase.order'}"
-                    >
-                        <tree default_order="sequence">
-                            <field name="sequence" widget="handle" />
-                            <field name="name" string="File Name" required="1" />
-                            <field name="description" />
-                        </tree>
-                        <form>
-                            <sheet>
-                                <group>
-                                    <field
-                                        name="res_model"
-                                        invisible="1"
-                                        readonly="0"
-                                    />
-                                    <field name="res_id" invisible="1" readonly="0" />
-                                    <field name="name" required="1" invisible="1" />
-                                    <field name="datas" filename="name" required="1" />
-                                    <field
-                                        name="description"
-                                        placeholder="Description"
-                                    />
-                                </group>
-                            </sheet>
-                        </form>
-                    </field>
+                    <field name="attachment_ids"
+                           widget="many2many_binary"
+                           context="{'default_res_model': 'purchase.order'}"/>
                 </page>
             </xpath>
 

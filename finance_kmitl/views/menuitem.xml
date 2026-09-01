@@ -1,7 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <!-- Root menu — visible to any finance role (manager implies the other three) -->
+    <!-- The Finance app is the treasury office's (กองคลัง) house: everything on
+         it is work they do themselves. The request side of a disbursement —
+         raising it, verifying it, the first round of approvals — stays in the
+         Disbursement app, which is the requesting unit's.
+         See docs/adr/0005-the-finance-app-is-the-treasury-offices-house.md -->
     <menuitem
         id="menu_payment_root"
         name="Finance"
@@ -10,11 +14,34 @@
         groups="finance_kmitl.group_finance_kmitl_user_in,finance_kmitl.group_finance_kmitl_user_out"
     />
 
-    <!-- Action: account.payment outbound -->
+    <!-- Money out. Sequence 5 is left free for its counterpart, Payment In
+         (การเงินรับ), which arrives with the receipts module.
+
+         Its leaves carry the finance group themselves rather than leaning on this
+         menu for it: disbursement_finance_kmitl adds the payment auditor to this
+         branch so their queue is reachable, and an auditor holds no rights on a
+         voucher, an e-payment file or a WHT certificate. -->
+    <menuitem
+        id="menu_finance_payment_out"
+        name="Payment Out"
+        parent="menu_payment_root"
+        sequence="10"
+        groups="finance_kmitl.group_finance_kmitl_user_out"
+    />
+
+    <!-- Action: account.payment outbound.
+         Bound to the finance office's own list and search views (written from
+         scratch, not inherited from core's) — see account_payment_list_views.xml.
+         The other view types fall back to core's. -->
     <record id="action_account_payment_outbound" model="ir.actions.act_window">
-        <field name="name">จ่ายเงิน</field>
+        <field name="name">Payment Vouchers</field>
         <field name="res_model">account.payment</field>
         <field name="view_mode">tree,kanban,form,graph</field>
+        <field name="view_id" ref="finance_kmitl.view_account_payment_tree_kmitl" />
+        <field
+            name="search_view_id"
+            ref="finance_kmitl.view_account_payment_search_kmitl"
+        />
         <field name="domain">[('payment_type', '=', 'outbound')]</field>
         <field name="context">{
             'default_payment_type': 'outbound',
@@ -23,82 +50,86 @@
         }</field>
     </record>
 
-    <!-- Action: account.payment inbound -->
-    <record id="action_account_payment_inbound" model="ir.actions.act_window">
-        <field name="name">รับเงิน</field>
-        <field name="res_model">account.payment</field>
-        <field name="view_mode">tree,kanban,form,graph</field>
-        <field name="domain">[('payment_type', '=', 'inbound')]</field>
-        <field name="context">{
-            'default_payment_type': 'inbound',
-            'default_partner_type': 'customer',
-            'default_move_journal_types': ('bank', 'cash'),
-        }</field>
-    </record>
-
+    <!-- The office calls the list ใบสำคัญจ่าย. The document itself is an
+         ใบจ่ายเงิน — see CONTEXT.md. Officers reach their own assigned vouchers
+         through the My Work filter on this list rather than a menu of their own,
+         because it is that list with one filter on. -->
     <menuitem
         id="menu_account_payment_outbound"
-        name="Payment List"
-        parent="menu_payment_root"
+        name="Payment Vouchers"
+        parent="menu_finance_payment_out"
         action="action_account_payment_outbound"
-        sequence="10"
+        sequence="30"
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
-    <!-- Receive Money menu temporarily hidden (inbound receipts not in use yet) -->
-    <!--
-    <menuitem
-        id="menu_account_payment_inbound"
-        name="รับเงิน"
-        parent="menu_payment_root"
-        action="action_account_payment_inbound"
-        sequence="15"
-        groups="finance_kmitl.group_finance_kmitl_user_in"
-    />
-    -->
 
-    <!-- Bank Payment Export (outbound-side workflow) -->
+    <!-- Bank Payment Export. The menu is the register (ทะเบียน); each record in
+         it is one ไฟล์ e-Payment. -->
     <menuitem
         id="menu_bank_payment_export"
-        name="e-Payment List"
-        parent="menu_payment_root"
+        name="e-Payment Register"
+        parent="menu_finance_payment_out"
         action="l10n_th_bank_payment_export.action_bank_payment_export"
-        sequence="20"
+        sequence="40"
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
 
-    <!-- Withholding Tax Certificates (outbound-side workflow) -->
+    <!-- The base module's own menu for the same action sits under Accounting ▸
+         Actions under a different name, so the office met the screen twice and
+         called it two things. This one is theirs; that one is retired. -->
+    <record
+        id="l10n_th_bank_payment_export.menu_bank_payment_export"
+        model="ir.ui.menu"
+    >
+        <field name="active" eval="False" />
+    </record>
+
+    <!-- Cheques, beside the e-payment register because the two are the same job
+         for payees settled two different ways — one instruction to a bank, one
+         piece of paper to a payee. It sat at the app's root while it spanned both
+         directions; a cheque KMITL *receives* is a receipt, which receipt_kmitl
+         models with a payment method of its own, so what is left here is money
+         out and it belongs with the rest of it. -->
+    <menuitem
+        id="menu_cheque_register"
+        name="Cheques"
+        parent="menu_finance_payment_out"
+        action="action_cheque_register"
+        sequence="45"
+        groups="finance_kmitl.group_finance_kmitl_user_out"
+    />
+
+    <!-- Withholding Tax Certificates: the document handed to the payee, not the
+         tax and not a ภ.ง.ด. filing report. -->
     <menuitem
         id="menu_withholding_tax_cert"
         name="Withholding Tax Certificates"
-        parent="menu_payment_root"
+        parent="menu_finance_payment_out"
         action="l10n_th_account_tax.action_withholding_tax_cert_menu"
-        sequence="25"
+        sequence="50"
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
 
-    <!-- Cheque Control Register -->
-    <menuitem
-        id="menu_cheque_register_root"
-        name="Cheque Register"
-        parent="menu_payment_root"
-        sequence="30"
-        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_user_in" />
-    <menuitem
-        id="menu_cheque_register_outbound"
-        name="Issued Cheques"
-        parent="menu_cheque_register_root"
-        action="action_cheque_register_outbound"
-        sequence="10"
-        groups="finance_kmitl.group_finance_kmitl_user_out" />
-    <menuitem
-        id="menu_cheque_register_inbound"
-        name="Received Cheques"
-        parent="menu_cheque_register_root"
-        action="action_cheque_register_inbound"
-        sequence="20"
-        groups="finance_kmitl.group_finance_kmitl_user_in" />
+    <!-- Sequence 30 belongs to the Approver (ผู้อนุมัติ) menu. It is defined in
+         disbursement_finance_kmitl, which owns both the approver group and the
+         queues, and which depends on this module rather than the other way
+         round. -->
 
-    <!-- Settings submenu (manager only) -->
+
+    <!-- Empty on purpose: Odoo hides a parent with no reachable child, so this
+         stays invisible until a reporting module hangs its menus off it — the
+         same arrangement accounting_kmitl has with accounting_kmitl_reports. -->
+    <menuitem
+        id="menu_finance_reports"
+        name="Reports"
+        parent="menu_payment_root"
+        sequence="80"
+        groups="finance_kmitl.group_finance_kmitl_user_out"
+    />
+
+    <!-- Settings submenu (manager only), in three groups: the banks and accounts
+         the money moves between, the reference data that decides how a payment is
+         made, and the layouts the documents and files are produced from. -->
     <menuitem
         id="menu_payment_settings"
         name="Settings"
@@ -106,33 +137,90 @@
         sequence="90"
         groups="finance_kmitl.group_finance_kmitl_manager"
     />
+
+    <!-- The banking reference data behind every outbound payment, in the order
+         it is set up: a bank, then an account at that bank — the institute's own
+         to pay out of, a payee's to pay into. Both actions are core's; what this
+         module adds is reaching them without leaving the Finance app. -->
+    <menuitem
+        id="menu_settings_banking"
+        name="Banking"
+        parent="menu_payment_settings"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_settings_res_bank"
+        name="Banks"
+        parent="menu_settings_banking"
+        action="base.action_res_bank_form"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_settings_res_partner_bank"
+        name="Bank Accounts"
+        parent="menu_settings_banking"
+        action="base.action_res_partner_bank_account_form"
+        sequence="20"
+    />
+
+    <!-- What decides how a payment is made: the account it leaves from, the
+         subject that picks that account, the operation type that books it, and
+         the rules that route the voucher to an officer. -->
+    <menuitem
+        id="menu_settings_payment_data"
+        name="Payment Data"
+        parent="menu_payment_settings"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_settings_paying_account"
+        name="Paying Accounts"
+        parent="menu_settings_payment_data"
+        action="action_kmitl_paying_account"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_settings_payment_subject"
+        name="Payment Subjects"
+        parent="menu_settings_payment_data"
+        action="action_kmitl_payment_subject"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_settings_payment_types"
+        name="Payment Types (KMITL)"
+        parent="menu_settings_payment_data"
+        action="action_kmitl_payment_type"
+        sequence="30"
+    />
+
+    <!-- The layouts a document or a file is produced from. -->
+    <menuitem
+        id="menu_settings_document_templates"
+        name="Document Templates"
+        parent="menu_payment_settings"
+        sequence="30"
+    />
     <menuitem
         id="menu_settings_bank_payment_template"
         name="Bank Payment Templates"
-        parent="menu_payment_settings"
+        parent="menu_settings_document_templates"
         action="l10n_th_bank_payment_export.action_bank_payment_template"
         sequence="10"
     />
     <menuitem
         id="menu_settings_bank_export_format"
         name="Bank Export Formats"
-        parent="menu_payment_settings"
+        parent="menu_settings_document_templates"
         action="l10n_th_bank_payment_export_format.action_bank_export_format_template"
         sequence="20"
     />
     <menuitem
-        id="menu_settings_payment_types"
-        name="Payment Types (KMITL)"
-        parent="menu_payment_settings"
-        action="action_kmitl_payment_type"
-        sequence="5"
-    />
-    <menuitem
         id="menu_settings_cheque_layout"
         name="Cheque Layouts"
-        parent="menu_payment_settings"
+        parent="menu_settings_document_templates"
         action="action_cheque_layout"
-        sequence="15"
+        sequence="30"
     />
 
 </odoo>

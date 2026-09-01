@@ -82,11 +82,31 @@
                         attrs="{'invisible': [('id', '>', 0)]}"
                     />
                     <button
-                        name="button_cancel"
-                        states="draft,to_approve"
-                        string="Cancel"
+                        name="action_resend_to_sarabun"
+                        states="sarabun_returned"
+                        string="Resend to Sarabun"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button
+                        name="action_open_return_cancel_wizard"
+                        states="draft"
+                        string="ตีกลับ/แก้ไข"
                         type="object"
                         groups="purchase_request.group_purchase_request_manager"
+                    />
+                    <button
+                        name="button_cancel"
+                        states="to_approve,sarabun_returned"
+                        string="Cancel"
+                        type="object"
+                        groups="purchase.group_purchase_user"
+                    />
+                    <button
+                        name="action_open_material_withdrawal_wizard"
+                        string="พิมพ์ใบเบิกวัสดุ"
+                        type="object"
+                        states="approved"
                     />
                     <field
                         name="state"
@@ -120,20 +140,6 @@
                             string="Sarabun Document"
                         />
                     </div>
-                    <!-- Sarabun status notification on the origin record -->
-                    <field name="sarabun_is_draft" invisible="1"/>
-                    <div class="alert alert-warning mb-2" role="alert"
-                         attrs="{'invisible': [('sarabun_is_draft', '=', False)]}">
-                        <i class="fa fa-pencil-square-o me-1"/>
-                        หนังสือสารบรรณถูกสร้างแล้วแต่ยังไม่ได้ส่งออก (สถานะ: ร่าง)
-                        <button name="action_view_sarabun_documents" type="object"
-                                class="btn btn-sm btn-warning ms-2" string="เปิดหนังสือเพื่อส่ง"/>
-                    </div>
-                    <div class="alert alert-info mb-2" role="alert"
-                         attrs="{'invisible': ['|', ('sarabun_has_live_document', '=', False), ('sarabun_is_draft', '=', True)]}">
-                        <i class="fa fa-paper-plane me-1"/>
-                        สถานะการเดินหนังสือสารบรรณ: <field name="sarabun_state_label" nolabel="1" readonly="1" class="d-inline fw-bold"/>
-                    </div>
                     <widget
                         name="web_ribbon"
                         title="Approved"
@@ -152,49 +158,66 @@
                         bg_color="bg-danger"
                         attrs="{'invisible': [('state', '!=', 'rejected')]}"
                     />
+                    <!-- Sarabun status notification on the origin record -->
+                    <field name="sarabun_is_draft" invisible="1"/>
+                    <field name="is_editable" invisible="1"/>
+                    <div class="alert alert-warning mb-2" role="alert"
+                         attrs="{'invisible': [('sarabun_is_draft', '=', False)]}">
+                        <i class="fa fa-pencil-square-o me-1"/>
+                        หนังสือสารบรรณถูกสร้างแล้วแต่ยังไม่ได้ส่งออก (สถานะ: ร่าง)
+                        <button name="action_view_sarabun_documents" type="object"
+                                class="btn btn-sm btn-warning ms-2" string="เปิดหนังสือเพื่อส่ง"/>
+                    </div>
+                    <div class="alert alert-info mb-2" role="alert"
+                         attrs="{'invisible': ['|', ('sarabun_has_live_document', '=', False), ('sarabun_is_draft', '=', True)]}">
+                        <i class="fa fa-paper-plane me-1"/>
+                        สถานะการเดินหนังสือสารบรรณ: <field name="sarabun_state_label" nolabel="1" readonly="1" class="d-inline fw-bold"/>
+                    </div>
                     <group>
                         <group name="main_info" string="Main Information">
                             <field name="name" placeholder="Approval Reference..." readonly="1"/>
-                            <field name="title" attrs="{'readonly': [('state', '!=', 'draft')]}" />
-                            <field name="description" attrs="{'readonly': [('state', '!=', 'draft')]}" />
-                            <field name="date_start" readonly="1" />
-                            <field name="requested_by" widget="many2one_avatar_user" readonly="1" />
-                            <field name="department_id" readonly="1" />
+                            <field name="title" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="description" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="date_start" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="requested_by" widget="many2one_avatar_user" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="department_id" attrs="{'readonly': [('is_editable', '=', False)]}" />
                         </group>
                         <group name="procurement_info" string="Procurement Information">
                             <field name="company_id" invisible="1" />
-                            <field name="procurement_type_id" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="selection" />
-                            <field name="procurement_method_id" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="selection" />
-                            <field name="account_fiscal_year_id" readonly="1" />
+                            <field name="procurement_type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
+                            <field name="procurement_method_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
+                            <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <field name="estimated_cost" readonly="1"/>
-                            <field name="payment_type" readonly="1" />
+                            <field name="payment_type" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <field
                                 name="partner_id"
                                 required="1"
-                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
                                 options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                             />
                             <field
                                 name="vat_included"
                                 required="1"
-                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
                             />
                             <field
                                 name="tax_id"
                                 widget="selection"
-                                attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': [('state', '!=', 'draft')]}"
+                                attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': [('is_editable', '=', False)]}"
                             />
                         </group>
                     </group>
                     <notebook>
                         <page name="lines" string="Products">
-                            <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
+                            <field name="line_ids" attrs="{'readonly': [('is_editable', '=', False)]}">
                                 <tree editable="bottom">
                                     <field name="currency_id" invisible="1"/>
-                                    <field name="product_id" readonly="1" />
+                                    <field name="product_id" readonly="1" optional="hide"/>
                                     <field name="name" readonly="1"/>
                                     <field name="product_qty"/>
                                     <field name="price_unit"/>
+                                    <field name="uom_text" required="1"/>
+                                    <field name="product_uom_id" invisible="1"/>
                                     <field name="tax_id" optional="hide"/>
                                     <field name="price_subtotal" widget="monetary" invisible="1"/>
                                     <field name="price_total" widget="monetary" invisible="1"/>
@@ -210,25 +233,30 @@
                         </page>
                         <page name="committee" string="Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}">
                             <separator string="Work Acceptance Committee"/>
-                            <field name="work_acceptance_committee_ids" nolabel="1" readonly="1"/>
+                            <field name="work_acceptance_committee_ids" nolabel="1" attrs="{'readonly': [('is_editable', '=', False)]}"/>
                             <separator string="TOR Committee"/>
-                            <field name="tor_committee_ids" nolabel="1" readonly="1"/>
+                            <field name="tor_committee_ids" nolabel="1" attrs="{'readonly': [('is_editable', '=', False)]}"/>
                             <separator string="Price Determine Committee"/>
-                            <field name="price_determine_committee_ids" nolabel="1" readonly="1" />
+                            <field name="price_determine_committee_ids" nolabel="1" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <separator string="Evaluation Committee"/>
-                            <field name="evaluation_committee_ids" nolabel="1" readonly="1" />
+                            <field name="evaluation_committee_ids" nolabel="1" attrs="{'readonly': [('is_editable', '=', False)]}" />
                         </page>
                         <page name="other_info" string="Other Information">
                             <group>
                                 <group>
-                                    <field name="origin" readonly="1" />
+                                    <field name="origin" attrs="{'readonly': [('is_editable', '=', False)]}" />
                                     <field name="assigned_to" readonly="1" />
                                 </group>
                                 <group>
                                     <field name="approval_date" readonly="1" />
-                                    <field name="requesting_department_id" readonly="1" />
+                                    <field name="requesting_department_id" attrs="{'readonly': [('is_editable', '=', False)]}" />
                                 </group>
                             </group>
+                        </page>
+                        <page name="document" string="Attachment">
+                            <field name="attachment_ids"
+                                   widget="many2many_binary"
+                                   context="{'default_res_model': 'purchase.request.approval'}"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -350,12 +378,14 @@
         id="purchase_request_approval_menu"
         parent="purchase.menu_purchase_root"
         action="action_purchase_request_approval"
+        groups="purchase.group_purchase_user"
         sequence="4"
     />
     <menuitem
         id="purchase_request_approval_menu_purchase_request"
         parent="purchase_request.parent_menu_purchase_request"
         action="action_purchase_request_approval"
+        groups="purchase.group_purchase_user"
         sequence="20"
     />
 </odoo>

@@ -94,9 +94,11 @@ class TestTwoApprover(TransactionCase):
         # The main status bar stays at 'verified'; the two-approver step is a
         # separate sub-status.
         self.assertEqual(dr.display_status, "verified")
-        # A Todo was pushed to the Finance Director group.
+        # A Todo was pushed to the Finance Director group. The fan-out reaches
+        # every member, and security.xml seats root/admin in the group too, so
+        # assert membership rather than a single assignee.
         finance_todos = self._todos(dr, self.act_finance)
-        self.assertEqual(finance_todos.user_id, self.finance)
+        self.assertIn(self.finance, finance_todos.user_id)
 
     def test_full_two_step_approval(self):
         dr = self._make_verified_dr()
@@ -107,7 +109,7 @@ class TestTwoApprover(TransactionCase):
         self.assertEqual(dr.finance_approver_id, self.finance)
         self.assertEqual(dr.budget_consumed_amount, 0.0)
         self.assertFalse(self._todos(dr, self.act_finance))
-        self.assertEqual(self._todos(dr, self.act_rector).user_id, self.rector)
+        self.assertIn(self.rector, self._todos(dr, self.act_rector).user_id)
 
         # Step 2: Rector-delegated approver — budget hook fires here only.
         with patch(_BUDGET_HOOK) as budget_hook:
@@ -146,7 +148,7 @@ class TestTwoApprover(TransactionCase):
         self.assertEqual(dr.approval_state, "pending_finance")
         self.assertFalse(dr.approval_reject_reason)
         self.assertFalse(self._todos(dr, self.act_rejected))
-        self.assertEqual(self._todos(dr, self.act_finance).user_id, self.finance)
+        self.assertIn(self.finance, self._todos(dr, self.act_finance).user_id)
 
     def test_return_to_verification_resets_approval(self):
         dr = self._make_verified_dr()

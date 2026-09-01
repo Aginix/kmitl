@@ -31,7 +31,8 @@
              P4 once sarabun.routing.step exists — see DESIGN.md §6 / ADR.
              ============================================================ -->
 
-        <!-- A user sees the หนังสือ they authored -->
+        <!-- A user sees the หนังสือ they authored; may delete only an unnumbered
+             draft / cancelled one (narrowed in unlink()) -->
         <record id="sarabun_document_sender_rule" model="ir.rule">
             <field name="name">Sarabun Document: Sender Access</field>
             <field name="model_id" ref="model_sarabun_document"/>
@@ -40,22 +41,28 @@
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
         </record>
 
-        <!-- Reached actor (READ ONLY) — the visibility fix. A user may read a หนังสือ
-             once it has REACHED them, i.e. they have a sarabun.step.recipient row on
-             any of its steps (created when a step activates, never removed — so read
-             access also spans prior re-send attempts they were reached in).
-             This keys visibility on the same permanent per-person ledger as the
-             Incoming box, so the two never diverge — the หนังสือ stays readable after
-             the user acts and after delegate / recall / reject (skipped steps), while
-             waiting/future steps (no recipient yet) grant nothing. (DESIGN §6.6 Rule 2) -->
+        <!-- Reached actor (READ ONLY) — the visibility key (ADR-0013). A user may read
+             a หนังสือ once it has REACHED them, i.e. they hold (or have ever held) a
+             sarabun.step.recipient row on any of its steps. Keyed on the STORED
+             reached_user_ids, which aggregates recipient users across ACTIVE +
+             ARCHIVED steps (resolved active_test=False): being involved is a property
+             of the หนังสือ, not of the current attempt, so read PERSISTS after the
+             หนังสือ completes and across ตีกลับ / ดึงกลับ / Reset — a raw
+             routing_step_ids traversal would drop prior-attempt holders once the chain
+             is archived (the join injects active_test on sarabun.routing.step). Same
+             permanent per-person ledger as the Incoming box, so the two never diverge;
+             waiting/future steps (no recipient yet) still grant nothing. Read-only:
+             only the sender may write, and only the sender may delete — and then only an
+             unnumbered draft / cancelled หนังสือ (enforced in unlink(), which binds
+             managers too; route actions run authority-check-then-sudo). -->
         <record id="sarabun_document_actor_rule" model="ir.rule">
             <field name="name">Sarabun Document: Reached Actor (read)</field>
             <field name="model_id" ref="model_sarabun_document"/>
             <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
-            <field name="domain_force">[('routing_step_ids.recipient_ids.user_id', '=', user.id)]</field>
+            <field name="domain_force">[('reached_user_ids', 'in', user.id)]</field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
@@ -95,15 +102,70 @@
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
+            <!-- A step is readable iff its parent document is: the sender, or anyone
+                 the หนังสือ has ever reached (reached_user_ids — spans archived
+                 attempts, unlike the active-scoped routing_step_ids traversal). -->
             <field name="domain_force">[
                 '|',
                     ('document_id.sender_user_id', '=', user.id),
-                    ('document_id.routing_step_ids.recipient_ids.user_id', '=', user.id)
+                    ('document_id.reached_user_ids', 'in', user.id)
             ]</field>
         </record>
         <record id="sarabun_routing_step_manager_rule" model="ir.rule">
             <field name="name">Sarabun Routing Step: Manager Access</field>
             <field name="model_id" ref="model_sarabun_routing_step"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- Side models scoped to the parent หนังสือ's readability (ADR-0013). Both
+             previously carried NO ir.rule, so any Sarabun user could read the full
+             recipient ledger / step↔activity links of documents they cannot open. -->
+
+        <!-- sarabun.step.recipient — the per-person reach/read ledger. Read-only for
+             users (rows are engine-minted via sudo); readable iff the parent document
+             is (sender or reached). Managers see all. -->
+        <record id="sarabun_step_recipient_user_rule" model="ir.rule">
+            <field name="name">Sarabun Step Recipient: parent-document scope (read)</field>
+            <field name="model_id" ref="model_sarabun_step_recipient"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="domain_force">[
+                '|',
+                    ('document_id.sender_user_id', '=', user.id),
+                    ('document_id.reached_user_ids', 'in', user.id)
+            ]</field>
+        </record>
+        <record id="sarabun_step_recipient_manager_rule" model="ir.rule">
+            <field name="name">Sarabun Step Recipient: Manager Access</field>
+            <field name="model_id" ref="model_sarabun_step_recipient"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- sarabun.routing.step.activity — the step↔activity link. Read-only for
+             users, scoped to the parent document's readability (write/unlink trimmed
+             off — the link is engine-owned, created/cleared via sudo). Managers manage. -->
+        <record id="sarabun_routing_step_activity_user_rule" model="ir.rule">
+            <field name="name">Sarabun Step↔Activity Link: parent-document scope (read)</field>
+            <field name="model_id" ref="model_sarabun_routing_step_activity"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="domain_force">[
+                '|',
+                    ('step_id.document_id.sender_user_id', '=', user.id),
+                    ('step_id.document_id.reached_user_ids', 'in', user.id)
+            ]</field>
+        </record>
+        <record id="sarabun_routing_step_activity_manager_rule" model="ir.rule">
+            <field name="name">Sarabun Step↔Activity Link: Manager Access</field>
+            <field name="model_id" ref="model_sarabun_routing_step_activity"/>
             <field name="groups" eval="[(4, ref('group_sarabun_manager'))]"/>
             <field name="domain_force">[(1, '=', 1)]</field>
         </record>

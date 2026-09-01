@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="contacts_kmitl.menu_contacts"
+        groups="contacts_kmitl_menu_restriction.group_can_access_contacts_app"
+    />
+    <menuitem
+        id="contacts_kmitl.res_partner_menu_contacts"
+        groups="contacts_kmitl_menu_restriction.group_can_access_contacts_app"
+    />
+</odoo>

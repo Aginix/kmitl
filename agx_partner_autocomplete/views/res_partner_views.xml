@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Rich list view for the "Search More…" dialog of the
+         partner_autocomplete widget. The widget injects this view via
+         tree_view_ref so searching beyond the dropdown still shows the columns
+         that matter (type, tax id, address, contact), not the bare default
+         partner list. -->
+    <record id="res_partner_autocomplete_view_tree" model="ir.ui.view">
+        <field name="name">res.partner.autocomplete.tree</field>
+        <field name="model">res.partner</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <tree string="Contacts">
+                <field name="company_type" string="Type"/>
+                <field name="display_name" string="Name"/>
+                <field name="email" optional="show"/>
+                <field name="phone" class="o_force_ltr" optional="show"/>
+                <field name="vat" string="Tax ID" optional="show"/>
+                <field name="contact_address" string="Address" optional="show"/>
+                <field name="is_company" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

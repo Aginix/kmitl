@@ -2,11 +2,25 @@
 <odoo>
     <!-- ADR-0007: append sarabun's เกษียน trail + signature block at the tail of the
          disbursement report (the origin embeds sarabun's block). Resolved from the
-         origin via active_sarabun_document_id; renders nothing until steps complete. -->
+         origin via active_sarabun_document_id; renders nothing until steps complete.
+         Injected *before* the origin's own signature block so the หัวหน้าส่วนงาน
+         signature — which happens first — prints above the steps that follow it. -->
     <template id="report_disbursement_request_sarabun_endorsement"
               inherit_id="disbursement.report_disbursement_request" priority="99">
-        <xpath expr="//div[@class='page']" position="inside">
+        <xpath expr="//div[hasclass('o_dr_signatures')]" position="before">
             <t t-call="agx_sarabun.sarabun_endorsement_block">
+                <t t-set="doc" t-value="o.active_sarabun_document_id"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- บันทึกนำ — the optional covering note the หนังสือ carries above the
+         origin's report (rendered just below its title). Nothing prints unless
+         the drafter ticked แนบเนื้อหา and wrote a body. -->
+    <template id="report_disbursement_request_sarabun_covering_note"
+              inherit_id="disbursement.report_disbursement_request" priority="99">
+        <xpath expr="//div[contains(@class,'page-header')]" position="after">
+            <t t-call="agx_sarabun.sarabun_covering_note">
                 <t t-set="doc" t-value="o.active_sarabun_document_id"/>
             </t>
         </xpath>

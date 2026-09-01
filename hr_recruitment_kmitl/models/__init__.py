@@ -4,7 +4,6 @@ from . import portal_work_history
 from . import res_partner
 from . import res_users
 from . import hr_job
-from . import hr_job_old_code
 from . import hr_applicant
 from . import mail_thread_applicant_child
 from . import hr_applicant_education

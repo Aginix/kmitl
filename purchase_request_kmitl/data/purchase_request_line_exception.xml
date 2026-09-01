@@ -14,7 +14,7 @@ for line in self:
         </field>
     </record>
 
-    <!-- ราคาต่อหน่วยต้องมากกว่า 0 -->
+    <!-- ราคาต้องมากกว่า 0 -->
     <record id="pr_line_exception_price_unit_min_0" model="exception.rule">
         <field name="name">The unit price must be greater than 0.</field>
         <field name="description">The system does not allow the unit price to be 0 or negative.</field>

@@ -35,8 +35,15 @@ class HrJob(models.Model):
         default=lambda self: self.env.ref("base.THB"),
     )
     date_close = fields.Datetime(string="Closing Date")
+    start_service_date = fields.Date()
+    exam_eligible_announce_date = fields.Date(
+        string="Eligible Candidates Announcement Date"
+    )
+    exam_passed_announce_date = fields.Date(
+        string="Passed Candidates Announcement Date"
+    )
     attachment_ids = fields.Many2many("ir.attachment", string="Attachments")
-    old_code_ids = fields.One2many("hr.job.old.code", "job_id", string="Old Codes")
+    old_code = fields.Char(string="Position Code")
     kmitl_employee_type = fields.Selection(
         selection=[
             ("B", "พนักงานสถาบันเงินงบประมาณ"),
@@ -45,6 +52,15 @@ class HrJob(models.Model):
         ],
         string="Employee Type",
     )
+
+    def name_get(self):
+        result = []
+        for record in self:
+            name = record.name
+            if record.old_code:
+                name = f"{name} ({record.old_code})"
+            result.append((record.id, name))
+        return result
 
     @api.model_create_multi
     def create(self, vals):
@@ -55,26 +71,9 @@ class HrJob(models.Model):
     def write(self, vals):
         res = super().write(vals)
         self._make_attachments_public(vals)
-        if vals.get("website_published") or "old_code_ids" in vals:
-            self._check_old_codes_on_publish()
         if vals.get("website_published") or "date_close" in vals:
             self._check_date_close_on_publish()
         return res
-
-    def _check_old_codes_on_publish(self):
-        for record in self:
-            if not record.website_published:
-                continue
-            if len(record.old_code_ids) != record.no_of_recruitment:
-                raise ValidationError(
-                    _(
-                        "Cannot publish '%(name)s': number of old codes (%(codes)d) "
-                        "must equal number of recruitments (%(recruitment)d).",
-                        name=record.name,
-                        codes=len(record.old_code_ids),
-                        recruitment=record.no_of_recruitment,
-                    )
-                )
 
     def _check_date_close_on_publish(self):
         now = fields.Datetime.now()

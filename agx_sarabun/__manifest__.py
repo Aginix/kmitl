@@ -2,14 +2,13 @@
 {
     "name": "e-Sarabun",
     "summary": "Electronic Correspondence Management System (สารบรรณอิเล็กทรอนิกส์)",
-    "version": "16.0.5.0.0",
+    "version": "16.0.5.1.0",
     "category": "KMITL/Correspondence",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": [
         "mail",
         "hr",
-        "bus",  # realtime push for the inbox systray (P4-tray)
         "thai_date_utils",
         "l10n_th_fonts",  # Thai font rendering for the cover-sheet PDF (P5)
         "hr_employee_digitized_signature",  # hr.employee.signature image (signature block)
@@ -45,13 +44,9 @@
     ],
     "assets": {
         "web.assets_backend": [
-            "agx_sarabun/static/src/scss/sarabun_systray.scss",
             "agx_sarabun/static/src/scss/sarabun_form.scss",
-            "agx_sarabun/static/src/js/sarabun_notification_handler.esm.js",
-            "agx_sarabun/static/src/js/sarabun_systray.esm.js",
             "agx_sarabun/static/src/js/sarabun_document_form.esm.js",
             "agx_sarabun/static/src/js/sarabun_pdf_preview.esm.js",
-            "agx_sarabun/static/src/xml/sarabun_systray.xml",
             "agx_sarabun/static/src/xml/sarabun_pdf_preview.xml",
         ],
     },

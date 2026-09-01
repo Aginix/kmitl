@@ -73,7 +73,7 @@ msgstr "รวม"
 #: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request_line__price_unit
 #: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request_line_make_purchase_order_item__price_unit
 msgid "Unit Price"
-msgstr "ราคาต่อหน่วย"
+msgstr "ราคา"
 
 #. module: purchase_request_price_tax_included
 #: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request__amount_untaxed

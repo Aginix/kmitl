@@ -17,6 +17,114 @@
         </xpath>
     </template>
 
+    <!-- Reusable status badge (Thai label + semantic colour) -->
+    <template id="kmitl_project_status_badge" name="KMITL Project Status Badge">
+        <t
+            t-set="_state_labels"
+            t-value="{
+                'draft': 'แบบร่าง',
+                'to_verify': 'รอตรวจสอบ/จองงบ',
+                'to_send': 'รอส่งขออนุมัติ',
+                'sent': 'ส่งขออนุมัติแล้ว',
+                'returned': 'ถูกตีกลับ',
+                'rejected': 'ถูกปฏิเสธ',
+                'in_progress': 'กำลังดำเนินการ',
+                'complete': 'แล้วเสร็จ',
+                'cancel': 'ยกเลิก',
+            }"
+        />
+        <t
+            t-set="_state_colors"
+            t-value="{
+                'draft': 'secondary',
+                'to_verify': 'info',
+                'to_send': 'info',
+                'sent': 'primary',
+                'returned': 'warning text-dark',
+                'rejected': 'danger',
+                'in_progress': 'primary',
+                'complete': 'success',
+                'cancel': 'dark',
+            }"
+        />
+        <span
+            t-attf-class="badge rounded-pill bg-#{_state_colors.get(state, 'secondary')}"
+            t-out="_state_labels.get(state, state)"
+        />
+    </template>
+
+    <!-- Shared list body: a responsive card wrapping the projects table -->
+    <template id="kmitl_project_list_body" name="KMITL Project List Body">
+        <t t-if="not projects">
+            <div class="alert alert-info d-flex align-items-center">
+                <i class="fa fa-info-circle me-2" />
+                ยังไม่มีโครงการในระบบ
+            </div>
+        </t>
+        <t t-else="">
+            <div class="card border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>รหัสโครงการ</th>
+                                <th>ชื่อโครงการ</th>
+                                <th>ปีงบประมาณ</th>
+                                <th>หน่วยงาน</th>
+                                <th class="text-end">สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="projects" t-as="project">
+                                <tr>
+                                    <td>
+                                        <a
+                                            t-attf-href="#{project_url}#{project.id}"
+                                            class="text-decoration-none fw-semibold"
+                                        >
+                                            <span
+                                                t-field="project.key"
+                                                t-if="project.key"
+                                            />
+                                            <span t-else="" class="text-muted">—</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a
+                                            t-attf-href="#{project_url}#{project.id}"
+                                            class="text-decoration-none"
+                                        >
+                                            <span t-field="project.name" />
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span
+                                            t-field="project.account_fiscal_year_id.name"
+                                            t-if="project.account_fiscal_year_id"
+                                        />
+                                        <span t-else="" class="text-muted">—</span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            t-field="project.department_analytic_id.name"
+                                            t-if="project.department_analytic_id"
+                                        />
+                                        <span t-else="" class="text-muted">—</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-call="kmitl_project.kmitl_project_status_badge">
+                                            <t t-set="state" t-value="project.state" />
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
     <!-- Public Projects List View -->
     <template id="portal_public_projects" name="Public KMITL Projects">
         <t t-call="portal.portal_layout">
@@ -26,58 +134,8 @@
                 <t t-set="title">โครงการ</t>
             </t>
 
-            <t t-if="not projects">
-                <div class="alert alert-info">ยังไม่มีโครงการในระบบ</div>
-            </t>
-            <t t-else="">
-                <t t-call="portal.portal_table">
-                    <thead>
-                        <tr>
-                            <th>รหัสโครงการ</th>
-                            <th>ชื่อโครงการ</th>
-                            <th>ปีงบประมาณ</th>
-                            <th>หน่วยงาน</th>
-                            <th>สถานะ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <t t-foreach="projects" t-as="project">
-                            <tr>
-                                <td>
-                                    <a t-attf-href="/project/#{project.id}">
-                                        <span
-                                            t-field="project.key"
-                                            t-if="project.key"
-                                        />
-                                        <span t-else="">-</span>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a t-attf-href="/project/#{project.id}">
-                                        <span t-field="project.name" />
-                                    </a>
-                                </td>
-                                <td>
-                                    <span
-                                        t-field="project.account_fiscal_year_id.name"
-                                        t-if="project.account_fiscal_year_id"
-                                    />
-                                    <span t-else="">-</span>
-                                </td>
-                                <td>
-                                    <span
-                                        t-field="project.department_analytic_id.name"
-                                        t-if="project.department_analytic_id"
-                                    />
-                                    <span t-else="">-</span>
-                                </td>
-                                <td>
-                                    <span t-field="project.state" />
-                                </td>
-                            </tr>
-                        </t>
-                    </tbody>
-                </t>
+            <t t-call="kmitl_project.kmitl_project_list_body">
+                <t t-set="project_url" t-value="'/project/'" />
             </t>
         </t>
     </template>
@@ -91,58 +149,8 @@
                 <t t-set="title">KMITL Projects</t>
             </t>
 
-            <t t-if="not projects">
-                <div class="alert alert-info">ยังไม่มีโครงการในระบบ</div>
-            </t>
-            <t t-else="">
-                <t t-call="portal.portal_table">
-                    <thead>
-                        <tr>
-                            <th>รหัสโครงการ</th>
-                            <th>ชื่อโครงการ</th>
-                            <th>ปีงบประมาณ</th>
-                            <th>หน่วยงาน</th>
-                            <th>สถานะ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <t t-foreach="projects" t-as="project">
-                            <tr>
-                                <td>
-                                    <a t-attf-href="/my/kmitl-project/#{project.id}">
-                                        <span
-                                            t-field="project.key"
-                                            t-if="project.key"
-                                        />
-                                        <span t-else="">-</span>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a t-attf-href="/my/kmitl-project/#{project.id}">
-                                        <span t-field="project.name" />
-                                    </a>
-                                </td>
-                                <td>
-                                    <span
-                                        t-field="project.account_fiscal_year_id.name"
-                                        t-if="project.account_fiscal_year_id"
-                                    />
-                                    <span t-else="">-</span>
-                                </td>
-                                <td>
-                                    <span
-                                        t-field="project.department_analytic_id.name"
-                                        t-if="project.department_analytic_id"
-                                    />
-                                    <span t-else="">-</span>
-                                </td>
-                                <td>
-                                    <span t-field="project.state" />
-                                </td>
-                            </tr>
-                        </t>
-                    </tbody>
-                </t>
+            <t t-call="kmitl_project.kmitl_project_list_body">
+                <t t-set="project_url" t-value="'/my/kmitl-project/'" />
             </t>
         </t>
     </template>
@@ -155,7 +163,7 @@
         primary="True"
     >
         <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
-            <div class="mt16">
+            <div class="mt-4">
                 <t t-call="kmitl_project.kmitl_project_portal_content" />
             </div>
         </xpath>
@@ -163,584 +171,547 @@
 
     <!-- Project Content Details -->
     <template id="kmitl_project_portal_content" name="KMITL Project Portal Content">
-        <!-- <style>
-            .required.form-label:after {
-                content: " *";
-                color: red;
-            }
-        </style> -->
-        <div class="card mb-3">
-            <div class="card-header">
-                <t t-if="kmitl_project.project_type == 'project'">โครงการ/กิจกรรม</t>
-                <t t-elif="kmitl_project.project_type == 'strategic_project'"
-                    >โครงการยุทธศาสตร์</t
-                >
-            </div>
+        <t
+            t-set="_type_labels"
+            t-value="{'project': 'โครงการ (งบประจำ)', 'activity': 'กิจกรรม (งบประจำ)', 'strategic_project': 'โครงการยุทธศาสตร์'}"
+        />
 
-            <div class="card-body">
-                <div class="row form-group mb-3">
-                    <label for="name" class="form-label required col col-lg-2 text-end"
-                        >รหัสโครงการ</label
-                    >
-                    <div class="col col-lg-9">
-                        <span t-out="kmitl_project.key" />
-                    </div>
-                </div>
-                <div class="row form-group mb-3">
-                    <label
-                        for="kmitl_project.name"
-                        class="form-label required col col-lg-2 text-end"
-                        >ชื่อโครงการ/กิจกรรม</label
-                    >
-                    <div class="col col-lg-9">
-                        <div
-                            id="kmitl_project.name"
-                            class="form-control text-bg-light input-block-level"
-                            style="white-space: pre-wrap"
-                            t-out="kmitl_project.name"
+        <!-- Hero header -->
+        <div class="card border-0 shadow-sm mb-4 text-white bg-primary bg-gradient">
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                    <span class="badge bg-white text-primary">
+                        <i class="fa fa-hashtag me-1" />
+                        <t t-out="kmitl_project.key or 'ยังไม่ออกรหัส'" />
+                    </span>
+                    <span class="badge bg-light text-dark">
+                        <t
+                            t-out="_type_labels.get(kmitl_project.project_type, kmitl_project.project_type)"
                         />
-                    </div>
+                    </span>
+                    <t t-call="kmitl_project.kmitl_project_status_badge">
+                        <t t-set="state" t-value="kmitl_project.state" />
+                    </t>
                 </div>
-                <div class="row form-group mb-3">
-                    <label for="name" class="form-label required col col-lg-2 text-end"
-                        >ปีงบประมาณ</label
-                    >
-                    <div class="col col-lg-9">
-                        <span t-out="kmitl_project.account_fiscal_year_id.name" />
-                    </div>
+                <h2 class="fw-bold mb-1" t-field="kmitl_project.name" />
+                <div class="opacity-75">
+                    <i class="fa fa-calendar me-1" />
+                    ปีงบประมาณ <t t-out="kmitl_project.account_fiscal_year_id.name or '—'" />
+                    <span class="mx-2">·</span>
+                    <i class="fa fa-building-o me-1" />
+                    <t t-out="kmitl_project.department_analytic_id.name or 'ไม่ระบุหน่วยงาน'" />
                 </div>
-                <div class="row form-group mb-3">
-                    <label for="name" class="form-label required col col-lg-2 text-end"
-                        >ประเภทโครงการ</label
-                    >
-                    <div class="col col-lg-9">
-                        <span t-out="kmitl_project.project_type" />
-                    </div>
-                </div>
-                <div class="row form-group mb-3">
-                    <label for="name" class="form-label required col col-lg-2 text-end"
-                        >หน่วยงาน</label
-                    >
-                    <div class="col col-lg-9">
-                        <span t-out="kmitl_project.department_analytic_id.name" />
-                    </div>
-                </div>
-                <div class="row form-group mb-3">
-                    <label for="name" class="form-label required col col-lg-2 text-end"
-                        >ความสอดคล้องกับนโยบายสถาบัน</label
-                    >
-                    <div class="col col-lg-9">
-                        <dt>Impact</dt>
-                        <dd>
-                            <span t-out="kmitl_project.impact_id.name" />
-                        </dd>
-                        <dt>Global Index</dt>
-                        <dd>
-                            <span t-out="kmitl_project.global_index_id.name" />
-                        </dd>
-                        <dt>FIGHT</dt>
-                        <dd>
-                            <span t-out="kmitl_project.fight_id.name" />
-                        </dd>
-                    </div>
-                </div>
-                <div class="row form-group mb-3">
-                    <label for="name" class="form-label required col col-lg-2 text-end"
-                        >ความสอดคล้องกับแผนยุทธศาสตร์</label
-                    >
-                    <div class="col col-lg-9">
-                        <dl>
-                            <dt>ยุทธศาสตร์ชาติ</dt>
-                            <dd>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sticky summary sidebar -->
+            <div class="col-12 col-lg-4 col-xl-3">
+                <div class="position-sticky" style="top: 1rem;">
+                    <!-- Quick facts -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white fw-bold">
+                            <i class="fa fa-info-circle me-2 text-primary" />ข้อมูลโครงการ
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="text-muted">สถานะ</span>
+                                <t t-call="kmitl_project.kmitl_project_status_badge">
+                                    <t t-set="state" t-value="kmitl_project.state" />
+                                </t>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="text-muted">ปีงบประมาณ</span>
                                 <span
-                                    t-field="kmitl_project.national_strategy_id.name"
+                                    class="fw-semibold"
+                                    t-out="kmitl_project.account_fiscal_year_id.name or '—'"
                                 />
-                            </dd>
-                            <dt>แผนแม่บทภายใต้ยุทธศาสตร์ชาติ</dt>
-                            <dd>
-                                <span t-field="kmitl_project.master_plan_id.name" />
-                            </dd>
-                            <dt>แผนพัฒนาเศรษฐกิจและสังคมแห่งชาติ</dt>
-                            <dd>
-                                <span t-field="kmitl_project.nesdc_plan_id.name" />
-                            </dd>
-                            <dt>แผนกลยุทธ์สถาบัน</dt>
-                            <dd>
-                                <span t-field="kmitl_project.kmitl_plan_id.name" />
-                            </dd>
-                        </dl>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="text-muted">หน่วยงาน</span>
+                                <span
+                                    class="fw-semibold text-end"
+                                    t-out="kmitl_project.department_analytic_id.name or '—'"
+                                />
+                            </li>
+                            <li
+                                t-if="kmitl_project.operating_unit_id"
+                                class="list-group-item d-flex justify-content-between"
+                            >
+                                <span class="text-muted">ส่วนงาน</span>
+                                <span
+                                    class="fw-semibold text-end"
+                                    t-out="kmitl_project.operating_unit_id.name"
+                                />
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="text-muted">หัวหน้าโครงการ</span>
+                                <span
+                                    class="fw-semibold text-end"
+                                    t-out="kmitl_project.manager_id.name or '—'"
+                                />
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="text-muted">ระยะเวลา</span>
+                                <span class="fw-semibold text-end">
+                                    <t t-if="kmitl_project.date_start or kmitl_project.date_end">
+                                        <span t-field="kmitl_project.date_start" />
+                                        <span> - </span>
+                                        <span t-field="kmitl_project.date_end" />
+                                    </t>
+                                    <t t-else="">—</t>
+                                </span>
+                            </li>
+                            <li
+                                t-if="kmitl_project.creating_user_id"
+                                class="list-group-item d-flex justify-content-between"
+                            >
+                                <span class="text-muted">ผู้จัดทำ</span>
+                                <span
+                                    class="fw-semibold text-end"
+                                    t-out="kmitl_project.creating_user_id.name"
+                                />
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Budget summary -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white fw-bold">
+                            <i class="fa fa-money me-2 text-success" />สรุปงบประมาณ
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">งบประมาณที่ได้รับ</span>
+                                <span class="fw-bold">
+                                    <t
+                                        t-out="'{:,.2f}'.format(kmitl_project.budget_amount)"
+                                    /> บาท
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">คงเหลือ</span>
+                                <span
+                                    t-attf-class="fw-bold text-#{'danger' if kmitl_project.budget_remaining &lt; 0 else 'success'}"
+                                >
+                                    <t
+                                        t-out="'{:,.2f}'.format(kmitl_project.budget_remaining)"
+                                    /> บาท
+                                </span>
+                            </div>
+                            <hr class="my-2" />
+                            <div
+                                t-if="kmitl_project.has_income"
+                                class="d-flex justify-content-between mb-2"
+                            >
+                                <span class="text-muted">รวมรายรับ</span>
+                                <span class="fw-semibold">
+                                    <t
+                                        t-out="'{:,.2f}'.format(kmitl_project.budget_income_total)"
+                                    /> บาท
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">รวมรายจ่าย</span>
+                                <span class="fw-semibold">
+                                    <t
+                                        t-out="'{:,.2f}'.format(kmitl_project.budget_expense_total)"
+                                    /> บาท
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card mb-3">
-            <div class="card-header">งบประมาณ</div>
-
-            <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label required"
-                        >แผนการดำเนินงานและแผนการใช้จ่ายงบประมาณ</label
-                    >
-                    <table class="table table-sm table-light table-bordered">
-                        <thead>
-                            <tr>
-                                <th>ชื่อรายการ</th>
-                                <th style="min-width: 120px; max-width: 200px">
-                                    งบประมาณ
-                                </th>
-                                <th class="text-center" style="width: 50px">ม.ค.</th>
-                                <th class="text-center" style="width: 50px">ก.พ.</th>
-                                <th class="text-center" style="width: 50px">มี.ค.</th>
-                                <th class="text-center" style="width: 50px">เม.ย.</th>
-                                <th class="text-center" style="width: 50px">พ.ค.</th>
-                                <th class="text-center" style="width: 50px">มิ.ย.</th>
-                                <th class="text-center" style="width: 50px">ก.ค.</th>
-                                <th class="text-center" style="width: 50px">ส.ค.</th>
-                                <th class="text-center" style="width: 50px">ก.ย.</th>
-                                <th class="text-center" style="width: 50px">ต.ค.</th>
-                                <th class="text-center" style="width: 50px">พ.ย.</th>
-                                <th class="text-center" style="width: 50px">ธ.ค.</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="kmitl_project.plan_ids" t-as="plan">
-                                <tr>
-                                    <td>
-                                        <span t-field="plan.name" />
-                                    </td>
-                                    <td>
-                                        <span t-field="plan.amount" />
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-if="plan.m1">✓</t>
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-if="plan.m2">✓</t>
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-if="plan.m3">✓</t>
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-if="plan.m4">✓</t>
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-if="plan.m5">✓</t>
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-if="plan.m6">✓</t>
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-if="plan.m7">✓</t>
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-if="plan.m8">✓</t>
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-if="plan.m9">✓</t>
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-if="plan.m10">✓</t>
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-if="plan.m11">✓</t>
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-if="plan.m12">✓</t>
-                                    </td>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="card mb-3">
-            <div class="card-header">รายละเอียดโครงการ/กิจกรรม</div>
-
-            <div class="card-body">
-                <div class="row form-group mb-3">
-                    <label
-                        for="kmitl_project.manager_id"
-                        class="form-label required col col-lg-2 text-end"
-                        >หัวหน้าโครงการ</label
-                    >
-                    <div class="col col-lg-9">
-                        <span id="kmitl_project.manager_id"
-                            ><t t-out="kmitl_project.manager_id.name"
-                        /></span>
+            <!-- Main content -->
+            <div class="col-12 col-lg-8 col-xl-9">
+                <!-- Strategic alignment -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa fa-sitemap me-2 text-primary" />ความสอดคล้องเชิงนโยบายและยุทธศาสตร์
                     </div>
-                </div>
-
-                <div class="row form-group mb-3">
-                    <label
-                        for="kmitl_project.state"
-                        class="form-label required col col-lg-2 text-end"
-                        >สถานะการดำเนินโครงการ</label
-                    >
-                    <div class="col col-lg-9">
-                        <div
-                            class="btn-group"
-                            role="group"
-                            aria-label="Basic radio toggle button group"
-                        >
-                            <label
-                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'complete' else 'outline-secondary' }}"
-                                for="complete"
-                                >แล้วเสร็จ</label
-                            >
-                            <label
-                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'in_progress' else 'outline-secondary' }}"
-                                for="in_progress"
-                                >กำลังดำเนินการ</label
-                            >
-                            <label
-                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'on_hold' else 'outline-secondary' }}"
-                                for="on_hold"
-                                >ชะลอ</label
-                            >
-                            <label
-                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'new' else 'outline-secondary' }}"
-                                for="new"
-                                >ยังไม่เริ่มดำเนินการ</label
-                            >
-                            <label
-                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'cancel' else 'outline-secondary' }}"
-                                for="cancel"
-                                >ยกเลิก</label
-                            >
-                            <label
-                                t-attf-class="btn btn-{{ 'primary' if kmitl_project.state == 'draft' else 'outline-secondary' }}"
-                                for="draft"
-                                >แบบร่าง</label
-                            >
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <h6 class="text-muted">นโยบายสถาบัน</h6>
+                                <dl class="row mb-0">
+                                    <dt class="col-sm-5">Impact</dt>
+                                    <dd class="col-sm-7" t-out="kmitl_project.impact_id.name or '—'" />
+                                    <dt class="col-sm-5">Global Index</dt>
+                                    <dd
+                                        class="col-sm-7"
+                                        t-out="kmitl_project.global_index_id.name or '—'"
+                                    />
+                                    <dt class="col-sm-5">FIGHT</dt>
+                                    <dd class="col-sm-7" t-out="kmitl_project.fight_id.name or '—'" />
+                                </dl>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <h6 class="text-muted">แผนยุทธศาสตร์</h6>
+                                <dl class="row mb-0">
+                                    <dt class="col-sm-5">ยุทธศาสตร์ชาติ</dt>
+                                    <dd
+                                        class="col-sm-7"
+                                        t-out="kmitl_project.national_strategy_id.name or '—'"
+                                    />
+                                    <dt class="col-sm-5">แผนแม่บทฯ</dt>
+                                    <dd
+                                        class="col-sm-7"
+                                        t-out="kmitl_project.master_plan_id.name or '—'"
+                                    />
+                                    <dt class="col-sm-5">แผนพัฒนาฯ ฉ.13</dt>
+                                    <dd
+                                        class="col-sm-7"
+                                        t-out="kmitl_project.nesdc_plan_id.name or '—'"
+                                    />
+                                    <dt class="col-sm-5">แผนกลยุทธ์สถาบัน</dt>
+                                    <dd
+                                        class="col-sm-7"
+                                        t-out="kmitl_project.kmitl_plan_id.name or '—'"
+                                    />
+                                </dl>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row form-group mb-3">
-                    <label
-                        for="kmitl_project.date_start"
-                        class="form-label required col col-lg-2 text-end"
-                        >ระยะเวลาดำเนินโครงการ</label
-                    >
-                    <div class="col col-lg-9">
-                        ตั้งแต่
-                        <span
-                            class="p-1 text-bg-secondary"
-                            t-out="kmitl_project.date_start"
-                        />
-                        ถึง
-                        <span
-                            class="p-1 text-bg-secondary"
-                            t-out="kmitl_project.date_end"
-                        />
+                <!-- Budget disbursement plan -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa fa-calendar-check-o me-2 text-primary" />แผนการดำเนินงานและแผนการใช้จ่ายงบประมาณ
                     </div>
-                </div>
-
-                <!-- Introduction -->
-                <div class="row form-group mb-3">
-                    <label
-                        for="kmitl_project.introduction"
-                        class="form-label required col col-lg-2 text-end"
-                        >หลักการและเหตุผล</label
-                    >
-                    <div class="col col-lg-9">
-                        <div
-                            id="kmitl_project.introduction"
-                            class="form-control text-bg-light input-block-level"
-                            style="white-space: pre-wrap"
-                            t-out="kmitl_project.introduction"
-                        />
-                    </div>
-                </div>
-
-                <!-- Objectives -->
-                <div class="row form-group mb-3">
-                    <label
-                        for="kmitl_project.objective"
-                        class="form-label required col col-lg-2 text-end"
-                        style="white-space: pre-wrap"
-                        >วัตถุประสงค์</label
-                    >
-                    <div class="col col-lg-9">
-                        <div
-                            id="kmitl_project.objective"
-                            class="form-control text-bg-light input-block-level"
-                            style="white-space: pre-wrap"
-                            t-out="kmitl_project.objective"
-                        />
-                    </div>
-                </div>
-
-                <div class="row form-group mb-3">
-                    <label
-                        for="kmitl_project.location"
-                        class="form-label required col col-lg-2 text-end"
-                        style="white-space: pre-wrap"
-                        >สถานที่/พื้นที่ดำเนินโครงการ</label
-                    >
-                    <div class="col col-lg-9">
-                        <div
-                            id="kmitl_project.location"
-                            class="form-control text-bg-light input-block-level"
-                            style="white-space: pre-wrap"
-                            t-out="kmitl_project.location"
-                        />
-                    </div>
-                </div>
-
-                <div class="row form-group mb-3">
-                    <label
-                        for="kmitl_project.methodology_ids"
-                        class="form-label required col col-lg-2 text-end"
-                        style="white-space: pre-wrap"
-                        >วิธีดำเนินการ</label
-                    >
-                    <div class="col col-lg-9">
-                        <t t-foreach="kmitl_project.methodology_ids" t-as="method">
-                            <div>
-                                <span t-field="method.name" />
+                    <div class="card-body">
+                        <t t-if="kmitl_project.plan_ids">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th rowspan="2" style="min-width: 160px">ชื่อรายการ</th>
+                                            <th rowspan="2" class="text-end" style="min-width: 110px">งบประมาณ</th>
+                                            <th colspan="3" class="text-center">ไตรมาสที่ 1</th>
+                                            <th colspan="3" class="text-center">ไตรมาสที่ 2</th>
+                                            <th colspan="3" class="text-center">ไตรมาสที่ 3</th>
+                                            <th colspan="3" class="text-center">ไตรมาสที่ 4</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">ต.ค.</th>
+                                            <th class="text-center">พ.ย.</th>
+                                            <th class="text-center">ธ.ค.</th>
+                                            <th class="text-center">ม.ค.</th>
+                                            <th class="text-center">ก.พ.</th>
+                                            <th class="text-center">มี.ค.</th>
+                                            <th class="text-center">เม.ย.</th>
+                                            <th class="text-center">พ.ค.</th>
+                                            <th class="text-center">มิ.ย.</th>
+                                            <th class="text-center">ก.ค.</th>
+                                            <th class="text-center">ส.ค.</th>
+                                            <th class="text-center">ก.ย.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="kmitl_project.plan_ids" t-as="plan">
+                                            <tr>
+                                                <td t-out="plan.name" />
+                                                <td
+                                                    class="text-end"
+                                                    t-out="'{:,.2f}'.format(plan.amount)"
+                                                />
+                                                <t
+                                                    t-foreach="[plan.m10, plan.m11, plan.m12, plan.m1, plan.m2, plan.m3, plan.m4, plan.m5, plan.m6, plan.m7, plan.m8, plan.m9]"
+                                                    t-as="month"
+                                                >
+                                                    <td class="text-center">
+                                                        <span
+                                                            t-if="month"
+                                                            class="text-success fw-bold"
+                                                        >&#10003;</span>
+                                                    </td>
+                                                </t>
+                                            </tr>
+                                        </t>
+                                        <tr class="table-light">
+                                            <td class="text-end fw-bold">รวม</td>
+                                            <td
+                                                class="text-end fw-bold"
+                                                t-out="'{:,.2f}'.format(sum(kmitl_project.plan_ids.mapped('amount')))"
+                                            />
+                                            <td colspan="12" />
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </t>
-                        <p
-                            style="white-space: pre-wrap"
-                            t-field="kmitl_project.methodology_detail"
+                        <t t-else="">
+                            <div class="text-muted">ยังไม่มีข้อมูลแผนการใช้จ่าย</div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Income / Expense -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa fa-exchange me-2 text-primary" />รายรับ-รายจ่ายโครงการ
+                    </div>
+                    <div class="card-body">
+                        <t
+                            t-set="budget_sections"
+                            t-value="[
+                                {'label': 'รายรับ', 'type': 'income', 'lines': kmitl_project.income_line_ids, 'total': kmitl_project.budget_income_total},
+                                {'label': 'รายจ่าย', 'type': 'expense', 'lines': kmitl_project.expense_line_ids, 'total': kmitl_project.budget_expense_total},
+                            ]"
                         />
+                        <t t-if="kmitl_project.income_line_ids or kmitl_project.expense_line_ids">
+                            <t t-foreach="budget_sections" t-as="section">
+                                <t t-if="section['lines']">
+                                    <h6 class="fw-bold mt-2" t-out="section['label']" />
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>รายการ</th>
+                                                    <th>คำอธิบาย</th>
+                                                    <th class="text-end" style="min-width: 120px">จำนวนเงิน</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t
+                                                    t-foreach="kmitl_project._portal_budget_tree(section['type'])"
+                                                    t-as="row"
+                                                >
+                                                    <t t-if="row['type'] == 'header'">
+                                                        <tr class="table-light">
+                                                            <td
+                                                                colspan="2"
+                                                                t-attf-style="padding-left: #{0.5 + row['level'] * 1.5}rem"
+                                                            >
+                                                                <span class="fw-semibold" t-out="row['name']" />
+                                                            </td>
+                                                            <td
+                                                                class="text-end fw-semibold"
+                                                                t-out="'{:,.2f}'.format(row['total'])"
+                                                            />
+                                                        </tr>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <tr>
+                                                            <td
+                                                                t-attf-style="padding-left: #{0.5 + row['level'] * 1.5}rem"
+                                                                t-out="row['line'].name"
+                                                            />
+                                                            <td
+                                                                style="white-space: pre-wrap"
+                                                                t-out="(row['line'].description or '').strip()"
+                                                            />
+                                                            <td
+                                                                class="text-end"
+                                                                t-out="'{:,.2f}'.format(row['line'].amount)"
+                                                            />
+                                                        </tr>
+                                                    </t>
+                                                </t>
+                                                <tr class="table-light">
+                                                    <td colspan="2" class="text-end fw-bold">รวม</td>
+                                                    <td
+                                                        class="text-end fw-bold"
+                                                        t-out="'{:,.2f}'.format(section['total'])"
+                                                    />
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </t>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <div class="text-muted">ยังไม่มีรายการรายรับ-รายจ่าย</div>
+                        </t>
                     </div>
                 </div>
 
-                <div class="row form-group mb-3">
-                    <label
-                        class="form-label required col col-lg-2 text-end"
-                        style="white-space: pre-wrap"
-                        >กลุ่มเป้าหมาย</label
-                    >
-                    <div class="col col-lg-9">
-                        <table class="table table-sm table-light w-75">
-                            <thead>
-                                <tr>
-                                    <th>ชื่อกลุ่มเป้าหมาย</th>
-                                    <th>จำนวน</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t
-                                    t-if="len(kmitl_project.target_ids) > 0"
-                                    t-foreach="kmitl_project.target_ids"
-                                    t-as="target"
-                                >
-                                    <tr>
-                                        <td>
-                                            <span t-field="target.name" />
-                                        </td>
-                                        <td>
-                                            <span t-field="target.amount" />
-                                        </td>
-                                    </tr>
-                                </t>
-                                <t t-else="">
-                                    <tr colspan="3">
-                                        ไม่มีข้อมูล
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
+                <!-- Project details -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa fa-file-text-o me-2 text-primary" />รายละเอียดโครงการ/กิจกรรม
                     </div>
-                </div>
-
-                <div class="row form-group mb-3">
-                    <label
-                        class="form-label required col col-lg-2 text-end"
-                        style="white-space: pre-wrap"
-                        >ผู้เข้าร่วม</label
-                    >
-                    <div class="col col-lg-9">
-                        <table class="table table-sm table-light w-75">
-                            <thead>
-                                <tr>
-                                    <th>ชื่อกลุ่มเป้าหมาย</th>
-                                    <th>จำนวน</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t
-                                    t-if="len(kmitl_project.participant_ids) > 0"
-                                    t-foreach="kmitl_project.participant_ids"
-                                    t-as="participant_id"
-                                >
-                                    <tr>
-                                        <td>
-                                            <span t-field="participant_id.name" />
-                                        </td>
-                                        <td>
-                                            <span t-field="participant_id.amount" />
-                                        </td>
-                                    </tr>
-                                </t>
-                                <t t-else="">
-                                    <tr colspan="3">
-                                        ไม่มีข้อมูล
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="row form-group mb-3">
-                    <label
-                        class="form-label required col col-lg-2 text-end"
-                        style="white-space: pre-wrap"
-                        >ผู้จัดงาน</label
-                    >
-                    <div class="col col-lg-9">
-                        <table class="table table-sm table-light w-75">
-                            <thead>
-                                <tr>
-                                    <th>ชื่อกลุ่มเป้าหมาย</th>
-                                    <th>จำนวน</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t
-                                    t-if="len(kmitl_project.organizer_ids) > 0"
-                                    t-foreach="kmitl_project.organizer_ids"
-                                    t-as="organizer_id"
-                                >
-                                    <tr>
-                                        <td>
-                                            <span t-field="organizer_id.name" />
-                                        </td>
-                                        <td>
-                                            <span t-field="organizer_id.amount" />
-                                        </td>
-                                    </tr>
-                                </t>
-                                <t t-else="">
-                                    <tr colspan="3">
-                                        ไม่มีข้อมูล
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="row form-group mb-3">
-                    <label
-                        class="form-label required col col-lg-2 text-end"
-                        style="white-space: pre-wrap"
-                        >ผลผลิต</label
-                    >
-                    <div class="col col-lg-9">
-                        <t t-if="len(kmitl_project.output_ids) > 0">
-                            <ul>
-                                <li
-                                    t-foreach="kmitl_project.output_ids"
-                                    t-as="output_id"
-                                >
-                                    <t t-out="output_id.name" />
-                                    <t t-out="output_id.amount" />
-                                    <t t-out="output_id.unit" />
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-muted">หลักการและเหตุผล</label>
+                            <div style="white-space: pre-wrap" t-out="kmitl_project.introduction or '—'" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-muted">วัตถุประสงค์</label>
+                            <div style="white-space: pre-wrap" t-out="kmitl_project.objective or '—'" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-muted">สถานที่/พื้นที่ดำเนินโครงการ</label>
+                            <div style="white-space: pre-wrap" t-out="kmitl_project.location or '—'" />
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold text-muted">วิธีดำเนินการ</label>
+                            <ul t-if="kmitl_project.methodology_ids" class="mb-1">
+                                <li t-foreach="kmitl_project.methodology_ids" t-as="method">
+                                    <span t-field="method.name" />
                                 </li>
                             </ul>
-                        </t>
-                        <t t-else=""> ไม่มีข้อมูล </t>
+                            <div
+                                t-if="kmitl_project.methodology_detail"
+                                style="white-space: pre-wrap"
+                                t-field="kmitl_project.methodology_detail"
+                            />
+                        </div>
                     </div>
                 </div>
 
-                <div class="row form-group mb-3">
-                    <label
-                        class="form-label required col col-lg-2 text-end"
-                        style="white-space: pre-wrap"
-                        >ผลลัพธ์</label
-                    >
-                    <div class="col col-lg-9">
-                        <t t-if="len(kmitl_project.outcome_ids) > 0">
-                            <ul>
-                                <li
-                                    t-foreach="kmitl_project.outcome_ids"
-                                    t-as="outcome_id"
-                                >
-                                    <t t-out="outcome_id.name" />
-                                    <t t-out="outcome_id.amount" />
-                                    <t t-out="outcome_id.unit" />
-                                </li>
-                            </ul>
-                        </t>
-                        <t t-else=""> ไม่มีข้อมูล </t>
+                <!-- People (targets / participants / organizers) -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa fa-users me-2 text-primary" />กลุ่มเป้าหมายและผู้เกี่ยวข้อง
                     </div>
-                </div>
-
-                <div class="row form-group mb-3">
-                    <label
-                        for="kmitl_project.expected_outcome_ids"
-                        class="form-label required col col-lg-2 text-end"
-                        style="white-space: pre-wrap"
-                        >ผลที่คาดว่าจะได้รับ</label
-                    >
-                    <div class="col col-lg-9">
-                        <ol id="kmitl_project.expected_outcome_ids">
+                    <div class="card-body">
+                        <div class="row">
                             <t
-                                t-foreach="kmitl_project.expected_outcome_ids"
-                                t-as="outcome"
-                            >
-                                <li>
+                                t-set="people_sections"
+                                t-value="[
+                                    {'label': 'กลุ่มเป้าหมาย', 'lines': kmitl_project.target_ids},
+                                    {'label': 'ผู้เข้าร่วม', 'lines': kmitl_project.participant_ids},
+                                    {'label': 'ผู้จัดงาน', 'lines': kmitl_project.organizer_ids},
+                                ]"
+                            />
+                            <t t-foreach="people_sections" t-as="people">
+                                <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                    <h6 class="fw-bold" t-out="people['label']" />
+                                    <table class="table table-sm align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>ชื่อ</th>
+                                                <th class="text-end">จำนวน</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-if="people['lines']">
+                                                <tr t-foreach="people['lines']" t-as="row">
+                                                    <td t-out="row.name" />
+                                                    <td
+                                                        class="text-end"
+                                                        t-out="'{:,.0f}'.format(row.amount)"
+                                                    />
+                                                </tr>
+                                            </t>
+                                            <t t-else="">
+                                                <tr>
+                                                    <td colspan="2" class="text-muted">ไม่มีข้อมูล</td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outputs / Outcomes / Expected outcomes -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa fa-bullseye me-2 text-primary" />ผลผลิต ผลลัพธ์ และผลที่คาดว่าจะได้รับ
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <h6 class="fw-bold">ผลผลิต</h6>
+                                <ul t-if="kmitl_project.output_ids" class="mb-0">
+                                    <li t-foreach="kmitl_project.output_ids" t-as="output_id">
+                                        <span t-field="output_id.name" />
+                                        <span class="text-muted">
+                                            (<span t-field="output_id.target" />
+                                            <span t-field="output_id.unit" />)
+                                        </span>
+                                    </li>
+                                </ul>
+                                <div t-else="" class="text-muted">ไม่มีข้อมูล</div>
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <h6 class="fw-bold">ผลลัพธ์</h6>
+                                <ul t-if="kmitl_project.outcome_ids" class="mb-0">
+                                    <li t-foreach="kmitl_project.outcome_ids" t-as="outcome_id">
+                                        <span t-field="outcome_id.name" />
+                                        <span class="text-muted">
+                                            (<span t-field="outcome_id.target" />
+                                            <span t-field="outcome_id.unit" />)
+                                        </span>
+                                    </li>
+                                </ul>
+                                <div t-else="" class="text-muted">ไม่มีข้อมูล</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold">ผลที่คาดว่าจะได้รับ</h6>
+                            <ol t-if="kmitl_project.expected_outcome_ids" class="mb-0">
+                                <li
+                                    t-foreach="kmitl_project.expected_outcome_ids"
+                                    t-as="outcome"
+                                >
                                     <span t-field="outcome.name" />
                                 </li>
-                            </t>
-                        </ol>
+                            </ol>
+                            <div t-else="" class="text-muted">ไม่มีข้อมูล</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="row form-group mb-3">
-                    <label
-                        for="kmitl_project.evaluation_ids"
-                        class="form-label required col col-lg-2 text-end"
-                        style="white-space: pre-wrap"
-                        >วิธีการ/เครื่องมือติดตามและประเมินผล</label
-                    >
-                    <div class="col col-lg-9">
+                <!-- Evaluation -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa fa-check-square-o me-2 text-primary" />วิธีการ/เครื่องมือติดตามและประเมินผล
+                    </div>
+                    <div class="card-body">
+                        <ul t-if="kmitl_project.evaluation_ids" class="mb-1">
+                            <li t-foreach="kmitl_project.evaluation_ids" t-as="eval">
+                                <span t-field="eval.name" />
+                            </li>
+                        </ul>
                         <div
-                            id="kmitl_project.evaluation_ids"
-                            t-foreach="kmitl_project.evaluation_ids"
-                            t-as="eval"
-                        >
-                            <div t-field="eval.name" />
-                        </div>
-                        <p
+                            t-if="kmitl_project.evaluation_detail"
                             style="white-space: pre-wrap"
                             t-field="kmitl_project.evaluation_detail"
                         />
+                        <div
+                            t-if="not kmitl_project.evaluation_ids and not kmitl_project.evaluation_detail"
+                            class="text-muted"
+                        >ไม่มีข้อมูล</div>
                     </div>
                 </div>
 
-                <div class="row form-group mb-3">
-                    <label
-                        for="kmitl_project.attachment_ids"
-                        class="form-label required col col-lg-2 text-end"
-                        style="white-space: pre-wrap"
-                        >เอกสารแนบ</label
-                    >
-                    <div class="col col-lg-9">
-                        <ul>
-                            <t
-                                t-foreach="kmitl_project.attachment_ids"
-                                t-as="attachment"
-                            >
-                                <li>
-                                    <a
-                                        t-attf-href="/web/content/#{attachment.id}?download=true"
-                                    >
+                <!-- Attachments -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fa fa-paperclip me-2 text-primary" />เอกสารแนบ
+                    </div>
+                    <div class="card-body">
+                        <t t-if="kmitl_project.attachment_ids">
+                            <div class="list-group list-group-flush">
+                                <a
+                                    t-foreach="kmitl_project.attachment_ids"
+                                    t-as="attachment"
+                                    t-attf-href="/web/content/#{attachment.id}?download=true"
+                                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0"
+                                >
+                                    <span>
+                                        <i class="fa fa-file-o me-2 text-muted" />
                                         <span t-field="attachment.name" />
-                                    </a>
-                                    (<span t-field="attachment.file_size" />
-                                    bytes)
-                                </li>
-                            </t>
-                        </ul>
+                                    </span>
+                                    <span class="badge bg-light text-muted">
+                                        <t
+                                            t-out="'{:,.0f}'.format((attachment.file_size or 0) / 1024.0)"
+                                        /> KB
+                                    </span>
+                                </a>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="text-muted">ไม่มีเอกสารแนบ</div>
+                        </t>
                     </div>
                 </div>
             </div>

@@ -166,6 +166,13 @@
                     name="is_egp"
                     attrs="{'readonly': ['|', ('estimated_cost', '&gt;', 100000), ('is_editable', '=', False)]}"
                 />
+                <div
+                    colspan="2"
+                    class="alert alert-info mb-0"
+                    role="alert"
+                >
+                    If e-GP procurement is selected, an internal Purchase Request approval (พจ.1) is not required.
+                </div>
             </xpath>
 
             <!-- Dual statusbar: KMITL view already sets the non-e-GP list;

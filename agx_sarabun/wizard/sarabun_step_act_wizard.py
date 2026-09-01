@@ -32,6 +32,7 @@ class SarabunStepActWizard(models.TransientModel):
 
     # complete (sign capacity — P5 adds full capacity selection)
     is_sign = fields.Boolean(compute="_compute_flags")
+    step_target_mode = fields.Selection(related="step_id.target_mode", readonly=True)
     signed_as_position_id = fields.Many2one(
         "sarabun.position", string="Sign As (Capacity)",
     )

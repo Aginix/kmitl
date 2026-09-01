@@ -1,0 +1,83 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-07 00:00+0000\n"
+"PO-Revision-Date: 2026-08-07 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: account_kmitl
+#: code:addons/account_kmitl/models/account_payment_method_line.py:0
+#, python-format
+msgid ""
+"%s cannot be a paying account: Odoo classifies a payment's lines by account "
+"type and tests the money side first, so a receivable/payable account there "
+"would swallow the counterpart line and make the payment unsavable."
+msgstr ""
+"%s เป็นหัวจ่ายไม่ได้ เพราะ Odoo แยกบรรทัดในใบจ่ายด้วยประเภทบัญชี "
+"และตรวจฝั่งเงินก่อน บัญชีลูกหนี้/เจ้าหนี้จึงจะกลืนบรรทัดคู่ "
+"จนบันทึกใบจ่ายไม่ได้"
+
+#. module: account_kmitl
+#: code:addons/account_kmitl/models/account_payment_method_line.py:0
+#, python-format
+msgid ""
+"%s pays through a bank, so it needs the institute's bank account the money "
+"leaves from. Without it the e-payment file has no sending account and the "
+"disbursement audit will refuse the payees routed through it."
+msgstr ""
+"%s จ่ายผ่านธนาคาร จึงต้องระบุบัญชีธนาคารของสถาบันที่เงินออก ถ้าไม่ระบุ ไฟล์ "
+"e-Payment จะไม่มีบัญชีต้นทาง "
+"และการตรวจสอบการเบิกจ่ายจะไม่ยอมให้ผ่านสำหรับผู้รับที่ใช้หัวจ่ายนี้"
+
+#. module: account_kmitl
+#: model:ir.model.fields,field_description:account_kmitl.field_account_payment_method_line__acc_number
+msgid "Account Number"
+msgstr "เลขที่บัญชี"
+
+#. module: account_kmitl
+#: model:ir.model.fields,field_description:account_kmitl.field_account_payment_method_line__bank_id
+msgid "Bank"
+msgstr "ธนาคาร"
+
+#. module: account_kmitl
+#: model:ir.model.fields,field_description:account_kmitl.field_account_payment_method_line__bank_account_id
+msgid "Bank Account"
+msgstr "บัญชีธนาคารของสถาบัน"
+
+#. module: account_kmitl
+#: code:addons/account_kmitl/models/account_payment_method_line.py:0
+#, python-format
+msgid ""
+"Every paying account on %(bank)s must be booked against the same GL account "
+"— money leaving one bank account leaves one ledger account however it is "
+"paid. %(other)s already uses %(account)s."
+msgstr ""
+"ทุกหัวจ่ายบน %(bank)s ต้องลงบัญชีแยกประเภทเดียวกัน "
+"เพราะเงินที่ออกจากบัญชีธนาคารเดียวย่อมออกจากบัญชีแยกประเภทเดียว "
+"ไม่ว่าจะจ่ายด้วยวิธีใด — %(other)s ใช้ %(account)s อยู่แล้ว"
+
+#. module: account_kmitl
+#: model:ir.model.fields,field_description:account_kmitl.field_account_payment_method_line__company_partner_id
+msgid "Institute"
+msgstr "สถาบัน"
+
+#. module: account_kmitl
+#: model:ir.model.fields,field_description:account_kmitl.field_account_payment_method_line__payment_method_code
+msgid "Method Code"
+msgstr "รหัสวิธีจ่าย"
+
+#. module: account_kmitl
+#: code:addons/account_kmitl/models/account_payment_method_line.py:0
+#, python-format
+msgid "Paying account without a bank account"
+msgstr "หัวจ่ายนี้ยังไม่มีบัญชีธนาคาร"

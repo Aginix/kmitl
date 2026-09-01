@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 from odoo import Command, _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 
 class PurchaseRequestApproval(models.Model):
-    _name = 'purchase.request.approval'
-    _inherit = ['purchase.request.approval', 'disbursement.return.source.mixin']
+    _name = "purchase.request.approval"
+    _inherit = ["purchase.request.approval", "disbursement.return.source.mixin"]
     _disbursement_return_state = "approved"
 
     state = fields.Selection(
@@ -21,29 +20,67 @@ class PurchaseRequestApproval(models.Model):
         copy=False,
     )
 
-    use_purchase_order = fields.Boolean(
-        string='Use Purchase Order',
-        default=True,
-        tracking=True
+    contract_mode = fields.Selection(
+        selection=[
+            ("with_po", "Create Contract / Purchase Order"),
+            ("no_po", "No Contract / Purchase Order"),
+        ],
+        string="Contract Mode",
+        tracking=True,
+        copy=False,
     )
 
+    use_purchase_order = fields.Boolean(
+        string="Use Purchase Order",
+        compute="_compute_use_purchase_order",
+        inverse="_inverse_use_purchase_order",
+        store=True,
+        tracking=True,
+    )
+
+    @api.depends("contract_mode")
+    def _compute_use_purchase_order(self):
+        for rec in self:
+            rec.use_purchase_order = rec.contract_mode == "with_po"
+
+    def _inverse_use_purchase_order(self):
+        for rec in self:
+            rec.contract_mode = "with_po" if rec.use_purchase_order else "no_po"
+
+    def _check_contract_mode_selected(self):
+        for rec in self:
+            if not rec.contract_mode:
+                raise UserError(
+                    _(
+                        "Please select 'Contract Mode' "
+                        "(Create Contract / Purchase Order, or No Contract) "
+                        "before proceeding."
+                    )
+                )
+
+    def button_to_approve(self):
+        self._check_contract_mode_selected()
+        return super().button_to_approve()
+
+    def action_submit_to_sarabun(self):
+        self._check_contract_mode_selected()
+        return super().action_submit_to_sarabun()
+
     purchase_order_id = fields.Many2one(
-        comodel_name='purchase.order',
-        compute='_compute_purchase_order_id',
-        string='Purchase Order',
+        comodel_name="purchase.order",
+        compute="_compute_purchase_order_id",
+        string="Purchase Order",
         store=True,
     )
 
     display_purchase_order = fields.Char(
-        string="Purchase Order",
-        compute="_compute_display_purchase_order",
-        store=False
+        string="Purchase Order", compute="_compute_display_purchase_order", store=False
     )
 
     disbursement_request_ids = fields.One2many(
         comodel_name="disbursement.request",
         inverse_name="purchase_request_approval_id",
-        string='Disbursement Requests',
+        string="Disbursement Requests",
     )
 
     billing_status = fields.Selection(
@@ -54,15 +91,15 @@ class PurchaseRequestApproval(models.Model):
             ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
-        string='Billing Status',
+        string="Billing Status",
         compute="_compute_billing_status",
         store=True,
         tracking=True,
     )
 
     disbursement_request_count = fields.Integer(
-        string='Disbursement Request Count',
-        compute='_compute_disbursement_request',
+        string="Disbursement Request Count",
+        compute="_compute_disbursement_request",
     )
 
     disbursement_request_total = fields.Monetary(
@@ -99,24 +136,32 @@ class PurchaseRequestApproval(models.Model):
     def _compute_disbursement_request(self):
         for approval in self:
             approval.disbursement_request_total = sum(
-                approval.disbursement_request_ids.mapped("amount_total"))
+                approval.disbursement_request_ids.mapped("amount_total")
+            )
             approval.disbursement_request_count = len(approval.disbursement_request_ids)
+
+    # Vocabulary read off disbursement.request.state — never pipeline_status,
+    # which lives on a different field and was never reachable from here.
+    # bills_posted/payment_*/cleared are added by disbursement_accounting_kmitl
+    # and disbursement_finance_kmitl via selection_add; if neither bridge is
+    # installed a request simply never reaches those keys and stays
+    # "in_progress" once approved, which is correct.
+    _DR_STATE_TO_BILLING_STATUS = {
+        "draft": "draft",
+        "submitted": "submitted",
+        "signed": "submitted",
+        "verified": "submitted",
+        "approved": "in_progress",
+        "bills_posted": "in_progress",
+        "payment_audited": "in_progress",
+        "payment_authorized": "in_progress",
+        "paid": "in_progress",
+        "cleared": "done",
+    }
+    _BILLING_STATUS_RANK = {"draft": 0, "submitted": 1, "in_progress": 2, "done": 3}
 
     @api.depends("disbursement_request_ids", "disbursement_request_ids.state")
     def _compute_billing_status(self):
-        state_map = {
-            "draft": "draft",
-            "submitted": "submitted",
-            "signed": "submitted",
-            "verified": "submitted",
-            "approved": "in_progress",
-            "bill_draft": "in_progress",
-            "bill_posted": "in_progress",
-            "payment_draft": "in_progress",
-            "payment_posted": "in_progress",
-            "done": "done",
-            "cancel": "cancel",
-        }
         for approval in self:
             active = approval.disbursement_request_ids.filtered(
                 lambda r: r.state != "cancel"
@@ -126,7 +171,16 @@ class PurchaseRequestApproval(models.Model):
             elif not active:
                 approval.billing_status = "cancel"
             else:
-                approval.billing_status = state_map.get(active[0].state, "draft")
+                # Reflect the least-advanced request: the source document is
+                # only as far along as its slowest disbursement request, not
+                # whichever one happens to be first in the recordset.
+                statuses = [
+                    self._DR_STATE_TO_BILLING_STATUS.get(r.state, "draft")
+                    for r in active
+                ]
+                approval.billing_status = min(
+                    statuses, key=self._BILLING_STATUS_RANK.get
+                )
 
     # -- return-to-source contract (disbursement.return.source.mixin) -----
     def _disbursement_get_request(self):
@@ -142,10 +196,12 @@ class PurchaseRequestApproval(models.Model):
             "partner_id": self.partner_id.id,
             "partner_type": "multi",
             "line_ids": [
-                Command.create({
-                    **line._prepare_disbursement_request_line_vals(),
-                    "partner_id": self.partner_id.id,
-                })
+                Command.create(
+                    {
+                        **line._prepare_disbursement_request_line_vals(),
+                        "partner_id": self.partner_id.id,
+                    }
+                )
                 for line in self.request_id.line_ids
             ],
             "ref": self.request_id.name,
@@ -208,7 +264,9 @@ class PurchaseRequestApproval(models.Model):
             subtype_xmlid="mail.mt_note",
         )
 
-    def _purchase_request_approval_create_bill_message_content(self, disbursement_request):
+    def _purchase_request_approval_create_bill_message_content(
+        self, disbursement_request
+    ):
         message = _(
             "Billing %(dr_name)s for %(pa_name)s created successfully, waiting for operation."
         ) % {

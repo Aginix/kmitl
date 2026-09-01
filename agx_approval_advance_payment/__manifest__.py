@@ -4,10 +4,12 @@
     "author": "KMITL",
     "category": "KMITL",
     "depends": [
-        "advance_payment_tier_validation",
+        "advance_payment",
+        "advance_payment_budget",
         "agx_approval_disbursement",
     ],
     "data": [
+        "data/advance_payment_data.xml",
         "views/advance_payment_views.xml",
         "views/approval_request_views.xml",
     ],

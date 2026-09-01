@@ -128,6 +128,9 @@
                             <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
                             <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
                             <field name="budget_account_id" invisible="1" />
+                            <!-- Loaded (hidden) so the line list can hide the
+                                 product column via parent. -->
+                            <field name="is_budget_account_product_expense" invisible="1" />
                             <field name="analytic_distribution" invisible="1"/>
                             <field name="budget_consumed_amount" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}" />
                             <field name="budget_consumed_date" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}" />
@@ -137,6 +140,8 @@
                             <field name="company_id" groups="base.group_multi_company" />
                             <field name="user_id" groups="disbursement.group_disbursement_manager" />
                             <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
+                            <field name="verifier_id" attrs="{'invisible': [('verifier_id', '=', False)]}" />
+                            <field name="verify_date" attrs="{'invisible': [('verifier_id', '=', False)]}" />
                             <field name="finance_approver_id" attrs="{'invisible': [('finance_approver_id', '=', False)]}" />
                             <field name="finance_approve_date" attrs="{'invisible': [('finance_approver_id', '=', False)]}" />
                             <field name="rector_approver_id" attrs="{'invisible': [('rector_approver_id', '=', False)]}" />
@@ -159,7 +164,10 @@
                                     <field name="sequence" widget="handle" />
                                     <field name="partner_id" required="1" />
                                     <field name="partner_bank_id" optional="hide" />
-                                    <field name="product_id" />
+                                    <!-- Budget codes that carry their own product stamp it
+                                         automatically, so the whole column is hidden and only
+                                         ordinary disbursements pick a product by hand. -->
+                                    <field name="product_id" attrs="{'column_invisible': [('parent.is_budget_account_product_expense', '=', True)], 'required': [('parent.is_budget_account_product_expense', '=', False)]}" />
                                     <field name="name" optional="show" />
                                     <field name="quantity" />
                                     <field name="price_unit" />
@@ -197,6 +205,25 @@
                                 <field name="amount_wht" />
                             </group>
                             <div class="oe_clear" />
+                        </page>
+                        <!-- Read-only: rows are frozen snapshots written by the
+                             workflow, so the officer can check the block before
+                             printing but nobody can edit a signature. -->
+                        <page string="Signatures" name="signatures"
+                              attrs="{'invisible': [('signature_ids', '=', [])]}">
+                            <field name="signature_ids" nolabel="1">
+                                <tree create="0" delete="0" edit="0">
+                                    <field name="step"/>
+                                    <field name="signed_by_id"/>
+                                    <field name="signed_name"/>
+                                    <field name="signed_position_name"/>
+                                    <field name="signed_date"/>
+                                    <!-- signature_image, not the raw snapshot: this
+                                         is exactly what the PDF will print. -->
+                                    <field name="signature_image" widget="image"
+                                           options="{'size': [0, 40]}"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
@@ -238,9 +265,16 @@
                 <group expand="0" name="group_by" string="Group By">
                     <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
                     <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}" />
+                    <filter string="Source" name="group_source" context="{'group_by': 'source_analytic_id'}" />
                     <filter string="Date" name="date" context="{'group_by': 'date'}" />
                     <filter string="State" name="state" context="{'group_by': 'state'}" />
                 </group>
+                <!-- แหล่งเงิน down the left: it is the first cut the finance office
+                     takes on any list of requests, and it is a handful of values,
+                     so it is a click rather than something to type. -->
+                <searchpanel>
+                    <field name="source_analytic_id" icon="fa-money" select="multi" enable_counters="1" />
+                </searchpanel>
             </search>
         </field>
     </record>

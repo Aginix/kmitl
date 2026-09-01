@@ -110,7 +110,7 @@ erDiagram
     HR_DEPARTMENT }o--o{ HR_EMPLOYEE : "sarabun_officer_ids (ธุรการหน่วยงาน)"
     HR_EMPLOYEE }o--o| RES_USERS : "user_id (must exist to act — ADR-0005)"
 
-    SARABUN_DOCUMENT_TYPE }o--|| SARABUN_DOCUMENT_SEQUENCE : "sequence_id"
+    SARABUN_DOCUMENT }o--o| SARABUN_DOCUMENT_SEQUENCE : "sequence_id (เล่มทะเบียน)"
     SARABUN_DOCUMENT_TYPE }o--o| SARABUN_ROUTE_TEMPLATE : "default_route_id"
     SARABUN_DOCUMENT_SEQUENCE ||--o{ SARABUN_DOCUMENT_NUMBER : "allocates"
     SARABUN_DOCUMENT_SEQUENCE }o--|| HR_DEPARTMENT : "sender_department_id register"
@@ -155,7 +155,7 @@ Inherits `mail.thread`, `mail.activity.mixin`, `portal.mixin`, `thai.date.mixin`
 | `content` | Html (sanitized) | **เนื้อหา (body)** — free rich text. The letter body for composed memo/circular; an optional covering note above the origin report for `from_record`. Editable while `draft`/`returned`; rendered on the cover sheet. Full regulation memo layout is phase-2. |
 | `remark` | Html (sanitized) | **หมายเหตุ (Remark)** — an optional **internal** note captured after `content`. Working notes only — **not** part of the letter body and not rendered as official content. |
 | `sender_user_id` | M2o → `res.users` (readonly) | The composer. |
-| `sender_department_id` | M2o → `hr.department` (required) | **sender ส่วนงาน** — drives register resolution (one register per ส่วนงาน). |
+| `sender_department_id` | M2o → `hr.department` (required) | **sender ส่วนงาน** — owns the เล่มทะเบียน the หนังสือ may issue from (ADR-0012). |
 | `sender_suffix` | Char | Sub-unit / extension display. |
 | `state` | Selection (readonly, tracked) | `draft → circulating → completed`; negative `returned`/`rejected`/`cancelled` (see §3). Replaces old `sent`. |
 | `strongest_verb_id` | M2o → `sarabun.verb` (computed/stored) | Highest-`rank` verb positively completed so far (`False` = none). Drives Recall eligibility (ADR-0002: Recall only if no signature verb — `verb.is_signature` — has completed yet). |
@@ -163,13 +163,14 @@ Inherits `mail.thread`, `mail.activity.mixin`, `portal.mixin`, `thai.date.mixin`
 | `origin_res_id` | Integer (indexed) | Origin record id. The `(model,res_id)` pair is the **1:N** link origin → documents. |
 | `route_template_id` | M2o → `sarabun.route.template` | The template that **seeded** the steps. Not authoritative once seeded (ADR-0001). |
 | `routing_step_ids` | O2m → `sarabun.routing.step` | The living Route (current attempt). |
-| `archived_step_ids` | O2m → `sarabun.routing.step` (computed/filtered, `active=False`) | Frozen steps of closed attempts, kept for the rendered เกษียน trail (see §3). |
+| `archived_step_ids` | O2m → `sarabun.routing.step` (domain `active=False`, `active_test=False`) | Frozen steps of closed attempts, kept for audit (see §3). **Not shown on the form** — ดึงกลับ / ตีกลับ / รีเซ็ต all re-run the whole เส้นทาง, so the prior attempt is noise beside the live Route. |
 | `attempt_seq` | Integer | Generation counter bumped on each re-send; stamps steps so prior attempts survive as history (see §3). |
 | `reference_document_ids` | M2m → `sarabun.document` | **อ้างถึง** prior in-system หนังสือ. |
 | `reference_line_ids` | O2m → `sarabun.reference.line` | **อ้างถึง** free-text out-of-system letters. |
 | `enclosure_ids` | O2m → `sarabun.enclosure` | **สิ่งที่ส่งมาด้วย**, ordered. |
+| `sequence_id` | M2o → `sarabun.document.sequence` (computed, stored, editable) | **เล่มทะเบียน** this หนังสือ issues from (ADR-0012). Defaults to the unit's เล่มทะเบียนหลัก / only book; editable while draft/returned; **pinned at send**. |
 | `register_number_id` | M2o → `sarabun.document.number` | The register ledger row; set by `_register()` at completion (ADR-0010). |
-| `numbering_mode` | Selection `auto`(default)/`reserved`/`gap`/`manual` | Constrained to `auto` for `from_record` (see §4). |
+| `numbering_mode` | Selection `auto`(default)/`reserved` | Constrained to `auto` for `from_record` (see §4). |
 | `signed_pdf` | Binary (`attachment=True`) | **ฉบับลงนาม** — frozen immutable PDF at `completed`. Before that, preview renders live. |
 | `signed_pdf_filename` | Char | Render filename (reuses origin filename via `_get_report_base_filename`). |
 | `signed_at` | Datetime | Freeze timestamp. |
@@ -302,7 +303,7 @@ used a hardcoded Selection `code` as both behaviour key *and* identifier.
 |---|---|---|
 | `name` | Char (required, translate) | Concrete type name, e.g. "บันทึกข้อความกองคลัง". |
 | `kind` | Selection (required) | The fixed axis: `memo`/`circular`/`from_record` (phase-2: `external`/`order`/`announcement`). Drives report template, numbering, routing rules. |
-| `sequence_id` | M2o → `sarabun.document.sequence` | Bound register for this type (combined with sender ส่วนงาน to resolve the running sequence). |
+| ~~`sequence_id`~~ | — | **Dropped.** The type does not bind a register: the เล่มทะเบียน is chosen on the หนังสือ / defaulted by the unit (ADR-0012). |
 | `default_route_id` | M2o → `sarabun.route.template` | Seed template. |
 | `report_template_id` | M2o → `ir.actions.report` | Compose/cover-sheet template for this type. |
 | `active`, `sequence` | Boolean/Integer | |
@@ -315,7 +316,8 @@ surfaced read-only on the document as `kind`.
 Atomic, per-ส่วนงาน, fiscal-year-reset register (full behaviour in §4). Field
 tables are given in §4.8 to avoid duplication. Key shape:
 
-- **`sarabun.document.sequence`** — one register per `(sender_department_id × type)`;
+- **`sarabun.document.sequence`** — a **เล่มทะเบียน** owned by a `sender_department_id`
+  (a unit may own several — ADR-0012; the หนังสือ picks one via `sequence_id`);
   `reset_period` default `fiscal_year` (also `yearly`/`never`); `allocate(document)`
   acquires a row lock, computes the next counter, writes the number row, and retries
   on the `unique(sequence_id, counter, fiscal_year)` backstop.
@@ -729,7 +731,8 @@ trail** rather than deleting it. Implementation: each *attempt* is a generation
 marker (`attempt_seq` bumped on each re-send); the steps of a closed attempt are
 archived (`active=False` + `attempt_seq` stamp) so they survive as immutable
 history, while `routing_step_ids` shows only the current attempt's steps and
-`archived_step_ids` exposes the rest.
+`archived_step_ids` exposes the rest **for audit** — the form deliberately does
+not render it, since every backward move re-runs the whole เส้นทาง.
 
 - **`sender_restart`** (default): the chain is **restarted** — a new attempt's
   steps are freshly seeded in `waiting`; on `action_send()` the Route re-activates
@@ -744,7 +747,7 @@ read access).
 
 ### 3.5 Number voiding on reject / cancel
 
-> **Superseded for the normal path by [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md).** Because the number is now assigned at **completion**, a rejected (#5) or cancelled (#6) หนังสือ — both pre-completion — was **never numbered**, so there is nothing to void and no gap to record. `_void_register(reason)` is retained but is a **guarded no-op** on this path (kept for the reserved/manual compose paths). The paragraph below describes the *former* at-send behaviour and is kept for historical context.
+> **Superseded for the normal path by [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md).** Because the number is now assigned at **completion**, a rejected (#5) or cancelled (#6) หนังสือ — both pre-completion — was **never numbered**, so there is nothing to void and no gap to record. `_void_register(reason)` is retained but is a **guarded no-op** on this path (kept for the reserved compose path). The paragraph below describes the *former* at-send behaviour and is kept for historical context.
 
 Per ระเบียบงานสารบรรณ, an official register number is **never reusable**
 (ADR-0002). When a *registered* Document (one that reached `circulating`) is
@@ -825,44 +828,50 @@ completion). Because a number is issued only on the terminal-positive transition
 over completed documents, and the former void-on-negative path (§3.5) no longer
 fires (ADR-0010).
 
-### 4.2 Sequence resolution — (sender ส่วนงาน), per-unit, BLOCK on missing
+### 4.2 Sequence resolution — the เล่มทะเบียน the หนังสือ picks, BLOCK on missing/ambiguous
 
-The sequence is resolved from **(sender ส่วนงาน)**; each ส่วนงาน issues
-from its own register. The old `is_shared`/`department_ids` "leave empty = all
-departments" fallback is **dropped** — silent institute-wide numbering is the
-exact anti-pattern CONTEXT forbids. No match ⇒ **block the send** with a clear,
-actionable error (the old `ir.sequence` / `next_by_code` fallbacks are removed).
+A ส่วนงาน owns **as many เล่มทะเบียน as it needs**
+([ADR-0012](./docs/adr/0012-multiple-register-books-per-unit.md)); the หนังสือ says
+which book it issues from (`sequence_id`), defaulting to the unit's
+**เล่มทะเบียนหลัก** (`hr.department.default_sarabun_sequence_id`) — or, when the unit
+owns exactly one book, to that book with no configuration at all. The old
+`is_shared`/`department_ids` "leave empty = all departments" fallback stays
+**dropped** — silent institute-wide numbering is the exact anti-pattern CONTEXT
+forbids. No book at all, or several with no default ⇒ **block the send** with a
+clear, actionable error (the old `ir.sequence` / `next_by_code` fallbacks are gone).
 
 ```python
 # sarabun.document
 def _resolve_sequence(self):
     self.ensure_one()
-    seq = self.env["sarabun.document.sequence"].search([
-        ("sender_department_id", "=", self.sender_department_id.id),
-        ("document_type_id", "=", self.type_id.id),
-        ("active", "=", True),
-    ], limit=1)
+    seq = self.sequence_id or self.sender_department_id._sarabun_default_sequence()
     if not seq:
-        raise UserError(_(
-            "ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%(unit)s' ประเภท '%(type)s' "
-            "(No register configured for unit %(unit)s × type %(type)s). "
-            "Configure a sequence before sending.",
-            unit=self.sender_department_id.display_name,
-            type=self.type_id.name,
-        ))
+        unit = self.sender_department_id.display_name
+        if self.sender_department_id._sarabun_registers():
+            raise UserError(_(
+                "ส่วนงาน '%s' มีหลายเล่มทะเบียน — โปรดเลือกเล่มทะเบียนที่จะใช้ส่ง."
+            ) % unit)
+        raise UserError(_("ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%s'.") % unit)
     return seq
 ```
 
-The resolution key is **`type_id`** (the admin-configurable `sarabun.document.type`
-record), not the dev-fixed `kind` axis — the *type* binds a sequence, and one type
-points at exactly one kind.
+`action_send()` **pins** the resolved book onto `sequence_id`: ลงทะเบียน runs at
+completion (ADR-0010), so the pin keeps a mid-route config change from moving the
+หนังสือ to another series between ส่ง and ลงทะเบียน.
+
+The หนังสือ's **type** does *not* select a register — the drafter (or the unit's
+default) does. Binding a sequence to `sarabun.document.type` would re-introduce the
+per-`(ส่วนงาน × type)` coupling that was already removed; a unit that wants a book
+per type simply leaves the default empty and picks per หนังสือ.
 
 ```mermaid
 flowchart LR
-    D[sarabun.document<br/>sender_department_id] -->|exact match| Q{sequence for<br/>unit?}
-    Q -->|found| S[sarabun.document.sequence<br/>per-unit register]
-    Q -->|none| B[BLOCK send<br/>UserError]
-    S --> A[allocate · atomic]
+    D[sarabun.document<br/>sequence_id] -->|chosen on the หนังสือ| S[sarabun.document.sequence<br/>เล่มทะเบียน]
+    D -->|empty| Q{unit's books?}
+    Q -->|default set / only one| S
+    Q -->|several, no default| B[BLOCK send<br/>เลือกเล่มทะเบียน]
+    Q -->|none| B2[BLOCK send<br/>ไม่พบทะเบียน]
+    S --> A[allocate · atomic · per book]
 ```
 
 ### 4.3 Atomic allocation — replacing the old max()+1 race
@@ -989,9 +998,9 @@ constraint; พ.ศ. exists only in the rendered string. The full Thai date on t
 header is formatted by the report layer from the send datetime, not stored on the
 number.
 
-### 4.6 reserved / gap / manual modes — manual-compose only
+### 4.6 reserved mode — manual-compose only
 
-CONTEXT scopes reserved/gap/manual to **manual compose only**. v1 focuses on
+CONTEXT scopes non-`auto` numbering to **manual compose only**. v1 focuses on
 `from_record`, whose registration is purely **auto** (§4.3). So `numbering_mode`
 on `sarabun.document` is constrained:
 
@@ -999,8 +1008,6 @@ on `sarabun.document` is constrained:
 |---|---|---|
 | `auto` | all (the only mode for `from_record`) | `allocate` draws `MAX(counter)+1` atomically. |
 | `reserved` | `memo` / `circular` | Consume a pre-`reserved` `sarabun.document.number` row (clerk pre-booked it). |
-| `gap` | `memo` / `circular` | Fill a permanent gap left by a **genuinely-skipped / never-allocated** counter (chosen via wizard). **`voided` rows are explicitly excluded** — a voided number is permanent and never fillable (ADR-0002). |
-| `manual` | `memo` / `circular` | Clerk types the counter; still routed through `allocate`'s lock + unique constraint, so a manual collision is rejected, not silently overwritten. |
 
 ```python
 @api.constrains("numbering_mode", "kind")
@@ -1009,11 +1016,15 @@ def _check_numbering_mode_scope(self):
         if doc.kind == "from_record" and doc.numbering_mode != "auto":
             raise ValidationError(_(
                 "from_record documents register automatically; "
-                "reserved/gap/manual numbering is for manual compose only."))
+                "reserved numbering is for manual compose only."))
 ```
 
-All three manual modes funnel through the **same `allocate` path** (lock + unique
-backstop) rather than the old `use_number()` bare-create.
+The earlier `gap` / `manual` counter modes (and the `manual_counter` field) were
+dropped: `gap` was code-identical to `manual`, and the case it was meant to handle
+— filling a genuinely skipped / never-allocated counter — was already excluded in
+the spec (`voided` rows were explicitly gated out, so a voided number can never be
+reissued via any path). Neither mode was reachable in the `auto`-only `from_record`
+flow.
 
 ### 4.7 Voiding — permanent gap, never reissued
 
@@ -1429,7 +1440,7 @@ ACL is the coarse gate; record rules are the fine gate.
 
 | Model | Group | read | write | create | unlink |
 |---|---|---|---|---|---|
-| `sarabun.document` | user | 1 | 1 | 1 | 0 |
+| `sarabun.document` | user | 1 | 1 | 1 | 1 |
 | `sarabun.document` | manager | 1 | 1 | 1 | 1 |
 | `sarabun.routing.step` | user | 1 | 1 | 1 | 0 |
 | `sarabun.routing.step` | manager | 1 | 1 | 1 | 1 |
@@ -1447,6 +1458,21 @@ ACL is the coarse gate; record rules are the fine gate.
 > may change. The over-broad `perm_write=True` recipient *record rule* of the old
 > model is what we remove. Dropped entirely: `sarabun.document.recipient`,
 > `sarabun.routing.line`, `sarabun.reference`, `sarabun.role`.
+
+> ACL also grants `unlink=1` on `sarabun.document` to User so a sender can throw away
+> a หนังสือ that should never have existed. The *narrowing* lives in two places, not in
+> the ACL: the sender **record rule** scopes it to their own หนังสือ, and
+> `SarabunDocument.unlink()` refuses **(a)** any state outside `draft` / `cancelled` —
+> ร่าง that never went out and a voided send are the only disposable shapes; anything
+> live or already on record (`circulating` / `returned` / `rejected` / `completed`) must
+> go through **ยกเลิกการส่ง** first, the audited way out of circulation — and **(b)** any
+> document carrying a `register_number_id`, because neither state implies *unnumbered*:
+> `agx_sarabun_reset` returns a signed / completed หนังสือ to draft while keeping its
+> number (ADR-0011), and the reserved/manual path voids a number on cancel without
+> dropping its document link. `sarabun.document.number.document_id` is
+> `ondelete=restrict` — a used number keeps its Document link for audit (§4.7).
+> `sarabun.routing.step` keeps `unlink=0`: steps die with their parent by DB cascade,
+> never on their own.
 
 ### 6.5 Fields the rules depend on
 
@@ -1480,13 +1506,17 @@ flowchart LR
     M[Manager] --> ALL[READ all v1 manager-see-all]
 ```
 
-**Rule 1 — Sender (read + manage own draft).**
+**Rule 1 — Sender (read + manage own draft, incl. delete).**
 
 ```python
 # id="sarabun_document_sender_rule", group=group_sarabun_user
-# perm_read, perm_write, perm_create = True ; perm_unlink = False
+# perm_read, perm_write, perm_create, perm_unlink = True
 [('sender_user_id', '=', user.id)]
 ```
+
+> `perm_unlink=True` lets the sender delete their **own** หนังสือ; `unlink()` then
+> restricts that to an *unnumbered* `draft` or `cancelled` document (§6.4 note) — a live
+> หนังสือ leaves circulation through ยกเลิกการส่ง, and only then may be deleted.
 
 > **State-aware caveat (documented):** this rule has no state filter, so it would
 > permit the sender to write a `circulating` document at the rule level — but
@@ -1639,7 +1669,7 @@ additive: it tightens, never restructures.
 
 | Model | Rule id | Group | Domain (read unless noted) |
 |---|---|---|---|
-| `sarabun.document` | `sarabun_document_sender_rule` | user | `[('sender_user_id','=',user.id)]` (R/W/C, no unlink) |
+| `sarabun.document` | `sarabun_document_sender_rule` | user | `[('sender_user_id','=',user.id)]` (R/W/C/U — unlink narrowed by `unlink()` to an unnumbered `draft` / `cancelled` doc) |
 | `sarabun.document` | `sarabun_document_actor_rule` | user | `[('routing_step_ids.recipient_ids.user_id','=',user.id)]` (read-only — reached via a per-person recipient row; same predicate as the Incoming box) |
 | `sarabun.document` | `sarabun_document_manager_rule` | manager | `[(1,'=',1)]` |
 | `sarabun.document` | `sarabun_document_company_rule` | (global) | `['|',('company_id','=',False),('company_id','in',company_ids)]` |
@@ -1771,6 +1801,8 @@ old `sarabun.document.recipient._send_notification()` (routed by the dropped
 `actor_user_ids`.
 
 ### 7.3 Sarabun inbox + systray tray + bus realtime ("หนังสือเข้า")
+
+> **Superseded (docs-first) by [ADR-0014](./docs/adr/0014-dissolve-inbox-tray-onto-native-activity-and-todo-bridge.md):** the bespoke **Action tray** + `sarabun_inbox` bus + `get_my_sarabun_inbox` are being **dissolved**. Base e-Saraban will surface awaiting-action work as native `mail.activity` (raised for **every** active step — including รับทราบ / CC, not just gating), and an `agx_sarabun_todo` bridge routes it into the unified Todo inbox. The **กล่องหนังสือเข้า (Incoming box)** backend menu below stays. This section describes the current as-built tray until that change lands.
 
 The inbox is the informational unread tray — it includes รับทราบ / สำเนาเรียน that
 have **no** activity. As-built there is **no `sarabun.inbox` model**: the tray is a

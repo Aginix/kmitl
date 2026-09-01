@@ -52,6 +52,11 @@
                            statusbar_visible="draft,circulating,completed"/>
                 </header>
                 <sheet>
+                    <!-- ยกเลิก / ปฏิเสธ are terminal states the statusbar does not show
+                         (statusbar_visible = draft,circulating,completed) — the ribbon
+                         is what tells the reader the หนังสือ is dead. -->
+                    <widget name="web_ribbon" title="ยกเลิกการส่ง" bg_color="bg-danger"
+                            attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_origin" type="object"
                                 class="oe_stat_button" icon="fa-external-link"
@@ -61,8 +66,11 @@
                             </div>
                         </button>
                     </div>
-                    <!-- Document Type — topmost classification (drives register + route). -->
-                    <group>
+                    <!-- Document Type — topmost classification (drives register + route).
+                         The first three groups (classification / ทะเบียน / header) are
+                         hidden once approved (completed) so the inline PDF is the focus. -->
+                    <group name="classification"
+                           attrs="{'invisible': [('state', '=', 'completed')]}">
                       <group>
                         <field name="type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                       </group>
@@ -72,7 +80,8 @@
                          No banner headline: ที่ (name) is '/' until numbered at
                          completion (final ลงนาม/อนุมัติ — ADR-0010), so it lives as a
                          small register field like on the real document. -->
-                    <group>
+                    <group name="registry_block"
+                           attrs="{'invisible': [('state', '=', 'completed')]}">
                         <!-- readonly is set per-field: a `readonly` attrs on the <group>
                              is NOT propagated to child fields by Odoo 16 (each node's
                              modifiers are computed from its own attrs only). -->
@@ -87,16 +96,22 @@
                         <group name="doc_meta" string="ทะเบียนหนังสือ">
                             <field name="name" string="ที่" readonly="1"/>
                             <field name="date" string="วันที่" readonly="1"/>
+                            <!-- เล่มทะเบียน — which of the unit's registers issues the
+                                 number (ADR-0012). Prefilled from the unit's default;
+                                 pinned at send, so read-only afterwards. -->
+                            <field name="sequence_department_ids" invisible="1"/>
+                            <field name="sequence_id" string="เล่มทะเบียน"
+                                   attrs="{'readonly': [('is_editable', '=', False)]}"
+                                   options="{'no_create': True, 'no_open': True}"/>
                             <!-- เลขที่หนังสือ sits with ที่ (same concern) — manual compose only. -->
                             <field name="numbering_mode"
                                    attrs="{'invisible': ['|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned'))]}"/>
                             <field name="reserved_number_id"
                                    attrs="{'invisible': ['|', '|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned')), ('numbering_mode', '!=', 'reserved')]}"/>
-                            <field name="manual_counter"
-                                   attrs="{'invisible': ['|', '|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned')), ('numbering_mode', 'not in', ('manual', 'gap'))]}"/>
                         </group>
                     </group>
-                    <group name="header">
+                    <group name="header"
+                           attrs="{'invisible': [('state', '!=', 'draft')]}">
                         <field name="subject" placeholder="เรื่อง..."
                                attrs="{'readonly': [('is_editable', '=', False)]}"/>
                         <field name="addressee_prefix_id" nolabel="1" widget="selection" required="1"
@@ -111,15 +126,26 @@
                          button instead). Placed before the เนื้อหา section. -->
                     <widget name="sarabun_pdf_inline"
                             attrs="{'invisible': [('state', '=', 'draft')]}"/>
-                    <!-- เนื้อหา — the composed body, used ONLY for a no-source Document.
-                         Hidden when the หนังสือ has a source (its report is the body). -->
+                    <!-- เนื้อหา — the composed body. A no-source Document always shows
+                         it; a from_record one is OFF by default (its origin report is
+                         the body) but the drafter can tick แนบเนื้อหา to add a covering
+                         note above the origin's report. -->
+                    <label string="มีเนื้อหา" for="include_content"
+                           attrs="{'invisible': ['|', ('origin_model', '=', False), ('state', '!=', 'draft')]}"/>
+                    <field name="include_content"
+                           attrs="{'invisible': ['|', ('origin_model', '=', False), ('state', '!=', 'draft')], 'readonly': [('is_editable', '=', False)]}"/>
                     <separator string="เนื้อหา (Content)"
-                               attrs="{'invisible': [('origin_model', '!=', False)]}"/>
+                               attrs="{'invisible': ['|', ('include_content', '=', False), ('state', '!=', 'draft')]}"/>
                     <field name="content" nolabel="1" class="o_sarabun_content"
                            placeholder="พิมพ์เนื้อหาหนังสือ..."
-                           attrs="{'invisible': [('origin_model', '!=', False)], 'readonly': [('is_editable', '=', False)]}"/>
+                           attrs="{'invisible': ['|', ('include_content', '=', False), ('state', '!=', 'draft')], 'readonly': [('is_editable', '=', False)]}"/>
                     <group>
                       <field name="remark" placeholder="หมายเหตุภายใน (ไม่บังคับ)..." attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                    </group>
+                    <group>
+                        <separator string="สิ่งที่ส่งมาด้วย (Enclosures)" name="enclosures"/>
+                        <field name="enclosure_attachment_ids" widget="many2many_binary" nolabel="1" colspan="2"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"/>
                     </group>
                     <!-- helper flags used by attrs -->
                     <field name="kind" invisible="1"/>
@@ -133,13 +159,24 @@
                                 <group>
                                     <field name="route_template_id"
                                            attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                                    <button name="action_seed_route_from_template"
+                                            type="object"
+                                            string="โหลดเส้นทางจากแม่แบบ"
+                                            icon="fa-refresh"
+                                            class="btn-link"
+                                            confirm="แทนที่เส้นทางปัจจุบันทั้งหมดด้วยแม่แบบที่เลือก? (ขั้นตอนที่มีอยู่จะถูกลบ)"
+                                            colspan="2"
+                                            attrs="{'invisible': ['|', ('is_editable', '=', False), ('route_template_id', '=', False)]}" />
                                 </group>
                                 <group>
                                     <field name="routing_progress" widget="progressbar"/>
                                     <field name="pending_ack_count"/>
                                 </group>
                             </group>
-                            <!-- Add เส้นทางเอกสาร via a modal form (non-editable tree). -->
+                            <!-- Add เส้นทางเอกสาร via a modal form (non-editable tree).
+                                 A new step's ลำดับ auto-increments to the next free Stage
+                                 via _onchange_document_default_order (survives Save & New,
+                                 which strips context default_*). -->
                             <field name="routing_step_ids"
                                    attrs="{'readonly': [('is_editable', '=', False)]}">
                                 <tree decoration-muted="state == 'skipped'"
@@ -172,7 +209,7 @@
                                         <group name="step_what">
                                             <field name="order" string="ลำดับ"
                                                    attrs="{'readonly': [('is_originator', '=', True)]}"/>
-                                            <field name="verb"/>
+                                            <field name="verb" widget="selection" />
                                         </group>
                                         <group>
                                             <field name="for_info" string="สำเนาเรียน (CC)"
@@ -196,7 +233,12 @@
                                         </field>
                                     </group>
 
-                                    <group string="ไทม์ไลน์ (Timeline)" col="2">
+                                    <!-- Timeline is meaningless before the step is sent
+                                         (all its dates are empty at compose time), so it
+                                         shows only once the step has been activated —
+                                         i.e. after the หนังสือ is sent. -->
+                                    <group string="ไทม์ไลน์ (Timeline)" col="2" name="timeline"
+                                           attrs="{'invisible': [('activated_date', '=', False)]}">
                                         <field name="activated_date" readonly="1"/>
                                         <field name="read_date" readonly="1"/>
                                         <field name="sent_date" readonly="1"/>
@@ -205,46 +247,11 @@
                                     </group>
                                 </form>
                             </field>
-                            <separator string="ประวัติการเดินเรื่อง (History)"
-                                       attrs="{'invisible': [('archived_step_ids', '=', [])]}"/>
-                            <field name="archived_step_ids" readonly="1"
-                                   attrs="{'invisible': [('archived_step_ids', '=', [])]}">
-                                <tree>
-                                    <field name="attempt_seq"/>
-                                    <field name="order"/>
-                                    <field name="verb"/>
-                                    <field name="target_name"/>
-                                    <field name="state"/>
-                                    <field name="disposition"/>
-                                    <field name="acted_by_id"/>
-                                    <field name="acted_date"/>
-                                    <field name="note"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="อ้างถึง (References)" name="references">
-                            <separator string="อ้างถึง — ในระบบ (prior หนังสือ)"/>
-                            <field name="reference_document_ids"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}"
-                                   widget="many2many_tags"/>
-                            <separator string="อ้างถึง — นอกระบบ (free text)"/>
-                            <field name="reference_line_ids"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}">
-                                <tree editable="bottom">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="text"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="สิ่งที่ส่งมาด้วย (Enclosures)" name="enclosures">
-                            <field name="enclosure_ids"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}">
-                                <tree editable="bottom">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="description"/>
-                                    <field name="attachment_id"/>
-                                </tree>
-                            </field>
+                            <!-- No ประวัติการเดินเรื่อง (History) list here: ดึงกลับ /
+                                 ตีกลับ / รีเซ็ต all mean "run the whole เส้นทาง again",
+                                 so the prior attempt is noise on the form. The rows are
+                                 still archived (audit / archived_step_ids), just not
+                                 shown beside the live Route. -->
                         </page>
                         <page string="Origin" name="origin"
                               attrs="{'invisible': [('origin_model', '=', False)]}">
@@ -260,6 +267,22 @@
                                 <field name="company_id" groups="base.group_multi_company"
                                        attrs="{'readonly': [('is_editable', '=', False)]}"/>
                             </group>
+                        </page>
+                        <!-- อ้างถึง / สิ่งที่ส่งมาด้วย are shown last, after the other
+                             notebook pages (feedback). -->
+                        <page string="อ้างถึง (References)" name="references">
+                            <separator string="อ้างถึง — ในระบบ (prior หนังสือ)"/>
+                            <field name="reference_document_ids"
+                                   attrs="{'readonly': [('is_editable', '=', False)]}"
+                                   widget="many2many_tags"/>
+                            <separator string="อ้างถึง — นอกระบบ (free text)"/>
+                            <field name="reference_line_ids"
+                                   attrs="{'readonly': [('is_editable', '=', False)]}">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="text"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>

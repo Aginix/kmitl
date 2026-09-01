@@ -9,7 +9,8 @@
                     <field name="agreement_id" readonly="1"/>
                     <field name="currency_id" invisible="1"/>
                     <field name="loan_amount"/>
-                    <field name="amount_used"/>
+                    <field name="actual_expense_amount"/>
+                    <field name="return_amount"/>
                     <field name="amount_returned"/>
                     <field name="amount_remaining"/>
                 </group>

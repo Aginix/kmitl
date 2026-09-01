@@ -5,9 +5,11 @@
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.basic_layout">
                     <t t-set="o" t-value="o.with_context(lang='th_TH')"/>
-                    <!-- Fall back to a default (in-memory) layout when the cheque
-                         book has none configured yet, so printing still works. -->
-                    <t t-set="layout" t-value="o.journal_id.cheque_layout_id or o.env['cheque.layout'].new({})"/>
+                    <!-- The bank prints the form, so the bank holds its calibration.
+                         Fall back to a default (in-memory) layout when a bank has
+                         none configured yet, so printing still works — misaligned,
+                         which is what a first test print is for. -->
+                    <t t-set="layout" t-value="o.bank_id.cheque_layout_id or o.env['cheque.layout'].new({})"/>
 
                     <style>
                         * {

@@ -84,21 +84,109 @@ class TestP3Numbering(SarabunCommon):
         self.assertFalse(doc.register_number_id)
         self.assertEqual(doc.name, "/")
 
-    def test_fiscal_year_bucket(self):
-        """ปีงบประมาณ runs Oct–Sep; Oct–Dec roll into the next budget year (พ.ศ.)."""
+    # ------------------------------------------------ เล่มทะเบียน (ADR-0012)
+    def _second_register(self):
+        """A second เล่มทะเบียน for the same ส่วนงาน."""
+        return self.Sequence.create({
+            "name": "ทะเบียนหนังสือเวียน กองทดสอบ",
+            "sender_department_id": self.dept.id,
+            "prefix": "ว ",
+        })
+
+    def test_duplicate_register_is_distinguishable(self):
+        """Duplicating a เล่มทะเบียน suffixes its name — the unit's books are told
+        apart by name alone now that ``code`` is gone."""
+        copy = self.sequence.copy()
+        self.assertNotEqual(copy.name, self.sequence.name)
+        self.assertIn(self.sequence.name, copy.name)
+        self.assertEqual(copy.sender_department_id, self.dept)
+
+    def test_single_register_is_picked_without_choosing(self):
+        """A unit with one register needs no choice — the หนังสือ defaults to it."""
+        doc = self._make_doc()
+        self.assertEqual(doc.sequence_id, self.sequence)
+
+    def test_unit_default_register_wins_when_several_exist(self):
+        """หลายเล่ม + เล่มทะเบียนหลัก set on the unit → new หนังสือ default to it."""
+        second = self._second_register()
+        self.dept.default_sarabun_sequence_id = second
+        doc = self._make_doc()
+        self.assertEqual(doc.sequence_id, second)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        self._complete(doc)
+        self.assertEqual(doc.register_number_id.sequence_id, second)
+
+    def test_chosen_register_book_issues_the_number(self):
+        """The book chosen on the หนังสือ overrides the unit's default."""
+        second = self._second_register()
+        self.dept.default_sarabun_sequence_id = self.sequence
+        doc = self._make_doc()
+        doc.sequence_id = second
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        self._complete(doc)
+        self.assertEqual(doc.register_number_id.sequence_id, second)
+        self.assertTrue(doc.name.startswith("ว "))
+
+    def test_ambiguous_register_blocks_send(self):
+        """Several books and no default → the sender must pick one; send is blocked."""
+        self._second_register()
+        doc = self._make_doc()
+        self.assertFalse(doc.sequence_id)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        with self.assertRaises(UserError):
+            doc.action_send()
+
+    def test_register_book_is_pinned_at_send(self):
+        """The resolved book is pinned at ส่ง, so a later config change can't move the
+        หนังสือ to another book before ลงทะเบียน runs at completion."""
+        self.dept.default_sarabun_sequence_id = self.sequence
+        doc = self._make_doc()
+        doc.sequence_id = False  # a หนังสือ that never picked a book (falls back)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        doc.action_send()
+        self.assertEqual(doc.sequence_id, self.sequence)  # pinned at ส่ง
+        second = self._second_register()
+        self.dept.default_sarabun_sequence_id = second  # unit switches books mid-route
+        step = doc.routing_step_ids.filtered("gating")[:1]
+        with self.mute_pdf():
+            self._act(step, "complete", self.user_a)
+        self.assertEqual(doc.register_number_id.sequence_id, self.sequence)
+
+    def test_archived_book_not_used_at_send(self):
+        """A draft still holding a book the unit retired (archive) must not issue from
+        it: send falls back to the unit's active default instead of the stale pick."""
+        second = self._second_register()
+        doc = self._make_doc()
+        self.assertEqual(doc.sequence_id, self.sequence)  # unit's only book at create
+        self.dept.default_sarabun_sequence_id = second
+        self.sequence.active = False  # the picked book is retired after the draft
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        doc.action_send()
+        self.assertEqual(doc.sequence_id, second)  # fell back to the active default
+        step = doc.routing_step_ids.filtered("gating")[:1]
+        with self.mute_pdf():
+            self._act(step, "complete", self.user_a)
+        self.assertEqual(doc.register_number_id.sequence_id, second)
+
+    def test_calendar_year_bucket(self):
+        """The register resets each calendar year (พ.ศ.); the month is irrelevant."""
         seq = self.sequence
-        self.assertEqual(seq._fiscal_year_for(date(2025, 10, 1)), 2569)   # Oct 2025 → FY2569
-        self.assertEqual(seq._fiscal_year_for(date(2026, 1, 15)), 2569)   # Jan 2026 → FY2569
-        self.assertEqual(seq._fiscal_year_for(date(2026, 9, 30)), 2569)   # Sep 2026 → FY2569
-        self.assertEqual(seq._fiscal_year_for(date(2025, 9, 30)), 2568)   # Sep 2025 → FY2568
+        self.assertEqual(seq._fiscal_year_for(date(2025, 10, 1)), 2568)   # 2025 → 2568
+        self.assertEqual(seq._fiscal_year_for(date(2025, 12, 31)), 2568)  # 2025 → 2568
+        self.assertEqual(seq._fiscal_year_for(date(2026, 1, 15)), 2569)   # 2026 → 2569
+        self.assertEqual(seq._fiscal_year_for(date(2026, 9, 30)), 2569)   # 2026 → 2569
 
     def test_register_number_rendering(self):
-        """register_number is zero-padded to the register's width and carries the FY."""
+        """register_number is zero-padded to the register's width and carries NO ปีงบ
+        (feedback: เลขที่หนังสือต้องไม่มีเลขปี — the running number omits the year)."""
         doc = self._make_doc()
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
         self._complete(doc)
         number = doc.register_number_id
         padded = str(number.counter).zfill(self.sequence.padding)
-        self.assertIn(padded, number.register_number)
-        self.assertIn(str(number.fiscal_year), number.register_number)
+        expected = "%s%s%s" % (
+            self.sequence.prefix or "", padded, self.sequence.suffix or "",
+        )
+        self.assertEqual(number.register_number, expected)
+        self.assertNotIn(str(number.fiscal_year), number.register_number)
         self.assertEqual(doc.name, number.register_number)

@@ -18,8 +18,11 @@ groups opens the already-handled Todos (dismissed with Mark as Read plus
 completed ones) in the same pane. The page lists each Todo
 with its detail (app, source record, activity type, assignee, note, who created
 it and when — as a relative time — and a colour-coded deadline countdown), each
-clickable straight to its source document, plus a link to the full Todo app. The
-activity systray routes here too, opening the page filtered to the clicked app.
+clickable straight to its source document, plus a link to the full Todo app. A
+search box filters the list and a toggle groups it by activity type into
+collapsible sections (so a crowded inbox can be focused one type at a time); the
+grouping choice is remembered across sessions. The activity systray routes here
+too, opening the page filtered to the clicked app.
 """,
     "depends": [
         "mail_activity_todo",

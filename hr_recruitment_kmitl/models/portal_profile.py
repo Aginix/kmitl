@@ -95,11 +95,6 @@ class PortalProfile(models.Model):
         ],
         string="Marital Status",
     )
-    spouse_prefix = fields.Many2one("res.partner.title")
-    spouse_first_name = fields.Char()
-    spouse_middle_name = fields.Char()
-    spouse_last_name = fields.Char()
-
     # Emergency contact
     emergency_contact_name = fields.Char()
     emergency_contact_relation = fields.Char()

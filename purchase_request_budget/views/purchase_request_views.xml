@@ -52,45 +52,89 @@
             </xpath>
 
             <xpath expr="//notebook" position="before">
-                <button name="action_open_reservation_picker" type="object"
-                    string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
-                    class="btn btn-primary mb-2" icon="fa-sitemap"
-                    attrs="{'invisible': [('is_budget_editable', '=', False)]}"/>
-                <group name="budget_details" string="Budget Details">
+                <field name="product_id" invisible="1" />
+
+                <!-- The reserved commitment, however it came to be: reserved by
+                     this request or drawn from an existing slip. Shown to everyone
+                     once a slip exists — users without budget.group_budget_commitment
+                     never see the selection UI below, but they must still see the
+                     ใบจองงบประมาณ their request ended up with. -->
+                <group
+                    name="budget_commitment_info_group" string="รหัสงบประมาณ"
+                    attrs="{'invisible': [('budget_commitment_id', '=', False)]}"
+                >
+                    <field name="budget_commitment_state" invisible="1" />
+                    <field
+                        name="budget_commitment_id"
+                        colspan="2" nolabel="1"
+                        widget="budget_commitment_info" readonly="1"
+                        options="{'no_create': True, 'no_open': True}"
+                    />
+                </group>
+
+                <!-- Budget selection UI: reserved to budget officers. Users without
+                     budget.group_budget_commitment never see this group nor its
+                     heading — they only see the reserved commitment above. -->
+                <group
+                    name="budget_details" string="Budget Details"
+                    groups="budget.group_budget_commitment"
+                >
                     <field name="is_budget_editable" invisible="1" />
+                    <!-- Ask which way first, then show only that way's fields. The
+                         mode is a UI affordance: the server still keys draw-down off
+                         reservation_commitment_id (ADR-0010). -->
+                    <field
+                        name="budget_selection_mode"
+                        colspan="2" widget="radio" options="{'horizontal': True}"
+                        attrs="{'invisible': [('is_budget_editable', '=', False)]}"
+                    />
+                    <button name="action_open_reservation_picker" type="object"
+                        string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
+                        colspan="2" class="btn btn-primary mb-2" icon="fa-sitemap"
+                        attrs="{'invisible': ['|', '|', ('is_budget_editable', '=', False), ('reservation_commitment_id', '!=', False), ('budget_selection_mode', '!=', 'chart')]}"/>
                     <field name="analytic_distribution" invisible="1" />
+                    <field name="reservation_commitment_domain" invisible="1" />
+
+                    <field
+                        name="reservation_commitment_id"
+                        colspan="2"
+                        widget="budget_commitment_info"
+                        domain="reservation_commitment_domain"
+                        options="{'no_create': True, 'no_open': True}"
+                        attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '!=', 'reservation'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                        placeholder="เลือกใบจองงบประมาณที่จะหยิบไปใช้"
+                    />
 
                     <field
                         name="budget_account_id"
-                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"
+                        readonly="1" attrs="{'required': [('state', '=', 'to_verify'), ('budget_selection_mode', '=', 'chart')], 'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
                     <field name="budget_account_id" invisible="1" />
                     <field
                         name="activity_analytic_id"
-                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"
+                        readonly="1" attrs="{'required': [('state', '=', 'to_verify'), ('budget_selection_mode', '=', 'chart')], 'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
                     <field name="activity_analytic_id" invisible="1" />
                     <field
                         name="department_analytic_id"
-                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"
+                        readonly="1" attrs="{'required': [('state', '=', 'to_verify'), ('budget_selection_mode', '=', 'chart')], 'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
                     <field name="department_analytic_id" invisible="1" />
                     <field
                         name="fund_analytic_id"
                         widget="selection"
-                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"
+                        readonly="1" attrs="{'required': [('state', '=', 'to_verify'), ('budget_selection_mode', '=', 'chart')], 'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}"
                     />
                     <field name="fund_analytic_id" widget="selection" invisible="1" />
                     <field
                         name="source_analytic_id"
                         widget="selection"
-                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"
+                        readonly="1" attrs="{'required': [('state', '=', 'to_verify'), ('budget_selection_mode', '=', 'chart')], 'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}"
                     />
                     <field name="source_analytic_id" widget="selection" invisible="1" />
-                    <field name="product_id" invisible="1" />
                 </group>
             </xpath>
             <xpath

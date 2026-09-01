@@ -45,5 +45,19 @@ if self.has_period and self.date_start and self.date_end \
             <field name="active" eval="True"/>
         </record>
 
+        <record id="excep_submit_date_outside_fy" model="exception.rule">
+            <field name="name">วันที่ส่งคำขอไม่อยู่ในปีงบประมาณที่ระบุ</field>
+            <field name="description">วันที่กดส่งคำขอต้องอยู่ในช่วงปีงบประมาณที่เลือกไว้ หากตั้งคำขอไว้ล่วงหน้าสำหรับปีงบประมาณถัดไป ให้รอจนขึ้นปีงบประมาณนั้นก่อนจึงกดส่ง</field>
+            <field name="sequence">40</field>
+            <field name="model">approval.request</field>
+            <field name="exception_type">by_py_code</field>
+            <field name="code">
+if self._exception_submit_date_outside_fy():
+    failed = True
+            </field>
+            <field name="is_blocking" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+
     </data>
 </odoo>

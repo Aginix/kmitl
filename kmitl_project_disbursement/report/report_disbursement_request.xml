@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add a โครงการ/กิจกรรม row to the budget table of the ใบขอเบิก PDF,
+         shown only when the disbursement is raised under a project. -->
+    <template id="report_disbursement_request_kmitl_project" inherit_id="disbursement.report_disbursement_request">
+        <xpath expr="//tr[hasclass('o_field_fund_analytic_id')]" position="after">
+            <tr class="o_field_kmitl_project_analytic_id" t-if="o.kmitl_project_analytic_id">
+                <td>โครงการ/กิจกรรม</td>
+                <td>
+                    <span t-field="o.kmitl_project_analytic_id"/>
+                </td>
+            </tr>
+        </xpath>
+    </template>
+
+</odoo>

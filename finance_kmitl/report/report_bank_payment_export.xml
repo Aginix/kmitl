@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template id="report_bank_payment_export">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.basic_layout">
-                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})"/>
-                    <t t-set="currency" t-value="o.currency_id"/>
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-set="currency" t-value="o.currency_id" />
 
                     <style>
                         * {
@@ -23,44 +23,87 @@
                     <div class="page">
                         <!-- Company Logo -->
                         <div style="position: absolute; top: 0px; left: 0px">
-                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 110px" alt="Logo"/>
+                            <img
+                                t-if="o.company_id.logo"
+                                t-att-src="image_data_uri(o.company_id.logo)"
+                                style="max-height: 110px"
+                                alt="Logo"
+                            />
                         </div>
 
-                        <div class="oe_structure"/>
-                        <div style="height: 1px"/>
+                        <div class="oe_structure" />
+                        <div style="height: 1px" />
 
                         <div class="page-header mt-5 mb-5">
-                            <h3 class="text-center fw-bolder" style="line-height: 1.575">
+                            <h3
+                                class="text-center fw-bolder"
+                                style="line-height: 1.575"
+                            >
                                 รายงานการเบิกจ่าย
                             </h3>
                         </div>
 
-                        <div class="my-5"/>
-                        <div class="my-5"/>
+                        <div class="my-5" />
+                        <div class="my-5" />
 
                         <!-- Document Information -->
                         <div class="row pt-8">
                             <div class="col-8">
-                                เลขที่ <span class="ms-2 fw-normal" t-out="o.name"/>
+                                เลขที่ <span class="ms-2 fw-normal" t-out="o.name" />
                             </div>
                             <div class="col">
-                                วันที่ <span class="ms-2 fw-normal" t-field="o.effective_date"/>
+                                วันที่ <span
+                                    class="ms-2 fw-normal"
+                                    t-field="o.effective_date"
+                                />
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col">
-                                ธนาคาร <span class="ms-2" t-out="o.template_id.name or dict(o._fields['bank'].selection).get(o.bank, '')"/>
+                                ธนาคาร <span
+                                    class="ms-2"
+                                    t-out="o.template_id.name or dict(o._fields['bank'].selection).get(o.bank, '')"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Where the money leaves from. One file debits one
+                             account, so this belongs to the whole document rather
+                             than to a column repeated on every row. -->
+                        <div class="row" t-if="o.paying_account_id">
+                            <div class="col">
+                                หัวจ่าย <span
+                                    class="ms-2"
+                                    t-out="o.paying_account_id.display_name"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="row" t-if="o.paying_account_id.acc_number">
+                            <div class="col">
+                                บัญชีต้นทาง
+                                <span
+                                    class="ms-2"
+                                    t-out="o.paying_account_id.bank_id.name"
+                                />
+                                <span
+                                    class="ms-2"
+                                    t-out="o.paying_account_id.acc_number"
+                                />
                             </div>
                         </div>
 
                         <div class="row" t-if="o.account_fiscal_year_id">
                             <div class="col">
-                                ปีงบประมาณ <span class="ms-2" t-out="o.account_fiscal_year_id.name"/>
+                                ปีงบประมาณ <span
+                                    class="ms-2"
+                                    t-out="o.account_fiscal_year_id.name"
+                                />
                             </div>
                         </div>
 
-                        <div class="my-4"/>
+                        <div class="my-4" />
 
                         <!-- Line Items Table -->
                         <table class="table table-bordered table-sm mb-4">
@@ -74,43 +117,62 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <t t-set="row_no" t-value="1"/>
-                                <t t-foreach="o.export_line_ids.filtered(lambda l: l.state != 'reject')" t-as="line">
+                                <t t-set="row_no" t-value="1" />
+                                <t
+                                    t-foreach="o.export_line_ids.filtered(lambda l: l.state != 'reject')"
+                                    t-as="line"
+                                >
                                     <tr>
-                                        <td class="text-center" t-out="row_no"/>
-                                        <td t-out="line.payment_id.name"/>
-                                        <td t-out="line.payment_partner_id.name"/>
+                                        <td class="text-center" t-out="row_no" />
+                                        <td t-out="line.payment_id.name" />
+                                        <td t-out="line.payment_partner_id.name" />
                                         <td>
                                             <t t-if="line.payment_partner_bank_id">
-                                                <span t-out="line.payment_partner_bank_id.bank_id.name"/>
-                                                <br/>
-                                                <span t-out="line.payment_partner_bank_id.acc_number"/>
+                                                <span
+                                                    t-out="line.payment_partner_bank_id.bank_id.name"
+                                                />
+                                                <br />
+                                                <span
+                                                    t-out="line.payment_partner_bank_id.acc_number"
+                                                />
                                             </t>
                                         </td>
-                                        <td class="text-end" t-out="'{0:,.2f}'.format(line.payment_amount)"/>
+                                        <td
+                                            class="text-end"
+                                            t-out="'{0:,.2f}'.format(line.payment_amount)"
+                                        />
                                     </tr>
-                                    <t t-set="row_no" t-value="row_no + 1"/>
+                                    <t t-set="row_no" t-value="row_no + 1" />
                                 </t>
 
                                 <!-- Total -->
                                 <tr class="fw-bold">
-                                    <td colspan="2" rowspan="2" class="text-center align-middle">
-                                        (<t t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.total_amount)"/>)
+                                    <td
+                                        colspan="2"
+                                        rowspan="2"
+                                        class="text-center align-middle"
+                                    >
+                                        (<t
+                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.total_amount)"
+                                        />)
                                     </td>
                                     <td class="text-center" colspan="2">รวมทั้งสิ้น</td>
-                                    <td class="text-end" t-out="'{0:,.2f}'.format(o.total_amount)"/>
+                                    <td
+                                        class="text-end"
+                                        t-out="'{0:,.2f}'.format(o.total_amount)"
+                                    />
                                 </tr>
                             </tbody>
                         </table>
 
-                        <div class="my-4"/>
+                        <div class="my-4" />
 
                         <!-- Signatures -->
                         <div class="my-5">
                             <div class="my-2 d-inline-block">
-                                <div>ลงชื่อ <t t-out="'.' * 80"/> ผู้จัดทำ</div>
+                                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้จัดทำ</div>
                                 <div class="text-center my-2">
-                                    (<span t-out="o.create_uid.name"/>)
+                                    (<span t-out="o.create_uid.name" />)
                                 </div>
                                 <div class="text-center">
                                     วันที่ ......../......../.........
@@ -118,19 +180,11 @@
                             </div>
                         </div>
 
-                        <div class="my-5"/>
-
-                        <div class="my-5">
-                            <div class="my-2 d-inline-block">
-                                <div>ลงชื่อ <t t-out="'.' * 80"/> ผู้อนุมัติ</div>
-                                <div class="text-center my-2">
-                                    ( ........................................... )
-                                </div>
-                                <div class="text-center">
-                                    วันที่ ......../......../.........
-                                </div>
-                            </div>
-                        </div>
+                        <!-- No approver block. Nothing is approved here: the
+                             authorisation happened on the disbursement request,
+                             and what this document reports is a file the finance
+                             office prepared and sent. A signature line for an
+                             approval that never takes place invites one. -->
 
                     </div>
                 </t>

@@ -22,6 +22,12 @@
     <record id="view_disbursement_request_approved_tree" model="ir.ui.view">
         <field name="name">disbursement.request.approved.tree</field>
         <field name="model">disbursement.request</field>
+        <!-- ir.ui.view is ordered by (priority, name), and default_view() takes
+             the first primary view: at equal priority this name would sort
+             before "disbursement.request.tree" and silently become the default
+             list for every action that does not pin a view_id. It is only ever
+             opened through action_disbursement_approved, which pins it. -->
+        <field name="priority">99</field>
         <field name="arch" type="xml">
             <tree string="Approved" create="false" edit="false"
                   default_order="finance_approve_date desc">
@@ -50,6 +56,10 @@
     <record id="view_disbursement_request_approved_search" model="ir.ui.view">
         <field name="name">disbursement.request.approved.search</field>
         <field name="model">disbursement.request</field>
+        <!-- Same reason as the approved tree: keep it out of default_view() so
+             the standard search view (and every search_default_* filter the
+             disbursement actions rely on) stays in effect. -->
+        <field name="priority">99</field>
         <field name="arch" type="xml">
             <search string="Approved">
                 <field name="name" string="Number"

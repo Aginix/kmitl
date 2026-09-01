@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Procurement Plan Portal",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.1.1",
     "author": "",
     "website": "",
     "category": "",
-    "depends": ["portal", "procurement_plan", "purchase_request_budget_procurement"],
+    "depends": [
+        "portal",
+        "procurement_plan",
+        "procurement_plan_budget",
+        "purchase_request_procurement_plan",
+    ],
     "data": ["views/templates.xml"],
     "assets": {
         "web.assets_frontend": [

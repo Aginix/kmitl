@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!--
+        The finance office's own list of ใบสำคัญจ่าย. Written from scratch rather
+        than inherited from core's payment tree, because almost nothing core shows
+        is what this office works by: core lists a payment's own state and its
+        journal, while here the columns that matter are the หัวจ่าย the money leaves
+        from, the finance office's own status, whether the voucher is in an
+        e-payment file yet, and how far the accounting office has got with it.
+        Inheriting would have meant hiding most of core's columns to add these.
+    -->
+    <record id="view_account_payment_tree_kmitl" model="ir.ui.view">
+        <field name="name">account.payment.tree.kmitl</field>
+        <field name="model">account.payment</field>
+        <field name="arch" type="xml">
+            <tree
+                string="ใบสำคัญจ่าย"
+                default_order="date desc, name desc"
+                decoration-muted="state == 'cancel'"
+                sample="1"
+            >
+                <!-- The office's main move out of this list, so it is a button that
+                     appears the moment rows are ticked rather than a line in the
+                     Action menu, where it sat between two actions belonging to
+                     other offices. Same idiom core uses for Confirm on its own
+                     payment tree, and the same implementation as the server action
+                     still bound to this model. -->
+                <header>
+                    <button
+                        name="action_create_bank_payment_export"
+                        type="object"
+                        string="Create e-Payment File"
+                        class="btn-primary"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"
+                    />
+                    <!-- The same move for the payees settled on paper. Beside the
+                         e-payment button and not behind a filter, because a run of
+                         cheques is picked out of this one list exactly as a run of
+                         transfers is, and which vouchers may be picked is the
+                         button's own business to say. -->
+                    <button
+                        name="action_create_cheques"
+                        type="object"
+                        string="Write Cheques"
+                        class="btn-secondary"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"
+                    />
+                </header>
+                <field name="name" string="เลขที่ใบสำคัญ" />
+                <field name="date" />
+                <field name="partner_id" string="ผู้รับเงิน" />
+                <field name="kmitl_payment_type_id" optional="show" />
+                <field name="kmitl_payment_subject_id" optional="hide" />
+                <!-- Which money it comes out of, ahead of the account it
+                     physically leaves from. Carries its own Thai label from
+                     analytic.distribution.mixin. -->
+                <field name="source_analytic_id" optional="show" />
+                <field name="payment_method_line_id" string="หัวจ่าย" optional="show" />
+                <field name="payment_method_id" string="วิธีจ่าย" optional="hide" />
+                <field
+                    name="partner_bank_id"
+                    string="บัญชีธนาคารผู้รับ"
+                    optional="hide"
+                />
+                <field name="amount_before_wht" optional="hide" />
+                <field name="amount_wht" optional="hide" />
+                <field name="amount" string="จำนวนเงิน" sum="Total" />
+                <!-- The two offices, side by side: whose turn it is, and how far
+                     each has got. -->
+                <field
+                    name="finance_state"
+                    widget="badge"
+                    decoration-info="finance_state == 'draft'"
+                    decoration-warning="finance_state == 'confirmed'"
+                    decoration-success="finance_state == 'paid'"
+                />
+                <field
+                    name="export_status"
+                    string="ไฟล์ e-Payment"
+                    widget="badge"
+                    decoration-info="export_status == 'draft'"
+                    decoration-warning="export_status == 'to_export'"
+                    decoration-success="export_status == 'exported'"
+                    optional="show"
+                    attrs="{'invisible': [('needs_bank_export', '=', False)]}"
+                />
+                <field name="payment_export_id" optional="hide" />
+                <field
+                    name="display_state"
+                    string="สถานะบัญชี"
+                    widget="badge"
+                    decoration-warning="display_state == 'to_approve'"
+                    decoration-success="display_state == 'posted'"
+                    optional="show"
+                />
+                <field name="bank_result_status" optional="hide" />
+                <field name="journal_id" string="ใบสำคัญ" optional="hide" />
+                <field name="ref" optional="hide" />
+                <!-- Carried for the modifiers and the monetary columns only. -->
+                <field name="needs_bank_export" invisible="1" />
+                <field name="currency_id" invisible="1" />
+                <field name="state" invisible="1" />
+                <field
+                    name="company_id"
+                    invisible="1"
+                    groups="base.group_multi_company"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <!--
+        Filters phrased as the questions the office actually asks, not as raw field
+        values: "what have I still to put in a file", "what is the accounting office
+        sitting on". Each is one state combination that would otherwise have to be
+        assembled by hand every morning.
+    -->
+    <record id="view_account_payment_search_kmitl" model="ir.ui.view">
+        <field name="name">account.payment.search.kmitl</field>
+        <field name="model">account.payment</field>
+        <field name="arch" type="xml">
+            <search string="ใบสำคัญจ่าย">
+                <field
+                    name="name"
+                    string="เลขที่ใบสำคัญ / ผู้รับเงิน"
+                    filter_domain="['|', '|', ('name', 'ilike', self), ('partner_id', 'ilike', self), ('ref', 'ilike', self)]"
+                />
+                <field name="partner_id" string="ผู้รับเงิน" />
+                <field name="payee_type_id" />
+                <field name="payment_method_line_id" string="หัวจ่าย" />
+                <field name="kmitl_payment_type_id" />
+                <field name="kmitl_payment_subject_id" />
+                <field name="payment_export_id" string="ไฟล์ e-Payment" />
+                <field name="amount" />
+
+                <!-- The six things a voucher is routed by, so the office can ask
+                     the list the same questions the assignment rules ask.
+
+                     The dimensions read the whole subtree, exactly as
+                     finance.assignment.rule._find_for_payment does: picking a
+                     faculty finds every voucher of every department under it. A
+                     filter that matched only the account itself would return
+                     nothing for the faculty a rule was set on — the same word
+                     meaning two things in one system. The fields carry their own
+                     Thai labels from analytic.distribution.mixin, so none is
+                     restated here. -->
+                <field
+                    name="department_analytic_id"
+                    filter_domain="[('department_analytic_id', 'child_of', raw_value)]"
+                />
+                <field
+                    name="source_analytic_id"
+                    filter_domain="[('source_analytic_id', 'child_of', raw_value)]"
+                />
+                <field
+                    name="fund_analytic_id"
+                    filter_domain="[('fund_analytic_id', 'child_of', raw_value)]"
+                />
+                <field
+                    name="activity_analytic_id"
+                    filter_domain="[('activity_analytic_id', 'child_of', raw_value)]"
+                />
+
+                <separator />
+                <filter
+                    string="ร่าง"
+                    name="finance_draft"
+                    domain="[('finance_state', '=', 'draft')]"
+                />
+                <filter
+                    string="พร้อมส่งธนาคาร"
+                    name="finance_confirmed"
+                    domain="[('finance_state', '=', 'confirmed')]"
+                />
+                <filter
+                    string="จ่ายสำเร็จแล้ว"
+                    name="finance_paid"
+                    domain="[('finance_state', '=', 'paid')]"
+                />
+
+                <separator />
+                <!-- The finance office's own worklist: confirmed for the bank,
+                     travels in a file, and not in one yet. -->
+                <filter
+                    string="รอใส่ไฟล์ e-Payment"
+                    name="to_export"
+                    domain="[('finance_state', '=', 'confirmed'), ('needs_bank_export', '=', True), ('export_status', '=', 'draft')]"
+                />
+                <filter
+                    string="อยู่ในไฟล์แล้ว"
+                    name="in_file"
+                    domain="[('export_status', 'in', ('to_export', 'exported'))]"
+                />
+                <!-- Handed over, still nobody's entry: what the accounting office
+                     has been asked for and not yet done. -->
+                <filter
+                    string="ส่งมอบแล้ว รอบันทึกบัญชี"
+                    name="to_book"
+                    domain="[('finance_state', '=', 'paid'), ('state', '=', 'draft')]"
+                />
+                <filter
+                    string="รออนุมัติบัญชี"
+                    name="to_approve"
+                    domain="[('workflow_state', '=', 'to_approve')]"
+                />
+                <filter
+                    string="ลงบัญชีแล้ว"
+                    name="posted"
+                    domain="[('state', '=', 'posted')]"
+                />
+
+                <separator />
+                <filter
+                    string="เงินโอน"
+                    name="method_transfer"
+                    domain="[('payment_method_line_id.payment_method_id.code', '=', 'kmitl_transfer')]"
+                />
+                <filter
+                    string="เช็ค"
+                    name="method_cheque"
+                    domain="[('payment_method_line_id.payment_method_id.code', '=', 'kmitl_cheque')]"
+                />
+                <filter
+                    string="เงินสด"
+                    name="method_cash"
+                    domain="[('payment_method_line_id.payment_method_id.code', '=', 'kmitl_cash')]"
+                />
+
+                <separator />
+                <filter
+                    string="ยกเลิก"
+                    name="cancelled"
+                    domain="[('state', '=', 'cancel')]"
+                />
+                <filter string="วันที่" name="filter_date" date="date" />
+
+                <group expand="0" string="จัดกลุ่มตาม">
+                    <filter
+                        string="สถานะฝั่งการเงิน"
+                        name="group_finance_state"
+                        context="{'group_by': 'finance_state'}"
+                    />
+                    <filter
+                        string="สถานะบัญชี"
+                        name="group_display_state"
+                        context="{'group_by': 'display_state'}"
+                    />
+                    <filter
+                        string="หัวจ่าย"
+                        name="group_paying_account"
+                        context="{'group_by': 'payment_method_line_id'}"
+                    />
+                    <filter
+                        string="ผู้รับเงิน"
+                        name="group_partner"
+                        context="{'group_by': 'partner_id'}"
+                    />
+                    <filter
+                        string="Payee Type"
+                        name="group_payee_type"
+                        context="{'group_by': 'payee_type_id'}"
+                    />
+                    <filter
+                        string="Department"
+                        name="group_department"
+                        context="{'group_by': 'department_analytic_id'}"
+                    />
+                    <filter
+                        string="Source"
+                        name="group_source"
+                        context="{'group_by': 'source_analytic_id'}"
+                    />
+                    <filter
+                        string="Fund"
+                        name="group_fund"
+                        context="{'group_by': 'fund_analytic_id'}"
+                    />
+                    <filter
+                        string="Activity"
+                        name="group_activity"
+                        context="{'group_by': 'activity_analytic_id'}"
+                    />
+                    <filter
+                        string="ประเภทธุรกรรม"
+                        name="group_payment_type"
+                        context="{'group_by': 'kmitl_payment_type_id'}"
+                    />
+                    <filter
+                        string="Payment Subject"
+                        name="group_payment_subject"
+                        context="{'group_by': 'kmitl_payment_subject_id'}"
+                    />
+                    <filter
+                        string="ไฟล์ e-Payment"
+                        name="group_export"
+                        context="{'group_by': 'payment_export_id'}"
+                    />
+                    <filter
+                        string="วันที่"
+                        name="group_date"
+                        context="{'group_by': 'date'}"
+                    />
+                </group>
+
+                <!-- หัวจ่าย down the left, because it is the axis this office
+                     actually works by: one e-payment file debits one account, so
+                     "what is left to send from KTB" is a question asked every
+                     morning. Read off the master data rather than written out as
+                     one filter per account, so a หัวจ่าย added in Settings shows
+                     up here without a code change; grouped by วิธีจ่าย because a
+                     paying account already names its method, and the officer
+                     thinks in เงินโอน / เช็ค / เงินสด first. -->
+                <searchpanel>
+                    <field
+                        name="payment_method_line_id"
+                        string="Paying Account"
+                        icon="fa-university"
+                        select="multi"
+                        groupby="payment_method_id"
+                        domain="[('payment_type', '=', 'outbound')]"
+                        enable_counters="1"
+                    />
+                    <!-- แหล่งเงิน beside it, because "what is left to send from KTB"
+                         is nearly always asked of one source at a time — government
+                         budget or revenue budget, never both in the same breath. A
+                         handful of values, so a click rather than something typed
+                         into the dimension field above. -->
+                    <field
+                        name="source_analytic_id"
+                        icon="fa-money"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+</odoo>

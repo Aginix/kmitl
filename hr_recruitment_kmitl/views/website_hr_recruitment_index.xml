@@ -109,6 +109,9 @@
                             <div class="flex-grow-1 w-100">
                                 <h4 class="fw-bold text-dark mb-3">
                                     <span t-field="job.name" />
+                                    <span t-if="job.old_code">
+                                        (<t t-out="job.old_code" />)
+                                    </span>
                                 </h4>
                                 <div
                                     t-if="job.department_id or job.address_id"

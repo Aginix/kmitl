@@ -22,11 +22,6 @@ odoo.define("hr_recruitment_kmitl.form_editor", function (require) {
         {type: "char", name: "birthday", string: _lt("Birthday")},
         {type: "char", name: "nationality_id", string: _lt("Nationality")},
         {type: "char", name: "marital", string: _lt("Marital Status")},
-        // Spouse
-        {type: "char", name: "spouse_prefix", string: _lt("Spouse Prefix")},
-        {type: "char", name: "spouse_first_name", string: _lt("Spouse First Name")},
-        {type: "char", name: "spouse_middle_name", string: _lt("Spouse Middle Name")},
-        {type: "char", name: "spouse_last_name", string: _lt("Spouse Last Name")},
         // Address
         {type: "char", name: "street", string: _lt("Street")},
         {type: "char", name: "street2", string: _lt("Street 2")},

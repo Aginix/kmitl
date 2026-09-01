@@ -19,10 +19,5 @@
             <field name="implied_ids" eval="[(4, ref('group_procurement_plan_user'))]"/>
         </record>
 
-        <!-- Budget users automatically get procurement plan user access -->
-        <record id="budget.group_budget_user" model="res.groups">
-            <field name="implied_ids" eval="[(4, ref('group_procurement_plan_user'))]"/>
-        </record>
-
     </data>
 </odoo>

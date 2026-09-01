@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Form: assignment buttons + responsible officer field.
+
+         Anchored on core's ``action_post`` rather than on the finance office's
+         own presses, so the placement does not depend on finance_kmitl's inherit
+         having been applied first. -->
+    <record id="view_account_payment_form_assignment" model="ir.ui.view">
+        <field name="name">account.payment.form.assignment</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_post']" position="before">
+                <button
+                    name="action_assignment_assign_me"
+                    type="object"
+                    string="Assign to me"
+                    class="oe_highlight"
+                    groups="finance_kmitl.group_finance_kmitl_user_out"
+                    attrs="{'invisible': ['|', ('finance_state', 'not in', ('draft', 'confirmed')), ('assignment_can_assign_me', '=', False)]}"
+                />
+                <button
+                    name="action_assignment_open_wizard"
+                    type="object"
+                    string="Assign…"
+                    groups="finance_kmitl.group_finance_kmitl_manager"
+                    attrs="{'invisible': [('finance_state', 'not in', ('draft', 'confirmed'))]}"
+                />
+                <button
+                    name="action_assignment_unassign"
+                    type="object"
+                    string="Unassign"
+                    groups="finance_kmitl.group_finance_kmitl_manager"
+                    attrs="{'invisible': ['|', ('finance_state', 'not in', ('draft', 'confirmed')), ('assigned_to', '=', False)]}"
+                />
+            </xpath>
+            <xpath expr="//group[@name='group2']" position="inside">
+                <field name="assignment_can_assign_me" invisible="1" />
+                <field name="assigned_to" readonly="1" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree: responsible officer column on the finance office's own list -->
+    <record id="view_account_payment_tree_assignment" model="ir.ui.view">
+        <field name="name">account.payment.tree.assignment</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="finance_kmitl.view_account_payment_tree_kmitl" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="assigned_to" optional="show" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search: my-work / unassigned filters + group by officer -->
+    <record id="view_account_payment_search_assignment" model="ir.ui.view">
+        <field name="name">account.payment.search.assignment</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="finance_kmitl.view_account_payment_search_kmitl" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="assigned_to" string="Assigned Officer" />
+            </xpath>
+            <xpath expr="//filter[@name='finance_paid']" position="after">
+                <separator />
+                <filter
+                    name="my_payments"
+                    string="My Work"
+                    domain="[('assigned_to', '=', uid)]"
+                />
+                <filter
+                    name="unassigned"
+                    string="Unassigned"
+                    domain="[('assigned_to', '=', False)]"
+                />
+            </xpath>
+            <xpath expr="//filter[@name='group_finance_state']" position="after">
+                <filter
+                    name="group_assigned_to"
+                    string="Assigned Officer"
+                    context="{'group_by': 'assigned_to'}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

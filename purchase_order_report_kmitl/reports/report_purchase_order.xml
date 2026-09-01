@@ -158,7 +158,7 @@
                                 <th>ลำดับ</th>
                                 <th class="text-center">รายการ</th>
                                 <th class="text-center">จำนวน</th>
-                                <th class="text-end">ราคาต่อหน่วย (บาท)</th>
+                                <th class="text-end">ราคา (บาท)</th>
                                 <th class="text-end">จำนวนเงิน (บาท)</th>
                             </tr>
                         </thead>
@@ -172,7 +172,9 @@
                                         <span
                                             t-out="'{0:,.0f}'.format(line.product_qty)"
                                         />
-                                        <span t-field="line.product_uom" />
+                                        <span
+                                            t-out="line.uom_text or line.product_uom.name or ''"
+                                        />
                                     </td>
                                     <td
                                         class="text-end"

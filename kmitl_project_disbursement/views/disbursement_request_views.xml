@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Show the project a disbursement is raised under (from its kmitl_project
+         analytic dimension). Read-only lookup, only when the DR carries one. -->
+    <record id="view_disbursement_request_form_kmitl_project" model="ir.ui.view">
+        <field name="name">view.disbursement.request.form.kmitl.project</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='activity_analytic_id']" position="after">
+                <field name="kmitl_project_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" attrs="{'invisible': [('kmitl_project_analytic_id', '=', False)]}"/>
+            </xpath>
+            <!-- Smart button: link back to the project this disbursement is raised under. -->
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <field name="kmitl_project_id" invisible="1"/>
+                <button name="action_open_kmitl_project" type="object" class="oe_stat_button" icon="fa-folder-open" attrs="{'invisible': [('kmitl_project_id', '=', False)]}">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">โครงการ/กิจกรรม</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

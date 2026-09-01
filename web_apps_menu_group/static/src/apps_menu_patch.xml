@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <!-- A THIRD extension of the same template web_responsive already
+         extended (t-inherit-mode="extension" keeps the t-name), chained
+         after it since this module depends on web_responsive. Replaces the
+         flat DropdownItem loop web_responsive inserted with a grouped one. -->
+    <t t-inherit="web.NavBar.AppsMenu" t-inherit-mode="extension" owl="1">
+        <xpath expr="//AppsMenu/DropdownItem" position="replace">
+            <t
+                t-foreach="this.getGroupedApps(apps)"
+                t-as="group"
+                t-key="group.id"
+            >
+                <div
+                    t-if="group.name"
+                    class="o_apps_menu_group_header"
+                    t-esc="group.name"
+                />
+                <div
+                    t-elif="!group_first"
+                    class="o_apps_menu_group_break"
+                />
+                <DropdownItem
+                    t-foreach="group.apps"
+                    t-as="app"
+                    t-key="app.id"
+                    class="'o_app'"
+                    dataset="{ menuXmlid: app.xmlid, section: app.id }"
+                    href="getMenuItemHref(app)"
+                    onSelected="() => this.onNavBarDropdownItemSelection(app)"
+                >
+                    <img
+                        class="o-app-icon"
+                        draggable="false"
+                        t-att-src="getWebIconData(app)"
+                    />
+                    <div t-esc="app.name" />
+                </DropdownItem>
+            </t>
+        </xpath>
+    </t>
+</templates>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    The banks the institute holds its own accounts at.
+
+    Reference data, not demo data. Until now the only Thai banks in the stack
+    came from ``kmitl_demo``, which is not installed on a production database,
+    so nothing there put a bank behind either the institute's own accounts or a
+    payee's — and the e-payment file has to name the bank on both sides.
+
+    ``hooks._seed_bank_accounts`` matches its table against these by BIC to
+    attach each paying account to its bank, and that bank is what auto-matching
+    compares a payee's own bank against and what the e-payment file names as the
+    sending bank.
+
+    The BIC is the key on purpose: it is what the bank export modules themselves
+    switch on (``KRTHTHBK`` for KTB, ``SICOTHBK`` for SCB, …), so a record that
+    carries the right one is a record those modules already recognise. The demo
+    copies carried truncated codes ("KTB", "SCB") that match none of them.
+
+    ``bank_code`` is the bank's clearing code and is seeded here. The e-payment
+    layouts write it straight into the file as the receiving bank — KTB's D
+    record and SCB's 003 record both do — so an empty one is not "rejected
+    visibly" at all: the field goes out as spaces and the bank returns the whole
+    file. The four codes are public, fixed, and the same for every customer of
+    each bank, so there is nothing for the treasury office to decide.
+
+    ``bank_branch_code`` is still left blank on purpose. It is per branch, not
+    per bank, so no single value on a bank record can be right for every payee;
+    SCB's layout now takes the receiving branch from the first three digits of
+    the payee's own account number instead, which is where SCB puts it.
+-->
+<odoo noupdate="1">
+
+    <record id="bank_scb" model="res.bank">
+        <field name="name">ธนาคารไทยพาณิชย์ (Siam Commercial Bank)</field>
+        <field name="bic">SICOTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">014</field>
+    </record>
+
+    <record id="bank_ktb" model="res.bank">
+        <field name="name">ธนาคารกรุงไทย (Krung Thai Bank)</field>
+        <field name="bic">KRTHTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">006</field>
+    </record>
+
+    <record id="bank_bay" model="res.bank">
+        <field name="name">ธนาคารกรุงศรีอยุธยา (Bank of Ayudhya)</field>
+        <field name="bic">AYUDTHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">002</field>
+    </record>
+
+    <record id="bank_kbank" model="res.bank">
+        <field name="name">ธนาคารกสิกรไทย (Kasikorn Bank)</field>
+        <field name="bic">KASITHBK</field>
+        <field name="country" ref="base.th" />
+        <field name="bank_code">004</field>
+    </record>
+
+</odoo>

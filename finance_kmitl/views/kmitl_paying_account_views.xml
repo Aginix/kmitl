@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    หัวจ่าย — the accounts money leaves the institute from. They are payment
+    method lines: a line names a voucher journal (ใบสำคัญ), a method
+    (เงินโอน/เช็ค/เงินสด), the institute's own bank account and the GL account the
+    money is booked against. This is the treasury office's screen for them.
+
+    ``company_id``, ``payment_type`` and ``available_payment_method_ids`` are
+    carried invisibly because core's own domains on this model read them
+    (``payment_method_id`` is domained on the latter two, ``payment_account_id``
+    on the first). Odoo validates those domains against the view for every field
+    an editable list or a form can write, so a missing one is a load error, not
+    just an empty dropdown.
+
+    ``payment_method_code`` and ``company_partner_id`` are carried for the same
+    reason from the other side: an ``attrs``, a ``domain`` or a ``context`` in a
+    view cannot follow a relation, so the method's code and the institute's
+    partner have to be fields on the record itself.
+-->
+<odoo>
+
+    <record id="kmitl_paying_account_view_tree" model="ir.ui.view">
+        <field name="name">account.payment.method.line.paying.account.tree</field>
+        <field name="model">account.payment.method.line</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="company_id" invisible="1" />
+                <field name="payment_type" invisible="1" />
+                <field name="available_payment_method_ids" invisible="1" />
+                <field name="payment_method_code" invisible="1" />
+                <field name="company_partner_id" invisible="1" />
+                <field name="sequence" widget="handle" />
+                <field name="journal_id" />
+                <field name="payment_method_id" />
+                <field name="name" />
+                <!-- Deliberately not ``optional``: it can be required, and a
+                     required column the officer has hidden fails the save with
+                     nothing on screen to fix. -->
+                <field
+                    name="bank_account_id"
+                    context="{'default_partner_id': company_partner_id}"
+                    attrs="{'invisible': [('payment_method_code', '=', 'kmitl_cash')], 'required': [('payment_method_code', 'in', ['kmitl_transfer', 'kmitl_cheque'])]}"
+                />
+                <field name="bank_id" optional="show" />
+                <field name="acc_number" optional="show" />
+                <field name="payment_account_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="kmitl_paying_account_view_form" model="ir.ui.view">
+        <field name="name">account.payment.method.line.paying.account.form</field>
+        <field name="model">account.payment.method.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="company_id" invisible="1" />
+                    <field name="payment_type" invisible="1" />
+                    <field name="available_payment_method_ids" invisible="1" />
+                    <field name="payment_method_code" invisible="1" />
+                    <field name="company_partner_id" invisible="1" />
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1><field name="name" /></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="journal_id" string="Voucher" />
+                            <field name="payment_method_id" string="Payment Method" />
+                            <field name="sequence" />
+                        </group>
+                        <group>
+                            <!-- Cash leaves no bank, only the ledger; the other
+                                 two cannot be saved without one. The bank and
+                                 the number are the picked account's own, shown
+                                 to confirm the right one was picked — correct
+                                 them in Finance ▸ Settings ▸ Bank Accounts. -->
+                            <field
+                                name="bank_account_id"
+                                context="{'default_partner_id': company_partner_id}"
+                                attrs="{'invisible': [('payment_method_code', '=', 'kmitl_cash')], 'required': [('payment_method_code', 'in', ['kmitl_transfer', 'kmitl_cheque'])]}"
+                            />
+                            <field
+                                name="bank_id"
+                                attrs="{'invisible': [('bank_account_id', '=', False)]}"
+                            />
+                            <field
+                                name="acc_number"
+                                attrs="{'invisible': [('bank_account_id', '=', False)]}"
+                            />
+                            <field name="payment_account_id" string="GL Account" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="kmitl_paying_account_view_search" model="ir.ui.view">
+        <field name="name">account.payment.method.line.paying.account.search</field>
+        <field name="model">account.payment.method.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="bank_id" />
+                <field name="payment_account_id" />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Voucher"
+                        name="group_by_journal"
+                        context="{'group_by': 'journal_id'}"
+                    />
+                    <filter
+                        string="Payment Method"
+                        name="group_by_method"
+                        context="{'group_by': 'payment_method_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_kmitl_paying_account" model="ir.actions.act_window">
+        <field name="name">Paying Accounts</field>
+        <field name="res_model">account.payment.method.line</field>
+        <field name="view_mode">tree,form</field>
+        <field
+            name="domain"
+        >[('payment_type', '=', 'outbound'), ('payment_account_id', '!=', False)]</field>
+        <field name="context">{'search_default_group_by_journal': 1}</field>
+        <!-- Both views are bound by hand. ``accounting_kmitl`` also ships a
+             form for this model and neither sets a priority, so the default
+             lookup (``ir.ui.view._order`` = priority, name, id) picked
+             ``account.payment.method.line.form`` over
+             ``account.payment.method.line.paying.account.form`` on the
+             name: a form with no bank account on it at all. -->
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'sequence': 1, 'view_mode': 'tree', 'view_id': ref('kmitl_paying_account_view_tree')}),
+                   (0, 0, {'sequence': 2, 'view_mode': 'form', 'view_id': ref('kmitl_paying_account_view_form')})]"
+        />
+        <field name="search_view_id" ref="kmitl_paying_account_view_search" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No paying account yet</p>
+            <p
+            >A paying account is where money leaves the institute from — it ties a voucher, a payment method, the institute's bank account and a GL account together.</p>
+        </field>
+    </record>
+
+</odoo>

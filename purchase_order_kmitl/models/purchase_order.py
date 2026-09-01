@@ -63,7 +63,7 @@ class PurchaseOrder(models.Model):
     )
 
     state = fields.Selection(selection_add=[
-        ("purchase", "Open"),
+        ("purchase", "In Progress"),
         ("done", "Done")
     ])
 
@@ -81,3 +81,9 @@ class PurchaseOrder(models.Model):
             'view_type': 'form',
             'target': 'current',
         }
+
+
+class PurchaseOrderLine(models.Model):
+    _inherit = 'purchase.order.line'
+
+    uom_text = fields.Char(string="หน่วยนับ")

@@ -11,34 +11,34 @@ scb_debit_format_01,l10n_th_bank_payment_export_scb.scb_domestic,18,002 DEBIT DE
 scb_debit_format_02,l10n_th_bank_payment_export_scb.scb_domestic,19,Record Type,,3,,,,,,"rec.scb_product_code != ""BNT""",fixed,rjust,0,2
 scb_debit_format_03,l10n_th_bank_payment_export_scb.scb_domestic,20,Product Code,,3,,,,,,"rec.scb_product_code != ""BNT""",dynamic,ljust,,rec.scb_product_code
 scb_debit_format_04,l10n_th_bank_payment_export_scb.scb_domestic,21,Value Date,,8,,,,,,"rec.scb_product_code != ""BNT""",dynamic,ljust,,"rec.effective_date.strftime(""%Y%m%d"")"
-scb_debit_format_05,l10n_th_bank_payment_export_scb.scb_domestic,22,Debit Account No,,25,,,,,,"rec.scb_product_code != ""BNT""",dynamic,ljust,,line.sanitize_account_number(line[:1].payment_journal_id.bank_account_id.acc_number)
-scb_debit_format_06,l10n_th_bank_payment_export_scb.scb_domestic,23,Account Type of Debit Account,,2,,,,,,"rec.scb_product_code != ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line[:1].payment_journal_id.bank_account_id.acc_number)[3:4]
-scb_debit_format_07,l10n_th_bank_payment_export_scb.scb_domestic,24,Debit Branch Code,,4,,,,,,"rec.scb_product_code != ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line[:1].payment_journal_id.bank_account_id.acc_number)[0:3]
+scb_debit_format_05,l10n_th_bank_payment_export_scb.scb_domestic,22,Debit Account No,,25,,,,,,"rec.scb_product_code != ""BNT""",dynamic,ljust,,line.sanitize_account_number(line[:1].sending_acc_number)
+scb_debit_format_06,l10n_th_bank_payment_export_scb.scb_domestic,23,Account Type of Debit Account,,2,,,,,,"rec.scb_product_code != ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line[:1].sending_acc_number)[3:4]
+scb_debit_format_07,l10n_th_bank_payment_export_scb.scb_domestic,24,Debit Branch Code,,4,,,,,,"rec.scb_product_code != ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line[:1].sending_acc_number)[0:3]
 scb_debit_format_08,l10n_th_bank_payment_export_scb.scb_domestic,25,Debit Currency,,3,,,,,,"rec.scb_product_code != ""BNT""",dynamic,ljust,,rec.currency_id.name
 scb_debit_format_09,l10n_th_bank_payment_export_scb.scb_domestic,26,Debit Amount,,16,,,,,,"rec.scb_product_code != ""BNT""",dynamic,rjust,0,"str(int(round(rec.total_amount * 1000, 2)))"
 scb_debit_format_10,l10n_th_bank_payment_export_scb.scb_domestic,27,Internal Reference,,8,,,,,,"rec.scb_product_code != ""BNT""",fixed,rjust,0,1
 scb_debit_format_11,l10n_th_bank_payment_export_scb.scb_domestic,28,No. of Credits,,6,,,,,,"rec.scb_product_code != ""BNT""",dynamic,rjust,0,str(len(line))
-scb_debit_format_12,l10n_th_bank_payment_export_scb.scb_domestic,29,Fee Debit Account,,15,,,,,,"rec.scb_product_code != ""BNT""",dynamic,ljust,,line.sanitize_account_number(line[:1].payment_journal_id.bank_account_id.acc_number)
+scb_debit_format_12,l10n_th_bank_payment_export_scb.scb_domestic,29,Fee Debit Account,,15,,,,,,"rec.scb_product_code != ""BNT""",dynamic,ljust,,line.sanitize_account_number(line[:1].sending_acc_number)
 scb_debit_format_13,l10n_th_bank_payment_export_scb.scb_domestic,30,Filler,,9,,,,,,"rec.scb_product_code != ""BNT""",fixed,ljust,,
 scb_debit_format_14,l10n_th_bank_payment_export_scb.scb_domestic,31,Media Clearing Cycle (Filler),,1,,,,,,"rec.scb_product_code != ""BNT""",dynamic,ljust,,"""2"" if rec.scb_product_code == ""MCL"" and rec.scb_bank_type == ""2"" else """""
-scb_debit_format_15,l10n_th_bank_payment_export_scb.scb_domestic,32,Account Type (Fee),,2,,,,,,"rec.scb_product_code != ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line[:1].payment_journal_id.bank_account_id.acc_number)[3:4]
-scb_debit_format_16,l10n_th_bank_payment_export_scb.scb_domestic,33,Debit Branch Code (Fee),,4,,,,,TRUE,"rec.scb_product_code != ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line[:1].payment_journal_id.bank_account_id.acc_number)[0:3]
+scb_debit_format_15,l10n_th_bank_payment_export_scb.scb_domestic,32,Account Type (Fee),,2,,,,,,"rec.scb_product_code != ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line[:1].sending_acc_number)[3:4]
+scb_debit_format_16,l10n_th_bank_payment_export_scb.scb_domestic,33,Debit Branch Code (Fee),,4,,,,,TRUE,"rec.scb_product_code != ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line[:1].sending_acc_number)[0:3]
 scb_debit_bnt_format_01,l10n_th_bank_payment_export_scb.scb_domestic,34,002 DEBIT DETAIL (BAHTNET),line_section,,,,,,,,fixed,ljust,,
 scb_debit_bnt_format_02,l10n_th_bank_payment_export_scb.scb_domestic,35,Record Type,,3,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",fixed,rjust,0,2
 scb_debit_bnt_format_03,l10n_th_bank_payment_export_scb.scb_domestic,36,Product Code,,3,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,ljust,,rec.scb_product_code
 scb_debit_bnt_format_04,l10n_th_bank_payment_export_scb.scb_domestic,37,Value Date,,8,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,ljust,,"rec.effective_date.strftime(""%Y%m%d"")"
-scb_debit_bnt_format_05,l10n_th_bank_payment_export_scb.scb_domestic,38,Debit Account No,,25,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,ljust,,line.sanitize_account_number(line[:1].payment_journal_id.bank_account_id.acc_number)
-scb_debit_bnt_format_06,l10n_th_bank_payment_export_scb.scb_domestic,39,Account Type of Debit Account,,2,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line.payment_journal_id.bank_account_id.acc_number)[3:4]
-scb_debit_bnt_format_07,l10n_th_bank_payment_export_scb.scb_domestic,40,Debit Branch Code,,4,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line.payment_journal_id.bank_account_id.acc_number)[0:3]
+scb_debit_bnt_format_05,l10n_th_bank_payment_export_scb.scb_domestic,38,Debit Account No,,25,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,ljust,,line.sanitize_account_number(line[:1].sending_acc_number)
+scb_debit_bnt_format_06,l10n_th_bank_payment_export_scb.scb_domestic,39,Account Type of Debit Account,,2,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line.sending_acc_number)[3:4]
+scb_debit_bnt_format_07,l10n_th_bank_payment_export_scb.scb_domestic,40,Debit Branch Code,,4,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line.sending_acc_number)[0:3]
 scb_debit_bnt_format_08,l10n_th_bank_payment_export_scb.scb_domestic,41,Debit Currency,,3,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,ljust,,rec.currency_id.name
 scb_debit_bnt_format_09,l10n_th_bank_payment_export_scb.scb_domestic,42,Debit Amount,,16,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,rjust,0,"str(int(round(line.payment_amount * 1000, 2)))"
 scb_debit_bnt_format_10,l10n_th_bank_payment_export_scb.scb_domestic,43,Internal Reference,,8,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,rjust,0,str(idx_line+1)
 scb_debit_bnt_format_11,l10n_th_bank_payment_export_scb.scb_domestic,44,No. of Credits,,6,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,rjust,0,str(1)
-scb_debit_bnt_format_12,l10n_th_bank_payment_export_scb.scb_domestic,45,Fee Debit Account,,15,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,ljust,,line.sanitize_account_number(line[:1].payment_journal_id.bank_account_id.acc_number)
+scb_debit_bnt_format_12,l10n_th_bank_payment_export_scb.scb_domestic,45,Fee Debit Account,,15,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,ljust,,line.sanitize_account_number(line[:1].sending_acc_number)
 scb_debit_bnt_format_13,l10n_th_bank_payment_export_scb.scb_domestic,46,Filler,,9,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",fixed,ljust,,
 scb_debit_bnt_format_14,l10n_th_bank_payment_export_scb.scb_domestic,47,Media Clearing Cycle (Filler),,1,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,ljust,,"""2"" if rec.scb_product_code == ""MCL"" and rec.scb_bank_type == ""2"" else """""
-scb_debit_bnt_format_15,l10n_th_bank_payment_export_scb.scb_domestic,48,Account Type (Fee),,2,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line[:1].payment_journal_id.bank_account_id.acc_number)[3:4]
-scb_debit_bnt_format_16,l10n_th_bank_payment_export_scb.scb_domestic,49,Debit Branch Code (Fee),,4,line1,TRUE,,,TRUE,"rec.scb_product_code == ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line[:1].payment_journal_id.bank_account_id.acc_number)[0:3]
+scb_debit_bnt_format_15,l10n_th_bank_payment_export_scb.scb_domestic,48,Account Type (Fee),,2,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line[:1].sending_acc_number)[3:4]
+scb_debit_bnt_format_16,l10n_th_bank_payment_export_scb.scb_domestic,49,Debit Branch Code (Fee),,4,line1,TRUE,,,TRUE,"rec.scb_product_code == ""BNT""",dynamic,rjust,0,line.sanitize_account_number(line[:1].sending_acc_number)[0:3]
 scb_credit_format_01,l10n_th_bank_payment_export_scb.scb_domestic,50,003 CREDIT DETAIL,line_section,,,,,,,,fixed,ljust,,
 scb_credit_format_02,l10n_th_bank_payment_export_scb.scb_domestic,51,Record Type,,3,line1,TRUE,,,,,fixed,rjust,0,3
 scb_credit_format_03,l10n_th_bank_payment_export_scb.scb_domestic,52,Credit Sequence Number,,6,line1,TRUE,,,,,dynamic,rjust,0,str(idx_line+1)
@@ -68,16 +68,16 @@ scb_credit_format_26,l10n_th_bank_payment_export_scb.scb_domestic,75,WHT Deduct 
 scb_credit_format_27,l10n_th_bank_payment_export_scb.scb_domestic,76,Receiving Bank Code,,3,line1,TRUE,,,,"rec.scb_product_code == ""DCP""",fixed,rjust,0,14
 scb_credit_format_28,l10n_th_bank_payment_export_scb.scb_domestic,77,Receiving Bank Code,,3,line1,TRUE,,,,"rec.scb_product_code != ""DCP""",dynamic,ljust,,line.payment_partner_bank_id.bank_id.bank_code
 scb_credit_format_29,l10n_th_bank_payment_export_scb.scb_domestic,78,Receiving Bank Name,,35,line1,TRUE,,,,"rec.scb_product_code == ""DCP""",fixed,ljust,,SCB
-scb_credit_format_30,l10n_th_bank_payment_export_scb.scb_domestic,79,Receiving Bank Name,,35,line1,TRUE,,,,"rec.scb_product_code != ""DCP""",dynamic,ljust,,"line.payment_partner_bank_id.bank_id.name.split("":"")[0]"
+scb_credit_format_30,l10n_th_bank_payment_export_scb.scb_domestic,79,Receiving Bank Name,,35,line1,TRUE,,,,"rec.scb_product_code != ""DCP""",fixed,ljust,,
 scb_credit_format_31,l10n_th_bank_payment_export_scb.scb_domestic,80,Receiving Branch Code,,4,line1,TRUE,,,,"rec.scb_product_code == ""DCP""",fixed,rjust,0,111
 scb_credit_format_32,l10n_th_bank_payment_export_scb.scb_domestic,81,Receiving Branch Code,,4,line1,TRUE,,,,"rec.scb_product_code != ""DCP"" and line.payment_bank_id.bic == ""GSBATHBK""",dynamic,ljust,,line._get_receiver_branch_code_gsb()
-scb_credit_format_33,l10n_th_bank_payment_export_scb.scb_domestic,82,Receiving Branch Code,,4,line1,TRUE,,,,"rec.scb_product_code != ""DCP"" and line.payment_bank_id.bic != ""GSBATHBK""",dynamic,ljust,,line.payment_partner_bank_id.bank_id.bank_branch_code
-scb_credit_format_34,l10n_th_bank_payment_export_scb.scb_domestic,83,Receiving Branch Name,,35,line1,TRUE,,,,"rec.scb_product_code == ""DCP""",fixed,rjust,0,111
-scb_credit_format_35,l10n_th_bank_payment_export_scb.scb_domestic,84,Receiving Branch Name,,35,line1,TRUE,,,,"rec.scb_product_code != ""DCP"" and line.payment_bank_id.bic == ""GSBATHBK""",dynamic,ljust,,line._get_receiver_branch_code_gsb()
-scb_credit_format_36,l10n_th_bank_payment_export_scb.scb_domestic,85,Receiving Branch Name,,35,line1,TRUE,,,,"rec.scb_product_code != ""DCP"" and line.payment_bank_id.bic != ""GSBATHBK""",dynamic,ljust,,line.payment_partner_bank_id.bank_id.bank_branch_code
-scb_credit_format_37,l10n_th_bank_payment_export_scb.scb_domestic,86,WHT Signatory,,1,line1,TRUE,,,,,dynamic,ljust,,rec.scb_wht_signatory
+scb_credit_format_33,l10n_th_bank_payment_export_scb.scb_domestic,82,Receiving Branch Code,,4,line1,TRUE,,,,"rec.scb_product_code != ""DCP"" and line.payment_bank_id.bic != ""GSBATHBK""",dynamic,ljust,,"line._get_receiver_branch_code_scb() if line.payment_bank_id.bic == ""SICOTHBK"" else (line.payment_partner_bank_id.bank_id.bank_branch_code or """")"
+scb_credit_format_34,l10n_th_bank_payment_export_scb.scb_domestic,83,Receiving Branch Name,,35,line1,TRUE,,,,"rec.scb_product_code == ""DCP""",fixed,ljust,,
+scb_credit_format_35,l10n_th_bank_payment_export_scb.scb_domestic,84,Receiving Branch Name,,35,line1,TRUE,,,,"rec.scb_product_code != ""DCP"" and line.payment_bank_id.bic == ""GSBATHBK""",fixed,ljust,,
+scb_credit_format_36,l10n_th_bank_payment_export_scb.scb_domestic,85,Receiving Branch Name,,35,line1,TRUE,,,,"rec.scb_product_code != ""DCP"" and line.payment_bank_id.bic != ""GSBATHBK""",fixed,ljust,,
+scb_credit_format_37,l10n_th_bank_payment_export_scb.scb_domestic,86,WHT Signatory,,1,line1,TRUE,,,,,dynamic,ljust,,"rec.scb_wht_signatory if rec.scb_is_wht_present else """""
 scb_credit_format_38,l10n_th_bank_payment_export_scb.scb_domestic,87,Beneficiary Notification,,1,line1,TRUE,,,,,dynamic,ljust,,"line.payment_partner_id.scb_beneficiary_noti or """""
-scb_credit_format_39,l10n_th_bank_payment_export_scb.scb_domestic,88,Customer Reference Number,,20,line1,TRUE,,,,,dynamic,ljust,,line.payment_id.name
+scb_credit_format_39,l10n_th_bank_payment_export_scb.scb_domestic,88,Customer Reference Number,,20,line1,TRUE,,,,,fixed,ljust,,
 scb_credit_format_40,l10n_th_bank_payment_export_scb.scb_domestic,89,Cheque Reference Document Type,,1,line1,TRUE,,,,,fixed,ljust,,
 scb_credit_format_41,l10n_th_bank_payment_export_scb.scb_domestic,90,Payment Type Code,,3,line1,TRUE,,,,,dynamic,ljust,,"rec.scb_payment_type_code or """""
 scb_credit_format_42,l10n_th_bank_payment_export_scb.scb_domestic,91,ServicesType,,2,line1,TRUE,,,,,dynamic,ljust,,"rec.scb_service_type_bahtnet if rec.scb_product_code == ""BNT"" else rec.scb_service_type or """""
@@ -88,14 +88,14 @@ scb_payee_format_01,l10n_th_bank_payment_export_scb.scb_domestic,95,004 PAYEE DE
 scb_payee_format_02,l10n_th_bank_payment_export_scb.scb_domestic,96,Record Type,,3,line1,TRUE,,,,,fixed,rjust,0,4
 scb_payee_format_03,l10n_th_bank_payment_export_scb.scb_domestic,97,Internal Reference,,8,line1,TRUE,,,,,dynamic,rjust,0,"str(1) if rec.scb_product_code != ""BNT"" else str(idx_line+1)"
 scb_payee_format_04,l10n_th_bank_payment_export_scb.scb_domestic,98,Credit Sequence Number,,6,line1,TRUE,,,,,dynamic,rjust,0,str(idx_line+1)
-scb_payee_format_05,l10n_th_bank_payment_export_scb.scb_domestic,99,Payee1 IDCard ,,15,line1,TRUE,,,,,dynamic,ljust,,"str(line.payment_partner_id.vat or """")"
+scb_payee_format_05,l10n_th_bank_payment_export_scb.scb_domestic,99,Payee1 IDCard ,,15,line1,TRUE,,,,,fixed,ljust,,
 scb_payee_format_06,l10n_th_bank_payment_export_scb.scb_domestic,100,Payee1 Name (Thai),,100,line1,TRUE,,,,,dynamic,ljust,,line.payment_partner_bank_id.acc_holder_name or line.payment_partner_bank_id.partner_id.display_name
-scb_payee_format_07,l10n_th_bank_payment_export_scb.scb_domestic,101,Payee1 Address 1 - 3,,210,line1,TRUE,,,,,dynamic,ljust,,"rec._get_address(line.payment_partner_id, 210)"
+scb_payee_format_07,l10n_th_bank_payment_export_scb.scb_domestic,101,Payee1 Address 1 - 3,,210,line1,TRUE,,,,,fixed,ljust,,
 scb_payee_format_08,l10n_th_bank_payment_export_scb.scb_domestic,102,Payee1 Tax ID,,10,line1,TRUE,,,,,fixed,ljust,,
 scb_payee_format_09,l10n_th_bank_payment_export_scb.scb_domestic,103,Payee1 Name (English),,70,line1,TRUE,,,,"rec.scb_product_code == ""BNT""",dynamic,ljust,,"line.payment_partner_bank_id.acc_holder_name or line.payment_partner_bank_id.partner_id.display_name or """""
 scb_payee_format_10,l10n_th_bank_payment_export_scb.scb_domestic,104,Payee1 Name (English),,70,line1,TRUE,,,,"rec.scb_product_code != ""BNT""",fixed,ljust,,
-scb_payee_format_11,l10n_th_bank_payment_export_scb.scb_domestic,105,Payee1 Fax Number,,10,line1,TRUE,,,,,dynamic,ljust,0,"line.payment_partner_id.scb_beneficiary_noti == ""F"" and line.scb_beneficiary_phone or """""
-scb_payee_format_12,l10n_th_bank_payment_export_scb.scb_domestic,106,Payee1 Mobile Phone Number,,10,line1,TRUE,,,,,dynamic,ljust,0,"line.payment_partner_id.scb_beneficiary_noti == ""S"" and line.scb_beneficiary_phone or """""
+scb_payee_format_11,l10n_th_bank_payment_export_scb.scb_domestic,105,Payee1 Fax Number,,10,line1,TRUE,,,,,dynamic,ljust,,"line.payment_partner_id.scb_beneficiary_noti == ""F"" and line.scb_beneficiary_phone or """""
+scb_payee_format_12,l10n_th_bank_payment_export_scb.scb_domestic,106,Payee1 Mobile Phone Number,,10,line1,TRUE,,,,,dynamic,ljust,,"line.payment_partner_id.scb_beneficiary_noti == ""S"" and line.scb_beneficiary_phone or """""
 scb_payee_format_13,l10n_th_bank_payment_export_scb.scb_domestic,107,Payee1 E-mail Address,,64,line1,TRUE,,,,,dynamic,ljust,,"line.payment_partner_id.scb_beneficiary_noti == ""E"" and line.scb_beneficiary_email or """""
 scb_payee_format_14,l10n_th_bank_payment_export_scb.scb_domestic,108,Payee2 Name (Thai),,100,line1,TRUE,,,,,fixed,ljust,,
 scb_payee_format_15,l10n_th_bank_payment_export_scb.scb_domestic,109,Payee2 Address 1,,70,line1,TRUE,,,,,fixed,ljust,,

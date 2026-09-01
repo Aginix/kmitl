@@ -9,9 +9,16 @@ class PurchaseRequestLine(models.Model):
 
     name = fields.Text(string="Description", tracking=True)
 
+    def _default_product_uom_id(self):
+        return self.env.ref("uom.product_uom_unit", raise_if_not_found=False)
+
     product_uom_id = fields.Many2one(
         comodel_name="uom.uom",
+        domain=[],
+        default=_default_product_uom_id,
     )
+
+    uom_text = fields.Char(string="หน่วยนับ", tracking=True)
 
     product_id = fields.Many2one(
         compute="_compute_default_product_id",

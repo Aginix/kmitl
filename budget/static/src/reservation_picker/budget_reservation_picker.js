@@ -31,10 +31,14 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.resId = ctx.res_id;
         this.selectMode = !!ctx.select_only;
         this.accountDomain = ctx.account_domain || false;
+        // Opt-in (approval host): collapse the browse tree to only the rows the
+        // host may actually pick — the selectable code(s) and the dimension path
+        // down to them — hiding non-selectable siblings and roll-up nodes. With a
+        // category-pinned single code this shows just that code. Other hosts
+        // (PR/PO/DR) do not pass it and keep the full-chart context view.
+        this.onlySelectable = !!ctx.only_selectable;
         this.state.selectedId = false;
         this.state.amounts = {};
-        // Free-text search on the budget-account code (feedback: not autocomplete).
-        this.state.accountSearch = "";
         // The picker must open with a blank filter bar — never pre-seeded from the
         // host's current selection (feedback: no default filters). The host still
         // passes its dimensions as context defaults (the read-only dashboard uses
@@ -48,36 +52,15 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.state.sourceId = false;
     }
 
-    onAccountSearchInput(ev) {
-        this.state.accountSearch = ev.target.value;
-    }
-
-    // Client-side filter on the budget-account code or name. Keeps each matching
-    // account row plus its ancestor (dimension) rows so the full hierarchy still
-    // shows, and ignores collapse/hide-zero so a match is never hidden. Matches
-    // code or name (feedback), case-insensitively.
+    // Free-text search (handled by the base visibleRows) takes precedence;
+    // otherwise, in only-selectable mode, collapse the tree to the pickable rows
+    // and their dimension path (keeping ancestors).
     get visibleRows() {
-        const query = (this.state.accountSearch || "").trim().toLowerCase();
-        if (!query) {
-            return super.visibleRows;
+        const query = (this.state.accountSearch || "").trim();
+        if (!query && this.onlySelectable) {
+            return this._rowsWithAncestors((row) => row.selectable);
         }
-        const byKey = this.rowsByKey;
-        const keep = new Set();
-        for (const row of this.state.rows) {
-            if (
-                row.row_type === "account" &&
-                ((row.code || "").toLowerCase().includes(query) ||
-                    (row.name || "").toLowerCase().includes(query))
-            ) {
-                keep.add(row.key);
-                let pk = row.parent_key;
-                while (pk && !keep.has(pk)) {
-                    keep.add(pk);
-                    pk = byKey[pk] ? byKey[pk].parent_key : false;
-                }
-            }
-        }
-        return this.state.rows.filter((row) => keep.has(row.key));
+        return super.visibleRows;
     }
 
     // The picker's breakdown is fixed (always on, no toggles) — the table always

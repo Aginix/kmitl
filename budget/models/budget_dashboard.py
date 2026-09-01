@@ -674,11 +674,36 @@ class BudgetDashboard(models.AbstractModel):
                 if selectable_ids is None
                 else account is not None and row["id"] in selectable_ids
             )
+        # When the host constrains selectable codes (account_domain), show only
+        # those codes and the dimension/roll-up rows leading to them — not every
+        # code under the category. Domain-less hosts (budget.commitment) keep the
+        # full grid.
+        if selectable_ids is not None:
+            rows = self._prune_to_selectable(rows)
         return {
             "rows": rows,
             "currency_id": data.get("currency_id"),
             "hier_op": data.get("hier_op", "="),
         }
+
+    @api.model
+    def _prune_to_selectable(self, rows):
+        """Keep only selectable budget-account rows plus the ancestor rows that
+        lead to them, so the reservation picker lists just the pickable
+        รหัสงบประมาณ. A ส่วนงาน/กิจกรรม/กองทุน branch with nothing selectable falls
+        away with its last child. Ancestry is walked through ``parent_key``."""
+        by_key = {row["key"]: row for row in rows}
+        keep = set()
+        for row in rows:
+            if not row.get("selectable"):
+                continue
+            keep.add(row["key"])
+            pk = row.get("parent_key")
+            while pk and pk not in keep:
+                keep.add(pk)
+                parent = by_key.get(pk)
+                pk = parent.get("parent_key") if parent else False
+        return [row for row in rows if row["key"] in keep]
 
     @api.model
     def get_selectable_roots(self, account_domain):
@@ -941,7 +966,13 @@ class BudgetDashboard(models.AbstractModel):
 
         commitments = self.env["budget.commitment"].search(domain, limit=limit)
         moves = self.env["budget.move"].search(domain, limit=limit)
-        transfers = self.env["budget.transfer"].search(domain, limit=limit)
+        # budget.transfer lives in the optional `budget_transfer` add-on
+        # (ADR-0013); the core dashboard stays self-contained without it.
+        transfers = (
+            self.env["budget.transfer"].search(domain, limit=limit)
+            if "budget.transfer" in self.env
+            else []
+        )
         return {
             "commitment": [
                 {

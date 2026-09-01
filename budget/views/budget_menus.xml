@@ -3,8 +3,8 @@
     <menuitem
         id="budget_root_menu"
         name="Budgeting"
-        sequence="1"
-        groups="budget.group_budget_user"
+        sequence="10"
+        groups="budget.group_budget_viewer"
         web_icon="budget,static/description/icon.png">
 
         <menuitem id="budget_commitment_management" name="จองงบประมาณ" sequence="30">
@@ -17,29 +17,6 @@
             <menuitem id="budget_move_menu" name="บัญชีงบประมาณ" sequence="1">
                 <menuitem id="action_budget_move_menu_action" name="รายการบันทึกสมุดบัญชีงบประมาณ" action="action_budget_move" />
                 <menuitem id="action_budget_move_line_menu_action" name="รายการบันทึกสมุดบัญชีงบประมาณ (แบบแจกแจง)" action="action_budget_move_line" />
-            </menuitem>
-        </menuitem>
-
-        <menuitem id="budget_transfer_management" name="โอนงบประมาณ" sequence="50">
-            <menuitem id="budget_transfer_menu" name="โอนงบประมาณ" sequence="1">
-                <menuitem
-                    id="action_my_budget_transfers_menu"
-                    name="คำขอโอนงบประมาณของฉัน"
-                    action="action_my_budget_transfers"
-                    sequence="1"
-                />
-                <menuitem
-                    id="action_budget_transfers_pending_menu"
-                    name="รอการอนุมัติ"
-                    action="action_budget_transfers_pending"
-                    sequence="2"
-                />
-                <menuitem
-                    id="action_budget_transfer_menu"
-                    name="คำขอโอนงบประมาณทั้งหมด"
-                    action="action_budget_transfer"
-                    sequence="3"
-                />
             </menuitem>
         </menuitem>
 

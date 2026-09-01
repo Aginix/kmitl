@@ -104,7 +104,7 @@
                         type="file"
                         class="d-none js-file-input"
                         t-att-name="name"
-                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                        t-att-accept="accept or '.pdf,.jpg,.jpeg,.png'"
                     />
                 </label>
                 <button
@@ -201,9 +201,10 @@
             <t t-if="download_url">
                 <a
                     t-att-href="download_url"
+                    target="_blank"
                     class="btn btn-outline-primary btn-sm rounded-3"
                 >
-                    <i class="fa fa-download me-1" />ดาวน์โหลด </a>
+                    <i class="fa fa-eye me-1" />ดูเอกสาร </a>
             </t>
         </div>
     </template>
@@ -244,7 +245,7 @@
                     class="d-none js-multi-file-input"
                     t-att-name="name"
                     multiple="multiple"
-                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    t-att-accept="accept or '.pdf,.jpg,.jpeg,.png'"
                 />
                 <div class="mb-3">
                     <i class="fa fa-cloud-upload text-secondary upload-cloud-icon" />
@@ -288,7 +289,7 @@
                             </span>
                         </t>
                     </div>
-                    <p class="text-secondary small mb-2">
+                    <p class="text-dark fw-semibold small mb-2">
                         <t t-out="description" />
                     </p>
                     <div
@@ -325,7 +326,7 @@
                         type="file"
                         class="d-none js-file-input"
                         t-att-name="name"
-                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                        t-att-accept="accept or '.pdf,.jpg,.jpeg,.png'"
                     />
                 </label>
                 <button
@@ -397,9 +398,10 @@
             <t t-if="download_url">
                 <a
                     t-att-href="download_url"
+                    target="_blank"
                     class="btn btn-outline-primary btn-sm rounded-3"
                 >
-                    <i class="fa fa-download me-1" />ดาวน์โหลด </a>
+                    <i class="fa fa-eye me-1" />ดูเอกสาร </a>
             </t>
         </div>
     </template>

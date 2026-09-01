@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Reset admin (ADR-0011) — a dangerous override granted INDEPENDENTLY of the
+             Sarabun access level: a person may be a Sarabun Manager WITHOUT reset rights.
+             It is therefore deliberately given NO module category. Odoo renders a group
+             that HAS a category as part of that category's level *dropdown* (even a lone
+             group — res.users.get_groups_by_application: a single group is a total order,
+             so 'selection'), whereas a category-LESS group falls into the "Other" bucket
+             and renders as a standalone **checkbox**. It still **implies Manager** so
+             ticking Reset also grants the manager see-all needed to reach any document.
+             Net: the e-Sarabun level stays a User/Manager dropdown and "Reset Admin" is
+             an orthogonal tick on top. (category_id=False is explicit so it also clears
+             on an in-place upgrade, not only on reinstall.) -->
+        <record id="group_sarabun_reset" model="res.groups">
+            <field name="name">Sarabun Reset Admin</field>
+            <field name="category_id" eval="False"/>
+            <field name="implied_ids" eval="[(4, ref('agx_sarabun.group_sarabun_manager'))]"/>
+        </record>
+    </data>
+</odoo>

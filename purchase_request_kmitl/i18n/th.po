@@ -519,7 +519,7 @@ msgstr "เหตุผล/ความจำเป็น"
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_line__name
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__name
 msgid "Description"
-msgstr "ชื่อรายการ"
+msgstr "รายการ"
 
 #. module: purchase_request
 #. odoo-python
@@ -601,7 +601,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__estimated_cost
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__estimated_cost
 msgid "Estimated Cost"
-msgstr "มูลค่าทั้งหมด"
+msgstr "จำนวนเงิน"
 
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__estimated_cost
@@ -1022,6 +1022,31 @@ msgid "Price Determine Committees"
 msgstr "คณะกรรมการกำหนดราคากลาง"
 
 #. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Committees"
+msgstr "คณะกรรมการ"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Propose Evaluation Committee"
+msgstr "เสนอรายชื่อคณะกรรมการพิจารณาผล"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Propose Price Determine Committee"
+msgstr "เสนอรายชื่อคณะกรรมการกำหนดราคากลาง"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Propose TOR Committee"
+msgstr "เสนอรายชื่อคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Propose Work Acceptance Committee"
+msgstr "เสนอรายชื่อคณะกรรมการตรวจรับพัสดุ"
+
+#. module: purchase_request_kmitl
 #: model:ir.actions.act_window,name:purchase_request_kmitl.action_procurement_committee
 #: model:ir.model,name:purchase_request_kmitl.model_procurement_committee
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__procurement
@@ -1152,6 +1177,11 @@ msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__assigned_to
 msgid "Purchase Representative"
 msgstr "ผู้แทนฝ่ายจัดซื้อ"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Responsible Officer"
+msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
 
 #. modules: purchase_request, purchase_request_kmitl
 #: model:ir.actions.report,name:purchase_request.action_report_purchase_requests
@@ -1344,7 +1374,7 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_qty
 msgid "Quantity"
-msgstr "ปริมาณ"
+msgstr "จำนวน"
 
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__qty_cancelled
@@ -1500,21 +1530,19 @@ msgid "Request status"
 msgstr ""
 
 #. module: purchase_request_kmitl
-#: model:ir.actions.act_window,name:purchase_request_kmitl.action_purchase_request_return_wizard
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_return_wizard_form
-msgid "Return Purchase Request"
-msgstr "ตีกลับคำขอซื้อ"
-
-#. module: purchase_request_kmitl
-#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_return_wizard__reason
-msgid "Return Reason"
-msgstr "เหตุผลในการตีกลับ"
+#: model:ir.model,name:purchase_request_kmitl.model_purchase_request_return_wizard
+msgid "Purchase Request Return Wizard"
+msgstr "Wizard ตีกลับคำขอ (พ.1)"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_return_wizard_form
 msgid "Return"
-msgstr "ตีกลับ"
+msgstr "ตีกลับแก้ไข"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__returned
+msgid "Returned"
+msgstr "รอการแก้ไข"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__requested_by
@@ -1541,7 +1569,7 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 msgid "Reset"
-msgstr "เริ่มใหม่"
+msgstr "ดึงกลับ"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__user_id
@@ -1848,7 +1876,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_uom_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__product_uom_id
 msgid "UoM"
-msgstr "หน่วยวัด"
+msgstr "หน่วยนับ"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_search_sub
@@ -2020,7 +2048,12 @@ msgstr "รายการแบบขอให้จัดหา"
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__title
 msgid "title"
-msgstr "ชื่อเรื่อง"
+msgstr "เรื่องขอให้จัดหา"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__title
+msgid "Title"
+msgstr "เรื่องขอให้จัดหา"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,description:purchase_request_kmitl.purchase_exception_amount_not_exceed_pr
@@ -2169,7 +2202,7 @@ msgstr "ยอดเงินของเอกสารนี้ เกิน�
 #. module: purchase_request_kmitl
 #: model:exception.rule,description:purchase_request_kmitl.pr_line_exception_price_unit_min_0
 msgid "The system does not allow the unit price to be 0 or negative."
-msgstr "ระบบไม่อนุญาตให้ราคาต่อหน่วยเป็น 0 หรือค่าติดลบ"
+msgstr "ระบบไม่อนุญาตให้ราคาเป็น 0 หรือค่าติดลบ"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.pr_exception_2_1
@@ -2204,7 +2237,7 @@ msgstr ""
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.pr_line_exception_price_unit_min_0
 msgid "The unit price must be greater than 0."
-msgstr "ราคาต่อหน่วยต้องมากกว่า 0"
+msgstr "ราคาต้องมากกว่า 0"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
@@ -2274,10 +2307,3 @@ msgstr "สำหรับงานก่อสร้าง"
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_submit
 msgid "To Submit"
 msgstr "รอส่งขอความเห็นชอบให้จัดหา"
-
-#. module: purchase_request_kmitl
-#. odoo-python
-#: code:addons/purchase_request_kmitl/wizards/purchase_request_return_wizard.py:0
-#, python-format
-msgid "Purchase request returned. Reason: %s"
-msgstr "แบบขอให้จัดหา (พ.1) ถูกตีกลับ. เหตุผล: %s"

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- Document type master records -->
+
+    <record id="doctype_contract" model="ir.attachment.document.type">
+        <field name="name">สัญญา</field>
+    </record>
+
+    <record id="doctype_receipt" model="ir.attachment.document.type">
+        <field name="name">เอกสารเบิกจ่ายและใบเสร็จ</field>
+    </record>
+
+    <record id="doctype_purchase" model="ir.attachment.document.type">
+        <field name="name">จัดซื้อจัดจ้าง</field>
+    </record>
+
+    <!-- Model configurations — one per parent model, each with its
+         ordered list of doctypes as inline lines. -->
+
+    <record id="config_kris_project" model="ir.attachment.document.type.config">
+        <field name="res_model_id" ref="kris_project.model_kris_project" />
+        <field
+            name="line_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'document_type_id': ref('doctype_contract'), 'sequence': 10}),
+                   (0, 0, {'document_type_id': ref('doctype_receipt'), 'sequence': 20}),
+                   (0, 0, {'document_type_id': ref('doctype_purchase'), 'sequence': 30})]"
+        />
+    </record>
+
+    <record id="config_kris_project_receipt" model="ir.attachment.document.type.config">
+        <field name="res_model_id" ref="kris_project.model_kris_project_receipt" />
+        <field
+            name="line_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'document_type_id': ref('doctype_contract'), 'sequence': 10}),
+                   (0, 0, {'document_type_id': ref('doctype_receipt'), 'sequence': 20}),
+                   (0, 0, {'document_type_id': ref('doctype_purchase'), 'sequence': 30})]"
+        />
+    </record>
+
+    <!-- Wizard mirrors the receipt config so the chooser dialog appears while
+         uploads still live on the transient wizard record; action_save then
+         repoints the attachments to kris.project.receipt, preserving the
+         chosen document_type_id. -->
+    <record
+        id="config_kris_project_receipt_wizard"
+        model="ir.attachment.document.type.config"
+    >
+        <field
+            name="res_model_id"
+            ref="kris_project.model_kris_project_receipt_wizard"
+        />
+        <field
+            name="line_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'document_type_id': ref('doctype_contract'), 'sequence': 10}),
+                   (0, 0, {'document_type_id': ref('doctype_receipt'), 'sequence': 20}),
+                   (0, 0, {'document_type_id': ref('doctype_purchase'), 'sequence': 30})]"
+        />
+    </record>
+
+</odoo>
