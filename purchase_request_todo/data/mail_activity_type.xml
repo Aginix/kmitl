@@ -12,7 +12,7 @@
 
     <!-- Execution Todo: PR endorsed — proceed with PA creation (non-EGP) or EGP recording -->
     <record id="mail_activity_create_purchase_order" model="mail.activity.type">
-        <field name="name">สร้างใบสั่งซื้อ (พ.1)</field>
+        <field name="name">ดำเนินการสร้างสัญญา/ใบสั่งซื้อ (PO)</field>
         <field
             name="summary"
         >กรุณาดำเนินการสร้างสัญญา/ใบสั่งซื้อ (PO)</field>

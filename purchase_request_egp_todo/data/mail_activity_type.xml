@@ -2,8 +2,8 @@
 <odoo noupdate="1">
     <!-- Execution Todo: EGP path — record the e-GP project number so procurement can proceed -->
     <record id="mail_activity_pr_egp_number_entry" model="mail.activity.type">
-        <field name="name">กรอกเลขโครงการ e-GP (พ.1)</field>
-        <field name="summary">กรอกเลขโครงการ e-GP เพื่อดำเนินการจัดซื้อจัดจ้างต่อ</field>
+        <field name="name">ดำเนินการ e-GP แบบขอให้จัดหา (พ.1)</field>
+        <field name="summary">ดำเนินการ e-GP แบบขอให้จัดหา (พ.1)</field>
         <field name="todo_category">execution</field>
         <field name="res_model">purchase.request</field>
         <field name="icon">fa-globe</field>

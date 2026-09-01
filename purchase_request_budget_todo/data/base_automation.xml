@@ -19,7 +19,7 @@ if act_type:
     for rec in records:
         if rec.activity_ids.filtered(lambda a: a.activity_type_id == act_type):
             continue
-        summary = "ท่านได้รับ แบบขอให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ จองเงินงบประมาณ" % (rec.name or "")
+        summary = "กรุณาจองงบประมาณ สำหรับแบบขอให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ จองเงินงบประมาณ" % (rec.name or "")
         if role and rec.operating_unit_id:
             rec.activity_schedule(
                 "purchase_request_budget_todo.mail_activity_pr_reserve_budget",
@@ -45,7 +45,7 @@ if act_type:
 for rec in records:
     if not rec.create_uid:
         continue
-    summary = "ท่านได้รับ แบบขอให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ สร้างหนังสือขอความเห็นชอบให้จัดหา" % (rec.name or "")
+    summary = "สร้างหนังสือขอความเห็นชอบให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ สร้างหนังสือขอความเห็นชอบให้จัดหา" % (rec.name or "")
     rec.activity_schedule(
         "purchase_request_budget_todo.mail_activity_pr_awaiting_endorsement_letter",
         summary=summary,

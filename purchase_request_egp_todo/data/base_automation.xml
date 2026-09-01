@@ -15,7 +15,7 @@
         <field name="code"><![CDATA[
 role = env.ref("purchase_user_role.purchase_role_procurement", raise_if_not_found=False)
 for rec in records:
-    summary = "แบบขอให้จัดหา (พ.1) เลขที่ %s กรุณาดำเนินการกรอกเลขที่โครงการ e-GP และกด ดำเนินการ e-GP เพื่อดำเนินการต่อ" % (rec.name or "")
+    summary = "กรุณาดำเนินการ e-GP แบบขอให้จัดหา (พ.1) เลขที่ %s" % (rec.name or "")
     if role and rec.operating_unit_id:
         rec.activity_schedule(
             "purchase_request_egp_todo.mail_activity_pr_egp_number_entry",
