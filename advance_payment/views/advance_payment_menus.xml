@@ -6,11 +6,18 @@
         web_icon="advance_payment,static/description/icon.png"
         groups="advance_payment.group_advance_payment_own_only"/>
 
-    <menuitem id="menu_advance_payment_agreement"
-        name="สัญญายืมเงิน"
+    <menuitem id="menu_advance_payment_my"
+        name="สัญญาของฉัน"
+        parent="menu_advance_payment_root"
+        action="action_advance_payment_my"
+        sequence="10"/>
+
+    <menuitem id="menu_advance_payment_all"
+        name="สัญญาเงินยืมทั้งหมด"
         parent="menu_advance_payment_root"
         action="action_advance_payment"
-        sequence="10"/>
+        sequence="20"
+        groups="advance_payment.group_advance_payment_user"/>
 
     <menuitem id="menu_advance_payment_config"
         name="การกำหนดค่า"
@@ -18,10 +25,18 @@
         sequence="100"
         groups="base.group_system"/>
 
+    <record id="action_advance_payment_config_settings" model="ir.actions.act_window">
+        <field name="name">การตั้งค่าสัญญายืมเงิน</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'advance_payment'}</field>
+    </record>
+
     <menuitem id="menu_advance_payment_settings"
         name="การตั้งค่า"
         parent="menu_advance_payment_config"
-        action="base_setup.action_general_configuration"
+        action="action_advance_payment_config_settings"
         sequence="1"/>
 
     <menuitem id="menu_advance_payment_loan_type"

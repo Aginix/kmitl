@@ -304,18 +304,6 @@ class AdvancePayment(models.Model):
         states=READONLY_STATES,
     )
 
-    use_attachment_bank = fields.Boolean(
-        string="ประสงค์ใช้เลขบัญชีธนาคารตามเอกสารแนบ",
-        states=READONLY_STATES,
-    )
-
-    book_bank = fields.Binary(
-        string="Book Bank",
-        attachment=True,
-        states=READONLY_STATES,
-    )
-    book_bank_filename = fields.Char()
-
     return_due_date = fields.Date(
         string="วันครบกำหนดคืน",
         copy=False,
