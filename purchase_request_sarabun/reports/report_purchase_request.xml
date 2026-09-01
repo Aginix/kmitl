@@ -41,226 +41,195 @@
                             บันทึกขอให้จัดหา
                         </h3>
                     </div>
-                    <!-- บันทึกนำ — optional covering note above the origin body;
-                         prints only when the drafter ticked แนบเนื้อหา. -->
-                    <t t-call="agx_sarabun.sarabun_covering_note">
-                        <t t-set="doc" t-value="o.active_sarabun_document_id" />
-                    </t>
-                    <div class="row">
-                        <div class="col">
-                            หน่วยงาน
-                            <span
-                                class="ms-2"
-                                t-out="o.active_sarabun_document_id.sender_department_id.display_name"
-                            />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-8">
-                            เลขที่เอกสาร
-                            <span
-                                class="ms-2 fw-normal"
-                                t-out="o.active_sarabun_document_id.name"
-                            />
-                        </div>
-                        <div class="col">
-                            วันที่
-                            <span
-                                class="ms-2 fw-normal"
-                                t-esc="o.format_date_thai(o.active_sarabun_document_id.date)"
-                            />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            เรื่อง
-                            <span
-                                class="ms-2"
-                                t-out="o.active_sarabun_document_id.subject"
-                            />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            เรียน
-                            <span
-                                class="ms-2"
-                                t-out="o.active_sarabun_document_id.addressee"
-                            />
-                        </div>
-                    </div>
 
-                    <div class="my-4" />
-                    <p style="text-indent: 6em">
-                        ข้าพเจ้า
-                        <span
-                            t-field="o.requested_by"
-                            class="fw-bolder text-decoration-underline"
-                        />
-                        <span class="ms-2">สังกัด</span>
-                        <span
-                            t-out="o.requested_by.employee_id.department_id.complete_name"
-                            class="fw-bolder text-decoration-underline"
-                        />
-                        ต้องการ
-                        <span
-                            t-field="o.procurement_type_id"
-                            class="fw-bolder text-decoration-underline"
-                        />
-                        <span
-                            t-out="o.product_id.name"
-                            class="fw-bolder text-decoration-underline"
-                        />
-                        ด้วยวิธีการจัดซื้อจัดจ้าง
-                        <span
-                            class="fw-bolder text-decoration-underline"
-                            t-field="o.procurement_method_id"
-                        />
-                    </p>
-
-                    <div class="my-4" />
-
-                    <div class="row">
-                        <div class="col">
-                            เหตุผลความจำเป็น
-                            <span
-                                class="fw-bolder text-decoration-underline"
-                                t-out="o.description"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col">
-                            โดยใช้งบประมาณ ประจำปีงบประมาณ พ.ศ.
-                            <span
-                                class="fw-bolder text-decoration-underline"
-                                t-field="o.account_fiscal_year_id"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="my-4" />
-                    <div class="row my-2">
-                        <div class="col">ขอให้จัดหาพัสดุ ดังตารางต่อไปนี้</div>
-                    </div>
-
-                    <table class="table table-bordered table-sm mb-4">
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="width: 40pt">
-                                    ลำดับ
-                                </th>
-                                <th class="text-center">รายละเอียด</th>
-                                <th class="text-center">จำนวน</th>
-                                <th class="text-end">ราคา</th>
-                                <th class="text-end">จำนวนเงิน</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-set="row_no" t-value="1" />
-                            <t t-foreach="o.line_ids" t-as="line">
-                                <tr>
-                                    <td class="text-center" t-out="row_no" />
-                                    <td t-out="line.name" style="white-space: pre-wrap" />
-                                    <td class="text-center">
-                                        <span
-                                            t-out="'{0:,.0f}'.format(line.product_qty)"
-                                        />
-                                        <span
-                                            t-out="line.uom_text or line.product_uom_id.name or ''"
-                                        />
-                                    </td>
-                                    <td
-                                        class="text-end"
-                                        t-out="'{0:,.2f}'.format(line.price_unit)"
-                                    />
-                                    <td
-                                        class="text-end"
-                                        t-out="'{0:,.2f}'.format(line.estimated_cost)"
-                                    />
-                                </tr>
-                                <t t-set="row_no" t-value="row_no + 1" />
-                            </t>
-                            <tr>
-                                <t t-set="currency" t-value="o.currency_id" />
-                                <td
-                                    colspan="2"
-                                    rowspan="3"
-                                    class="text-center align-middle"
-                                >
-                                    (
-                                    <t
-                                        t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
-                                    />
-                                    )
-                                </td>
-                                <td class="text-center" colspan="2">
-                                    ราคาก่อนรวมภาษีมูลค่าเพิ่ม
-                                </td>
-                                <td
-                                    class="text-end"
-                                    t-out="'{0:,.2f}'.format(o.amount_untaxed)"
-                                />
-                            </tr>
-                            <tr>
-                                <td class="text-center" colspan="2">
-                                    ภาษีมูลค่าเพิ่ม (VAT 7%)
-                                </td>
-                                <td
-                                    class="text-end"
-                                    t-out="'{0:,.2f}'.format(o.amount_tax)"
-                                />
-                            </tr>
-                            <tr>
-                                <td class="text-center" colspan="2">ราคาสุทธิ</td>
-                                <td
-                                    class="text-end"
-                                    t-out="'{0:,.2f}'.format(o.amount_total)"
-                                />
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="my-4" />
-                    <p>รายละเอียดงบประมาณ</p>
+                    <!-- Request narrative (บรรยาย) + live body (ตาราง).
+                         Extracted into reusable sub-templates so the Sarabun
+                         bridge can reuse them (ADR-0015): the บรรยาย seeds the
+                         หนังสือ's editable content, the body renders live in the
+                         Sarabun no-source layout's origin slot. -->
                     <t
-                        t-call="purchase_request_sarabun.report_purchase_request_budget"
+                        t-call="purchase_request_sarabun.report_purchase_request_narrative"
                     />
-
-                    <div class="my-4" />
-                    <div class="mb-2">
-                        และพร้อมกันนี้ได้แนบเอกสารประกอบการพิจารณา ดังนี้
-                    </div>
-                    <ol>
-                        <li>
-                            บันทึกเสนอซื้อ จำนวน
-                            <span class="fw-bolder text-decoration-underline">1</span>
-                            ชุด
-                        </li>
-                        <li>
-                            ใบเสนอราคาพัสดุ จำนวน
-                            <span
-                                class="fw-bolder text-decoration-underline"
-                                t-out="len(o.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_rfq')))"
-                            />
-                            ชุด
-                        </li>
-                        <li>
-                            เอกสารคุณสมบัติ จำนวน
-                            <span
-                                class="fw-bolder text-decoration-underline"
-                                t-out="len(o.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_tor')))"
-                            />
-                            ชุด
-                        </li>
-                        <t
-                            t-call="purchase_request_sarabun.report_purchase_request_committee"
-                        />
-                    </ol>
+                    <t
+                        t-call="purchase_request_sarabun.report_purchase_request_body"
+                    />
                 </div>
             </t>
         </xpath>
+    </template>
+
+    <!-- บรรยาย (request narrative) — the descriptive prose above the tables.
+         Reused by the Sarabun bridge to seed the หนังสือ's editable เนื้อหา
+         (ADR-0015). Expects `o` (a purchase.request) in context. -->
+    <template id="report_purchase_request_narrative">
+        <p style="text-indent: 6em">
+            ข้าพเจ้า
+            <span
+                t-field="o.requested_by"
+                class="fw-bolder text-decoration-underline"
+            />
+            <span class="ms-2">สังกัด</span>
+            <span
+                t-out="o.requested_by.employee_id.department_id.complete_name"
+                class="fw-bolder text-decoration-underline"
+            />
+            ต้องการ
+            <span
+                t-field="o.procurement_type_id"
+                class="fw-bolder text-decoration-underline"
+            />
+            <span
+                t-out="o.product_id.name"
+                class="fw-bolder text-decoration-underline"
+            />
+            ด้วยวิธีการจัดซื้อจัดจ้าง
+            <span
+                class="fw-bolder text-decoration-underline"
+                t-field="o.procurement_method_id"
+            />
+        </p>
+
+        <div class="my-4" />
+
+        <div class="row">
+            <div class="col">
+                เหตุผลความจำเป็น
+                <span
+                    class="fw-bolder text-decoration-underline"
+                    t-out="o.description"
+                />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                โดยใช้งบประมาณ ประจำปีงบประมาณ พ.ศ.
+                <span
+                    class="fw-bolder text-decoration-underline"
+                    t-field="o.account_fiscal_year_id"
+                />
+            </div>
+        </div>
+    </template>
+
+    <!-- Live body (ตาราง) — items table + budget details + enclosure list +
+         committees. Reused by the Sarabun bridge as the live origin body fragment
+         rendered between the หนังสือ's เนื้อหา and its signatures (ADR-0015);
+         rendered live so numbers always match the reserved commitment. Expects
+         `o` (a purchase.request) in context. -->
+    <template id="report_purchase_request_body">
+        <div class="my-4" />
+        <div class="row my-2">
+            <div class="col">ขอให้จัดหาพัสดุ ดังตารางต่อไปนี้</div>
+        </div>
+
+        <table class="table table-bordered table-sm mb-4">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 40pt">ลำดับ</th>
+                    <th class="text-center">รายละเอียด</th>
+                    <th class="text-center">จำนวน</th>
+                    <th class="text-end">ราคา</th>
+                    <th class="text-end">จำนวนเงิน</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-set="row_no" t-value="1" />
+                <t t-foreach="o.line_ids" t-as="line">
+                    <tr>
+                        <td class="text-center" t-out="row_no" />
+                        <td t-out="line.name" style="white-space: pre-wrap" />
+                        <td class="text-center">
+                            <span
+                                t-out="'{0:,.0f}'.format(line.product_qty)"
+                            />
+                            <span
+                                t-out="line.uom_text or line.product_uom_id.name or ''"
+                            />
+                        </td>
+                        <td
+                            class="text-end"
+                            t-out="'{0:,.2f}'.format(line.price_unit)"
+                        />
+                        <td
+                            class="text-end"
+                            t-out="'{0:,.2f}'.format(line.estimated_cost)"
+                        />
+                    </tr>
+                    <t t-set="row_no" t-value="row_no + 1" />
+                </t>
+                <tr>
+                    <t t-set="currency" t-value="o.currency_id" />
+                    <td
+                        colspan="2"
+                        rowspan="3"
+                        class="text-center align-middle"
+                    >
+                        (
+                        <t
+                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
+                        />
+                        )
+                    </td>
+                    <td class="text-center" colspan="2">
+                        ราคาก่อนรวมภาษีมูลค่าเพิ่ม
+                    </td>
+                    <td
+                        class="text-end"
+                        t-out="'{0:,.2f}'.format(o.amount_untaxed)"
+                    />
+                </tr>
+                <tr>
+                    <td class="text-center" colspan="2">
+                        ภาษีมูลค่าเพิ่ม (VAT 7%)
+                    </td>
+                    <td
+                        class="text-end"
+                        t-out="'{0:,.2f}'.format(o.amount_tax)"
+                    />
+                </tr>
+                <tr>
+                    <td class="text-center" colspan="2">ราคาสุทธิ</td>
+                    <td
+                        class="text-end"
+                        t-out="'{0:,.2f}'.format(o.amount_total)"
+                    />
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="my-4" />
+        <p>รายละเอียดงบประมาณ</p>
+        <t t-call="purchase_request_sarabun.report_purchase_request_budget" />
+
+        <div class="my-4" />
+        <div class="mb-2">
+            และพร้อมกันนี้ได้แนบเอกสารประกอบการพิจารณา ดังนี้
+        </div>
+        <ol>
+            <li>
+                บันทึกเสนอซื้อ จำนวน
+                <span class="fw-bolder text-decoration-underline">1</span>
+                ชุด
+            </li>
+            <li>
+                ใบเสนอราคาพัสดุ จำนวน
+                <span
+                    class="fw-bolder text-decoration-underline"
+                    t-out="len(o.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_rfq')))"
+                />
+                ชุด
+            </li>
+            <li>
+                เอกสารคุณสมบัติ จำนวน
+                <span
+                    class="fw-bolder text-decoration-underline"
+                    t-out="len(o.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_tor')))"
+                />
+                ชุด
+            </li>
+            <t t-call="purchase_request_sarabun.report_purchase_request_committee" />
+        </ol>
     </template>
 
     <template id="report_purchase_request_committee">
@@ -342,21 +311,5 @@
                 </tr>
             </tbody>
         </table>
-    </template>
-
-    <!-- ADR-0007: append sarabun's เกษียน trail + signature block at the tail of the
-         source report (the origin embeds sarabun's block). Resolved from the origin
-         via active_sarabun_document_id; renders nothing until steps complete.
-         priority 99 so it applies after this module's layout replace. -->
-    <template
-        id="report_purchase_request_sarabun_endorsement"
-        inherit_id="purchase_request.report_purchase_request"
-        priority="99"
-    >
-        <xpath expr="//div[@class='page']" position="inside">
-            <t t-call="agx_sarabun.sarabun_endorsement_block">
-                <t t-set="doc" t-value="o.active_sarabun_document_id" />
-            </t>
-        </xpath>
     </template>
 </odoo>
