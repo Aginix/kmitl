@@ -13,13 +13,13 @@
     </record>
 
     <record
-        id="mail_activity_pr_awaiting_endorsement_letter"
+        id="mail_activity_pr_awaiting_sarabun"
         model="mail.activity.type"
     >
-        <field name="name">รอจดหมายรับรอง (พ.1)</field>
+        <field name="name">ดำเนินการสร้างหนังสือขอความเห็นชอบ (พ.1)</field>
         <field
             name="summary"
-        >Create the endorsement letter for the purchase request</field>
+        >รอดำเนินการสร้างหนังสือขอความเห็นชอบ (พ.1)</field>
         <field name="todo_category">execution</field>
         <field name="res_model">purchase.request</field>
         <field name="icon">fa-file-text-o</field>

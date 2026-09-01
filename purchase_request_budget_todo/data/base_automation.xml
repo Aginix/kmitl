@@ -47,7 +47,7 @@ for rec in records:
         continue
     summary = "สร้างหนังสือขอความเห็นชอบให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ สร้างหนังสือขอความเห็นชอบให้จัดหา" % (rec.name or "")
     rec.activity_schedule(
-        "purchase_request_budget_todo.mail_activity_pr_awaiting_endorsement_letter",
+        "purchase_request_budget_todo.mail_activity_pr_awaiting_sarabun",
         summary=summary,
         user_id=rec.create_uid.id,
     )
@@ -66,7 +66,7 @@ for rec in records:
         <field name="filter_domain">[("state", "!=", "to_submit")]</field>
         <field name="state">code</field>
         <field name="code"><![CDATA[
-records.activity_feedback(["purchase_request_budget_todo.mail_activity_pr_awaiting_endorsement_letter"])
+records.activity_feedback(["purchase_request_budget_todo.mail_activity_pr_awaiting_sarabun"])
 ]]></field>
     </record>
 
