@@ -98,16 +98,30 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
         with self.assertRaises(UserError):
             receipt.action_draft()
 
-    def test_reset_blocked_while_remitted(self):
+    def test_cancel_detaches_from_draft_remittance(self):
         receipt = self._make_receipt()
-        self.env["kmitl.receipt.remittance"].create(
-            {
-                "department_analytic_id": self.dept_a.id,
-                "receipt_ids": [(6, 0, [receipt.id])],
-            }
-        )
+        remittance = self.env["kmitl.receipt.remittance"].create({
+            "department_analytic_id": self.dept_a.id,
+            "receipt_ids": [(6, 0, [receipt.id])],
+        })
         receipt.action_cancel()
         self.assertEqual(receipt.state, "cancelled")
+        self.assertFalse(receipt.remittance_id)
+        self.assertNotIn(receipt.id, remittance.receipt_ids.ids)
+        self.assertTrue(
+            remittance.message_ids.filtered(lambda m: receipt.name in (m.body or ""))
+        )
+        # detached, so it can now be reset
+        receipt.action_draft()
+        self.assertEqual(receipt.state, "draft")
+
+    def test_reset_blocked_while_remitted(self):
+        receipt = self._make_receipt()
+        receipt.action_cancel()
+        remittance = self.env["kmitl.receipt.remittance"].create(
+            {"department_analytic_id": self.dept_a.id}
+        )
+        remittance.write({"receipt_ids": [(4, receipt.id)]})
         with self.assertRaises(UserError):
             receipt.action_draft()
 
@@ -131,30 +145,34 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
 
     def test_payment_type_cheque_requires_number_and_date(self):
         with self.assertRaises(ValidationError):
-            self._make_receipt(extra_vals={"payment_type": "cheque"})
+            self._make_receipt(
+                method=self.pm_cheque,
+                extra_vals={"cheque_number": False, "cheque_date": False},
+            )
 
     def test_payment_type_cheque_with_fields_ok(self):
-        receipt = self._make_receipt(
-            extra_vals={
-                "payment_type": "cheque",
-                "cheque_number": "123456",
-                "cheque_date": fields.Date.context_today(self.env.user),
-            }
-        )
+        receipt = self._make_receipt(method=self.pm_cheque)
         self.assertEqual(receipt.payment_type, "cheque")
 
     def test_payment_type_transfer_requires_date(self):
         with self.assertRaises(ValidationError):
-            self._make_receipt(extra_vals={"payment_type": "transfer"})
+            self._make_receipt(
+                method=self.pm_transfer, extra_vals={"transfer_date": False}
+            )
 
     def test_payment_type_transfer_with_date_ok(self):
-        receipt = self._make_receipt(
-            extra_vals={
-                "payment_type": "transfer",
-                "transfer_date": fields.Date.context_today(self.env.user),
-            }
-        )
+        receipt = self._make_receipt(method=self.pm_transfer)
         self.assertEqual(receipt.payment_type, "transfer")
+
+    def test_payment_method_must_match_payment_type(self):
+        with self.assertRaises(ValidationError):
+            self._make_receipt(
+                method=self.pm_cash,
+                extra_vals={
+                    "payment_type": "transfer",
+                    "transfer_date": fields.Date.context_today(self.env.user),
+                },
+            )
 
     def test_onchange_payment_type_clears_inactive_fields(self):
         receipt = self.env["kmitl.receipt"].new(

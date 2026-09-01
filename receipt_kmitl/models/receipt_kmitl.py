@@ -492,6 +492,23 @@ class ReceiptKmitl(models.Model):
                     _("Transfer date is required for transfer payments.")
                 )
 
+    @api.constrains("payment_type", "payment_method_id")
+    def _check_payment_method_matches_type(self):
+        """The domain on payment_method_id is UI-only — import, API writes,
+        and writes that skip the onchange can still pair a method with the
+        wrong type. That mismatch isn't cosmetic: the printed receipt ticks
+        its box from payment_type, the journal entry debits
+        payment_method_id.account_id, and the summary report filters by
+        payment_type.
+        """
+        for rec in self:
+            method = rec.payment_method_id
+            if method and method.payment_type != rec.payment_type:
+                raise ValidationError(
+                    _("Payment method '%s' does not match the receipt's "
+                      "payment type.") % method.name
+                )
+
     # -------------------------------------------------------------------------
     # Actions
     # -------------------------------------------------------------------------
@@ -558,7 +575,26 @@ class ReceiptKmitl(models.Model):
                     _("Only draft receipts can be cancelled. "
                       "Reset to draft first.")
                 )
-            rec.state = "cancelled"
+            remittance = rec.remittance_id
+            if remittance:
+                # to_submit was merged into draft, so a receipt pulled into a
+                # still-draft remittance is itself still draft and passes the
+                # check above. Cancelling it without detaching would leave it
+                # stuck both ways: the remittance can't submit (every receipt
+                # must be draft) and the receipt can't reset to draft
+                # (action_draft blocks while remittance_id is set) — so
+                # detach it as part of cancelling.
+                rec.write({"remittance_id": False, "state": "cancelled"})
+                rec.message_post(
+                    body=_("Cancelled and removed from remittance %s.")
+                    % remittance.display_name
+                )
+                remittance.message_post(
+                    body=_("Receipt %s was cancelled and removed from this "
+                           "remittance.") % rec.name
+                )
+            else:
+                rec.state = "cancelled"
         return True
 
     def action_draft(self):

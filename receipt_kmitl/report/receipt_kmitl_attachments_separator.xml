@@ -17,7 +17,7 @@
                     <strong>จำนวนเงิน / Amount: </strong>
                     <span t-esc="'{:,.2f}'.format(o.amount_total)"/>
                 </div>
-                <t t-set="skipped" t-value="(data or {}).get('skipped_map', {}).get(str(o.id), [])"/>
+                <t t-set="skipped" t-value="(skipped_map or {}).get(str(o.id), [])"/>
                 <div t-if="skipped" class="mt16">
                     <strong>ไฟล์แนบที่ไม่รองรับ (ข้าม) / Unsupported attachments (skipped):</strong>
                     <ul>

@@ -62,7 +62,6 @@
                                 <option value="cash" t-att-selected="state.paymentType === 'cash'">Cash</option>
                                 <option value="cheque" t-att-selected="state.paymentType === 'cheque'">Cheque</option>
                                 <option value="transfer" t-att-selected="state.paymentType === 'transfer'">Transfer</option>
-                                <option value="other" t-att-selected="state.paymentType === 'other'">Other</option>
                             </select>
                         </div>
                         <div style="min-width: 180px;">

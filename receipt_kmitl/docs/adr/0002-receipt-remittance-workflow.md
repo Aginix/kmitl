@@ -39,6 +39,16 @@ found the two indistinguishable in practice — both meant "รอ" (pending) �
   `draft`" — the receipt pool this ADR's pull/detach/reject mechanisms draw
   from and return to is simply draft receipts not yet on a remittance.
 
+**Consequence for `kmitl.receipt.action_cancel`**: before this revision, a
+receipt pulled into a remittance was `to_submit` and one still eligible for
+cancellation was `draft` — the two states were distinguishable, so checking
+`state == 'draft'` was enough to know a receipt was free to cancel outright.
+After the merge, a receipt sitting in a still-`draft` remittance is itself
+`draft`, indistinguishable from an unattached one. `action_cancel` therefore
+also inspects `remittance_id`: if set, it clears it and removes the receipt
+from the remittance in the same write (auto-detach, with a chatter note on
+both records) instead of just flipping `state`.
+
 ## Error correction — two mechanisms
 
 1. **Remove one receipt** from a `submitted` remittance using the standard

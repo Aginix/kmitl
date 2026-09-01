@@ -1,5 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from odoo import fields
 from odoo.tests.common import TransactionCase
 
 
@@ -96,6 +97,15 @@ class ReceiptKmitlCommon(TransactionCase):
         cls.pm_transfer = Method.create(
             {
                 "name": "Transfer",
+                "payment_type": "transfer",
+                "journal_id": cls.bank_journal.id,
+                "account_id": cls.bank_account.id,
+            }
+        )
+        cls.pm_cheque = Method.create(
+            {
+                "name": "Cheque",
+                "payment_type": "cheque",
                 "journal_id": cls.bank_journal.id,
                 "account_id": cls.bank_account.id,
             }
@@ -131,8 +141,10 @@ class ReceiptKmitlCommon(TransactionCase):
         department = department or self.dept_a
         method = method or self.pm_cash
         lines = lines or [(self.product_tuition, 1, 5000.0)]
+        today = fields.Date.context_today(self.env.user)
         vals = {
             "department_analytic_id": department.id,
+            "payment_type": method.payment_type,
             "payment_method_id": method.id,
             "partner_id": self.walkin.id,
             "line_ids": [
@@ -150,6 +162,10 @@ class ReceiptKmitlCommon(TransactionCase):
                 for (product, qty, price) in lines
             ],
         }
+        if method.payment_type == "cheque":
+            vals.update({"cheque_number": "TEST-CHQ-0001", "cheque_date": today})
+        elif method.payment_type == "transfer":
+            vals["transfer_date"] = today
         if extra_vals:
             vals.update(extra_vals)
         return self.env["kmitl.receipt"].create(vals)

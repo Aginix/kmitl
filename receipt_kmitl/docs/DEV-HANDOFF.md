@@ -6,6 +6,11 @@ Implementation spec for the changes agreed in the grill session. Read alongside
 **Pre-production module** — not deployed yet ([[kmitl-deployed-in-production]] does
 NOT apply here). No migration scripts, no manifest version bump. Model/table
 renames are done directly (dev DBs are reinstalled/`-u`, not data-migrated).
+Two selection values removed by this hand-off, `kmitl.receipt.state='to_submit'`
+and `kmitl.payment.method.payment_type='other'`, are no longer valid and Odoo
+will **not** remap existing rows for you (`ir_model._process_ondelete` skips
+selections on base fields) — once this module ships to a database with real
+data, a migration script must remap both before upgrade.
 
 Work is in three deliverables, implement in this order:
 
@@ -275,3 +280,27 @@ above never shipped under that name (it shipped as `action_to_submit`/
   `get_receipt_dashboard(self, domain=None)` ANDs the caller's domain into each
   bucket; `receipt_dashboard.js` reads `env.searchModel.domain` and refetches
   on the search model's `update` event — no `search_default_*` added anywhere.
+
+## Revision 3 — post-review fixes
+
+A code review of Revision 2 found five defects, closed before deploy:
+
+- **Payment**: `payment_type` on the receipt header intentionally duplicates
+  `payment_method_id.payment_type` (type-first UX, per CONTEXT.md) — the form
+  domain alone doesn't stop imports/API writes from pairing them up wrong, so
+  `_check_payment_method_matches_type` (`@api.constrains`) closes that gap.
+  The printed receipt and the summary report both read the receipt's own
+  `payment_type`, never the method's.
+- **Attachments PDF**: `_build_attachments_pdf()` renders the separator batch
+  once and slices it by index, which only holds if every receipt's separator
+  is exactly one page. It now checks the separator's page count against the
+  receipt count and falls back to rendering each receipt's separator
+  individually (still correctly ordered) when they don't match, plus caps the
+  skipped-file list per receipt at 8 names (`MAX_SKIPPED_LISTED`) so long
+  lists rarely trigger the fallback in the first place.
+
+**Known follow-ups**:
+- `receipt_kmitl_operating_unit`'s test suite is not part of base
+  `receipt_kmitl`'s suite and was found broken (calling a removed method)
+  only via manual grep, not by running `oca_run_tests` on the base module.
+  Grep every add-on's tests whenever the base workflow changes.

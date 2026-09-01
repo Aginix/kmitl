@@ -15,6 +15,11 @@ Lifecycle: `draft` (รอนำส่ง / To Submit, still editable by the iss
 _Avoid_: Invoice, bill, Confirm (old action, removed — receipts are numbered at
 creation, not on a separate confirm step)
 
+Cancelling a receipt still attached to a `draft` remittance (`action_cancel`)
+automatically detaches it — clears `remittance_id` and removes it from the
+remittance's `receipt_ids` in the same write, with a chatter note on both
+records — rather than requiring a manual detach first.
+
 **Receipt Remittance** (รายงานนำส่งคลัง):
 The document a department submits to remit its confirmed receipts to the central
 treasury (`kmitl.receipt.remittance`). Bundles many receipts (like an HR expense
@@ -58,6 +63,13 @@ header (`kmitl.receipt.payment_type`), before the specific `payment_method_id`
 switching type clears the other type's fields and the payment method.
 _Avoid_: Other (removed as a payment type — every receipt is cash, cheque, or
 transfer)
+
+`payment_type` and `payment_method_id.payment_type` are enforced to match by
+`_check_payment_method_matches_type` (an `@api.constrains`, not just the form's
+domain) — the domain only guides UI selection and does nothing against
+imports or API writes. The printed receipt ticks its box from, and the
+summary report filters on, the receipt's own `payment_type` — not the
+method's.
 
 **Payment Method**:
 A named way money was received (`kmitl.payment.method`) — cash / cheque /

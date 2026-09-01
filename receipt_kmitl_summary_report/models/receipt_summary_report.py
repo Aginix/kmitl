@@ -40,7 +40,7 @@ class ReceiptReport(models.AbstractModel):
 
         payment_type = options.get("payment_type")
         if payment_type:
-            domain.append(("payment_method_id.payment_type", "=", payment_type))
+            domain.append(("payment_type", "=", payment_type))
 
         dims = options.get("dims") or {}
         for field_name, code in DIMENSION_FIELDS:
@@ -159,7 +159,6 @@ class ReceiptReport(models.AbstractModel):
                 "cash": _("Cash"),
                 "cheque": _("Cheque"),
                 "transfer": _("Transfer"),
-                "other": _("Other"),
             }
             lines.append(
                 _("Payment Type: %s")
