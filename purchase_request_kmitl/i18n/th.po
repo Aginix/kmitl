@@ -1844,7 +1844,7 @@ msgstr "รอพิจารณาให้จัดหา"
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "To be verified"
-msgstr "รอตรวจสอบ"
+msgstr "รอจองงบประมาณ"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__estimated_cost
@@ -1919,7 +1919,7 @@ msgstr "แสดงใน"
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Waiting for e-GP"
-msgstr "รอ e-GP"
+msgstr "รอดำเนินการ e-GP"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__website_message_ids
