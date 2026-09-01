@@ -32,30 +32,19 @@ class ResUsers(models.Model):
             "kmitl_backend_user.action_contact_admin", raise_if_not_found=False
         )
 
+    def _is_contact_admin_exempt(self):
+        group_system = self.env.ref("base.group_system", raise_if_not_found=False)
+        if not group_system:
+            return self.browse()
+        return self.filtered(lambda u: group_system in u.groups_id)
+
     @api.model_create_multi
     def create(self, vals_list):
-        """Send brand-new backend-UI-only users to the Contact-Admin page.
-
-        Setting their Home Action means that, on login, they land on a friendly
-        "contact your administrator" screen rather than a blank backend.
-        """
         users = super().create(vals_list)
         action = self._get_contact_admin_action()
-        group_user = self.env.ref("base.group_user", raise_if_not_found=False)
-        backend_ui = self.env.ref(
-            "base_group_backend.group_backend_ui_users", raise_if_not_found=False
-        )
-        if action and backend_ui:
+        if action:
             for user, vals in zip(users, vals_list):
-                # Use "not in vals" to respect explicit action_id=False.
-                # Check raw groups_id because base_group_backend hijacks
-                # has_group("base.group_user") to return True for backend
-                # users, so it cannot tell the two apart here.
-                if (
-                    "action_id" not in vals
-                    and backend_ui in user.groups_id
-                    and group_user not in user.groups_id
-                ):
+                if "action_id" not in vals and not user._is_contact_admin_exempt():
                     user.action_id = action.id
         return users
 
@@ -63,16 +52,15 @@ class ResUsers(models.Model):
         res = super().write(vals)
         if "groups_id" in vals:
             action = self._get_contact_admin_action()
-            group_user = self.env.ref(
-                "base.group_user", raise_if_not_found=False
-            )
-            if action and group_user:
-                promoted = self.filtered(
-                    lambda u: u.action_id == action
-                    and group_user in u.groups_id
-                )
-                if promoted:
-                    promoted.sudo().write({"action_id": False})
+            if action:
+                has_action = self.filtered(lambda u: u.action_id == action)
+                exempt = has_action._is_contact_admin_exempt()
+                if exempt:
+                    exempt.sudo().write({"action_id": False})
+                no_action = self.filtered(lambda u: not u.action_id)
+                needs_action = no_action - no_action._is_contact_admin_exempt()
+                if needs_action:
+                    needs_action.sudo().write({"action_id": action.id})
         return res
 
     @api.model
