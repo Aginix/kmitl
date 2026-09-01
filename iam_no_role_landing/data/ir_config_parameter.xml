@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <!-- Default contact message shown on the no-role landing page.
+             IAM Managers may update this via Settings > Technical > Parameters. -->
+        <record id="param_contact_message" model="ir.config_parameter">
+            <field name="key">iam_no_role_landing.contact_message</field>
+            <field
+                name="value"
+            >กรุณาติดต่อผู้ดูแลระบบ (IAM Manager) เพื่อขอกำหนดสิทธิ์การใช้งาน</field>
+        </record>
+    </data>
+</odoo>

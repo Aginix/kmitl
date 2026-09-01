@@ -55,6 +55,10 @@ upfront.
   user/role/group/OU/access-right/record-rule administration without granting full
   Settings (`base.group_system`); a single `IAM Manager` group implying `erp_manager`
   plus one escalation guard.
+- [No-Role Landing](./iam_no_role_landing/CONTEXT.md) — pending-role UX gate: gated
+  internal users (no `role_line_ids`, no `erp_manager`) are redirected to a landing
+  page on every backend URL until an IAM Manager assigns a role; exempt users
+  (`base.group_erp_manager`+) pass through unconditionally.
 - [Todos](./mail_activity_todo/CONTEXT.md) — cross-cutting unified inbox (สิ่งที่ต้องทำ)
   of everything a user must act on; each Todo is a native `mail.activity` on its source
   record, surfaced in one consolidated page with a jump-to-source button. Owns no
