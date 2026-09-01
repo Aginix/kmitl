@@ -431,8 +431,17 @@ class AdvancePayment(models.Model):
     )
 
     date_submitted = fields.Datetime(string="Date Submitted", readonly=True, copy=False)
+    date_verified = fields.Datetime(string="Date Verified", readonly=True, copy=False)
     date_approved = fields.Datetime(string="Date Approved", readonly=True, copy=False)
     date_closed = fields.Datetime(string="Date Closed", readonly=True, copy=False)
+
+    terms_conditions = fields.Html(
+        string="เงื่อนไขและข้อตกลงการยืมเงินทดรองจ่าย",
+        default=lambda self: self.env["ir.config_parameter"]
+        .sudo()
+        .get_param("advance_payment.terms_conditions"),
+        copy=True,
+    )
 
     cancel_reason = fields.Text(string="Reason", readonly=True, copy=False)
 
@@ -704,7 +713,7 @@ class AdvancePayment(models.Model):
         for rec in self:
             if rec.state != "to_verify":
                 raise UserError(_("Only agreements under verification can be verified."))
-            rec.state = "to_approve"
+            rec.write({"state": "to_approve", "date_verified": fields.Datetime.now()})
             rec.message_post(
                 body=_("ตรวจสอบคำขอเรียบร้อย ส่งเข้าขั้นอนุมัติ โดย <b>%(user)s</b>.",
                        user=self.env.user.name),
@@ -798,6 +807,20 @@ class AdvancePayment(models.Model):
             rec.state = "draft"
             rec.message_post(
                 body=_("ส่งกลับแก้ไข โดยเจ้าหน้าที่ <b>%(user)s</b>.",
+                       user=self.env.user.name),
+                subtype_xmlid="mail.mt_note",
+            )
+
+    def action_reset_cancel_to_draft(self):
+        """Manager reopens a cancelled agreement back to draft (ad-hoc recovery)."""
+        for rec in self:
+            if rec.state != "cancel":
+                raise UserError(
+                    _("Only a cancelled agreement can be reset to draft.")
+                )
+            rec.write({"state": "draft", "cancel_reason": False})
+            rec.message_post(
+                body=_("ตั้งสัญญาที่ยกเลิกกลับเป็นแบบร่าง โดย <b>%(user)s</b>.",
                        user=self.env.user.name),
                 subtype_xmlid="mail.mt_note",
             )

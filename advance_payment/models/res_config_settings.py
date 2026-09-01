@@ -10,3 +10,9 @@ class ResConfigSettings(models.TransientModel):
         help="เมื่อเปิด ผู้ใช้สามารถระบุเอกสารอ้างอิง (Reference) เองได้ตอนสร้างสัญญา "
         "หากปิด จะระบุได้เฉพาะจากระบบเท่านั้น (เช่น สร้างจากใบขอซื้อ)",
     )
+
+    advance_payment_terms_conditions = fields.Html(
+        string="เงื่อนไขและข้อตกลงการยืมเงินทดรองจ่าย",
+        config_parameter="advance_payment.terms_conditions",
+        help="ข้อความเงื่อนไขและข้อตกลงเริ่มต้น แสดงบนสัญญายืมเงินทุกฉบับ",
+    )

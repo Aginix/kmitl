@@ -26,7 +26,7 @@
 
     <record id="group_advance_payment_loan_officer" model="res.groups">
         <field name="name">เจ้าหน้าที่งานเงินยืม</field>
-        <field name="category_id" ref="module_category_advance_payment"/>
+        <field name="category_id" ref="False"/>
         <field name="implied_ids" eval="[(4, ref('group_advance_payment_user'))]"/>
     </record>
 

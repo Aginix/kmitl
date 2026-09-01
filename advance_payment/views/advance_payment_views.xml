@@ -95,6 +95,10 @@
                         confirm="ต้องการเปิดสัญญาอีกครั้งหรือไม่?"
                         attrs="{'invisible': [('state', '!=', 'done')]}"
                         groups="base.group_system" />
+                    <button name="action_reset_cancel_to_draft" string="Reset to draft" type="object"
+                        confirm="ต้องการตั้งสัญญาที่ยกเลิกกลับเป็นแบบร่างหรือไม่?"
+                        attrs="{'invisible': [('state', '!=', 'cancel')]}"
+                        groups="advance_payment.group_advance_payment_manager" />
                     <button name="button_cancel" string="ยกเลิก" type="object"
                         confirm="ต้องการยกเลิกสัญญานี้หรือไม่?"
                         attrs="{'invisible': [('state', '!=', 'draft')]}" />
@@ -165,10 +169,19 @@
                             <field name="book_bank" filename="book_bank_filename"
                                 attrs="{'invisible': [('use_attachment_bank', '=', False)]}" />
                         </group>
-                        <group name="attachments" string="เอกสารแนบ">
-                            <field name="attachment_ids" widget="many2many_binary"
-                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}" />
-                        </group>
+                    </group>
+                    <group name="processing_dates" string="ข้อมูลการดำเนินการ"
+                        attrs="{'invisible': [('state', '=', 'draft')]}">
+                        <field name="date_submitted" string="วันที่ยื่นขอยืมเงิน" />
+                        <field name="date_verified" string="วันที่ตรวจสอบ" />
+                        <field name="date_approved" string="วันที่อนุมัติ" />
+                    </group>
+                    <group name="terms" string="เงื่อนไขและข้อตกลงการยืมเงินทดรองจ่าย">
+                        <field name="terms_conditions" nolabel="1" readonly="1" />
+                    </group>
+                    <group name="attachments" string="เอกสารแนบ">
+                        <field name="attachment_ids" widget="many2many_binary"
+                            attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}" />
                     </group>
                     <group name="actual_expense" string="บันทึกค่าใช้จ่ายจริง"
                         attrs="{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer'])]}">
