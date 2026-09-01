@@ -53,13 +53,13 @@
                             type="object"
                             string="Print Original"
                             icon="fa-print"
-                            attrs="{'invisible': [('state', 'in', ['draft', 'cancelled'])]}"
+                            attrs="{'invisible': [('state', '=', 'cancelled')]}"
                             groups="receipt_kmitl.group_receipt_kmitl_user"/>
                     <button name="action_print_copy"
                             type="object"
                             string="Print Copy"
                             icon="fa-copy"
-                            attrs="{'invisible': [('state', 'in', ['draft', 'cancelled'])]}"
+                            attrs="{'invisible': [('state', '=', 'cancelled')]}"
                             groups="receipt_kmitl.group_receipt_kmitl_user"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,submitted,approved,done"/>
