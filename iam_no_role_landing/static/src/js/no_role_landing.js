@@ -3,6 +3,7 @@
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { Dialog } from "@web/core/dialog/dialog";
 import { Component, useState, onWillStart } from "@odoo/owl";
 
 export class NoRoleLanding extends Component {
@@ -28,7 +29,6 @@ export class NoRoleLanding extends Component {
         try {
             const result = await this.orm.call("res.users", "check_role_status", []);
             if (result.has_role) {
-                // Hard reload so the session's group cache and menus are refreshed.
                 window.location = "/web";
             } else {
                 this.notification.add(
@@ -47,6 +47,7 @@ export class NoRoleLanding extends Component {
 }
 
 NoRoleLanding.template = "iam_no_role_landing.Landing";
+NoRoleLanding.components = { Dialog };
 NoRoleLanding.props = ["*"];
 
 registry.category("actions").add("iam_no_role_landing.landing", NoRoleLanding);

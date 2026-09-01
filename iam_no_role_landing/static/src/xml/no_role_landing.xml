@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates>
     <t t-name="iam_no_role_landing.Landing" owl="1">
-        <div class="o_no_role_landing d-flex flex-column align-items-center justify-content-center vh-100 bg-light">
+        <div class="o_no_role_landing">
             <t t-if="state.loading">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                <div class="d-flex align-items-center justify-content-center vh-100">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
             </t>
             <t t-else="">
-                <div class="o_no_role_card card shadow-sm p-5 text-center" style="max-width: 480px; width: 100%;">
-                    <div class="mb-4">
-                        <i class="fa fa-lock fa-3x text-muted" />
+                <Dialog
+                    title="'บัญชีรอกำหนดสิทธิ์'"
+                    size="'md'"
+                    contentClass="'o_no_role_dialog_content'"
+                >
+                    <div class="text-center py-3">
+                        <div class="mb-4">
+                            <i class="fa fa-lock fa-3x text-muted" />
+                        </div>
+                        <h5 class="mb-2">บัญชีของคุณยังไม่ได้กำหนดสิทธิ์การใช้งาน</h5>
+                        <p class="text-muted mb-1">
+                            ยินดีต้อนรับ, <strong t-esc="state.userName" />
+                        </p>
+                        <p class="text-muted o_no_role_contact" t-esc="state.contactMessage" />
                     </div>
-                    <h4 class="mb-2">บัญชีของคุณยังไม่ได้กำหนดสิทธิ์</h4>
-                    <p class="text-muted mb-1">
-                        ยินดีต้อนรับ, <strong t-esc="state.userName" />
-                    </p>
-                    <p class="text-muted mb-4 o_no_role_contact" t-esc="state.contactMessage" />
-                    <div class="d-grid gap-2">
+                    <t t-set-slot="footer">
                         <button
                             class="btn btn-primary"
                             t-on-click="onCheckRole"
@@ -28,11 +36,11 @@
                             </t>
                             ตรวจสอบสิทธิ์
                         </button>
-                        <button class="btn btn-outline-secondary" t-on-click="onLogout">
+                        <button class="btn btn-secondary" t-on-click="onLogout">
                             ออกจากระบบ
                         </button>
-                    </div>
-                </div>
+                    </t>
+                </Dialog>
             </t>
         </div>
     </t>

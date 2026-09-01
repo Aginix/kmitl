@@ -1,4 +1,4 @@
-# Gate at both home-action and HTTP dispatch, exempt base.group_erp_manager
+# Gate at both home-action and HTTP dispatch, exempt base.group_system
 
 Overriding `_get_home_action` alone is not enough: a user who bookmarked
 `/odoo/action-N` can bypass the landing and hit a blank Odoo AccessError
@@ -8,12 +8,11 @@ redirect any non-whitelisted, non-JSON-RPC request from a gated user back to
 the landing action. The whitelist covers logout, static assets, and all
 `application/json` requests (Odoo's own group ACL guards data there).
 
-Exempt threshold is `base.group_erp_manager` (rather than just
-`iam.group_iam_manager` or `base.group_system`) so that the full
-erp-manager tier — which includes the IAM Manager — can always log in and
-remediate a misconfigured role setup. A narrower exemption (system-only or
-iam-manager-only) risked a deadlock where the person responsible for assigning
-roles was themselves gated.
+Exempt threshold is `base.group_system` (full Settings access). Only system
+administrators can bypass the gate without a role. IAM Managers
+(`iam.group_iam_manager`) and `base.group_erp_manager` holders are **not**
+exempt — they must have at least one role assigned to enter the backend.
+The system admin is responsible for bootstrapping IAM Managers with a role.
 
 **Considered options rejected:**
 - *Home action only* — bookmarked URLs bypass, user sees a broken skeleton.
@@ -22,5 +21,6 @@ roles was themselves gated.
   that issues RPC on page load.
 - *`ir.rule` per model* — no single model to attach to; this is a route-level
   concern, not a record-level one.
-- *Exempt system-only* — IAM Managers (the primary remediators) would be gated
-  themselves if they had no role assigned, causing a bootstrap deadlock.
+- *Exempt `base.group_erp_manager`* — too wide; many internal users may hold
+  `erp_manager` through role implication without being administrators. The gate
+  should only be bypassed by Settings-level administrators.

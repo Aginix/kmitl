@@ -9,15 +9,15 @@ class ResUsers(models.Model):
     def _is_role_gated(self):
         """Return True when this user should be shown the no-role landing.
 
-        A user is gated when they have no role lines AND do not hold
-        base.group_erp_manager (which covers IAM Managers, full Settings
-        admins, and any other elevated group that implies erp_manager).
+        A user is gated when they have no role lines AND does not hold
+        base.group_system (full Settings access). Only system administrators
+        are exempt; IAM Managers without a role are gated like everyone else.
         Superuser context is always exempt.
         """
         if self.env.su:
             return False
         return not self.role_line_ids and not self.has_group(
-            "base.group_erp_manager"
+            "base.group_system"
         )
 
     def _get_home_action(self):
