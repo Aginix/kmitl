@@ -34,6 +34,7 @@ class ReceiptKmitlException(models.Model):
         "fund_analytic_id",
         "source_analytic_id",
         "activity_analytic_id",
+        "analytic_distribution",
         "amount_total",
         "line_ids",
         "ignore_exception",

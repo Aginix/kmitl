@@ -84,60 +84,41 @@
                     <group>
                         <group name="header" string="Receipt Info">
                             <field name="date"/>
-                            <field name="department_analytic_id"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
                             <field name="payment_type" widget="radio"/>
-                            <field name="payment_method_id"
-                                   widget="selection"/>
-                            <field name="cheque_number"
-                                   attrs="{'invisible': [('payment_type', '!=', 'cheque')],
-                                           'required': [('payment_type', '=', 'cheque')]}"/>
-                            <field name="cheque_date"
-                                   attrs="{'invisible': [('payment_type', '!=', 'cheque')],
-                                           'required': [('payment_type', '=', 'cheque')]}"/>
-                            <field name="transfer_date"
-                                   attrs="{'invisible': [('payment_type', '!=', 'transfer')],
-                                           'required': [('payment_type', '=', 'transfer')]}"/>
-                            <field name="user_id" readonly="1"
-                                   groups="!receipt_kmitl.group_receipt_kmitl_manager"/>
-                            <field name="user_id" readonly="0"
-                                   groups="receipt_kmitl.group_receipt_kmitl_manager"/>
-                            <field name="description" required="1"/>
+                            <field name="payment_method_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="cheque_number" attrs="{'invisible': [('payment_type', '!=', 'cheque')],'required': [('payment_type', '=', 'cheque')]}"/>
+                            <field name="cheque_date" attrs="{'invisible': [('payment_type', '!=', 'cheque')],'required': [('payment_type', '=', 'cheque')]}"/>
+                            <field name="transfer_date" attrs="{'invisible': [('payment_type', '!=', 'transfer')],'required': [('payment_type', '=', 'transfer')]}"/>
+                            <separator/>
+                            <field name="user_id" readonly="1" groups="!receipt_kmitl.group_receipt_kmitl_manager"/>
+                            <field name="user_id" readonly="0" groups="receipt_kmitl.group_receipt_kmitl_manager" required="1"/>
                         </group>
                         <group name="customer" string="Payer">
                             <field name="is_walkin"/>
-                            <div colspan="2" class="alert alert-info mb-0 py-2" role="alert"
-                                 attrs="{'invisible': [('is_walkin', '=', False)]}">
+                            <div colspan="2" class="alert alert-info mb-0 py-2" role="alert" attrs="{'invisible': [('is_walkin', '=', False)]}">
                                 <i class="fa fa-info-circle"/>
                                 Walk-in customer: receipt for a general customer without specific payer details.
                             </div>
-                            <field name="partner_id"
-                                   options="{'no_create': True, 'no_edit': True}"
-                                   attrs="{'readonly': ['|', ('is_walkin', '=', True), ('state', '!=', 'draft')]}"/>
+                            <field name="partner_id" options="{'no_create': True, 'no_edit': True}" attrs="{'readonly': ['|', ('is_walkin', '=', True), ('state', '!=', 'draft')]}"/>
                             <field name="customer_name"/>
-                            <field name="customer_tax_id"
-                                   attrs="{'invisible': [('is_walkin', '=', True)]}"/>
-                            <field name="customer_branch_code"
-                                   attrs="{'invisible': [('is_walkin', '=', True)]}"/>
-                            <field name="customer_address"
-                                   attrs="{'invisible': [('is_walkin', '=', True)]}"/>
+                            <field name="customer_tax_id" attrs="{'invisible': [('is_walkin', '=', True)]}"/>
+                            <field name="customer_branch_code" attrs="{'invisible': [('is_walkin', '=', True)]}"/>
+                            <field name="customer_address" attrs="{'invisible': [('is_walkin', '=', True)]}"/>
                         </group>
+                        <separator name="description" string="Description"/>
+                        <field name="description" required="1" nolabel="1" colspan="2"/>
                     </group>
                     <group name="analytic_dimensions" string="Analytic Dimensions">
                         <group>
-                            <field name="fund_analytic_id" required="1"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                            <field name="source_analytic_id" required="1"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                            <field name="activity_analytic_id" required="1"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="department_analytic_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting"/>
                         </group>
-                        <group>
-                            <field name="kmitl_project_analytic_id"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                            <field name="procurement_plan_analytic_id"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                        </group>
+                    </group>
+                    <group name="attachments" string="Attachments">
+                        <field name="attachment_ids" nolabel="1" colspan="2" widget="many2many_binary"/>
                     </group>
                     <notebook>
                         <page string="Lines" name="lines">
@@ -150,9 +131,7 @@
                                     <field name="quantity"/>
                                     <field name="price_unit"/>
                                     <field name="amount" sum="Total"/>
-                                    <field name="analytic_distribution"
-                                           widget="analytic_distribution"
-                                           optional="hide"/>
+                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" optional="hide"/>
                                     <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
@@ -165,10 +144,6 @@
                                 <label for="note" string="Notes"/>
                                 <field name="note" nolabel="1" colspan="2" placeholder="Notes"/>
                               </group>
-                            </group>
-                            <group name="attachments" string="Attachments">
-                                <field name="attachment_ids" nolabel="1" colspan="2"
-                                       widget="many2many_binary"/>
                             </group>
                         </page>
                     </notebook>

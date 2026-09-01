@@ -14,6 +14,7 @@ DIMENSION_FIELDS = [
 
 class ReceiptReport(models.AbstractModel):
     _name = "receipt_kmitl.receipt.report"
+    _inherit = "accounting_kmitl_reports.dimension.filter.mixin"
     _description = "Receipt Report Data Provider"
 
     @api.model
@@ -42,13 +43,7 @@ class ReceiptReport(models.AbstractModel):
         if payment_type:
             domain.append(("payment_type", "=", payment_type))
 
-        dims = options.get("dims") or {}
-        for field_name, code in DIMENSION_FIELDS:
-            ids = dims.get(code) or []
-            if ids:
-                Analytic = self.env["account.analytic.account"]
-                ids = Analytic.search([("id", "child_of", ids)]).ids
-                domain.append((field_name, "in", ids))
+        domain += self._kmitl_build_dim_leaves(options.get("dims"))
 
         receipts = self.env["kmitl.receipt"].search(
             domain, order="date desc, id desc"

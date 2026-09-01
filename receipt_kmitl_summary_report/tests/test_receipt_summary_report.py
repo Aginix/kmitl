@@ -24,3 +24,41 @@ class TestReceiptSummaryReport(ReceiptKmitlCommon):
         report = self.env["receipt_kmitl.receipt.report"]
         lines = report.get_filter_lines({"payment_type": "other"})
         self.assertFalse(any("Other" in line for line in lines))
+
+    def test_dims_fund_filter_does_not_crash(self):
+        # fund_analytic_id is store=False — the report must build the domain
+        # against analytic_distribution, not the (non-searchable) field.
+        matching = self._make_receipt(extra_vals={"fund_analytic_id": self.fund_a.id})
+        other = self._make_receipt()
+        today = str(fields.Date.context_today(self.env.user))
+        report = self.env["receipt_kmitl.receipt.report"]
+        result = report.get_report_data(
+            {
+                "date_from": today,
+                "date_to": today,
+                "dims": {"funds": [self.fund_a.id]},
+            }
+        )
+        row_ids = {r["id"] for group in result["groups"] for r in group["rows"]}
+        self.assertIn(matching.id, row_ids)
+        self.assertNotIn(other.id, row_ids)
+
+    def test_dims_source_filter_does_not_crash(self):
+        matching = self._make_receipt(
+            extra_vals={"source_analytic_id": self.source_a.id}
+        )
+        other = self._make_receipt(
+            extra_vals={"source_analytic_id": self.source_b.id}
+        )
+        today = str(fields.Date.context_today(self.env.user))
+        report = self.env["receipt_kmitl.receipt.report"]
+        result = report.get_report_data(
+            {
+                "date_from": today,
+                "date_to": today,
+                "dims": {"sources": [self.source_a.id]},
+            }
+        )
+        row_ids = {r["id"] for group in result["groups"] for r in group["rows"]}
+        self.assertIn(matching.id, row_ids)
+        self.assertNotIn(other.id, row_ids)

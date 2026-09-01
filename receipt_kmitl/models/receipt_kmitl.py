@@ -8,25 +8,18 @@ from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
-ANALYTIC_DIMENSION_FIELDS = [
-    "department_analytic_id",
-    "fund_analytic_id",
-    "source_analytic_id",
-    "activity_analytic_id",
-    "kmitl_project_analytic_id",
-    "procurement_plan_analytic_id",
-]
+# Root plan code → convenience field. The only place a dimension is named.
+ANALYTIC_KEYS = {
+    "departments": "department_analytic_id",
+    "sources": "source_analytic_id",
+    "funds": "fund_analytic_id",
+    "activities": "activity_analytic_id",
+    "kmitl_project": "kmitl_project_analytic_id",
+    "procurement_plan": "procurement_plan_analytic_id",
+}
 
 # Fields readonly from submitted (remittance submission) onwards.
 READONLY_STATES = {
-    "submitted": [("readonly", True)],
-    "approved": [("readonly", True)],
-    "done": [("readonly", True)],
-    "cancelled": [("readonly", True)],
-}
-
-# Analytic dims editable in draft only.
-ANALYTIC_READONLY_STATES = {
     "submitted": [("readonly", True)],
     "approved": [("readonly", True)],
     "done": [("readonly", True)],
@@ -43,8 +36,9 @@ FLEX_READONLY_STATES = {
 class ReceiptKmitl(models.Model):
     _name = "kmitl.receipt"
     _description = "KMITL Cash Receipt"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "analytic.mixin"]
     _order = "date desc, id desc"
+    _analytic_keys = ANALYTIC_KEYS
 
     name = fields.Char(
         string="Receipt Number",
@@ -76,8 +70,13 @@ class ReceiptKmitl(models.Model):
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Issuing Department",
-        required=True,
+        compute="_compute_analytic_id",
+        inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
+        store=True,
+        index=True,
+        required=True,
+        compute_sudo=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -122,35 +121,61 @@ class ReceiptKmitl(models.Model):
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Fund",
+        compute="_compute_analytic_id",
+        inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
-        states=ANALYTIC_READONLY_STATES,
+        store=False,
+        compute_sudo=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Source",
+        compute="_compute_analytic_id",
+        inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
         default=lambda self: self.env.ref(
             "account_analytic_kmitl.source_2", raise_if_not_found=False
         ),
-        states=ANALYTIC_READONLY_STATES,
+        store=True,
+        index=True,
+        compute_sudo=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Activity",
+        compute="_compute_analytic_id",
+        inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
-        states=ANALYTIC_READONLY_STATES,
+        store=False,
+        compute_sudo=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
     kmitl_project_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="KMITL Project",
+        compute="_compute_analytic_id",
+        inverse="_inverse_kmitl_project_analytic",
         domain=[("root_plan_id.code", "=", "kmitl_project")],
-        states=ANALYTIC_READONLY_STATES,
+        store=False,
+        compute_sudo=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
     procurement_plan_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Procurement Plan",
+        compute="_compute_analytic_id",
+        inverse="_inverse_procurement_plan_analytic",
         domain=[("root_plan_id.code", "=", "procurement_plan")],
-        states=ANALYTIC_READONLY_STATES,
+        store=False,
+        compute_sudo=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
 
     # --- Customer ---
@@ -335,20 +360,47 @@ class ReceiptKmitl(models.Model):
     # -------------------------------------------------------------------------
     # Analytic dimension sync (header → lines)
     # -------------------------------------------------------------------------
-    def _build_analytic_distribution(self):
-        self.ensure_one()
-        dist = {}
-        for fname in ANALYTIC_DIMENSION_FIELDS:
-            account = self[fname]
-            if account:
-                dist[str(account.id)] = 100.0
-        return dist or False
+    @api.depends("analytic_distribution")
+    def _compute_analytic_id(self):
+        # Reset first: the shared mixin only assigns dimensions that are
+        # present in the JSON, so a stored field (department/source) would
+        # keep a stale value when its dimension is removed from the
+        # distribution.
+        for rec in self:
+            for field_name in self._analytic_keys.values():
+                rec[field_name] = False
+        return super()._compute_analytic_id()
+
+    def _inverse_department_analytic(self):
+        for rec in self:
+            rec._update_analytic_distribution("departments")
+
+    def _inverse_source_analytic(self):
+        for rec in self:
+            rec._update_analytic_distribution("sources")
+
+    def _inverse_fund_analytic(self):
+        for rec in self:
+            rec._update_analytic_distribution("funds")
+
+    def _inverse_activity_analytic(self):
+        for rec in self:
+            rec._update_analytic_distribution("activities")
+
+    def _inverse_kmitl_project_analytic(self):
+        for rec in self:
+            rec._update_analytic_distribution("kmitl_project")
+
+    def _inverse_procurement_plan_analytic(self):
+        for rec in self:
+            rec._update_analytic_distribution("procurement_plan")
 
     def _sync_analytic_to_lines(self):
         for rec in self:
-            dist = rec._build_analytic_distribution()
             if rec.line_ids:
-                rec.line_ids.write({"analytic_distribution": dist})
+                rec.line_ids.write(
+                    {"analytic_distribution": rec.analytic_distribution}
+                )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -359,9 +411,18 @@ class ReceiptKmitl(models.Model):
                 rec.name = rec._get_receipt_sequence().next_by_id()
         return records
 
+    # A write touching any of these must re-push the header distribution onto
+    # the lines: the dimension fields (their inverse rewrites the JSON), the
+    # JSON itself, and line_ids (a newly added line starts with no
+    # distribution).
+    _SYNC_TRIGGERS = frozenset(ANALYTIC_KEYS.values()) | {
+        "analytic_distribution",
+        "line_ids",
+    }
+
     def write(self, vals):
         res = super().write(vals)
-        if any(f in vals for f in ANALYTIC_DIMENSION_FIELDS):
+        if self._SYNC_TRIGGERS & set(vals):
             self._sync_analytic_to_lines()
         if "remittance_id" in vals and not vals.get("remittance_id"):
             detached = self.filtered(lambda r: r.state in ("submitted", "approved"))
@@ -373,15 +434,12 @@ class ReceiptKmitl(models.Model):
                     )
         return res
 
-    @api.onchange(
-        "department_analytic_id", "fund_analytic_id", "source_analytic_id",
-        "activity_analytic_id", "kmitl_project_analytic_id",
-        "procurement_plan_analytic_id",
-    )
+    @api.onchange(*ANALYTIC_KEYS.values())
     def _onchange_analytic_dimensions(self):
-        dist = self._build_analytic_distribution()
-        for line in self.line_ids:
-            line.analytic_distribution = dist
+        """Mirror the dimension pickers into analytic_distribution while the
+        record is unsaved — the field inverses only run on write."""
+        for code in ANALYTIC_KEYS:
+            self._update_analytic_distribution(code)
 
     # -------------------------------------------------------------------------
     # Onchanges
@@ -462,7 +520,7 @@ class ReceiptKmitl(models.Model):
     # -------------------------------------------------------------------------
     # Constraints
     # -------------------------------------------------------------------------
-    @api.constrains("line_ids", "line_ids.amount", "line_ids.account_id")
+    @api.constrains("line_ids", "amount_total")
     def _check_lines(self):
         for rec in self:
             if not rec.line_ids:

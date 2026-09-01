@@ -24,10 +24,15 @@ Work is in three deliverables, implement in this order:
 
 Both `kmitl.receipt` and `kmitl.receipt.remittance` (the renamed deposit).
 
-- Stays a **plain, required, `store=True` Many2one** to `account.analytic.account`,
-  `domain=[("root_plan_id.code","=","departments")]`. **Not** derived from
-  `analytic_distribution` — it is the source of truth for the running number and
-  bundling. (It only shares the naming convention; the header has no mixin.)
+- On `kmitl.receipt.remittance` (which carries no `analytic.mixin`): stays a
+  **plain, required, `store=True` Many2one** to `account.analytic.account`,
+  `domain=[("root_plan_id.code","=","departments")]`, source of truth for the
+  running number and bundling.
+- On `kmitl.receipt` the header now inherits `analytic.mixin` (Revision 4) —
+  `department_analytic_id` is a `compute="_compute_analytic_id"` /
+  `inverse="_inverse_department_analytic"` field, still `store=True,
+  required=True, index=True`, but `analytic_distribution` is the source of
+  truth it is derived from. See Revision 4 below and item B.
 - Update every reference: `_get_receipt_sequence(rec.department_analytic_id, …)`,
   `action_confirm`, deposit/remittance pull + validate, and all views
   (`receipt_kmitl_views.xml` tree/form/search + `group_by`, remittance views).
@@ -57,6 +62,14 @@ Both `kmitl.receipt` and `kmitl.receipt.remittance` (the renamed deposit).
 - View: `receipt_kmitl_views.xml` already lists 4 of them; add
   `kmitl_project_analytic_id` / `procurement_plan_analytic_id` as `optional="hide"`.
 - Reference pattern: `purchase_request_budget/models/purchase_request.py`.
+
+> **This is about the line's own dimension fields, which were never built** —
+> `receipt_kmitl_line.py` still inherits plain `analytic.mixin` with no
+> per-field declarations (see Deviations). The `store=False` /
+> "no search/group_by/report consumes it" reasoning above does **not**
+> generalize to `department_analytic_id` on the **header** — that one is
+> `store=True` and load-bearing (remittance `child_of` pull, pivot row,
+> search field, `group_by` filter — see Revision 4).
 
 ## C. Walk-in customer
 
@@ -231,13 +244,17 @@ What actually shipped differs from the plan above in a few places:
 - **Group renamed.** `group_receipt_kmitl_treasury_officer` from item E shipped
   as `group_receipt_kmitl_remittance_approver` — same independent-checkbox
   shape, different name (see CONTEXT.md).
-- **Dimension implementation differs from item B.** The 6 dimension fields
-  (`department_analytic_id`, `fund_analytic_id`, etc.) live as plain Many2one
-  fields on the receipt **header** (`receipt_kmitl.py`), not as compute/inverse
-  fields on the line. `write()`/`_sync_analytic_to_lines()` builds one
-  `analytic_distribution` JSON from the header fields and pushes it onto every
-  line; `receipt_kmitl_line.py` just inherits plain `analytic.mixin` with no
-  per-field declarations of its own.
+- **Dimension implementation differs from item B — superseded by Revision 4.**
+  Between Revision 3 and Revision 4 the 6 dimension fields lived as plain
+  Many2one fields on the receipt **header**, with `analytic_distribution` a
+  hand-built dict assembled from them (`_build_analytic_distribution`). As of
+  Revision 4 the header itself inherits `analytic.mixin`:
+  `analytic_distribution` is the source of truth, and the 6 fields are
+  compute/inverse convenience fields around it (`department_analytic_id` /
+  `source_analytic_id` stored, the other 4 not). `receipt_kmitl_line.py`
+  still just inherits plain `analytic.mixin` with no per-field declarations
+  of its own — the header's JSON is copied onto every line via
+  `_sync_analytic_to_lines()`.
 - **Receipt numbering is per-FY only.** `RC/<fy4>/nnnn` (e.g. `RC/2569/0001`),
   matching CONTEXT.md — the testing checklist item above that says
   `RC/<dept>/<fy2>/nnnn` is stale.
@@ -304,3 +321,66 @@ A code review of Revision 2 found five defects, closed before deploy:
   `receipt_kmitl`'s suite and was found broken (calling a removed method)
   only via manual grep, not by running `oca_run_tests` on the base module.
   Grep every add-on's tests whenever the base workflow changes.
+
+## Revision 4 — post-review fixes + header analytic.mixin
+
+A review of `16.0-imp-receipt_kmitl-user-feedback` found two more defects and
+decided a third finding didn't need a code fix; the same round also reverted
+Revision 3's header-fields deviation back to the item-B design (`analytic.mixin`
+on the header, not just the line).
+
+- **Summary Report no longer reads `account.fiscal.year`.** The ACL for that
+  model was removed from `ir.model.access.csv` but the JS report still did an
+  `orm.searchRead("account.fiscal.year", …)` on `onWillStart` — Viewer/User
+  hit an `AccessError` opening the report. The Fiscal Year dropdown is gone;
+  the default date range is now computed client-side as the current Thai
+  fiscal year (1 Oct – 30 Sep), the same boundary `_get_fiscal_year_be` uses.
+  Date From / Date To remain freely editable.
+- **`_check_lines` constrains parameter fixed.** `@api.constrains("line_ids",
+  "line_ids.amount", "line_ids.account_id")` — Odoo drops dotted params with a
+  registry warning, so only `line_ids` actually triggered the constraint, and
+  the web client omits `line_ids` from `create()` vals entirely when no line
+  was ever touched — a lineless receipt could be saved after minting a
+  number. Changed to `@api.constrains("line_ids", "amount_total")`:
+  `amount_total` is a stored compute that always gets marked for recompute on
+  `create` (and whenever a line's amount changes), so `_validate_fields`
+  always re-runs this constraint.
+- **`date` stays editable in draft after numbering.** Considered locking it
+  once the fiscal-year-derived receipt number is minted (since changing
+  `date` across a FY boundary would desync the number from the year it
+  implies), but decided against a code change — accepted as a known,
+  low-frequency edge case rather than adding another readonly-state rule.
+- **Header returns to `analytic.mixin` (supersedes Revision 3's deviation).**
+  `kmitl.receipt` now inherits `analytic.mixin` directly, per item B's
+  original design. `analytic_distribution` is the source of truth;
+  `department_analytic_id` / `source_analytic_id` stay `store=True` (the
+  former `required=True` too) because both are load-bearing — remittance
+  pull's `child_of` search, the pivot report row, the search-view field and
+  `group_by` filter all need a real column. The other 4
+  (`fund_analytic_id`, `activity_analytic_id`, `kmitl_project_analytic_id`,
+  `procurement_plan_analytic_id`) stay `store=False`. `_compute_analytic_id`
+  is overridden reset-first (clears all 6 convenience fields before
+  delegating to the mixin) so a stored field doesn't keep a stale value when
+  its dimension drops out of the JSON. An `@api.onchange` on the 6
+  convenience fields mirrors them into `analytic_distribution` immediately
+  (the field inverses only fire on `write`), so the `analytic_distribution`
+  widget and the pickers agree before the record is even saved.
+  `_sync_analytic_to_lines()` now just copies the header's
+  `analytic_distribution` onto every line, and `write()` re-syncs on any of:
+  the 6 convenience fields, `analytic_distribution` itself (direct
+  write/import/RPC), or `line_ids` (a newly added line otherwise starts with
+  no distribution at all) — the old trigger set (only the 6 fields) missed
+  both of those cases.
+- **`receipt_kmitl_summary_report`'s dimension filter no longer crashes.**
+  `get_report_data` built `(field_name, "in", ids)` leaves straight off the 6
+  convenience fields; once 4 of them went `store=False` (no `search=`),
+  filtering by Fund or Activity raised `ValueError: Invalid field … in leaf`.
+  `ReceiptReport` now inherits
+  `accounting_kmitl_reports.dimension.filter.mixin` and builds the domain via
+  `_kmitl_build_dim_leaves`, which targets `analytic_distribution` directly
+  (with `child_of` expansion, and exact-match for the flat `sources` plan) —
+  the same helper the Trial Balance / Aged Partner Balance reports use.
+- **`receipt_kmitl_exception`'s blocking-exception constraint gained
+  `analytic_distribution`** to its trigger field list, so a direct JSON write
+  (import/RPC/widget) re-evaluates exception rules, not just writes through
+  the 4 convenience fields.

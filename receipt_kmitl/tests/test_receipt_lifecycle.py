@@ -77,6 +77,60 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
         self.assertIn(str(self.dept_b.id), line.analytic_distribution)
         self.assertNotIn(str(self.dept_a.id), line.analytic_distribution)
 
+    def test_write_fund_analytic_syncs_json_and_lines(self):
+        receipt = self._make_receipt()
+        receipt.write({"fund_analytic_id": self.fund_a.id})
+        self.assertIn(str(self.fund_a.id), receipt.analytic_distribution)
+        self.assertIn(str(self.dept_a.id), receipt.analytic_distribution)
+        line = receipt.line_ids[0]
+        self.assertEqual(line.analytic_distribution, receipt.analytic_distribution)
+
+    def test_write_analytic_distribution_directly_syncs_fields_and_lines(self):
+        receipt = self._make_receipt()
+        new_distribution = {
+            str(self.dept_b.id): 100,
+            str(self.source_a.id): 100,
+            str(self.activity_a.id): 100,
+        }
+        receipt.write({"analytic_distribution": new_distribution})
+        self.assertEqual(receipt.department_analytic_id, self.dept_b)
+        self.assertEqual(receipt.source_analytic_id, self.source_a)
+        self.assertEqual(receipt.activity_analytic_id, self.activity_a)
+        line = receipt.line_ids[0]
+        self.assertEqual(line.analytic_distribution, new_distribution)
+
+    def test_removing_dimension_clears_stored_field(self):
+        receipt = self._make_receipt(extra_vals={"source_analytic_id": self.source_a.id})
+        self.assertEqual(receipt.source_analytic_id, self.source_a)
+        distribution = dict(receipt.analytic_distribution)
+        distribution.pop(str(self.source_a.id), None)
+        receipt.write({"analytic_distribution": distribution})
+        self.assertFalse(receipt.source_analytic_id)
+
+    def test_new_line_on_saved_receipt_gets_analytic_distribution(self):
+        receipt = self._make_receipt()
+        receipt.write(
+            {
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "product_id": self.product_card.id,
+                            "name": self.product_card.name,
+                            "account_id": self.income_other.id,
+                            "quantity": 1,
+                            "price_unit": 100.0,
+                        },
+                    )
+                ]
+            }
+        )
+        new_line = receipt.line_ids.filtered(
+            lambda l: l.product_id == self.product_card
+        )
+        self.assertEqual(new_line.analytic_distribution, receipt.analytic_distribution)
+
     def test_reset_to_draft_from_cancelled(self):
         receipt = self._make_receipt()
         name = receipt.name

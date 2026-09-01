@@ -20,6 +20,18 @@ class ReceiptKmitlCommon(TransactionCase):
         cls.fund_plan = AnalyticPlan.search([("code", "=", "funds")], limit=1)
         if not cls.fund_plan:
             cls.fund_plan = AnalyticPlan.create({"name": "Funds", "code": "funds"})
+        cls.source_plan = AnalyticPlan.search([("code", "=", "sources")], limit=1)
+        if not cls.source_plan:
+            cls.source_plan = AnalyticPlan.create(
+                {"name": "Sources", "code": "sources"}
+            )
+        cls.activity_plan = AnalyticPlan.search(
+            [("code", "=", "activities")], limit=1
+        )
+        if not cls.activity_plan:
+            cls.activity_plan = AnalyticPlan.create(
+                {"name": "Activities", "code": "activities"}
+            )
 
         Analytic = cls.env["account.analytic.account"]
         cls.dept_a = Analytic.create(
@@ -27,6 +39,18 @@ class ReceiptKmitlCommon(TransactionCase):
         )
         cls.dept_b = Analytic.create(
             {"name": "Department B", "code": "02", "plan_id": cls.dept_plan.id}
+        )
+        cls.fund_a = Analytic.create(
+            {"name": "Fund A", "code": "F01", "plan_id": cls.fund_plan.id}
+        )
+        cls.source_a = Analytic.create(
+            {"name": "Source A", "code": "S01", "plan_id": cls.source_plan.id}
+        )
+        cls.source_b = Analytic.create(
+            {"name": "Source B", "code": "S02", "plan_id": cls.source_plan.id}
+        )
+        cls.activity_a = Analytic.create(
+            {"name": "Activity A", "code": "A01", "plan_id": cls.activity_plan.id}
         )
 
         # --- Accounts ---

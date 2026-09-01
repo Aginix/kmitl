@@ -5,7 +5,7 @@
         <field name="model">kmitl.receipt</field>
         <field name="inherit_id" ref="receipt_kmitl.view_receipt_kmitl_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='user_id']" position="after">
+            <xpath expr="//field[@name='user_id'][2]" position="after">
                 <field name="operating_unit_id" widget="selection"
                        groups="operating_unit.group_multi_operating_unit"/>
             </xpath>

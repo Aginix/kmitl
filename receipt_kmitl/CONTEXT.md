@@ -38,18 +38,20 @@ _Avoid_: Detach (old term for a custom button that was never built)
 
 **Issuing Department**:
 The organizational unit that issued a receipt or owns a deposit — a `departments`
-analytic account stored on the header as `department_analytic_id` (a plain
-required Many2one, kept as the source of truth). A **business dimension only**:
-it drives remittance bundling (a remittance pulls its department's whole
-subtree) — **not** the receipt running number (per-fiscal-year only, shared
-across departments) and **not** access control (that is the Operating Unit's
-job).
+analytic account exposed on the header as `department_analytic_id`, a
+`store=True, required=True` convenience field computed/inverted against
+`analytic_distribution` (the `analytic.mixin` JSON field, the source of truth).
+A **business dimension only**: it drives remittance bundling (a remittance
+pulls its department's whole subtree) — **not** the receipt running number
+(per-fiscal-year only, shared across departments) and **not** access control
+(that is the Operating Unit's job).
 _Avoid_: Cost center
 
 **Department dimension**:
-The `departments` analytic account carried on a **receipt line** as one of the
-six financial dimensions (compute/inverse from `analytic_distribution`). Distinct
-from the header Issuing Department, though usually the same value.
+The `departments` analytic account carried on a **receipt line**, one of the
+six financial dimensions (compute/inverse from `analytic_distribution`). Kept
+in sync with the header's Issuing Department on every create/write — see
+`kmitl.receipt._sync_analytic_to_lines`.
 
 **Walk-in Customer**:
 The default partner used on a receipt when no specific customer is named.
