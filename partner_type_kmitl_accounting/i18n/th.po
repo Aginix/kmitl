@@ -1,0 +1,105 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* partner_type_kmitl_accounting
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 11:07+0000\n"
+"PO-Revision-Date: 2026-08-27 11:07+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: partner_type_kmitl_accounting
+#. odoo-python
+#: code:addons/partner_type_kmitl_accounting/models/res_partner_type.py:0
+#, python-format
+msgid "%(updated)s of %(total)s partner(s) updated."
+msgstr "อัปเดตคู่ค้า %(updated)s จาก %(total)s ราย"
+
+#. module: partner_type_kmitl_accounting
+#: model:ir.model.fields,field_description:partner_type_kmitl_accounting.field_res_partner_type__property_account_payable_id
+msgid "Account Payable"
+msgstr "บัญชีเจ้าหนี้"
+
+#. module: partner_type_kmitl_accounting
+#: model:ir.model.fields,field_description:partner_type_kmitl_accounting.field_res_partner_type__property_account_receivable_id
+msgid "Account Receivable"
+msgstr "บัญชีลูกหนี้"
+
+#. module: partner_type_kmitl_accounting
+#: model_terms:ir.ui.view,arch_db:partner_type_kmitl_accounting.res_partner_type_form_accounting
+msgid "Accounting Settings"
+msgstr "รายการบัญชี"
+
+#. module: partner_type_kmitl_accounting
+#. odoo-python
+#: code:addons/partner_type_kmitl_accounting/models/res_partner_type.py:0
+#, python-format
+msgid "All %(total)s partner(s) already use these accounts."
+msgstr "คู่ค้าทั้ง %(total)s รายใช้บัญชีเหล่านี้อยู่แล้ว"
+
+#. module: partner_type_kmitl_accounting
+#: model_terms:ir.ui.view,arch_db:partner_type_kmitl_accounting.res_partner_type_form_accounting
+msgid "Apply to existing partners"
+msgstr "นำไปใช้กับคู่ค้าที่มีอยู่"
+
+#. module: partner_type_kmitl_accounting
+#: model:ir.model,name:partner_type_kmitl_accounting.model_res_partner
+msgid "Contact"
+msgstr "ติดต่อ"
+
+#. module: partner_type_kmitl_accounting
+#. odoo-python
+#: code:addons/partner_type_kmitl_accounting/models/res_partner_type.py:0
+#, python-format
+msgid "No account is configured on this partner type."
+msgstr "ยังไม่ได้กำหนดบัญชีสำหรับประเภทคู่ค้านี้"
+
+#. module: partner_type_kmitl_accounting
+#. odoo-python
+#: code:addons/partner_type_kmitl_accounting/models/res_partner_type.py:0
+#, python-format
+msgid "No partner uses this type yet."
+msgstr "ยังไม่มีคู่ค้าที่ใช้ประเภทนี้"
+
+#. module: partner_type_kmitl_accounting
+#: model_terms:ir.ui.view,arch_db:partner_type_kmitl_accounting.res_partner_type_form_accounting
+msgid ""
+"Overwrite the receivable and payable accounts of every partner of this type,"
+" including partners whose accounts were changed by hand? Journal entries "
+"already recorded are not affected."
+msgstr ""
+"เขียนทับบัญชีลูกหนี้และเจ้าหนี้ของคู่ค้าทุกรายในประเภทนี้ "
+"รวมถึงคู่ค้าที่มีการแก้ไขบัญชีด้วยตนเองด้วยหรือไม่? "
+"รายการบัญชีที่บันทึกไว้แล้วจะไม่ได้รับผลกระทบ"
+
+#. module: partner_type_kmitl_accounting
+#: model:ir.model,name:partner_type_kmitl_accounting.model_res_partner_type
+#: model:ir.ui.menu,name:partner_type_kmitl_accounting.menu_res_partner_type_accounting
+msgid "Partner Type"
+msgstr "ประเภทคู่ค้า"
+
+#. module: partner_type_kmitl_accounting
+#: model:ir.model.fields,help:partner_type_kmitl_accounting.field_res_partner_type__property_account_payable_id
+msgid ""
+"This account will be used instead of the default one as the payable account "
+"for the partner"
+msgstr ""
+
+#. module: partner_type_kmitl_accounting
+#: model:ir.model.fields,help:partner_type_kmitl_accounting.field_res_partner_type__property_account_receivable_id
+msgid ""
+"This account will be used instead of the default one as the receivable "
+"account for the partner"
+msgstr ""
+
+#. module: partner_type_kmitl_accounting
+#: model:ir.model.fields,field_description:partner_type_kmitl_accounting.field_res_partner_type__wht_tax_id
+msgid "WHT"
+msgstr "ภาษีหัก ณ ที่จ่าย"

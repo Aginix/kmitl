@@ -441,6 +441,7 @@ class DisbursementRequest(models.Model):
                     "payment_audit_date": fields.Datetime.now(),
                 }
             )
+            record._stamp_signature("payment_audit")
             record.activity_feedback([TO_AUDIT_ACTIVITY])
             record._schedule_payment_todo(TO_AUTHORIZE_ACTIVITY, AUTHORIZER_GROUP)
         return True
@@ -466,6 +467,7 @@ class DisbursementRequest(models.Model):
                     "payment_authorize_date": fields.Datetime.now(),
                 }
             )
+            record._stamp_signature("payment_authorize")
             record.activity_feedback([TO_AUTHORIZE_ACTIVITY])
             record._schedule_payment_todo(TO_PAY_ACTIVITY, FINANCE_GROUP)
             record._try_create_payments()

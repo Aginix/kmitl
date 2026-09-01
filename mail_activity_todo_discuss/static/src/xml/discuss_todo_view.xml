@@ -147,6 +147,20 @@
                         <t t-if="todo.completed_by"> by <t t-esc="todo.completed_by"/></t>
                     </span>
                 </small>
+                <div class="o_DiscussTodoView_itemActions mt-1">
+                    <div t-if="!discuss.isTodoHistory and todo.todo_category !== 'execution'"
+                        class="o_DiscussTodoView_markRead btn btn-outline-primary btn-sm"
+                        t-on-click.stop="() => this.onMarkRead(todo)"
+                    >
+                        <i class="fa fa-check me-1"/>Mark as Read
+                    </div>
+                    <div t-if="discuss.isTodoHistory and todo.kind === 'read'"
+                        class="o_DiscussTodoView_markUnread btn btn-outline-primary btn-sm"
+                        t-on-click.stop="() => this.onMarkUnread(todo)"
+                    >
+                        <i class="fa fa-undo me-1"/>Mark as Unread
+                    </div>
+                </div>
             </div>
         </button>
     </t>

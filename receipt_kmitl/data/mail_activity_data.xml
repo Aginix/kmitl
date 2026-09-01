@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="mail_activity_type_remittance_approval" model="mail.activity.type">
+        <field name="name">Remittance Approval</field>
+        <field name="summary">Review and approve receipt remittance</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

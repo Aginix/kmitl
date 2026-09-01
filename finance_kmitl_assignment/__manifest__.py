@@ -10,7 +10,7 @@
     "license": "LGPL-3",
     "depends": [
         "finance_kmitl",
-        "partner_type_aginix",
+        "partner_type_kmitl",
         # Owns both halves of the payment-subject criterion: the link from the
         # voucher back to its request, and the subject chosen on that request.
         "disbursement_finance_kmitl",

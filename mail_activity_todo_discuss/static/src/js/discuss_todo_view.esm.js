@@ -245,13 +245,32 @@ export class DiscussTodoView extends LegacyComponent {
         if (!todo.res_model || !todo.res_id) {
             return;
         }
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            res_model: todo.res_model,
-            res_id: todo.res_id,
-            views: [[false, "form"]],
-            target: "current",
-        });
+        this.action.doAction(
+            {
+                type: "ir.actions.act_window",
+                res_model: todo.res_model,
+                res_id: todo.res_id,
+                views: [[false, "form"]],
+                target: "current",
+            },
+            // Clear the breadcrumb trail so repeated Todo → record → systray →
+            // Todo hops don't stack endlessly (Discuss/รายการงาน/record/... ad
+            // infinitum). Each Todo click starts a fresh trail at the record;
+            // the systray reopens Todos when the user wants to go back.
+            { clearBreadcrumbs: true }
+        );
+    }
+
+    async onMarkRead(todo) {
+        await this.orm.call("mail.activity", "action_mark_read", [[todo.id]]);
+        this.env.bus.trigger("mail_activity_todo_updated");
+        await this.fetchData();
+    }
+
+    async onMarkUnread(todo) {
+        await this.orm.call("mail.activity", "action_mark_unread", [[todo.id]]);
+        this.env.bus.trigger("mail_activity_todo_updated");
+        await this.fetchData();
     }
 
     onViewAllClick() {
