@@ -20,17 +20,23 @@ class ReceiptReport(models.AbstractModel):
     def get_report_data(self, options):
         options = options or {}
         company_id = options.get("company_id") or self.env.company.id
+        remittance_id = options.get("remittance_id")
         date_from = options.get("date_from")
         date_to = options.get("date_to")
-        if not date_from or not date_to:
-            return {"rows": [], "groups": []}
 
-        domain = [
-            ("company_id", "=", company_id),
-            ("date", ">=", date_from),
-            ("date", "<=", date_to),
-            ("state", "in", ["to_submit", "submitted", "approved", "done"]),
-        ]
+        domain = [("company_id", "=", company_id)]
+        if remittance_id:
+            # Scoped to a single remittance — show all its receipts regardless
+            # of date or state.
+            domain.append(("remittance_id", "=", remittance_id))
+        else:
+            if not date_from or not date_to:
+                return {"groups": [], "grand_total": 0}
+            domain += [
+                ("date", ">=", date_from),
+                ("date", "<=", date_to),
+                ("state", "in", ["draft", "submitted", "approved", "done"]),
+            ]
 
         payment_type = options.get("payment_type")
         if payment_type:
@@ -135,6 +141,10 @@ class ReceiptReport(models.AbstractModel):
         """Human-readable summary of the applied filters, for the PDF header."""
         options = options or {}
         lines = []
+        remittance_name = options.get("remittance_name")
+        if remittance_name:
+            lines.append(_("Remittance: %s") % remittance_name)
+
         date_from = options.get("date_from")
         date_to = options.get("date_to")
         if date_from and date_to:

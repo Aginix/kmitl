@@ -30,6 +30,8 @@ export class ReceiptSummaryReport extends Component {
             sources: [],
             funds: [],
             activities: [],
+            remittanceMode: false,
+            remittanceName: false,
         });
         this.labels = {
             print: _t("Print"),
@@ -52,7 +54,18 @@ export class ReceiptSummaryReport extends Component {
     }
 
     async onWillStart() {
-        this.companyId = this.company.currentCompany.id;
+        const params = (this.props.action && this.props.action.params) || {};
+        this.companyId = params.company_id || this.company.currentCompany.id;
+        this.remittanceId = params.remittance_id || false;
+        this.remittanceName = params.remittance_name || false;
+        if (this.remittanceId) {
+            // Opened from a remittance: scope to that remittance's receipts,
+            // no date/dimension filters.
+            this.state.remittanceMode = true;
+            this.state.remittanceName = this.remittanceName;
+            await this.load();
+            return;
+        }
         this.fiscalYears = await this.orm.searchRead(
             "account.fiscal.year",
             [],
@@ -79,6 +92,8 @@ export class ReceiptSummaryReport extends Component {
     get options() {
         return {
             company_id: this.companyId,
+            remittance_id: this.remittanceId || false,
+            remittance_name: this.remittanceName || false,
             date_from: this.state.dateFrom,
             date_to: this.state.dateTo,
             payment_type: this.state.paymentType || false,
@@ -92,7 +107,11 @@ export class ReceiptSummaryReport extends Component {
     }
 
     async load() {
-        if (!this.state.dateFrom || !this.state.dateTo) return;
+        if (
+            !this.state.remittanceMode &&
+            (!this.state.dateFrom || !this.state.dateTo)
+        )
+            return;
         this.state.loading = true;
         try {
             const data = await this.orm.call(
