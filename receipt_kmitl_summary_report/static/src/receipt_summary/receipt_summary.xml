@@ -23,21 +23,6 @@
                     </div>
                     <div t-if="!state.remittanceMode" class="d-flex flex-wrap gap-2 align-items-end">
                         <div>
-                            <label class="form-label-sm mb-1">Fiscal Year</label>
-                            <select class="form-select form-select-sm" t-on-change="onFiscalYearChange">
-                                <option value="">/</option>
-                                <option
-                                    t-foreach="fiscalYears"
-                                    t-as="fy"
-                                    t-key="fy.id"
-                                    t-att-value="fy.id"
-                                    t-att-selected="fy.id === state.fiscalYearId"
-                                >
-                                    <t t-esc="fy.name" />
-                                </option>
-                            </select>
-                        </div>
-                        <div>
                             <label class="form-label-sm mb-1">Date From</label>
                             <input
                                 type="date"
