@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement ↔ KMITL Finance Bridge",
-    "version": "16.0.5.4.0",
+    "version": "16.0.5.5.0",
     "category": "KMITL/Finance",
     "summary": "DR ↔ Payment: post-bill payment-execution workflow "
     "(audit → authorize → pay → clear), payee-level paying account, WHT, "
@@ -27,6 +27,7 @@
         "views/disbursement_queue_views.xml",
         "views/disbursement_request_views.xml",
         "views/bank_payment_export_views.xml",
+        "report/report_payment_voucher.xml",
     ],
     "assets": {
         "web.assets_backend": [

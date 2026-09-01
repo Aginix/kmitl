@@ -1263,6 +1263,7 @@ msgstr "ประเภทการจ่ายเงิน (KMITL)"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__payment_id
+#: model:report.paperformat,name:finance_kmitl.paperformat_payment_voucher_report
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_search
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_tree
