@@ -1,16 +1,31 @@
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
+    partner_id_domain = fields.Binary(
+        compute="_compute_partner_id_domain",
+        readonly=True,
+        store=False,
+    )
+
+    @api.depends("payment_type")
+    def _compute_partner_id_domain(self):
+        for rec in self:
+            rec.partner_id_domain = (
+                [("partner_type_id.is_internal", "=", True)]
+                if rec.payment_type == "prepaid"
+                else []
+            )
+
     @api.onchange("payment_type")
     def _onchange_payment_type_prepaid(self):
         if self.payment_type == "prepaid":
             if self.procurement_mode != "by_requester":
                 self.procurement_mode = "by_requester"
-            if self.partner_id and not self.partner_id.user_ids.employee_ids:
+            if self.partner_id and not self.partner_id.partner_type_id.is_internal:
                 self.partner_id = False
 
     @api.constrains("payment_type", "procurement_mode", "partner_id")
@@ -25,10 +40,11 @@ class PurchaseRequest(models.Model):
                         "ไม่สามารถเลือกโหมดจัดหาเป็น 'ให้พัสดุจัดหา' ได้"
                     )
                 )
-            if rec.partner_id and not rec.partner_id.user_ids.employee_ids:
+            if rec.partner_id and not rec.partner_id.partner_type_id.is_internal:
                 raise ValidationError(
                     _(
                         "กรณีวิธีการจ่ายเงินเป็นสำรองจ่าย "
-                        "คู่ค้าต้องเป็นบุคลากรภายในที่มีข้อมูลพนักงาน (hr.employee) เท่านั้น"
+                        "คู่ค้าต้องเป็นบุคลากรภายใน "
+                        "(partner type ที่ตั้งค่า is_internal) เท่านั้น"
                     )
                 )

@@ -7,7 +7,7 @@
     "summary": "Restrict vendor to internal employees and hide "
     "'ให้พัสดุจัดหา' when payment type is สำรองจ่าย.",
     "depends": [
-        "hr",
+        "partner_type_kmitl",
         "purchase_request_kmitl",
         "purchase_request_procurement_mode",
     ],
