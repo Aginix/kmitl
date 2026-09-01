@@ -8,6 +8,11 @@ from odoo.osv import expression
 class BankPaymentExport(models.Model):
     _name = "bank.payment.export"
     _inherit = ["bank.payment.export", "thai.date.mixin"]
+    # The upstream model leaves _order unset, so the register opened on id ASC —
+    # the oldest file first, which is the wrong end for a register that is read
+    # to find the run just made. The sequence is fixed-width (PE<yy>#####) and
+    # minted at create, so ordering by it lexically is ordering by recency.
+    _order = "name desc"
 
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
