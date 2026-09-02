@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        ใบสำคัญจ่าย (payment voucher) — the printed face of an account.payment.
+        The document the finance office files and hands to the accounting office
+        with the rest of the paperwork, so its labels are Thai inline: this is a
+        fixed-format Thai form, the same reason receipt_kmitl and disbursement
+        write theirs that way.
+
+        No signature block. Nothing is signed here — the authorisation happened on
+        the ใบขอเบิก, and the accounting side signs its own ใบสำคัญรายการบัญชี.
+
+        No debit/credit table either: accounting_kmitl_workflow already prints
+        that for this very move.
+    -->
+    <template id="report_payment_voucher">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-set="currency" t-value="o.currency_id" />
+                    <t t-set="dims" t-value="o._voucher_dimensions()" />
+                    <!-- Order and labels of the six financial dimensions. Kept
+                         here with the rest of the document's words; the helper
+                         only says which account fills each one. -->
+                    <t
+                        t-set="dim_labels"
+                        t-value="[('departments', 'ส่วนงาน'), ('sources', 'แหล่งเงิน'), ('funds', 'กองทุน'), ('activities', 'ด้าน/แผนงาน/กิจกรรม'), ('kmitl_project', 'โครงการ/กิจกรรม'), ('procurement_plan', 'แผนจัดซื้อจัดจ้าง')]"
+                    />
+                    <t t-set="wht_lines" t-value="o._voucher_wht_lines()" />
+
+                    <style>
+                        * {
+                        font-family: "THSarabunNew", Arial, sans-serif;
+                        --bs-body-font-size: 16pt;
+                        }
+                        p,
+                        span,
+                        div {
+                        font-size: 16pt;
+                        line-height: 1.2;
+                        }
+                        table.pv-keys tr td:first-child {
+                        width: 30%;
+                        }
+                    </style>
+
+                    <div class="page">
+                        <!-- A voucher the finance office has not confirmed yet
+                             carries no number and binds nobody, so a print of it
+                             says so on its face. -->
+                        <t t-if="o.finance_state == 'draft'">
+                            <div
+                                style="position: absolute; top: 320px; left: 200px;
+                                       transform: rotate(-30deg); font-size: 96px;
+                                       color: red; opacity: 0.25; z-index: 1000;"
+                            >
+                                ร่าง / DRAFT
+                            </div>
+                        </t>
+
+                        <!-- Company Logo (top-left) -->
+                        <div style="position: absolute; top: 0px; left: 0px">
+                            <img
+                                t-if="o.company_id.logo"
+                                t-att-src="image_data_uri(o.company_id.logo)"
+                                style="max-height: 110px"
+                                alt="Logo"
+                            />
+                        </div>
+
+                        <div class="oe_structure" />
+                        <div style="height: 1px" />
+
+                        <div class="page-header mt-5 mb-5">
+                            <h3
+                                class="text-center fw-bolder"
+                                style="line-height: 1.575"
+                            >
+                                ใบสำคัญจ่าย
+                            </h3>
+                        </div>
+
+                        <div class="my-5" />
+                        <div class="my-5" />
+
+                        <!-- Document information. Named so bridge modules can add
+                             their own reference lines here (see
+                             disbursement_finance_kmitl). -->
+                        <div class="o_pv_meta">
+                            <div class="row pt-8">
+                                <div class="col-8">
+                                    เลขที่ <span class="ms-2 fw-normal">
+                                        <t
+                                            t-if="o.name and o.name != '/'"
+                                            t-out="o.name"
+                                        />
+                                        <t t-else="">(ยังไม่ออกเลขที่)</t>
+                                    </span>
+                                </div>
+                                <div class="col">
+                                    วันที่ <span
+                                        class="ms-2 fw-normal"
+                                        t-out="o.format_date_thai(o.date)"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-8">
+                                    สมุดรายวัน <span
+                                        class="ms-2"
+                                        t-out="o.journal_id.display_name"
+                                    />
+                                </div>
+                                <div class="col">
+                                    สถานะ <span
+                                        class="ms-2"
+                                        t-field="o.finance_state"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="row" t-if="o.kmitl_payment_subject_id">
+                                <div class="col">
+                                    เรื่องที่จ่าย <span
+                                        class="ms-2"
+                                        t-out="o.kmitl_payment_subject_id.display_name"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="row" t-if="o.kmitl_payment_type_id">
+                                <div class="col">
+                                    ประเภทธุรกรรม <span
+                                        class="ms-2"
+                                        t-out="o.kmitl_payment_type_id.display_name"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="row" t-if="o.ref">
+                                <div class="col">
+                                    อ้างอิง <span class="ms-2" t-out="o.ref" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="my-4" />
+
+                        <!-- Payee -->
+                        <div class="row">
+                            <div class="col">
+                                <strong>ผู้รับเงิน: <span
+                                        t-out="o.partner_id.display_name or '-'"
+                                    /></strong>
+                            </div>
+                        </div>
+
+                        <div class="row" t-if="o.payee_type_id">
+                            <div class="col">
+                                ประเภทผู้รับเงิน <span
+                                    class="ms-2"
+                                    t-out="o.payee_type_id.display_name"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="row" t-if="o.partner_id.vat">
+                            <div class="col">
+                                เลขประจำตัวผู้เสียภาษี <span
+                                    class="ms-2"
+                                    t-out="o.partner_id.vat"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="my-4" />
+
+                        <!-- How the money leaves -->
+                        <div class="row">
+                            <div class="col">
+                                หัวจ่าย <span
+                                    class="ms-2"
+                                    t-out="o.payment_method_line_id.display_name or '-'"
+                                />
+                            </div>
+                        </div>
+
+                        <t t-if="o.is_cheque_payment">
+                            <div class="row" t-if="o.cheque_id">
+                                <div class="col-8">
+                                    เลขที่เช็ค <span
+                                        class="ms-2"
+                                        t-out="o.cheque_id.cheque_number or '-'"
+                                    />
+                                </div>
+                                <div class="col">
+                                    ลงวันที่ <span
+                                        class="ms-2"
+                                        t-out="o.format_date_thai(o.cheque_id.cheque_date)"
+                                    />
+                                </div>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <!-- The payee's account number is masked: the voucher
+                                 is read outside the office that keeps it. -->
+                            <div class="row" t-if="o.partner_bank_id">
+                                <div class="col">
+                                    ธนาคารผู้รับ <span
+                                        class="ms-2"
+                                        t-out="o.partner_bank_id.bank_id.name"
+                                    />
+                                    เลขที่บัญชี <span
+                                        class="ms-2"
+                                        t-out="o._mask_acc_number(o.partner_bank_id.acc_number)"
+                                    />
+                                </div>
+                            </div>
+                            <div class="row" t-if="o.payment_export_id">
+                                <div class="col-8">
+                                    ไฟล์ e-payment <span
+                                        class="ms-2"
+                                        t-out="o.payment_export_id.display_name"
+                                    />
+                                </div>
+                                <div class="col">
+                                    วันที่มีผลที่ธนาคาร <span
+                                        class="ms-2"
+                                        t-out="o.format_date_thai(o.payment_export_id.effective_date)"
+                                    />
+                                </div>
+                            </div>
+                        </t>
+
+                        <div class="row" t-if="o.bank_result_status">
+                            <div class="col">
+                                ผลการจ่าย <span
+                                    class="ms-2"
+                                    t-field="o.bank_result_status"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="my-4" />
+
+                        <!-- Financial dimensions (all six, whichever the voucher
+                             carries) -->
+                        <table
+                            class="table table-bordered border table-sm pv-keys"
+                            t-if="dims"
+                        >
+                            <tbody>
+                                <t t-foreach="dim_labels" t-as="dim">
+                                    <t t-set="acc" t-value="dims.get(dim[0])" />
+                                    <tr t-if="acc">
+                                        <td t-out="dim[1]" />
+                                        <td t-out="acc.display_name" />
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <div class="my-4" />
+
+                        <!-- Amounts. The gross is what the payee was owed, the net
+                             is what left the account; the withholding in between
+                             is listed rate by rate because one payee can be
+                             withheld on at more than one. -->
+                        <table class="table table-bordered table-sm mb-4">
+                            <tbody>
+                                <!-- Only where something was withheld: with no
+                                     withholding the gross and the net are the
+                                     same figure, and printing it twice reads as
+                                     two facts. -->
+                                <tr t-if="o.amount_wht">
+                                    <td class="text-center" colspan="2">จำนวนเงินก่อนหักภาษี</td>
+                                    <td
+                                        class="text-end"
+                                        style="width: 25%"
+                                        t-out="'{0:,.2f} ฿'.format(o.amount_before_wht)"
+                                    />
+                                </tr>
+                                <tr t-foreach="wht_lines" t-as="line">
+                                    <td
+                                        class="text-center"
+                                        style="width: 40%"
+                                        t-out="line.wht_tax_id.display_name"
+                                    />
+                                    <td class="text-end">
+                                        ฐานภาษี <span
+                                            class="ms-2"
+                                            t-out="'{0:,.2f} ฿'.format(line.tax_base_amount)"
+                                        />
+                                    </td>
+                                    <td
+                                        class="text-end"
+                                        t-out="'{0:,.2f} ฿'.format(abs(line.balance))"
+                                    />
+                                </tr>
+                                <tr t-if="o.amount_wht">
+                                    <td class="text-center" colspan="2">รวมภาษีหัก ณ ที่จ่าย</td>
+                                    <td
+                                        class="text-end"
+                                        t-out="'{0:,.2f} ฿'.format(o.amount_wht)"
+                                    />
+                                </tr>
+                                <tr class="fw-bold">
+                                    <td class="text-center align-middle">
+                                        (<t
+                                            t-out="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount)"
+                                        />)
+                                    </td>
+                                    <td class="text-center">จำนวนเงินจ่ายสุทธิ</td>
+                                    <td
+                                        class="text-end"
+                                        t-out="'{0:,.2f} ฿'.format(o.amount)"
+                                    />
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="row" t-if="not is_html_empty(o.narration)">
+                            <div class="col">
+                                <strong>หมายเหตุ:</strong>
+                                <span class="ms-2" t-field="o.narration" />
+                            </div>
+                        </div>
+
+                        <!-- Anchor for anything a bridge module adds at the foot of
+                             the voucher. -->
+                        <div class="o_pv_footer" />
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

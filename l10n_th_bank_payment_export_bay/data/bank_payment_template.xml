@@ -6,12 +6,17 @@
     One template: CashLink models no same-bank / other-bank split the way KTB
     and SCB do, so there is nothing to branch on.
 
-    ``kmitl`` is a placeholder, not a value. The Company ID and the Sender Name
-    come from BAY when the institute is onboarded and we do not have them, and
-    ``bank.payment.config.value`` is required so the line cannot ship blank.
-    Replace both in Finance > Settings > Bank Payment Templates before the first
-    real file. The Sender Name matters most: it is the only one of the three the
-    ``bay_cashlink`` layout writes into the file today.
+    There is no Sender Name line, and there is nothing for one to set any more:
+    the twenty characters after the originating account are blank in every file
+    KMITL sends BAY, and the layout now writes them blank outright rather than
+    reading a field. A file with a name written there was refused by Krungsri
+    with "I_PAY128_WEB_UPLD user account product linkage is not available", and
+    it was the only structural difference between it and the bank's own file.
+
+    ``kmitl`` is still a placeholder on the Company ID. It comes from BAY when
+    the institute is onboarded, we do not have it, and nothing in the sample
+    shows it because the layout never writes it. Replace it in
+    Finance > Settings > Bank Payment Templates if BAY ever asks for it.
 
     noupdate: those replacements, and any service type the treasury office
     adjusts, have to survive ``-u``. That is also why this is XML rather than
@@ -29,14 +34,6 @@
         <field
             name="field_id"
             ref="l10n_th_bank_payment_export_bay.field_bank_payment_export__bay_company_id"
-        />
-        <field name="value">kmitl</field>
-    </record>
-    <record id="payment_template_bay_cashlink_sender_name" model="bank.payment.config">
-        <field name="template_id" ref="payment_template_bay_cashlink" />
-        <field
-            name="field_id"
-            ref="l10n_th_bank_payment_export_bay.field_bank_payment_export__bay_sender_name"
         />
         <field name="value">kmitl</field>
     </record>

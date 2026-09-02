@@ -46,6 +46,21 @@
                         class="btn-secondary"
                         groups="finance_kmitl.group_finance_kmitl_user_out"
                     />
+                    <!-- The accounting maker's own move, because this same list is
+                         their register of ใบล้างเจ้าหนี้ as well as the finance
+                         office's list of ใบสำคัญจ่าย. Shown to the accounting
+                         office only: the two presses above belong to the treasury
+                         and this one does not, and a press that is not yours on a
+                         list you work every day is a press waiting to be made by
+                         mistake. Which vouchers may go is the batch method's own
+                         business — it reports the rest back by name. -->
+                    <button
+                        name="action_submit_batch"
+                        type="object"
+                        string="Submit Selected"
+                        class="btn-secondary"
+                        groups="accounting_kmitl.group_accounting_kmitl_user"
+                    />
                 </header>
                 <field name="name" string="เลขที่ใบสำคัญ" />
                 <field name="date" />
