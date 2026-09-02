@@ -436,3 +436,12 @@ on the header, not just the line).
   `t-esc`, printing raw ISO, unlike `o.date` in the same report. Switched
   to `t-field`, matching `o.date`. `cheque_number` stays `t-esc` — it's a
   `Char`.
+- **Orphan attachments-separator report removed.** Splitting out
+  `receipt_kmitl_attachment_viewer` left
+  `receipt_kmitl/report/receipt_kmitl_attachments_separator.xml` behind;
+  it was never in `data`, so it had no `ir.model.data` and nothing
+  referenced its xmlid — removed with no impact, along with 9 stale
+  entries in `th.po` (3 templates, 2 report actions, the
+  `ดูไฟล์แนบทั้งหมด` button that moved to the inherited view, and the
+  `… and %s more file(s)` string). All had empty `msgstr`, so no
+  translation was lost, and nothing else in the file was touched.

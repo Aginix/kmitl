@@ -50,11 +50,6 @@ msgid "<span>วันที่ / Date</span>"
 msgstr ""
 
 #. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_attachments_separator_document
-msgid "<strong>จำนวนเงิน / Amount: </strong>"
-msgstr ""
-
-#. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
 msgid "<strong>จำนวนเงิน / THE SUM OF</strong>"
 msgstr ""
@@ -65,11 +60,6 @@ msgid "<strong>ที่อยู่ / ADDRESS</strong>"
 msgstr ""
 
 #. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_attachments_separator_document
-msgid "<strong>ผู้จ่าย / Payer: </strong>"
-msgstr ""
-
-#. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
 msgid "<strong>รับเงินจาก / RECEIVED FROM</strong>"
 msgstr ""
@@ -77,13 +67,6 @@ msgstr ""
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
 msgid "<strong>เป็นค่า / PAY FOR</strong>"
-msgstr ""
-
-#. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_attachments_separator_document
-msgid ""
-"<strong>ไฟล์แนบที่ไม่รองรับ (ข้าม) / Unsupported attachments "
-"(skipped):</strong>"
 msgstr ""
 
 #. module: receipt_kmitl
@@ -1052,11 +1035,6 @@ msgid "Receipt Analysis"
 msgstr "วิเคราะห์ใบเสร็จรับเงิน"
 
 #. module: receipt_kmitl
-#: model:ir.actions.report,name:receipt_kmitl.action_report_receipt_kmitl_attachments_separator
-msgid "Receipt Attachments Separator"
-msgstr ""
-
-#. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_tree
 msgid "Receipt Count"
 msgstr "จำนวนใบเสร็จรับเงิน"
@@ -1097,11 +1075,6 @@ msgstr "วิธีชำระเงินของใบเสร็จ"
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__remittance_id
 msgid "Receipt Remittance"
 msgstr "รายงานนำส่งใบเสร็จรับเงิน"
-
-#. module: receipt_kmitl
-#: model:ir.actions.report,name:receipt_kmitl.action_report_receipt_kmitl_no_attachments
-msgid "Receipt Remittance No Attachments"
-msgstr ""
 
 #. module: receipt_kmitl
 #: model:ir.actions.act_window,name:receipt_kmitl.action_receipt_remittance
@@ -1412,11 +1385,6 @@ msgid "จำนวนเงิน บาท / BAHT"
 msgstr ""
 
 #. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_form
-msgid "ดูไฟล์แนบทั้งหมด"
-msgstr ""
-
-#. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
 msgid "ต้นฉบับ / Original"
 msgstr ""
@@ -1482,11 +1450,6 @@ msgid "โดย / by"
 msgstr ""
 
 #. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_attachments_separator_document
-msgid "ใบเสร็จ / Receipt"
-msgstr ""
-
-#. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
 msgid "ใบเสร็จรับเงิน"
 msgstr ""
@@ -1497,16 +1460,4 @@ msgid ""
 "ได้รับเงินจำนวนดังกล่าวข้างต้นไว้เป็นการถูกต้องแล้ว\n"
 "                        <br/>\n"
 "                        Received the amount stated above"
-msgstr ""
-
-#. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_no_attachments
-msgid "ไม่มีไฟล์แนบ / No attachments"
-msgstr ""
-
-#. module: receipt_kmitl
-#. odoo-python
-#: code:addons/receipt_kmitl/models/receipt_remittance.py:0
-#, python-format
-msgid "… and %s more file(s)"
 msgstr ""
