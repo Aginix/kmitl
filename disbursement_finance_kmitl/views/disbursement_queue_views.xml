@@ -100,7 +100,14 @@
         </field>
     </record>
 
-    <record id="action_dr_audit_queue" model="ir.actions.act_window">
+    <!-- New external ids on purpose. The three actions were ir.actions.client
+         records under action_dr_{audit,authorize,book}_queue, and an external id
+         cannot change the model behind it: an upgrade of a database that already
+         has them fails outright with "found record of different model
+         ir.actions.client". The old ids are gone from this file, so the upgrade's
+         orphan cleanup removes those records; the menu ids are unchanged, because
+         a menu is still a menu. -->
+    <record id="action_dr_to_audit" model="ir.actions.act_window">
         <field name="name">Audit Disbursements</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
@@ -122,7 +129,7 @@
         </field>
     </record>
 
-    <record id="action_dr_authorize_queue" model="ir.actions.act_window">
+    <record id="action_dr_to_authorize" model="ir.actions.act_window">
         <field name="name">Authorize Disbursements</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
@@ -149,7 +156,7 @@
          Accounting app because the work is theirs, and the voucher-level list
          (Accounting ▸ ใบจ่ายรอบันทึกบัญชี) catches the payments made by hand, which
          have no request to navigate by. -->
-    <record id="action_dr_book_queue" model="ir.actions.act_window">
+    <record id="action_dr_to_book" model="ir.actions.act_window">
         <field name="name">Book Disbursement Payments</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
@@ -175,7 +182,7 @@
         id="menu_dr_book_queue"
         name="Book Disbursement Payments"
         parent="accounting_kmitl.menu_accounting_root"
-        action="action_dr_book_queue"
+        action="action_dr_to_book"
         sequence="23"
         groups="accounting_kmitl.group_accounting_kmitl_user"
     />
@@ -212,7 +219,7 @@
         id="menu_dr_audit_queue"
         name="Audit Disbursements"
         parent="finance_kmitl.menu_finance_payment_out"
-        action="action_dr_audit_queue"
+        action="action_dr_to_audit"
         sequence="20"
         groups="disbursement_finance_kmitl.group_disbursement_payment_auditor"
     />
@@ -229,7 +236,7 @@
         id="menu_dr_authorize_queue"
         name="Authorize Disbursements"
         parent="menu_finance_approver"
-        action="action_dr_authorize_queue"
+        action="action_dr_to_authorize"
         sequence="10"
         groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"
     />

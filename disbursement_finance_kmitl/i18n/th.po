@@ -56,7 +56,7 @@ msgstr ""
 "e-Payment แล้วยืนยันจ่ายสำเร็จ"
 
 #. module: disbursement_finance_kmitl
-#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_audit_queue
+#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_to_audit
 msgid ""
 "A request arrives here once the accounting office has billed it, waiting for"
 " its payment subject and the audit."
@@ -75,7 +75,7 @@ msgid "Audit"
 msgstr "ตรวจสอบ"
 
 #. module: disbursement_finance_kmitl
-#: model:ir.actions.act_window,name:disbursement_finance_kmitl.action_dr_audit_queue
+#: model:ir.actions.act_window,name:disbursement_finance_kmitl.action_dr_to_audit
 #: model:ir.ui.menu,name:disbursement_finance_kmitl.menu_dr_audit_queue
 msgid "Audit Disbursements"
 msgstr "ตรวจสอบการเบิกจ่าย"
@@ -96,7 +96,7 @@ msgid "Authorize"
 msgstr "อนุมัติ"
 
 #. module: disbursement_finance_kmitl
-#: model:ir.actions.act_window,name:disbursement_finance_kmitl.action_dr_authorize_queue
+#: model:ir.actions.act_window,name:disbursement_finance_kmitl.action_dr_to_authorize
 #: model:ir.ui.menu,name:disbursement_finance_kmitl.menu_dr_authorize_queue
 msgid "Authorize Disbursements"
 msgstr "อนุมัติเบิกจ่าย"
@@ -144,7 +144,7 @@ msgid "Bill Amount"
 msgstr "ยอดตามใบตั้งหนี้"
 
 #. module: disbursement_finance_kmitl
-#: model:ir.actions.act_window,name:disbursement_finance_kmitl.action_dr_book_queue
+#: model:ir.actions.act_window,name:disbursement_finance_kmitl.action_dr_to_book
 #: model:ir.ui.menu,name:disbursement_finance_kmitl.menu_dr_book_queue
 msgid "Book Disbursement Payments"
 msgstr "ใบขอเบิกรอบันทึกบัญชี"
@@ -291,17 +291,17 @@ msgid "Net Total"
 msgstr "ยอดสุทธิรวม"
 
 #. module: disbursement_finance_kmitl
-#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_audit_queue
+#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_to_audit
 msgid "No disbursement request is waiting to be audited."
 msgstr "ไม่มีใบขอเบิกที่รอตรวจสอบ"
 
 #. module: disbursement_finance_kmitl
-#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_authorize_queue
+#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_to_authorize
 msgid "No disbursement request is waiting to be authorized."
 msgstr "ไม่มีใบขอเบิกที่รออนุมัติเบิกจ่าย"
 
 #. module: disbursement_finance_kmitl
-#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_book_queue
+#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_to_book
 msgid "No disbursement request is waiting to be booked."
 msgstr "ไม่มีใบขอเบิกที่รอบันทึกบัญชี"
 
@@ -472,14 +472,14 @@ msgid "Recipient Bank"
 msgstr "บัญชีธนาคารผู้รับ"
 
 #. module: disbursement_finance_kmitl
-#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_authorize_queue
+#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_to_authorize
 msgid ""
 "Requests that have passed the audit, waiting for the authorization that "
 "raises the payment vouchers."
 msgstr "ใบขอเบิกที่ผ่านการตรวจสอบแล้ว รออนุมัติเพื่อออกใบสำคัญจ่าย"
 
 #. module: disbursement_finance_kmitl
-#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_book_queue
+#: model_terms:ir.actions.act_window,help:disbursement_finance_kmitl.action_dr_to_book
 msgid ""
 "Requests the finance office has paid in full, waiting for the accounting "
 "maker to submit their payment vouchers."
