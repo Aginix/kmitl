@@ -53,9 +53,12 @@ _Avoid_: balance, loan (the loan is the agreement, the debt is the owed amount)
 Reducing the debt during the report/return stage, by (a) verified actual expenses and (b) returned leftover cash. Internal to the agreement — it does **not** involve a Disbursement Request (ใบเบิก/DR).
 _Avoid_: settlement, reconciliation, reimbursement
 
-**Recall (ดึงกลับ)**:
-The borrower withdrawing their own not-yet-approved request back to `draft` (to edit or drop it). Distinct from the officer's reset-to-draft and from a Verify-stage return.
-_Avoid_: cancel, withdraw, reset
+**Reset to draft (ตั้งกลับเป็นแบบร่าง)**:
+Any transition that puts a request back in `draft`, keeping the ADV number. Three distinct paths, deliberately sharing one UI verb because they are the same thing from the borrower's point of view — the request is editable again:
+- the **borrower's own** pull-back (`action_recall`, from `to_verify`/`to_approve`) — withdrawing a not-yet-approved request to edit or drop it;
+- the **loan officer's ส่งกลับแก้ไข** (`action_reset_to_draft` / `_action_do_reject`, from `to_verify`) — sending it back for the borrower to fix;
+- the **manager's un-cancel** (`action_reset_cancel_to_draft`, from `cancel`) — ad-hoc recovery of a request cancelled before the money moved.
+_Avoid_: recall / ดึงกลับ (reserved for e-Saraban's own ดึงกลับ — see ADR-0011), withdraw, reopen (that is `action_reopen`: `done` → `in_progress`/`to_reconcile`)
 
 **Source Reference (AR / PR)**:
 The upstream document a loan is created from — an Approval Request (ใบขออนุมัติ / expense plan, `approval.request`) or a Purchase Request (คำขอให้จัดหา, `purchase.request`). A Purchase Request backs **one** loan; an Approval Request may back **several**, one per participant who chose to borrow, each capped by the request's remaining headroom (`agx_approval` ADR-0003). Held in the `reference` Reference field, with `reference_model` derived from it; each bridge additionally mirrors it into a typed Many2one (`purchase_request_id`, `approval_request_id`) for searching, grouping and FK integrity. advance_payment never depends on these models directly; the mirrors and the auto-fill live only in bridge modules. A Disbursement Request (ใบเบิก/DR) is *not* a source and is unrelated to loans. See ADR-0007.
