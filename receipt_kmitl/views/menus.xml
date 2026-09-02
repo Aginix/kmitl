@@ -3,24 +3,42 @@
     <menuitem id="menu_receipt_kmitl_root"
               name="Receipts"
               sequence="48"
-              groups="receipt_kmitl.group_receipt_kmitl_cashier"/>
-
-    <menuitem id="menu_receipt_kmitl_operations"
-              name="Operations"
-              parent="menu_receipt_kmitl_root"
-              sequence="10"/>
-
+              groups="receipt_kmitl.group_receipt_kmitl_viewer"/>
     <menuitem id="menu_receipt_kmitl_receipts"
               name="Receipts"
-              parent="menu_receipt_kmitl_operations"
-              action="action_receipt_kmitl"
+              parent="menu_receipt_kmitl_root"
+              sequence="10"
+              groups="receipt_kmitl.group_receipt_kmitl_viewer"/>
+
+    <menuitem id="menu_receipt_kmitl_my_receipts"
+              name="My Receipts"
+              parent="menu_receipt_kmitl_receipts"
+              action="action_receipt_kmitl_my"
               sequence="10"/>
 
-    <menuitem id="menu_receipt_kmitl_cash_deposits"
-              name="Cash Deposits"
-              parent="menu_receipt_kmitl_operations"
-              action="action_cash_deposit"
+    <menuitem id="menu_receipt_kmitl_all_receipts"
+              name="All Receipts"
+              parent="menu_receipt_kmitl_receipts"
+              action="action_receipt_kmitl"
+              sequence="15"/>
+
+    <menuitem id="menu_receipt_kmitl_remittances"
+              name="Receipt Remittances"
+              parent="menu_receipt_kmitl_root"
+              action="action_receipt_remittance"
               sequence="20"/>
+
+    <menuitem id="menu_receipt_kmitl_reports"
+              name="Reports"
+              parent="menu_receipt_kmitl_root"
+              sequence="50"
+              groups="receipt_kmitl.group_receipt_kmitl_viewer"/>
+
+    <menuitem id="menu_receipt_kmitl_analysis"
+              name="Receipt Analysis"
+              parent="menu_receipt_kmitl_reports"
+              action="action_receipt_analysis"
+              sequence="10"/>
 
     <menuitem id="menu_receipt_kmitl_configuration"
               name="Configuration"
@@ -34,9 +52,15 @@
               action="action_payment_method"
               sequence="10"/>
 
+    <menuitem id="menu_receipt_kmitl_walkin_partner"
+              name="Walk-In Customer"
+              parent="menu_receipt_kmitl_configuration"
+              action="action_receipt_kmitl_walkin_partner"
+              sequence="20"/>
+
     <menuitem id="menu_receipt_kmitl_settings"
               name="Settings"
               parent="menu_receipt_kmitl_configuration"
               action="action_receipt_kmitl_config"
-              sequence="20"/>
+              sequence="5"/>
 </odoo>

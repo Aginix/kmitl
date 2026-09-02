@@ -1,6 +1,6 @@
 {
     "name": "Purchase Request KMITL",
-    "version": "16.0.0.2.0",
+    "version": "16.0.0.2.1",
     "summary": """ Purchase Request KMITL""",
     "category": "KMITL",
     "author": "Aginix Technologies",
@@ -11,6 +11,7 @@
         "purchase_exception",
         "purchase_request_exception",
         "purchase_request_operating_unit",
+        "purchase_request_price_tax_included",
         "account_fiscal_year",
         "purchase_order_kmitl",
         "purchase_operating_unit",

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="receipt_kmitl.ListButtons" t-inherit="web.ListView.Buttons" t-inherit-mode="primary" owl="1">
+        <xpath expr="//button[hasclass('o_list_button_add')]" position="after">
+            <button class="btn btn-secondary o_button_create_report" t-on-click="onCreateReportClick">
+                Create Report
+            </button>
+        </xpath>
+    </t>
+
+    <t t-name="receipt_kmitl.DashboardListRenderer" t-inherit="web.ListRenderer" t-inherit-mode="primary" owl="1">
+        <xpath expr="//div[hasclass('o_list_renderer')]" position="before">
+            <ReceiptDashboard/>
+        </xpath>
+    </t>
+
+</templates>

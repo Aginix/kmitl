@@ -15,7 +15,11 @@ They use different vocabulary and different security groups.
 | Approve | **Request Approval** — state `approved` (obligates + consumes budget), "อนุมัติคำขอ", `group_disbursement_manager` | **Payment Authorization** — state `payment_authorized`, "อนุมัติเบิกจ่าย" (rector delegate), `group_disbursement_payment_authorizer` |
 
 Round 2 deliberately uses the verbs **audit** and **authorize** so it never collides
-with round 1's verify/approve.
+with round 1's verify/approve. Both round-2 steps also contribute a signature row to
+the ใบขอเบิก's **signature block**, which is owned by `disbursement` — this module only
+declares its two steps and stamps them, and never touches the report (see
+[`disbursement` ADR-0002](../disbursement/docs/adr/0002-signature-block-snapshots-per-step.md)).
+Because the round is forward-only, those rows are never archived.
 
 The two rounds also live in **different apps**: round 1 in **การขอเบิก**, which is the
 requesting unit's, and round 2 in **การเงิน**, which is the treasury office's. An app

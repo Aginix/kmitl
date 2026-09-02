@@ -65,8 +65,15 @@
                     </div>
 
                     <div class="oe_title">
+                        <!-- The number is minted at submit; until then ``name`` holds
+                             the untranslated "/" placeholder, so show a translatable
+                             label instead of the raw sentinel. -->
+                        <field name="is_number_assigned" invisible="1" />
                         <h1>
-                            <field name="name" readonly="1" />
+                            <field name="name" readonly="1"
+                                attrs="{'invisible': [('is_number_assigned', '=', False)]}" />
+                            <span
+                                attrs="{'invisible': [('is_number_assigned', '=', True)]}">New</span>
                         </h1>
                     </div>
 
@@ -75,7 +82,7 @@
                             <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}"
                                 options="{'no_open': True}" />
                             <field name="owner_id" widget="employee_detail_many2one"
-                                attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
+                                attrs="{'readonly': [('state', '!=', 'draft')]}" />
 
                             <field name="has_period" invisible="1" />
                             <field name="has_city" invisible="1" />
@@ -91,7 +98,7 @@
                                     attrs="{'invisible': [('period_type', '!=', 'range')]}"
                                     aria-label="Arrow icon" title="Arrow" />
                                 <field name="date_end" nolabel="1" class="oe_inline"
-                                    attrs="{'invisible': [('period_type', '!=', 'range')], 'required': [('period_type', '=', 'range')], 'readonly': [('is_plan_editable', '=', False)]}" />
+                                    attrs="{'invisible': [('period_type', '!=', 'range')], 'readonly': [('is_plan_editable', '=', False)], 'required': [('period_type', '=', 'range'), ('has_period', '=', True)]}" />
                                 <field name="day_portion" widget="radio"
                                     options="{'horizontal': True}" nolabel="1"
                                     class="oe_inline ms-3"
@@ -108,7 +115,7 @@
                             <field name="date" readonly="1"
                                 attrs="{'invisible': [('date', '=', False)]}" />
                             <field name="account_fiscal_year_id" options="{'no_open': True}"
-                                attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
+                                attrs="{'readonly': [('is_number_assigned', '=', True)]}" />
                             <field name="id" invisible="1" />
                             <field name="user_id" readonly="1" />
                             <field name="create_date" readonly="1" />
@@ -196,14 +203,35 @@
                                         <field name="total_amount" sum="Total" />
                                     </tree>
                                 </field>
-                                <separator string="Participants" />
-                                <field name="participant_ids" widget="no_open_readonly_x2many" nolabel="1"
+                                <separator string="รายชื่อบุคลากรภายใน" />
+                                <field name="internal_participant_ids" widget="no_open_readonly_x2many" nolabel="1"
                                     colspan="2"
+                                    context="{'default_participant_type': 'internal'}"
                                     attrs="{'readonly': [('is_plan_editable', '=', False)]}">
                                     <tree editable="bottom">
                                         <field name="allowed_partner_type_ids" invisible="1" />
+                                        <field name="participant_type" invisible="1" />
                                         <field name="sequence" widget="handle" />
                                         <field name="partner_id" />
+                                        <field name="employee_department_name" />
+                                        <field name="employee_job_name" />
+                                        <field name="phone" optional="show" />
+                                        <field name="description" />
+                                    </tree>
+                                </field>
+                                <separator string="รายชื่อบุคคลภายนอก" />
+                                <field name="external_participant_ids" widget="no_open_readonly_x2many" nolabel="1"
+                                    colspan="2"
+                                    context="{'default_participant_type': 'external'}"
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                                    <tree editable="bottom">
+                                        <field name="allowed_partner_type_ids" invisible="1" />
+                                        <field name="participant_type" invisible="1" />
+                                        <field name="sequence" widget="handle" />
+                                        <field name="partner_id" />
+                                        <field name="partner_type_id" optional="show" />
+                                        <field name="vat" optional="show" />
+                                        <field name="phone" optional="show" />
                                         <field name="description" />
                                     </tree>
                                 </field>
@@ -215,6 +243,10 @@
                             </group>
                         </page>
                         <page string="Actual Expenses (Disbursement)" name="actual_expenses">
+                            <group string="เปรียบเทียบแผน / จ่ายจริง" name="plan_actual_comparison">
+                                <field name="plan_actual_comparison_html" nolabel="1" colspan="2" />
+                            </group>
+                            <separator string="บันทึกค่าใช้จ่ายจริง" />
                             <field name="allocation_ids" widget="allocation_grouped"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                                 <tree editable="bottom" default_order="partner_id">
@@ -277,6 +309,18 @@
         </field>
     </record>
 
+    <record id="approval_request_view_pivot" model="ir.ui.view">
+        <field name="name">approval.request.view.pivot</field>
+        <field name="model">approval.request</field>
+        <field name="arch" type="xml">
+            <pivot string="Approval Request" sample="1">
+                <field name="category_id" type="row" />
+                <field name="state" type="col" />
+                <field name="total_amount" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
     <record id="approval_request_view_search" model="ir.ui.view">
         <field name="name">approval.request.view.search</field>
         <field name="model">approval.request</field>
@@ -330,7 +374,7 @@
         <field name="name">Approval Request</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">approval.request</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,pivot,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
     </record>
@@ -341,7 +385,7 @@
         <field name="name">My Request</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">approval.request</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,pivot,form</field>
         <field name="domain">[]</field>
         <field name="context">{'search_default_my_request': 1}</field>
     </record>

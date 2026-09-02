@@ -1,5 +1,8 @@
+from markupsafe import Markup
+
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import formatLang
 
 
 class ApprovalRequest(models.Model):
@@ -41,6 +44,11 @@ class ApprovalRequest(models.Model):
 
     is_budget_editable = fields.Boolean(compute="_compute_is_budget_editable")
 
+    # True once the official AR/<be>/#### number has been minted. Used by the
+    # view to freeze account_fiscal_year_id and to swap the title for a "New"
+    # label while the number is still the placeholder.
+    is_number_assigned = fields.Boolean(compute="_compute_is_number_assigned")
+
     hide_reserve_budget_button = fields.Boolean(
         compute="_compute_hide_reserve_budget_button"
     )
@@ -66,6 +74,14 @@ class ApprovalRequest(models.Model):
         store=True,
     )
 
+    plan_actual_comparison_html = fields.Html(
+        string="เปรียบเทียบแผน / จ่ายจริง",
+        compute="_compute_plan_actual_comparison_html",
+        sanitize=False,
+        help="สรุปเปรียบเทียบค่าใช้จ่ายตามแผนกับค่าใช้จ่ายจริงแยกตามรายการ "
+        "แสดงบนแท็บค่าใช้จ่ายจริงเพื่อไม่ต้องสลับแท็บไปดูแผน",
+    )
+
     category_id = fields.Many2one(
         string="Category",
         comodel_name="approval.category",
@@ -75,6 +91,11 @@ class ApprovalRequest(models.Model):
 
     name = fields.Char(
         string="Name",
+        # Untranslated placeholder, like account.move's "/": the number is minted
+        # later (at submit), so this value sits in the DB and is read back by
+        # users in other locales. Anything translated here would compare unequal
+        # to _() evaluated in the reader's language. The friendly "New" label is
+        # rendered by the form view instead.
         default="/",
         required=True,
         copy=False,
@@ -195,6 +216,22 @@ class ApprovalRequest(models.Model):
         "request_id",
         string="รายชื่อ",
         copy=True,
+    )
+
+    internal_participant_ids = fields.One2many(
+        "approval.request.participant",
+        "request_id",
+        string="รายชื่อบุคลากรภายใน",
+        domain=[("participant_type", "=", "internal")],
+        copy=False,
+    )
+
+    external_participant_ids = fields.One2many(
+        "approval.request.participant",
+        "request_id",
+        string="รายชื่อบุคคลภายนอก",
+        domain=[("participant_type", "=", "external")],
+        copy=False,
     )
 
     allocation_ids = fields.One2many(
@@ -453,6 +490,8 @@ class ApprovalRequest(models.Model):
     def _onchange_category_id(self):
         self.line_ids = False
         self.participant_ids = False
+        self.internal_participant_ids = False
+        self.external_participant_ids = False
         self.description = self.category_id.default_description
 
     @api.model
@@ -526,8 +565,41 @@ class ApprovalRequest(models.Model):
         # anywhere. Re-stamped on every pass through this transition, so a request
         # reset to draft (or ดึงกลับ) and re-submitted carries the date it was
         # actually submitted, not the first attempt's.
-        self.write({"state": "to_verify", "date": fields.Date.context_today(self)})
+        vals = {"state": "to_verify", "date": fields.Date.context_today(self)}
+        # Mint the official number on first submission only. Once assigned it is
+        # permanent — a returned/ดึงกลับ request that comes back through here
+        # keeps its number, unlike ``date`` which re-stamps.
+        #
+        # Mirrors procurement_plan.action_send_to_verify: the number's ปีงบ
+        # comes from account_fiscal_year_id, not today — pin both %(year_be)s
+        # interpolation (ir_sequence_date) and the date_range sub-sequence
+        # (sequence_date) to the FY's date_to.
+        if not self.is_number_assigned:
+            fiscal_date = self.account_fiscal_year_id.date_to
+            vals["name"] = self.env["ir.sequence"].with_context(
+                ir_sequence_date=fiscal_date
+            ).next_by_code(
+                "approval.request",
+                sequence_date=fiscal_date,
+            ) or "/"
+        self.write(vals)
         return True
+
+    @api.constrains("account_fiscal_year_id")
+    def _check_fiscal_year_locked_after_submission(self):
+        """Once a request has an official number, its fiscal year is frozen:
+        the number is minted from ``%(year_be)s`` of that FY's ``date_to``, so
+        swapping the FY afterwards would silently desync AR/<year>/#### from
+        the year the money is actually spent under."""
+        for rec in self:
+            if rec.is_number_assigned:
+                raise ValidationError(
+                    _(
+                        "Fiscal year cannot be changed after the request has "
+                        "been submitted (number %s already assigned)."
+                    )
+                    % rec.name
+                )
 
     def action_submit(self):
         for record in self:
@@ -704,12 +776,6 @@ class ApprovalRequest(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get("name", "/") == "/":
-                vals["name"] = self.env["ir.sequence"].next_by_code(
-                    "approval.request"
-                ) or "/"
-
         records = super().create(vals_list)
         for rec in records:
             if rec.budget_commitment_id:
@@ -976,11 +1042,12 @@ class ApprovalRequest(models.Model):
 
     @api.depends("state")
     def _compute_is_plan_editable(self):
-        """The plan (expense lines, participants, header) is editable only in
-        draft by default. agx_approval_sarabun widens this to a Sarabun-returned
+        """The plan (expense lines, participants, header) stays editable until
+        the request is sent for approval — i.e. through draft, รอตรวจสอบ and
+        รอส่งขออนุมัติ. agx_approval_sarabun widens this to a Sarabun-returned
         request (edit everything except budget)."""
         for rec in self:
-            rec.is_plan_editable = rec.state == "draft"
+            rec.is_plan_editable = rec.state in ("draft", "to_verify", "to_send")
 
     @api.depends("state")
     def _compute_is_actual_editable(self):
@@ -995,6 +1062,13 @@ class ApprovalRequest(models.Model):
         for rec in self:
             rec.is_correction = False
 
+    @api.depends("name")
+    def _compute_is_number_assigned(self):
+        # "/" is the placeholder a request carries until action_to_verify mints
+        # its number. Kept untranslated on purpose — see the ``name`` field.
+        for rec in self:
+            rec.is_number_assigned = bool(rec.name and rec.name != "/")
+
     @api.depends("line_ids.total_amount")
     def _compute_total_amount(self):
         for rec in self:
@@ -1004,6 +1078,122 @@ class ApprovalRequest(models.Model):
     def _compute_total_actual_amount(self):
         for rec in self:
             rec.total_actual_amount = sum(rec.allocation_ids.mapped("amount"))
+
+    def _plan_actual_rows(self):
+        """Per-product (planned, actual) totals for the plan-vs-actual
+        comparison, ordered by the plan's sequence with any actual-only products
+        appended. Actual amounts are summed across recipients so a per-product
+        total lines up with the single planned amount. ``descriptions`` gathers
+        the distinct plan-line details (รายละเอียด) for the product."""
+        self.ensure_one()
+        rows = {}
+        order = []
+
+        def bucket(product):
+            if product.id not in rows:
+                rows[product.id] = {
+                    "product": product,
+                    "plan": 0.0,
+                    "actual": 0.0,
+                    "descriptions": [],
+                }
+                order.append(product.id)
+            return rows[product.id]
+
+        for line in self.line_ids:
+            row = bucket(line.product_id)
+            row["plan"] += line.total_amount
+            detail = (line.description or "").strip()
+            if detail and detail not in row["descriptions"]:
+                row["descriptions"].append(detail)
+        for alloc in self.allocation_ids:
+            bucket(alloc.product_id)["actual"] += alloc.amount
+        return [rows[pid] for pid in order]
+
+    @api.depends(
+        "line_ids.product_id",
+        "line_ids.total_amount",
+        "allocation_ids.product_id",
+        "allocation_ids.amount",
+        "currency_id",
+    )
+    def _compute_plan_actual_comparison_html(self):
+        for rec in self:
+            rec.plan_actual_comparison_html = rec._render_plan_actual_comparison()
+
+    def _render_plan_actual_comparison(self):
+        """Render the per-product plan-vs-actual table as HTML. ผลต่าง = จ่ายจริง −
+        แผน; over-plan rows show red, under-plan green."""
+        self.ensure_one()
+        rows = self._plan_actual_rows()
+        if not rows:
+            return Markup(
+                "<p class='text-muted'>ยังไม่มีรายการค่าใช้จ่ายในแผน</p>"
+            )
+
+        def money(value):
+            return formatLang(self.env, value, currency_obj=self.currency_id)
+
+        def diff_cls(value):
+            if value > 0:
+                return "text-danger"
+            if value < 0:
+                return "text-success"
+            return "text-muted"
+
+        row_tpl = Markup(
+            "<tr>"
+            "<td>{product}</td>"
+            "<td class='text-muted'>{detail}</td>"
+            "<td class='text-end'>{plan}</td>"
+            "<td class='text-end'>{actual}</td>"
+            "<td class='text-end {cls}'>{diff}</td>"
+            "</tr>"
+        )
+        body = Markup("")
+        total_plan = total_actual = 0.0
+        for row in rows:
+            diff = row["actual"] - row["plan"]
+            total_plan += row["plan"]
+            total_actual += row["actual"]
+            body += row_tpl.format(
+                product=row["product"].display_name or "",
+                detail="\n".join(row["descriptions"]) or "-",
+                plan=money(row["plan"]),
+                actual=money(row["actual"]),
+                cls=diff_cls(diff),
+                diff=money(diff),
+            )
+
+        total_diff = total_actual - total_plan
+        table = Markup(
+            "<table class='table table-sm o_list_table mb-0'>"
+            "<thead><tr>"
+            "<th>รายการ</th>"
+            "<th>รายละเอียด</th>"
+            "<th class='text-end'>แผน</th>"
+            "<th class='text-end'>จ่ายจริง</th>"
+            "<th class='text-end'>ผลต่าง</th>"
+            "</tr></thead>"
+            "<tbody>{body}</tbody>"
+            "<tfoot><tr class='fw-bold'>"
+            "<td colspan='2'>รวม</td>"
+            "<td class='text-end'>{plan}</td>"
+            "<td class='text-end'>{actual}</td>"
+            "<td class='text-end {cls}'>{diff}</td>"
+            "</tr></tfoot>"
+            "</table>"
+        ).format(
+            body=body,
+            plan=money(total_plan),
+            actual=money(total_actual),
+            cls=diff_cls(total_diff),
+            diff=money(total_diff),
+        )
+        return Markup(
+            "<div style=\"background-color:#f8f9fa;border-radius:8px;padding:16px;"
+            "box-shadow:0 1px 4px rgba(0,0,0,.15);white-space:pre-line;\">{table}</div>"
+        ).format(table=table)
 
     def _voucher_groups(self):
         """งบหน้าใบสำคัญคู่จ่าย data: the disbursed actual allocation — จ่ายตรง /
@@ -1046,4 +1236,36 @@ class ApprovalRequest(models.Model):
                         "ยอดค่าใช้จ่ายจริง (%(actual)s) เกินงบที่อนุมัติ/จองไว้ (%(cap)s)"
                     )
                     % {"actual": rec.total_actual_amount, "cap": cap}
+                )
+
+    @api.constrains("allocation_ids", "line_ids")
+    def _check_actual_not_exceed_plan(self):
+        """ยอดเบิกจ่ายจริงของแต่ละรายการ (product) ต้องไม่เกินยอดที่วางแผนไว้ใน
+        ค่าใช้จ่าย (แผน) สำหรับรายการนั้น."""
+        for rec in self:
+            if not rec.allocation_ids:
+                continue
+            over = []
+            for row in rec._plan_actual_rows():
+                if rec.currency_id.compare_amounts(row["actual"], row["plan"]) > 0:
+                    over.append(
+                        _(
+                            "- %(product)s: เบิกจริง %(actual)s / แผน %(plan)s"
+                        )
+                        % {
+                            "product": row["product"].display_name,
+                            "actual": formatLang(
+                                self.env, row["actual"],
+                                currency_obj=rec.currency_id,
+                            ),
+                            "plan": formatLang(
+                                self.env, row["plan"],
+                                currency_obj=rec.currency_id,
+                            ),
+                        }
+                    )
+            if over:
+                raise ValidationError(
+                    _("ยอดเบิกจ่ายจริงเกินยอดที่วางแผนไว้ในรายการต่อไปนี้:\n%s")
+                    % "\n".join(over)
                 )

@@ -46,12 +46,31 @@
                         class="btn-secondary"
                         groups="finance_kmitl.group_finance_kmitl_user_out"
                     />
+                    <!-- The accounting maker's own move, because this same list is
+                         their register of ใบล้างเจ้าหนี้ as well as the finance
+                         office's list of ใบสำคัญจ่าย. Shown to the accounting
+                         office only: the two presses above belong to the treasury
+                         and this one does not, and a press that is not yours on a
+                         list you work every day is a press waiting to be made by
+                         mistake. Which vouchers may go is the batch method's own
+                         business — it reports the rest back by name. -->
+                    <button
+                        name="action_submit_batch"
+                        type="object"
+                        string="Submit Selected"
+                        class="btn-secondary"
+                        groups="accounting_kmitl.group_accounting_kmitl_user"
+                    />
                 </header>
                 <field name="name" string="เลขที่ใบสำคัญ" />
                 <field name="date" />
                 <field name="partner_id" string="ผู้รับเงิน" />
                 <field name="kmitl_payment_type_id" optional="show" />
                 <field name="kmitl_payment_subject_id" optional="hide" />
+                <!-- Which money it comes out of, ahead of the account it
+                     physically leaves from. Carries its own Thai label from
+                     analytic.distribution.mixin. -->
+                <field name="source_analytic_id" optional="show" />
                 <field name="payment_method_line_id" string="หัวจ่าย" optional="show" />
                 <field name="payment_method_id" string="วิธีจ่าย" optional="hide" />
                 <field
@@ -315,6 +334,17 @@
                         select="multi"
                         groupby="payment_method_id"
                         domain="[('payment_type', '=', 'outbound')]"
+                        enable_counters="1"
+                    />
+                    <!-- แหล่งเงิน beside it, because "what is left to send from KTB"
+                         is nearly always asked of one source at a time — government
+                         budget or revenue budget, never both in the same breath. A
+                         handful of values, so a click rather than something typed
+                         into the dimension field above. -->
+                    <field
+                        name="source_analytic_id"
+                        icon="fa-money"
+                        select="multi"
                         enable_counters="1"
                     />
                 </searchpanel>

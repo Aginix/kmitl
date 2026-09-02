@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Finance",
-    "version": "16.0.4.7.0",
+    "version": "16.0.5.0.0",
     "category": "KMITL/Finance",
     "summary": "งานการเงิน KMITL: จ่ายเงิน, bank export, WHT, ทะเบียนคุมเช็ค, รายรับ/ใบเสร็จ",
     "license": "LGPL-3",
@@ -21,10 +21,9 @@
         "l10n_th_fonts",
         "l10n_th_amount_to_text",
         "l10n_th_account_wht_cert_form",
-        # The payee's category carries their payable account and their WHT rate,
-        # both of which are this office's business — and it is what the finance
-        # list filters and the routing rules read.
-        "partner_type_aginix",
+        # The payee's category is what the finance list filters and the
+        # routing rules read (classification only, via a related field).
+        "partner_type_kmitl",
     ],
     "data": [
         "security/security.xml",
@@ -54,15 +53,9 @@
         "report/report_bank_payment_export.xml",
         "report/report_cheque_print.xml",
         "report/report_cheque_print_action.xml",
+        "report/report_payment_voucher_action.xml",
+        "report/report_payment_voucher.xml",
     ],
-    "assets": {
-        "web.assets_backend": [
-            # The stylesheet and MultiRecordSelect come from
-            # accounting_kmitl_workflow's approval queue, already in this bundle.
-            "finance_kmitl/static/src/clearing_queue/clearing_queue.js",
-            "finance_kmitl/static/src/clearing_queue/clearing_queue.xml",
-        ],
-    },
     # The เรื่องที่จ่าย are seeded here rather than in a data file: they name
     # หัวจ่าย that account_kmitl publishes external ids for only when *it* is
     # installed, so a ref would fail to load on any database whose chart predates

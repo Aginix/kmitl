@@ -7,18 +7,44 @@ from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
+ANALYTIC_DIMENSION_FIELDS = [
+    "department_analytic_id",
+    "fund_analytic_id",
+    "source_analytic_id",
+    "activity_analytic_id",
+    "kmitl_project_analytic_id",
+    "procurement_plan_analytic_id",
+]
+
+# Fields readonly from to_submit onwards (most fields).
+READONLY_STATES = {
+    "to_submit": [("readonly", True)],
+    "submitted": [("readonly", True)],
+    "approved": [("readonly", True)],
+    "done": [("readonly", True)],
+    "cancelled": [("readonly", True)],
+}
+
+# Analytic dims editable in draft + to_submit only.
+ANALYTIC_READONLY_STATES = {
+    "submitted": [("readonly", True)],
+    "approved": [("readonly", True)],
+    "done": [("readonly", True)],
+    "cancelled": [("readonly", True)],
+}
+
+# description / payment_method editable in draft → approved.
+FLEX_READONLY_STATES = {
+    "done": [("readonly", True)],
+    "cancelled": [("readonly", True)],
+}
+
 
 class ReceiptKmitl(models.Model):
     _name = "kmitl.receipt"
     _description = "KMITL Cash Receipt"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "date desc, id desc"
-
-    READONLY_STATES = {
-        "confirmed": [("readonly", True)],
-        "posted": [("readonly", True)],
-        "cancelled": [("readonly", True)],
-    }
 
     name = fields.Char(
         string="Receipt Number",
@@ -31,8 +57,10 @@ class ReceiptKmitl(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("confirmed", "Confirmed"),
-            ("posted", "Posted"),
+            ("to_submit", "To Submit"),
+            ("submitted", "Submitted"),
+            ("approved", "Approved"),
+            ("done", "Done"),
             ("cancelled", "Cancelled"),
         ],
         default="draft",
@@ -46,7 +74,13 @@ class ReceiptKmitl(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    department_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
+        "account.fiscal.year",
+        string="Fiscal Year",
+        tracking=True,
+        states=READONLY_STATES,
+    )
+    department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Issuing Department",
         required=True,
@@ -61,6 +95,48 @@ class ReceiptKmitl(models.Model):
         check_company=True,
         domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]",
         tracking=True,
+        states=FLEX_READONLY_STATES,
+    )
+
+    # --- Analytic dimensions (header-level, synced to lines) ---
+    fund_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="Fund",
+        domain=[("root_plan_id.code", "=", "funds")],
+        states=ANALYTIC_READONLY_STATES,
+    )
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="Source",
+        domain=[("root_plan_id.code", "=", "sources")],
+        default=lambda self: self.env.ref(
+            "account_analytic_kmitl.source_2", raise_if_not_found=False
+        ),
+        states=ANALYTIC_READONLY_STATES,
+    )
+    activity_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="Activity",
+        domain=[("root_plan_id.code", "=", "activities")],
+        states=ANALYTIC_READONLY_STATES,
+    )
+    kmitl_project_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="KMITL Project",
+        domain=[("root_plan_id.code", "=", "kmitl_project")],
+        states=ANALYTIC_READONLY_STATES,
+    )
+    procurement_plan_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="Procurement Plan",
+        domain=[("root_plan_id.code", "=", "procurement_plan")],
+        states=ANALYTIC_READONLY_STATES,
+    )
+
+    # --- Customer ---
+    is_walkin = fields.Boolean(
+        string="Walk-in Customer",
+        default=True,
         states=READONLY_STATES,
     )
     partner_id = fields.Many2one(
@@ -87,7 +163,14 @@ class ReceiptKmitl(models.Model):
         string="Branch Code (snapshot)",
         states=READONLY_STATES,
     )
-    note = fields.Text(states=READONLY_STATES)
+
+    description = fields.Text(states=FLEX_READONLY_STATES)
+    note = fields.Text()
+    attachment_ids = fields.Many2many(
+        "ir.attachment",
+        string="Attachments",
+        help="Supporting evidence, e.g. bank transfer slips.",
+    )
     line_ids = fields.One2many(
         "kmitl.receipt.line",
         "receipt_id",
@@ -119,9 +202,9 @@ class ReceiptKmitl(models.Model):
         readonly=True,
         copy=False,
     )
-    deposit_id = fields.Many2one(
-        "kmitl.cash.deposit",
-        string="Cash Deposit",
+    remittance_id = fields.Many2one(
+        "kmitl.receipt.remittance",
+        string="Receipt Remittance",
         readonly=True,
         copy=False,
     )
@@ -134,6 +217,9 @@ class ReceiptKmitl(models.Model):
         copy=False,
     )
 
+    # -------------------------------------------------------------------------
+    # Defaults & computes
+    # -------------------------------------------------------------------------
     @api.model
     def _default_partner_id(self):
         param = self.env["ir.config_parameter"].sudo().get_param(
@@ -154,13 +240,156 @@ class ReceiptKmitl(models.Model):
         for rec in self:
             rec.amount_total = sum(rec.line_ids.mapped("amount"))
 
+    @api.model
+    def get_receipt_dashboard(self):
+        currency_id = self.env.company.currency_id.id
+        dashboard = {
+            "to_report": {
+                "description": _("To Report"),
+                "amount": 0.0,
+                "currency": currency_id,
+            },
+            "under_validation": {
+                "description": _("Under Validation"),
+                "amount": 0.0,
+                "currency": currency_id,
+            },
+            "reported": {
+                "description": _("Reported"),
+                "amount": 0.0,
+                "currency": currency_id,
+            },
+        }
+        groups = self.read_group(
+            [("state", "in", ["to_submit", "submitted", "approved", "done"])],
+            ["amount_total"],
+            ["state"],
+            lazy=False,
+        )
+        state_map = {
+            "to_submit": "to_report",
+            "submitted": "under_validation",
+            "approved": "under_validation",
+            "done": "reported",
+        }
+        for g in groups:
+            bucket = state_map.get(g["state"])
+            if bucket:
+                dashboard[bucket]["amount"] += g.get("amount_total") or 0.0
+        return dashboard
+
+    def action_create_report(self):
+        receipts = self.filtered(
+            lambda r: r.state == "to_submit"
+            and not r.remittance_id
+            and r.date <= fields.Date.context_today(r)
+        )
+        if not receipts:
+            raise UserError(
+                _("No receipts eligible for remittance.")
+            )
+        departments = receipts.mapped("department_analytic_id")
+        if len(departments) > 1:
+            raise UserError(
+                _("Selected receipts belong to different departments. "
+                  "Please select receipts from the same department.")
+            )
+        remittance = self.env["kmitl.receipt.remittance"].create(
+            {
+                "department_analytic_id": departments.id,
+                "receipt_ids": [(6, 0, receipts.ids)],
+            }
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "kmitl.receipt.remittance",
+            "res_id": remittance.id,
+            "view_mode": "form",
+            "views": [(False, "form")],
+            "target": "current",
+        }
+
+    # -------------------------------------------------------------------------
+    # Analytic dimension sync (header → lines)
+    # -------------------------------------------------------------------------
+    def _build_analytic_distribution(self):
+        self.ensure_one()
+        dist = {}
+        for fname in ANALYTIC_DIMENSION_FIELDS:
+            account = self[fname]
+            if account:
+                dist[str(account.id)] = 100.0
+        return dist or False
+
+    def _sync_analytic_to_lines(self):
+        for rec in self:
+            dist = rec._build_analytic_distribution()
+            if rec.line_ids:
+                rec.line_ids.write({"analytic_distribution": dist})
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._sync_analytic_to_lines()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if any(f in vals for f in ANALYTIC_DIMENSION_FIELDS):
+            self._sync_analytic_to_lines()
+        if "remittance_id" in vals and not vals.get("remittance_id"):
+            detached = self.filtered(lambda r: r.state in ("submitted", "approved"))
+            if detached:
+                detached.write({"state": "to_submit"})
+                for rec in detached:
+                    rec.message_post(
+                        body=_("Removed from remittance; returned to the pending pool.")
+                    )
+        return res
+
+    @api.onchange(
+        "department_analytic_id", "fund_analytic_id", "source_analytic_id",
+        "activity_analytic_id", "kmitl_project_analytic_id",
+        "procurement_plan_analytic_id",
+    )
+    def _onchange_analytic_dimensions(self):
+        dist = self._build_analytic_distribution()
+        for line in self.line_ids:
+            line.analytic_distribution = dist
+
+    # -------------------------------------------------------------------------
+    # Onchanges
+    # -------------------------------------------------------------------------
+    @api.onchange("date")
+    def _onchange_date(self):
+        if self.date:
+            fiscal_year = self.env["account.fiscal.year"].search(
+                [
+                    ("date_from", "<=", self.date),
+                    ("date_to", ">=", self.date),
+                    ("company_id", "=", self.company_id.id),
+                ],
+                limit=1,
+            )
+            if fiscal_year:
+                self.account_fiscal_year_id = fiscal_year
+
+    @api.onchange("is_walkin")
+    def _onchange_is_walkin(self):
+        if self.is_walkin:
+            walkin_id = self._default_partner_id()
+            if walkin_id:
+                self.partner_id = walkin_id
+                self._sync_customer_snapshot()
+            self.customer_tax_id = False
+            self.customer_branch_code = False
+            self.customer_address = False
+
     @api.onchange("partner_id")
     def _onchange_partner_id(self):
         self._sync_customer_snapshot()
 
     def _sync_customer_snapshot(self):
-        """Copy the partner's identity onto the receipt snapshot fields so the
-        printed receipt stays stable even if the partner record changes later."""
         for rec in self:
             if not rec.partner_id:
                 continue
@@ -183,59 +412,43 @@ class ReceiptKmitl(models.Model):
     # -------------------------------------------------------------------------
     # Sequence
     # -------------------------------------------------------------------------
-    def _get_fiscal_year_be(self, date):
-        """Thai fiscal year as the full Buddhist Era budget year.
-        FY runs Oct → Sep, so Oct-Dec belong to the next budget year
-        (e.g. 2025-10 → 2569)."""
+    @staticmethod
+    def _get_fiscal_year_be(date):
         budget_year_ce = date.year + (1 if date.month >= 10 else 0)
         return budget_year_ce + 543
 
-    def _get_fiscal_year_suffix(self, date):
-        """2-digit Buddhist Era fiscal year for display (e.g. 2025-10 → '69')."""
-        return str(self._get_fiscal_year_be(date))[-2:]
+    def _get_fy_be(self):
+        self.ensure_one()
+        if self.account_fiscal_year_id:
+            return self.account_fiscal_year_id.date_to.year + 543
+        return self._get_fiscal_year_be(self.date)
 
-    def _get_or_create_dept_fy_sequence(
-        self, department, date, code_ns, name_label, number_prefix
-    ):
-        """Lazy-create a per-(dept_code, fiscal_year) ir.sequence.
-
-        The lookup ``code`` uses the full BE year so it never collides across
-        century rollovers, while the human-facing ``prefix`` keeps the 2-digit
-        year (e.g. ``RC/01/69/0001``)."""
-        dept_code = department.code or "00"
-        fy_be = self._get_fiscal_year_be(date)
-        fy_suffix = str(fy_be)[-2:]
-        seq_code = "%s.%s.%s" % (code_ns, dept_code, fy_be)
+    def _get_receipt_sequence(self):
+        fy_be = self._get_fy_be()
+        seq_code = "kmitl.receipt.%s" % fy_be
         IrSeq = self.env["ir.sequence"].sudo()
         seq = IrSeq.search([("code", "=", seq_code)], limit=1)
         if not seq:
             seq = IrSeq.create(
                 {
-                    "name": "%s %s FY%s" % (name_label, dept_code, fy_suffix),
+                    "name": "Receipt FY%s" % fy_be,
                     "code": seq_code,
-                    "prefix": "%s/%s/%s/" % (number_prefix, dept_code, fy_suffix),
+                    "prefix": "RC/%s/" % fy_be,
                     "padding": 4,
                     "company_id": False,
                 }
             )
         return seq
 
-    def _get_receipt_sequence(self, department, date):
-        return self._get_or_create_dept_fy_sequence(
-            department, date, "kmitl.receipt", "Receipt", "RC"
-        )
-
     # -------------------------------------------------------------------------
     # Actions
     # -------------------------------------------------------------------------
-    def action_confirm(self):
-        """Issued by the department: validate, assign number, allow printing.
-        No journal entry is created here — central finance posts later."""
+    def action_to_submit(self):
         for rec in self:
             if rec.state != "draft":
-                raise UserError(_("Only draft receipts can be confirmed."))
+                raise UserError(_("Only draft receipts can be submitted."))
             if not rec.line_ids:
-                raise ValidationError(_("Add at least one line before confirming."))
+                raise ValidationError(_("Add at least one line before submitting."))
             for line in rec.line_ids:
                 if not line.account_id:
                     raise ValidationError(
@@ -251,23 +464,52 @@ class ReceiptKmitl(models.Model):
             if not rec.customer_name and rec.partner_id:
                 rec._sync_customer_snapshot()
             if rec.name == "/" or not rec.name:
-                seq = rec._get_receipt_sequence(rec.department_id, rec.date)
+                seq = rec._get_receipt_sequence()
                 rec.name = seq.next_by_id()
-            rec.state = "confirmed"
+            rec.state = "to_submit"
         return True
 
-    def action_post(self):
-        """Posted by central finance (typically via a cash deposit batch).
-        Creates the journal entry: Dr payment-method account / Cr income."""
+    # Kept as internal method — called by remittance, not exposed as button.
+    def _action_post(self):
         for rec in self:
-            if rec.state != "confirmed":
-                raise UserError(
-                    _("Only confirmed receipts can be posted (%s).") % rec.name
-                )
             move = rec._create_move()
             rec.move_id = move.id
-            rec.state = "posted"
+            rec.state = "done"
         return True
+
+    def _prepare_debit_line_vals(self):
+        self.ensure_one()
+        method = self.payment_method_id
+        return {
+            "name": _("Receipt %s") % self.name,
+            "account_id": method.account_id.id,
+            "debit": self.amount_total,
+            "credit": 0.0,
+            "partner_id": self.partner_id.id,
+            "currency_id": self.currency_id.id,
+        }
+
+    def _prepare_move_line_vals(self, line):
+        self.ensure_one()
+        return {
+            "name": line.name or self.name,
+            "account_id": line.account_id.id,
+            "debit": 0.0,
+            "credit": line.amount,
+            "partner_id": self.partner_id.id,
+            "currency_id": self.currency_id.id,
+            "analytic_distribution": line.analytic_distribution,
+        }
+
+    def _prepare_move_vals(self, line_vals):
+        self.ensure_one()
+        return {
+            "ref": self.name,
+            "date": self.date,
+            "journal_id": self.payment_method_id.journal_id.id,
+            "company_id": self.company_id.id,
+            "line_ids": line_vals,
+        }
 
     def _create_move(self):
         self.ensure_one()
@@ -276,74 +518,89 @@ class ReceiptKmitl(models.Model):
             raise UserError(
                 _("Payment method '%s' has no debit account.") % method.name
             )
-        line_vals = [
-            (
-                0,
-                0,
-                {
-                    "name": _("Receipt %s") % self.name,
-                    "account_id": method.account_id.id,
-                    "debit": self.amount_total,
-                    "credit": 0.0,
-                    "partner_id": self.partner_id.id,
-                    "currency_id": self.currency_id.id,
-                },
-            )
-        ]
+        line_vals = [(0, 0, self._prepare_debit_line_vals())]
         for line in self.line_ids:
-            line_vals.append(
-                (
-                    0,
-                    0,
-                    {
-                        "name": line.name or self.name,
-                        "account_id": line.account_id.id,
-                        "debit": 0.0,
-                        "credit": line.amount,
-                        "partner_id": self.partner_id.id,
-                        "currency_id": self.currency_id.id,
-                        "analytic_distribution": line.analytic_distribution,
-                    },
-                )
-            )
-        move = self.env["account.move"].create(
-            {
-                "ref": self.name,
-                "date": self.date,
-                "journal_id": method.journal_id.id,
-                "company_id": self.company_id.id,
-                "line_ids": line_vals,
-            }
-        )
+            line_vals.append((0, 0, self._prepare_move_line_vals(line)))
+        move = self.env["account.move"].create(self._prepare_move_vals(line_vals))
         move.action_post()
         return move
 
     def action_cancel(self):
         for rec in self:
-            if rec.state == "posted":
+            if rec.state != "draft":
                 raise UserError(
-                    _("Posted receipts cannot be cancelled. Use a reversal/credit "
-                      "note from Accounting.")
-                )
-            if rec.deposit_id:
-                raise UserError(
-                    _("Receipt %s is in cash deposit %s; remove it from the deposit "
-                      "first.") % (rec.name, rec.deposit_id.display_name)
+                    _("Only draft receipts can be cancelled. "
+                      "Reset to draft first.")
                 )
             rec.state = "cancelled"
         return True
 
     def action_draft(self):
         for rec in self:
-            if rec.state != "cancelled":
-                raise UserError(_("Only cancelled receipts can be reset to draft."))
+            if rec.state not in ("to_submit", "cancelled"):
+                raise UserError(
+                    _("Only 'To Submit' or cancelled receipts can be "
+                      "reset to draft.")
+                )
+            if rec.remittance_id:
+                raise UserError(
+                    _("Receipt %s is in remittance %s; detach it or "
+                      "reset the remittance first.")
+                    % (rec.name, rec.remittance_id.display_name)
+                )
             rec.state = "draft"
         return True
 
+    def action_view_move(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "account.move",
+            "res_id": self.move_id.id,
+            "view_mode": "form",
+            "views": [(False, "form")],
+        }
+
+    def action_view_remittance(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "kmitl.receipt.remittance",
+            "res_id": self.remittance_id.id,
+            "view_mode": "form",
+            "views": [(False, "form")],
+            "target": "current",
+        }
+
+    def action_print_original(self):
+        self.ensure_one()
+        self.message_post(body=_("Original receipt printed."))
+        return self._action_print_via_browser(is_copy=False)
+
+    def action_print_copy(self):
+        self.ensure_one()
+        self.message_post(body=_("Copy of receipt printed."))
+        return self._action_print_via_browser(is_copy=True)
+
+    def _action_print_via_browser(self, is_copy=False):
+        self.ensure_one()
+        html = self.env["ir.actions.report"].with_context(
+            receipt_copy=is_copy,
+        )._render_qweb_html(
+            "receipt_kmitl.action_report_receipt_kmitl", self.ids
+        )[0]
+        if isinstance(html, bytes):
+            html = html.decode("utf-8")
+        return {
+            "type": "ir.actions.client",
+            "tag": "receipt_kmitl_print",
+            "params": {"html": html},
+        }
+
     def unlink(self):
         for rec in self:
-            if rec.state not in ("draft", "cancelled"):
+            if rec.state != "cancelled":
                 raise UserError(
-                    _("Only draft or cancelled receipts can be deleted.")
+                    _("Only cancelled receipts can be deleted.")
                 )
         return super().unlink()
