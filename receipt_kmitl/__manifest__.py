@@ -30,7 +30,6 @@
         "report/paperformat.xml",
         "report/receipt_kmitl_report.xml",
         "report/receipt_kmitl_action.xml",
-        "report/receipt_kmitl_attachments_separator.xml",
     ],
     "assets": {
         "web.assets_backend": [
