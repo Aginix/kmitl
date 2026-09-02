@@ -62,6 +62,9 @@
                     help="Created by me"
                 />
             </xpath>
+            <xpath expr="//filter[@name='tofix']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
             <xpath expr="//filter[@name='state_to_approve']" position="replace" />
             <xpath expr="//filter[@name='state_approved']" position="replace" />
             <xpath expr="//filter[@name='state_in_progress']" position="replace" />
