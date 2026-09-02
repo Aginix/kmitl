@@ -6,16 +6,15 @@
         <field name="priority">160</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
-            <field name="partner_id" position="before">
-                <field name="partner_id_domain" invisible="1" />
-            </field>
-            <field name="partner_id" position="attributes">
-                <attribute name="domain">partner_id_domain</attribute>
-            </field>
             <field name="procurement_mode" position="attributes">
                 <attribute
                     name="attrs"
-                >{'readonly': ['|', ('is_editable', '=', False), ('payment_type', '=', 'prepaid')]}</attribute>
+                >{'readonly': ['|', ('is_editable', '=', False), ('payment_type', 'in', ('prepaid', 'advance'))]}</attribute>
+            </field>
+            <field name="vat_included" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': ['|', ('is_editable', '=', False), ('payment_type', 'in', ('prepaid', 'advance'))]}</attribute>
             </field>
         </field>
     </record>
