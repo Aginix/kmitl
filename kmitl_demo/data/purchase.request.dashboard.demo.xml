@@ -142,7 +142,7 @@
         <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_select"/>
         <field name="payment_type">advance</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_010"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_008'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_008"/>
         <field name="department_id" ref="kmitl_demo.01"/>
         <field name="budget_account_id" ref="budget.budget_account_5101020008"/>
@@ -278,7 +278,7 @@
         <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_select"/>
         <field name="payment_type">advance</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_011"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_008"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_011'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_011"/>
         <field name="department_id" ref="kmitl_demo.04"/>
         <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
@@ -355,7 +355,7 @@
         <field name="is_egp" eval="True"/>
         <field name="payment_type">advance</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_014"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_008'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_008"/>
         <field name="department_id" ref="kmitl_demo.01"/>
         <field name="budget_account_id" ref="budget.budget_account_5411000002"/>
@@ -396,7 +396,7 @@
         <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_select"/>
         <field name="payment_type">advance</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_014"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_015"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_014'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_014"/>
         <field name="department_id" ref="kmitl_demo.06"/>
         <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
@@ -522,7 +522,7 @@
         <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
         <field name="payment_type">advance</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_018"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_008'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_008"/>
         <field name="department_id" ref="kmitl_demo.01"/>
         <field name="budget_account_id" ref="budget.budget_account_5101020011"/>
@@ -567,7 +567,7 @@
         <field name="is_egp" eval="True"/>
         <field name="payment_type">advance</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_009"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_019"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_009'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_009"/>
         <field name="department_id" ref="kmitl_demo.02"/>
         <field name="budget_account_id" ref="budget.budget_account_5411000002"/>
@@ -834,7 +834,7 @@
         <field name="is_egp" eval="True"/>
         <field name="payment_type">advance</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_009"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_009"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_009'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_009"/>
         <field name="department_id" ref="kmitl_demo.02"/>
         <field name="budget_account_id" ref="budget.budget_account_5411000002"/>
@@ -999,7 +999,7 @@
         <field name="is_egp" eval="True"/>
         <field name="payment_type">advance</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_011"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_019"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_011'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_011"/>
         <field name="department_id" ref="kmitl_demo.04"/>
         <field name="budget_account_id" ref="budget.budget_account_5411000002"/>
@@ -1040,7 +1040,7 @@
         <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_select"/>
         <field name="payment_type">advance</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_014"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_015"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_014'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_014"/>
         <field name="department_id" ref="kmitl_demo.06"/>
         <field name="budget_account_id" ref="budget.budget_account_5101020008"/>
