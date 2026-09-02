@@ -131,10 +131,11 @@
                             <field name="date"/>
                             <field name="description" optional="show" />
                             <field name="partner_id" optional="show" />
+                            <field name="payment_type" optional="show" />
                             <field name="payment_method_id" optional="show" />
                             <field name="amount_total" sum="Total"/>
                             <field name="currency_id" invisible="1"/>
-                            <field name="state" optional="show" />
+                            <field name="state" optional="hide" />
                             <field name="note" optional="hide" />
                         </tree>
                     </field>
