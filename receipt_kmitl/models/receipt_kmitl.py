@@ -516,6 +516,7 @@ class ReceiptKmitl(models.Model):
                     "code": seq_code,
                     "prefix": "RC/%s/" % fy_be,
                     "padding": 4,
+                    "implementation": "no_gap",
                     "company_id": False,
                 }
             )

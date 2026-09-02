@@ -17,6 +17,21 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
         fy_be = str(receipt._get_fy_be())
         self.assertTrue(receipt.name.startswith("RC/%s/" % fy_be))
 
+    def test_rejected_create_does_not_burn_a_number(self):
+        """A save rejected by a constraint must give the number back."""
+        seq = self._make_receipt()._get_receipt_sequence()
+        self.assertEqual(seq.implementation, "no_gap")
+        number_next = seq.number_next_actual
+        with self.assertRaises(ValidationError), self.env.cr.savepoint():
+            self.env["kmitl.receipt"].create(
+                {
+                    "department_analytic_id": self.dept_a.id,
+                    "payment_method_id": self.pm_cash.id,
+                    "partner_id": self.walkin.id,
+                }
+            )
+        self.assertEqual(seq.number_next_actual, number_next)
+
     def test_post_creates_move(self):
         receipt = self._make_receipt(
             lines=[(self.product_tuition, 1, 5000.0), (self.product_card, 2, 100.0)]

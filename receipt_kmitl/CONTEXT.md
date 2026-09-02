@@ -9,6 +9,8 @@ posts the accounting entries.
 **Cash Receipt**:
 A record of money received at a department counter (`kmitl.receipt`). Numbered
 `RC/<FY>/nnnn` the moment it is created — there is no separate "confirm" step.
+The per-fiscal-year sequence is `no_gap`, so a save rejected by validation
+gives its number back instead of burning it.
 Lifecycle: `draft` (รอนำส่ง / To Submit, still editable by the issuing department)
 → `submitted` (locked, once pulled into a remittance and submitted) →
 `approved` → `done` (posted to accounting by central finance), plus `cancelled`.

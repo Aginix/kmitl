@@ -136,6 +136,7 @@ class ReceiptRemittance(models.Model):
                     "code": seq_code,
                     "prefix": "RM/%s/" % fy_be,
                     "padding": 4,
+                    "implementation": "no_gap",
                     "company_id": False,
                 }
             )

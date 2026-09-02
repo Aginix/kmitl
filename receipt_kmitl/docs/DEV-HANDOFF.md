@@ -396,3 +396,31 @@ on the header, not just the line).
   `analytic_distribution`** to its trigger field list, so a direct JSON write
   (import/RPC/widget) re-evaluates exception rules, not just writes through
   the 4 convenience fields.
+
+## Revision 5 — post-review fixes
+
+- **Receipt sequences are now `no_gap`.** `_get_receipt_sequence` /
+  `_get_sequence` create an `ir.sequence` per fiscal year lazily but never
+  set `implementation`, so it defaulted to `standard` — PostgreSQL
+  `nextval()`, which does not roll back. Since Revision 4 mints the number
+  in `create()` while `_check_lines` only fires later, on flush's
+  recompute of `amount_total`, every save a constraint rejects burns a
+  `RC/<FY>/nnnn` number — and `retrying()` can replay the same request up
+  to 5 times, burning one each time. `no_gap` keeps its counter in the
+  `ir_sequence.number_next` column, so it is returned by every rollback
+  path, not just the one we happened to think of, and it brings this
+  module in line with every other KMITL document sequence, which is
+  already `no_gap`. The remittance sequence gets the same flag for
+  symmetry (its number mints in `action_submit` after validation, so it
+  was only ever at risk from retries). **Not done**: reordering `create()`
+  to validate before minting — redundant once the counter is transactional,
+  and it would only cover one path anyway. **Trade-off**: `_update_nogap`
+  holds `FOR UPDATE NOWAIT` until commit, so concurrent saves within the
+  same fiscal year serialize; `LOCK_NOT_AVAILABLE` is in
+  `PG_CONCURRENCY_ERRORS_TO_RETRY`, so the framework retries automatically.
+  **No self-heal** for sequences already created as `standard`: those rows
+  are created from Python, have no xmlid, and survive `-u`/uninstall — on
+  an existing database this fix has no effect. This was decided on a
+  fresh-install assumption; an existing database needs its
+  `kmitl.receipt.%` / `kmitl.receipt.remittance.%` sequences deleted
+  manually, or a fresh database.
