@@ -424,3 +424,15 @@ on the header, not just the line).
   fresh-install assumption; an existing database needs its
   `kmitl.receipt.%` / `kmitl.receipt.remittance.%` sequences deleted
   manually, or a fresh database.
+- **Line-level `analytic_distribution` is read-only in the tree.** This
+  column was editable for users in `analytic.group_analytic_accounting`
+  in the `editable="bottom"` tree, but `write()` pushes the header's
+  distribution onto every line whenever `line_ids` is in vals — so a line
+  edit was silently discarded in the same save. Header-is-source-of-truth
+  is the design (Revision 4), so the affordance was a bug; the field is
+  now `readonly="1"`, which the widget supports natively — no
+  `force_save` needed, since the value is pushed server-side anyway.
+- **Cheque/transfer dates print in the user's date format.** These used
+  `t-esc`, printing raw ISO, unlike `o.date` in the same report. Switched
+  to `t-field`, matching `o.date`. `cheque_number` stays `t-esc` — it's a
+  `Char`.

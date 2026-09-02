@@ -53,7 +53,9 @@ _Avoid_: Cost center
 The `departments` analytic account carried on a **receipt line**, one of the
 six financial dimensions (compute/inverse from `analytic_distribution`). Kept
 in sync with the header's Issuing Department on every create/write — see
-`kmitl.receipt._sync_analytic_to_lines`.
+`kmitl.receipt._sync_analytic_to_lines`. The header is the single source of
+truth: every save pushes it onto every line, so this column is `readonly`
+in the form.
 
 **Walk-in Customer**:
 The default partner used on a receipt when no specific customer is named.

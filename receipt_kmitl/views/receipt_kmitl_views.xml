@@ -131,7 +131,7 @@
                                     <field name="quantity"/>
                                     <field name="price_unit"/>
                                     <field name="amount" sum="Total"/>
-                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" optional="hide"/>
+                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" readonly="1" optional="hide"/>
                                     <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>

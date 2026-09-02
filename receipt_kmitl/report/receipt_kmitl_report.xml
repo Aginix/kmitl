@@ -134,8 +134,8 @@
                                         <span t-if="o.payment_type == 'cheque'" t-esc="o.cheque_number or ''"/>
                                     </td>
                                     <td>
-                                        <span t-if="o.payment_type == 'cheque'" t-esc="o.cheque_date or ''"/>
-                                        <span t-if="o.payment_type == 'transfer'" t-esc="o.transfer_date or ''"/>
+                                        <span t-if="o.payment_type == 'cheque'" t-field="o.cheque_date"/>
+                                        <span t-if="o.payment_type == 'transfer'" t-field="o.transfer_date"/>
                                     </td>
                                 </tr>
                             </tbody>
