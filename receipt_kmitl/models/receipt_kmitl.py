@@ -371,26 +371,37 @@ class ReceiptKmitl(models.Model):
                 rec[field_name] = False
         return super()._compute_analytic_id()
 
+    # Also onchange handlers (not just inverses): on an unsaved record the
+    # inverse only runs at write(). Each must stay single-field — looping
+    # over all six codes here would reassign analytic_distribution after the
+    # first, invalidating every dimension field (they share one compute) and
+    # wiping out the very field the user just edited before it's read.
+    @api.onchange("department_analytic_id")
     def _inverse_department_analytic(self):
         for rec in self:
             rec._update_analytic_distribution("departments")
 
+    @api.onchange("source_analytic_id")
     def _inverse_source_analytic(self):
         for rec in self:
             rec._update_analytic_distribution("sources")
 
+    @api.onchange("fund_analytic_id")
     def _inverse_fund_analytic(self):
         for rec in self:
             rec._update_analytic_distribution("funds")
 
+    @api.onchange("activity_analytic_id")
     def _inverse_activity_analytic(self):
         for rec in self:
             rec._update_analytic_distribution("activities")
 
+    @api.onchange("kmitl_project_analytic_id")
     def _inverse_kmitl_project_analytic(self):
         for rec in self:
             rec._update_analytic_distribution("kmitl_project")
 
+    @api.onchange("procurement_plan_analytic_id")
     def _inverse_procurement_plan_analytic(self):
         for rec in self:
             rec._update_analytic_distribution("procurement_plan")
@@ -433,13 +444,6 @@ class ReceiptKmitl(models.Model):
                         body=_("Removed from remittance; returned to the pending pool.")
                     )
         return res
-
-    @api.onchange(*ANALYTIC_KEYS.values())
-    def _onchange_analytic_dimensions(self):
-        """Mirror the dimension pickers into analytic_distribution while the
-        record is unsaved — the field inverses only run on write."""
-        for code in ANALYTIC_KEYS:
-            self._update_analytic_distribution(code)
 
     # -------------------------------------------------------------------------
     # Onchanges

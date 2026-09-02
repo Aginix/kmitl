@@ -361,10 +361,22 @@ on the header, not just the line).
   `procurement_plan_analytic_id`) stay `store=False`. `_compute_analytic_id`
   is overridden reset-first (clears all 6 convenience fields before
   delegating to the mixin) so a stored field doesn't keep a stale value when
-  its dimension drops out of the JSON. An `@api.onchange` on the 6
-  convenience fields mirrors them into `analytic_distribution` immediately
+  its dimension drops out of the JSON. Each of the 6 convenience fields
+  carries its own single-field `@api.onchange` (stacked directly on its
+  `_inverse_*` method) mirroring it into `analytic_distribution` immediately
   (the field inverses only fire on `write`), so the `analytic_distribution`
-  widget and the pickers agree before the record is even saved.
+  widget and the pickers agree before the record is even saved. **Must stay
+  one onchange per field** — an earlier version used one `@api.onchange`
+  covering all 6 fields, looping `_update_analytic_distribution` over every
+  code on every edit; each loop iteration reassigns
+  `analytic_distribution`, and because the reset-first compute above fires
+  on every reassignment, it wiped out the *other* fields' in-memory values
+  before the loop ever got to read them. Only the first dimension processed
+  (`departments`, first in `ANALYTIC_KEYS`) survived — Fund/Source/Activity
+  silently failed to save picker → JSON in the UI. This was caught in
+  manual testing, not by the test suite (the tests write field values
+  directly, which goes through `write()`/the inverse, not onchange, so they
+  never exercised the loop).
   `_sync_analytic_to_lines()` now just copies the header's
   `analytic_distribution` onto every line, and `write()` re-syncs on any of:
   the 6 convenience fields, `analytic_distribution` itself (direct

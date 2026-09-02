@@ -2,7 +2,7 @@
 
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
-from odoo.tests.common import tagged
+from odoo.tests.common import Form, tagged
 
 from .common import ReceiptKmitlCommon
 
@@ -106,6 +106,28 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
         distribution.pop(str(self.source_a.id), None)
         receipt.write({"analytic_distribution": distribution})
         self.assertFalse(receipt.source_analytic_id)
+
+    def test_onchange_all_dimensions_survive_together(self):
+        """Regression: an earlier onchange design used one @api.onchange
+        looping over all 6 codes. Each loop iteration reassigns
+        analytic_distribution, and since every dimension field shares one
+        reset-first compute, that wiped out the *other* fields' in-memory
+        values before the loop read them — only the first code processed
+        survived. Each dimension now has its own single-field onchange, so
+        setting several pickers in the same form session must all land in
+        the JSON together. write()/create() never exercised this: they go
+        through the inverse directly, not onchange.
+        """
+        form = Form(self.env["kmitl.receipt"])
+        form.department_analytic_id = self.dept_a
+        form.fund_analytic_id = self.fund_a
+        form.source_analytic_id = self.source_a
+        form.activity_analytic_id = self.activity_a
+        distribution = form.analytic_distribution
+        self.assertIn(str(self.dept_a.id), distribution)
+        self.assertIn(str(self.fund_a.id), distribution)
+        self.assertIn(str(self.source_a.id), distribution)
+        self.assertIn(str(self.activity_a.id), distribution)
 
     def test_new_line_on_saved_receipt_gets_analytic_distribution(self):
         receipt = self._make_receipt()
