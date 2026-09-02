@@ -6,17 +6,27 @@ class PurchaseRequest(models.Model):
 
     state = fields.Selection(
         selection_add=[
+            ("to_verify", "To be verified"),
             ("to_submit", "To Submit"),
             ("to_approve",),
             ("cancelled", "Cancelled"),
             ("returned", "Returned"),
         ],
+        string="Status",
+        index=True,
+        tracking=True,
+        required=True,
+        copy=False,
         ondelete={
+            "to_verify": "set default",
             "to_submit": "set default",
             "cancelled": "set default",
             "returned": "set default",
         },
     )
+
+    is_purchase_request = fields.Boolean(compute="_compute_is_purchase_request")
+    can_request = fields.Boolean(compute="_compute_can_request")
 
     line_ids = fields.One2many(
         states={
@@ -149,6 +159,34 @@ class PurchaseRequest(models.Model):
     )
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
     can_reset_to_draft = fields.Boolean(compute="_compute_can_reset_to_draft")
+
+    def _compute_is_purchase_request(self):
+        for rec in self:
+            rec.is_purchase_request = rec._name == "purchase.request"
+
+    @api.depends("requested_by")
+    def _compute_can_request(self):
+        current_user = self.env.user
+        is_manager = current_user.has_group(
+            "purchase_request.group_purchase_request_manager"
+        )
+        is_admin = current_user.has_group("base.group_erp_manager")
+        for rec in self:
+            own_by_me = rec.requested_by.id == current_user.id
+            rec.can_request = own_by_me or is_manager or is_admin
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        super()._compute_is_editable()
+        editable_states = ("draft", "to_verify", "to_submit", "returned")
+        for record in self:
+            record.is_editable = record.state in editable_states
+
+    def button_to_verify(self):
+        self.ensure_one()
+        if self.detect_exceptions() and not self.ignore_exception:
+            return self._popup_exceptions()
+        self.write({"state": "to_verify"})
 
     @api.depends("state", "requested_by")
     def _compute_can_reset_to_draft(self):

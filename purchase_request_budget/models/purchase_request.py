@@ -179,14 +179,17 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         # Means "budget selection is still open on this request", which is also
         # exactly when a reservation may be picked — so the reservation field
-        # rides on this rather than re-listing states (purchase.request draws its
-        # states from four modules, and three of them override this compute).
-        # Drawing an existing reservation does not close selection: the user must
-        # be able to un-pick. The chart picker is hidden view-side while a
-        # reservation is picked, since dimensions then come from it.
+        # rides on this rather than re-listing states. The chart picker is
+        # hidden view-side while a reservation is picked, since dimensions then
+        # come from it. Drawing an existing reservation does not close
+        # selection: the user must be able to un-pick.
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
-            if rec.state in ("to_verify", "to_approve") and (
+            if rec.state == "to_submit":
+                rec.is_budget_editable = False
+            elif rec.state == "to_verify" and can_edit:
+                rec.is_budget_editable = True
+            elif rec.state == "to_approve" and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
             ):
@@ -197,7 +200,9 @@ class PurchaseRequest(models.Model):
     @api.depends("state", "budget_commitment_id")
     def _compute_hide_reserve_budget_button(self):
         for rec in self:
-            if rec.state in ("to_approve") and (
+            if rec.state == "to_verify":
+                rec.hide_reserve_budget_button = False
+            elif rec.state == "to_approve" and (
                 rec.budget_commitment_id.state == "cancel"
                 or not rec.budget_commitment_id
             ):

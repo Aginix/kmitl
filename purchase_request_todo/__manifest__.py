@@ -11,7 +11,7 @@
         "mail_activity_todo_role_unit",
         "purchase_request_approval",
         "purchase_request_activity_kmitl",
-        "purchase_request_approval_kmitl",
+        "purchase_request_kmitl",
         "purchase_request_sarabun",
         "purchase_request_egp",
         "budget_role",

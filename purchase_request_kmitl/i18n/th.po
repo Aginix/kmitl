@@ -1485,10 +1485,10 @@ msgstr ""
 msgid "Request Reference"
 msgstr "เลขที่"
 
-#. module: purchase_request
-#: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Request approval"
-msgstr ""
+msgstr "ส่งข้อมูล"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
@@ -2307,3 +2307,8 @@ msgstr "สำหรับงานก่อสร้าง"
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_submit
 msgid "To Submit"
 msgstr "รอส่งขอความเห็นชอบให้จัดหา"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_verify
+msgid "To be verified"
+msgstr "รอจองงบประมาณ"

@@ -1,0 +1,45 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_request_sequence_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: purchase_request_sequence_kmitl
+#. odoo-python
+#: code:addons/purchase_request_sequence_kmitl/models/purchase_request.py:0
+#, python-format
+msgid ""
+"Document number sequence (purchase.request.kmitl) not found. Please "
+"upgrade the module."
+msgstr "ไม่พบลำดับเลขที่เอกสาร (purchase.request.kmitl) กรุณาอัปเดตโมดูล"
+
+#. module: purchase_request_sequence_kmitl
+#. odoo-python
+#: code:addons/purchase_request_sequence_kmitl/models/purchase_request.py:0
+#, python-format
+msgid "Fiscal Year is required to generate the document number."
+msgstr "ต้องระบุปีงบประมาณเพื่อสร้างเลขที่เอกสาร"
+
+#. module: purchase_request_sequence_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_sequence_kmitl.view_purchase_request_form_fy_lock
+msgid "New"
+msgstr "รายการใหม่"
+
+#. module: purchase_request_sequence_kmitl
+#. odoo-python
+#: code:addons/purchase_request_sequence_kmitl/models/purchase_request.py:0
+#, python-format
+msgid ""
+"The fiscal year is frozen once the PR number has been assigned — changing it "
+"would make the number inconsistent."
+msgstr ""
+"ไม่สามารถเปลี่ยนปีงบประมาณได้ เนื่องจากเลขที่เอกสารถูกสร้างแล้ว "
+"— หากเปลี่ยนจะทำให้เลขที่เอกสารไม่ตรงกับปีงบประมาณ"
