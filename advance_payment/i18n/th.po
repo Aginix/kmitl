@@ -797,9 +797,9 @@ msgid "Paid"
 msgstr "จ่ายแล้ว"
 
 #. module: advance_payment
-#: model:ir.model.fields,help:advance_payment.field_advance_payment__requested_by_partner_id
-msgid "Partner-related data of the user"
-msgstr "ข้อมูลพาร์ทเนอร์ที่เกี่ยวข้องกับผู้ใช้งาน"
+#: model:ir.model.fields,help:advance_payment.field_advance_payment__partner_id
+msgid "Partner-related data of the employee"
+msgstr "ข้อมูลพาร์ทเนอร์ที่เกี่ยวข้องกับพนักงาน"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__payment_id
@@ -876,13 +876,19 @@ msgid "Reject"
 msgstr "ส่งกลับ"
 
 #. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__requested_by
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__employee_id
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
-msgid "Requested By"
+msgid "ผู้ยืม"
 msgstr "ผู้ยืม"
 
 #. module: advance_payment
-#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__requested_by_partner_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__user_id
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "ผู้จัดทำ"
+msgstr "ผู้จัดทำ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__partner_id
 msgid "Requestor Partner"
 msgstr "พาร์ทเนอร์ผู้ยืม"
 

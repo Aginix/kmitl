@@ -9,15 +9,19 @@ One loan contract for one borrower, funded by a **single** disbursement for the 
 _Avoid_: loan, borrowing, cash advance request, contract (bare)
 
 **Borrower (ผู้ยืม)**:
-The person who takes the loan and personally owes the debt; stored in `requested_by`. Must always **submit** the request personally — no submitting on behalf of someone else — but need not be the record's *creator*: a `user`-tier staffer may draft the request on the borrower's behalf, ready for the borrower to submit (ADR-0010).
-_Avoid_: requester, requestor, applicant
+The person who takes the loan and personally owes the debt — must be an organization staff member, stored in `employee_id` (`hr.employee`), not a bare `res.users`. The borrower's payable partner (`partner_id`, used for bank matching and payment) is a stored `related` on `employee_id.work_contact_id`. Must always **submit** the request personally — no submitting on behalf of someone else — but need not be the record's *drafter* (see below): a `user`-tier staffer may draft the request on the borrower's behalf, ready for the borrower to submit (ADR-0010), unless Strict mode is on (ADR-0014). An employee with no linked user account can be picked as borrower but cannot submit for themselves — only an admin can submit on their behalf.
+_Avoid_: requester, requestor, applicant, requested_by (old field name, retyped by ADR-0014)
+
+**Drafter (ผู้จัดทำ)**:
+Who actually filled the form in — `user_id` (`res.users`), the source of truth for this, distinct from `create_uid` (immutable) so a manager can correct a mis-attributed request. Grants visibility to the record via the own-only ir.rule (OR'd with the borrower's own visibility) even after the drafter loses the `user`-tier draft-on-behalf group. Editable only by a manager/admin (`can_edit_drafter`), everyone else sees it read-only (ADR-0014).
+_Avoid_: creator, create_uid, ผู้ยืม (that is the borrower, `employee_id`)
 
 **Role tiers (own-only / user / manager / loan officer)**:
 The implied permission chain `own_only → user → manager`, plus the standalone `loan_officer` group (ADR-0010):
 - **Own-only (`group_advance_payment_own_only`)**: sees and creates only their own agreements; the default borrower tier.
-- **User (`group_advance_payment_user`)**: sees every agreement and may draft one on behalf of another borrower (data entry only) — cannot submit someone else's draft or perform any workflow action.
+- **User (`group_advance_payment_user`)**: sees every agreement and may draft one on behalf of another borrower (data entry only) — cannot submit someone else's draft or perform any workflow action. Strict mode (ADR-0014) switches this power off org-wide except for `base.group_system`.
 - **เจ้าหน้าที่งานเงินยืม / Loan Officer (`group_advance_payment_loan_officer`)**: the standalone oversight tier that performs the workflow actions — verify, reset-to-draft, accept-report, bank correction, due-date, and return-line approve/reject. Implies `user` (sees all). Each record is assigned to a single named officer via the required `loan_verifier_id`; verifying (`action_verify`) is restricted to that specific officer (or an admin), not any member of the group (ADR-0013). `base.group_system` admins are standing members of this group so they can always be picked.
-- **Manager (`group_advance_payment_manager`)**: approves (the manual fallback) and cancels; implies `user` but not `loan_officer` — a manager does not get the loan officer's workflow buttons.
+- **Manager (`group_advance_payment_manager`)**: approves (the manual fallback) and cancels; implies `user` but not `loan_officer` — a manager does not get the loan officer's workflow buttons. Managers (and admins) alone may edit the Drafter field (`can_edit_drafter`, ADR-0014).
 The escape hatch for exceptional data fixes stays `base.group_system`, never `manager`.
 _Avoid_: officer (renamed to `loan_officer`; the plain `user` group is now the sees-all data-entry tier, not the borrower's own-only tier)
 

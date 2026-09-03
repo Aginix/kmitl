@@ -45,7 +45,7 @@ class AdvancePayment(models.Model):
         "loan_type_id",
         "bank_id",
         "reference",
-        "requested_by",
+        "employee_id",
     }
 
     # Material fields are read-only in the UI in every non-draft state.
@@ -113,19 +113,35 @@ class AdvancePayment(models.Model):
         default="draft",
     )
 
-    requested_by = fields.Many2one(
-        comodel_name="res.users",
-        string="Requested By",
+    employee_id = fields.Many2one(
+        comodel_name="hr.employee",
+        string="ผู้ยืม",
         required=True,
-        default=lambda self: self.env.user,
+        default=lambda self: self.env.user.employee_id,
         states=READONLY_STATES,
+        tracking=True,
     )
 
-    requested_by_partner_id = fields.Many2one(
+    # Who filled the form in — the source of truth for "ผู้จัดทำ", not create_uid,
+    # so a manager can correct a mis-attributed request. Grants visibility to a
+    # `user`-tier drafter via the own-only rule (ADR-0014).
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="ผู้จัดทำ",
+        required=True,
+        default=lambda self: self.env.uid,
+        tracking=True,
+    )
+
+    # The borrower's payable partner — KMITL's employee↔partner link is
+    # work_contact_id (cf. agx_approval's participant resolver), not
+    # address_home_id. Stored so the bank domain and the payment vals read one
+    # column instead of hopping into hr.employee (ADR-0014).
+    partner_id = fields.Many2one(
         comodel_name="res.partner",
-        related="requested_by.partner_id",
+        related="employee_id.work_contact_id",
         string="Requestor Partner",
-        store=False,
+        store=True,
     )
 
     is_reference_visible = fields.Boolean(
@@ -146,7 +162,7 @@ class AdvancePayment(models.Model):
     can_submit = fields.Boolean(compute="_compute_can_submit")
 
     # Mirrors _check_creator_only: only a `user`-tier staffer or an admin may
-    # point requested_by at somebody else (ADR-0010).
+    # point employee_id at somebody else (ADR-0010, amended by ADR-0014).
     can_draft_on_behalf = fields.Boolean(compute="_compute_can_draft_on_behalf")
 
     # Mirrors _check_verify_permission: only the officer named on
@@ -154,23 +170,49 @@ class AdvancePayment(models.Model):
     # member (ADR-0013).
     can_verify = fields.Boolean(compute="_compute_can_verify")
 
-    @api.depends("requested_by")
+    # True only for a manager/admin — gates edit access to user_id, the
+    # "ผู้จัดทำ" field, in the UI (ADR-0014).
+    can_edit_drafter = fields.Boolean(compute="_compute_can_edit_drafter")
+
+    @api.depends("employee_id")
     def _compute_is_requester(self):
         for rec in self:
-            rec.is_requester = rec.requested_by == self.env.user
+            rec.is_requester = rec.employee_id.user_id == self.env.user
 
-    @api.depends("requested_by")
+    @api.depends("employee_id")
     def _compute_can_submit(self):
         is_admin = self.env.user.has_group("base.group_system")
         for rec in self:
-            rec.can_submit = is_admin or rec.requested_by == self.env.user
+            rec.can_submit = is_admin or rec.employee_id.user_id == self.env.user
+
+    def _is_strict_own_only(self):
+        """Strict mode: a request may only ever be created for oneself — the
+        `user` tier's draft-on-behalf power (ADR-0010) is switched off."""
+        return str2bool(
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("advance_payment.strict_own_only", default=False)
+        )
+
+    def _can_draft_on_behalf(self):
+        """Single source for both the form gate and _check_creator_only."""
+        if self.env.user.has_group("base.group_system"):
+            return True  # escape hatch survives strict mode (ADR-0014)
+        return not self._is_strict_own_only() and self.env.user.has_group(
+            "advance_payment.group_advance_payment_user"
+        )
 
     def _compute_can_draft_on_behalf(self):
-        allowed = self.env.user.has_group(
-            "base.group_system"
-        ) or self.env.user.has_group("advance_payment.group_advance_payment_user")
+        allowed = self._can_draft_on_behalf()
         for rec in self:
             rec.can_draft_on_behalf = allowed
+
+    def _compute_can_edit_drafter(self):
+        allowed = self.env.user.has_group(
+            "advance_payment.group_advance_payment_manager"
+        ) or self.env.user.has_group("base.group_system")
+        for rec in self:
+            rec.can_edit_drafter = allowed
 
     @api.depends("loan_verifier_id")
     def _compute_can_verify(self):
@@ -508,9 +550,9 @@ class AdvancePayment(models.Model):
         domain=[("res_model", "=", "advance.payment")],
     )
 
-    @api.onchange("requested_by")
-    def _onchange_requested_by(self):
-        if self.bank_id and self.bank_id.partner_id != self.requested_by.partner_id:
+    @api.onchange("employee_id")
+    def _onchange_employee_id(self):
+        if self.bank_id and self.bank_id.partner_id != self.employee_id.work_contact_id:
             self.bank_id = False
 
     @api.depends(
@@ -568,19 +610,18 @@ class AdvancePayment(models.Model):
                     _("Agreement number '%(name)s' must be unique!", name=rec.name)
                 )
 
-    @api.constrains("requested_by")
+    @api.constrains("employee_id", "user_id")
     def _check_creator_only(self):
-        """No submitting on behalf: outside the `user` data-entry tier,
-        requested_by must be the record creator (ADR-0005, amended by
-        ADR-0010). A base.group_system admin, or a `user`-tier staffer
-        drafting on behalf of a borrower, is exempt — the borrower still has
-        to submit the request personally (_check_submit_permission)."""
-        if self.env.user.has_group(
-            "base.group_system"
-        ) or self.env.user.has_group("advance_payment.group_advance_payment_user"):
+        """No drafting on behalf: outside the `user` data-entry tier (and
+        outside strict mode, ADR-0014), the borrower (employee_id) must be
+        the drafter (user_id). A base.group_system admin, or a `user`-tier
+        staffer drafting on behalf of a borrower, is exempt — the borrower
+        still has to submit the request personally
+        (_check_submit_permission)."""
+        if self._can_draft_on_behalf():
             return
         for rec in self:
-            if rec.create_uid and rec.requested_by != rec.create_uid:
+            if rec.employee_id.user_id != rec.user_id:
                 raise ValidationError(
                     _(
                         "A loan must be created by the borrower — you cannot"
@@ -590,7 +631,7 @@ class AdvancePayment(models.Model):
 
     def _prepare_account_payment_vals(self, payment_type):
         vals = {
-            "partner_id": self.requested_by.partner_id.id,
+            "partner_id": self.partner_id.id,
             "amount": self.loan_amount,
             "currency_id": self.currency_id.id,
             "advance_payment_id": self.id,
@@ -677,7 +718,7 @@ class AdvancePayment(models.Model):
         """Creator-only: only the borrower (or an admin) may submit (ADR-0005)."""
         is_admin = self.env.user.has_group("base.group_system")
         for rec in self:
-            if rec.requested_by == self.env.user or is_admin:
+            if rec.employee_id.user_id == self.env.user or is_admin:
                 continue
             raise UserError(
                 _("Only the borrower can submit this agreement (no borrowing on"
@@ -689,7 +730,7 @@ class AdvancePayment(models.Model):
         for rec in self:
             other = rec.sudo().search(
                 [
-                    ("requested_by", "=", rec.requested_by.id),
+                    ("employee_id", "=", rec.employee_id.id),
                     ("state", "in", self.ACTIVE_STATES),
                     ("id", "!=", rec.id),
                 ],
@@ -700,7 +741,7 @@ class AdvancePayment(models.Model):
                     _(
                         "%(user)s already has an active loan agreement"
                         " (%(name)s). Clear it before starting a new one.",
-                        user=rec.requested_by.name,
+                        user=rec.employee_id.name,
                         name=other.name,
                     )
                 )
@@ -747,7 +788,7 @@ class AdvancePayment(models.Model):
                 body=_(
                     "Agreement submitted for verification by <b>%(user)s</b>."
                     " Loan amount: <b>%(amount)s %(currency)s</b>.",
-                    user=rec.requested_by.name,
+                    user=rec.employee_id.name,
                     amount=rec.loan_amount,
                     currency=rec.currency_id.name,
                 ),
@@ -848,7 +889,7 @@ class AdvancePayment(models.Model):
     def action_recall(self):
         """Borrower pulls a not-yet-approved request back to draft (ADR-0001)."""
         self.ensure_one()
-        if self.requested_by != self.env.user and not self.env.user.has_group(
+        if self.employee_id.user_id != self.env.user and not self.env.user.has_group(
             "base.group_system"
         ):
             raise UserError(_("Only the borrower can recall this request."))

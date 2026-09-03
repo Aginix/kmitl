@@ -12,7 +12,8 @@
                 <field name="create_date" optional="show" />
                 <field name="name" />
                 <field name="contract_number" optional="show" />
-                <field name="requested_by" />
+                <field name="employee_id" />
+                <field name="user_id" optional="hide" />
                 <field name="loan_type_id" />
                 <field name="loan_amount" />
                 <field name="actual_expense_amount" optional="show" />
@@ -133,9 +134,12 @@
                         <group name="borrow_info" string="ข้อมูลการยืมเงิน">
                             <field name="is_locked_by_reference" invisible="1" />
                             <field name="can_draft_on_behalf" invisible="1" />
-                            <field name="requested_by"
+                            <field name="can_edit_drafter" invisible="1" />
+                            <field name="employee_id" options="{'no_create': True}"
                                 attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('can_draft_on_behalf', '=', False)]}" />
-                            <field name="requested_by_partner_id" invisible="1" />
+                            <field name="user_id"
+                                attrs="{'readonly': [('can_edit_drafter', '=', False)]}" />
+                            <field name="partner_id" invisible="1" />
                             <field name="is_reference_visible" invisible="1" />
                             <field name="loan_type_id" widget="selection"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}" />
@@ -155,11 +159,11 @@
                                     'readonly': ['|', ('is_loan_officer', '=', False), ('state', 'in', ['done', 'cancel'])]
                                 }" />
                             <field name="loan_verifier_id"
-                                attrs="{'readonly': [('is_manager', '=', False)]}" />
+                                attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}" />
                         </group>
                         <group name="loan_info" string="บัญชีธนาคาร">
                             <field name="bank_id"
-                                domain="[('partner_id', '=', requested_by_partner_id)]"
+                                domain="[('partner_id', '=', partner_id)]"
                                 widget="selection"
                                 attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]}" />
                         </group>
@@ -246,10 +250,11 @@
             <search string="สัญญายืมเงิน">
                 <field name="name" />
                 <field name="contract_number" />
-                <field name="requested_by" />
+                <field name="employee_id" />
+                <field name="user_id" />
                 <separator />
                 <filter string="สัญญาของฉัน" name="my_contracts"
-                    domain="[('requested_by', '=', uid)]" />
+                    domain="['|', ('employee_id.user_id', '=', uid), ('user_id', '=', uid)]" />
                 <separator />
                 <filter icon="fa-exclamation-circle" name="tofix" string="Exceptions"
                     domain="[('main_exception_id','!=',False)]" />
@@ -274,8 +279,8 @@
                     <filter string="State" name="group_state" context="{'group_by':'state'}" />
                     <filter string="Loan Type" name="group_loan_type"
                         context="{'group_by':'loan_type_id'}" />
-                    <filter string="Requested By" name="group_requested_by"
-                        context="{'group_by':'requested_by'}" />
+                    <filter string="Requested By" name="group_employee"
+                        context="{'group_by':'employee_id'}" />
                 </group>
             </search>
         </field>

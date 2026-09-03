@@ -11,6 +11,13 @@ class ResConfigSettings(models.TransientModel):
         "หากปิด จะระบุได้เฉพาะจากระบบเท่านั้น (เช่น สร้างจากใบขอซื้อ)",
     )
 
+    advance_payment_strict_own_only = fields.Boolean(
+        string="สร้างสัญญาของตนเองเท่านั้น",
+        config_parameter="advance_payment.strict_own_only",
+        help="เมื่อเปิด ผู้ยืมบนสัญญาจะเป็นตัวผู้จัดทำเองเสมอ แก้ไม่ได้ทุกสิทธิ์ "
+        "(ยกเว้นผู้ดูแลระบบ) หากปิด สิทธิ์ระดับ User ขึ้นไปจะดราฟต์แทนผู้ยืมคนอื่นได้",
+    )
+
     # A rich-text Html field cannot use config_parameter= — res.config.settings
     # only allows boolean/integer/float/char/selection/many2one/datetime on that
     # path (_get_classified_fields raises otherwise). Bridge it to the

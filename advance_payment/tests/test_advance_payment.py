@@ -117,6 +117,15 @@ class TestAdvancePayment(TransactionCase):
         cls.loan_type = cls.env["advance.payment.loan.type"].create(
             {"name": "Test Loan Type"}
         )
+        # Give every acting user a linked hr.employee — the borrower field is
+        # now employee_id (ADR-0014). Passing user_id at create makes core
+        # _sync_user mirror work_contact_id = user.partner_id, so the bank
+        # fixtures below (keyed on user.partner_id) still resolve.
+        Employee = cls.env["hr.employee"]
+        cls.emp = {
+            u.id: Employee.create({"name": u.name, "user_id": u.id})
+            for u in (cls.manager, cls.user, cls.user2, cls.staff, cls.officer)
+        }
         cls.banks = {}
         for rec in (cls.manager, cls.user, cls.user2, cls.staff, cls.officer):
             cls.banks[rec.id] = cls.env["res.partner.bank"].create(
@@ -129,7 +138,7 @@ class TestAdvancePayment(TransactionCase):
         env = self.env(user=as_user) if as_user else self.env
         return env["advance.payment"].create(
             {
-                "requested_by": requested_by.id,
+                "employee_id": self.emp[requested_by.id].id,
                 "loan_amount": amount,
                 "loan_type_id": self.loan_type.id,
                 "loan_reason": "Test reason",
@@ -205,8 +214,9 @@ class TestAdvancePayment(TransactionCase):
 
     def test_user_tier_can_draft_on_behalf(self):
         ap = self._make(requested_by=self.user2, as_user=self.staff)
-        self.assertEqual(ap.requested_by, self.user2)
+        self.assertEqual(ap.employee_id, self.emp[self.user2.id])
         self.assertEqual(ap.create_uid, self.staff)
+        self.assertEqual(ap.user_id, self.staff)
 
     def test_user_tier_can_pick_borrower_in_form(self):
         """The UI gate must match _check_creator_only, not base.group_system."""
@@ -592,6 +602,81 @@ class TestAdvancePayment(TransactionCase):
         with self.assertRaises(ValidationError):
             a2.write({"name": a1.name})
 
-    def test_requested_by_partner_computed(self):
+    def test_partner_id_computed_from_work_contact(self):
         ap = self._make(requested_by=self.user)
-        self.assertEqual(ap.requested_by_partner_id, self.user.partner_id)
+        self.assertEqual(ap.partner_id, self.user.partner_id)
+
+    # ------------------------------------------------------------------ #
+    # Employee without a user account (decision 3)                         #
+    # ------------------------------------------------------------------ #
+
+    def test_employee_without_user_can_draft_but_not_submit(self):
+        employee = self.env["hr.employee"].create({"name": "No User Employee"})
+        ap = self.env["advance.payment"].create(
+            {
+                "employee_id": employee.id,
+                "loan_amount": 1000,
+                "loan_type_id": self.loan_type.id,
+                "loan_reason": "Test reason",
+                "loan_verifier_id": self.officer.id,
+            }
+        )
+        self.assertEqual(ap.state, "draft")
+        with self.assertRaises(UserError):
+            ap.with_user(self.staff).action_submit()
+        ap.with_user(self.manager).action_submit()
+        self.assertEqual(ap.state, "to_verify")
+
+    # ------------------------------------------------------------------ #
+    # Own-only rule ORs in the drafter (ADR-0014)                          #
+    # ------------------------------------------------------------------ #
+
+    def test_own_only_rule_ors_drafter(self):
+        ap = self._make(requested_by=self.user2, as_user=self.staff)
+        # Drop staff from the `user` tier, leaving only own-only.
+        self.env.ref("advance_payment.group_advance_payment_user").write(
+            {"users": [(3, self.staff.id)]}
+        )
+        self.env.ref("advance_payment.group_advance_payment_own_only").write(
+            {"users": [(4, self.staff.id)]}
+        )
+        visible_to_staff = (
+            self.env["advance.payment"].with_user(self.staff).search([("id", "=", ap.id)])
+        )
+        self.assertEqual(visible_to_staff, ap)
+        visible_to_user2 = (
+            self.env["advance.payment"].with_user(self.user2).search([("id", "=", ap.id)])
+        )
+        self.assertEqual(visible_to_user2, ap)
+        visible_to_user = (
+            self.env["advance.payment"].with_user(self.user).search([("id", "=", ap.id)])
+        )
+        self.assertFalse(visible_to_user)
+
+    # ------------------------------------------------------------------ #
+    # Strict own-only mode (ADR-0014)                                      #
+    # ------------------------------------------------------------------ #
+
+    def test_strict_mode_blocks_draft_on_behalf_except_admin(self):
+        params = self.env["ir.config_parameter"].sudo()
+        params.set_param("advance_payment.strict_own_only", "True")
+        try:
+            AP = self.env["advance.payment"]
+            self.assertFalse(AP.with_user(self.staff)._can_draft_on_behalf())
+            self.assertTrue(AP.with_user(self.manager)._can_draft_on_behalf())
+            with self.assertRaises(ValidationError):
+                self._make(requested_by=self.user2, as_user=self.staff)
+        finally:
+            params.set_param("advance_payment.strict_own_only", "False")
+        # Strict mode off again → draft-on-behalf works as before.
+        self._make(requested_by=self.user2, as_user=self.staff)
+
+    # ------------------------------------------------------------------ #
+    # can_edit_drafter (ADR-0014)                                          #
+    # ------------------------------------------------------------------ #
+
+    def test_can_edit_drafter_manager_only(self):
+        ap = self._make()
+        self.assertTrue(ap.with_user(self.manager).can_edit_drafter)
+        self.assertFalse(ap.with_user(self.staff).can_edit_drafter)
+        self.assertFalse(ap.with_user(self.officer).can_edit_drafter)

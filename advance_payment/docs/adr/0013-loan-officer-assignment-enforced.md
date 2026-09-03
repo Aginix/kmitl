@@ -14,6 +14,8 @@ Submitting a request (`action_submit`, draft → to_verify) schedules a "To Do" 
 
 The permission model already recorded who "owns" a given agreement's verification (`loan_verifier_id`, ADR-0010), but nothing enforced it — any loan-officer-group member could act on any record, undermining the "single named officer" design and making the assignment purely cosmetic. Requiring the field and checking it in `action_verify` closes that gap, matching the same creator/assignee pattern already used for `requested_by` (`_check_creator_only`/`_check_submit_permission`) and `requested_by`'s draft-on-behalf gate (`can_draft_on_behalf`).
 
+The field was originally readonly for anyone but a manager at every state, including `draft` — combined with `required=True` and a default that only resolves when exactly one non-admin officer exists, that locked out any non-manager creator whenever the default came up empty. It is now readonly only once the record has left `draft` and the editor isn't a manager, matching how the other material fields (amount, loan type) behave: freely editable while drafting, manager-only to correct afterward.
+
 ## Consequences
 
 - `action_reset_to_draft` and `action_accept_report` remain gated only at the `group_advance_payment_loan_officer` level (any officer, not just the assigned one) — this ADR narrows only `action_verify`, per explicit scope decision; extending the same per-record restriction to the other officer actions is a separate future change if needed.

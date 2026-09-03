@@ -103,7 +103,7 @@ class AdvancePaymentReturnLine(models.Model):
             "advance_payment.payment_type_advance_payment_inbound"
         )
         vals = {
-            "partner_id": self.agreement_id.requested_by.partner_id.id,
+            "partner_id": self.agreement_id.partner_id.id,
             "amount": self.amount,
             "currency_id": self.currency_id.id,
             "kmitl_payment_type_id": payment_type.id,

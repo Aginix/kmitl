@@ -11,9 +11,11 @@ The permission model is restructured into a clean implied chain **own-only → u
 - `group_advance_payment_manager` (unchanged xml id): approves (manual fallback) and cancels; implies `user`.
 - `group_advance_payment_loan_officer` (**new**): the standalone oversight tier — owns every workflow action (verify, reset-to-draft, accept-report, reconcile/return-lines, due-date, bank correction, return-line approve/reject). Implies `user` (sees all).
 
-A new per-record field, `loan_verifier_id` (Many2one `res.users`, domain = loan-officer group members, defaulted to the sole member when exactly one exists, manager-editable) — "เจ้าหน้าที่งานเงินยืม" — records who is responsible for a given agreement.
+A new per-record field, `loan_verifier_id` (Many2one `res.users`, domain = loan-officer group members, defaulted to the sole member when exactly one exists, editable by the creator while in `draft`, manager-only after — see ADR-0013) — "เจ้าหน้าที่งานเงินยืม" — records who is responsible for a given agreement.
 
 `_check_creator_only` is relaxed: a `user`-tier staffer (or a `base.group_system` admin) may create a loan with `requested_by` pointing at someone else — but `_check_submit_permission` is **unchanged**, so only the borrower (or an admin) may call `action_submit()`. The borrower still has to submit personally; only *drafting* moves.
+
+> ADR-0014 retypes `requested_by` into `employee_id` (`hr.employee`) + a separate `user_id` (`res.users`, "ผู้จัดทำ"), moves `_check_creator_only` to compare `employee_id.user_id` against `user_id`, and adds a Strict mode setting that can switch this tier's draft-on-behalf power off.
 
 The escape hatch for exceptional data fixes stays `base.group_system`, never `manager` — a manager only gets the normal manager buttons.
 
@@ -31,3 +33,4 @@ The escape hatch for exceptional data fixes stays `base.group_system`, never `ma
 - `is_officer` is renamed `is_loan_officer` throughout (model + views); a new `is_manager` computed field is added to gate `loan_verifier_id`'s edit rights in the form.
 - The submit button is additionally gated on a `can_submit` computed field (mirrors `_check_submit_permission`: requester or admin) so a `user`-tier drafter never sees a submit button that would raise a `UserError` on click.
 - Symmetrically, `requested_by` is a single field gated on a `can_draft_on_behalf` computed field (mirrors `_check_creator_only`: `user` tier or admin). The form previously rendered an editable copy only for `base.group_system`, which made drafting on behalf unreachable from the UI.
+- ADR-0014 changes the type of the borrower field (`requested_by` → `employee_id`) and makes `can_draft_on_behalf` togglable via a Strict mode setting; see that ADR for the up-to-date field names.
