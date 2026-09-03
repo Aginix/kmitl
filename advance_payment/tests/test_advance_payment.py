@@ -1,5 +1,6 @@
 import base64
 
+from odoo import fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests.common import TransactionCase, tagged
 
@@ -183,6 +184,13 @@ class TestAdvancePayment(TransactionCase):
         ap = self._make(requested_by=self.user2, as_user=self.staff)
         self.assertEqual(ap.requested_by, self.user2)
         self.assertEqual(ap.create_uid, self.staff)
+
+    def test_user_tier_can_pick_borrower_in_form(self):
+        """The UI gate must match _check_creator_only, not base.group_system."""
+        ap = self._make(requested_by=self.user2, as_user=self.staff)
+        self.assertTrue(ap.with_user(self.staff).can_draft_on_behalf)
+        self.assertTrue(ap.with_user(self.manager).can_draft_on_behalf)
+        self.assertFalse(ap.with_user(self.user2).can_draft_on_behalf)
 
     def test_user_tier_cannot_submit_drafted_on_behalf(self):
         ap = self._make(requested_by=self.user2, as_user=self.staff)
@@ -495,6 +503,22 @@ class TestAdvancePayment(TransactionCase):
         )
         wiz.action_confirm()
         self.assertEqual(ap.state, "cancel")
+
+    def test_reset_cancel_to_draft_before_disbursement(self):
+        ap = self._make()
+        ap.action_submit()
+        ap._action_do_cancel("dup")
+        ap.action_reset_cancel_to_draft()
+        self.assertEqual(ap.state, "draft")
+        self.assertFalse(ap.cancel_reason)
+        self.assertFalse(ap.date_submitted)
+
+    def test_reset_cancel_to_draft_blocked_after_disbursement(self):
+        ap = self._make()
+        ap.write({"state": "in_progress", "effective_date": fields.Date.today()})
+        ap._action_do_cancel("stopped")
+        with self.assertRaises(UserError):
+            ap.action_reset_cancel_to_draft()
 
     # ------------------------------------------------------------------ #
     # Uniqueness                                                           #

@@ -97,7 +97,7 @@
                         groups="base.group_system" />
                     <button name="action_reset_cancel_to_draft" string="Reset to draft" type="object"
                         confirm="ต้องการตั้งสัญญาที่ยกเลิกกลับเป็นแบบร่างหรือไม่?"
-                        attrs="{'invisible': [('state', '!=', 'cancel')]}"
+                        attrs="{'invisible': ['|', ('state', '!=', 'cancel'), ('effective_date', '!=', False)]}"
                         groups="advance_payment.group_advance_payment_manager" />
                     <button name="button_cancel" string="ยกเลิก" type="object"
                         confirm="ต้องการยกเลิกสัญญานี้หรือไม่?"
@@ -131,11 +131,9 @@
                     <group>
                         <group name="borrow_info" string="ข้อมูลการยืมเงิน">
                             <field name="is_locked_by_reference" invisible="1" />
-                            <field name="requested_by" readonly="1"
-                                groups="!base.group_system" />
+                            <field name="can_draft_on_behalf" invisible="1" />
                             <field name="requested_by"
-                                attrs="{'readonly': [('state', '!=', 'draft')]}"
-                                groups="base.group_system" />
+                                attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('can_draft_on_behalf', '=', False)]}" />
                             <field name="requested_by_partner_id" invisible="1" />
                             <field name="is_reference_visible" invisible="1" />
                             <field name="loan_type_id" widget="selection"

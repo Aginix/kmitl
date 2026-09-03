@@ -30,3 +30,4 @@ The escape hatch for exceptional data fixes stays `base.group_system`, never `ma
 - `write()`'s protected-field guard (material fields, bank correction) re-gates from the old `officer` group to `loan_officer`.
 - `is_officer` is renamed `is_loan_officer` throughout (model + views); a new `is_manager` computed field is added to gate `loan_verifier_id`'s edit rights in the form.
 - The submit button is additionally gated on a `can_submit` computed field (mirrors `_check_submit_permission`: requester or admin) so a `user`-tier drafter never sees a submit button that would raise a `UserError` on click.
+- Symmetrically, `requested_by` is a single field gated on a `can_draft_on_behalf` computed field (mirrors `_check_creator_only`: `user` tier or admin). The form previously rendered an editable copy only for `base.group_system`, which made drafting on behalf unreachable from the UI.

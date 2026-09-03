@@ -141,6 +141,10 @@ class AdvancePayment(models.Model):
     # who would otherwise hit a UserError on click.
     can_submit = fields.Boolean(compute="_compute_can_submit")
 
+    # Mirrors _check_creator_only: only a `user`-tier staffer or an admin may
+    # point requested_by at somebody else (ADR-0010).
+    can_draft_on_behalf = fields.Boolean(compute="_compute_can_draft_on_behalf")
+
     @api.depends("requested_by")
     def _compute_is_requester(self):
         for rec in self:
@@ -151,6 +155,13 @@ class AdvancePayment(models.Model):
         is_admin = self.env.user.has_group("base.group_system")
         for rec in self:
             rec.can_submit = is_admin or rec.requested_by == self.env.user
+
+    def _compute_can_draft_on_behalf(self):
+        allowed = self.env.user.has_group(
+            "base.group_system"
+        ) or self.env.user.has_group("advance_payment.group_advance_payment_user")
+        for rec in self:
+            rec.can_draft_on_behalf = allowed
 
     def _compute_is_loan_officer(self):
         is_loan_officer = self.env.user.has_group(
@@ -800,13 +811,32 @@ class AdvancePayment(models.Model):
             )
 
     def action_reset_cancel_to_draft(self):
-        """Manager reopens a cancelled agreement back to draft (ad-hoc recovery)."""
+        """Manager reopens a cancelled agreement back to draft (ad-hoc recovery).
+
+        Only before the money moved: once the transfer completed
+        (`effective_date`) the record carries a contract number, an expense
+        report and return lines from its first cycle, and re-approving would
+        mint a second disbursement payment (ADR-0012).
+        """
         for rec in self:
             if rec.state != "cancel":
                 raise UserError(
                     _("Only a cancelled agreement can be reset to draft.")
                 )
-            rec.write({"state": "draft", "cancel_reason": False})
+            if rec.effective_date:
+                raise UserError(
+                    _("เงินยืมนี้โอนออกไปแล้ว ไม่สามารถตั้งกลับเป็นแบบร่างได้"
+                      " — ให้ทำสัญญาฉบับใหม่")
+                )
+            rec.write(
+                {
+                    "state": "draft",
+                    "cancel_reason": False,
+                    "date_submitted": False,
+                    "date_verified": False,
+                    "date_approved": False,
+                }
+            )
             rec.message_post(
                 body=_("ตั้งสัญญาที่ยกเลิกกลับเป็นแบบร่าง โดย <b>%(user)s</b>.",
                        user=self.env.user.name),
