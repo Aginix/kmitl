@@ -39,20 +39,20 @@ class TestAdvancePaymentReceiptKmitl(TransactionCase):
                 "company_id": cls.company.id,
             }
         )
-        cls.cash_journal = cls.env["account.journal"].create(
+        cls.bank_journal = cls.env["account.journal"].create(
             {
-                "name": "Cash (test)",
-                "type": "cash",
-                "code": "CSHR",
+                "name": "Bank (test)",
+                "type": "bank",
+                "code": "BNKR",
                 "default_account_id": cls.cash_account.id,
                 "company_id": cls.company.id,
             }
         )
         cls.method = cls.env["kmitl.payment.method"].create(
             {
-                "name": "Cash return",
-                "payment_type": "cash",
-                "journal_id": cls.cash_journal.id,
+                "name": "Transfer return",
+                "payment_type": "transfer",
+                "journal_id": cls.bank_journal.id,
                 "account_id": cls.cash_account.id,
             }
         )
@@ -139,6 +139,14 @@ class TestAdvancePaymentReceiptKmitl(TransactionCase):
             {"agreement_id": agreement.id, "amount": amount}
         )
         line.action_confirm()
+        # officer step: record how/where the money was received before
+        # pressing "สร้างใบเสร็จรับเงิน"
+        line.write(
+            {
+                "receipt_payment_method_id": self.method.id,
+                "receipt_transfer_date": line.date,
+            }
+        )
         return line
 
     def test_approve_issues_receipt_not_payment(self):
@@ -154,8 +162,13 @@ class TestAdvancePaymentReceiptKmitl(TransactionCase):
         self.assertEqual(receipt.partner_id, agreement.partner_id)
         self.assertFalse(receipt.is_walkin)
         self.assertEqual(receipt.amount_total, 400)
+        self.assertEqual(receipt.payment_type, "transfer")
         self.assertEqual(receipt.payment_method_id, self.method)
+        self.assertEqual(receipt.transfer_date, line.date)
         self.assertEqual(receipt.department_analytic_id, self.dept)
+        self.assertEqual(receipt.advance_return_line_id, line)
+        self.assertEqual(receipt.advance_agreement_id, agreement)
+        self.assertIn(agreement.name, receipt.description)
         # fully returned -> agreement auto-closes (ADR-0003)
         self.assertEqual(agreement.state, "done")
         self.assertEqual(agreement.receipt_count, 1)
@@ -165,6 +178,23 @@ class TestAdvancePaymentReceiptKmitl(TransactionCase):
             "advance_payment_receipt_kmitl.return_product_id", ""
         )
         agreement = self._make_reconcilable()
+        line = self._return_line(agreement, 400)
+        with self.assertRaises(UserError):
+            line.with_user(self.officer).action_approve()
+
+    def test_missing_receipt_payment_method_raises(self):
+        agreement = self._make_reconcilable()
+        line = self._return_line(agreement, 400)
+        line.receipt_payment_method_id = False
+        with self.assertRaises(UserError):
+            line.with_user(self.officer).action_approve()
+
+    def test_missing_department_dimension_raises(self):
+        # A loan with no department (ส่วนงาน) set — e.g. a standalone loan
+        # with no budget_commitment_id to inherit dimensions from — must not
+        # produce a receipt with a NULL required department_analytic_id.
+        agreement = self._make_reconcilable()
+        agreement.analytic_distribution = False
         line = self._return_line(agreement, 400)
         with self.assertRaises(UserError):
             line.with_user(self.officer).action_approve()

@@ -6,9 +6,23 @@
         <field name="inherit_id"
             ref="advance_payment.view_advance_payment_return_line_form"/>
         <field name="arch" type="xml">
-            <field name="payment_id" position="after">
-                <field name="receipt_id"
-                    attrs="{'invisible': [('receipt_id', '=', False)]}"/>
+            <button name="action_approve" position="attributes">
+                <attribute name="string">สร้างใบเสร็จรับเงิน</attribute>
+                <attribute name="icon">fa-file-text-o</attribute>
+            </button>
+            <xpath expr="//sheet/group[1]" position="before">
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_view_receipt" type="object"
+                        class="oe_stat_button" icon="fa-file-text-o"
+                        attrs="{'invisible': [('receipt_id', '=', False)]}">
+                        <field name="receipt_id" widget="statinfo"
+                            string="ใบเสร็จ"/>
+                    </button>
+                </div>
+            </xpath>
+            <field name="amount" position="after">
+                <field name="receipt_payment_method_id"/>
+                <field name="receipt_transfer_date"/>
             </field>
         </field>
     </record>

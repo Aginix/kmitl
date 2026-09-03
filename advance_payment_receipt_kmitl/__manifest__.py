@@ -17,6 +17,7 @@
         "data/product_data.xml",
         "views/advance_payment_return_line_views.xml",
         "views/advance_payment_views.xml",
+        "views/receipt_kmitl_views.xml",
         "views/res_config_settings_views.xml",
     ],
     "application": False,

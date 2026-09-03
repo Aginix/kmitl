@@ -24,6 +24,40 @@ class AdvancePaymentReturnLine(models.Model):
         copy=False,
     )
 
+    # -- officer-entered receiving details (filled in pending_review) -------- #
+
+    receipt_payment_method_id = fields.Many2one(
+        comodel_name="kmitl.payment.method",
+        string="โอนเข้าบัญชี",
+        domain=[("payment_type", "=", "transfer")],
+        default=lambda self: self._default_receipt_payment_method_id(),
+        readonly=True,
+        states={"pending_review": [("readonly", False)]},
+        copy=False,
+        help="บัญชีธนาคารที่รับเงินคืน ใช้เป็นวิธีรับเงินและบัญชีเดบิตบนใบเสร็จ",
+    )
+    receipt_transfer_date = fields.Date(
+        string="วันที่โอนเงิน",
+        default=fields.Date.context_today,
+        readonly=True,
+        states={"pending_review": [("readonly", False)]},
+        copy=False,
+    )
+
+    def _default_receipt_payment_method_id(self):
+        method_id = self.env["ir.config_parameter"].sudo().get_param(PARAM_METHOD)
+        return int(method_id) if method_id else False
+
+    def action_view_receipt(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "kmitl.receipt",
+            "res_id": self.receipt_id.id,
+            "view_mode": "form",
+            "views": [(False, "form")],
+        }
+
     # -- settlement seam overrides (advance_payment) ------------------------- #
 
     def _settle_return(self):
@@ -82,26 +116,32 @@ class AdvancePaymentReturnLine(models.Model):
         """
         self.ensure_one()
         agreement = self.agreement_id
-        ICP = self.env["ir.config_parameter"].sudo()
-        product = self.env["product.product"].browse(
-            int(ICP.get_param(PARAM_PRODUCT) or 0)
-        )
-        method = self.env["kmitl.payment.method"].browse(
-            int(ICP.get_param(PARAM_METHOD) or 0)
-        )
-        if not product.exists() or not method.exists():
+        if not self.receipt_payment_method_id:
             raise UserError(
                 _(
-                    "Set the advance-payment return product and payment method "
-                    "in Settings before approving a return."
+                    "Set the receiving payment method (โอนเข้าบัญชี) before "
+                    "issuing the receipt."
                 )
             )
-        if method.payment_type == "cheque":
+        if not agreement.department_analytic_id:
             raise UserError(
                 _(
-                    "The configured return payment method is a cheque method, "
-                    "which returns do not capture. Choose a cash or transfer "
-                    "method in Settings."
+                    "Agreement %s has no department (ส่วนงาน) set. The "
+                    "receipt requires it — set it on the agreement first."
+                )
+                % agreement.name
+            )
+        product = self.env["product.product"].browse(
+            int(
+                self.env["ir.config_parameter"].sudo().get_param(PARAM_PRODUCT)
+                or 0
+            )
+        )
+        if not product.exists():
+            raise UserError(
+                _(
+                    "Set the advance-payment return product in Settings "
+                    "before issuing a receipt."
                 )
             )
         account = (
@@ -112,19 +152,33 @@ class AdvancePaymentReturnLine(models.Model):
             raise UserError(
                 _(
                     "Product '%s' has no income account. Configure one before "
-                    "approving a return."
+                    "issuing a receipt."
                 )
                 % product.display_name
             )
-        vals = {
+        line_description = _("Return of advance payment %s") % (agreement.name or "")
+        header_description = _(
+            "คืนเงินยืมทดรองจ่าย สัญญาเลขที่ %(agreement)s "
+            "ผู้ยืม %(employee)s เหตุผลการยืม %(reason)s"
+        ) % {
+            "agreement": agreement.name or "-",
+            "employee": agreement.employee_id.name or "-",
+            "reason": agreement.loan_reason or "-",
+        }
+        return {
             "date": self.date,
             "partner_id": agreement.partner_id.id,
             "is_walkin": False,
-            "payment_type": method.payment_type,
-            "payment_method_id": method.id,
-            # analytic.mixin JSON is the source of truth; copying it carries the
-            # agreement's dimensions and populates the receipt's required
-            # department_analytic_id.
+            "payment_type": "transfer",
+            "payment_method_id": self.receipt_payment_method_id.id,
+            "transfer_date": self.receipt_transfer_date,
+            "advance_return_line_id": self.id,
+            "description": header_description,
+            # department_analytic_id is set explicitly (not left to compute from
+            # analytic_distribution alone) since it's a required field on
+            # kmitl.receipt; analytic_distribution still carries the rest of the
+            # agreement's dimensions (fund/source/activity).
+            "department_analytic_id": agreement.department_analytic_id.id,
             "analytic_distribution": agreement.analytic_distribution,
             "line_ids": [
                 (
@@ -132,8 +186,7 @@ class AdvancePaymentReturnLine(models.Model):
                     0,
                     {
                         "product_id": product.id,
-                        "name": _("Return of advance payment %s")
-                        % (agreement.name or ""),
+                        "name": line_description,
                         "account_id": account.id,
                         "quantity": 1.0,
                         "price_unit": self.amount,
@@ -141,6 +194,3 @@ class AdvancePaymentReturnLine(models.Model):
                 )
             ],
         }
-        if method.payment_type == "transfer":
-            vals["transfer_date"] = self.date
-        return vals

@@ -15,9 +15,9 @@ class ResConfigSettings(models.TransientModel):
 
     advance_payment_return_payment_method_id = fields.Many2one(
         comodel_name="kmitl.payment.method",
-        string="วิธีรับเงินคืนยืมเริ่มต้น",
+        string="บัญชีรับโอนเงินคืนยืมเริ่มต้น",
         config_parameter="advance_payment_receipt_kmitl.return_payment_method_id",
-        domain="[('payment_type', 'in', ('cash', 'transfer'))]",
-        help="วิธีรับเงิน (เงินสด/เงินโอน) ที่ใช้ตั้งต้นบนใบเสร็จรับเงินคืนยืม "
-        "การเงินปรับแก้บนใบเสร็จ (สถานะร่าง) ได้ก่อนนำส่งคลัง",
+        domain="[('payment_type', '=', 'transfer')]",
+        help="บัญชีรับโอนที่ใช้ตั้งต้นบนรายการคืนเงิน (เจ้าหน้าที่ปรับแก้ได้ก่อนกด"
+        "สร้างใบเสร็จรับเงิน) — คืนยืมรับเป็นเงินโอนเท่านั้น",
     )
