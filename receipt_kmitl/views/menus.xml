@@ -3,7 +3,8 @@
     <menuitem id="menu_receipt_kmitl_root"
               name="Receipts"
               sequence="48"
-              groups="receipt_kmitl.group_receipt_kmitl_viewer"/>
+              groups="receipt_kmitl.group_receipt_kmitl_viewer"
+              web_icon="receipt_kmitl,static/description/icon.png"/>
     <menuitem id="menu_receipt_kmitl_receipts"
               name="Receipts"
               parent="menu_receipt_kmitl_root"

@@ -4,29 +4,22 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
-ANALYTIC_DIMENSION_FIELDS = [
-    "department_analytic_id",
-    "fund_analytic_id",
-    "source_analytic_id",
-    "activity_analytic_id",
-    "kmitl_project_analytic_id",
-    "procurement_plan_analytic_id",
-]
-
-# Fields readonly from to_submit onwards (most fields).
-READONLY_STATES = {
-    "to_submit": [("readonly", True)],
-    "submitted": [("readonly", True)],
-    "approved": [("readonly", True)],
-    "done": [("readonly", True)],
-    "cancelled": [("readonly", True)],
+# Root plan code → convenience field. The only place a dimension is named.
+ANALYTIC_KEYS = {
+    "departments": "department_analytic_id",
+    "sources": "source_analytic_id",
+    "funds": "fund_analytic_id",
+    "activities": "activity_analytic_id",
+    "kmitl_project": "kmitl_project_analytic_id",
+    "procurement_plan": "procurement_plan_analytic_id",
 }
 
-# Analytic dims editable in draft + to_submit only.
-ANALYTIC_READONLY_STATES = {
+# Fields readonly from submitted (remittance submission) onwards.
+READONLY_STATES = {
     "submitted": [("readonly", True)],
     "approved": [("readonly", True)],
     "done": [("readonly", True)],
@@ -43,8 +36,9 @@ FLEX_READONLY_STATES = {
 class ReceiptKmitl(models.Model):
     _name = "kmitl.receipt"
     _description = "KMITL Cash Receipt"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "analytic.mixin"]
     _order = "date desc, id desc"
+    _analytic_keys = ANALYTIC_KEYS
 
     name = fields.Char(
         string="Receipt Number",
@@ -56,8 +50,7 @@ class ReceiptKmitl(models.Model):
     )
     state = fields.Selection(
         [
-            ("draft", "Draft"),
-            ("to_submit", "To Submit"),
+            ("draft", "To Submit"),
             ("submitted", "Submitted"),
             ("approved", "Approved"),
             ("done", "Done"),
@@ -74,26 +67,52 @@ class ReceiptKmitl(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    account_fiscal_year_id = fields.Many2one(
-        "account.fiscal.year",
-        string="Fiscal Year",
-        tracking=True,
-        states=READONLY_STATES,
-    )
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Issuing Department",
-        required=True,
+        compute="_compute_analytic_id",
+        inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
+        store=True,
+        index=True,
+        required=True,
+        compute_sudo=True,
         tracking=True,
         states=READONLY_STATES,
+    )
+    payment_type = fields.Selection(
+        [
+            ("cash", "Cash"),
+            ("cheque", "Cheque"),
+            ("transfer", "Money Transfer"),
+        ],
+        required=True,
+        default="cash",
+        tracking=True,
+        states=FLEX_READONLY_STATES,
     )
     payment_method_id = fields.Many2one(
         "kmitl.payment.method",
         string="Payment Method",
         required=True,
         check_company=True,
-        domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]",
+        domain="['&', '|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids),"
+        " ('payment_type', '=', payment_type)]",
+        tracking=True,
+        states=FLEX_READONLY_STATES,
+    )
+    cheque_number = fields.Char(
+        string="Cheque Number",
+        tracking=True,
+        states=FLEX_READONLY_STATES,
+    )
+    cheque_date = fields.Date(
+        string="Cheque Date",
+        tracking=True,
+        states=FLEX_READONLY_STATES,
+    )
+    transfer_date = fields.Date(
+        string="Transfer Date",
         tracking=True,
         states=FLEX_READONLY_STATES,
     )
@@ -102,35 +121,61 @@ class ReceiptKmitl(models.Model):
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Fund",
+        compute="_compute_analytic_id",
+        inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
-        states=ANALYTIC_READONLY_STATES,
+        store=False,
+        compute_sudo=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Source",
+        compute="_compute_analytic_id",
+        inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
         default=lambda self: self.env.ref(
             "account_analytic_kmitl.source_2", raise_if_not_found=False
         ),
-        states=ANALYTIC_READONLY_STATES,
+        store=True,
+        index=True,
+        compute_sudo=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Activity",
+        compute="_compute_analytic_id",
+        inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
-        states=ANALYTIC_READONLY_STATES,
+        store=False,
+        compute_sudo=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
     kmitl_project_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="KMITL Project",
+        compute="_compute_analytic_id",
+        inverse="_inverse_kmitl_project_analytic",
         domain=[("root_plan_id.code", "=", "kmitl_project")],
-        states=ANALYTIC_READONLY_STATES,
+        store=False,
+        compute_sudo=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
     procurement_plan_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Procurement Plan",
+        compute="_compute_analytic_id",
+        inverse="_inverse_procurement_plan_analytic",
         domain=[("root_plan_id.code", "=", "procurement_plan")],
-        states=ANALYTIC_READONLY_STATES,
+        store=False,
+        compute_sudo=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
 
     # --- Customer ---
@@ -241,7 +286,7 @@ class ReceiptKmitl(models.Model):
             rec.amount_total = sum(rec.line_ids.mapped("amount"))
 
     @api.model
-    def get_receipt_dashboard(self):
+    def get_receipt_dashboard(self, domain=None):
         currency_id = self.env.company.currency_id.id
         dashboard = {
             "to_report": {
@@ -260,14 +305,17 @@ class ReceiptKmitl(models.Model):
                 "currency": currency_id,
             },
         }
+        base_domain = [("state", "in", ["draft", "submitted", "approved", "done"])]
+        if domain:
+            base_domain = expression.AND([base_domain, domain])
         groups = self.read_group(
-            [("state", "in", ["to_submit", "submitted", "approved", "done"])],
+            base_domain,
             ["amount_total"],
             ["state"],
             lazy=False,
         )
         state_map = {
-            "to_submit": "to_report",
+            "draft": "to_report",
             "submitted": "under_validation",
             "approved": "under_validation",
             "done": "reported",
@@ -280,7 +328,7 @@ class ReceiptKmitl(models.Model):
 
     def action_create_report(self):
         receipts = self.filtered(
-            lambda r: r.state == "to_submit"
+            lambda r: r.state == "draft"
             and not r.remittance_id
             and r.date <= fields.Date.context_today(r)
         )
@@ -312,67 +360,102 @@ class ReceiptKmitl(models.Model):
     # -------------------------------------------------------------------------
     # Analytic dimension sync (header → lines)
     # -------------------------------------------------------------------------
-    def _build_analytic_distribution(self):
-        self.ensure_one()
-        dist = {}
-        for fname in ANALYTIC_DIMENSION_FIELDS:
-            account = self[fname]
-            if account:
-                dist[str(account.id)] = 100.0
-        return dist or False
+    @api.depends("analytic_distribution")
+    def _compute_analytic_id(self):
+        # Reset first: the shared mixin only assigns dimensions that are
+        # present in the JSON, so a stored field (department/source) would
+        # keep a stale value when its dimension is removed from the
+        # distribution.
+        for rec in self:
+            for field_name in self._analytic_keys.values():
+                rec[field_name] = False
+        return super()._compute_analytic_id()
+
+    # Also onchange handlers (not just inverses): on an unsaved record the
+    # inverse only runs at write(). Each must stay single-field — looping
+    # over all six codes here would reassign analytic_distribution after the
+    # first, invalidating every dimension field (they share one compute) and
+    # wiping out the very field the user just edited before it's read.
+    @api.onchange("department_analytic_id")
+    def _inverse_department_analytic(self):
+        for rec in self:
+            rec._update_analytic_distribution("departments")
+
+    @api.onchange("source_analytic_id")
+    def _inverse_source_analytic(self):
+        for rec in self:
+            rec._update_analytic_distribution("sources")
+
+    @api.onchange("fund_analytic_id")
+    def _inverse_fund_analytic(self):
+        for rec in self:
+            rec._update_analytic_distribution("funds")
+
+    @api.onchange("activity_analytic_id")
+    def _inverse_activity_analytic(self):
+        for rec in self:
+            rec._update_analytic_distribution("activities")
+
+    @api.onchange("kmitl_project_analytic_id")
+    def _inverse_kmitl_project_analytic(self):
+        for rec in self:
+            rec._update_analytic_distribution("kmitl_project")
+
+    @api.onchange("procurement_plan_analytic_id")
+    def _inverse_procurement_plan_analytic(self):
+        for rec in self:
+            rec._update_analytic_distribution("procurement_plan")
 
     def _sync_analytic_to_lines(self):
         for rec in self:
-            dist = rec._build_analytic_distribution()
             if rec.line_ids:
-                rec.line_ids.write({"analytic_distribution": dist})
+                rec.line_ids.write(
+                    {"analytic_distribution": rec.analytic_distribution}
+                )
 
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
         records._sync_analytic_to_lines()
+        for rec in records:
+            if rec.name in ("/", False):
+                rec.name = rec._get_receipt_sequence().next_by_id()
         return records
+
+    # A write touching any of these must re-push the header distribution onto
+    # the lines: the dimension fields (their inverse rewrites the JSON), the
+    # JSON itself, and line_ids (a newly added line starts with no
+    # distribution).
+    _SYNC_TRIGGERS = frozenset(ANALYTIC_KEYS.values()) | {
+        "analytic_distribution",
+        "line_ids",
+    }
 
     def write(self, vals):
         res = super().write(vals)
-        if any(f in vals for f in ANALYTIC_DIMENSION_FIELDS):
+        if self._SYNC_TRIGGERS & set(vals):
             self._sync_analytic_to_lines()
         if "remittance_id" in vals and not vals.get("remittance_id"):
             detached = self.filtered(lambda r: r.state in ("submitted", "approved"))
             if detached:
-                detached.write({"state": "to_submit"})
+                detached.write({"state": "draft"})
                 for rec in detached:
                     rec.message_post(
                         body=_("Removed from remittance; returned to the pending pool.")
                     )
         return res
 
-    @api.onchange(
-        "department_analytic_id", "fund_analytic_id", "source_analytic_id",
-        "activity_analytic_id", "kmitl_project_analytic_id",
-        "procurement_plan_analytic_id",
-    )
-    def _onchange_analytic_dimensions(self):
-        dist = self._build_analytic_distribution()
-        for line in self.line_ids:
-            line.analytic_distribution = dist
-
     # -------------------------------------------------------------------------
     # Onchanges
     # -------------------------------------------------------------------------
-    @api.onchange("date")
-    def _onchange_date(self):
-        if self.date:
-            fiscal_year = self.env["account.fiscal.year"].search(
-                [
-                    ("date_from", "<=", self.date),
-                    ("date_to", ">=", self.date),
-                    ("company_id", "=", self.company_id.id),
-                ],
-                limit=1,
-            )
-            if fiscal_year:
-                self.account_fiscal_year_id = fiscal_year
+    @api.onchange("payment_type")
+    def _onchange_payment_type(self):
+        if self.payment_type != "cheque":
+            self.cheque_number = False
+            self.cheque_date = False
+        if self.payment_type != "transfer":
+            self.transfer_date = False
+        self.payment_method_id = False
 
     @api.onchange("is_walkin")
     def _onchange_is_walkin(self):
@@ -419,8 +502,6 @@ class ReceiptKmitl(models.Model):
 
     def _get_fy_be(self):
         self.ensure_one()
-        if self.account_fiscal_year_id:
-            return self.account_fiscal_year_id.date_to.year + 543
         return self._get_fiscal_year_be(self.date)
 
     def _get_receipt_sequence(self):
@@ -435,40 +516,65 @@ class ReceiptKmitl(models.Model):
                     "code": seq_code,
                     "prefix": "RC/%s/" % fy_be,
                     "padding": 4,
+                    "implementation": "no_gap",
                     "company_id": False,
                 }
             )
         return seq
 
     # -------------------------------------------------------------------------
-    # Actions
+    # Constraints
     # -------------------------------------------------------------------------
-    def action_to_submit(self):
+    @api.constrains("line_ids", "amount_total")
+    def _check_lines(self):
         for rec in self:
-            if rec.state != "draft":
-                raise UserError(_("Only draft receipts can be submitted."))
             if not rec.line_ids:
-                raise ValidationError(_("Add at least one line before submitting."))
+                raise ValidationError(_("Add at least one line."))
             for line in rec.line_ids:
                 if not line.account_id:
                     raise ValidationError(
                         _("Line '%s' has no income account.") % (line.name or "")
                     )
-                if line.amount <= 0:
-                    raise ValidationError(
-                        _("Line '%s' must have a positive amount.")
-                        % (line.name or "")
-                    )
-            if not rec.partner_id:
-                rec.partner_id = rec._default_partner_id()
-            if not rec.customer_name and rec.partner_id:
-                rec._sync_customer_snapshot()
-            if rec.name == "/" or not rec.name:
-                seq = rec._get_receipt_sequence()
-                rec.name = seq.next_by_id()
-            rec.state = "to_submit"
-        return True
+            if rec.amount_total <= 0:
+                raise ValidationError(
+                    _("The receipt total must be greater than zero.")
+                )
 
+    @api.constrains("payment_type", "cheque_number", "cheque_date", "transfer_date")
+    def _check_payment_type_fields(self):
+        for rec in self:
+            if rec.payment_type == "cheque" and not (
+                rec.cheque_number and rec.cheque_date
+            ):
+                raise ValidationError(
+                    _("Cheque number and cheque date are required for "
+                      "cheque payments.")
+                )
+            if rec.payment_type == "transfer" and not rec.transfer_date:
+                raise ValidationError(
+                    _("Transfer date is required for transfer payments.")
+                )
+
+    @api.constrains("payment_type", "payment_method_id")
+    def _check_payment_method_matches_type(self):
+        """The domain on payment_method_id is UI-only — import, API writes,
+        and writes that skip the onchange can still pair a method with the
+        wrong type. That mismatch isn't cosmetic: the printed receipt ticks
+        its box from payment_type, the journal entry debits
+        payment_method_id.account_id, and the summary report filters by
+        payment_type.
+        """
+        for rec in self:
+            method = rec.payment_method_id
+            if method and method.payment_type != rec.payment_type:
+                raise ValidationError(
+                    _("Payment method '%s' does not match the receipt's "
+                      "payment type.") % method.name
+                )
+
+    # -------------------------------------------------------------------------
+    # Actions
+    # -------------------------------------------------------------------------
     # Kept as internal method — called by remittance, not exposed as button.
     def _action_post(self):
         for rec in self:
@@ -532,15 +638,33 @@ class ReceiptKmitl(models.Model):
                     _("Only draft receipts can be cancelled. "
                       "Reset to draft first.")
                 )
-            rec.state = "cancelled"
+            remittance = rec.remittance_id
+            if remittance:
+                # to_submit was merged into draft, so a receipt pulled into a
+                # still-draft remittance is itself still draft and passes the
+                # check above. Cancelling it without detaching would leave it
+                # stuck both ways: the remittance can't submit (every receipt
+                # must be draft) and the receipt can't reset to draft
+                # (action_draft blocks while remittance_id is set) — so
+                # detach it as part of cancelling.
+                rec.write({"remittance_id": False, "state": "cancelled"})
+                rec.message_post(
+                    body=_("Cancelled and removed from remittance %s.")
+                    % remittance.display_name
+                )
+                remittance.message_post(
+                    body=_("Receipt %s was cancelled and removed from this "
+                           "remittance.") % rec.name
+                )
+            else:
+                rec.state = "cancelled"
         return True
 
     def action_draft(self):
         for rec in self:
-            if rec.state not in ("to_submit", "cancelled"):
+            if rec.state != "cancelled":
                 raise UserError(
-                    _("Only 'To Submit' or cancelled receipts can be "
-                      "reset to draft.")
+                    _("Only cancelled receipts can be reset to draft.")
                 )
             if rec.remittance_id:
                 raise UserError(

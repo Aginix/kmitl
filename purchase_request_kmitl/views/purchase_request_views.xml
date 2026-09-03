@@ -292,6 +292,31 @@
                 </group>
             </xpath>
 
+            <!-- === Attachment group (before notebook, ends up under Budget Details) === -->
+            <xpath expr="//form/sheet/notebook" position="before">
+                <group name="attachment" string="Attachment">
+                    <div
+                        colspan="2"
+                        class="alert alert-info"
+                        role="alert"
+                        attrs="{'invisible': [('is_editable', '=', False)]}"
+                    >
+                        <b>Sample attachments</b>
+                        <ul class="mb-0">
+                            <li>Item specifications</li>
+                            <li>Vendor price quotation</li>
+                        </ul>
+                    </div>
+                    <field
+                        name="attachment_ids"
+                        widget="many2many_binary"
+                        nolabel="1"
+                        colspan="2"
+                        attrs="{'readonly': [('is_editable','=', False)]}"
+                    />
+                </group>
+            </xpath>
+
             <!-- === Notebook pages === -->
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="committee" string="Committees">
@@ -352,24 +377,6 @@
                             <field name="mobile_phone" />
                         </tree>
                     </field>
-                </page>
-                <page name="document" string="Attachment">
-                    <div class="alert alert-info" role="alert">
-                        <b>ตัวอย่างเอกสารแนบ</b>
-                        <ul class="mb-0">
-                            <li>รายละเอียดและคุณลักษณะพัสดุ</li>
-                            <li>ใบเสนอราคาพัสดุ</li>
-                        </ul>
-                    </div>
-                    <group name="attachment" string="Attachment">
-                        <field
-                            name="attachment_ids"
-                            widget="many2many_binary"
-                            nolabel="1"
-                            colspan="2"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
-                        />
-                    </group>
                 </page>
             </xpath>
 

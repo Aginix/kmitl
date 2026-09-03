@@ -2330,3 +2330,18 @@ msgstr "สำหรับงานก่อสร้าง"
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "To Submit"
 msgstr "รอส่งขอความเห็นชอบให้จัดหา"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "<b>Sample attachments</b>"
+msgstr "<b>ตัวอย่างเอกสารแนบ</b>"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Item specifications"
+msgstr "รายละเอียดและคุณลักษณะพัสดุ"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Vendor price quotation"
+msgstr "ใบเสนอราคาพัสดุ"

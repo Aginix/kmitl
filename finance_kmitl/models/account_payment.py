@@ -39,7 +39,11 @@ PAYEE_ACCOUNT_FIELD = "partner_bank_id"
 
 
 class AccountPayment(models.Model):
-    _inherit = "account.payment"
+    # ``thai.date.mixin`` for the printed ใบสำคัญจ่าย, which dates itself in the
+    # Buddhist era. Listing the mixin turns ``_inherit`` into a list, and a list
+    # without ``_name`` is read as a new model, so the name has to be said again.
+    _name = "account.payment"
+    _inherit = ["account.payment", "thai.date.mixin"]
 
     kmitl_payment_type_id = fields.Many2one(
         comodel_name="kmitl.payment.type",
@@ -648,6 +652,28 @@ class AccountPayment(models.Model):
         return res
 
     # -------------------------------------------------------------------------
+    # Over to the accounting office
+    # -------------------------------------------------------------------------
+    def action_submit_batch(self):
+        """Submit the entries behind the selected vouchers for accounting approval.
+
+        Sits on this model so the accounting maker can work from the register they
+        already have in front of them — ใบล้างเจ้าหนี้ lists payments, because the
+        payment is what carries both offices' statuses, while the thing being
+        submitted is its entry. The delegation to account.move is fields only, so
+        the method has to be named here for a list button to reach it.
+
+        The work itself stays where it belongs: ``account.move.action_submit_batch``
+        picks out the drafts, isolates each failure in a savepoint and reports them
+        by name. A voucher the finance office has not handed over yet fails on the
+        maker rule in ``account.move._check_submit_allowed`` and is named in that
+        report — deliberately not filtered out here, because somebody who ticked
+        twenty vouchers and got eighteen entries would have no way to tell which
+        two were dropped or why.
+        """
+        return self.move_id.action_submit_batch()
+
+    # -------------------------------------------------------------------------
     # Out by cheque
     # -------------------------------------------------------------------------
     def action_create_cheques(self):
@@ -898,4 +924,70 @@ class AccountPayment(models.Model):
         return (
             *super()._get_trigger_fields_to_synchronize(),
             "kmitl_payment_type_id",
+        )
+
+    # -------------------------------------------------------------------------
+    # The printed ใบสำคัญจ่าย
+    # -------------------------------------------------------------------------
+    def _get_report_base_filename(self):
+        """Name the downloaded file after the voucher it is.
+
+        A voucher confirmed for the bank has its number by then, which is what
+        the office files the paper under.
+        """
+        self.ensure_one()
+        return "Payment Voucher-%s" % (self.name or self.id)
+
+    def _voucher_dimensions(self):
+        """The analytic account of each financial dimension, keyed by plan code.
+
+        Read off ``analytic_distribution`` rather than the convenience
+        ``*_analytic_id`` fields, for two reasons: that JSON is the source of
+        truth every dimension is written through, and only four of the six
+        dimensions exist as fields here — the project and procurement-plan ones
+        are added by modules this one does not depend on, so naming them would
+        break a lean install. Grouping by the *root* plan is what makes a
+        sub-account answer for its dimension.
+
+        The order and the Thai labels stay in the template, where the rest of the
+        printed document's words are.
+        """
+        self.ensure_one()
+        accounts = (
+            self.env["account.analytic.account"]
+            .browse(int(account_id) for account_id in (self.analytic_distribution or {}))
+            .exists()
+        )
+        return {account.root_plan_id.code: account for account in accounts}
+
+    def _voucher_wht_lines(self):
+        """The withholding-tax lines this voucher deducted.
+
+        The same lines ``_compute_amount_wht`` sums, listed rather than totalled
+        so the printed voucher can show what each deduction was for — one payee
+        can be withheld on at more than one rate. They survive a rebuild of the
+        entry, which is what ``_write_off_line_vals`` above exists for.
+        """
+        self.ensure_one()
+        return self.move_id.line_ids.filtered("wht_tax_id")
+
+    @api.model
+    def _mask_acc_number(self, acc_number):
+        """Hide the middle of a bank account number, keeping the first 3 and last 4.
+
+        The voucher is handled outside the finance office — it is filed with the
+        accounting office and travels with the paperwork — so the payee's full
+        account number has no business on it. Deliberately a copy of
+        ``disbursement.request._get_masked_acc_number`` rather than a shared
+        helper: the two module trees are independent, and neither may depend on
+        the other for the sake of ten lines.
+        """
+        acc = acc_number or ""
+        digit_positions = [index for index, char in enumerate(acc) if char.isdigit()]
+        if len(digit_positions) <= 7:
+            return acc
+        keep = set(digit_positions[:3]) | set(digit_positions[-4:])
+        return "".join(
+            char if (not char.isdigit() or index in keep) else "X"
+            for index, char in enumerate(acc)
         )

@@ -60,11 +60,6 @@ msgid "Show Egp Create Purchase Order Button"
 msgstr ""
 
 #. module: purchase_request_egp
-#: model:ir.ui.menu,name:purchase_request_egp.menu_purchase_request_tier_validation_exception
-msgid "Tier Validation Exception"
-msgstr ""
-
-#. module: purchase_request_egp
 #: model:ir.model.fields.selection,name:purchase_request_egp.selection__purchase_request__egp_status__waiting
 msgid "Waiting for e-GP"
 msgstr "รอดำเนินการ e-GP"

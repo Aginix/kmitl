@@ -5,7 +5,7 @@
         <field name="model">kmitl.receipt</field>
         <field name="arch" type="xml">
             <tree decoration-muted="state == 'cancelled'"
-                  decoration-info="state == 'to_submit'"
+                  decoration-info="state == 'draft'"
                   decoration-success="state == 'done'"
                   js_class="receipt_kmitl_dashboard_tree">
                 <field name="name"/>
@@ -14,12 +14,13 @@
                 <field name="user_id" optional="show"/>
                 <field name="customer_name"/>
                 <field name="partner_id" optional="hide"/>
+                <field name="payment_type" optional="show"/>
                 <field name="payment_method_id" optional="show"/>
                 <field name="amount_total" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="remittance_id" optional="show"/>
                 <field name="state" widget="badge"
-                       decoration-info="state == 'to_submit'"
+                       decoration-info="state == 'draft'"
                        decoration-warning="state in ('submitted', 'approved')"
                        decoration-success="state == 'done'"
                        decoration-muted="state == 'cancelled'"
@@ -39,17 +40,6 @@
                             string="View Report"
                             class="btn-primary"
                             attrs="{'invisible': [('remittance_id', '=', False)]}"/>
-                    <button name="action_to_submit"
-                            type="object"
-                            string="Confirm"
-                            class="btn-primary"
-                            states="draft"
-                            groups="receipt_kmitl.group_receipt_kmitl_user"/>
-                    <button name="action_draft"
-                            type="object"
-                            string="Reset to Draft"
-                            states="to_submit"
-                            groups="receipt_kmitl.group_receipt_kmitl_user"/>
                     <button name="action_cancel"
                             type="object"
                             string="Cancel"
@@ -64,16 +54,16 @@
                             type="object"
                             string="Print Original"
                             icon="fa-print"
-                            attrs="{'invisible': [('state', 'in', ['draft', 'cancelled'])]}"
+                            attrs="{'invisible': [('state', '=', 'cancelled')]}"
                             groups="receipt_kmitl.group_receipt_kmitl_user"/>
                     <button name="action_print_copy"
                             type="object"
                             string="Print Copy"
                             icon="fa-copy"
-                            attrs="{'invisible': [('state', 'in', ['draft', 'cancelled'])]}"
+                            attrs="{'invisible': [('state', '=', 'cancelled')]}"
                             groups="receipt_kmitl.group_receipt_kmitl_user"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,to_submit,submitted,approved,done"/>
+                           statusbar_visible="draft,submitted,approved,done"/>
                 </header>
                 <sheet>
                     <field name="remittance_id" invisible="1"/>
@@ -95,51 +85,41 @@
                     <group>
                         <group name="header" string="Receipt Info">
                             <field name="date"/>
-                            <field name="account_fiscal_year_id" widget="selection"/>
-                            <field name="department_analytic_id"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                            <field name="payment_method_id"
-                                   widget="selection"/>
-                            <field name="user_id" readonly="1"
-                                   groups="!receipt_kmitl.group_receipt_kmitl_manager"/>
-                            <field name="user_id" readonly="0"
-                                   groups="receipt_kmitl.group_receipt_kmitl_manager"/>
-                            <field name="description"/>
+                            <field name="payment_type" widget="radio"/>
+                            <field name="payment_method_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="cheque_number" attrs="{'invisible': [('payment_type', '!=', 'cheque')],'required': [('payment_type', '=', 'cheque')]}"/>
+                            <field name="cheque_date" attrs="{'invisible': [('payment_type', '!=', 'cheque')],'required': [('payment_type', '=', 'cheque')]}"/>
+                            <field name="transfer_date" attrs="{'invisible': [('payment_type', '!=', 'transfer')],'required': [('payment_type', '=', 'transfer')]}"/>
+                            <separator/>
+                            <field name="user_id" readonly="1" groups="!receipt_kmitl.group_receipt_kmitl_manager"/>
+                            <field name="user_id" readonly="0" groups="receipt_kmitl.group_receipt_kmitl_manager" required="1"/>
                         </group>
                         <group name="customer" string="Payer">
                             <field name="is_walkin"/>
-                            <div colspan="2" class="alert alert-info mb-0 py-2" role="alert"
-                                 attrs="{'invisible': [('is_walkin', '=', False)]}">
+                            <div colspan="2" class="alert alert-info mb-0 py-2" role="alert" attrs="{'invisible': [('is_walkin', '=', False)]}">
                                 <i class="fa fa-info-circle"/>
                                 Walk-in customer: receipt for a general customer without specific payer details.
                             </div>
-                            <field name="partner_id"
-                                   options="{'no_create': True, 'no_edit': True}"
-                                   attrs="{'readonly': ['|', ('is_walkin', '=', True), ('state', '!=', 'draft')]}"/>
+                            <field name="partner_id" options="{'no_create': True, 'no_edit': True}" attrs="{'readonly': ['|', ('is_walkin', '=', True), ('state', '!=', 'draft')]}"/>
                             <field name="customer_name"/>
-                            <field name="customer_tax_id"
-                                   attrs="{'invisible': [('is_walkin', '=', True)]}"/>
-                            <field name="customer_branch_code"
-                                   attrs="{'invisible': [('is_walkin', '=', True)]}"/>
-                            <field name="customer_address"
-                                   attrs="{'invisible': [('is_walkin', '=', True)]}"/>
+                            <field name="customer_tax_id" attrs="{'invisible': [('is_walkin', '=', True)]}"/>
+                            <field name="customer_branch_code" attrs="{'invisible': [('is_walkin', '=', True)]}"/>
+                            <field name="customer_address" attrs="{'invisible': [('is_walkin', '=', True)]}"/>
                         </group>
+                        <separator name="description" string="Description"/>
+                        <field name="description" required="1" nolabel="1" colspan="2"/>
                     </group>
                     <group name="analytic_dimensions" string="Analytic Dimensions">
                         <group>
-                            <field name="fund_analytic_id"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                            <field name="source_analytic_id"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                            <field name="activity_analytic_id"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="department_analytic_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting"/>
                         </group>
-                        <group>
-                            <field name="kmitl_project_analytic_id"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                            <field name="procurement_plan_analytic_id"
-                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                        </group>
+                    </group>
+                    <group name="attachments" string="Attachments">
+                        <field name="attachment_ids" nolabel="1" colspan="2" widget="many2many_binary"/>
                     </group>
                     <notebook>
                         <page string="Lines" name="lines">
@@ -152,9 +132,7 @@
                                     <field name="quantity"/>
                                     <field name="price_unit"/>
                                     <field name="amount" sum="Total"/>
-                                    <field name="analytic_distribution"
-                                           widget="analytic_distribution"
-                                           optional="hide"/>
+                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" readonly="1" optional="hide"/>
                                     <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
@@ -167,10 +145,6 @@
                                 <label for="note" string="Notes"/>
                                 <field name="note" nolabel="1" colspan="2" placeholder="Notes"/>
                               </group>
-                            </group>
-                            <group name="attachments" string="Attachments">
-                                <field name="attachment_ids" nolabel="1" colspan="2"
-                                       widget="many2many_binary"/>
                             </group>
                         </page>
                     </notebook>
@@ -207,7 +181,6 @@
                 <field name="department_analytic_id"/>
                 <field name="customer_name"/>
                 <field name="payment_method_id"/>
-                <field name="account_fiscal_year_id"/>
                 <field name="user_id"/>
                 <field name="remittance_id"/>
                 <separator/>
@@ -216,23 +189,25 @@
                 <filter string="Walk-in" name="walkin"
                         domain="[('is_walkin','=',True)]"/>
                 <separator/>
+                <filter string="Cash" name="cash" domain="[('payment_type','=', 'cash')]"/>
+                <filter string="Cheque" name="cheque" domain="[('payment_type','=', 'cheque')]"/>
+                <filter string="Transfer" name="transfer" domain="[('payment_type','=', 'transfer')]"/>
+                <separator/>
                 <filter string="Today" name="today"
                         domain="[('date','=', context_today().strftime('%Y-%m-%d'))]"/>
                 <filter string="Yesterday" name="yesterday"
                         domain="[('date','=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
                 <separator/>
-                <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
-                <filter string="To Submit" name="to_submit" domain="[('state','=','to_submit')]"/>
+                <filter string="To Submit" name="draft" domain="[('state','=','draft')]"/>
                 <filter string="Submitted" name="submitted" domain="[('state','=','submitted')]"/>
                 <filter string="Approved" name="approved" domain="[('state','=','approved')]"/>
                 <filter string="Done" name="done" domain="[('state','=','done')]"/>
                 <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
                 <separator/>
                 <filter string="Pending Remittance" name="pending_remittance"
-                        domain="[('state','=','to_submit'),('remittance_id','=',False)]"/>
+                        domain="[('state','=','draft'),('remittance_id','=',False)]"/>
                 <group expand="0" name="group_by" string="Group By">
                     <filter string="Department" name="group_department" context="{'group_by':'department_analytic_id'}"/>
-                    <filter string="Fiscal Year" name="group_fiscal_year" context="{'group_by':'account_fiscal_year_id'}"/>
                     <filter string="State" name="group_state" context="{'group_by':'state'}"/>
                     <filter string="Date" name="group_date" context="{'group_by':'date:day'}"/>
                     <filter string="Payment Method" name="group_method" context="{'group_by':'payment_method_id'}"/>
