@@ -8,7 +8,7 @@ ADR-0008 made `budget_commitment_id` a read-only field, filled only by copying i
 
 `budget_commitment_id` now drops `readonly=True` and gains `domain=[("state", "in", ["reserved", "partial"])]`: while the loan is in `draft`, the officer may pick any open ใบจองงบประมาณ directly, the same way `agx_approval`'s `reservation_commitment_id` already lets a budget officer pick one. A new `@api.onchange("budget_commitment_id")` sets `analytic_distribution` from the chosen commitment, which cascades through the existing `_compute_analytic_ids` compute so the four dimension pickers (`department_analytic_id`, `source_analytic_id`, `fund_analytic_id`, `activity_analytic_id`) fill from it — overriding whatever `reference` had supplied. Picking a different commitment later (still in draft) overrides again.
 
-The view field switches to `widget="budget_commitment_info"` (from `budget_commitment_autocomplete`, now a dependency) so the officer gets the same rich picker used elsewhere in the budget stack, instead of a bare Many2one.
+The view field switches to `widget="budget_commitment_info"` (from `budget`, already a dependency) so the officer sees the commitment's code/dimensions/amounts card, not a bare Many2one. `budget_commitment_autocomplete`'s richer multi-line dropdown — the same widget name, replacing this one's registry entry when installed — is deliberately left out of `depends` for now; wiring it in is its own bridge-module change, not part of this ADR.
 
 ## Why
 

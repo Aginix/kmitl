@@ -8,7 +8,6 @@
         "advance_payment",
         "budget",
         "account_analytic_kmitl",
-        "budget_commitment_autocomplete",
     ],
     "data": [
         "data/advance_payment_exception_data.xml",
