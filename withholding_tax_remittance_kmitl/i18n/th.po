@@ -35,39 +35,39 @@ msgstr ""
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "ต้องดำเนินการ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "กิจกรรม"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr ""
+msgstr "การตกแต่งข้อยกเว้นกิจกรรม"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_state
 msgid "Activity State"
-msgstr ""
+msgstr "สถานะกิจกรรม"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_type_icon
 msgid "Activity Type Icon"
-msgstr ""
+msgstr "ไอคอนประเภทกิจกรรม"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Already cancelled."
-msgstr ""
+msgstr "ยกเลิกไปแล้ว"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__amount_total
 msgid "Amount Total"
-msgstr ""
+msgstr "ยอดรวม"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -84,14 +84,14 @@ msgstr "สิงหาคม"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "จำนวนไฟล์แนบ"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Can only load certificates on a draft remittance."
-msgstr ""
+msgstr "โหลดใบรับรองได้เฉพาะใบนำส่งที่เป็นฉบับร่างเท่านั้น"
 
 #. module: withholding_tax_remittance_kmitl
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_form
@@ -102,7 +102,7 @@ msgstr "ยกเลิก"
 #: model:ir.model.fields.selection,name:withholding_tax_remittance_kmitl.selection__withholding_tax_remittance__state__cancelled
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_search
 msgid "Cancelled"
-msgstr ""
+msgstr "ยกเลิกแล้ว"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -110,21 +110,21 @@ msgstr ""
 #, python-format
 msgid ""
 "Cancelled remittance holding %(count)s certificate(s), total %(total)s."
-msgstr ""
+msgstr "ยกเลิกใบนำส่งที่ถืออยู่ %(count)s ใบรับรอง รวม %(total)s"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Certificate(s) %(certs)s already belong to remittance %(remit)s."
-msgstr ""
+msgstr "ใบรับรอง %(certs)s อยู่ในใบนำส่ง %(remit)s อยู่แล้ว"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Certificate(s) %(certs)s fall outside period %(period)s."
-msgstr ""
+msgstr "ใบรับรอง %(certs)s อยู่นอกงวด %(period)s"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -151,14 +151,14 @@ msgstr ""
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Certificate(s) %s have no analytic dimensions on their source entry."
-msgstr ""
+msgstr "ใบรับรอง %s ไม่มีมิติการวิเคราะห์บนรายการต้นทาง"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Certificates must match this remittance's funding source (%s)."
-msgstr ""
+msgstr "ใบรับรองต้องตรงกับแหล่งเงินของใบนำส่งนี้ (%s)"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -170,12 +170,12 @@ msgstr "ใบรับรองต้องตรงกับแบบ ภ.ง.
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__cheque_no
 msgid "Cheque No."
-msgstr ""
+msgstr "เลขที่เช็ค"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__company_id
 msgid "Company"
-msgstr ""
+msgstr "บริษัท"
 
 #. module: withholding_tax_remittance_kmitl
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_form
@@ -190,17 +190,17 @@ msgstr "สร้างใบนำส่ง"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "สร้างโดย"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__create_date
 msgid "Created on"
-msgstr ""
+msgstr "สร้างเมื่อ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__currency_id
 msgid "Currency"
-msgstr ""
+msgstr "สกุลเงิน"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__current_account_id
@@ -210,12 +210,12 @@ msgstr "บัญชีกระแสรายวัน"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__date_from
 msgid "Date From"
-msgstr ""
+msgstr "จากวันที่"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__date_to
 msgid "Date To"
-msgstr ""
+msgstr "ถึงวันที่"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -227,13 +227,13 @@ msgstr "ธันวาคม"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "ชื่อที่ใช้แสดง"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields.selection,name:withholding_tax_remittance_kmitl.selection__withholding_tax_remittance__state__draft
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_search
 msgid "Draft"
-msgstr ""
+msgstr "ฉบับร่าง"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -245,22 +245,22 @@ msgstr "กุมภาพันธ์"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "ผู้ติดตาม"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "ผู้ติดตาม (พาร์ทเนอร์)"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr ""
+msgstr "ไอคอน Font Awesome เช่น fa-tasks"
 
 #. module: withholding_tax_remittance_kmitl
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_search
 msgid "Form"
-msgstr ""
+msgstr "แบบฟอร์ม"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__source_analytic_id
@@ -271,38 +271,38 @@ msgstr "แหล่งเงิน"
 #. module: withholding_tax_remittance_kmitl
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_search
 msgid "Group By"
-msgstr ""
+msgstr "จัดกลุ่มตาม"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "มีข้อความ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_exception_icon
 msgid "Icon"
-msgstr ""
+msgstr "ไอคอน"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr ""
+msgstr "ไอคอนที่ใช้บ่งชี้กิจกรรมข้อยกเว้น"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr ""
+msgstr "ถ้าเลือกไว้ ข้อความใหม่จะต้องการความสนใจจากคุณ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_has_error
 #: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "ถ้าเลือกไว้ แสดงว่าข้อความบางส่วนส่งไม่สำเร็จ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__income_tax_form
@@ -312,7 +312,7 @@ msgstr "ภ.ง.ด."
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "เป็นผู้ติดตาม"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -324,7 +324,7 @@ msgstr "มกราคม"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__journal_id
 msgid "Journal"
-msgstr ""
+msgstr "สมุดรายวัน"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -333,14 +333,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_form
 #, python-format
 msgid "Journal Entry"
-msgstr ""
+msgstr "สมุดรายวัน"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Journal entry: %s"
-msgstr ""
+msgstr "สมุดรายวัน: %s"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -359,17 +359,17 @@ msgstr "มิถุนายน"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "แก้ไขล่าสุดเมื่อ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "อัปเดตล่าสุดโดย"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "อัปเดตล่าสุดเมื่อ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_form
@@ -379,7 +379,7 @@ msgstr "โหลดรายการยังไม่นำส่ง"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_main_attachment_id
 msgid "Main Attachment"
-msgstr ""
+msgstr "ไฟล์แนบหลัก"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -398,44 +398,44 @@ msgstr "พฤษภาคม"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "ข้อผิดพลาดในการส่งข้อความ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_ids
 msgid "Messages"
-msgstr ""
+msgstr "ข้อความ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr ""
+msgstr "กำหนดเวลากิจกรรมของฉัน"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__name
 msgid "Name"
-msgstr ""
+msgstr "ชื่อ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr ""
+msgstr "กำหนดเวลากิจกรรมถัดไป"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_summary
 msgid "Next Activity Summary"
-msgstr ""
+msgstr "สรุปกิจกรรมถัดไป"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_type_id
 msgid "Next Activity Type"
-msgstr ""
+msgstr "ประเภทกิจกรรมถัดไป"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "No unremitted certificates found for this period and funding source."
-msgstr ""
+msgstr "ไม่พบใบรับรองที่ยังไม่นำส่งสำหรับงวดและแหล่งเงินนี้"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -447,22 +447,22 @@ msgstr "พฤศจิกายน"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_needaction_counter
 msgid "Number of Actions"
-msgstr ""
+msgstr "จำนวนการดำเนินการ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_has_error_counter
 msgid "Number of errors"
-msgstr ""
+msgstr "จำนวนข้อผิดพลาด"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr ""
+msgstr "จำนวนข้อความที่ต้องดำเนินการ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr ""
+msgstr "จำนวนข้อความที่ส่งไม่สำเร็จ"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -476,44 +476,44 @@ msgstr "ตุลาคม"
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Only certificates in 'Done' state can be remitted."
-msgstr ""
+msgstr "นำส่งได้เฉพาะใบรับรองที่อยู่ในสถานะ 'เสร็จสิ้น' เท่านั้น"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Only draft remittances can be posted."
-msgstr ""
+msgstr "ยืนยันได้เฉพาะใบนำส่งที่เป็นฉบับร่างเท่านั้น"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields.selection,name:withholding_tax_remittance_kmitl.selection__withholding_tax_remittance__income_tax_form__pnd1
 msgid "PND1"
-msgstr ""
+msgstr "ภ.ง.ด.1"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields.selection,name:withholding_tax_remittance_kmitl.selection__withholding_tax_remittance__income_tax_form__pnd2
 msgid "PND2"
-msgstr ""
+msgstr "ภ.ง.ด.2"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields.selection,name:withholding_tax_remittance_kmitl.selection__withholding_tax_remittance__income_tax_form__pnd3
 msgid "PND3"
-msgstr ""
+msgstr "ภ.ง.ด.3"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields.selection,name:withholding_tax_remittance_kmitl.selection__withholding_tax_remittance__income_tax_form__pnd3a
 msgid "PND3a"
-msgstr ""
+msgstr "ภ.ง.ด.3ก"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields.selection,name:withholding_tax_remittance_kmitl.selection__withholding_tax_remittance__income_tax_form__pnd53
 msgid "PND53"
-msgstr ""
+msgstr "ภ.ง.ด.53"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__partner_id
 msgid "Payee"
-msgstr ""
+msgstr "ผู้รับเงิน"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields.selection,name:withholding_tax_remittance_kmitl.selection__withholding_tax_cert__remit_state__pending
@@ -531,19 +531,19 @@ msgstr "งวด"
 #: model:ir.model.fields.selection,name:withholding_tax_remittance_kmitl.selection__withholding_tax_remittance__state__posted
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_search
 msgid "Posted"
-msgstr ""
+msgstr "ยืนยันแล้ว"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Posted remittances cannot be deleted."
-msgstr ""
+msgstr "ใบนำส่งที่ยืนยันแล้วไม่สามารถลบได้"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__rd_ref
 msgid "RD Reference"
-msgstr ""
+msgstr "เลขอ้างอิงกรมสรรพากร"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -555,13 +555,13 @@ msgstr "นำส่ง %(form)s งวด %(period)s แหล่งเงิ�
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__date_remit
 msgid "Remittance Date"
-msgstr ""
+msgstr "วันที่นำส่ง"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_cert__remit_state
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_cert_search_remittance
 msgid "Remittance Status"
-msgstr ""
+msgstr "สถานะการนำส่ง"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields.selection,name:withholding_tax_remittance_kmitl.selection__withholding_tax_cert__remit_state__remitted
@@ -572,26 +572,26 @@ msgstr "นำส่งแล้ว"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_user_id
 msgid "Responsible User"
-msgstr ""
+msgstr "ผู้รับผิดชอบ"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Reversal entry: %s"
-msgstr ""
+msgstr "รายการกลับรายการ: %s"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Reversal of: %s"
-msgstr ""
+msgstr "การกลับรายการของ: %s"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr ""
+msgstr "ข้อผิดพลาดในการส่ง SMS"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__savings_account_id
@@ -603,7 +603,7 @@ msgstr "บัญชีออมทรัพย์"
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Select at least one WHT certificate."
-msgstr ""
+msgstr "เลือกใบรับรองหัก ณ ที่จ่ายอย่างน้อยหนึ่งใบ"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -617,28 +617,28 @@ msgstr "เลือกใบรับรองสำหรับแบบ ภ.�
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Select certificates that share the same funding source."
-msgstr ""
+msgstr "เลือกใบรับรองที่มีแหล่งเงินเดียวกัน"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Select certificates that share the same withholding tax account."
-msgstr ""
+msgstr "เลือกใบรับรองที่ใช้บัญชีภาษีหัก ณ ที่จ่ายเดียวกัน"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Selected certificates carry no withholding tax account."
-msgstr ""
+msgstr "ใบรับรองที่เลือกไม่มีบัญชีภาษีหัก ณ ที่จ่าย"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_cert.py:0
 #, python-format
 msgid "Selected certificates span more than one month; group by month."
-msgstr ""
+msgstr "ใบรับรองที่เลือกคาบเกี่ยวมากกว่าหนึ่งเดือน กรุณาจัดกลุ่มตามเดือน"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -652,7 +652,7 @@ msgstr "กันยายน"
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Set the current account the cheque is cleared from."
-msgstr ""
+msgstr "กรุณาระบุบัญชีกระแสรายวันที่เช็คจะขึ้นเงิน"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -680,20 +680,20 @@ msgstr "กรุณาระบุแบบ ภ.ง.ด. ในทุกใบ�
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Set the journal to post to."
-msgstr ""
+msgstr "กรุณาระบุสมุดรายวันที่จะผ่านรายการ"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
 msgid "Set the savings account the cheque is drawn on."
-msgstr ""
+msgstr "กรุณาระบุบัญชีออมทรัพย์ที่ใช้ออกเช็ค"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__state
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_search
 msgid "State"
-msgstr ""
+msgstr "สถานะ"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_state
@@ -703,6 +703,10 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+"สถานะตามกิจกรรม\n"
+"เกินกำหนด: วันครบกำหนดผ่านไปแล้ว\n"
+"วันนี้: วันที่ทำกิจกรรมคือวันนี้\n"
+"วางแผนไว้: กิจกรรมในอนาคต"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__period_month
@@ -712,7 +716,7 @@ msgstr "เดือนภาษี"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_cert__amount_total
 msgid "Tax Total"
-msgstr ""
+msgstr "ภาษีรวม"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__current_account_id
@@ -738,22 +742,22 @@ msgstr "แหล่งเงินที่นำส่งในใบนี้
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_form
 #: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_tree
 msgid "Total"
-msgstr ""
+msgstr "รวม"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr ""
+msgstr "ประเภทของกิจกรรมข้อยกเว้นในเรกคอร์ด"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__cert_ids
 msgid "WHT Certificates"
-msgstr ""
+msgstr "ใบรับรองหัก ณ ที่จ่าย"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__wht_account_id
 msgid "WHT Payable Account"
-msgstr ""
+msgstr "บัญชีภาษีหัก ณ ที่จ่ายรอนำส่ง"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python
@@ -769,17 +773,17 @@ msgstr "ใบนำส่งภาษีหัก ณ ที่จ่าย"
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__website_message_ids
 msgid "Website Messages"
-msgstr ""
+msgstr "ข้อความเว็บไซต์"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,help:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__website_message_ids
 msgid "Website communication history"
-msgstr ""
+msgstr "ประวัติการสื่อสารทางเว็บไซต์"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model,name:withholding_tax_remittance_kmitl.model_withholding_tax_cert
 msgid "Withholding Tax Certificate"
-msgstr ""
+msgstr "ใบรับรองหัก ณ ที่จ่าย"
 
 #. module: withholding_tax_remittance_kmitl
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__period_year
