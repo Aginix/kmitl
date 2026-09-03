@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.misc import str2bool
 
 # Activity type of the "To Do" raised on whoever a pending state waits for —
@@ -1032,31 +1032,13 @@ class AdvancePayment(models.Model):
             )
 
     def action_approve(self):
-        """Approve and create the outbound disbursement payment
-        (to_approve → waiting_transfer).
-
-        The voucher is deliberately left a **finance-office draft**
-        (`finance_state = 'draft'`). Approval hands the money over; it does not
-        advance it. The finance office's own first press — ยืนยันพร้อมส่งธนาคาร,
-        `account.payment.action_confirm_for_bank()` — is what freezes the money
-        side, numbers the ใบสำคัญจ่าย and makes the voucher eligible for an
-        e-payment file, and it needs a paying account (หัวจ่าย) that this module
-        has no business choosing. `account_payment.action_post` then closes the
-        loop back to `action_start()` once the transfer is booked.
-        """
+        """Approve the request (to_approve → waiting_transfer). Issuing the
+        disbursement voucher is a separate, later act — see
+        action_create_payment_voucher."""
         self._check_approve_permission()
         for rec in self:
             if rec.state != "to_approve":
                 raise UserError(_("Only agreements awaiting approval can be approved."))
-        payment_type = self.env.ref(
-            "advance_payment.payment_type_advance_payment_outbound"
-        )
-        vals_list = [rec._prepare_account_payment_vals(payment_type) for rec in self]
-        # account.payment create is ACL-gated to Accounting/Budget groups the
-        # approver has no reason to hold — authority is already established
-        # by _check_approve_permission() above; sudo() the create the same
-        # way _done_workflow_activity does for its own ACL gap.
-        payments = self.env["account.payment"].sudo().create(vals_list)
         self.write(
             {
                 "state": "waiting_transfer",
@@ -1067,21 +1049,83 @@ class AdvancePayment(models.Model):
         self._done_workflow_activity(
             "to_approve", _("อนุมัติคำขอเรียบร้อย โดย %s", self.env.user.name)
         )
+        for rec in self:
+            rec.message_post(
+                body=_(
+                    "Agreement approved by <b>%(user)s</b>."
+                    " ขั้นตอนถัดไป: เจ้าหน้าที่การเงินสร้างใบสำคัญจ่าย",
+                    user=self.env.user.name,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+
+    def action_create_payment_voucher(self):
+        """Loan officer issues the outbound disbursement voucher
+        (ใบสำคัญจ่าย) for an approved loan (waiting_transfer).
+
+        Left a **finance-office draft**, like the outbound disbursement used
+        to be created in `action_approve` itself: receipting the voucher
+        toward the bank — `account.payment.action_confirm_for_bank()` — is
+        the finance office's own press, not this one's (mirrors
+        `advance.payment.return.line.action_approve`).
+        """
+        if not self.env.user.has_group(
+            "advance_payment.group_advance_payment_loan_officer"
+        ):
+            raise AccessError(_("Only a loan officer can create the payment voucher."))
+        for rec in self:
+            if rec.state != "waiting_transfer":
+                raise UserError(
+                    _("Only agreements waiting for transfer can have a payment"
+                      " voucher created.")
+                )
+            if rec.payment_count:
+                raise UserError(
+                    _("A payment voucher already exists for this agreement.")
+                )
+        payment_type = self.env.ref(
+            "advance_payment.payment_type_advance_payment_outbound"
+        )
+        vals_list = [rec._prepare_account_payment_vals(payment_type) for rec in self]
+        # account.payment create is ACL-gated to Accounting/Budget groups a
+        # loan officer has no reason to hold — the group check above already
+        # establishes authority; sudo() the create the same way
+        # advance_payment.action_approve used to for the same ACL gap.
+        payments = self.env["account.payment"].sudo().create(vals_list)
         for rec, payment in zip(self, payments):
             rec.message_post(
                 body=_(
-                    "Agreement approved. Payment"
+                    "Payment"
                     " <a href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a>"
-                    " created for <b>%(amount)s %(currency)s</b> to <b>%(partner)s</b>."
+                    " created for <b>%(amount)s %(currency)s</b> to <b>%(partner)s</b>"
+                    " by <b>%(user)s</b>."
                     " ขั้นตอนถัดไป: รอฝ่ายการเงินดำเนินการโอนเงิน",
                     id=payment.id,
                     name=payment.name,
                     amount=payment.amount,
                     currency=payment.currency_id.name,
                     partner=payment.partner_id.name,
+                    user=self.env.user.name,
                 ),
                 subtype_xmlid="mail.mt_note",
             )
+        if len(payments) == 1:
+            return {
+                "type": "ir.actions.act_window",
+                "name": _("Payment"),
+                "res_model": "account.payment",
+                "view_mode": "form",
+                "res_id": payments.id,
+                "target": "current",
+            }
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Payments"),
+            "res_model": "account.payment",
+            "view_mode": "tree,form",
+            "domain": [("id", "in", payments.ids)],
+            "target": "current",
+        }
 
     def action_start(self, payment=None):
         """Transfer completed → the loan becomes a formal debt.
