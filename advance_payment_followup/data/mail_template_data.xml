@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="mail_template_followup_borrower" model="mail.template">
+        <field name="name">Advance Payment Followup: Borrower Digest</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="subject">แจ้งเตือนติดตามเงินยืมค้างคืน - ${object.name}</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>เรียน <t t-esc="object.name"/></p>
+                <p>
+                    ระบบตรวจพบว่าท่านมีสัญญายืมเงินที่ใกล้ครบกำหนด/เกินกำหนดคืนเงิน
+                    ดังรายการต่อไปนี้ กรุณาดำเนินการคืนเงินยืมให้เรียบร้อยภายในกำหนด
+                </p>
+                <table style="width:100%;border-collapse:collapse;" border="1" cellpadding="4" cellspacing="0">
+                    <tr style="background-color:#f0f0f0;">
+                        <th>เลขที่สัญญา</th>
+                        <th>วันครบกำหนดคืน</th>
+                        <th>จำนวนวันคงเหลือ</th>
+                        <th>ยอดที่ต้องคืน</th>
+                    </tr>
+                    <tr t-foreach="followup_loans" t-as="loan">
+                        <td><t t-esc="loan.contract_number or loan.name"/></td>
+                        <td><t t-esc="format_date(loan.return_due_date)"/></td>
+                        <td><t t-esc="loan.days_to_return_display"/></td>
+                        <td><t t-esc="loan.return_amount"/></td>
+                    </tr>
+                </table>
+            </div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <record id="mail_template_followup_officer" model="mail.template">
+        <field name="name">Advance Payment Followup: Officer Digest</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="subject">สรุปลูกหนี้เงินยืมที่ต้องติดตาม - ${object.name}</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>เรียน <t t-esc="object.name"/></p>
+                <p>
+                    สรุปสัญญายืมเงินที่ท่านดูแลซึ่งใกล้ครบกำหนด/เกินกำหนดคืนเงิน
+                    ดังรายการต่อไปนี้
+                </p>
+                <table style="width:100%;border-collapse:collapse;" border="1" cellpadding="4" cellspacing="0">
+                    <tr style="background-color:#f0f0f0;">
+                        <th>เลขที่สัญญา</th>
+                        <th>ผู้ยืม</th>
+                        <th>วันครบกำหนดคืน</th>
+                        <th>จำนวนวันคงเหลือ</th>
+                        <th>ยอดที่ต้องคืน</th>
+                    </tr>
+                    <tr t-foreach="followup_loans" t-as="loan">
+                        <td><t t-esc="loan.contract_number or loan.name"/></td>
+                        <td><t t-esc="loan.employee_id.name"/></td>
+                        <td><t t-esc="format_date(loan.return_due_date)"/></td>
+                        <td><t t-esc="loan.days_to_return_display"/></td>
+                        <td><t t-esc="loan.return_amount"/></td>
+                    </tr>
+                </table>
+            </div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+</odoo>
