@@ -4,24 +4,25 @@
     <!-- Menu-scoped search views: partner-type filter + panel (คู่ค้าบุคคล / คู่ค้าบริษัท).
          Primary inherits so the base account.move search view stays untouched — only
          the four menus whose actions bind these views expose the filter.
-         Two xpaths per view: one to add filter buttons before the existing searchpanel,
-         one to add our field into the existing searchpanel (core views already have one). -->
+         account.view_account_move_filter has NO searchpanel → add filters + new searchpanel
+         via position="inside" on //search.
+         account.view_account_move_line_filter HAS a searchpanel → use two xpaths. -->
     <record id="view_account_move_filter_vendor_bills_kmitl" model="ir.ui.view">
         <field name="name">account.move.filter.vendor.bills.kmitl</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_account_move_filter"/>
         <field name="mode">primary</field>
         <field name="arch" type="xml">
-            <xpath expr="//searchpanel" position="before">
+            <xpath expr="//search" position="inside">
                 <separator/>
                 <filter string="คู่ค้าบุคคล" name="partner_type_person"
                         domain="[('partner_company_type', '=', 'person')]"/>
                 <filter string="คู่ค้าบริษัท" name="partner_type_company"
                         domain="[('partner_company_type', '=', 'company')]"/>
-            </xpath>
-            <xpath expr="//searchpanel" position="inside">
-                <field name="partner_company_type" string="ประเภทคู่ค้า"
-                       icon="fa-user" select="multi" enable_counters="1"/>
+                <searchpanel>
+                    <field name="partner_company_type" string="ประเภทคู่ค้า"
+                           icon="fa-user" select="multi" enable_counters="1"/>
+                </searchpanel>
             </xpath>
         </field>
     </record>
@@ -32,16 +33,16 @@
         <field name="inherit_id" ref="account.view_account_move_filter"/>
         <field name="mode">primary</field>
         <field name="arch" type="xml">
-            <xpath expr="//searchpanel" position="before">
+            <xpath expr="//search" position="inside">
                 <separator/>
                 <filter string="คู่ค้าบุคคล" name="partner_type_person"
                         domain="[('partner_company_type', '=', 'person')]"/>
                 <filter string="คู่ค้าบริษัท" name="partner_type_company"
                         domain="[('partner_company_type', '=', 'company')]"/>
-            </xpath>
-            <xpath expr="//searchpanel" position="inside">
-                <field name="partner_company_type" string="ประเภทคู่ค้า"
-                       icon="fa-user" select="multi" enable_counters="1"/>
+                <searchpanel>
+                    <field name="partner_company_type" string="ประเภทคู่ค้า"
+                           icon="fa-user" select="multi" enable_counters="1"/>
+                </searchpanel>
             </xpath>
         </field>
     </record>
