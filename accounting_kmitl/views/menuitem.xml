@@ -1,6 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Menu-scoped search views: partner-type filter + panel (คู่ค้าบุคคล / คู่ค้าบริษัท).
+         Primary inherits so the base account.move search view stays untouched — only
+         the four menus whose actions bind these views expose the filter. -->
+    <record id="view_account_move_filter_vendor_bills_kmitl" model="ir.ui.view">
+        <field name="name">account.move.filter.vendor.bills.kmitl</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_move_filter"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter string="คู่ค้าบุคคล" name="partner_type_person"
+                        domain="[('partner_company_type', '=', 'person')]"/>
+                <filter string="คู่ค้าบริษัท" name="partner_type_company"
+                        domain="[('partner_company_type', '=', 'company')]"/>
+                <searchpanel>
+                    <field name="partner_company_type" string="ประเภทคู่ค้า"
+                           icon="fa-user" select="multi" enable_counters="1"/>
+                </searchpanel>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_move_filter_vendor_payment_moves_kmitl" model="ir.ui.view">
+        <field name="name">account.move.filter.vendor.payment.moves.kmitl</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_move_filter"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter string="คู่ค้าบุคคล" name="partner_type_person"
+                        domain="[('partner_company_type', '=', 'person')]"/>
+                <filter string="คู่ค้าบริษัท" name="partner_type_company"
+                        domain="[('partner_company_type', '=', 'company')]"/>
+                <searchpanel>
+                    <field name="partner_company_type" string="ประเภทคู่ค้า"
+                           icon="fa-user" select="multi" enable_counters="1"/>
+                </searchpanel>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_move_line_filter_all_kmitl" model="ir.ui.view">
+        <field name="name">account.move.line.filter.all.kmitl</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_account_move_line_filter"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter string="คู่ค้าบุคคล" name="partner_type_person"
+                        domain="[('partner_company_type', '=', 'person')]"/>
+                <filter string="คู่ค้าบริษัท" name="partner_type_company"
+                        domain="[('partner_company_type', '=', 'company')]"/>
+                <searchpanel>
+                    <field name="partner_company_type" string="ประเภทคู่ค้า"
+                           icon="fa-user" select="multi" enable_counters="1"/>
+                </searchpanel>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Bind the vendor-bills menu (core action) to its scoped search view. -->
+    <record id="account.action_move_in_invoice_type" model="ir.actions.act_window">
+        <field name="search_view_id" ref="view_account_move_filter_vendor_bills_kmitl"/>
+    </record>
+
     <!-- Root menu -->
     <menuitem
         id="menu_accounting_root"
@@ -56,6 +124,7 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[('payment_id', '!=', False), ('payment_id.partner_type', '=', 'supplier'), ('payment_id.payment_type', '=', 'outbound')]</field>
         <field name="context">{'create': False}</field>
+        <field name="search_view_id" ref="view_account_move_filter_vendor_payment_moves_kmitl"/>
     </record>
     <menuitem
         id="menu_vendor_payment_moves"
@@ -88,7 +157,7 @@
         <field name="name">Journal Items</field>
         <field name="res_model">account.move.line</field>
         <field name="view_mode">tree,pivot,graph,kanban,form</field>
-        <field name="search_view_id" ref="account.view_account_move_line_filter"/>
+        <field name="search_view_id" ref="view_account_move_line_filter_all_kmitl"/>
         <field name="domain">[('display_type', 'not in', ('line_section', 'line_note'))]</field>
         <field name="context">{'search_default_group_by_move': 1, 'create': 0}</field>
     </record>
