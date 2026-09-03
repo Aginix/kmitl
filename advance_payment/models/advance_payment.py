@@ -2,6 +2,11 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import str2bool
 
+# Activity type of the "To Do" raised on whoever a pending state waits for —
+# the loan officer at to_verify, the approver at to_approve. It is the generic
+# type, so every lookup must also match the summary (ADR-0013/0015).
+WORKFLOW_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
+
 
 class AdvancePayment(models.Model):
     """
@@ -41,7 +46,7 @@ class AdvancePayment(models.Model):
         "loan_type_id",
         "bank_id",
         "reference",
-        "requested_by",
+        "employee_id",
     }
 
     # Material fields are read-only in the UI in every non-draft state.
@@ -109,19 +114,35 @@ class AdvancePayment(models.Model):
         default="draft",
     )
 
-    requested_by = fields.Many2one(
-        comodel_name="res.users",
-        string="Requested By",
+    employee_id = fields.Many2one(
+        comodel_name="hr.employee",
+        string="ผู้ยืม",
         required=True,
-        default=lambda self: self.env.user,
+        default=lambda self: self.env.user.employee_id,
         states=READONLY_STATES,
+        tracking=True,
     )
 
-    requested_by_partner_id = fields.Many2one(
+    # Who filled the form in — the source of truth for "ผู้จัดทำ", not create_uid,
+    # so a manager can correct a mis-attributed request. Grants visibility to a
+    # `user`-tier drafter via the own-only rule (ADR-0014).
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="ผู้จัดทำ",
+        required=True,
+        default=lambda self: self.env.uid,
+        tracking=True,
+    )
+
+    # The borrower's payable partner — KMITL's employee↔partner link is
+    # work_contact_id (cf. agx_approval's participant resolver), not
+    # address_home_id. Stored so the bank domain and the payment vals read one
+    # column instead of hopping into hr.employee (ADR-0014).
+    partner_id = fields.Many2one(
         comodel_name="res.partner",
-        related="requested_by.partner_id",
+        related="employee_id.work_contact_id",
         string="Requestor Partner",
-        store=False,
+        store=True,
     )
 
     is_reference_visible = fields.Boolean(
@@ -134,19 +155,98 @@ class AdvancePayment(models.Model):
 
     is_requester = fields.Boolean(compute="_compute_is_requester")
 
-    is_officer = fields.Boolean(compute="_compute_is_officer")
+    is_loan_officer = fields.Boolean(compute="_compute_is_loan_officer")
 
-    @api.depends("requested_by")
+    # Mirrors _check_submit_permission: only the borrower or an admin may
+    # submit — used to hide the button for a `user`-tier drafter-on-behalf,
+    # who would otherwise hit a UserError on click.
+    can_submit = fields.Boolean(compute="_compute_can_submit")
+
+    # Mirrors _check_creator_only: only a `user`-tier staffer or an admin may
+    # point employee_id at somebody else (ADR-0010, amended by ADR-0014).
+    can_draft_on_behalf = fields.Boolean(compute="_compute_can_draft_on_behalf")
+
+    # Mirrors _check_verify_permission: only the officer named on
+    # loan_verifier_id (or an admin) may verify — not any loan-officer-group
+    # member (ADR-0013).
+    can_verify = fields.Boolean(compute="_compute_can_verify")
+
+    # Mirrors _check_approve_permission: only the approver named on
+    # approver_id (or an admin) may approve — not any loan-approver-group
+    # member (ADR-0017).
+    can_approve = fields.Boolean(compute="_compute_can_approve")
+
+    # True only for a manager/admin — gates edit access to user_id, the
+    # "ผู้จัดทำ" field, in the UI (ADR-0014).
+    can_edit_drafter = fields.Boolean(compute="_compute_can_edit_drafter")
+
+    @api.depends("employee_id")
     def _compute_is_requester(self):
         for rec in self:
-            rec.is_requester = rec.requested_by == self.env.user
+            rec.is_requester = rec.employee_id.user_id == self.env.user
 
-    def _compute_is_officer(self):
-        is_officer = self.env.user.has_group(
-            "advance_payment.group_advance_payment_officer"
+    @api.depends("employee_id")
+    def _compute_can_submit(self):
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            rec.can_submit = is_admin or rec.employee_id.user_id == self.env.user
+
+    def _is_strict_own_only(self):
+        """Strict mode: a request may only ever be created for oneself — the
+        `user` tier's draft-on-behalf power (ADR-0010) is switched off."""
+        return str2bool(
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("advance_payment.strict_own_only", default=False)
+        )
+
+    def _can_draft_on_behalf(self):
+        """Single source for both the form gate and _check_creator_only."""
+        if self.env.user.has_group("base.group_system"):
+            return True  # escape hatch survives strict mode (ADR-0014)
+        return not self._is_strict_own_only() and self.env.user.has_group(
+            "advance_payment.group_advance_payment_user"
+        )
+
+    def _compute_can_draft_on_behalf(self):
+        allowed = self._can_draft_on_behalf()
+        for rec in self:
+            rec.can_draft_on_behalf = allowed
+
+    def _compute_can_edit_drafter(self):
+        allowed = self.env.user.has_group(
+            "advance_payment.group_advance_payment_manager"
+        ) or self.env.user.has_group("base.group_system")
+        for rec in self:
+            rec.can_edit_drafter = allowed
+
+    @api.depends("loan_verifier_id")
+    def _compute_can_verify(self):
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            rec.can_verify = is_admin or rec.loan_verifier_id == self.env.user
+
+    @api.depends("approver_id")
+    def _compute_can_approve(self):
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            rec.can_approve = is_admin or rec.approver_id == self.env.user
+
+    def _compute_is_loan_officer(self):
+        is_loan_officer = self.env.user.has_group(
+            "advance_payment.group_advance_payment_loan_officer"
         )
         for rec in self:
-            rec.is_officer = is_officer
+            rec.is_loan_officer = is_loan_officer
+
+    is_manager = fields.Boolean(compute="_compute_is_manager")
+
+    def _compute_is_manager(self):
+        is_manager = self.env.user.has_group(
+            "advance_payment.group_advance_payment_manager"
+        )
+        for rec in self:
+            rec.is_manager = is_manager
 
     reference = fields.Reference(
         selection=[("purchase.request", "Purchase Request")],
@@ -284,24 +384,124 @@ class AdvancePayment(models.Model):
         states=READONLY_STATES,
     )
 
-    use_attachment_bank = fields.Boolean(
-        string="ประสงค์ใช้เลขบัญชีธนาคารตามเอกสารแนบ",
-        states=READONLY_STATES,
-    )
-
-    book_bank = fields.Binary(
-        string="Book Bank",
-        attachment=True,
-        states=READONLY_STATES,
-    )
-    book_bank_filename = fields.Char()
-
     return_due_date = fields.Date(
         string="วันครบกำหนดคืน",
         copy=False,
         tracking=True,
         help="Set by the loan officer after approval; drives the weekly "
         "overdue reminders.",
+    )
+
+    @api.model
+    def _loan_officer_candidates(self):
+        """Real officers — the admin/root escape hatch (standing members of the
+        group, ADR-0013) excluded, so their blanket membership never makes a
+        genuinely single-officer setup look ambiguous."""
+        officers = self.env.ref(
+            "advance_payment.group_advance_payment_loan_officer"
+        ).users - (self.env.ref("base.user_root") + self.env.ref("base.user_admin"))
+        # A m2m read does not apply active_test, so archived officers would
+        # otherwise still count towards "exactly one".
+        return officers.filtered("active")
+
+    @api.model
+    def _default_loan_verifier_id(self):
+        """The officer configured in Settings, else the sole real officer.
+
+        The field is required (ADR-0013), so a multi-officer institute had no
+        working default at all and every create — including the programmatic
+        ones in the bridges — had to name an officer explicitly. Settings now
+        carries the standing assignee; the sole-officer fallback keeps small
+        setups working with no configuration (ADR-0015).
+        """
+        candidates = self._loan_officer_candidates()
+        configured = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("advance_payment.default_loan_verifier_id")
+        )
+        if configured:
+            # Ignore a stale setting: the user may have been deleted, archived
+            # or dropped from the group since it was saved, and the field's own
+            # domain would then reject the default.
+            try:
+                officer = self.env["res.users"].browse(int(configured))
+            except (TypeError, ValueError):
+                officer = self.env["res.users"]
+            if officer & candidates:
+                return officer.id
+        return candidates.id if len(candidates) == 1 else False
+
+    loan_verifier_id = fields.Many2one(
+        comodel_name="res.users",
+        string="เจ้าหน้าที่งานเงินยืม",
+        domain=lambda self: [
+            (
+                "groups_id",
+                "in",
+                self.env.ref(
+                    "advance_payment.group_advance_payment_loan_officer"
+                ).ids,
+            )
+        ],
+        default=_default_loan_verifier_id,
+        required=True,
+        tracking=True,
+    )
+
+    @api.model
+    def _approver_candidates(self):
+        """Members of the approver group who may be named as approver —
+        matched the same way the field's own domain matches (direct
+        membership), so a configured user can never resolve to a default the
+        domain then rejects (ADR-0017)."""
+        return self.env.ref(
+            "advance_payment.group_advance_payment_loan_approver"
+        ).users.filtered("active")
+
+    @api.model
+    def _default_approver_id(self):
+        """The approver configured in Settings, else the admin.
+
+        Approval is narrowed to the named approver (ADR-0017) and unlike the
+        loan officer there is no "sole member" to infer — root/admin are
+        standing members of the approver group. So the setting is the only
+        real source, and the fallback is `base.user_admin`: required=True
+        must always resolve, and an admin can approve anyway, so a database
+        that never configured this still works instead of blocking every
+        create (ADR-0016).
+        """
+        configured = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("advance_payment.default_approver_id")
+        )
+        if configured:
+            # Ignore a stale setting the field's own domain would reject.
+            try:
+                approver = self.env["res.users"].browse(int(configured))
+            except (TypeError, ValueError):
+                approver = self.env["res.users"]
+            if approver & self._approver_candidates():
+                return approver.id
+        return self.env.ref("base.user_admin").id
+
+    approver_id = fields.Many2one(
+        comodel_name="res.users",
+        string="ผู้อนุมัติ",
+        domain=lambda self: [
+            (
+                "groups_id",
+                "in",
+                self.env.ref(
+                    "advance_payment.group_advance_payment_loan_approver"
+                ).ids,
+            )
+        ],
+        default=_default_approver_id,
+        required=True,
+        tracking=True,
+        help="ผู้ที่จะได้รับงานให้อนุมัติเมื่อเจ้าหน้าที่ตรวจสอบคำขอเรียบร้อยแล้ว",
     )
 
     effective_date = fields.Date(
@@ -388,8 +588,17 @@ class AdvancePayment(models.Model):
     )
 
     date_submitted = fields.Datetime(string="Date Submitted", readonly=True, copy=False)
+    date_verified = fields.Datetime(string="Date Verified", readonly=True, copy=False)
     date_approved = fields.Datetime(string="Date Approved", readonly=True, copy=False)
     date_closed = fields.Datetime(string="Date Closed", readonly=True, copy=False)
+
+    terms_conditions = fields.Html(
+        string="เงื่อนไขและข้อตกลงการยืมเงินทดรองจ่าย",
+        default=lambda self: self.env["ir.config_parameter"]
+        .sudo()
+        .get_param("advance_payment.terms_conditions"),
+        copy=True,
+    )
 
     cancel_reason = fields.Text(string="Reason", readonly=True, copy=False)
 
@@ -435,10 +644,34 @@ class AdvancePayment(models.Model):
         domain=[("res_model", "=", "advance.payment")],
     )
 
-    @api.onchange("requested_by")
-    def _onchange_requested_by(self):
-        if self.bank_id and self.bank_id.partner_id != self.requested_by.partner_id:
-            self.bank_id = False
+    def _default_bank_id(self):
+        """The borrower's first bank account, in res.partner.bank order.
+
+        Picked outright rather than only when unambiguous: a borrower with
+        several accounts should still not have to open the dropdown, and the
+        officer may correct bank_id up to the transfer anyway (ADR-0005).
+        Returns an empty recordset when the work contact has no account — the
+        blocking exception rule on bank_id then catches it at submit.
+        """
+        self.ensure_one()
+        partner = self.employee_id.work_contact_id
+        if not partner:
+            return self.env["res.partner.bank"]
+        return self.env["res.partner.bank"].search(
+            [("partner_id", "=", partner.id)], limit=1
+        )
+
+    @api.onchange("employee_id")
+    def _onchange_employee_id(self):
+        """Re-point bank_id at the new borrower, without making them pick.
+
+        Also fires on form open (the client's initial onchange pass runs every
+        onchange method), so a borrower drafting for themselves gets their
+        account filled in from the start (ADR-0015).
+        """
+        if self.bank_id and self.bank_id.partner_id == self.employee_id.work_contact_id:
+            return
+        self.bank_id = self._default_bank_id()
 
     @api.depends(
         "loan_amount",
@@ -461,8 +694,10 @@ class AdvancePayment(models.Model):
 
     @api.depends("payment_ids")
     def _compute_payment_count(self):
+        # sudo: account.payment read is ACL-gated to Accounting/Budget groups
+        # a loan officer viewing the smart button has no reason to hold.
         for rec in self:
-            rec.payment_count = len(rec.payment_ids)
+            rec.payment_count = len(rec.sudo().payment_ids)
 
     @api.depends("return_line_ids")
     def _compute_return_count(self):
@@ -495,14 +730,18 @@ class AdvancePayment(models.Model):
                     _("Agreement number '%(name)s' must be unique!", name=rec.name)
                 )
 
-    @api.constrains("requested_by")
+    @api.constrains("employee_id", "user_id")
     def _check_creator_only(self):
-        """No borrowing on behalf: requested_by must be the record creator
-        (ADR-0005). A base.group_system admin is exempt (data / exceptional)."""
-        if self.env.user.has_group("base.group_system"):
+        """No drafting on behalf: outside the `user` data-entry tier (and
+        outside strict mode, ADR-0014), the borrower (employee_id) must be
+        the drafter (user_id). A base.group_system admin, or a `user`-tier
+        staffer drafting on behalf of a borrower, is exempt — the borrower
+        still has to submit the request personally
+        (_check_submit_permission)."""
+        if self._can_draft_on_behalf():
             return
         for rec in self:
-            if rec.create_uid and rec.requested_by != rec.create_uid:
+            if rec.employee_id.user_id != rec.user_id:
                 raise ValidationError(
                     _(
                         "A loan must be created by the borrower — you cannot"
@@ -512,7 +751,7 @@ class AdvancePayment(models.Model):
 
     def _prepare_account_payment_vals(self, payment_type):
         vals = {
-            "partner_id": self.requested_by.partner_id.id,
+            "partner_id": self.partner_id.id,
             "amount": self.loan_amount,
             "currency_id": self.currency_id.id,
             "advance_payment_id": self.id,
@@ -556,19 +795,19 @@ class AdvancePayment(models.Model):
         protected = self._PROTECTED_FIELDS & set(vals)
         if protected:
             is_admin = self.env.user.has_group("base.group_system")
-            is_officer = self.env.user.has_group(
-                "advance_payment.group_advance_payment_officer"
+            is_loan_officer = self.env.user.has_group(
+                "advance_payment.group_advance_payment_loan_officer"
             )
             for rec in self:
                 if rec.state == "draft" or is_admin:
                     continue
-                # Finance officer may still correct fields (ADR-0005):
+                # Loan officer may still correct fields (ADR-0005):
                 #  - all material fields while in to_verify
                 #  - bank_id up to the transfer
                 editable = set()
-                if is_officer and rec.state == "to_verify":
+                if is_loan_officer and rec.state == "to_verify":
                     editable |= self._PROTECTED_FIELDS
-                if is_officer and rec.state in (
+                if is_loan_officer and rec.state in (
                     "to_verify",
                     "to_approve",
                     "waiting_transfer",
@@ -585,6 +824,22 @@ class AdvancePayment(models.Model):
                     )
         return super().write(vals)
 
+    def unlink(self):
+        """An agreement may only be deleted once cancelled (ยกเลิกก่อน) — a
+        live/settled record is the audit trail, not scratch data. Any group
+        with delete rights on the model is subject to this, base.group_system
+        excepted (same escape hatch as write())."""
+        if not self.env.user.has_group("base.group_system"):
+            not_cancelled = self.filtered(lambda rec: rec.state != "cancel")
+            if not_cancelled:
+                raise UserError(
+                    _(
+                        "Cancel an agreement before deleting it: %(names)s",
+                        names=", ".join(not_cancelled.mapped("name")),
+                    )
+                )
+        return super().unlink()
+
     def button_draft(self):
         self.write({"state": "draft"})
 
@@ -599,7 +854,7 @@ class AdvancePayment(models.Model):
         """Creator-only: only the borrower (or an admin) may submit (ADR-0005)."""
         is_admin = self.env.user.has_group("base.group_system")
         for rec in self:
-            if rec.requested_by == self.env.user or is_admin:
+            if rec.employee_id.user_id == self.env.user or is_admin:
                 continue
             raise UserError(
                 _("Only the borrower can submit this agreement (no borrowing on"
@@ -611,7 +866,7 @@ class AdvancePayment(models.Model):
         for rec in self:
             other = rec.sudo().search(
                 [
-                    ("requested_by", "=", rec.requested_by.id),
+                    ("employee_id", "=", rec.employee_id.id),
                     ("state", "in", self.ACTIVE_STATES),
                     ("id", "!=", rec.id),
                 ],
@@ -622,10 +877,86 @@ class AdvancePayment(models.Model):
                     _(
                         "%(user)s already has an active loan agreement"
                         " (%(name)s). Clear it before starting a new one.",
-                        user=rec.requested_by.name,
+                        user=rec.employee_id.name,
                         name=other.name,
                     )
                 )
+
+    def _workflow_activity_specs(self):
+        """(summary, assignee) of the To-Do owned by each pending state.
+
+        One entry per state that waits on a named person, keyed by that state
+        so the transitions can name the stage they are leaving or entering
+        rather than repeating a set of near-identical helpers (ADR-0015).
+        """
+        self.ensure_one()
+        return {
+            "to_verify": (
+                _("ตรวจสอบคำขอยืมเงิน %s", self.name),
+                self.loan_verifier_id,
+            ),
+            "to_approve": (
+                _("อนุมัติคำขอยืมเงิน %s", self.name),
+                self.approver_id,
+            ),
+        }
+
+    def _workflow_activities(self, stage=None):
+        """The records' open workflow To-Dos — one stage, or all of them.
+
+        Matched on type *and* summary, not type alone: WORKFLOW_ACTIVITY_XMLID
+        is the generic "To Do" type, so a blanket `activity_feedback` /
+        `activity_unlink` would sweep up unrelated to-dos on the same record.
+        """
+        activity_type = self.env.ref(WORKFLOW_ACTIVITY_XMLID)
+        wanted = set()
+        for rec in self:
+            specs = rec._workflow_activity_specs()
+            for key in [stage] if stage else specs:
+                wanted.add((rec.id, specs[key][0]))
+        return self.activity_ids.filtered(
+            lambda a: a.activity_type_id == activity_type
+            and (a.res_id, a.summary) in wanted
+        )
+
+    def _schedule_workflow_activity(self, stage):
+        """Raise `stage`'s To-Do on its assignee.
+
+        Clears any stale one first so recall/resubmit loops (action_recall,
+        the officer's own ส่งกลับแก้ไข) don't pile up duplicates on the same
+        record (ADR-0013).
+        """
+        for rec in self:
+            summary, assignee = rec._workflow_activity_specs()[stage]
+            rec._drop_workflow_activities(stage)
+            rec.activity_schedule(
+                WORKFLOW_ACTIVITY_XMLID,
+                user_id=assignee.id,
+                summary=summary,
+            )
+
+    def _done_workflow_activity(self, stage, feedback):
+        """Close `stage`'s To-Do — the step actually happened (ADR-0015).
+
+        sudo: `mail_activity_rule_user` limits write/unlink to the activity's
+        `user_id` or `create_uid`, which here are the stage's assignee and
+        whoever moved the record into that stage. An admin acting on the
+        assignee's behalf is neither, so the rule would block them. Authority
+        is already established by the caller's own check, and sudo() keeps
+        `env.uid`, so the done-message is still authored by the real actor.
+        """
+        self._workflow_activities(stage).sudo().action_feedback(feedback=feedback)
+
+    def _drop_workflow_activities(self, stage=None):
+        """Drop To-Dos without marking them done — the request left the stage
+        without the step being taken (cancel / ส่งกลับแก้ไข / ดึงกลับ), so the
+        assignee must not keep a to-do they can no longer act on, and it must
+        not show up in their done history either (ADR-0015).
+
+        sudo for the same reason as _done_workflow_activity — a manager
+        cancelling is neither the to-do's assignee nor its creator.
+        """
+        self._workflow_activities(stage).sudo().unlink()
 
     def action_submit(self):
         """Submit the request for verification (draft → to_verify)."""
@@ -644,28 +975,76 @@ class AdvancePayment(models.Model):
                 body=_(
                     "Agreement submitted for verification by <b>%(user)s</b>."
                     " Loan amount: <b>%(amount)s %(currency)s</b>.",
-                    user=rec.requested_by.name,
+                    user=rec.employee_id.name,
                     amount=rec.loan_amount,
                     currency=rec.currency_id.name,
                 ),
                 subtype_xmlid="mail.mt_note",
             )
+            rec._schedule_workflow_activity("to_verify")
+
+    def _check_verify_permission(self):
+        """Officer-only: only the assigned loan officer (or an admin) may
+        verify — not any loan-officer-group member (ADR-0013)."""
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            if is_admin or rec.loan_verifier_id == self.env.user:
+                continue
+            raise UserError(
+                _(
+                    "Only the assigned loan officer (%(officer)s) can verify"
+                    " this agreement.",
+                    officer=rec.loan_verifier_id.name,
+                )
+            )
 
     def action_verify(self):
         """Finance officer confirms the document check (to_verify → to_approve)."""
+        self._check_verify_permission()
         for rec in self:
             if rec.state != "to_verify":
                 raise UserError(_("Only agreements under verification can be verified."))
-            rec.state = "to_approve"
+            rec.write({"state": "to_approve", "date_verified": fields.Datetime.now()})
+            rec._done_workflow_activity(
+                "to_verify",
+                _("ตรวจสอบคำขอเรียบร้อย โดย %s", self.env.user.name),
+            )
+            rec._schedule_workflow_activity("to_approve")
             rec.message_post(
                 body=_("ตรวจสอบคำขอเรียบร้อย ส่งเข้าขั้นอนุมัติ โดย <b>%(user)s</b>.",
                        user=self.env.user.name),
                 subtype_xmlid="mail.mt_note",
             )
 
+    def _check_approve_permission(self):
+        """Approver-only: only the named approver (or an admin) may approve —
+        not any loan-approver-group member (ADR-0017)."""
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            if is_admin or rec.approver_id == self.env.user:
+                continue
+            raise UserError(
+                _(
+                    "Only the assigned approver (%(approver)s) can approve"
+                    " this agreement.",
+                    approver=rec.approver_id.name,
+                )
+            )
+
     def action_approve(self):
         """Approve and create the outbound disbursement payment
-        (to_approve → waiting_transfer)."""
+        (to_approve → waiting_transfer).
+
+        The voucher is deliberately left a **finance-office draft**
+        (`finance_state = 'draft'`). Approval hands the money over; it does not
+        advance it. The finance office's own first press — ยืนยันพร้อมส่งธนาคาร,
+        `account.payment.action_confirm_for_bank()` — is what freezes the money
+        side, numbers the ใบสำคัญจ่าย and makes the voucher eligible for an
+        e-payment file, and it needs a paying account (หัวจ่าย) that this module
+        has no business choosing. `account_payment.action_post` then closes the
+        loop back to `action_start()` once the transfer is booked.
+        """
+        self._check_approve_permission()
         for rec in self:
             if rec.state != "to_approve":
                 raise UserError(_("Only agreements awaiting approval can be approved."))
@@ -673,7 +1052,11 @@ class AdvancePayment(models.Model):
             "advance_payment.payment_type_advance_payment_outbound"
         )
         vals_list = [rec._prepare_account_payment_vals(payment_type) for rec in self]
-        payments = self.env["account.payment"].create(vals_list)
+        # account.payment create is ACL-gated to Accounting/Budget groups the
+        # approver has no reason to hold — authority is already established
+        # by _check_approve_permission() above; sudo() the create the same
+        # way _done_workflow_activity does for its own ACL gap.
+        payments = self.env["account.payment"].sudo().create(vals_list)
         self.write(
             {
                 "state": "waiting_transfer",
@@ -681,7 +1064,9 @@ class AdvancePayment(models.Model):
                 "date_approved": fields.Datetime.now(),
             }
         )
-        payments.action_submit()
+        self._done_workflow_activity(
+            "to_approve", _("อนุมัติคำขอเรียบร้อย โดย %s", self.env.user.name)
+        )
         for rec, payment in zip(self, payments):
             rec.message_post(
                 body=_(
@@ -728,13 +1113,14 @@ class AdvancePayment(models.Model):
     def action_recall(self):
         """Borrower pulls a not-yet-approved request back to draft (ADR-0001)."""
         self.ensure_one()
-        if self.requested_by != self.env.user and not self.env.user.has_group(
+        if self.employee_id.user_id != self.env.user and not self.env.user.has_group(
             "base.group_system"
         ):
             raise UserError(_("Only the borrower can recall this request."))
         if self.state not in ("to_verify", "to_approve"):
             raise UserError(_("Only a not-yet-approved request can be recalled."))
         self.state = "draft"
+        self._drop_workflow_activities()
         self.message_post(
             body=_("ดึงคำขอกลับเพื่อแก้ไข โดย <b>%(user)s</b>.", user=self.env.user.name),
             subtype_xmlid="mail.mt_note",
@@ -748,8 +1134,42 @@ class AdvancePayment(models.Model):
                     _("Only agreements under verification can be reset to draft.")
                 )
             rec.state = "draft"
+            rec._drop_workflow_activities()
             rec.message_post(
                 body=_("ส่งกลับแก้ไข โดยเจ้าหน้าที่ <b>%(user)s</b>.",
+                       user=self.env.user.name),
+                subtype_xmlid="mail.mt_note",
+            )
+
+    def action_reset_cancel_to_draft(self):
+        """Manager reopens a cancelled agreement back to draft (ad-hoc recovery).
+
+        Only before the money moved: once the transfer completed
+        (`effective_date`) the record carries a contract number, an expense
+        report and return lines from its first cycle, and re-approving would
+        mint a second disbursement payment (ADR-0012).
+        """
+        for rec in self:
+            if rec.state != "cancel":
+                raise UserError(
+                    _("Only a cancelled agreement can be reset to draft.")
+                )
+            if rec.effective_date:
+                raise UserError(
+                    _("เงินยืมนี้โอนออกไปแล้ว ไม่สามารถตั้งกลับเป็นแบบร่างได้"
+                      " — ให้ทำสัญญาฉบับใหม่")
+                )
+            rec.write(
+                {
+                    "state": "draft",
+                    "cancel_reason": False,
+                    "date_submitted": False,
+                    "date_verified": False,
+                    "date_approved": False,
+                }
+            )
+            rec.message_post(
+                body=_("ตั้งสัญญาที่ยกเลิกกลับเป็นแบบร่าง โดย <b>%(user)s</b>.",
                        user=self.env.user.name),
                 subtype_xmlid="mail.mt_note",
             )
@@ -913,11 +1333,24 @@ class AdvancePayment(models.Model):
         }
 
     def _cancel_payments(self):
-        for payment in self.payment_ids.filtered(lambda p: p.state != "cancel"):
+        """Void this loan's vouchers so a cancelled agreement leaves none live.
+
+        `account.payment.state` is Odoo's own draft/posted/cancel — the finance
+        office's status is the separate `finance_state` (finance_kmitl), so
+        there is no "submitted" payment state to unwind here. A voucher the
+        finance office has already confirmed for the bank keeps
+        `finance_state = 'confirmed'` after this: unwinding that is their call,
+        not the loan's, and the numbered ใบสำคัญจ่าย has to stay auditable.
+
+        sudo: account.payment read/write is ACL-gated to Accounting/Budget
+        groups, which cancelling an agreement has no reason to require —
+        authority to cancel is already established by the caller (the cancel
+        wizard's own groups=, or an admin), same rationale as
+        _done_workflow_activity.
+        """
+        for payment in self.sudo().payment_ids.filtered(lambda p: p.state != "cancel"):
             if payment.state == "posted":
                 payment.action_draft()
-            elif payment.state == "submitted":
-                payment.write({"state": "draft"})
             payment.action_cancel()
 
     def _action_do_cancel(self, reason):
@@ -935,6 +1368,7 @@ class AdvancePayment(models.Model):
         self.write(
             {"state": "cancel", "cancel_reason": reason, "disbursement_state": False}
         )
+        self._drop_workflow_activities()
         self.message_post(
             body=_("Agreement cancelled. Reason: %(reason)s", reason=reason),
             subtype_xmlid="mail.mt_note",
@@ -949,6 +1383,7 @@ class AdvancePayment(models.Model):
         if reason:
             vals["cancel_reason"] = reason
         self.write(vals)
+        self._drop_workflow_activities()
         body = (
             _("Agreement returned to draft. Reason: %(reason)s", reason=reason)
             if reason
@@ -969,11 +1404,16 @@ class AdvancePayment(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id(
             "account.action_account_payments"
         )
-        if self.payment_count == 1:
+        # sudo: only resolves which record/domain to open with — the
+        # Accounting app's own action still applies its own access rules once
+        # the client navigates there, for whoever isn't otherwise granted
+        # read on account.payment (see ADR-0015/17's sudo() precedent).
+        payment_ids = self.sudo().payment_ids
+        if len(payment_ids) == 1:
             action["views"] = [(False, "form")]
-            action["res_id"] = self.payment_ids.id
+            action["res_id"] = payment_ids.id
         else:
-            action["domain"] = [("id", "in", self.payment_ids.ids)]
+            action["domain"] = [("id", "in", payment_ids.ids)]
         return action
 
     def action_open_return_wizard(self):

@@ -16,6 +16,38 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.manager = cls.env.ref("base.user_admin")
+        # The advance payment borrower is now hr.employee (ADR-0014); PR's
+        # requested_by needs one to seed action_create_advance_payment. hr's
+        # own data.xml already seeds hr.employee_admin with
+        # user_id=base.user_admin on every database — reuse it instead of
+        # creating a second one, which would violate hr_employee_user_uniq.
+        cls.manager_employee = cls.env["hr.employee"].search(
+            [("user_id", "=", cls.manager.id)], limit=1
+        ) or cls.env["hr.employee"].create(
+            {"name": cls.manager.name, "user_id": cls.manager.id}
+        )
+
+        # advance.payment.loan_verifier_id is required (ADR-0013); the admin
+        # escape hatch is excluded from the auto-default candidate pool, so
+        # the suite needs a real named officer for it to resolve.
+        cls.officer = cls.env["res.users"].create(
+            {
+                "name": "Loan Officer",
+                "login": "officer_pr_ap",
+                "email": "officer_pr_ap@test.local",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            cls.env.ref(
+                                "advance_payment.group_advance_payment_loan_officer"
+                            ).id
+                        ],
+                    )
+                ],
+            }
+        )
 
         # Fiscal year
         cls.fiscal_year = cls.env["account.fiscal.year"].search([], limit=1)
@@ -120,7 +152,7 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         pr = self._make_pr(estimated_cost=7500)
         pr.action_create_advance_payment()
         ap = pr.advance_payment_id
-        self.assertEqual(ap.requested_by, pr.requested_by)
+        self.assertEqual(ap.employee_id, pr.requested_by.employee_id)
         self.assertEqual(ap.loan_amount, 7500)
         self.assertEqual(
             ap.loan_type_id,
@@ -181,6 +213,21 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         """Cannot create a second AP for the same PR."""
         pr = self._make_pr()
         pr.action_create_advance_payment()
+        with self.assertRaises(UserError):
+            pr.action_create_advance_payment()
+
+    def test_create_ap_requires_requested_by_employee(self):
+        """PR whose requested_by has no linked hr.employee cannot seed an AP —
+        a readable UserError, not the required-field error (ADR-0014)."""
+        no_employee_user = self.env["res.users"].create(
+            {
+                "name": "No Employee Requester",
+                "login": "no_employee_requester_pr_ap",
+                "email": "no_employee_requester_pr_ap@test.local",
+            }
+        )
+        pr = self._make_pr()
+        pr.requested_by = no_employee_user
         with self.assertRaises(UserError):
             pr.action_create_advance_payment()
 
