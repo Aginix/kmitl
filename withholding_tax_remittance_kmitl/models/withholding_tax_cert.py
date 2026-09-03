@@ -14,7 +14,7 @@ class WithholdingTaxCert(models.Model):
         copy=False,
     )
     remit_state = fields.Selection(
-        selection=[("pending", "ยังไม่นำส่ง"), ("remitted", "นำส่งแล้ว")],
+        selection=[("pending", "Pending"), ("remitted", "Remitted")],
         string="Remittance Status",
         compute="_compute_remit_state",
         store=True,

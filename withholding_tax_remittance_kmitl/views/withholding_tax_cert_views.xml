@@ -10,7 +10,7 @@
                     <button
                         name="action_create_remittance"
                         type="object"
-                        string="สร้างใบนำส่ง"
+                        string="Create Remittance"
                         class="btn-primary"
                         groups="accounting_kmitl.group_accounting_kmitl_user"
                     />
@@ -36,12 +36,12 @@
             <filter name="journal" position="after">
                 <separator />
                 <filter
-                    string="ยังไม่นำส่ง"
+                    string="Pending"
                     name="remit_pending"
                     domain="[('remit_state', '=', 'pending')]"
                 />
                 <filter
-                    string="นำส่งแล้ว"
+                    string="Remitted"
                     name="remit_done"
                     domain="[('remit_state', '=', 'remitted')]"
                 />

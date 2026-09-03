@@ -13,18 +13,25 @@ from odoo.tools import formatLang
 from odoo.addons.l10n_th_account_tax.models.withholding_tax_cert import (
     INCOME_TAX_FORM,
 )
-from odoo.addons.thai_date_utils.models.thai_date_mixin import (
-    MONTHS_TH,
-    MONTHS_TH_SHORT,
-)
+from odoo.addons.thai_date_utils.models.thai_date_mixin import MONTHS_TH_SHORT
 
-PND_FORM_TH = {
-    "pnd1": "ภ.ง.ด.1",
-    "pnd2": "ภ.ง.ด.2",
-    "pnd3": "ภ.ง.ด.3",
-    "pnd3a": "ภ.ง.ด.3ก",
-    "pnd53": "ภ.ง.ด.53",
-}
+INCOME_TAX_FORM_LABELS = dict(INCOME_TAX_FORM)
+
+MONTHS_EN = [
+    "",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+]
 
 
 class WithholdingTaxRemittance(models.Model):
@@ -53,17 +60,20 @@ class WithholdingTaxRemittance(models.Model):
     )
     income_tax_form = fields.Selection(
         selection=INCOME_TAX_FORM,
-        string="ภ.ง.ด.",
+        string="Income Tax Form",
         required=True,
         tracking=True,
     )
     source_analytic_id = fields.Many2one(
         comodel_name="account.analytic.account",
-        string="แหล่งเงิน",
+        string="Funding Source",
         domain="[('root_plan_id.code', '=', 'sources')]",
         required=True,
         tracking=True,
-        help="แหล่งเงินที่นำส่งในใบนี้ — ยื่นแยกใบต่อ ภ.ง.ด./งวด/แหล่งเงิน",
+        help=(
+            "The funding source remitted on this document — file a separate "
+            "remittance per Income Tax Form / period / funding source."
+        ),
     )
     date_remit = fields.Date(
         string="Remittance Date",
@@ -72,36 +82,39 @@ class WithholdingTaxRemittance(models.Model):
         tracking=True,
     )
     period_month = fields.Selection(
-        selection=[(str(m), MONTHS_TH[m]) for m in range(1, 13)],
-        string="เดือนภาษี",
+        selection=[(str(m), MONTHS_EN[m]) for m in range(1, 13)],
+        string="Tax Month",
         required=True,
         tracking=True,
         default=lambda self: str(fields.Date.context_today(self).month),
     )
     period_year = fields.Selection(
         selection="_get_period_year_selection",
-        string="ปี (พ.ศ.)",
+        string="Year (B.E.)",
         required=True,
         tracking=True,
         default=lambda self: str(fields.Date.context_today(self).year + 543),
     )
     period = fields.Char(
-        string="งวด",
+        string="Period",
         compute="_compute_period",
     )
     date_from = fields.Date(compute="_compute_period_range")
     date_to = fields.Date(compute="_compute_period_range")
     savings_account_id = fields.Many2one(
         comodel_name="account.account",
-        string="บัญชีออมทรัพย์",
+        string="Savings Account",
         domain="[('account_type', '=', 'asset_cash'), ('company_id', '=', company_id)]",
-        help="บัญชีที่ออกเช็ค — เงินออกจากบัญชีนี้จริง",
+        help="The account the cheque is drawn on — money actually leaves this account.",
     )
     current_account_id = fields.Many2one(
         comodel_name="account.account",
-        string="บัญชีกระแสรายวัน",
+        string="Current Account",
         domain="[('account_type', '=', 'asset_cash'), ('company_id', '=', company_id)]",
-        help="บัญชีที่ธนาคารโอนเงินเข้าตามยอดเช็คแล้วเช็คจึงขึ้นเงินจากบัญชีนี้",
+        help=(
+            "The account the bank transfers the cheque amount into before the "
+            "cheque clears from it."
+        ),
     )
     partner_id = fields.Many2one(
         comodel_name="res.partner",
@@ -228,11 +241,11 @@ class WithholdingTaxRemittance(models.Model):
             if duplicate:
                 raise ValidationError(
                     _(
-                        "มีใบนำส่ง %(form)s งวด %(period)s แหล่งเงิน %(source)s "
-                        "อยู่แล้ว (%(name)s)"
+                        "A remittance for %(form)s period %(period)s funding "
+                        "source %(source)s already exists (%(name)s)."
                     )
                     % {
-                        "form": PND_FORM_TH.get(
+                        "form": INCOME_TAX_FORM_LABELS.get(
                             rec.income_tax_form, rec.income_tax_form
                         ),
                         "period": rec.period,
@@ -266,10 +279,12 @@ class WithholdingTaxRemittance(models.Model):
             )
         forms = set(certs.mapped("income_tax_form"))
         if not all(forms):
-            raise UserError(_("Set the ภ.ง.ด. form on every certificate first."))
+            raise UserError(
+                _("Set the Income Tax Form on every certificate first.")
+            )
         if len(forms) > 1:
             raise UserError(
-                _("Select certificates for one ภ.ง.ด. form at a time.")
+                _("Select certificates for one Income Tax Form at a time.")
             )
         accounts = certs.mapped("wht_line.wht_tax_id.account_id")
         if not accounts:
@@ -287,8 +302,8 @@ class WithholdingTaxRemittance(models.Model):
         if multi_source:
             raise UserError(
                 _(
-                    "Certificate(s) %s carry more than one funding source "
-                    "(แหล่งเงิน); a certificate is remitted whole or not at all."
+                    "Certificate(s) %s carry more than one funding source; "
+                    "a certificate is remitted whole or not at all."
                 )
                 % ", ".join(multi_source)
             )
@@ -299,7 +314,7 @@ class WithholdingTaxRemittance(models.Model):
             raise UserError(
                 _(
                     "Certificate(s) %s have missing or incomplete analytic "
-                    "dimensions (แหล่งเงิน) on their source entry."
+                    "dimensions (funding source) on their source entry."
                 )
                 % ", ".join(no_source)
             )
@@ -313,7 +328,7 @@ class WithholdingTaxRemittance(models.Model):
         if remittance:
             if forms != {remittance.income_tax_form}:
                 raise UserError(
-                    _("Certificates must match this remittance's ภ.ง.ด. form.")
+                    _("Certificates must match this remittance's Income Tax Form.")
                 )
             if source_ids != {remittance.source_analytic_id.id}:
                 raise UserError(
@@ -359,8 +374,8 @@ class WithholdingTaxRemittance(models.Model):
 
     def _get_memo(self):
         self.ensure_one()
-        return _("นำส่ง %(form)s งวด %(period)s แหล่งเงิน %(source)s") % {
-            "form": PND_FORM_TH.get(self.income_tax_form, ""),
+        return _("Remit %(form)s period %(period)s funding source %(source)s") % {
+            "form": INCOME_TAX_FORM_LABELS.get(self.income_tax_form, ""),
             "period": self.period,
             "source": self.source_analytic_id.name or "-",
         }
@@ -372,9 +387,9 @@ class WithholdingTaxRemittance(models.Model):
                     _("Can only load certificates on a draft remittance.")
                 )
             if not rec.income_tax_form:
-                raise UserError(_("Set the ภ.ง.ด. form first."))
+                raise UserError(_("Set the Income Tax Form first."))
             if not rec.source_analytic_id:
-                raise UserError(_("Set the funding source (แหล่งเงิน) first."))
+                raise UserError(_("Set the funding source first."))
             certs = self.env["withholding.tax.cert"].search(
                 [
                     ("company_id", "=", rec.company_id.id),
@@ -500,7 +515,7 @@ class WithholdingTaxRemittance(models.Model):
         """
         self.ensure_one()
         memo = "%s - %s" % (self._get_memo(), cert.name)
-        transfer_memo = _("%s - โอนจากบัญชีออมทรัพย์") % memo
+        transfer_memo = _("%s - Transfer from savings account") % memo
         return [
             {
                 "name": memo,

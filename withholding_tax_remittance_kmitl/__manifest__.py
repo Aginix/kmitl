@@ -4,7 +4,7 @@
     "name": "Withholding Tax Remittance KMITL",
     "version": "16.0.1.0.0",
     "category": "KMITL/Finance",
-    "summary": "Batch-clear the withholding tax payable (รอนำส่ง) when it is remitted to the Revenue Department",
+    "summary": "Batch-clear the withholding tax payable when it is remitted to the Revenue Department",
     "license": "LGPL-3",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
