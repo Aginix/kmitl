@@ -194,9 +194,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_07')]"/>
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_07')]"/>
-    </function>
 
     <!-- PR D08: IT / เช่า / งบดำเนินงาน / to_approve -->
     <record id="pr_dashboard_demo_08" model="purchase.request">
@@ -227,9 +224,6 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_08')]"/>
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_08')]"/>
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_08')]"/>
     </function>
 
@@ -265,9 +259,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_09')]"/>
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_09')]"/>
-    </function>
 
     <!-- PR D10: เกษตร / จ้างทำของ / งบดำเนินงาน / to_approve -->
     <record id="pr_dashboard_demo_10" model="purchase.request">
@@ -300,9 +291,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_10')]"/>
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_10')]"/>
-    </function>
 
     <!-- PR D11: สถาปัตย์ / ซื้อ / งบดำเนินงาน / approved (to_verify → reserve → validate → approve) -->
     <record id="pr_dashboard_demo_11" model="purchase.request">
@@ -333,9 +321,6 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_11')]"/>
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_11')]"/>
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_11')]"/>
     </function>
     <function model="purchase.request" name="button_approved">
@@ -377,9 +362,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_12')]"/>
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_12')]"/>
-    </function>
     <function model="purchase.request" name="button_approved">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_12')]"/>
     </function>
@@ -416,9 +398,6 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_13')]"/>
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_13')]"/>
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_13')]"/>
     </function>
     <function model="purchase.request" name="button_approved">
@@ -459,9 +438,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_14')]"/>
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_14')]"/>
-    </function>
     <function model="purchase.request" name="button_approved">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_14')]"/>
     </function>
@@ -498,9 +474,6 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_15')]"/>
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_15')]"/>
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_15')]"/>
     </function>
     <function model="purchase.request" name="button_approved">
@@ -542,9 +515,6 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_16')]"/>
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_16')]"/>
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_16')]"/>
     </function>
     <function model="purchase.request" name="button_approved">
@@ -589,9 +559,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_17')]"/>
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_17')]"/>
-    </function>
     <function model="purchase.request" name="button_approved">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_17')]"/>
     </function>
@@ -631,9 +598,6 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_18')]"/>
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_18')]"/>
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_18')]"/>
     </function>
     <function model="purchase.request" name="button_approved">
@@ -678,9 +642,6 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_19')]"/>
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_19')]"/>
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_19')]"/>
     </function>
     <function model="purchase.request" name="button_approved">
@@ -730,9 +691,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>
-    </function>
     <function model="purchase.request" name="button_rejected">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>
     </function>
@@ -773,9 +731,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_21')]"/>
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_21')]"/>
-    </function>
     <function model="purchase.request" name="button_approved">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_21')]"/>
     </function>
@@ -812,9 +767,6 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_22')]"/>
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_22')]"/>
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_22')]"/>
     </function>
     <function model="purchase.request" name="button_approved">
@@ -856,9 +808,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_23')]"/>
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_23')]"/>
-    </function>
     <function model="purchase.request" name="button_approved">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_23')]"/>
     </function>
@@ -895,9 +844,6 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_24')]"/>
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_24')]"/>
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_24')]"/>
     </function>
     <function model="purchase.request" name="button_approved">
@@ -938,9 +884,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_25')]"/>
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_25')]"/>
-    </function>
     <function model="purchase.request" name="button_approved">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_25')]"/>
     </function>
@@ -977,9 +920,6 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_26')]"/>
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_26')]"/>
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_26')]"/>
     </function>
     <function model="purchase.request" name="button_approved">
@@ -1021,9 +961,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_27')]"/>
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_27')]"/>
-    </function>
     <function model="purchase.request" name="button_approved">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_27')]"/>
     </function>
@@ -1060,9 +997,6 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_28')]"/>
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_28')]"/>
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_28')]"/>
     </function>
     <function model="purchase.request" name="button_approved">
@@ -1104,9 +1038,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_29')]"/>
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_29')]"/>
-    </function>
     <function model="purchase.request" name="button_approved">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_29')]"/>
     </function>
@@ -1143,9 +1074,6 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_30')]"/>
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.pr_dashboard_demo_30')]"/>
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_30')]"/>
     </function>
     <function model="purchase.request" name="button_approved">
