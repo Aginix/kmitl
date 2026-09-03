@@ -92,6 +92,13 @@ upfront.
   cash and revenue under the dimensions of the unit actually spending it; the first
   bridge in the repo between the budget side and the General Ledger, driven entirely
   by a **Central Funding Profile** per source of funds.
+- [Disbursement — Cash Movement](./disbursement_cash_movement_kmitl/CONTEXT.md) —
+  the **การโยกเงินระหว่างบัญชี** legs, added to a disbursement voucher's own journal
+  entry, that trace its money from source account down to the หัวจ่าย that pays the
+  payee — the trail a bank auto-sweep leaves that accounting never otherwise books.
+  Driven entirely by **Cash Route** (`kmitl.cash.route`), one row per (paying
+  account × sources of funds); a row naming no intermediate account means "pays
+  directly", a missing row is a setup gap.
 - [Advance Payment](./advance_payment/CONTEXT.md) — employee cash-advance loans
   (สัญญายืมเงิน); a single-disbursement loan to one borrower, tracked from request
   through clearing to closure. A borrower may hold only one active agreement at a time,
@@ -193,6 +200,17 @@ upfront.
   consumed at the request's final approval). A non-blocking exception warns if the
   bill is submitted while the handover is still draft
   (`disbursement_cash_revenue_handover` ADR-0001).
+- **Disbursement → Cash Movement**: a disbursement voucher's `account.move` already
+  correctly books `Dr เจ้าหนี้ / Cr หัวจ่าย`; registering it grows the missing legs in
+  between, in the **same entry**, tracing the money from its source account down to
+  the หัวจ่าย that pays the payee — one **Cash Route** per (paying account × sources
+  of funds), keyed by the underlying GL account rather than by หัวจ่าย because one
+  bank account's transfer and cheque หัวจ่าย must already book against the same GL
+  (`account_kmitl`). A route naming no intermediate account means "pays directly";
+  a paying account with no route at all for a voucher's source of funds is a setup
+  gap, surfaced as a non-blocking warning at Submit. Scoped to vouchers raised from a
+  disbursement request; the budget ledger and the bank reconciliation view are both
+  untouched by design (`disbursement_cash_movement_kmitl` ADR-0001/0002).
 - **Budget ↔ Operating Units (cross-OU reservation)**: a standalone `budget.commitment`
   (ใบจองงบประมาณ) may be reserved by one OU (the **Owning Unit** / funder — normally
   central) _for_ another (the **Beneficiary Unit** — the requesting unit); both OUs see

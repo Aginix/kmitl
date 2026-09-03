@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cash_route_accounting_user,kmitl.cash.route accounting user,model_kmitl_cash_route,accounting_kmitl.group_accounting_kmitl_user,1,0,0,0
+access_cash_route_accounting_manager,kmitl.cash.route accounting manager,model_kmitl_cash_route,accounting_kmitl.group_accounting_kmitl_manager,1,1,1,1
+access_cash_route_finance_manager,kmitl.cash.route finance manager,model_kmitl_cash_route,finance_kmitl.group_finance_kmitl_manager,1,0,0,0
+access_cash_route_hop_accounting_user,kmitl.cash.route.hop accounting user,model_kmitl_cash_route_hop,accounting_kmitl.group_accounting_kmitl_user,1,0,0,0
+access_cash_route_hop_accounting_manager,kmitl.cash.route.hop accounting manager,model_kmitl_cash_route_hop,accounting_kmitl.group_accounting_kmitl_manager,1,1,1,1
+access_cash_route_hop_finance_manager,kmitl.cash.route.hop finance manager,model_kmitl_cash_route_hop,finance_kmitl.group_finance_kmitl_manager,1,0,0,0

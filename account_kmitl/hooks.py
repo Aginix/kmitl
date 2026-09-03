@@ -163,6 +163,27 @@ PAYING_ACCOUNTS = [
         "bic": "KASITHBK",
         "acc_number": "036-1-00165-6",
     },
+    # ธ.ไทยพาณิชย์ /ย่อยเทคโนฯ — เงินโอน หัวจ่ายเพิ่มสำหรับ disbursement_cash_movement_kmitl
+    {
+        "account": "1112220005",
+        "method": "kmitl_transfer",
+        "bic": "SICOTHBK",
+        "acc_number": "088-3-00171-2",
+    },
+    # ธ.กรุงไทย /ย่อยเทคโนฯ — เงินโอน หัวจ่ายเพิ่มสำหรับ disbursement_cash_movement_kmitl
+    {
+        "account": "1112220016",
+        "method": "kmitl_transfer",
+        "bic": "KRTHTHBK",
+        "acc_number": "693-6-00042-8",
+    },
+    # ธ.กรุงศรีอยุธยา /ย่อยเทคโนฯ — เงินโอน หัวจ่ายเพิ่มสำหรับ disbursement_cash_movement_kmitl
+    {
+        "account": "1112220012",
+        "method": "kmitl_transfer",
+        "bic": "AYUDTHBK",
+        "acc_number": "507-0-00033-8",
+    },
     # เงินสด — booked against the institute's cash-on-hand account, not a bank
     # account. Without this entry the cash method line keeps the GL account
     # _setup_payment_method_lines hands every line (the journal's own bank

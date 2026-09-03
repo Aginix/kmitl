@@ -1,0 +1,174 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_cash_movement_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-03 00:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model,name:disbursement_cash_movement_kmitl.model_kmitl_cash_route
+msgid "Inter-account Cash Route"
+msgstr "เส้นทางโยกเงินระหว่างบัญชี"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,field_description:disbursement_cash_movement_kmitl.field_kmitl_cash_route__paying_gl_account_id
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_movement_kmitl.view_cash_route_search
+msgid "Paying Account"
+msgstr "หัวจ่าย"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,help:disbursement_cash_movement_kmitl.field_kmitl_cash_route__paying_gl_account_id
+msgid ""
+"หัวจ่าย — the GL account a voucher is drawn on. Named by GL account rather "
+"than by payment method line, so a transfer and a cheque out of the same "
+"bank account share one route."
+msgstr ""
+"หัวจ่าย — บัญชีแยกประเภทที่ใบสำคัญจ่ายเบิกออก ใช้บัญชี GL เป็นตัวอ้างอิงแทนที่จะเป็น "
+"ช่องทางจ่ายเงิน เพื่อให้การโอนและเช็คที่ออกจากบัญชีธนาคารเดียวกันใช้เส้นทางเดียวกันได้"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,field_description:disbursement_cash_movement_kmitl.field_kmitl_cash_route__source_analytic_ids
+msgid "Sources of Funds"
+msgstr "แหล่งเงิน"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,help:disbursement_cash_movement_kmitl.field_kmitl_cash_route__source_analytic_ids
+msgid ""
+"แหล่งเงิน — which sources this route applies to. Money from a "
+"government-budget source and an own-revenue source usually travels through "
+"different accounts even to the same paying account."
+msgstr ""
+"แหล่งเงิน — เส้นทางนี้ใช้กับแหล่งเงินใดบ้าง เงินจากงบประมาณแผ่นดินกับเงินรายได้ของสถาบัน "
+"มักเดินทางผ่านบัญชีคนละสายแม้จะไปหัวจ่ายเดียวกัน"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,field_description:disbursement_cash_movement_kmitl.field_kmitl_cash_route__hop_ids
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_movement_kmitl.view_cash_route_form
+msgid "Intermediate Accounts"
+msgstr "บัญชีระหว่างทาง"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,help:disbursement_cash_movement_kmitl.field_kmitl_cash_route__hop_ids
+msgid ""
+"บัญชีระหว่างทาง — the accounts money passes through, from the true source "
+"down to (but not including) the paying account, in order. Left empty on "
+"purpose for a paying account the money is spent directly out of."
+msgstr ""
+"บัญชีระหว่างทาง — บัญชีที่เงินไหลผ่านตามลำดับ นับจากบัญชีต้นทางจนถึงก่อนหัวจ่าย "
+"(ไม่รวมหัวจ่ายเอง) เว้นว่างไว้โดยตั้งใจสำหรับหัวจ่ายที่จ่ายเงินออกตรง ๆ"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,field_description:disbursement_cash_movement_kmitl.field_kmitl_cash_route__company_id
+msgid "Company"
+msgstr "บริษัท"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,field_description:disbursement_cash_movement_kmitl.field_kmitl_cash_route__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: disbursement_cash_movement_kmitl
+#: code:addons/disbursement_cash_movement_kmitl/models/cash_route.py:0
+#, python-format
+msgid "New Cash Route"
+msgstr "เส้นทางโยกเงินใหม่"
+
+#. module: disbursement_cash_movement_kmitl
+#: code:addons/disbursement_cash_movement_kmitl/models/cash_route.py:0
+#, python-format
+msgid ""
+"%(account)s already has a cash route for %(sources)s (%(other)s). A source "
+"of funds may only reach one paying account through one route."
+msgstr ""
+"%(account)s มีเส้นทางโยกเงินของ %(sources)s อยู่แล้ว (%(other)s) "
+"แหล่งเงินหนึ่งจะไปถึงหัวจ่ายหนึ่งได้ผ่านเส้นทางเดียวเท่านั้น"
+
+#. module: disbursement_cash_movement_kmitl
+#: code:addons/disbursement_cash_movement_kmitl/models/cash_route.py:0
+#, python-format
+msgid ""
+"%s cannot be both the paying account and one of its own intermediate "
+"accounts."
+msgstr "%s เป็นทั้งหัวจ่ายและบัญชีระหว่างทางของตัวเองพร้อมกันไม่ได้"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model,name:disbursement_cash_movement_kmitl.model_kmitl_cash_route_hop
+msgid "Inter-account Cash Route — Intermediate Account"
+msgstr "เส้นทางโยกเงินระหว่างบัญชี — บัญชีระหว่างทาง"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,field_description:disbursement_cash_movement_kmitl.field_kmitl_cash_route_hop__account_id
+msgid "Account"
+msgstr "บัญชี"
+
+#. module: disbursement_cash_movement_kmitl
+#: code:addons/disbursement_cash_movement_kmitl/models/cash_route.py:0
+#, python-format
+msgid ""
+"%s appears twice in a row in the same cash route's intermediate accounts."
+msgstr "%s ปรากฏซ้ำติดกันสองครั้งในบัญชีระหว่างทางของเส้นทางโยกเงินเดียวกัน"
+
+#. module: disbursement_cash_movement_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_movement_kmitl.view_cash_route_form
+msgid "Route"
+msgstr "เส้นทาง"
+
+#. module: disbursement_cash_movement_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_movement_kmitl.view_cash_route_form
+msgid "Bookkeeping"
+msgstr "การบันทึกบัญชี"
+
+#. module: disbursement_cash_movement_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_movement_kmitl.view_cash_route_form
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_movement_kmitl.view_cash_route_search
+msgid "Archived"
+msgstr "เก็บถาวรแล้ว"
+
+#. module: disbursement_cash_movement_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_movement_kmitl.view_cash_route_form
+msgid ""
+"Listed from the true source account down to (but not including) the "
+"paying account, in the order the money travels. Leave empty for a paying "
+"account the money is spent directly out of."
+msgstr ""
+"เรียงจากบัญชีต้นทางจริงไปจนถึงก่อนหัวจ่าย (ไม่รวมหัวจ่ายเอง) ตามลำดับที่เงินไหลผ่าน "
+"เว้นว่างไว้สำหรับหัวจ่ายที่จ่ายเงินออกตรง ๆ"
+
+#. module: disbursement_cash_movement_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_cash_movement_kmitl.view_cash_route_search
+msgid "Group By"
+msgstr "จัดกลุ่มตาม"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.actions.act_window,name:disbursement_cash_movement_kmitl.action_cash_route
+#: model:ir.ui.menu,name:disbursement_cash_movement_kmitl.menu_config_cash_route_accounting
+#: model:ir.ui.menu,name:disbursement_cash_movement_kmitl.menu_config_cash_route_finance
+msgid "Cash Routes"
+msgstr "เส้นทางโยกเงิน"
+
+#. module: disbursement_cash_movement_kmitl
+#: model_terms:ir.actions.act_window,help:disbursement_cash_movement_kmitl.action_cash_route
+msgid "Set up an inter-account cash route"
+msgstr "ตั้งค่าเส้นทางโยกเงินระหว่างบัญชี"
+
+#. module: disbursement_cash_movement_kmitl
+#: model_terms:ir.actions.act_window,help:disbursement_cash_movement_kmitl.action_cash_route
+msgid ""
+"One row per paying account and the sources of funds it serves, listing the "
+"accounts money travels through before it gets there. A paying account "
+"spent directly out of is a row with no intermediate accounts — a (paying "
+"account, source) pair with no row at all is a setup gap."
+msgstr ""
+"หนึ่งแถวต่อหัวจ่ายและแหล่งเงินที่เส้นทางนั้นรองรับ ระบุบัญชีที่เงินไหลผ่านก่อนจะถึงหัวจ่าย "
+"หัวจ่ายที่จ่ายเงินออกตรง ๆ คือแถวที่ไม่มีบัญชีระหว่างทาง "
+"ส่วนคู่ (หัวจ่าย, แหล่งเงิน) ที่ไม่มีแถวเลยคือจุดที่ยังตั้งค่าไม่ครบ"
