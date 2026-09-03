@@ -252,6 +252,97 @@ class BankPaymentExport(models.Model):
         prefix = self._get_text_file_prefix(text)
         return "{}{}".format(prefix, text) if prefix else text
 
+    def _check_constraint_line(self):
+        """The money has to leave from an account at the bank the file goes to.
+
+        Every layout writes the debit account into its own header, and the
+        receiving bank reads it as one of its own. A file addressed to KTB that
+        debits an SCB account asks KTB to debit an account it has never heard
+        of, so KTB refuses the file -- and the refusal says nothing about which
+        account, because as far as the bank is concerned the account simply is
+        not there.
+
+        Nothing checked this. The bank is derived from the paying account when a
+        file is created from a payment selection, but an officer can change
+        either side afterwards and the two then disagree in silence: the form
+        says KTB, the header says an SCB account, and the first sign of trouble
+        is a rejection from the bank.
+
+        A line with no sending account at all is the same fault seen earlier:
+        the header renders the field as zeros.
+        """
+        res = super()._check_constraint_line()
+        self.ensure_one()
+        if not self.bank:
+            return res
+        wrong = self.export_line_ids.filtered(
+            lambda line: line.sending_bank_id.bic != self.bank
+        )
+        if wrong:
+            bank = dict(self._fields["bank"]._description_selection(self.env)).get(
+                self.bank, self.bank
+            )
+            raise UserError(
+                _(
+                    "This file goes to %(bank)s, so every payment on it has to be "
+                    "paid out of an account at %(bank)s. These are not:\n%(lines)s"
+                )
+                % {
+                    "bank": bank,
+                    "lines": "\n".join(
+                        "- %s: %s"
+                        % (
+                            line.payment_id.display_name,
+                            line.sending_bank_id.display_name
+                            or _("no bank account on the journal"),
+                        )
+                        for line in wrong
+                    ),
+                }
+            )
+        return res
+
+    def _check_receiving_bank_code(self, lines):
+        """Refuse a file whose payees' banks have no clearing code.
+
+        The layouts that cross banks -- SCB's 003 record, KTB's -- write the
+        receiving bank as a three-digit clearing code read off ``res.bank``.
+        It is seeded, but under ``noupdate``, so a database that had the bank
+        records before the codes were added still has them empty; the field
+        then goes out as three spaces and the bank refuses the file without
+        saying which field it could not read.
+
+        Called by the banks whose layout actually writes it: KBANK and BAY
+        credit their own accounts only and carry no such field, so requiring
+        one there would block a file that is perfectly good.
+        """
+        self.ensure_one()
+        missing = lines.filtered(
+            lambda line: not line.payment_partner_bank_id.bank_id.bank_code
+        )
+        if missing:
+            raise UserError(
+                _(
+                    "The file names each payee's bank by its clearing code, and "
+                    "these banks have none. Fill in the Bank Code in "
+                    "Settings > Banks:\n%s"
+                )
+                % "\n".join(
+                    sorted(
+                        {
+                            "- %s (%s)"
+                            % (
+                                line.payment_partner_bank_id.bank_id.display_name
+                                or line.payment_id.display_name,
+                                line.payment_id.display_name,
+                            )
+                            for line in missing
+                        }
+                    )
+                )
+            )
+        return True
+
     def _check_bank_specific_constraint(self, payments):
         """Hook for the rules a particular bank puts on a batch of payments.
 
