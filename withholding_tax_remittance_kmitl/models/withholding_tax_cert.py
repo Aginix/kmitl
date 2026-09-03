@@ -1,6 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class WithholdingTaxCert(models.Model):
@@ -40,9 +41,17 @@ class WithholdingTaxCert(models.Model):
     def action_create_remittance(self):
         Remittance = self.env["withholding.tax.remittance"]
         Remittance._validate_certs(self)
+        months = {(d.year, d.month) for d in self.mapped("date")}
+        if len(months) > 1:
+            raise UserError(
+                _("Selected certificates span more than one month; group by month.")
+            )
+        year, month = months.pop()
         remittance = Remittance.create(
             {
                 "income_tax_form": self[0].income_tax_form,
+                "period_month": str(month),
+                "period_year": str(year + 543),
                 "cert_ids": [(6, 0, self.ids)],
             }
         )

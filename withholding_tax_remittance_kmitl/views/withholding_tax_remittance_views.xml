@@ -57,7 +57,20 @@
                                 name="income_tax_form"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}"
                             />
-                            <field name="period" />
+                            <label for="period_month" string="งวด" />
+                            <div class="o_row">
+                                <field
+                                    name="period_month"
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                />
+                                <field
+                                    name="period_year"
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                />
+                            </div>
+                            <field name="period" readonly="1" />
+                            <field name="date_from" invisible="1" />
+                            <field name="date_to" invisible="1" />
                             <field
                                 name="date_remit"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}"
@@ -92,9 +105,11 @@
                     </group>
                     <field
                         name="cert_ids"
+                        widget="many2many"
+                        domain="[('state', '=', 'done'), ('remittance_id', '=', False), ('income_tax_form', '=', income_tax_form), ('date', '&gt;=', date_from), ('date', '&lt;=', date_to), ('company_id', '=', company_id)]"
                         attrs="{'readonly': [('state', '!=', 'draft')]}"
                     >
-                        <tree>
+                        <tree edit="false" create="false">
                             <field name="name" />
                             <field name="partner_id" />
                             <field name="date" />

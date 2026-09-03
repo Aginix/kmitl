@@ -20,19 +20,30 @@ and durably mark those certificates "นำส่งแล้ว".
 Key features
 ============
 
+* Every remittance declares a **งวด** (tax month) up front — ``period_month``
+  / ``period_year`` — that the accountant sets, not one derived from the
+  certificates. Only one remittance per ภ.ง.ด. form per month may be
+  ``draft`` or ``posted`` at a time; a cancelled one doesn't block redoing
+  that month.
 * From the WHT Certificate list, select several ``done``, unremitted
   certificates and click **สร้างใบนำส่ง** to open a draft
-  ``withholding.tax.remittance`` pre-loaded with them. All selected
-  certificates must share one ภ.ง.ด. form and one withholding tax account.
-* The remittance document can also be created empty and filled via
-  **โหลดรายการยังไม่นำส่ง**, which pulls every unremitted, done certificate for
-  the chosen form.
-* **ยืนยัน / ล้างหนี้** posts a single journal entry — ``Dr`` the WHT payable
-  account / ``Cr`` the bank account the cheque is drawn on — for the sum of
-  the selected certificates, and marks every certificate on the document
-  "นำส่งแล้ว" via its ``remittance_id`` link.
-* **ยกเลิก** reverses the journal entry (if posted) and returns every
-  certificate to "ยังไม่นำส่ง".
+  ``withholding.tax.remittance`` pre-loaded with them, its งวด filled in from
+  their dates. All selected certificates must share one ภ.ง.ด. form, one
+  withholding tax account, and one calendar month.
+* The remittance document can also be created empty (set the งวด first) and
+  filled via **โหลดรายการยังไม่นำส่ง**, which pulls every unremitted, done
+  certificate for the chosen form that falls inside that month.
+* **ยืนยัน / ล้างหนี้** posts a single journal entry per remittance, but with
+  one ``Dr``/``Cr`` line pair — WHT payable account / bank account — per
+  certificate, each pair carrying that certificate's own analytic
+  distribution (read back from its source entry) so both sides of the entry
+  stay attributable to the same department/fund/activity/etc. It marks every
+  certificate on the document "นำส่งแล้ว" via its ``remittance_id`` link. A
+  certificate whose source entry carries no analytic dimensions, or whose
+  date falls outside the declared งวด, blocks posting.
+* **ยกเลิก** reverses the journal entry (if posted), returns every
+  certificate to "ยังไม่นำส่ง", and posts a chatter note recording which
+  certificates and how much the remittance held before it let go of them.
 * The WHT Certificate list gains a Remittance Status column and
   "ยังไม่นำส่ง" / "นำส่งแล้ว" filters.
 
@@ -53,9 +64,10 @@ Usage
 
 1. An accountant (``accounting_kmitl`` User) opens **Finance ▸ Payment Out ▸
    Withholding Tax Certificates**, filters to "ยังไม่นำส่ง", ticks the
-   certificates for one ภ.ง.ด. form, and clicks **สร้างใบนำส่ง**.
-2. On the draft remittance, set the bank account the cheque is drawn on, the
-   remittance date, and optionally the cheque number and RD reference.
+   certificates for one ภ.ง.ด. form and one month, and clicks **สร้างใบนำส่ง**.
+2. On the draft remittance, check the งวด (pre-filled from the certificates),
+   set the bank account the cheque is drawn on, the remittance date, and
+   optionally the cheque number and RD reference.
 3. Click **ยืนยัน / ล้างหนี้**. The journal entry posts and every certificate on
    the document leaves the "ยังไม่นำส่ง" list.
 4. To undo, open the remittance and click **ยกเลิก** — the entry is reversed
