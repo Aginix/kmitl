@@ -24,6 +24,7 @@ The other KTB product, ``ktb_ipay``, has no sample and is not covered here.
 """
 
 from odoo import fields
+from odoo.exceptions import UserError
 
 from odoo.addons.l10n_th_bank_payment_export_format.tests.common import (
     BLANK,
@@ -157,6 +158,44 @@ class TestKtbHdtGoldenFile(CommonBankExportFormat):
             export.effective_date.strftime("%d%m%y"),
         )
         self.assertSingleByteEncoding(export)
+
+    def test_the_money_must_leave_from_an_account_at_this_bank(self):
+        """A KTB file that debits an account at another bank is refused.
+
+        KTB reads the header's Sending A/C as one of its own, so a file
+        addressed to KTB carrying an SCB account asks it to debit an account it
+        has never heard of. It came back rejected with nothing said about which
+        account, because as far as the bank was concerned it was not there.
+        """
+        bank_scb = self._thai_bank("SICOTHBK", "014", "Siam Commercial Bank")
+        journal_scb = self._paying_journal(bank_scb, "0883000059", "TWRG")
+        payee = self._payee("สมชาย  ทดสอบระบบ", self.bank_ktb, "6930009999")
+        wrong_bank = self._posted_payment(journal_scb, payee, 100.00)
+        export = self._export_with_lines(
+            {
+                "bank": "KRTHTHBK",
+                "bank_export_format_id": self.bank_export_format.id,
+                "ktb_sender_name": SENDER_NAME,
+                "ktb_bank_type": "direct",
+                "ktb_service_type_direct": "14",
+                "effective_date": fields.Date.today(),
+            },
+            wrong_bank,
+        )
+        with self.assertRaises(UserError):
+            export.action_confirm()
+
+    def test_a_payee_bank_without_a_clearing_code_is_refused(self):
+        """The D record names the payee's bank by its three-digit code.
+
+        With none, the field went out as three spaces and KTB refused the file.
+        The codes are seeded but under ``noupdate``, so a database that had the
+        bank records first still has them empty.
+        """
+        export = self._create_ktb_export()
+        self.bank_ktb.bank_code = False
+        with self.assertRaises(UserError):
+            export.action_confirm()
 
     def test_every_record_is_128_characters(self):
         _text, records = self._render(self._create_ktb_export())
