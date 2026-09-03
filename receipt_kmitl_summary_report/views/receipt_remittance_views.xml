@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_receipt_remittance_form_summary" model="ir.ui.view">
+        <field name="name">kmitl.receipt.remittance.form.summary</field>
+        <field name="model">kmitl.receipt.remittance</field>
+        <field name="inherit_id" ref="receipt_kmitl.view_receipt_remittance_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/field[@name='state']" position="before">
+                <button name="action_view_summary_report"
+                        type="object"
+                        string="Summary Report"
+                        icon="fa-list-alt"
+                        attrs="{'invisible': [('receipt_count', '=', 0)]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

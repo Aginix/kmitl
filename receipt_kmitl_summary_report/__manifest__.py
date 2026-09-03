@@ -18,6 +18,7 @@
         "report/paperformat.xml",
         "report/receipt_summary_pdf_template.xml",
         "report/receipt_summary_pdf_action.xml",
+        "views/receipt_remittance_views.xml",
         "views/menus.xml",
     ],
     "assets": {

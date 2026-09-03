@@ -22,9 +22,7 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
 
     def test_full_flow(self):
         r1 = self._make_receipt()
-        r1.action_to_submit()
         r2 = self._make_receipt()
-        r2.action_to_submit()
 
         remittance = self.env["kmitl.receipt.remittance"].create(
             {"department_analytic_id": self.dept_a.id}
@@ -50,13 +48,25 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         self.assertTrue(r2.move_id)
         self.assertNotEqual(r1.move_id, r2.move_id)
 
+    def test_pull_appends_to_existing_set(self):
+        r1 = self._make_receipt()
+        remittance = self.env["kmitl.receipt.remittance"].create(
+            {"department_analytic_id": self.dept_a.id}
+        )
+        remittance.action_pull_pending_receipts()
+        self.assertEqual(set(remittance.receipt_ids.ids), {r1.id})
+
+        # A receipt that becomes pending afterwards is added to the batch,
+        # not swapped in to replace the ones already pulled.
+        r2 = self._make_receipt()
+        remittance.action_pull_pending_receipts()
+        self.assertEqual(set(remittance.receipt_ids.ids), {r1.id, r2.id})
+        self.assertEqual(r1.remittance_id, remittance)
+
     def test_pull_gathers_subtree(self):
         r_parent = self._make_receipt(department=self.dept_a)
-        r_parent.action_to_submit()
         r_child = self._make_receipt(department=self.dept_a_child)
-        r_child.action_to_submit()
         r_other = self._make_receipt(department=self.dept_b)
-        r_other.action_to_submit()
 
         remittance = self.env["kmitl.receipt.remittance"].create(
             {"department_analytic_id": self.dept_a.id}
@@ -65,12 +75,11 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         self.assertEqual(
             set(remittance.receipt_ids.ids), {r_parent.id, r_child.id}
         )
+        self.assertNotIn(r_other.id, remittance.receipt_ids.ids)
 
     def test_removing_receipt_returns_it_to_pool(self):
         r1 = self._make_receipt()
-        r1.action_to_submit()
         r2 = self._make_receipt()
-        r2.action_to_submit()
         remittance = self.env["kmitl.receipt.remittance"].create(
             {
                 "department_analytic_id": self.dept_a.id,
@@ -81,12 +90,11 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
 
         remittance.write({"receipt_ids": [(3, r1.id)]})
         self.assertFalse(r1.remittance_id)
-        self.assertEqual(r1.state, "to_submit")
+        self.assertEqual(r1.state, "draft")
         self.assertEqual(remittance.state, "submitted")
 
     def test_cancel_releases_receipts(self):
         r1 = self._make_receipt()
-        r1.action_to_submit()
         remittance = self.env["kmitl.receipt.remittance"].create(
             {
                 "department_analytic_id": self.dept_a.id,
@@ -97,11 +105,10 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         remittance.action_cancel()
         self.assertEqual(remittance.state, "cancelled")
         self.assertFalse(r1.remittance_id)
-        self.assertEqual(r1.state, "to_submit")
+        self.assertEqual(r1.state, "draft")
 
     def test_posted_cannot_be_cancelled(self):
         r1 = self._make_receipt()
-        r1.action_to_submit()
         remittance = self.env["kmitl.receipt.remittance"].create(
             {
                 "department_analytic_id": self.dept_a.id,
@@ -116,7 +123,6 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
 
     def test_reset_to_draft_from_submitted(self):
         r1 = self._make_receipt()
-        r1.action_to_submit()
         remittance = self.env["kmitl.receipt.remittance"].create(
             {
                 "department_analytic_id": self.dept_a.id,
@@ -126,11 +132,10 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         remittance.action_submit()
         remittance.action_draft()
         self.assertEqual(remittance.state, "draft")
-        self.assertEqual(r1.state, "to_submit")
+        self.assertEqual(r1.state, "draft")
 
     def test_submit_rejects_receipt_outside_subtree(self):
         r_other = self._make_receipt(department=self.dept_b)
-        r_other.action_to_submit()
         remittance = self.env["kmitl.receipt.remittance"].create(
             {
                 "department_analytic_id": self.dept_a.id,

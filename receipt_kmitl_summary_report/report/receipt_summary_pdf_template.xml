@@ -3,42 +3,39 @@
     <template id="receipt_summary_pdf">
         <t t-call="web.html_container">
             <t t-call="web.basic_layout">
-                <div class="header" style="border-bottom: 1px solid #000;">
-                    <table style="width: 100%; border: none;">
-                        <tr>
-                            <td style="width: 70px; border: none; vertical-align: top;">
-                                <img
-                                    t-if="company.logo"
-                                    t-att-src="image_data_uri(company.logo)"
-                                    style="max-height: 60px; max-width: 60px;"
-                                    alt="Logo"
-                                />
-                            </td>
-                            <td style="border: none; text-align: center; vertical-align: middle; line-height: 1.6;">
-                                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 4px;">
-                                    <t t-out="company.display_name" />
-                                </div>
-                                <div style="font-size: 16pt; font-weight: bold;">Receipt Summary Report</div>
-                            </td>
-                            <td style="width: 70px; border: none;" />
-                        </tr>
-                    </table>
+                <style>
+                  * {
+                    font-family: "THSarabun", Arial, sans-serif;
+                  }
+                  h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+                    margin-bottom: 0;
+                  }
+                </style>
+
+                <div>
+                  <div>
+                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 60px; max-width: 60px;" alt="Logo"/>
+                  </div>
+                  <div>
+                    <h4 t-out="company.display_name"/>
+                    <h5>Receipt Summary Report</h5>
+                  </div>
                 </div>
 
-                <div class="footer" style="text-align: right; font-size: 10pt;">
-                    <span class="page" />/<span class="topage" />
+                <div class="footer" style="text-align: right; font-size: 12pt;">
+                    <span class="page"/>/<span class="topage"/>
                 </div>
 
                 <div class="article">
-                    <div style="text-align: left; font-size: 10pt; margin-bottom: 10px;">
-                        <div t-foreach="filter_lines" t-as="line" t-out="line" />
+                    <div style="text-align: left; font-size: 12pt; margin-bottom: 10px;">
+                        <div t-foreach="filter_lines" t-as="line" t-out="line"/>
                     </div>
 
                     <style>
                         table.kmitl-receipt-summary {
                             width: 100%;
                             border-collapse: collapse;
-                            font-size: 9pt;
+                            font-size: 12pt;
                         }
                         table.kmitl-receipt-summary th,
                         table.kmitl-receipt-summary td {
@@ -66,29 +63,29 @@
                     <table class="kmitl-receipt-summary">
                         <thead style="display: table-header-group;">
                             <tr>
-                                <th style="width: 8%;">Date</th>
-                                <th style="width: 12%;">Receipt No.</th>
-                                <th>Description</th>
-                                <th class="text-right" style="width: 12%;">Amount</th>
-                                <th style="width: 22%;">Analytic Dimensions</th>
-                                <th style="width: 16%;">Note</th>
+                                <th style="width: 24pt">วันที่</th>
+                                <th style="width: 56pt;">เลขที่ใบเสร็จ</th>
+                                <th>รายละเอียด</th>
+                                <th class="text-right" style="width: 64pt;">จำนวนเงิน</th>
+                                <th style="width: 30%;">มิติบัญชี</th>
+                                <th style="width: 16%;">หมายเหตุ</th>
                             </tr>
                         </thead>
                         <tbody>
                             <t t-foreach="groups" t-as="group">
                                 <tr class="group-row">
-                                    <td colspan="3" t-out="group['date']" />
-                                    <td class="text-right" t-out="format_amount(group['total'])" />
-                                    <td colspan="2" />
+                                    <td colspan="3" t-out="group['date']"/>
+                                    <td class="text-right" t-out="format_amount(group['total'])"/>
+                                    <td colspan="2"/>
                                 </tr>
                                 <t t-foreach="group['rows']" t-as="row">
                                     <tr>
-                                        <td />
-                                        <td t-out="row['name']" />
-                                        <td class="pre-line" t-out="row['description']" />
-                                        <td class="text-right" t-out="format_amount(row['amount_total'])" />
-                                        <td class="pre-line" t-out="row['dimensions']" />
-                                        <td t-out="row['note']" />
+                                        <td/>
+                                        <td class="text-center" t-out="row['name']"/>
+                                        <td class="pre-line" t-out="row['description']"/>
+                                        <td class="text-right" t-out="format_amount(row['amount_total'])"/>
+                                        <td class="pre-line" t-out="row['dimensions']"/>
+                                        <td t-out="row['note']"/>
                                     </tr>
                                 </t>
                             </t>
@@ -96,8 +93,8 @@
                         <tfoot>
                             <tr>
                                 <td colspan="3">Grand Total</td>
-                                <td class="text-right" t-out="format_amount(grand_total)" />
-                                <td colspan="2" />
+                                <td class="text-right" t-out="format_amount(grand_total)"/>
+                                <td colspan="2"/>
                             </tr>
                         </tfoot>
                     </table>
