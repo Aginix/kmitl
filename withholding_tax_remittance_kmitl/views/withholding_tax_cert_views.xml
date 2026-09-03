@@ -46,13 +46,13 @@
                     domain="[('remit_state', '=', 'remitted')]"
                 />
             </filter>
-            <group string="Group By" position="inside">
+            <filter name="tax_payer" position="after">
                 <filter
                     string="Remittance Status"
                     name="group_remit_state"
                     context="{'group_by': 'remit_state'}"
                 />
-            </group>
+            </filter>
         </field>
     </record>
 </odoo>
