@@ -130,7 +130,11 @@ class AdvancePaymentReturnLine(models.Model):
                     _("Only pending review return lines can be approved.")
                 )
             vals = rec._prepare_return_payment_vals()
-            payment = self.env["account.payment"].create(vals)
+            # account.payment create is ACL-gated to Accounting/Budget groups
+            # a loan officer has no reason to hold — the button's own
+            # groups="...loan_officer" already establishes authority; sudo()
+            # the create the same way advance_payment.action_approve does.
+            payment = self.env["account.payment"].sudo().create(vals)
             # Left a finance-office draft, like the outbound disbursement in
             # advance_payment.action_approve: receipting the money in is the
             # finance office's own press, not this line's (ADR-0003).

@@ -17,8 +17,13 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         super().setUpClass()
         cls.manager = cls.env.ref("base.user_admin")
         # The advance payment borrower is now hr.employee (ADR-0014); PR's
-        # requested_by needs one to seed action_create_advance_payment.
-        cls.manager_employee = cls.env["hr.employee"].create(
+        # requested_by needs one to seed action_create_advance_payment. hr's
+        # own data.xml already seeds hr.employee_admin with
+        # user_id=base.user_admin on every database — reuse it instead of
+        # creating a second one, which would violate hr_employee_user_uniq.
+        cls.manager_employee = cls.env["hr.employee"].search(
+            [("user_id", "=", cls.manager.id)], limit=1
+        ) or cls.env["hr.employee"].create(
             {"name": cls.manager.name, "user_id": cls.manager.id}
         )
 

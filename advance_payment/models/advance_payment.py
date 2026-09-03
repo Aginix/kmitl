@@ -694,8 +694,10 @@ class AdvancePayment(models.Model):
 
     @api.depends("payment_ids")
     def _compute_payment_count(self):
+        # sudo: account.payment read is ACL-gated to Accounting/Budget groups
+        # a loan officer viewing the smart button has no reason to hold.
         for rec in self:
-            rec.payment_count = len(rec.payment_ids)
+            rec.payment_count = len(rec.sudo().payment_ids)
 
     @api.depends("return_line_ids")
     def _compute_return_count(self):
@@ -1050,7 +1052,11 @@ class AdvancePayment(models.Model):
             "advance_payment.payment_type_advance_payment_outbound"
         )
         vals_list = [rec._prepare_account_payment_vals(payment_type) for rec in self]
-        payments = self.env["account.payment"].create(vals_list)
+        # account.payment create is ACL-gated to Accounting/Budget groups the
+        # approver has no reason to hold — authority is already established
+        # by _check_approve_permission() above; sudo() the create the same
+        # way _done_workflow_activity does for its own ACL gap.
+        payments = self.env["account.payment"].sudo().create(vals_list)
         self.write(
             {
                 "state": "waiting_transfer",
@@ -1335,8 +1341,14 @@ class AdvancePayment(models.Model):
         finance office has already confirmed for the bank keeps
         `finance_state = 'confirmed'` after this: unwinding that is their call,
         not the loan's, and the numbered ใบสำคัญจ่าย has to stay auditable.
+
+        sudo: account.payment read/write is ACL-gated to Accounting/Budget
+        groups, which cancelling an agreement has no reason to require —
+        authority to cancel is already established by the caller (the cancel
+        wizard's own groups=, or an admin), same rationale as
+        _done_workflow_activity.
         """
-        for payment in self.payment_ids.filtered(lambda p: p.state != "cancel"):
+        for payment in self.sudo().payment_ids.filtered(lambda p: p.state != "cancel"):
             if payment.state == "posted":
                 payment.action_draft()
             payment.action_cancel()
@@ -1392,11 +1404,16 @@ class AdvancePayment(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id(
             "account.action_account_payments"
         )
-        if self.payment_count == 1:
+        # sudo: only resolves which record/domain to open with — the
+        # Accounting app's own action still applies its own access rules once
+        # the client navigates there, for whoever isn't otherwise granted
+        # read on account.payment (see ADR-0015/17's sudo() precedent).
+        payment_ids = self.sudo().payment_ids
+        if len(payment_ids) == 1:
             action["views"] = [(False, "form")]
-            action["res_id"] = self.payment_ids.id
+            action["res_id"] = payment_ids.id
         else:
-            action["domain"] = [("id", "in", self.payment_ids.ids)]
+            action["domain"] = [("id", "in", payment_ids.ids)]
         return action
 
     def action_open_return_wizard(self):

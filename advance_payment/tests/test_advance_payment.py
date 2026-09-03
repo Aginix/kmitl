@@ -160,12 +160,17 @@ class TestAdvancePayment(TransactionCase):
         # Give every acting user a linked hr.employee — the borrower field is
         # now employee_id (ADR-0014). Passing user_id at create makes core
         # _sync_user mirror work_contact_id = user.partner_id, so the bank
-        # fixtures below (keyed on user.partner_id) still resolve.
+        # fixtures below (keyed on user.partner_id) still resolve. cls.manager
+        # (base.user_admin) already has one — hr's own data.xml seeds
+        # hr.employee_admin with user_id=base.user_admin on every database, so
+        # creating a second one here would violate hr_employee_user_uniq.
         Employee = cls.env["hr.employee"]
-        cls.emp = {
-            u.id: Employee.create({"name": u.name, "user_id": u.id})
-            for u in (cls.manager, cls.user, cls.user2, cls.staff, cls.officer)
-        }
+        cls.emp = {}
+        for u in (cls.manager, cls.user, cls.user2, cls.staff, cls.officer):
+            existing = Employee.search([("user_id", "=", u.id)], limit=1)
+            cls.emp[u.id] = existing or Employee.create(
+                {"name": u.name, "user_id": u.id}
+            )
         cls.banks = {}
         for rec in (cls.manager, cls.user, cls.user2, cls.staff, cls.officer):
             cls.banks[rec.id] = cls.env["res.partner.bank"].create(
@@ -259,10 +264,18 @@ class TestAdvancePayment(TransactionCase):
         self.assertEqual(ap.user_id, self.staff)
 
     def test_user_tier_can_pick_borrower_in_form(self):
-        """The UI gate must match _check_creator_only, not base.group_system."""
+        """The UI gate must match _check_creator_only, not base.group_system.
+
+        can_draft_on_behalf has no field dependency (it only reads
+        self.env.user), so Odoo's field cache — keyed by record id, not by
+        uid — would otherwise serve the first with_user()'s stale value to
+        the next; invalidate between reads to force a fresh compute.
+        """
         ap = self._make(requested_by=self.user2, as_user=self.staff)
         self.assertTrue(ap.with_user(self.staff).can_draft_on_behalf)
+        ap.invalidate_recordset()
         self.assertTrue(ap.with_user(self.manager).can_draft_on_behalf)
+        ap.invalidate_recordset()
         self.assertFalse(ap.with_user(self.user2).can_draft_on_behalf)
 
     def test_user_tier_cannot_submit_drafted_on_behalf(self):
@@ -886,6 +899,10 @@ class TestAdvancePayment(TransactionCase):
                 "loan_type_id": self.loan_type.id,
                 "loan_reason": "Test reason",
                 "loan_verifier_id": self.officer.id,
+                # No work_contact_id on a bare employee to auto-fill bank_id
+                # from (ADR-0015) — set it explicitly, unrelated to what this
+                # test actually exercises (submit permission).
+                "bank_id": self.banks[self.manager.id].id,
             }
         )
         self.assertEqual(ap.state, "draft")
@@ -943,7 +960,12 @@ class TestAdvancePayment(TransactionCase):
     # ------------------------------------------------------------------ #
 
     def test_can_edit_drafter_manager_only(self):
+        # can_edit_drafter has no field dependency — invalidate between
+        # with_user() reads so the field cache (keyed by record id, not uid)
+        # doesn't serve a stale value from the previous user's compute.
         ap = self._make()
         self.assertTrue(ap.with_user(self.manager).can_edit_drafter)
+        ap.invalidate_recordset()
         self.assertFalse(ap.with_user(self.staff).can_edit_drafter)
+        ap.invalidate_recordset()
         self.assertFalse(ap.with_user(self.officer).can_edit_drafter)
