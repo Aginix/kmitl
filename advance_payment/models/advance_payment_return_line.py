@@ -113,6 +113,46 @@ class AdvancePaymentReturnLine(models.Model):
             vals["journal_id"] = payment_type.journal_id.id
         return vals
 
+    def _settle_return(self):
+        """Create the inbound settlement document, link it to the line, and
+        return an HTML fragment describing it for the agreement chatter.
+
+        Base creates a draft inbound ``account.payment`` (receipting the money
+        in is left to the finance office, ADR-0003). Bridge modules override
+        this to settle the return through a different document (e.g. issuing a
+        cash receipt) without re-implementing :meth:`action_approve`.
+        """
+        self.ensure_one()
+        vals = self._prepare_return_payment_vals()
+        # account.payment create is ACL-gated to Accounting/Budget groups
+        # a loan officer has no reason to hold — the button's own
+        # groups="...loan_officer" already establishes authority; sudo()
+        # the create the same way advance_payment.action_approve does.
+        payment = self.env["account.payment"].sudo().create(vals)
+        self.payment_id = payment.id
+        return _(
+            "Payment"
+            " <a href='/web#id=%(pid)s&amp;model=account.payment'>"
+            "<b>%(pname)s</b></a> created.",
+            pid=payment.id,
+            pname=payment.name,
+        )
+
+    def _cancel_return_settlement(self):
+        """Undo the settlement document created by :meth:`_settle_return`.
+
+        Base drafts/cancels the linked payment. Bridge modules override to
+        undo their own settlement document.
+        """
+        self.ensure_one()
+        if self.payment_id:
+            payment = self.payment_id
+            if payment.state == "posted":
+                payment.action_draft()
+            if payment.state != "cancel":
+                payment.action_cancel()
+        self.payment_id = False
+
     def action_confirm(self):
         for rec in self:
             if rec.state != "draft":
@@ -129,27 +169,15 @@ class AdvancePaymentReturnLine(models.Model):
                 raise UserError(
                     _("Only pending review return lines can be approved.")
                 )
-            vals = rec._prepare_return_payment_vals()
-            # account.payment create is ACL-gated to Accounting/Budget groups
-            # a loan officer has no reason to hold — the button's own
-            # groups="...loan_officer" already establishes authority; sudo()
-            # the create the same way advance_payment.action_approve does.
-            payment = self.env["account.payment"].sudo().create(vals)
-            # Left a finance-office draft, like the outbound disbursement in
-            # advance_payment.action_approve: receipting the money in is the
-            # finance office's own press, not this line's (ADR-0003).
-            rec.write({"state": "done", "payment_id": payment.id})
+            ref_message = rec._settle_return()
+            rec.write({"state": "done"})
             rec.agreement_id.message_post(
                 body=_(
-                    "Return of <b>%(amount)s %(currency)s</b> reconciled."
-                    " Payment"
-                    " <a href='/web#id=%(pid)s&amp;model=account.payment'>"
-                    "<b>%(pname)s</b></a> created.",
+                    "Return of <b>%(amount)s %(currency)s</b> reconciled. ",
                     amount=rec.amount,
                     currency=rec.currency_id.name,
-                    pid=payment.id,
-                    pname=payment.name,
-                ),
+                )
+                + ref_message,
                 subtype_xmlid="mail.mt_note",
             )
             # Settle the agreement automatically once fully returned (ADR-0003).
@@ -177,10 +205,5 @@ class AdvancePaymentReturnLine(models.Model):
                 raise UserError(
                     _("Only done return lines can be reset by admin.")
                 )
-            if rec.payment_id:
-                payment = rec.payment_id
-                if payment.state == "posted":
-                    payment.action_draft()
-                if payment.state != "cancel":
-                    payment.action_cancel()
-            rec.write({"state": "draft", "payment_id": False})
+            rec._cancel_return_settlement()
+            rec.write({"state": "draft"})
