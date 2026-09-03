@@ -2281,7 +2281,7 @@ msgstr "กรณีเลือกประเภทการจ่ายเง
 msgid ""
 "When payment type is Advance, please select the advance's\n"
 "                            name in the Vendor field."
-msgstr "กรณีเลือกประเภทการจ่ายเงินเป็นเงินยืมให้เลือกชื่อผู้ยืมเงิน"
+msgstr "กรณีเลือกประเภทการจ่ายเงินเป็นเงินยืมให้เลือกชื่อยืมเงิน"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.po_payment_type_should_be_the_same_as_pr

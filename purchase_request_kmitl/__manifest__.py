@@ -1,6 +1,6 @@
 {
     "name": "Purchase Request KMITL",
-    "version": "16.0.0.2.1",
+    "version": "16.0.0.2.2",
     "summary": """ Purchase Request KMITL""",
     "category": "KMITL",
     "author": "Aginix Technologies",

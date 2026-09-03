@@ -9,12 +9,12 @@
             <field name="procurement_mode" position="attributes">
                 <attribute
                     name="attrs"
-                >{'readonly': ['|', ('is_editable', '=', False), ('payment_type', 'in', ('prepaid', 'advance'))]}</attribute>
+                >{'readonly': ['|', ('is_editable', '=', False), ('payment_type', '=', 'prepaid')]}</attribute>
             </field>
             <field name="vat_included" position="attributes">
                 <attribute
                     name="attrs"
-                >{'readonly': ['|', ('is_editable', '=', False), ('payment_type', 'in', ('prepaid', 'advance'))]}</attribute>
+                >{'readonly': ['|', ('is_editable', '=', False), ('payment_type', '=', 'prepaid')]}</attribute>
             </field>
         </field>
     </record>
