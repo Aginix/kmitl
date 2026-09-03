@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_withholding_tax_cert_tree_remittance" model="ir.ui.view">
+        <field name="name">withholding.tax.cert.tree.remittance</field>
+        <field name="model">withholding.tax.cert</field>
+        <field name="inherit_id" ref="l10n_th_account_tax.view_withholding_tax_cert_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <header>
+                    <button
+                        name="action_create_remittance"
+                        type="object"
+                        string="สร้างใบนำส่ง"
+                        class="btn-primary"
+                        groups="accounting_kmitl.group_accounting_kmitl_user"
+                    />
+                </header>
+            </xpath>
+            <field name="state" position="after">
+                <field
+                    name="remit_state"
+                    widget="badge"
+                    decoration-success="remit_state == 'remitted'"
+                    decoration-warning="remit_state == 'pending'"
+                    optional="show"
+                />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_withholding_tax_cert_search_remittance" model="ir.ui.view">
+        <field name="name">withholding.tax.cert.search.remittance</field>
+        <field name="model">withholding.tax.cert</field>
+        <field name="inherit_id" ref="l10n_th_account_tax.view_withholding_tax_cert_search" />
+        <field name="arch" type="xml">
+            <filter name="journal" position="after">
+                <separator />
+                <filter
+                    string="ยังไม่นำส่ง"
+                    name="remit_pending"
+                    domain="[('remit_state', '=', 'pending')]"
+                />
+                <filter
+                    string="นำส่งแล้ว"
+                    name="remit_done"
+                    domain="[('remit_state', '=', 'remitted')]"
+                />
+            </filter>
+            <group string="Group By" position="inside">
+                <filter
+                    string="Remittance Status"
+                    name="group_remit_state"
+                    context="{'group_by': 'remit_state'}"
+                />
+            </group>
+        </field>
+    </record>
+</odoo>
