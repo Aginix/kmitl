@@ -159,11 +159,10 @@ class AdvancePaymentReturnLine(models.Model):
         line_description = _("Return of advance payment %s") % (agreement.name or "")
         header_description = _(
             "คืนเงินยืมทดรองจ่าย สัญญาเลขที่ %(agreement)s "
-            "ผู้ยืม %(employee)s เหตุผลการยืม %(reason)s"
+            "ผู้ยืม %(employee)s"
         ) % {
             "agreement": agreement.name or "-",
             "employee": agreement.employee_id.name or "-",
-            "reason": agreement.loan_reason or "-",
         }
         return {
             "date": self.date,
