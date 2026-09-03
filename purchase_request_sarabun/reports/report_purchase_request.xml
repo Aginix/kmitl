@@ -62,31 +62,18 @@
          Reused by the Sarabun bridge to seed the หนังสือ's editable เนื้อหา
          (ADR-0015). Expects `o` (a purchase.request) in context. -->
     <template id="report_purchase_request_narrative">
-        <p style="text-indent: 6em">
+        <p>
+            <span class="oe-tabs" style="width: 40px;">	</span>
             ข้าพเจ้า
-            <span
-                t-field="o.requested_by"
-                class="fw-bolder text-decoration-underline"
-            />
-            <span class="ms-2">สังกัด</span>
-            <span
-                t-out="o.requested_by.employee_id.department_id.complete_name"
-                class="fw-bolder text-decoration-underline"
-            />
+            <u><strong><span t-field="o.requested_by" /></strong></u>
+            <span class="oe-tabs" style="width: 40px;">	</span>
+            <span>สังกัด</span>
+            <u><strong><span t-out="o.requested_by.employee_id.department_id.complete_name" /></strong></u>
             ต้องการ
-            <span
-                t-field="o.procurement_type_id"
-                class="fw-bolder text-decoration-underline"
-            />
-            <span
-                t-out="o.product_id.name"
-                class="fw-bolder text-decoration-underline"
-            />
+            <u><strong><span t-field="o.procurement_type_id" /></strong></u>
+            <u><strong><span t-out="o.product_id.name" /></strong></u>
             ด้วยวิธีการจัดซื้อจัดจ้าง
-            <span
-                class="fw-bolder text-decoration-underline"
-                t-field="o.procurement_method_id"
-            />
+            <u><strong><span t-field="o.procurement_method_id" /></strong></u>
         </p>
 
         <div class="my-4" />
@@ -94,20 +81,14 @@
         <div class="row">
             <div class="col">
                 เหตุผลความจำเป็น
-                <span
-                    class="fw-bolder text-decoration-underline"
-                    t-out="o.description"
-                />
+                <u><strong><span t-out="o.description" /></strong></u>
             </div>
         </div>
 
         <div class="row">
             <div class="col">
                 โดยใช้งบประมาณ ประจำปีงบประมาณ พ.ศ.
-                <span
-                    class="fw-bolder text-decoration-underline"
-                    t-field="o.account_fiscal_year_id"
-                />
+                <u><strong><span t-field="o.account_fiscal_year_id" /></strong></u>
             </div>
         </div>
     </template>
