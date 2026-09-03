@@ -3,10 +3,9 @@
 
     <!-- Menu-scoped search views: partner-type filter + panel (คู่ค้าบุคคล / คู่ค้าบริษัท).
          Primary inherits so the base account.move search view stays untouched — only
-         the four menus whose actions bind these views expose the filter.
+         the menus whose actions bind these views expose the filter.
          account.view_account_move_filter has NO searchpanel → add filters + new searchpanel
-         via position="inside" on //search.
-         account.view_account_move_line_filter HAS a searchpanel → use two xpaths. -->
+         via position="inside" on //search. -->
     <record id="view_account_move_filter_vendor_bills_kmitl" model="ir.ui.view">
         <field name="name">account.move.filter.vendor.bills.kmitl</field>
         <field name="model">account.move</field>
@@ -47,22 +46,22 @@
         </field>
     </record>
 
-    <record id="view_account_move_line_filter_all_kmitl" model="ir.ui.view">
-        <field name="name">account.move.line.filter.all.kmitl</field>
-        <field name="model">account.move.line</field>
-        <field name="inherit_id" ref="account.view_account_move_line_filter"/>
+    <record id="view_account_move_filter_account_entries_kmitl" model="ir.ui.view">
+        <field name="name">account.move.filter.account.entries.kmitl</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_move_filter"/>
         <field name="mode">primary</field>
         <field name="arch" type="xml">
-            <xpath expr="//searchpanel" position="before">
+            <xpath expr="//search" position="inside">
                 <separator/>
                 <filter string="คู่ค้าบุคคล" name="partner_type_person"
                         domain="[('partner_company_type', '=', 'person')]"/>
                 <filter string="คู่ค้าบริษัท" name="partner_type_company"
                         domain="[('partner_company_type', '=', 'company')]"/>
-            </xpath>
-            <xpath expr="//searchpanel" position="inside">
-                <field name="partner_company_type" string="ประเภทคู่ค้า"
-                       icon="fa-user" select="multi" enable_counters="1"/>
+                <searchpanel>
+                    <field name="partner_company_type" string="ประเภทคู่ค้า"
+                           icon="fa-user" select="multi" enable_counters="1"/>
+                </searchpanel>
             </xpath>
         </field>
     </record>
@@ -160,7 +159,7 @@
         <field name="name">Journal Items</field>
         <field name="res_model">account.move.line</field>
         <field name="view_mode">tree,pivot,graph,kanban,form</field>
-        <field name="search_view_id" ref="view_account_move_line_filter_all_kmitl"/>
+        <field name="search_view_id" ref="account.view_account_move_line_filter"/>
         <field name="domain">[('display_type', 'not in', ('line_section', 'line_note'))]</field>
         <field name="context">{'search_default_group_by_move': 1, 'create': 0}</field>
     </record>
