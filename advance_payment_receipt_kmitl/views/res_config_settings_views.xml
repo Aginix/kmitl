@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_advance_payment_receipt"
+        model="ir.ui.view">
+        <field name="name">res.config.settings.form.advance_payment_receipt_kmitl</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="21"/>
+        <field name="inherit_id"
+            ref="advance_payment.res_config_settings_view_form_advance_payment"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@data-key='advance_payment']" position="inside">
+                <h2>การรับเงินคืน (ใบเสร็จ)</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_right_pane">
+                            <label for="advance_payment_return_product_id"/>
+                            <div class="text-muted">
+                                สินค้า/บริการที่ใช้เป็นรายการบนใบเสร็จรับเงินคืนยืม บัญชีรายได้ดึงจากสินค้านี้
+                            </div>
+                            <field name="advance_payment_return_product_id"
+                                options="{'no_create': True, 'no_open': True}"/>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_right_pane">
+                            <label for="advance_payment_return_payment_method_id"/>
+                            <div class="text-muted">
+                                วิธีรับเงิน (เงินสด/เงินโอน) ตั้งต้นบนใบเสร็จ การเงินปรับแก้บนใบเสร็จ (ร่าง) ได้ก่อนนำส่งคลัง
+                            </div>
+                            <field name="advance_payment_return_payment_method_id"
+                                options="{'no_create': True, 'no_open': True}"/>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

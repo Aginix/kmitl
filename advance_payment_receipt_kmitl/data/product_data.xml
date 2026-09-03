@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <!-- Line item used on the receipt issued when advance money is
+             returned. The income account is intentionally left blank for
+             finance to configure (per requirement); until then, approving a
+             return raises a clear error. -->
+        <record id="product_advance_payment_return" model="product.product">
+            <field name="name">รับคืนเงินยืม</field>
+            <field name="detailed_type">service</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="lst_price">0.0</field>
+        </record>
+    </data>
+</odoo>
