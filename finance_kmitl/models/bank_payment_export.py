@@ -8,6 +8,7 @@ from odoo.osv import expression
 class BankPaymentExport(models.Model):
     _name = "bank.payment.export"
     _inherit = ["bank.payment.export", "thai.date.mixin"]
+    _order = "name desc, id desc"
 
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
