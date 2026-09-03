@@ -21,3 +21,4 @@ Status: proposed (2026-07 review; UAT-only)
 - `requested_by` field permission tightened — no longer editable by the manager group.
 - ADR-0014 renames this field to `employee_id` (`hr.employee`) and moves the creator-only comparison to `employee_id.user_id` vs. the new `user_id` field.
 - `bank_id` is borrower-editable only in `draft`; editable by the finance officer in later states up to `waiting_transfer`; the borrower's book-bank attachment remains the evidence.
+- ADR-0015 makes `bank_id` default itself to the borrower's first `res.partner.bank` whenever `employee_id` changes, so the borrower never picks it by hand; the officer's correction window above is what keeps that safe.

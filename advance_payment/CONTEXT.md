@@ -42,11 +42,12 @@ The date the disbursement transfer to the borrower completes. At this moment the
 _Avoid_: approval date, disbursement request date
 
 **Verify (ตรวจสอบ)**:
-The finance officer's check of the submitted request against the real paper documents, at `to_verify`. Distinct from Approve. On failure the officer returns the request to the borrower to edit (back to `draft`). Only the officer named in the record's `loan_verifier_id` (or an admin) may verify (ADR-0013); submitting the request raises a To Do activity for that officer.
+The finance officer's check of the submitted request against the real paper documents, at `to_verify`. Distinct from Approve. On failure the officer returns the request to the borrower to edit (back to `draft`). Only the officer named in the record's `loan_verifier_id` (or an admin) may verify (ADR-0013); submitting the request raises a To Do activity for that officer, which verifying marks **done** and which cancel / ส่งกลับแก้ไข / ดึงกลับ **drop** unfinished, so the officer's inbox only ever holds requests they can actually act on (ADR-0015). `loan_verifier_id` defaults from the standing assignee configured in Settings, else from the sole officer when there is only one (ADR-0015).
 _Avoid_: approve, review, validate
 
 **Approve (อนุมัติ)**:
 The management sign-off at `to_approve` that releases the request to disbursement — a **single step**, a manual click by `group_advance_payment_manager` (`action_approve`), which creates the disbursement `account.payment` and moves the loan to `waiting_transfer`. The multi-tier Endorse → Approve chain routed by org unit (Faculty: Dean endorses → Deputy Rector approves; สนอ.: ผอ.กองคลัง endorses → Deputy Rector approves) is **not implemented**. There is no `rejected` state on the loan itself — a request that does not pass goes back to `draft`/`to_verify` (ส่งกลับแก้ไข) or to `cancel`. (An e-Saraban approval bridge, `advance_payment_sarabun`, was prototyped and removed for now — see ADR-0011.)
+Each record names its expected approver in `approver_id` (defaulted from the standing approver configured in Settings, else the admin), and finishing verification raises a To Do for that person; approving marks it done, cancel/ดึงกลับ drop it (ADR-0016). Note `approver_id` is a **routing target, not an authority check** — any `group_advance_payment_manager` member may still approve, unlike verify which ADR-0013 narrowed to the named officer.
 _Avoid_: verify, confirm, endorse
 
 **Debt (หนี้เงินยืม / ลูกหนี้)**:

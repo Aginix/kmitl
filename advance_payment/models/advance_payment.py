@@ -2,9 +2,10 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import str2bool
 
-# The "To Do" raised on the assigned loan officer when a request is submitted
-# for verification (ADR-0013).
-VERIFY_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
+# Activity type of the "To Do" raised on whoever a pending state waits for —
+# the loan officer at to_verify, the approver at to_approve. It is the generic
+# type, so every lookup must also match the summary (ADR-0013/0015).
+WORKFLOW_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
 
 
 class AdvancePayment(models.Model):
@@ -381,17 +382,44 @@ class AdvancePayment(models.Model):
     )
 
     @api.model
-    def _default_loan_verifier_id(self):
-        """Auto-pick the sole real officer.
-
-        Excludes the admin/root escape hatch (auto-members of the group, see
-        ADR-0013) so a genuinely single-officer setup keeps auto-defaulting
-        instead of always falling back to ambiguous once admin is counted.
-        """
+    def _loan_officer_candidates(self):
+        """Real officers — the admin/root escape hatch (standing members of the
+        group, ADR-0013) excluded, so their blanket membership never makes a
+        genuinely single-officer setup look ambiguous."""
         officers = self.env.ref(
             "advance_payment.group_advance_payment_loan_officer"
         ).users - (self.env.ref("base.user_root") + self.env.ref("base.user_admin"))
-        return officers.id if len(officers) == 1 else False
+        # A m2m read does not apply active_test, so archived officers would
+        # otherwise still count towards "exactly one".
+        return officers.filtered("active")
+
+    @api.model
+    def _default_loan_verifier_id(self):
+        """The officer configured in Settings, else the sole real officer.
+
+        The field is required (ADR-0013), so a multi-officer institute had no
+        working default at all and every create — including the programmatic
+        ones in the bridges — had to name an officer explicitly. Settings now
+        carries the standing assignee; the sole-officer fallback keeps small
+        setups working with no configuration (ADR-0015).
+        """
+        candidates = self._loan_officer_candidates()
+        configured = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("advance_payment.default_loan_verifier_id")
+        )
+        if configured:
+            # Ignore a stale setting: the user may have been deleted, archived
+            # or dropped from the group since it was saved, and the field's own
+            # domain would then reject the default.
+            try:
+                officer = self.env["res.users"].browse(int(configured))
+            except (TypeError, ValueError):
+                officer = self.env["res.users"]
+            if officer & candidates:
+                return officer.id
+        return candidates.id if len(candidates) == 1 else False
 
     loan_verifier_id = fields.Many2one(
         comodel_name="res.users",
@@ -408,6 +436,58 @@ class AdvancePayment(models.Model):
         default=_default_loan_verifier_id,
         required=True,
         tracking=True,
+    )
+
+    @api.model
+    def _approver_candidates(self):
+        """Managers who may be named as approver — matched the same way the
+        field's own domain matches (direct membership), so a configured user
+        can never resolve to a default the domain then rejects."""
+        return self.env.ref(
+            "advance_payment.group_advance_payment_manager"
+        ).users.filtered("active")
+
+    @api.model
+    def _default_approver_id(self):
+        """The approver configured in Settings, else the admin.
+
+        Approval is a single manager sign-off (ADR-0006) and unlike the loan
+        officer there is no "sole member" to infer — root/admin are standing
+        members of the manager group. So the setting is the only real source,
+        and the fallback is `base.user_admin`: required=True must always
+        resolve, and an admin can approve anyway, so a database that never
+        configured this still works instead of blocking every create
+        (ADR-0016).
+        """
+        configured = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("advance_payment.default_approver_id")
+        )
+        if configured:
+            # Ignore a stale setting the field's own domain would reject.
+            try:
+                approver = self.env["res.users"].browse(int(configured))
+            except (TypeError, ValueError):
+                approver = self.env["res.users"]
+            if approver & self._approver_candidates():
+                return approver.id
+        return self.env.ref("base.user_admin").id
+
+    approver_id = fields.Many2one(
+        comodel_name="res.users",
+        string="ผู้อนุมัติ",
+        domain=lambda self: [
+            (
+                "groups_id",
+                "in",
+                self.env.ref("advance_payment.group_advance_payment_manager").ids,
+            )
+        ],
+        default=_default_approver_id,
+        required=True,
+        tracking=True,
+        help="ผู้ที่จะได้รับงานให้อนุมัติเมื่อเจ้าหน้าที่ตรวจสอบคำขอเรียบร้อยแล้ว",
     )
 
     effective_date = fields.Date(
@@ -550,10 +630,34 @@ class AdvancePayment(models.Model):
         domain=[("res_model", "=", "advance.payment")],
     )
 
+    def _default_bank_id(self):
+        """The borrower's first bank account, in res.partner.bank order.
+
+        Picked outright rather than only when unambiguous: a borrower with
+        several accounts should still not have to open the dropdown, and the
+        officer may correct bank_id up to the transfer anyway (ADR-0005).
+        Returns an empty recordset when the work contact has no account — the
+        blocking exception rule on bank_id then catches it at submit.
+        """
+        self.ensure_one()
+        partner = self.employee_id.work_contact_id
+        if not partner:
+            return self.env["res.partner.bank"]
+        return self.env["res.partner.bank"].search(
+            [("partner_id", "=", partner.id)], limit=1
+        )
+
     @api.onchange("employee_id")
     def _onchange_employee_id(self):
-        if self.bank_id and self.bank_id.partner_id != self.employee_id.work_contact_id:
-            self.bank_id = False
+        """Re-point bank_id at the new borrower, without making them pick.
+
+        Also fires on form open (the client's initial onchange pass runs every
+        onchange method), so a borrower drafting for themselves gets their
+        account filled in from the start (ADR-0015).
+        """
+        if self.bank_id and self.bank_id.partner_id == self.employee_id.work_contact_id:
+            return
+        self.bank_id = self._default_bank_id()
 
     @api.depends(
         "loan_amount",
@@ -746,30 +850,81 @@ class AdvancePayment(models.Model):
                     )
                 )
 
-    def _verify_activity_summary(self):
-        self.ensure_one()
-        return _("ตรวจสอบคำขอยืมเงิน %s", self.name)
+    def _workflow_activity_specs(self):
+        """(summary, assignee) of the To-Do owned by each pending state.
 
-    def _schedule_verify_activity(self):
-        """Raise the verify To-Do on the assigned loan officer.
+        One entry per state that waits on a named person, keyed by that state
+        so the transitions can name the stage they are leaving or entering
+        rather than repeating a set of near-identical helpers (ADR-0015).
+        """
+        self.ensure_one()
+        return {
+            "to_verify": (
+                _("ตรวจสอบคำขอยืมเงิน %s", self.name),
+                self.loan_verifier_id,
+            ),
+            "to_approve": (
+                _("อนุมัติคำขอยืมเงิน %s", self.name),
+                self.approver_id,
+            ),
+        }
+
+    def _workflow_activities(self, stage=None):
+        """The records' open workflow To-Dos — one stage, or all of them.
+
+        Matched on type *and* summary, not type alone: WORKFLOW_ACTIVITY_XMLID
+        is the generic "To Do" type, so a blanket `activity_feedback` /
+        `activity_unlink` would sweep up unrelated to-dos on the same record.
+        """
+        activity_type = self.env.ref(WORKFLOW_ACTIVITY_XMLID)
+        wanted = set()
+        for rec in self:
+            specs = rec._workflow_activity_specs()
+            for key in [stage] if stage else specs:
+                wanted.add((rec.id, specs[key][0]))
+        return self.activity_ids.filtered(
+            lambda a: a.activity_type_id == activity_type
+            and (a.res_id, a.summary) in wanted
+        )
+
+    def _schedule_workflow_activity(self, stage):
+        """Raise `stage`'s To-Do on its assignee.
 
         Clears any stale one first so recall/resubmit loops (action_recall,
         the officer's own ส่งกลับแก้ไข) don't pile up duplicates on the same
         record (ADR-0013).
         """
-        activity_type = self.env.ref(VERIFY_ACTIVITY_XMLID)
         for rec in self:
-            summary = rec._verify_activity_summary()
-            rec.activity_ids.filtered(
-                lambda a, activity_type=activity_type, summary=summary: (
-                    a.activity_type_id == activity_type and a.summary == summary
-                )
-            ).unlink()
+            summary, assignee = rec._workflow_activity_specs()[stage]
+            rec._drop_workflow_activities(stage)
             rec.activity_schedule(
-                VERIFY_ACTIVITY_XMLID,
-                user_id=rec.loan_verifier_id.id,
+                WORKFLOW_ACTIVITY_XMLID,
+                user_id=assignee.id,
                 summary=summary,
             )
+
+    def _done_workflow_activity(self, stage, feedback):
+        """Close `stage`'s To-Do — the step actually happened (ADR-0015).
+
+        sudo: `mail_activity_rule_user` limits write/unlink to the activity's
+        `user_id` or `create_uid`, which here are the stage's assignee and
+        whoever moved the record into that stage. An admin acting on the
+        assignee's behalf is neither, so the rule would block them. Authority
+        is already established by the caller's own check, and sudo() keeps
+        `env.uid`, so the done-message is still authored by the real actor.
+        """
+        self._workflow_activities(stage).sudo().action_feedback(feedback=feedback)
+
+    def _drop_workflow_activities(self, stage=None):
+        """Drop To-Dos without marking them done — the request left the stage
+        without the step being taken (cancel / ส่งกลับแก้ไข / ดึงกลับ), so the
+        assignee must not keep a to-do they can no longer act on, and it must
+        not show up in their done history either (ADR-0015).
+
+        sudo for the same reason as _done_workflow_activity — a manager
+        cancelling is neither the to-do's assignee nor its creator.
+        """
+        self._workflow_activities(stage).sudo().unlink()
 
     def action_submit(self):
         """Submit the request for verification (draft → to_verify)."""
@@ -794,7 +949,7 @@ class AdvancePayment(models.Model):
                 ),
                 subtype_xmlid="mail.mt_note",
             )
-            rec._schedule_verify_activity()
+            rec._schedule_workflow_activity("to_verify")
 
     def _check_verify_permission(self):
         """Officer-only: only the assigned loan officer (or an admin) may
@@ -818,6 +973,11 @@ class AdvancePayment(models.Model):
             if rec.state != "to_verify":
                 raise UserError(_("Only agreements under verification can be verified."))
             rec.write({"state": "to_approve", "date_verified": fields.Datetime.now()})
+            rec._done_workflow_activity(
+                "to_verify",
+                _("ตรวจสอบคำขอเรียบร้อย โดย %s", self.env.user.name),
+            )
+            rec._schedule_workflow_activity("to_approve")
             rec.message_post(
                 body=_("ตรวจสอบคำขอเรียบร้อย ส่งเข้าขั้นอนุมัติ โดย <b>%(user)s</b>.",
                        user=self.env.user.name),
@@ -826,7 +986,17 @@ class AdvancePayment(models.Model):
 
     def action_approve(self):
         """Approve and create the outbound disbursement payment
-        (to_approve → waiting_transfer)."""
+        (to_approve → waiting_transfer).
+
+        The voucher is deliberately left a **finance-office draft**
+        (`finance_state = 'draft'`). Approval hands the money over; it does not
+        advance it. The finance office's own first press — ยืนยันพร้อมส่งธนาคาร,
+        `account.payment.action_confirm_for_bank()` — is what freezes the money
+        side, numbers the ใบสำคัญจ่าย and makes the voucher eligible for an
+        e-payment file, and it needs a paying account (หัวจ่าย) that this module
+        has no business choosing. `account_payment.action_post` then closes the
+        loop back to `action_start()` once the transfer is booked.
+        """
         for rec in self:
             if rec.state != "to_approve":
                 raise UserError(_("Only agreements awaiting approval can be approved."))
@@ -842,7 +1012,9 @@ class AdvancePayment(models.Model):
                 "date_approved": fields.Datetime.now(),
             }
         )
-        payments.action_submit()
+        self._done_workflow_activity(
+            "to_approve", _("อนุมัติคำขอเรียบร้อย โดย %s", self.env.user.name)
+        )
         for rec, payment in zip(self, payments):
             rec.message_post(
                 body=_(
@@ -896,6 +1068,7 @@ class AdvancePayment(models.Model):
         if self.state not in ("to_verify", "to_approve"):
             raise UserError(_("Only a not-yet-approved request can be recalled."))
         self.state = "draft"
+        self._drop_workflow_activities()
         self.message_post(
             body=_("ดึงคำขอกลับเพื่อแก้ไข โดย <b>%(user)s</b>.", user=self.env.user.name),
             subtype_xmlid="mail.mt_note",
@@ -909,6 +1082,7 @@ class AdvancePayment(models.Model):
                     _("Only agreements under verification can be reset to draft.")
                 )
             rec.state = "draft"
+            rec._drop_workflow_activities()
             rec.message_post(
                 body=_("ส่งกลับแก้ไข โดยเจ้าหน้าที่ <b>%(user)s</b>.",
                        user=self.env.user.name),
@@ -1107,11 +1281,18 @@ class AdvancePayment(models.Model):
         }
 
     def _cancel_payments(self):
+        """Void this loan's vouchers so a cancelled agreement leaves none live.
+
+        `account.payment.state` is Odoo's own draft/posted/cancel — the finance
+        office's status is the separate `finance_state` (finance_kmitl), so
+        there is no "submitted" payment state to unwind here. A voucher the
+        finance office has already confirmed for the bank keeps
+        `finance_state = 'confirmed'` after this: unwinding that is their call,
+        not the loan's, and the numbered ใบสำคัญจ่าย has to stay auditable.
+        """
         for payment in self.payment_ids.filtered(lambda p: p.state != "cancel"):
             if payment.state == "posted":
                 payment.action_draft()
-            elif payment.state == "submitted":
-                payment.write({"state": "draft"})
             payment.action_cancel()
 
     def _action_do_cancel(self, reason):
@@ -1129,6 +1310,7 @@ class AdvancePayment(models.Model):
         self.write(
             {"state": "cancel", "cancel_reason": reason, "disbursement_state": False}
         )
+        self._drop_workflow_activities()
         self.message_post(
             body=_("Agreement cancelled. Reason: %(reason)s", reason=reason),
             subtype_xmlid="mail.mt_note",
@@ -1143,6 +1325,7 @@ class AdvancePayment(models.Model):
         if reason:
             vals["cancel_reason"] = reason
         self.write(vals)
+        self._drop_workflow_activities()
         body = (
             _("Agreement returned to draft. Reason: %(reason)s", reason=reason)
             if reason

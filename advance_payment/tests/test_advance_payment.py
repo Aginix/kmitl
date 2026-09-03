@@ -13,11 +13,15 @@ class TestAdvancePayment(TransactionCase):
     """
     Test suite for the redesigned advance.payment (สัญญายืมเงิน) lifecycle.
 
-    States past `to_approve` need accounting setup (journals, bank export) to
-    reach organically, so downstream states are set directly on the record and
-    the business logic is exercised in isolation — action_approve /
-    return_line.action_approve (which create account.payment) are only tested
-    for their guards.
+    Most states past `to_approve` are set directly on the record rather than
+    reached organically, so the business logic can be exercised without a full
+    accounting setup.
+
+    The two exceptions are `action_approve` and `return_line.action_approve`,
+    which are run for real: leaving them guard-only is how a call to a
+    non-existent `account.payment.action_submit` survived in both of them
+    until somebody clicked อนุมัติ (ADR-0006). Anything that creates an
+    `account.payment` gets executed here, not just asserted against.
     """
 
     @classmethod
@@ -304,6 +308,38 @@ class TestAdvancePayment(TransactionCase):
         with self.assertRaises(UserError):
             ap.action_approve()
 
+    def test_approve_creates_finance_draft_voucher(self):
+        """Approval must actually run, not just be guarded.
+
+        This whole path was only ever tested for its guards, which is how a
+        call to a non-existent `account.payment.action_submit` survived in it.
+        The voucher is left a finance-office draft on purpose — confirming it
+        for the bank is their press, and needs a paying account (ADR-0006).
+        """
+        ap = self._make()
+        ap.action_submit()
+        ap.with_user(self.officer).action_verify()
+        ap.action_approve()
+        self.assertEqual(ap.state, "waiting_transfer")
+        self.assertEqual(ap.disbursement_state, "pending")
+        self.assertEqual(len(ap.payment_ids), 1)
+        payment = ap.payment_ids
+        self.assertEqual(payment.state, "draft")
+        self.assertEqual(payment.finance_state, "draft")
+        self.assertEqual(payment.partner_id, ap.partner_id)
+        self.assertEqual(payment.partner_bank_id, ap.bank_id)
+        self.assertEqual(payment.amount, ap.loan_amount)
+
+    def test_cancel_after_approve_voids_the_voucher(self):
+        ap = self._make()
+        ap.action_submit()
+        ap.with_user(self.officer).action_verify()
+        ap.action_approve()
+        ap._action_do_cancel("stopped")
+        self.assertEqual(ap.state, "cancel")
+        self.assertEqual(ap.payment_ids.state, "cancel")
+        self.assertFalse(ap.disbursement_state)
+
     # ------------------------------------------------------------------ #
     # Loan officer assignment (ADR-0013)                                   #
     # ------------------------------------------------------------------ #
@@ -340,6 +376,120 @@ class TestAdvancePayment(TransactionCase):
             lambda a: a.user_id == self.officer
         )
         self.assertTrue(activity)
+
+    # ------------------------------------------------------------------ #
+    # Verify To-Do lifecycle + defaults (ADR-0015)                         #
+    # ------------------------------------------------------------------ #
+
+    def test_verify_marks_activity_done(self):
+        ap = self._make()
+        ap.action_submit()
+        self.assertTrue(ap._workflow_activities("to_verify"))
+        ap.with_user(self.officer).action_verify()
+        # _action_done unlinks the activity and leaves an mt_activities
+        # message as the done trail — assert both halves.
+        self.assertFalse(ap._workflow_activities("to_verify"))
+        self.assertTrue(
+            ap.message_ids.filtered(
+                lambda m: m.subtype_id
+                == self.env.ref("mail.mt_activities")
+            )
+        )
+
+    def test_reset_to_draft_drops_activity(self):
+        ap = self._make()
+        ap.action_submit()
+        self.assertTrue(ap._workflow_activities("to_verify"))
+        ap.with_user(self.officer).action_reset_to_draft()
+        self.assertFalse(ap._workflow_activities("to_verify"))
+
+    def test_recall_drops_activity(self):
+        ap = self._make(requested_by=self.user)
+        ap.with_user(self.user).action_submit()
+        self.assertTrue(ap._workflow_activities("to_verify"))
+        ap.with_user(self.user).action_recall()
+        self.assertFalse(ap._workflow_activities("to_verify"))
+
+    def test_cancel_drops_activity(self):
+        ap = self._make()
+        ap.action_submit()
+        self.assertTrue(ap._workflow_activities("to_verify"))
+        ap._action_do_cancel("dup")
+        self.assertFalse(ap._workflow_activities("to_verify"))
+
+    def test_default_loan_verifier_from_settings(self):
+        """With two officers the sole-officer fallback is ambiguous, so the
+        configured one is what makes the required field defaultable."""
+        self.assertFalse(self.env["advance.payment"]._default_loan_verifier_id())
+        self.env["ir.config_parameter"].sudo().set_param(
+            "advance_payment.default_loan_verifier_id", str(self.officer2.id)
+        )
+        self.assertEqual(
+            self.env["advance.payment"]._default_loan_verifier_id(), self.officer2.id
+        )
+
+    def test_default_loan_verifier_ignores_stale_setting(self):
+        self.env["ir.config_parameter"].sudo().set_param(
+            "advance_payment.default_loan_verifier_id", str(self.user.id)
+        )  # not a loan officer
+        self.assertFalse(self.env["advance.payment"]._default_loan_verifier_id())
+
+    def test_bank_auto_filled_on_borrower_change(self):
+        ap = self._make(requested_by=self.user)
+        ap.employee_id = self.emp[self.user2.id]
+        ap._onchange_employee_id()
+        self.assertEqual(ap.bank_id, self.banks[self.user2.id])
+
+    def test_manager_cancel_drops_officer_todo(self):
+        """mail_activity_rule_user limits write/unlink to the to-do's user_id
+        or create_uid — here the officer and the borrower. A manager is
+        neither, so this only works because the helper sudo()s."""
+        ap = self._make(requested_by=self.user)
+        ap.with_user(self.user).action_submit()
+        self.assertTrue(ap._workflow_activities("to_verify"))
+        ap.with_user(self.manager)._action_do_cancel("dup")
+        self.assertFalse(ap._workflow_activities("to_verify"))
+
+    # ------------------------------------------------------------------ #
+    # Approver assignment + approve To-Do (ADR-0016)                       #
+    # ------------------------------------------------------------------ #
+
+    def test_default_approver_is_admin_when_unset(self):
+        self.env["ir.config_parameter"].sudo().set_param(
+            "advance_payment.default_approver_id", ""
+        )
+        self.assertEqual(
+            self.env["advance.payment"]._default_approver_id(),
+            self.env.ref("base.user_admin").id,
+        )
+
+    def test_default_approver_ignores_non_manager(self):
+        self.env["ir.config_parameter"].sudo().set_param(
+            "advance_payment.default_approver_id", str(self.user.id)
+        )  # own-only tier, not a manager
+        self.assertEqual(
+            self.env["advance.payment"]._default_approver_id(),
+            self.env.ref("base.user_admin").id,
+        )
+
+    def test_new_agreement_gets_approver(self):
+        self.assertTrue(self._make().approver_id)
+
+    def test_verify_schedules_approve_activity(self):
+        ap = self._make()
+        ap.action_submit()
+        ap.with_user(self.officer).action_verify()
+        todo = ap._workflow_activities("to_approve")
+        self.assertTrue(todo)
+        self.assertEqual(todo.user_id, ap.approver_id)
+
+    def test_cancel_from_to_approve_drops_approve_activity(self):
+        ap = self._make()
+        ap.action_submit()
+        ap.with_user(self.officer).action_verify()
+        self.assertTrue(ap._workflow_activities("to_approve"))
+        ap._action_do_cancel("dup")
+        self.assertFalse(ap._workflow_activities())
 
     # ------------------------------------------------------------------ #
     # Recall / reset                                                       #
@@ -467,6 +617,28 @@ class TestAdvancePayment(TransactionCase):
         )
         ap.invalidate_recordset()
         ap._try_auto_close()
+        self.assertEqual(ap.state, "done")
+
+    def test_return_line_approve_creates_inbound_voucher(self):
+        """The inbound half of the money path, run for real.
+
+        It carried the same call to a non-existent
+        `account.payment.action_submit` as the outbound one, and was likewise
+        only ever tested for its guards.
+        """
+        ap = self._make(amount=1000)
+        ap.write({"state": "to_reconcile", "actual_expense_amount": 600})
+        line = self.env["advance.payment.return.line"].create(
+            {"agreement_id": ap.id, "amount": 400, "state": "pending_review"}
+        )
+        line.with_user(self.officer).action_approve()
+        self.assertEqual(line.state, "done")
+        self.assertTrue(line.payment_id)
+        self.assertEqual(line.payment_id.state, "draft")
+        self.assertEqual(line.payment_id.finance_state, "draft")
+        self.assertEqual(line.payment_id.partner_id, ap.partner_id)
+        self.assertEqual(line.payment_id.payment_type, "inbound")
+        # Fully returned → the agreement closes itself (ADR-0003).
         self.assertEqual(ap.state, "done")
 
     def test_multiple_partial_returns_close(self):

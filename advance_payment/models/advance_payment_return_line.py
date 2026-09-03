@@ -131,7 +131,9 @@ class AdvancePaymentReturnLine(models.Model):
                 )
             vals = rec._prepare_return_payment_vals()
             payment = self.env["account.payment"].create(vals)
-            payment.action_submit()
+            # Left a finance-office draft, like the outbound disbursement in
+            # advance_payment.action_approve: receipting the money in is the
+            # finance office's own press, not this line's (ADR-0003).
             rec.write({"state": "done", "payment_id": payment.id})
             rec.agreement_id.message_post(
                 body=_(

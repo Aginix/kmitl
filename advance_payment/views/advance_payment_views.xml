@@ -51,8 +51,8 @@
                     <strong>อนุมัติแล้ว</strong> — รอฝ่ายการเงินดำเนินการโอนเงิน </div>
                 <div class="alert alert-info" role="alert" style="margin-bottom:0px;"
                     attrs="{'invisible': [('state', '!=', 'to_reconcile')]}">
-                    <strong>รอคืนเงิน</strong> — ยอดคงเหลือที่ต้องคืน
-                    <field name="return_amount" class="oe_inline" /> บาท </div>
+                    <strong>รอคืนเงิน</strong> — ยอดคงเหลือที่ต้องคืน <field name="return_amount"
+                        class="oe_inline" /> บาท </div>
                 <header>
                     <field name="is_requester" invisible="1" />
                     <field name="is_loan_officer" invisible="1" />
@@ -97,7 +97,8 @@
                         confirm="ต้องการเปิดสัญญาอีกครั้งหรือไม่?"
                         attrs="{'invisible': [('state', '!=', 'done')]}"
                         groups="base.group_system" />
-                    <button name="action_reset_cancel_to_draft" string="Reset to draft" type="object"
+                    <button name="action_reset_cancel_to_draft" string="Reset to draft"
+                        type="object"
                         confirm="ต้องการตั้งสัญญาที่ยกเลิกกลับเป็นแบบร่างหรือไม่?"
                         attrs="{'invisible': ['|', ('state', '!=', 'cancel'), ('effective_date', '!=', False)]}"
                         groups="advance_payment.group_advance_payment_manager" />
@@ -137,8 +138,6 @@
                             <field name="can_edit_drafter" invisible="1" />
                             <field name="employee_id" options="{'no_create': True}"
                                 attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('can_draft_on_behalf', '=', False)]}" />
-                            <field name="user_id"
-                                attrs="{'readonly': [('can_edit_drafter', '=', False)]}" />
                             <field name="partner_id" invisible="1" />
                             <field name="is_reference_visible" invisible="1" />
                             <field name="loan_type_id" widget="selection"
@@ -153,6 +152,16 @@
                             <field name="currency_id" invisible="1" />
                             <field name="loan_amount"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="bank_id"
+                                domain="[('partner_id', '=', partner_id)]"
+                                widget="selection"
+                                required="1"
+                                attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]}" />
+                        </group>
+                        <group name="processing_dates" string="ข้อมูลการดำเนินการ">
+                            <field name="date_submitted" />
+                            <field name="date_verified" attrs="{'invisible': [('state', '=', 'draft')]}" />
+                            <field name="date_approved" attrs="{'invisible': [('state', '=', 'draft')]}" />
                             <field name="return_due_date"
                                 attrs="{
                                     'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve'])],
@@ -160,22 +169,14 @@
                                 }" />
                             <field name="loan_verifier_id"
                                 attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}" />
+                            <field name="approver_id"
+                                attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}" />
+                            <field name="user_id"
+                                attrs="{'readonly': [('can_edit_drafter', '=', False)]}" />
                         </group>
-                        <group name="loan_info" string="บัญชีธนาคาร">
-                            <field name="bank_id"
-                                domain="[('partner_id', '=', partner_id)]"
-                                widget="selection"
-                                attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]}" />
-                        </group>
-                    </group>
-                    <group name="processing_dates" string="ข้อมูลการดำเนินการ"
-                        attrs="{'invisible': [('state', '=', 'draft')]}">
-                        <field name="date_submitted" string="วันที่ยื่นขอยืมเงิน" />
-                        <field name="date_verified" string="วันที่ตรวจสอบ" />
-                        <field name="date_approved" string="วันที่อนุมัติ" />
                     </group>
                     <group name="terms" string="เงื่อนไขและข้อตกลงการยืมเงินทดรองจ่าย">
-                        <field name="terms_conditions" nolabel="1" readonly="1" colspan="2"/>
+                        <field name="terms_conditions" nolabel="1" readonly="1" colspan="2" />
                     </group>
                     <group name="attachments" string="เอกสารแนบ">
                         <field name="attachment_ids" widget="many2many_binary"
