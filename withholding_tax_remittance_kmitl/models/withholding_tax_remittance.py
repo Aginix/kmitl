@@ -57,6 +57,14 @@ class WithholdingTaxRemittance(models.Model):
         required=True,
         tracking=True,
     )
+    source_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="แหล่งเงิน",
+        domain="[('root_plan_id.code', '=', 'sources')]",
+        required=True,
+        tracking=True,
+        help="แหล่งเงินที่นำส่งในใบนี้ — ยื่นแยกใบต่อ ภ.ง.ด./งวด/แหล่งเงิน",
+    )
     date_remit = fields.Date(
         string="Remittance Date",
         required=True,
@@ -83,10 +91,17 @@ class WithholdingTaxRemittance(models.Model):
     )
     date_from = fields.Date(compute="_compute_period_range")
     date_to = fields.Date(compute="_compute_period_range")
-    bank_account_id = fields.Many2one(
+    savings_account_id = fields.Many2one(
         comodel_name="account.account",
-        string="Bank Account",
+        string="บัญชีออมทรัพย์",
         domain="[('account_type', '=', 'asset_cash'), ('company_id', '=', company_id)]",
+        help="บัญชีที่ออกเช็ค — เงินออกจากบัญชีนี้จริง",
+    )
+    current_account_id = fields.Many2one(
+        comodel_name="account.account",
+        string="บัญชีกระแสรายวัน",
+        domain="[('account_type', '=', 'asset_cash'), ('company_id', '=', company_id)]",
+        help="บัญชีที่ธนาคารโอนเงินเข้าตามยอดเช็คแล้วเช็คจึงขึ้นเงินจากบัญชีนี้",
     )
     partner_id = fields.Many2one(
         comodel_name="res.partner",
@@ -189,7 +204,12 @@ class WithholdingTaxRemittance(models.Model):
             rec.amount_total = sum(rec.cert_ids.mapped("amount_total"))
 
     @api.constrains(
-        "income_tax_form", "period_month", "period_year", "company_id", "state"
+        "income_tax_form",
+        "period_month",
+        "period_year",
+        "source_analytic_id",
+        "company_id",
+        "state",
     )
     def _check_unique_period(self):
         for rec in self.filtered(lambda r: r.state != "cancelled"):
@@ -201,17 +221,22 @@ class WithholdingTaxRemittance(models.Model):
                     ("income_tax_form", "=", rec.income_tax_form),
                     ("period_month", "=", rec.period_month),
                     ("period_year", "=", rec.period_year),
+                    ("source_analytic_id", "=", rec.source_analytic_id.id),
                 ],
                 limit=1,
             )
             if duplicate:
                 raise ValidationError(
-                    _("มีใบนำส่ง %(form)s งวด %(period)s อยู่แล้ว (%(name)s)")
+                    _(
+                        "มีใบนำส่ง %(form)s งวด %(period)s แหล่งเงิน %(source)s "
+                        "อยู่แล้ว (%(name)s)"
+                    )
                     % {
                         "form": PND_FORM_TH.get(
                             rec.income_tax_form, rec.income_tax_form
                         ),
                         "period": rec.period,
+                        "source": rec.source_analytic_id.display_name,
                         "name": duplicate.name,
                     }
                 )
@@ -255,10 +280,45 @@ class WithholdingTaxRemittance(models.Model):
             raise UserError(
                 _("Select certificates that share the same withholding tax account.")
             )
+        cert_sources = {cert: self._cert_source_ids(cert) for cert in certs}
+        multi_source = [
+            cert.name for cert, sources in cert_sources.items() if len(sources) > 1
+        ]
+        if multi_source:
+            raise UserError(
+                _(
+                    "Certificate(s) %s carry more than one funding source "
+                    "(แหล่งเงิน); a certificate is remitted whole or not at all."
+                )
+                % ", ".join(multi_source)
+            )
+        no_source = [
+            cert.name for cert, sources in cert_sources.items() if not sources
+        ]
+        if no_source:
+            raise UserError(
+                _(
+                    "Certificate(s) %s have missing or incomplete analytic "
+                    "dimensions (แหล่งเงิน) on their source entry."
+                )
+                % ", ".join(no_source)
+            )
+        source_ids = set()
+        for sources in cert_sources.values():
+            source_ids |= sources
+        if len(source_ids) > 1:
+            raise UserError(
+                _("Select certificates that share the same funding source.")
+            )
         if remittance:
             if forms != {remittance.income_tax_form}:
                 raise UserError(
                     _("Certificates must match this remittance's ภ.ง.ด. form.")
+                )
+            if source_ids != {remittance.source_analytic_id.id}:
+                raise UserError(
+                    _("Certificates must match this remittance's funding source (%s).")
+                    % remittance.source_analytic_id.display_name
                 )
             out_of_period = certs.filtered(
                 lambda c: not (remittance.date_from <= c.date <= remittance.date_to)
@@ -299,10 +359,11 @@ class WithholdingTaxRemittance(models.Model):
 
     def _get_memo(self):
         self.ensure_one()
-        return _("นำส่ง %s งวด %s") % (
-            PND_FORM_TH.get(self.income_tax_form, ""),
-            self.period,
-        )
+        return _("นำส่ง %(form)s งวด %(period)s แหล่งเงิน %(source)s") % {
+            "form": PND_FORM_TH.get(self.income_tax_form, ""),
+            "period": self.period,
+            "source": self.source_analytic_id.name or "-",
+        }
 
     def action_load_pending_certs(self):
         for rec in self:
@@ -312,6 +373,8 @@ class WithholdingTaxRemittance(models.Model):
                 )
             if not rec.income_tax_form:
                 raise UserError(_("Set the ภ.ง.ด. form first."))
+            if not rec.source_analytic_id:
+                raise UserError(_("Set the funding source (แหล่งเงิน) first."))
             certs = self.env["withholding.tax.cert"].search(
                 [
                     ("company_id", "=", rec.company_id.id),
@@ -327,12 +390,51 @@ class WithholdingTaxRemittance(models.Model):
                     lambda c, rec=rec: rec.wht_account_id
                     in c.wht_line.wht_tax_id.account_id
                 )
+            # แหล่งเงินอยู่บน analytic_distribution ของบรรทัด WHT ต้นทาง ไม่ใช่บนตัว
+            # ใบรับรอง จึงกรองด้วย Python ไม่ใช่ domain — ใบที่คาบหลายแหล่งหรือไม่มี
+            # แหล่งเงินเลยตกไปเองเพราะ set ไม่ตรง
+            certs = certs.filtered(
+                lambda c, rec=rec: rec._cert_source_ids(c)
+                == {rec.source_analytic_id.id}
+            )
             if not certs:
                 raise UserError(
-                    _("No unremitted certificates found for this period.")
+                    _(
+                        "No unremitted certificates found for this period and "
+                        "funding source."
+                    )
                 )
             rec.cert_ids = [(4, cert.id) for cert in certs]
 
+    @api.model
+    def _source_ids_in_distribution(self, dist):
+        """ids ของมิติแหล่งเงินที่อยู่ใน distribution หนึ่ง ๆ
+
+        อ่านมิติจาก root plan ของบัญชี analytic เอง ไม่ hard-code ต่อมิติ แบบเดียวกับ
+        ``finance_kmitl._voucher_dimensions`` — บัญชีลูกจึงตอบแทนมิติแม่ได้
+        """
+        if not dist:
+            return set()
+        accounts = (
+            self.env["account.analytic.account"]
+            .browse(int(key) for key in dist)
+            .exists()
+        )
+        return set(accounts.filtered(lambda a: a.root_plan_id.code == "sources").ids)
+
+    @api.model
+    def _cert_source_ids(self, cert):
+        """ids แหล่งเงินทั้งหมดที่ปรากฏบนบรรทัด WHT ต้นทางของใบรับรองหนึ่งใบ
+
+        ใบที่คาบเกี่ยวหลายแหล่งเงินจะได้ set ขนาดมากกว่า 1 ซึ่งนำส่งไม่ได้ เพราะ
+        ``remittance_id`` เป็น Many2one — 1 ใบรับรองอยู่ได้ใบนำส่งเดียวเต็มใบ
+        """
+        source_ids = set()
+        for dist, _amount in self._cert_distribution_amounts(cert):
+            source_ids |= self._source_ids_in_distribution(dist)
+        return source_ids
+
+    @api.model
     def _cert_distribution_amounts(self, cert):
         """คืน [(analytic_distribution, amount)] ของใบรับรอง
 
@@ -343,7 +445,6 @@ class WithholdingTaxRemittance(models.Model):
         ``cert.amount_total`` เสมอ — เกลี่ยตามสัดส่วนของบรรทัดต้นทาง แล้วโยนเศษ
         ปัดเข้ากลุ่มที่มีสัดส่วนมากที่สุด
         """
-        self.ensure_one()
         lines = cert.move_id.line_ids.filtered(
             lambda l: l.wht_tax_id and l.account_id.wht_account
         )
@@ -351,7 +452,12 @@ class WithholdingTaxRemittance(models.Model):
         for line in lines:
             key = json.dumps(line.analytic_distribution or {}, sort_keys=True)
             groups[key] = groups.get(key, 0.0) + (line.credit - line.debit)
-        if not groups or not any(json.loads(k) for k in groups):
+        dimensioned = [bool(json.loads(key)) for key in groups]
+        if any(dimensioned) and not all(dimensioned):
+            # บางบรรทัด WHT ต้นทางมีมิติ บางบรรทัดไม่มี — เกลี่ยยอดของส่วนที่ไม่มี
+            # มิติไปให้ส่วนที่มีคือการเดา จึงถือว่าใบนี้แบกมิติไม่ครบและนำส่งไม่ได้
+            return []
+        if not groups or not any(dimensioned):
             dist = cert.payment_id.analytic_distribution or (
                 cert.move_id.analytic_distribution
             )
@@ -382,8 +488,19 @@ class WithholdingTaxRemittance(models.Model):
         return result
 
     def _prepare_move_line_vals(self, cert, dist, amount):
+        """4 บรรทัดต่อ 1 ใบรับรอง 1 มิติ
+
+        เช็คสั่งจ่ายผูกกับบัญชีออมทรัพย์ แต่ธนาคารจะโอนเงินตามยอดเช็คเข้าบัญชี
+        กระแสรายวันก่อน แล้วเช็คจึงขึ้นเงินจากบัญชีกระแสรายวัน ทั้งสองการเดินทาง
+        ของเงินถูกบันทึกไว้เพื่อให้กระทบยอดกับ statement ได้ทั้งสองบัญชี — บัญชี
+        กระแสรายวันเข้าและออกเท่ากันจึงสุทธิเป็น 0 ส่วนเงินที่ออกจริงคือออมทรัพย์
+
+        คู่โอนระหว่างบัญชีธนาคารไม่ใส่คู่ค้า เพราะเป็นการย้ายเงินภายในของธนาคาร
+        ไม่ใช่รายการกับกรมสรรพากร แต่ยังแบกมิติเดียวกันเพื่อให้ทุกมิติสุทธิเป็น 0
+        """
         self.ensure_one()
         memo = "%s - %s" % (self._get_memo(), cert.name)
+        transfer_memo = _("%s - โอนจากบัญชีออมทรัพย์") % memo
         return [
             {
                 "name": memo,
@@ -392,16 +509,32 @@ class WithholdingTaxRemittance(models.Model):
                 "debit": amount,
                 "credit": 0.0,
                 "currency_id": self.currency_id.id,
-                "analytic_distribution": dist,
+                "analytic_distribution": dict(dist),
             },
             {
                 "name": memo,
-                "account_id": self.bank_account_id.id,
+                "account_id": self.current_account_id.id,
                 "partner_id": self.partner_id.id,
                 "debit": 0.0,
                 "credit": amount,
                 "currency_id": self.currency_id.id,
-                "analytic_distribution": dist,
+                "analytic_distribution": dict(dist),
+            },
+            {
+                "name": transfer_memo,
+                "account_id": self.current_account_id.id,
+                "debit": amount,
+                "credit": 0.0,
+                "currency_id": self.currency_id.id,
+                "analytic_distribution": dict(dist),
+            },
+            {
+                "name": transfer_memo,
+                "account_id": self.savings_account_id.id,
+                "debit": 0.0,
+                "credit": amount,
+                "currency_id": self.currency_id.id,
+                "analytic_distribution": dict(dist),
             },
         ]
 
@@ -430,9 +563,13 @@ class WithholdingTaxRemittance(models.Model):
             if rec.state != "draft":
                 raise UserError(_("Only draft remittances can be posted."))
             self._validate_certs(rec.cert_ids, remittance=rec)
-            if not rec.bank_account_id:
+            if not rec.savings_account_id:
                 raise UserError(
-                    _("Set the bank account the cheque is drawn on.")
+                    _("Set the savings account the cheque is drawn on.")
+                )
+            if not rec.current_account_id:
+                raise UserError(
+                    _("Set the current account the cheque is cleared from.")
                 )
             if not rec.journal_id:
                 raise UserError(_("Set the journal to post to."))

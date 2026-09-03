@@ -48,6 +48,12 @@ existing table already tolerates the pattern (see `budget_transfer`,
 
 ### One JE, but one Dr/Cr line pair per certificate per analytic distribution
 
+> Amended by
+> [ADR-0003](./0003-source-scoped-remittance-and-two-bank-accounts.md): the
+> bank side is now two accounts, so each group is **four** lines, not two.
+> Everything below about one JE, per-certificate splitting and where the
+> distribution comes from still holds.
+
 `analytic_distribution` is stored as `{analytic_account_id: percentage}` —
 there is no way to "sum" two certificates' distributions into one line
 without losing which certificate contributed which dimension. So the

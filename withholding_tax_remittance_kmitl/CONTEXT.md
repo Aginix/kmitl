@@ -8,10 +8,26 @@ office actually remitted to the Revenue Department into one journal entry.
 
 **WHT Remittance** (การนำส่งภาษีหัก ณ ที่จ่าย, `withholding.tax.remittance`):
 The batch an accountant posts when the office writes a cheque to สรรพากร — one
-per ภ.ง.ด. form, one journal entry (`Dr` the WHT payable account / `Cr` the bank
-the cheque is drawn on). Bundles `withholding.tax.cert` records the way
-`kmitl.receipt.remittance` bundles receipts. Numbered `WHTR/<FY>/nnnn`.
+per (ภ.ง.ด. form, งวด, แหล่งเงิน), one journal entry. Bundles
+`withholding.tax.cert` records the way `kmitl.receipt.remittance` bundles
+receipts. Numbered `WHTR/<FY>/nnnn`.
 _Avoid_: bare "ล้างหนี้" — ambiguous with Vendor Clearing below.
+
+**แหล่งเงิน (funding source, `source_analytic_id`)**:
+The `sources` dimension of the 6D framework, entered on the remittance and
+required. The office files one cheque per funding source, so the document is
+scoped by it: only certificates whose source dimension matches are loadable,
+and a certificate spanning more than one source cannot be remitted at all
+(`remittance_id` is a Many2one — a certificate belongs to one remittance,
+whole). Read off the certificate's source WHT line, never off the certificate
+itself, which has no analytic fields of its own.
+
+**บัญชีออมทรัพย์ / บัญชีกระแสรายวัน** (`savings_account_id`,
+`current_account_id`): the cheque is drawn on the savings account, but the bank
+first moves the cheque amount into the current account and the cheque is then
+cleared from there. Both movements are booked, so both accounts reconcile
+against their statements: the current account is debited and credited the same
+amount (net zero) and the money genuinely leaves the savings account.
 
 **Vendor Clearing** (ล้างเจ้าหนี้ / Vendor Clearing Vouchers):
 A **different, pre-existing** concept: settling a *vendor's* payable by paying
@@ -50,18 +66,24 @@ remittance from the WHT Certificate list (`action_create_remittance`)
 auto-fills the period from the selected certificates' dates as a convenience,
 and raises if they span more than one month.
 
-**One form per month**: at most one non-cancelled remittance (`draft` or
-`posted`) may exist per `(company, ภ.ง.ด., period_month, period_year)`.
+**One form per month per source**: at most one non-cancelled remittance
+(`draft` or `posted`) may exist per
+`(company, ภ.ง.ด., period_month, period_year, source_analytic_id)`.
 Cancelled remittances don't count, so a botched month can be redone. This is
 a Python `@api.constrains`, not a SQL unique index, precisely so cancelled
 records are excluded.
 
-**Analytic dimensions on the clearing JE**: the remittance's JE carries the
-**same** `analytic_distribution` on both the debit (WHT payable) and credit
-(bank) side, one pair of lines per certificate per distinct distribution —
-never a single header-level distribution on `account.move` (see
+**Analytic dimensions on the clearing JE**: every line of the remittance's JE
+carries an `analytic_distribution`, and the lines come in groups of four per
+certificate per distinct distribution — `Dr` WHT payable / `Cr` current
+account (the cheque) and `Dr` current account / `Cr` savings account (the
+bank's sweep that funds it) — all four with the same distribution, so every
+dimension nets to zero inside the one entry. The header-level
+`analytic_distribution` on `account.move` is **never** set (see
 [ADR-0002](./docs/adr/0002-remittance-period-and-per-cert-analytic-lines.md)
 for why). The distribution is read back from each certificate's *source*
 journal entry (`cert.move_id`, the entry the WHT line was booked on), not
 recomputed — `finance_kmitl` already stamps the payment's dimensions onto
-that line when the cert is created.
+that line when the cert is created. See
+[ADR-0003](./docs/adr/0003-source-scoped-remittance-and-two-bank-accounts.md)
+for the funding-source scoping and the two bank accounts.

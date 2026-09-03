@@ -28,11 +28,27 @@ class WithholdingTaxRemittanceCommon(TransactionCase):
                 "company_id": cls.company.id,
             }
         )
-        cls.bank_account = Account.create(
+        cls.savings_account = Account.create(
             {
                 "code": "111002",
-                "name": "Bank for remittance",
+                "name": "Savings account for remittance",
                 "account_type": "asset_cash",
+                "company_id": cls.company.id,
+            }
+        )
+        cls.current_account = Account.create(
+            {
+                "code": "111003",
+                "name": "Current account for remittance",
+                "account_type": "asset_cash",
+                "company_id": cls.company.id,
+            }
+        )
+        cls.expense_account = Account.create(
+            {
+                "code": "520001",
+                "name": "Expense for source entries",
+                "account_type": "expense",
                 "company_id": cls.company.id,
             }
         )
@@ -68,17 +84,51 @@ class WithholdingTaxRemittanceCommon(TransactionCase):
         cls.vendor = cls.env["res.partner"].create({"name": "Test Vendor"})
         cls.rd_partner = cls.env["res.partner"].create({"name": "กรมสรรพากร"})
 
-        analytic_plan = cls.env["account.analytic.plan"].create(
-            {"name": "WHT Remittance Test Plan"}
+        Plan = cls.env["account.analytic.plan"]
+        analytic_plan = Plan.create({"name": "WHT Remittance Test Plan"})
+        # code เป็น unique ทั้งระบบ และ account_analytic_kmitl ส่ง plan "sources"
+        # มาเป็น data อยู่แล้ว — ใช้ตัวที่มีถ้ามี
+        cls.plan_sources = Plan.search([("code", "=", "sources")], limit=1) or Plan.create(
+            {"name": "แหล่งเงิน (test)", "code": "sources"}
         )
-        cls.analytic_dept_a = cls.env["account.analytic.account"].create(
+        Analytic = cls.env["account.analytic.account"]
+        cls.analytic_dept_a = Analytic.create(
             {"name": "Dept A", "plan_id": analytic_plan.id, "company_id": cls.company.id}
         )
-        cls.analytic_dept_b = cls.env["account.analytic.account"].create(
+        cls.analytic_dept_b = Analytic.create(
             {"name": "Dept B", "plan_id": analytic_plan.id, "company_id": cls.company.id}
         )
-        cls.distribution_a = {str(cls.analytic_dept_a.id): 100.0}
-        cls.distribution_b = {str(cls.analytic_dept_b.id): 100.0}
+        cls.source_1 = Analytic.create(
+            {
+                "name": "งบประมาณแผ่นดิน (test)",
+                "plan_id": cls.plan_sources.id,
+                "company_id": cls.company.id,
+            }
+        )
+        cls.source_2 = Analytic.create(
+            {
+                "name": "เงินรายได้ (test)",
+                "plan_id": cls.plan_sources.id,
+                "company_id": cls.company.id,
+            }
+        )
+        # ทุก distribution ที่ใช้ในเทสต์ต้องมีมิติแหล่งเงิน ไม่งั้นนำส่งไม่ได้
+        cls.distribution_a = {
+            str(cls.analytic_dept_a.id): 100.0,
+            str(cls.source_1.id): 100.0,
+        }
+        cls.distribution_b = {
+            str(cls.analytic_dept_b.id): 100.0,
+            str(cls.source_1.id): 100.0,
+        }
+        cls.distribution_source_2 = {
+            str(cls.analytic_dept_a.id): 100.0,
+            str(cls.source_2.id): 100.0,
+        }
+        cls.distribution_two_sources = {
+            str(cls.source_1.id): 100.0,
+            str(cls.source_2.id): 100.0,
+        }
 
     def _make_source_move(self, wht_tax, amount, analytic_distribution, date):
         move = self.env["account.move"].create(
@@ -91,7 +141,7 @@ class WithholdingTaxRemittanceCommon(TransactionCase):
                         0,
                         {
                             "name": "Vendor bill",
-                            "account_id": self.bank_account.id,
+                            "account_id": self.expense_account.id,
                             "debit": amount,
                             "credit": 0.0,
                         },
@@ -123,8 +173,16 @@ class WithholdingTaxRemittanceCommon(TransactionCase):
         date="2026-01-15",
         name=None,
         analytic_distribution=None,
+        source_move=None,
     ):
+        """``analytic_distribution=None`` = ใช้ ``distribution_a`` (มีแหล่งเงิน)
+
+        ส่ง ``False`` เมื่อต้องการใบรับรองที่ไม่มีมิติเลย หรือส่ง ``source_move``
+        เมื่อต้องคุมบรรทัด WHT ต้นทางเอง
+        """
         wht_tax = wht_tax or self.wht_tax_53
+        if analytic_distribution is None:
+            analytic_distribution = self.distribution_a
         vals = {
             "partner_id": self.vendor.id,
             "income_tax_form": income_tax_form,
@@ -145,7 +203,9 @@ class WithholdingTaxRemittanceCommon(TransactionCase):
         }
         if name:
             vals["name"] = name
-        if analytic_distribution is not None:
+        if source_move:
+            vals["move_id"] = source_move.id
+        elif analytic_distribution:
             vals["move_id"] = self._make_source_move(
                 wht_tax, amount, analytic_distribution, date
             ).id
@@ -153,12 +213,23 @@ class WithholdingTaxRemittanceCommon(TransactionCase):
         cert.action_done()
         return cert
 
-    def _make_remittance(self, certs, month="1", year="2569"):
+    def _make_remittance(self, certs, month="1", year="2569", source=None):
         return self.env["withholding.tax.remittance"].create(
             {
                 "income_tax_form": certs[0].income_tax_form,
                 "period_month": month,
                 "period_year": year,
+                "source_analytic_id": (source or self.source_1).id,
                 "cert_ids": [(6, 0, certs.ids)],
             }
         )
+
+    def _set_bank_accounts(self, remittance):
+        remittance.write(
+            {
+                "savings_account_id": self.savings_account.id,
+                "current_account_id": self.current_account.id,
+                "journal_id": self.journal_general.id,
+            }
+        )
+        return remittance

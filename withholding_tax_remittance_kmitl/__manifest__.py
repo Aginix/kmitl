@@ -12,6 +12,8 @@
         "finance_kmitl",
         "l10n_th_account_tax",
         "accounting_kmitl",
+        # แหล่งเงินอ่านจาก root plan code "sources" ที่โมดูลนี้เป็นเจ้าของ
+        "account_analytic_kmitl",
         "thai_date_utils",
         "mail",
     ],

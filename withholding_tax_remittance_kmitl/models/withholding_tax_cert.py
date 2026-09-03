@@ -47,11 +47,16 @@ class WithholdingTaxCert(models.Model):
                 _("Selected certificates span more than one month; group by month.")
             )
         year, month = months.pop()
+        # _validate_certs ยืนยันแล้วว่าใบที่เลือกมีแหล่งเงินร่วมกันเพียงแหล่งเดียว
+        source_ids = set()
+        for cert in self:
+            source_ids |= Remittance._cert_source_ids(cert)
         remittance = Remittance.create(
             {
                 "income_tax_form": self[0].income_tax_form,
                 "period_month": str(month),
                 "period_year": str(year + 543),
+                "source_analytic_id": source_ids.pop(),
                 "cert_ids": [(6, 0, self.ids)],
             }
         )

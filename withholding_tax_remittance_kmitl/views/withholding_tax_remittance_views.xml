@@ -72,6 +72,11 @@
                             <field name="date_from" invisible="1" />
                             <field name="date_to" invisible="1" />
                             <field
+                                name="source_analytic_id"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                options="{'no_create': True}"
+                            />
+                            <field
                                 name="date_remit"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}"
                             />
@@ -83,7 +88,11 @@
                         <group>
                             <field name="wht_account_id" readonly="1" />
                             <field
-                                name="bank_account_id"
+                                name="savings_account_id"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="current_account_id"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}"
                             />
                             <field
@@ -139,6 +148,7 @@
                 <field name="name" />
                 <field name="income_tax_form" />
                 <field name="period" optional="show" />
+                <field name="source_analytic_id" optional="show" />
                 <field name="date_remit" />
                 <field name="amount_total" sum="Total" />
                 <field name="currency_id" invisible="1" />
@@ -158,6 +168,7 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name" />
+                <field name="source_analytic_id" />
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />
                 <filter
                     string="Posted"
@@ -174,6 +185,11 @@
                         string="Form"
                         name="group_form"
                         context="{'group_by': 'income_tax_form'}"
+                    />
+                    <filter
+                        string="แหล่งเงิน"
+                        name="group_source"
+                        context="{'group_by': 'source_analytic_id'}"
                     />
                     <filter
                         string="State"
