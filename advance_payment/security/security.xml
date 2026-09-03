@@ -28,6 +28,7 @@
         <field name="name">เจ้าหน้าที่งานเงินยืม</field>
         <field name="category_id" eval="False"/>
         <field name="implied_ids" eval="[(4, ref('group_advance_payment_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
     <!-- Record Rules -->

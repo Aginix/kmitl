@@ -2,6 +2,10 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import str2bool
 
+# The "To Do" raised on the assigned loan officer when a request is submitted
+# for verification (ADR-0013).
+VERIFY_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
+
 
 class AdvancePayment(models.Model):
     """
@@ -145,6 +149,11 @@ class AdvancePayment(models.Model):
     # point requested_by at somebody else (ADR-0010).
     can_draft_on_behalf = fields.Boolean(compute="_compute_can_draft_on_behalf")
 
+    # Mirrors _check_verify_permission: only the officer named on
+    # loan_verifier_id (or an admin) may verify — not any loan-officer-group
+    # member (ADR-0013).
+    can_verify = fields.Boolean(compute="_compute_can_verify")
+
     @api.depends("requested_by")
     def _compute_is_requester(self):
         for rec in self:
@@ -162,6 +171,12 @@ class AdvancePayment(models.Model):
         ) or self.env.user.has_group("advance_payment.group_advance_payment_user")
         for rec in self:
             rec.can_draft_on_behalf = allowed
+
+    @api.depends("loan_verifier_id")
+    def _compute_can_verify(self):
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            rec.can_verify = is_admin or rec.loan_verifier_id == self.env.user
 
     def _compute_is_loan_officer(self):
         is_loan_officer = self.env.user.has_group(
@@ -325,9 +340,15 @@ class AdvancePayment(models.Model):
 
     @api.model
     def _default_loan_verifier_id(self):
+        """Auto-pick the sole real officer.
+
+        Excludes the admin/root escape hatch (auto-members of the group, see
+        ADR-0013) so a genuinely single-officer setup keeps auto-defaulting
+        instead of always falling back to ambiguous once admin is counted.
+        """
         officers = self.env.ref(
             "advance_payment.group_advance_payment_loan_officer"
-        ).users
+        ).users - (self.env.ref("base.user_root") + self.env.ref("base.user_admin"))
         return officers.id if len(officers) == 1 else False
 
     loan_verifier_id = fields.Many2one(
@@ -343,6 +364,7 @@ class AdvancePayment(models.Model):
             )
         ],
         default=_default_loan_verifier_id,
+        required=True,
         tracking=True,
     )
 
@@ -683,6 +705,31 @@ class AdvancePayment(models.Model):
                     )
                 )
 
+    def _verify_activity_summary(self):
+        self.ensure_one()
+        return _("ตรวจสอบคำขอยืมเงิน %s", self.name)
+
+    def _schedule_verify_activity(self):
+        """Raise the verify To-Do on the assigned loan officer.
+
+        Clears any stale one first so recall/resubmit loops (action_recall,
+        the officer's own ส่งกลับแก้ไข) don't pile up duplicates on the same
+        record (ADR-0013).
+        """
+        activity_type = self.env.ref(VERIFY_ACTIVITY_XMLID)
+        for rec in self:
+            summary = rec._verify_activity_summary()
+            rec.activity_ids.filtered(
+                lambda a, activity_type=activity_type, summary=summary: (
+                    a.activity_type_id == activity_type and a.summary == summary
+                )
+            ).unlink()
+            rec.activity_schedule(
+                VERIFY_ACTIVITY_XMLID,
+                user_id=rec.loan_verifier_id.id,
+                summary=summary,
+            )
+
     def action_submit(self):
         """Submit the request for verification (draft → to_verify)."""
         self._check_submit_permission()
@@ -706,9 +753,26 @@ class AdvancePayment(models.Model):
                 ),
                 subtype_xmlid="mail.mt_note",
             )
+            rec._schedule_verify_activity()
+
+    def _check_verify_permission(self):
+        """Officer-only: only the assigned loan officer (or an admin) may
+        verify — not any loan-officer-group member (ADR-0013)."""
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            if is_admin or rec.loan_verifier_id == self.env.user:
+                continue
+            raise UserError(
+                _(
+                    "Only the assigned loan officer (%(officer)s) can verify"
+                    " this agreement.",
+                    officer=rec.loan_verifier_id.name,
+                )
+            )
 
     def action_verify(self):
         """Finance officer confirms the document check (to_verify → to_approve)."""
+        self._check_verify_permission()
         for rec in self:
             if rec.state != "to_verify":
                 raise UserError(_("Only agreements under verification can be verified."))

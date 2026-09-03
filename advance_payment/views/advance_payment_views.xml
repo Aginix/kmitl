@@ -57,6 +57,7 @@
                     <field name="is_loan_officer" invisible="1" />
                     <field name="is_manager" invisible="1" />
                     <field name="can_submit" invisible="1" />
+                    <field name="can_verify" invisible="1" />
                     <field name="excess_amount" invisible="1" />
                     <button name="action_submit" string="ส่งคำขอ" type="object"
                         class="btn-primary"
@@ -66,7 +67,7 @@
                         attrs="{'invisible': ['|', ('state', 'not in', ['to_verify', 'to_approve']), ('is_requester', '=', False)]}" />
                     <button name="action_verify" string="ยืนยันการตรวจสอบ" type="object"
                         class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'to_verify')]}"
+                        attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('can_verify', '=', False)]}"
                         groups="advance_payment.group_advance_payment_loan_officer" />
                     <button name="action_reset_to_draft" string="ส่งกลับแก้ไข" type="object"
                         attrs="{'invisible': [('state', '!=', 'to_verify')]}"
@@ -170,7 +171,7 @@
                         <field name="date_approved" string="วันที่อนุมัติ" />
                     </group>
                     <group name="terms" string="เงื่อนไขและข้อตกลงการยืมเงินทดรองจ่าย">
-                        <field name="terms_conditions" nolabel="1" readonly="1" />
+                        <field name="terms_conditions" nolabel="1" readonly="1" colspan="2"/>
                     </group>
                     <group name="attachments" string="เอกสารแนบ">
                         <field name="attachment_ids" widget="many2many_binary"

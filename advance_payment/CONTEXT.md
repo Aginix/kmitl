@@ -16,7 +16,7 @@ _Avoid_: requester, requestor, applicant
 The implied permission chain `own_only → user → manager`, plus the standalone `loan_officer` group (ADR-0010):
 - **Own-only (`group_advance_payment_own_only`)**: sees and creates only their own agreements; the default borrower tier.
 - **User (`group_advance_payment_user`)**: sees every agreement and may draft one on behalf of another borrower (data entry only) — cannot submit someone else's draft or perform any workflow action.
-- **เจ้าหน้าที่งานเงินยืม / Loan Officer (`group_advance_payment_loan_officer`)**: the standalone oversight tier that performs the workflow actions — verify, reset-to-draft, accept-report, bank correction, due-date, and return-line approve/reject. Implies `user` (sees all). Normally a single named officer, referenced per-record by `loan_verifier_id`.
+- **เจ้าหน้าที่งานเงินยืม / Loan Officer (`group_advance_payment_loan_officer`)**: the standalone oversight tier that performs the workflow actions — verify, reset-to-draft, accept-report, bank correction, due-date, and return-line approve/reject. Implies `user` (sees all). Each record is assigned to a single named officer via the required `loan_verifier_id`; verifying (`action_verify`) is restricted to that specific officer (or an admin), not any member of the group (ADR-0013). `base.group_system` admins are standing members of this group so they can always be picked.
 - **Manager (`group_advance_payment_manager`)**: approves (the manual fallback) and cancels; implies `user` but not `loan_officer` — a manager does not get the loan officer's workflow buttons.
 The escape hatch for exceptional data fixes stays `base.group_system`, never `manager`.
 _Avoid_: officer (renamed to `loan_officer`; the plain `user` group is now the sees-all data-entry tier, not the borrower's own-only tier)
@@ -38,7 +38,7 @@ The date the disbursement transfer to the borrower completes. At this moment the
 _Avoid_: approval date, disbursement request date
 
 **Verify (ตรวจสอบ)**:
-The finance officer's check of the submitted request against the real paper documents, at `to_verify`. Distinct from Approve. On failure the officer returns the request to the borrower to edit (back to `draft`).
+The finance officer's check of the submitted request against the real paper documents, at `to_verify`. Distinct from Approve. On failure the officer returns the request to the borrower to edit (back to `draft`). Only the officer named in the record's `loan_verifier_id` (or an admin) may verify (ADR-0013); submitting the request raises a To Do activity for that officer.
 _Avoid_: approve, review, validate
 
 **Approve (อนุมัติ)**:

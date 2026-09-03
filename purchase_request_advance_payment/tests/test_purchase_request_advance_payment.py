@@ -17,6 +17,28 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         super().setUpClass()
         cls.manager = cls.env.ref("base.user_admin")
 
+        # advance.payment.loan_verifier_id is required (ADR-0013); the admin
+        # escape hatch is excluded from the auto-default candidate pool, so
+        # the suite needs a real named officer for it to resolve.
+        cls.officer = cls.env["res.users"].create(
+            {
+                "name": "Loan Officer",
+                "login": "officer_pr_ap",
+                "email": "officer_pr_ap@test.local",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            cls.env.ref(
+                                "advance_payment.group_advance_payment_loan_officer"
+                            ).id
+                        ],
+                    )
+                ],
+            }
+        )
+
         # Fiscal year
         cls.fiscal_year = cls.env["account.fiscal.year"].search([], limit=1)
         if not cls.fiscal_year:

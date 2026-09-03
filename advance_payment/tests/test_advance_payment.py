@@ -1,8 +1,11 @@
 import base64
 
+import psycopg2
+
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests.common import TransactionCase, tagged
+from odoo.tools import mute_logger
 
 
 @tagged("post_install", "-at_install")
@@ -93,6 +96,24 @@ class TestAdvancePayment(TransactionCase):
                 ],
             }
         )
+        cls.officer2 = Users.create(
+            {
+                "name": "Other Loan Officer",
+                "login": "officer2_ap",
+                "email": "officer2@test.local",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            cls.env.ref(
+                                "advance_payment.group_advance_payment_loan_officer"
+                            ).id
+                        ],
+                    )
+                ],
+            }
+        )
         cls.loan_type = cls.env["advance.payment.loan.type"].create(
             {"name": "Test Loan Type"}
         )
@@ -102,8 +123,9 @@ class TestAdvancePayment(TransactionCase):
                 {"acc_number": "x-%s" % rec.id, "partner_id": rec.partner_id.id}
             )
 
-    def _make(self, requested_by=None, amount=1000, as_user=None):
+    def _make(self, requested_by=None, amount=1000, as_user=None, loan_verifier_id=None):
         requested_by = requested_by or self.manager
+        verifier = loan_verifier_id if loan_verifier_id is not None else self.officer
         env = self.env(user=as_user) if as_user else self.env
         return env["advance.payment"].create(
             {
@@ -112,6 +134,7 @@ class TestAdvancePayment(TransactionCase):
                 "loan_type_id": self.loan_type.id,
                 "loan_reason": "Test reason",
                 "bank_id": self.banks[requested_by.id].id,
+                "loan_verifier_id": verifier.id,
             }
         )
 
@@ -270,6 +293,43 @@ class TestAdvancePayment(TransactionCase):
         ap.action_submit()
         with self.assertRaises(UserError):
             ap.action_approve()
+
+    # ------------------------------------------------------------------ #
+    # Loan officer assignment (ADR-0013)                                   #
+    # ------------------------------------------------------------------ #
+
+    def test_loan_verifier_id_required(self):
+        with self.assertRaises(psycopg2.IntegrityError):
+            with mute_logger("odoo.sql_db"), self.cr.savepoint():
+                self._make(loan_verifier_id=self.env["res.users"])
+
+    def test_assigned_officer_can_verify(self):
+        ap = self._make()
+        ap.action_submit()
+        self.assertTrue(ap.with_user(self.officer).can_verify)
+        ap.with_user(self.officer).action_verify()
+        self.assertEqual(ap.state, "to_approve")
+
+    def test_other_officer_cannot_verify(self):
+        ap = self._make()
+        ap.action_submit()
+        self.assertFalse(ap.with_user(self.officer2).can_verify)
+        with self.assertRaises(UserError):
+            ap.with_user(self.officer2).action_verify()
+
+    def test_admin_can_verify_any_assignment(self):
+        ap = self._make()
+        ap.action_submit()
+        ap.with_user(self.manager).action_verify()
+        self.assertEqual(ap.state, "to_approve")
+
+    def test_submit_schedules_verify_activity(self):
+        ap = self._make()
+        ap.action_submit()
+        activity = ap.activity_ids.filtered(
+            lambda a: a.user_id == self.officer
+        )
+        self.assertTrue(activity)
 
     # ------------------------------------------------------------------ #
     # Recall / reset                                                       #
