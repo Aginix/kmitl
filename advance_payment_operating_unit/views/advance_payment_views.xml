@@ -29,7 +29,7 @@
         <field name="model">advance.payment</field>
         <field name="inherit_id" ref="advance_payment.view_advance_payment_search"/>
         <field name="arch" type="xml">
-            <filter name="group_requested_by" position="after">
+            <filter name="group_employee" position="after">
                 <filter string="Operating Unit" name="group_operating_unit"
                     domain="[]" context="{'group_by':'operating_unit_id'}"
                     groups="operating_unit.group_multi_operating_unit"/>
