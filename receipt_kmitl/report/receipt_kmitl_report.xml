@@ -97,19 +97,19 @@
                     <div class="col-3">
                         <div>
                             <span style="display:inline-block;width:11px;height:11px;border:1px solid #000;text-align:center;line-height:11px;font-size:9px;">
-                                <t t-if="o.payment_method_id.payment_type == 'cash'">✓</t>
+                                <t t-if="o.payment_type == 'cash'">✓</t>
                             </span>
                             เงินสด / CASH
                         </div>
                         <div>
                             <span style="display:inline-block;width:11px;height:11px;border:1px solid #000;text-align:center;line-height:11px;font-size:9px;">
-                                <t t-if="o.payment_method_id.payment_type == 'cheque'">✓</t>
+                                <t t-if="o.payment_type == 'cheque'">✓</t>
                             </span>
                             เช็ค / CHEQUE
                         </div>
                         <div>
                             <span style="display:inline-block;width:11px;height:11px;border:1px solid #000;text-align:center;line-height:11px;font-size:9px;">
-                                <t t-if="o.payment_method_id.payment_type == 'transfer'">✓</t>
+                                <t t-if="o.payment_type == 'transfer'">✓</t>
                             </span>
                             เงินโอน / MONEY TRANSFER
                         </div>
@@ -130,8 +130,13 @@
                                         <span t-esc="'{:,.2f}'.format(o.amount_total)"/>
                                     </td>
                                     <td/>
-                                    <td/>
-                                    <td/>
+                                    <td>
+                                        <span t-if="o.payment_type == 'cheque'" t-esc="o.cheque_number or ''"/>
+                                    </td>
+                                    <td>
+                                        <span t-if="o.payment_type == 'cheque'" t-field="o.cheque_date"/>
+                                        <span t-if="o.payment_type == 'transfer'" t-field="o.transfer_date"/>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

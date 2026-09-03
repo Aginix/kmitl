@@ -136,6 +136,7 @@ class ReceiptRemittance(models.Model):
                     "code": seq_code,
                     "prefix": "RM/%s/" % fy_be,
                     "padding": 4,
+                    "implementation": "no_gap",
                     "company_id": False,
                 }
             )
@@ -164,7 +165,7 @@ class ReceiptRemittance(models.Model):
                         "child_of",
                         rec.department_analytic_id.id,
                     ),
-                    ("state", "=", "to_submit"),
+                    ("state", "=", "draft"),
                     ("remittance_id", "=", False),
                     ("date", "<=", rec.date),
                 ]
@@ -173,7 +174,7 @@ class ReceiptRemittance(models.Model):
                 raise UserError(
                     _("No pending receipts found for this department.")
                 )
-            rec.write({"receipt_ids": [(6, 0, receipts.ids)]})
+            rec.write({"receipt_ids": [(4, rid) for rid in receipts.ids]})
 
     def _schedule_approver_activity(self):
         self.ensure_one()
@@ -218,7 +219,7 @@ class ReceiptRemittance(models.Model):
                 raise UserError(_("Only draft remittances can be submitted."))
             if not rec.approver_id:
                 raise UserError(_("Please set an approver before submitting."))
-            rec._validate_receipts("to_submit")
+            rec._validate_receipts("draft")
             for receipt in rec.receipt_ids:
                 if not self.env["account.analytic.account"].search_count(
                     [
@@ -306,7 +307,7 @@ class ReceiptRemittance(models.Model):
                     _("Cannot reset to draft from this state.")
                 )
             rec._cancel_approver_activity()
-            rec.receipt_ids.write({"state": "to_submit"})
+            rec.receipt_ids.write({"state": "draft"})
             rec.write(
                 {
                     "state": "draft",
@@ -319,7 +320,7 @@ class ReceiptRemittance(models.Model):
         for rec in self:
             if rec.state == "posted":
                 raise UserError(_("Posted remittances cannot be cancelled."))
-            rec.receipt_ids.write({"remittance_id": False, "state": "to_submit"})
+            rec.receipt_ids.write({"remittance_id": False, "state": "draft"})
             rec.state = "cancelled"
 
     def action_view_journal_entries(self):

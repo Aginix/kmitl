@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-30 15:36+0000\n"
-"PO-Revision-Date: 2026-08-30 15:36+0000\n"
+"POT-Creation-Date: 2026-09-02 10:22+0000\n"
+"PO-Revision-Date: 2026-09-02 10:22+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -113,8 +113,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
 #, python-format
-msgid "Add at least one line before submitting."
-msgstr "ต้องมีอย่างน้อย 1 รายการ ถึงจะส่งข้อมูลได้"
+msgid "Add at least one line."
+msgstr ""
 
 #. module: receipt_kmitl
 #. odoo-python
@@ -141,6 +141,7 @@ msgid "Amount Total"
 msgstr "จำนวนเงินรวม"
 
 #. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__analytic_distribution
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__analytic_distribution
 msgid "Analytic"
 msgstr ""
@@ -151,11 +152,13 @@ msgid "Analytic Dimensions"
 msgstr "มิติบัญชี"
 
 #. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__analytic_distribution_search
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__analytic_distribution_search
 msgid "Analytic Distribution Search"
 msgstr ""
 
 #. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__analytic_precision
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__analytic_precision
 msgid "Analytic Precision"
 msgstr ""
@@ -204,7 +207,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__attachment_ids
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
 msgid "Attachments"
-msgstr ""
+msgstr "เอกสารประกอบ"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__customer_branch_code
@@ -235,6 +238,13 @@ msgstr "ยกเลิกแล้ว"
 
 #. module: receipt_kmitl
 #. odoo-python
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Cancelled and removed from remittance %s."
+msgstr ""
+
+#. module: receipt_kmitl
+#. odoo-python
 #: code:addons/receipt_kmitl/models/res_partner.py:0
 #, python-format
 msgid ""
@@ -258,6 +268,7 @@ msgstr "ไม่สามารถย้อนกลับแบบร่าง
 
 #. module: receipt_kmitl
 #: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__cash
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__payment_type__cash
 msgid "Cash"
 msgstr "เงินสด"
 
@@ -268,8 +279,26 @@ msgstr ""
 
 #. module: receipt_kmitl
 #: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__cheque
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__payment_type__cheque
 msgid "Cheque"
 msgstr "เช็ค"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__cheque_date
+msgid "Cheque Date"
+msgstr "วันที่เช็ค"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__cheque_number
+msgid "Cheque Number"
+msgstr "หมายเลขเช็ค"
+
+#. module: receipt_kmitl
+#. odoo-python
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Cheque number and cheque date are required for cheque payments."
+msgstr "จำเป็นต้องระบุหมายเลขเช็คและวันที่เช็คสำหรับการชำระเงินด้วยเช็ค"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__company_id
@@ -288,11 +317,6 @@ msgstr "ตั้งค่าการกำหนดค่า"
 #: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_configuration
 msgid "Configuration"
 msgstr "การตั้งค่า"
-
-#. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
-msgid "Confirm"
-msgstr "ยืนยัน"
 
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_reject_form
@@ -395,6 +419,7 @@ msgstr "หน่วยงาน"
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__description
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt_line__name
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
 msgid "Description"
 msgstr "รายละเอียด"
 
@@ -414,9 +439,7 @@ msgid "Done"
 msgstr "เสร็จสิ้น"
 
 #. module: receipt_kmitl
-#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__state__draft
 #: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt_remittance__state__draft
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_search
 msgid "Draft"
 msgstr "ร่าง"
@@ -425,12 +448,6 @@ msgstr "ร่าง"
 #: model:ir.model.fields,help:receipt_kmitl.field_kmitl_payment_method__payment_type
 msgid "Drives which box is ticked on the printed official receipt."
 msgstr ""
-
-#. module: receipt_kmitl
-#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__account_fiscal_year_id
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
-msgid "Fiscal Year"
-msgstr "ปีงบประมาณ"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__message_follower_ids
@@ -531,7 +548,7 @@ msgstr "ออกโดย"
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__department_analytic_id
 msgid "Issuing Department"
-msgstr "ออกโดยหน่วยงาน"
+msgstr "หน่วยงาน"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__journal_id
@@ -627,13 +644,6 @@ msgid "Line '%s' has no income account."
 msgstr "รายการ '%s' ยังไม่ได้ระบุบัญชีรายได้"
 
 #. module: receipt_kmitl
-#. odoo-python
-#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
-#, python-format
-msgid "Line '%s' must have a positive amount."
-msgstr "รายการ '%s' ต้องมีจำนวนเงินมากกว่าศูนย์"
-
-#. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__line_ids
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
 msgid "Lines"
@@ -669,6 +679,7 @@ msgstr ""
 
 #. module: receipt_kmitl
 #: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__transfer
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__payment_type__transfer
 msgid "Money Transfer"
 msgstr "เงินโอน"
 
@@ -776,13 +787,6 @@ msgstr ""
 
 #. module: receipt_kmitl
 #. odoo-python
-#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
-#, python-format
-msgid "Only 'To Submit' or cancelled receipts can be reset to draft."
-msgstr ""
-
-#. module: receipt_kmitl
-#. odoo-python
 #: code:addons/receipt_kmitl/models/receipt_remittance.py:0
 #, python-format
 msgid "Only approved remittances can be posted."
@@ -799,14 +803,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
 #, python-format
-msgid "Only draft receipts can be cancelled. Reset to draft first."
+msgid "Only cancelled receipts can be reset to draft."
 msgstr ""
 
 #. module: receipt_kmitl
 #. odoo-python
 #: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
 #, python-format
-msgid "Only draft receipts can be submitted."
+msgid "Only draft receipts can be cancelled. Reset to draft first."
 msgstr ""
 
 #. module: receipt_kmitl
@@ -846,11 +850,6 @@ msgid "Original receipt printed."
 msgstr "พิมพ์ใบเสร็จรับเงินต้นฉบับ"
 
 #. module: receipt_kmitl
-#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__other
-msgid "Other"
-msgstr "อื่นๆ"
-
-#. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__partner_id
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
 msgid "Partner"
@@ -875,8 +874,16 @@ msgstr "วิธีชำระเงิน"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__payment_type
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__payment_type
 msgid "Payment Type"
 msgstr "ประเภทการชำระเงิน"
+
+#. module: receipt_kmitl
+#. odoo-python
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Payment method '%s' does not match the receipt's payment type."
+msgstr "วิธีชำระเงิน '%s' ไม่ตรงกับประเภทการชำระเงินของใบเสร็จ"
 
 #. module: receipt_kmitl
 #. odoo-python
@@ -900,7 +907,7 @@ msgstr "รอทำรายงานนำส่ง"
 #: code:addons/receipt_kmitl/models/receipt_remittance.py:0
 #, python-format
 msgid "Please set an approver before submitting."
-msgstr "กรุณาตั้งค่า"
+msgstr "กรุณาตั้งค่าผู้อนุมัติก่อนส่งรายงานนำส่ง"
 
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_reject_form
@@ -1015,10 +1022,22 @@ msgid "Receipt %s is not in '%s' state."
 msgstr ""
 
 #. module: receipt_kmitl
+#. odoo-python
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Receipt %s was cancelled and removed from this remittance."
+msgstr ""
+
+#. module: receipt_kmitl
 #: model:ir.actions.act_window,name:receipt_kmitl.action_receipt_analysis
 #: model:ir.ui.menu,name:receipt_kmitl.menu_receipt_kmitl_analysis
 msgid "Receipt Analysis"
 msgstr "วิเคราะห์ใบเสร็จรับเงิน"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_tree
+msgid "Receipt Count"
+msgstr "จำนวนใบเสร็จรับเงิน"
 
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
@@ -1034,7 +1053,7 @@ msgstr "ใบเสร็จรับเงิน สจล."
 #: model:ir.model.fields,field_description:receipt_kmitl.field_res_partner__receipt_kmitl_count
 #: model:ir.model.fields,field_description:receipt_kmitl.field_res_users__receipt_kmitl_count
 msgid "Receipt Kmitl Count"
-msgstr ""
+msgstr "จำนวนใบเสร็จรับเงิน"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_res_partner__receipt_kmitl_total
@@ -1080,7 +1099,7 @@ msgstr "ใบเสร็จรับเงิน"
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_form
 msgid "Reject"
-msgstr ""
+msgstr "ปฏิเสธ"
 
 #. module: receipt_kmitl
 #: model:ir.model,name:receipt_kmitl.model_kmitl_receipt_remittance_reject
@@ -1245,11 +1264,18 @@ msgstr "เลขประจำตัวผู้เสียภาษี (ส�
 #. odoo-python
 #: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
 #, python-format
+msgid "The receipt total must be greater than zero."
+msgstr "ยอดรวมใบเสร็จต้องมากกว่า 0"
+
+#. module: receipt_kmitl
+#. odoo-python
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
 msgid "To Report"
 msgstr "รอนำส่ง"
 
 #. module: receipt_kmitl
-#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__state__to_submit
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__state__draft
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
 msgid "To Submit"
 msgstr "รอนำส่ง"
@@ -1267,6 +1293,18 @@ msgstr "วันนี้"
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_tree
 msgid "Total"
 msgstr "รวม"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__transfer_date
+msgid "Transfer Date"
+msgstr "วันที่โอนเงิน"
+
+#. module: receipt_kmitl
+#. odoo-python
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Transfer date is required for transfer payments."
+msgstr "กรุณาระบุวันที่โอนเงิน"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,help:receipt_kmitl.field_kmitl_receipt__activity_exception_decoration
