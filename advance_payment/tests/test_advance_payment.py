@@ -118,6 +118,42 @@ class TestAdvancePayment(TransactionCase):
                 ],
             }
         )
+        cls.approver = Users.create(
+            {
+                "name": "Loan Approver",
+                "login": "approver_ap",
+                "email": "approver@test.local",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            cls.env.ref(
+                                "advance_payment.group_advance_payment_loan_approver"
+                            ).id
+                        ],
+                    )
+                ],
+            }
+        )
+        cls.approver2 = Users.create(
+            {
+                "name": "Other Loan Approver",
+                "login": "approver2_ap",
+                "email": "approver2@test.local",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            cls.env.ref(
+                                "advance_payment.group_advance_payment_loan_approver"
+                            ).id
+                        ],
+                    )
+                ],
+            }
+        )
         cls.loan_type = cls.env["advance.payment.loan.type"].create(
             {"name": "Test Loan Type"}
         )
@@ -463,10 +499,10 @@ class TestAdvancePayment(TransactionCase):
             self.env.ref("base.user_admin").id,
         )
 
-    def test_default_approver_ignores_non_manager(self):
+    def test_default_approver_ignores_non_approver(self):
         self.env["ir.config_parameter"].sudo().set_param(
             "advance_payment.default_approver_id", str(self.user.id)
-        )  # own-only tier, not a manager
+        )  # own-only tier, not in the loan-approver group
         self.assertEqual(
             self.env["advance.payment"]._default_approver_id(),
             self.env.ref("base.user_admin").id,
@@ -490,6 +526,36 @@ class TestAdvancePayment(TransactionCase):
         self.assertTrue(ap._workflow_activities("to_approve"))
         ap._action_do_cancel("dup")
         self.assertFalse(ap._workflow_activities())
+
+    # ------------------------------------------------------------------ #
+    # Approval narrowed to the named approver (ADR-0017)                   #
+    # ------------------------------------------------------------------ #
+
+    def test_assigned_approver_can_approve(self):
+        ap = self._make()
+        ap.approver_id = self.approver.id
+        ap.action_submit()
+        ap.with_user(self.officer).action_verify()
+        self.assertTrue(ap.with_user(self.approver).can_approve)
+        ap.with_user(self.approver).action_approve()
+        self.assertEqual(ap.state, "waiting_transfer")
+
+    def test_other_approver_cannot_approve(self):
+        ap = self._make()
+        ap.approver_id = self.approver.id
+        ap.action_submit()
+        ap.with_user(self.officer).action_verify()
+        self.assertFalse(ap.with_user(self.approver2).can_approve)
+        with self.assertRaises(UserError):
+            ap.with_user(self.approver2).action_approve()
+
+    def test_admin_can_approve_any_assignment(self):
+        ap = self._make()
+        ap.approver_id = self.approver.id
+        ap.action_submit()
+        ap.with_user(self.officer).action_verify()
+        ap.with_user(self.manager).action_approve()
+        self.assertEqual(ap.state, "waiting_transfer")
 
     # ------------------------------------------------------------------ #
     # Recall / reset                                                       #

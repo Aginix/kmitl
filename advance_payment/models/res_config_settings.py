@@ -40,9 +40,10 @@ class ResConfigSettings(models.TransientModel):
     )
 
     # The standing approver for approver_id. Unlike the loan officer there is
-    # no sole-member to infer (root/admin are standing managers), so this
-    # setting is the only real source; advance.payment falls back to
-    # base.user_admin (ADR-0016). Domain mirrors the field's own.
+    # no sole-member to infer (root/admin are standing members of the approver
+    # group), so this setting is the only real source; advance.payment falls
+    # back to base.user_admin (ADR-0016). Domain mirrors the field's own,
+    # which is scoped to the dedicated approver group, not manager (ADR-0017).
     advance_payment_default_approver_id = fields.Many2one(
         comodel_name="res.users",
         string="ผู้มีสิทธิ์อนุมัติเงินยืม",
@@ -51,7 +52,9 @@ class ResConfigSettings(models.TransientModel):
             (
                 "groups_id",
                 "in",
-                self.env.ref("advance_payment.group_advance_payment_manager").ids,
+                self.env.ref(
+                    "advance_payment.group_advance_payment_loan_approver"
+                ).ids,
             )
         ],
         help="ผู้ที่จะถูกตั้งเป็นผู้อนุมัติของสัญญาใหม่ทุกฉบับ และได้รับงานให้อนุมัติ "

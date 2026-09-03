@@ -6,6 +6,8 @@ Status: accepted (supersedes the tier-validation parts of ADR-0001; UAT-only)
 
 ADR-0001 assumed `to_approve` would run the OCA `base_tier_validation` Endorse → Approve chain via an `advance_payment_tier_validation` bridge. That bridge is **removed**. `to_approve → waiting_transfer` is now a **single sign-off**: the อนุมัติ button on the form, restricted to `group_advance_payment_manager`, calling `action_approve()`. There is no `rejected` state — a request that does not pass goes back to `draft` (ส่งกลับแก้ไข, `action_reset_to_draft`) or to `cancel` (ยกเลิกสัญญา).
 
+> ADR-0016 adds a named `approver_id`; ADR-0017 narrows `action_approve` itself off `group_advance_payment_manager` onto a dedicated `group_advance_payment_loan_approver` (the assigned approver, or an admin) — "restricted to `group_advance_payment_manager`" above is no longer current.
+
 The multi-tier chain routed by org unit (Faculty: Dean → Deputy Rector; สนอ.: ผอ.กองคลัง → Deputy Rector) is **deferred**, not rejected on the merits.
 
 ## Why

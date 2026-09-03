@@ -59,6 +59,7 @@
                     <field name="is_manager" invisible="1" />
                     <field name="can_submit" invisible="1" />
                     <field name="can_verify" invisible="1" />
+                    <field name="can_approve" invisible="1" />
                     <field name="excess_amount" invisible="1" />
                     <button name="action_submit" string="ส่งคำขอ" type="object"
                         class="btn-primary"
@@ -75,8 +76,8 @@
                         groups="advance_payment.group_advance_payment_loan_officer" />
                     <button name="action_approve" string="อนุมัติ" type="object"
                         class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'to_approve')]}"
-                        groups="advance_payment.group_advance_payment_manager" />
+                        attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('can_approve', '=', False)]}"
+                        groups="advance_payment.group_advance_payment_loan_approver" />
                     <button name="action_submit_report" string="นำส่งรายงานค่าใช้จ่าย"
                         type="object" class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('is_requester', '=', False)]}" />

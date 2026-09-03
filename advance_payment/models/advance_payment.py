@@ -171,6 +171,11 @@ class AdvancePayment(models.Model):
     # member (ADR-0013).
     can_verify = fields.Boolean(compute="_compute_can_verify")
 
+    # Mirrors _check_approve_permission: only the approver named on
+    # approver_id (or an admin) may approve — not any loan-approver-group
+    # member (ADR-0017).
+    can_approve = fields.Boolean(compute="_compute_can_approve")
+
     # True only for a manager/admin — gates edit access to user_id, the
     # "ผู้จัดทำ" field, in the UI (ADR-0014).
     can_edit_drafter = fields.Boolean(compute="_compute_can_edit_drafter")
@@ -220,6 +225,12 @@ class AdvancePayment(models.Model):
         is_admin = self.env.user.has_group("base.group_system")
         for rec in self:
             rec.can_verify = is_admin or rec.loan_verifier_id == self.env.user
+
+    @api.depends("approver_id")
+    def _compute_can_approve(self):
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            rec.can_approve = is_admin or rec.approver_id == self.env.user
 
     def _compute_is_loan_officer(self):
         is_loan_officer = self.env.user.has_group(
@@ -440,24 +451,25 @@ class AdvancePayment(models.Model):
 
     @api.model
     def _approver_candidates(self):
-        """Managers who may be named as approver — matched the same way the
-        field's own domain matches (direct membership), so a configured user
-        can never resolve to a default the domain then rejects."""
+        """Members of the approver group who may be named as approver —
+        matched the same way the field's own domain matches (direct
+        membership), so a configured user can never resolve to a default the
+        domain then rejects (ADR-0017)."""
         return self.env.ref(
-            "advance_payment.group_advance_payment_manager"
+            "advance_payment.group_advance_payment_loan_approver"
         ).users.filtered("active")
 
     @api.model
     def _default_approver_id(self):
         """The approver configured in Settings, else the admin.
 
-        Approval is a single manager sign-off (ADR-0006) and unlike the loan
-        officer there is no "sole member" to infer — root/admin are standing
-        members of the manager group. So the setting is the only real source,
-        and the fallback is `base.user_admin`: required=True must always
-        resolve, and an admin can approve anyway, so a database that never
-        configured this still works instead of blocking every create
-        (ADR-0016).
+        Approval is narrowed to the named approver (ADR-0017) and unlike the
+        loan officer there is no "sole member" to infer — root/admin are
+        standing members of the approver group. So the setting is the only
+        real source, and the fallback is `base.user_admin`: required=True
+        must always resolve, and an admin can approve anyway, so a database
+        that never configured this still works instead of blocking every
+        create (ADR-0016).
         """
         configured = (
             self.env["ir.config_parameter"]
@@ -481,7 +493,9 @@ class AdvancePayment(models.Model):
             (
                 "groups_id",
                 "in",
-                self.env.ref("advance_payment.group_advance_payment_manager").ids,
+                self.env.ref(
+                    "advance_payment.group_advance_payment_loan_approver"
+                ).ids,
             )
         ],
         default=_default_approver_id,
@@ -984,6 +998,21 @@ class AdvancePayment(models.Model):
                 subtype_xmlid="mail.mt_note",
             )
 
+    def _check_approve_permission(self):
+        """Approver-only: only the named approver (or an admin) may approve —
+        not any loan-approver-group member (ADR-0017)."""
+        is_admin = self.env.user.has_group("base.group_system")
+        for rec in self:
+            if is_admin or rec.approver_id == self.env.user:
+                continue
+            raise UserError(
+                _(
+                    "Only the assigned approver (%(approver)s) can approve"
+                    " this agreement.",
+                    approver=rec.approver_id.name,
+                )
+            )
+
     def action_approve(self):
         """Approve and create the outbound disbursement payment
         (to_approve → waiting_transfer).
@@ -997,6 +1026,7 @@ class AdvancePayment(models.Model):
         has no business choosing. `account_payment.action_post` then closes the
         loop back to `action_start()` once the transfer is booked.
         """
+        self._check_approve_permission()
         for rec in self:
             if rec.state != "to_approve":
                 raise UserError(_("Only agreements awaiting approval can be approved."))
