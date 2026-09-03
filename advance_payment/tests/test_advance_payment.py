@@ -3,7 +3,7 @@ import base64
 import psycopg2
 
 from odoo import fields
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests.common import TransactionCase, tagged
 from odoo.tools import mute_logger
 
@@ -17,11 +17,12 @@ class TestAdvancePayment(TransactionCase):
     reached organically, so the business logic can be exercised without a full
     accounting setup.
 
-    The two exceptions are `action_approve` and `return_line.action_approve`,
-    which are run for real: leaving them guard-only is how a call to a
-    non-existent `account.payment.action_submit` survived in both of them
-    until somebody clicked อนุมัติ (ADR-0006). Anything that creates an
-    `account.payment` gets executed here, not just asserted against.
+    `action_create_payment_voucher` and `return_line.action_approve` are the
+    two places that create an `account.payment`, and both are run for real,
+    not just guard-tested — leaving them guard-only is how a call to a
+    non-existent `account.payment.action_submit` once survived in both of
+    them until somebody clicked อนุมัติ (ADR-0006). `action_approve` itself no
+    longer creates a payment: issuing the voucher is a separate, later act.
     """
 
     @classmethod
@@ -151,6 +152,16 @@ class TestAdvancePayment(TransactionCase):
                             ).id
                         ],
                     )
+                ],
+            }
+        )
+        cls.loan_officer = Users.create(
+            {
+                "name": "Loan Officer",
+                "login": "loan_officer_ap",
+                "email": "loan_officer@test.local",
+                "groups_id": [
+                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_loan_officer").id])
                 ],
             }
         )
@@ -357,33 +368,58 @@ class TestAdvancePayment(TransactionCase):
         with self.assertRaises(UserError):
             ap.action_approve()
 
-    def test_approve_creates_finance_draft_voucher(self):
-        """Approval must actually run, not just be guarded.
-
-        This whole path was only ever tested for its guards, which is how a
-        call to a non-existent `account.payment.action_submit` survived in it.
-        The voucher is left a finance-office draft on purpose — confirming it
-        for the bank is their press, and needs a paying account (ADR-0006).
-        """
+    def test_approve_moves_to_waiting_transfer_without_payment(self):
+        """Approval hands the request to the loan officer; issuing the
+        voucher is a separate, later act (see the payment-voucher tests
+        below) — action_approve itself must not create a payment."""
         ap = self._make()
         ap.action_submit()
         ap.with_user(self.officer).action_verify()
         ap.action_approve()
         self.assertEqual(ap.state, "waiting_transfer")
         self.assertEqual(ap.disbursement_state, "pending")
-        self.assertEqual(len(ap.payment_ids), 1)
+        self.assertTrue(ap.date_approved)
+        self.assertEqual(ap.payment_count, 0)
+
+    # ------------------------------------------------------------------ #
+    # Payment voucher issuance (loan officer)                              #
+    # ------------------------------------------------------------------ #
+
+    def test_loan_officer_creates_payment_voucher(self):
+        ap = self._make(requested_by=self.user, amount=1000)
+        ap.write({"state": "waiting_transfer", "disbursement_state": "pending"})
+        ap.with_user(self.officer).action_create_payment_voucher()
+        self.assertEqual(ap.payment_count, 1)
         payment = ap.payment_ids
         self.assertEqual(payment.state, "draft")
         self.assertEqual(payment.finance_state, "draft")
+        self.assertEqual(
+            payment.kmitl_payment_type_id,
+            self.env.ref("advance_payment.payment_type_advance_payment_outbound"),
+        )
         self.assertEqual(payment.partner_id, ap.partner_id)
         self.assertEqual(payment.partner_bank_id, ap.bank_id)
-        self.assertEqual(payment.amount, ap.loan_amount)
+        self.assertEqual(payment.amount, 1000)
+        with self.assertRaises(UserError):
+            ap.with_user(self.officer).action_create_payment_voucher()
+
+    def test_create_payment_voucher_requires_loan_officer(self):
+        ap = self._make(requested_by=self.user)
+        ap.write({"state": "waiting_transfer"})
+        with self.assertRaises(AccessError):
+            ap.with_user(self.staff).action_create_payment_voucher()
+
+    def test_create_payment_voucher_only_from_waiting_transfer(self):
+        ap = self._make()
+        with self.assertRaises(UserError):
+            ap.with_user(self.officer).action_create_payment_voucher()
 
     def test_cancel_after_approve_voids_the_voucher(self):
         ap = self._make()
         ap.action_submit()
         ap.with_user(self.officer).action_verify()
         ap.action_approve()
+        ap.with_user(self.officer).action_create_payment_voucher()
         ap._action_do_cancel("stopped")
         self.assertEqual(ap.state, "cancel")
         self.assertEqual(ap.payment_ids.state, "cancel")

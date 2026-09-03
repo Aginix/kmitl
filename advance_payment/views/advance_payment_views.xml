@@ -78,6 +78,10 @@
                         class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('can_approve', '=', False)]}"
                         groups="advance_payment.group_advance_payment_loan_approver" />
+                    <button name="action_create_payment_voucher" string="สร้างใบสำคัญจ่าย"
+                        type="object" class="btn-primary"
+                        attrs="{'invisible': ['|', ('state', '!=', 'waiting_transfer'), ('payment_count', '!=', 0)]}"
+                        groups="advance_payment.group_advance_payment_loan_officer" />
                     <button name="action_submit_report" string="นำส่งรายงานค่าใช้จ่าย"
                         type="object" class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('is_requester', '=', False)]}" />
