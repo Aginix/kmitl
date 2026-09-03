@@ -829,6 +829,35 @@ class TestAdvancePayment(TransactionCase):
             ap.action_reset_cancel_to_draft()
 
     # ------------------------------------------------------------------ #
+    # Delete requires cancel first (ADR-0018)                              #
+    # ------------------------------------------------------------------ #
+
+    def test_delete_blocked_before_cancel(self):
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        with self.assertRaises(UserError):
+            ap.with_user(self.user).unlink()
+
+    def test_own_only_can_delete_own_cancelled_draft(self):
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).button_cancel()
+        ap_id = ap.id
+        ap.with_user(self.user).unlink()
+        self.assertFalse(self.env["advance.payment"].search([("id", "=", ap_id)]))
+
+    def test_own_only_can_delete_after_cancel_from_to_verify(self):
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        ap.with_user(self.user)._action_do_cancel("dup")
+        self.assertEqual(ap.state, "cancel")
+        ap.with_user(self.user).unlink()
+        self.assertFalse(ap.exists())
+
+    def test_admin_can_delete_without_cancel(self):
+        ap = self._make()
+        ap.with_user(self.manager).unlink()
+        self.assertFalse(ap.exists())
+
+    # ------------------------------------------------------------------ #
     # Uniqueness                                                           #
     # ------------------------------------------------------------------ #
 

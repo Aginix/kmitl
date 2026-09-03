@@ -822,6 +822,22 @@ class AdvancePayment(models.Model):
                     )
         return super().write(vals)
 
+    def unlink(self):
+        """An agreement may only be deleted once cancelled (ยกเลิกก่อน) — a
+        live/settled record is the audit trail, not scratch data. Any group
+        with delete rights on the model is subject to this, base.group_system
+        excepted (same escape hatch as write())."""
+        if not self.env.user.has_group("base.group_system"):
+            not_cancelled = self.filtered(lambda rec: rec.state != "cancel")
+            if not_cancelled:
+                raise UserError(
+                    _(
+                        "Cancel an agreement before deleting it: %(names)s",
+                        names=", ".join(not_cancelled.mapped("name")),
+                    )
+                )
+        return super().unlink()
+
     def button_draft(self):
         self.write({"state": "draft"})
 
