@@ -66,9 +66,12 @@
         </field>
     </record>
 
-    <!-- Bind the vendor-bills menu (core action) to its scoped search view. -->
+    <!-- Bind menus to their scoped search views (must come after view definitions above). -->
     <record id="account.action_move_in_invoice_type" model="ir.actions.act_window">
         <field name="search_view_id" ref="view_account_move_filter_vendor_bills_kmitl"/>
+    </record>
+    <record id="action_account_entries" model="ir.actions.act_window">
+        <field name="search_view_id" ref="view_account_move_filter_account_entries_kmitl"/>
     </record>
 
     <!-- Root menu -->
