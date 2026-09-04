@@ -10,7 +10,8 @@
             <xpath expr="//field[@name='line_ids']" position="before">
                 <group>
                     <group>
-                        <field name="vat_included" attrs="{'readonly': [('is_editable','=', False)]}" />
+                        <field name="is_vat_editable" invisible="1" />
+                        <field name="vat_included" attrs="{'readonly': [('is_vat_editable','=', False)]}" />
                         <field name="tax_id" widget="selection" attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': [('is_editable','=', False)]}" />
                     </group>
                 </group>

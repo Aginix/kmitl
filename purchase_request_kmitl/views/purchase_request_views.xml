@@ -91,9 +91,11 @@
             <xpath expr="//field[@name='line_ids']" position="before">
                 <group>
                     <group>
+                        <field name="partner_id_domain" invisible="1" />
                         <field
                             name="partner_id"
                             attrs="{'readonly': [('is_editable','=', False)]}"
+                            domain="partner_id_domain"
                             options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                         />
                     </group>
