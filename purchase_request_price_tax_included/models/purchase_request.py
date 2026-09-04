@@ -19,6 +19,17 @@ class PurchaseRequest(models.Model):
         readonly=False,
     )
 
+    is_vat_editable = fields.Boolean(
+        compute="_compute_is_vat_editable",
+        readonly=True,
+        store=False,
+    )
+
+    @api.depends("is_editable")
+    def _compute_is_vat_editable(self):
+        for rec in self:
+            rec.is_vat_editable = rec.is_editable
+
     tax_id = fields.Many2one(
         "account.tax",
         string="Tax",
