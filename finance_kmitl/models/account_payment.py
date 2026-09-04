@@ -652,6 +652,28 @@ class AccountPayment(models.Model):
         return res
 
     # -------------------------------------------------------------------------
+    # Over to the accounting office
+    # -------------------------------------------------------------------------
+    def action_submit_batch(self):
+        """Submit the entries behind the selected vouchers for accounting approval.
+
+        Sits on this model so the accounting maker can work from the register they
+        already have in front of them — ใบล้างเจ้าหนี้ lists payments, because the
+        payment is what carries both offices' statuses, while the thing being
+        submitted is its entry. The delegation to account.move is fields only, so
+        the method has to be named here for a list button to reach it.
+
+        The work itself stays where it belongs: ``account.move.action_submit_batch``
+        picks out the drafts, isolates each failure in a savepoint and reports them
+        by name. A voucher the finance office has not handed over yet fails on the
+        maker rule in ``account.move._check_submit_allowed`` and is named in that
+        report — deliberately not filtered out here, because somebody who ticked
+        twenty vouchers and got eighteen entries would have no way to tell which
+        two were dropped or why.
+        """
+        return self.move_id.action_submit_batch()
+
+    # -------------------------------------------------------------------------
     # Out by cheque
     # -------------------------------------------------------------------------
     def action_create_cheques(self):

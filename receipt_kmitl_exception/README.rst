@@ -2,9 +2,11 @@
 Receipt KMITL Exception
 =========================
 
-Adds ``base_exception`` blocking/warning rule checks on ``kmitl.receipt``
-confirmation. When an active rule fails, confirming pops up a wizard listing
-the outstanding exceptions; a manager may choose to ignore and proceed.
+Adds ``base_exception`` rule checks on ``kmitl.receipt``. Rules are evaluated
+whenever a receipt is created or edited (the receipt has no confirm step —
+numbers are minted at creation). A failing **blocking** rule (``is_blocking``)
+prevents the receipt from being saved; non-blocking rules are still detected
+and stored on the record for visibility but do not block saving.
 
 Configuration
 =============

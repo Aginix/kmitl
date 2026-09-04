@@ -15,22 +15,13 @@
                     </div>
                 </t>
                 <t t-set-slot="control-panel-top-right">
-                    <div class="d-flex flex-wrap gap-2 align-items-end">
+                    <div t-if="state.remittanceMode" class="d-flex align-items-end">
                         <div>
-                            <label class="form-label-sm mb-1">Fiscal Year</label>
-                            <select class="form-select form-select-sm" t-on-change="onFiscalYearChange">
-                                <option value="">/</option>
-                                <option
-                                    t-foreach="fiscalYears"
-                                    t-as="fy"
-                                    t-key="fy.id"
-                                    t-att-value="fy.id"
-                                    t-att-selected="fy.id === state.fiscalYearId"
-                                >
-                                    <t t-esc="fy.name" />
-                                </option>
-                            </select>
+                            <label class="form-label-sm mb-1">Remittance</label>
+                            <div class="fw-bold"><t t-esc="state.remittanceName" /></div>
                         </div>
+                    </div>
+                    <div t-if="!state.remittanceMode" class="d-flex flex-wrap gap-2 align-items-end">
                         <div>
                             <label class="form-label-sm mb-1">Date From</label>
                             <input
@@ -56,7 +47,6 @@
                                 <option value="cash" t-att-selected="state.paymentType === 'cash'">Cash</option>
                                 <option value="cheque" t-att-selected="state.paymentType === 'cheque'">Cheque</option>
                                 <option value="transfer" t-att-selected="state.paymentType === 'transfer'">Transfer</option>
-                                <option value="other" t-att-selected="state.paymentType === 'other'">Other</option>
                             </select>
                         </div>
                         <div style="min-width: 180px;">

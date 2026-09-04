@@ -16,23 +16,24 @@ class AdvancePayment(models.Model):
     _name = "advance.payment"
     _inherit = ["advance.payment", "analytic.mixin"]
 
-    # Which earmark the borrowed cash comes out of. Copied off the source
-    # document when the reference is picked, never reserved by the loan itself —
-    # a loan creating its own commitment would double-reserve the same money
-    # (agx_approval ADR-0003). A snapshot on purpose: the source is free to
-    # release or re-point its own commitment afterwards without erasing the
-    # record of where this cash came from. Empty for a standalone loan, whose
-    # budget source is still an open policy question (ADR-0008).
+    # Which earmark the borrowed cash comes out of. Either copied off the
+    # source document when the reference is picked, or chosen directly by the
+    # officer while the loan is still draft (ADR-0010) — never reserved by the
+    # loan itself, as a loan creating its own commitment would double-reserve
+    # the same money (agx_approval ADR-0003). The loan never releases or
+    # re-points it either: the source document (or the officer) stays free to
+    # do that on their own. Empty for a standalone loan, whose budget source
+    # is still an open policy question (ADR-0008).
     budget_commitment_id = fields.Many2one(
         "budget.commitment",
         string="ใบจองงบประมาณ",
-        readonly=True,
+        domain=[("state", "in", ["reserved", "partial"])],
         copy=False,
         index=True,
         ondelete="restrict",
         tracking=True,
         help="ใบจองงบประมาณที่เงินยืมก้อนนี้เบิกออกมา "
-        "คัดลอกมาจากเอกสารต้นทางตอนเลือกเอกสารอ้างอิง "
+        "เลือกได้เองตอนแบบร่าง หรือคัดลอกมาจากเอกสารต้นทางตอนเลือกเอกสารอ้างอิง "
         "และใช้ส่งต่อให้ขั้นตัดงบประมาณ",
     )
 
@@ -76,6 +77,12 @@ class AdvancePayment(models.Model):
         domain=[("root_plan_id.code", "=", "sources")],
         store=False,
     )
+
+    @api.onchange("budget_commitment_id")
+    def _onchange_budget_commitment_id(self):
+        self.analytic_distribution = (
+            self.budget_commitment_id.analytic_distribution or False
+        )
 
     @api.depends("analytic_distribution")
     def _compute_analytic_ids(self):
