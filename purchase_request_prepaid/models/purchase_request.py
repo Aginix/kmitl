@@ -18,6 +18,13 @@ class PurchaseRequest(models.Model):
             if rec.payment_type == "prepaid":
                 rec.is_vat_editable = False
 
+    @api.depends("is_editable", "payment_type")
+    def _compute_is_procurement_mode_editable(self):
+        super()._compute_is_procurement_mode_editable()
+        for rec in self:
+            if rec.payment_type == "prepaid":
+                rec.is_procurement_mode_editable = False
+
     @api.onchange("payment_type")
     def _onchange_payment_type_prepaid(self):
         if self.payment_type == "prepaid":

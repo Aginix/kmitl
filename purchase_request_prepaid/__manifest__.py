@@ -11,9 +11,7 @@
         "purchase_request_kmitl",
         "purchase_request_procurement_mode",
     ],
-    "data": [
-        "views/purchase_request_views.xml",
-    ],
+    "data": [],
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",
