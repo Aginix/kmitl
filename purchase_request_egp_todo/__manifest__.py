@@ -1,16 +1,14 @@
 {
-    "name": "Purchase Request Todos",
+    "name": "Purchase Request E-GP Todo",
     "version": "16.0.1.0.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "summary": "Activity type definitions for the พ.1 / พจ.1 Todo lifecycle, "
-    "and PA (พจ.1) workflow Todos (status FYI, manager consideration, "
-    "record contract, PO creation)",
+    "summary": "Route E-GP number entry Todos for พ.1 in the e-GP procurement path",
     "depends": [
         "base_automation",
+        "purchase_request_egp",
         "mail_activity_todo_role_unit",
-        "purchase_request_approval",
         "purchase_user_role",
     ],
     "data": [

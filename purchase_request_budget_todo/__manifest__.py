@@ -1,17 +1,14 @@
 {
-    "name": "Purchase Request Todos",
+    "name": "Purchase Request Budget Todo",
     "version": "16.0.1.0.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "summary": "Activity type definitions for the พ.1 / พจ.1 Todo lifecycle, "
-    "and PA (พจ.1) workflow Todos (status FYI, manager consideration, "
-    "record contract, PO creation)",
+    "summary": "Route reserve-budget Todos when a พ.1 enters รอจองงบประมาณ",
     "depends": [
         "base_automation",
+        "budget_role",
         "mail_activity_todo_role_unit",
-        "purchase_request_approval",
-        "purchase_user_role",
     ],
     "data": [
         "data/mail_activity_type.xml",
