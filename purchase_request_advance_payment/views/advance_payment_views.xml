@@ -34,7 +34,7 @@
         <field name="model">advance.payment</field>
         <field name="inherit_id" ref="advance_payment.view_advance_payment_search"/>
         <field name="arch" type="xml">
-            <field name="requested_by" position="after">
+            <field name="employee_id" position="after">
                 <field name="purchase_request_id"/>
             </field>
             <filter name="group_loan_type" position="after">

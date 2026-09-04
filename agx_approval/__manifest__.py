@@ -13,6 +13,7 @@
         "base_exception",
         "account_fiscal_year_enhance",
         "l10n_th_amount_to_text",
+        "l10n_th_base_sequence",
         "partner_type_kmitl_accounting",
         "hr_employee_name_detail_kmitl",
     ],

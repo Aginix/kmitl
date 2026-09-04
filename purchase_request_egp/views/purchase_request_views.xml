@@ -136,12 +136,6 @@
         </field>
     </record>
 
-    <menuitem
-        action="base_tier_validation.tier_validation_exception_action"
-        id="menu_purchase_request_tier_validation_exception"
-        parent="purchase.menu_purchase_config"
-    />
-
     <!-- UX override: move is_egp into the purchase_request_group (defined in
          purchase_request_kmitl.view_purchase_request_form_ux). This view inherits from
          the UX view so it is applied right after the UX restructure. -->

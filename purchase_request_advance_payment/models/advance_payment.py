@@ -57,9 +57,11 @@ class AdvancePayment(models.Model):
         vals = super()._prepare_vals_from_reference()
         pr = self.purchase_request_id
         if pr:
+            pr._check_requested_by_has_employee()
             vals.update(
                 {
-                    "requested_by": pr.requested_by.id,
+                    "employee_id": pr.requested_by.employee_id.id,
+                    "user_id": self.env.uid,
                     "loan_amount": pr.get_estimated_cost_currency(),
                     "loan_reason": pr.description or "",
                     "analytic_distribution": pr.analytic_distribution,

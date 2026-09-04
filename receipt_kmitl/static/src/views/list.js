@@ -24,7 +24,7 @@ export class ReceiptListController extends ListController {
             const allRecords = this.model.root.records;
             for (const rec of allRecords) {
                 if (
-                    rec.data.state === "to_submit" &&
+                    rec.data.state === "draft" &&
                     !rec.data.remittance_id
                 ) {
                     recordIds.push(rec.resId);

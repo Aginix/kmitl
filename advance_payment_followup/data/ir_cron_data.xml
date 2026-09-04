@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <!-- Change date -->
+    <record id="ir_cron_recompute_return_days" model="ir.cron">
+        <field name="name">Recompute Advance Payment Return Days</field>
+        <field name="model_id" ref="advance_payment.model_advance_payment"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_recompute_return_days()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Notification -->
+    <record id="ir_cron_send_followup_digest" model="ir.cron">
+        <field name="name">Send Advance Payment Followup Digest</field>
+        <field name="model_id" ref="advance_payment.model_advance_payment"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_send_followup_digest()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">weeks</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+
+</odoo>
