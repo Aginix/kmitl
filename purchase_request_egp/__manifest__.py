@@ -7,10 +7,8 @@
     "depends": [
         "iframe_viewer_widget",
         "purchase_request_kmitl",
-        "purchase_request_tier_validation",
     ],
     "data": [
-        "data/tier_validation_exception.xml",
         "views/purchase_request_views.xml",
     ],
     "application": False,

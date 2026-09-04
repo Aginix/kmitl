@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_advance_payment_tree_followup" model="ir.ui.view">
+        <field name="name">advance.payment.tree.followup</field>
+        <field name="model">advance.payment</field>
+        <field name="arch" type="xml">
+            <tree string="ติดตามลูกหนี้เงินยืม"
+                  decoration-danger="is_overdue"
+                  decoration-warning="return_range in ('0-7','8-15')">
+                <field name="name"/>
+                <field name="contract_number"/>
+                <field name="employee_id"/>
+                <field name="loan_verifier_id"/>
+                <field name="loan_amount"/>
+                <field name="amount_remaining"/>
+                <field name="return_amount"/>
+                <field name="return_due_date"/>
+                <field name="days_to_return_display" string="จำนวนวันคงเหลือ"/>
+                <field name="return_range"/>
+                <field name="is_overdue" invisible="1"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Pivot View -->
+    <record id="view_advance_payment_pivot_followup" model="ir.ui.view">
+        <field name="name">advance.payment.pivot.followup</field>
+        <field name="model">advance.payment</field>
+        <field name="arch" type="xml">
+            <pivot string="สรุปลูกหนี้เงินยืม">
+                <field name="loan_verifier_id" type="row"/>
+                <field name="return_range" type="col"/>
+                <field name="amount_remaining" type="measure"/>
+                <field name="return_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_advance_payment_search_followup" model="ir.ui.view">
+        <field name="name">advance.payment.search.followup</field>
+        <field name="model">advance.payment</field>
+        <field name="arch" type="xml">
+            <search string="ติดตามลูกหนี้เงินยืม">
+                <field name="name"/>
+                <field name="contract_number"/>
+                <field name="employee_id"/>
+                <field name="loan_verifier_id"/>
+                <field name="loan_type_id"/>
+                <field name="return_due_date"/>
+                <separator/>
+                <filter string="เกินกำหนดคืน" name="overdue" domain="[('is_overdue','=',True)]"/>
+                <filter string="ครบกำหนดเดือนนี้" name="due_this_month"
+                    domain="[('return_due_date','&gt;=', context_today().strftime('%Y-%m-01')),
+                             ('return_due_date','&lt;', (context_today() + relativedelta(months=1)).strftime('%Y-%m-01'))]"/>
+                <filter string="ครบกำหนดเดือนหน้า" name="due_next_month"
+                    domain="[('return_due_date','&gt;=', (context_today() + relativedelta(months=1)).strftime('%Y-%m-01')),
+                             ('return_due_date','&lt;', (context_today() + relativedelta(months=2)).strftime('%Y-%m-01'))]"/>
+                <filter string="ยังไม่กำหนดวันครบกำหนด" name="no_due_date" domain="[('return_due_date','=',False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="ช่วงวันครบกำหนดคืน" name="group_return_range"
+                        context="{'group_by':'return_range'}"/>
+                    <filter string="ผู้ยืม" name="group_employee"
+                        context="{'group_by':'employee_id'}"/>
+                    <filter string="เจ้าหน้าที่งานเงินยืม" name="group_loan_verifier"
+                        context="{'group_by':'loan_verifier_id'}"/>
+                    <filter string="ประเภทเงินยืม" name="group_loan_type"
+                        context="{'group_by':'loan_type_id'}"/>
+                    <filter string="สถานะ" name="group_state"
+                        context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_advance_payment_followup" model="ir.actions.act_window">
+        <field name="name">ติดตามลูกหนี้เงินยืม</field>
+        <field name="res_model">advance.payment</field>
+        <field name="view_mode">tree,pivot,form</field>
+        <field name="domain">[('state','in',['in_progress','to_verify_report','to_reconcile'])]</field>
+        <field name="search_view_id" ref="view_advance_payment_search_followup"/>
+        <field name="context">{'search_default_group_return_range': 1}</field>
+    </record>
+
+    <record id="action_advance_payment_followup_view_tree" model="ir.actions.act_window.view">
+        <field name="sequence">1</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_advance_payment_tree_followup"/>
+        <field name="act_window_id" ref="action_advance_payment_followup"/>
+    </record>
+
+    <record id="action_advance_payment_followup_view_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">2</field>
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_advance_payment_pivot_followup"/>
+        <field name="act_window_id" ref="action_advance_payment_followup"/>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_advance_payment_followup"
+        name="ติดตามลูกหนี้เงินยืม"
+        parent="advance_payment.menu_advance_payment_root"
+        action="action_advance_payment_followup"
+        sequence="30"
+        groups="advance_payment.group_advance_payment_user"/>
+
+</odoo>

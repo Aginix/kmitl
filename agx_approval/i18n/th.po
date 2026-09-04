@@ -779,6 +779,11 @@ msgid "Name"
 msgstr "ชื่อ"
 
 #. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "New"
+msgstr "รายการใหม่"
+
+#. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_new_request_menu
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_kanban
 msgid "New Request"

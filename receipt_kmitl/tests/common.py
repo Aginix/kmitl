@@ -1,5 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from odoo import fields
 from odoo.tests.common import TransactionCase
 
 
@@ -19,6 +20,18 @@ class ReceiptKmitlCommon(TransactionCase):
         cls.fund_plan = AnalyticPlan.search([("code", "=", "funds")], limit=1)
         if not cls.fund_plan:
             cls.fund_plan = AnalyticPlan.create({"name": "Funds", "code": "funds"})
+        cls.source_plan = AnalyticPlan.search([("code", "=", "sources")], limit=1)
+        if not cls.source_plan:
+            cls.source_plan = AnalyticPlan.create(
+                {"name": "Sources", "code": "sources"}
+            )
+        cls.activity_plan = AnalyticPlan.search(
+            [("code", "=", "activities")], limit=1
+        )
+        if not cls.activity_plan:
+            cls.activity_plan = AnalyticPlan.create(
+                {"name": "Activities", "code": "activities"}
+            )
 
         Analytic = cls.env["account.analytic.account"]
         cls.dept_a = Analytic.create(
@@ -26,6 +39,18 @@ class ReceiptKmitlCommon(TransactionCase):
         )
         cls.dept_b = Analytic.create(
             {"name": "Department B", "code": "02", "plan_id": cls.dept_plan.id}
+        )
+        cls.fund_a = Analytic.create(
+            {"name": "Fund A", "code": "F01", "plan_id": cls.fund_plan.id}
+        )
+        cls.source_a = Analytic.create(
+            {"name": "Source A", "code": "S01", "plan_id": cls.source_plan.id}
+        )
+        cls.source_b = Analytic.create(
+            {"name": "Source B", "code": "S02", "plan_id": cls.source_plan.id}
+        )
+        cls.activity_a = Analytic.create(
+            {"name": "Activity A", "code": "A01", "plan_id": cls.activity_plan.id}
         )
 
         # --- Accounts ---
@@ -96,6 +121,15 @@ class ReceiptKmitlCommon(TransactionCase):
         cls.pm_transfer = Method.create(
             {
                 "name": "Transfer",
+                "payment_type": "transfer",
+                "journal_id": cls.bank_journal.id,
+                "account_id": cls.bank_account.id,
+            }
+        )
+        cls.pm_cheque = Method.create(
+            {
+                "name": "Cheque",
+                "payment_type": "cheque",
                 "journal_id": cls.bank_journal.id,
                 "account_id": cls.bank_account.id,
             }
@@ -127,28 +161,35 @@ class ReceiptKmitlCommon(TransactionCase):
         if not cls.walkin:
             cls.walkin = cls.env["res.partner"].create({"name": "Walk-in (test)"})
 
-    def _make_receipt(self, department=None, method=None, lines=None):
+    def _make_receipt(self, department=None, method=None, lines=None, extra_vals=None):
         department = department or self.dept_a
         method = method or self.pm_cash
         lines = lines or [(self.product_tuition, 1, 5000.0)]
-        return self.env["kmitl.receipt"].create(
-            {
-                "department_analytic_id": department.id,
-                "payment_method_id": method.id,
-                "partner_id": self.walkin.id,
-                "line_ids": [
-                    (
-                        0,
-                        0,
-                        {
-                            "product_id": product.id,
-                            "name": product.name,
-                            "account_id": product.property_account_income_id.id,
-                            "quantity": qty,
-                            "price_unit": price,
-                        },
-                    )
-                    for (product, qty, price) in lines
-                ],
-            }
-        )
+        today = fields.Date.context_today(self.env.user)
+        vals = {
+            "department_analytic_id": department.id,
+            "payment_type": method.payment_type,
+            "payment_method_id": method.id,
+            "partner_id": self.walkin.id,
+            "line_ids": [
+                (
+                    0,
+                    0,
+                    {
+                        "product_id": product.id,
+                        "name": product.name,
+                        "account_id": product.property_account_income_id.id,
+                        "quantity": qty,
+                        "price_unit": price,
+                    },
+                )
+                for (product, qty, price) in lines
+            ],
+        }
+        if method.payment_type == "cheque":
+            vals.update({"cheque_number": "TEST-CHQ-0001", "cheque_date": today})
+        elif method.payment_type == "transfer":
+            vals["transfer_date"] = today
+        if extra_vals:
+            vals.update(extra_vals)
+        return self.env["kmitl.receipt"].create(vals)

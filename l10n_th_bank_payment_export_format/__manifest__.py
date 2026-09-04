@@ -1,6 +1,6 @@
 {
     "name": "L10n Th Bank Payment Export Format",
-    "version": "16.0.1.2.0",
+    "version": "16.0.1.2.1",
     "summary": """ L10n Th Bank Payment Export Format Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",

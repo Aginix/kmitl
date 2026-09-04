@@ -14,35 +14,36 @@ DIMENSION_FIELDS = [
 
 class ReceiptReport(models.AbstractModel):
     _name = "receipt_kmitl.receipt.report"
+    _inherit = "accounting_kmitl_reports.dimension.filter.mixin"
     _description = "Receipt Report Data Provider"
 
     @api.model
     def get_report_data(self, options):
         options = options or {}
         company_id = options.get("company_id") or self.env.company.id
+        remittance_id = options.get("remittance_id")
         date_from = options.get("date_from")
         date_to = options.get("date_to")
-        if not date_from or not date_to:
-            return {"rows": [], "groups": []}
 
-        domain = [
-            ("company_id", "=", company_id),
-            ("date", ">=", date_from),
-            ("date", "<=", date_to),
-            ("state", "in", ["to_submit", "submitted", "approved", "done"]),
-        ]
+        domain = [("company_id", "=", company_id)]
+        if remittance_id:
+            # Scoped to a single remittance — show all its receipts regardless
+            # of date or state.
+            domain.append(("remittance_id", "=", remittance_id))
+        else:
+            if not date_from or not date_to:
+                return {"groups": [], "grand_total": 0}
+            domain += [
+                ("date", ">=", date_from),
+                ("date", "<=", date_to),
+                ("state", "in", ["draft", "submitted", "approved", "done"]),
+            ]
 
         payment_type = options.get("payment_type")
         if payment_type:
-            domain.append(("payment_method_id.payment_type", "=", payment_type))
+            domain.append(("payment_type", "=", payment_type))
 
-        dims = options.get("dims") or {}
-        for field_name, code in DIMENSION_FIELDS:
-            ids = dims.get(code) or []
-            if ids:
-                Analytic = self.env["account.analytic.account"]
-                ids = Analytic.search([("id", "child_of", ids)]).ids
-                domain.append((field_name, "in", ids))
+        domain += self._kmitl_build_dim_leaves(options.get("dims"))
 
         receipts = self.env["kmitl.receipt"].search(
             domain, order="date desc, id desc"
@@ -135,6 +136,10 @@ class ReceiptReport(models.AbstractModel):
         """Human-readable summary of the applied filters, for the PDF header."""
         options = options or {}
         lines = []
+        remittance_name = options.get("remittance_name")
+        if remittance_name:
+            lines.append(_("Remittance: %s") % remittance_name)
+
         date_from = options.get("date_from")
         date_to = options.get("date_to")
         if date_from and date_to:
@@ -149,7 +154,6 @@ class ReceiptReport(models.AbstractModel):
                 "cash": _("Cash"),
                 "cheque": _("Cheque"),
                 "transfer": _("Transfer"),
-                "other": _("Other"),
             }
             lines.append(
                 _("Payment Type: %s")

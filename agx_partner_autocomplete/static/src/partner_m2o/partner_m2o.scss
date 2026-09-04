@@ -1,0 +1,60 @@
+// The option markup lives inside <a class="dropdown-item … text-truncate">,
+// which clamps every item to one line. Undo that for our items only, scoped by
+// the o_partner_ac_item class set on the <li> in partner_m2o.js.
+.o_partner_ac_item {
+    border-bottom: 1px solid var(--border-color, #dee2e6);
+
+    .dropdown-item {
+        white-space: normal;
+        overflow: visible;
+        height: auto;
+        line-height: 1.3;
+    }
+}
+// Selected-value subtitle (the compact "type · VAT · locality" secondary):
+// muted and smaller than the name. Read-only renders it as the line after the
+// name (right after the <br>); edit mode renders it in o_field_many2one_extra.
+.o_field_partner_autocomplete {
+    br + span,
+    .o_field_many2one_extra {
+        font-size: 0.85em;
+        color: var(--o-gray-600, #6b7280);
+    }
+}
+.o_partner_ac_option {
+    padding: 0.15rem 0;
+
+    .o_partner_ac_head {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    .o_partner_ac_name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .o_partner_ac_type {
+        flex: 0 0 auto;
+        font-size: 0.75em;
+        font-weight: 500;
+        padding: 0.05rem 0.5rem;
+        border-radius: 0.75rem;
+        white-space: nowrap;
+        color: var(--o-gray-800, #374151);
+        background-color: var(--o-gray-200, #e9ecef);
+    }
+    .o_partner_ac_rows {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 0.9rem;
+        margin-top: 0.1rem;
+    }
+    .o_partner_ac_row {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.85em;
+        color: var(--o-gray-700, #4b5563);
+    }
+}

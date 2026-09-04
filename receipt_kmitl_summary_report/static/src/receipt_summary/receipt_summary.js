@@ -17,12 +17,10 @@ export class ReceiptSummaryReport extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.company = useService("company");
-        this.fiscalYears = [];
         this.state = useState({
             loading: true,
             groups: [],
             grandTotal: 0,
-            fiscalYearId: false,
             dateFrom: false,
             dateTo: false,
             paymentType: false,
@@ -30,6 +28,8 @@ export class ReceiptSummaryReport extends Component {
             sources: [],
             funds: [],
             activities: [],
+            remittanceMode: false,
+            remittanceName: false,
         });
         this.labels = {
             print: _t("Print"),
@@ -52,33 +52,32 @@ export class ReceiptSummaryReport extends Component {
     }
 
     async onWillStart() {
-        this.companyId = this.company.currentCompany.id;
-        this.fiscalYears = await this.orm.searchRead(
-            "account.fiscal.year",
-            [],
-            ["id", "name", "date_from", "date_to"],
-            { order: "date_from desc" }
-        );
-        const today = new Date().toISOString().slice(0, 10);
-        const covering = this.fiscalYears.find(
-            (fy) => fy.date_from <= today && fy.date_to >= today
-        );
-        const fy = covering || this.fiscalYears[0];
-        if (fy) {
-            this.state.fiscalYearId = fy.id;
-            this.state.dateFrom = fy.date_from;
-            this.state.dateTo = fy.date_to;
-        } else {
-            const year = new Date().getFullYear();
-            this.state.dateFrom = `${year}-01-01`;
-            this.state.dateTo = `${year}-12-31`;
+        const params = (this.props.action && this.props.action.params) || {};
+        this.companyId = params.company_id || this.company.currentCompany.id;
+        this.remittanceId = params.remittance_id || false;
+        this.remittanceName = params.remittance_name || false;
+        if (this.remittanceId) {
+            // Opened from a remittance: scope to that remittance's receipts,
+            // no date/dimension filters.
+            this.state.remittanceMode = true;
+            this.state.remittanceName = this.remittanceName;
+            await this.load();
+            return;
         }
+        // Default range = current Thai fiscal year (1 Oct – 30 Sep), the same
+        // boundary kmitl.receipt._get_fiscal_year_be uses. getMonth() is 0-based.
+        const now = new Date();
+        const endCe = now.getFullYear() + (now.getMonth() >= 9 ? 1 : 0);
+        this.state.dateFrom = `${endCe - 1}-10-01`;
+        this.state.dateTo = `${endCe}-09-30`;
         await this.load();
     }
 
     get options() {
         return {
             company_id: this.companyId,
+            remittance_id: this.remittanceId || false,
+            remittance_name: this.remittanceName || false,
             date_from: this.state.dateFrom,
             date_to: this.state.dateTo,
             payment_type: this.state.paymentType || false,
@@ -92,7 +91,11 @@ export class ReceiptSummaryReport extends Component {
     }
 
     async load() {
-        if (!this.state.dateFrom || !this.state.dateTo) return;
+        if (
+            !this.state.remittanceMode &&
+            (!this.state.dateFrom || !this.state.dateTo)
+        )
+            return;
         this.state.loading = true;
         try {
             const data = await this.orm.call(
@@ -105,17 +108,6 @@ export class ReceiptSummaryReport extends Component {
         } finally {
             this.state.loading = false;
         }
-    }
-
-    onFiscalYearChange(ev) {
-        const id = parseInt(ev.target.value) || false;
-        this.state.fiscalYearId = id;
-        const fy = this.fiscalYears.find((f) => f.id === id);
-        if (fy) {
-            this.state.dateFrom = fy.date_from;
-            this.state.dateTo = fy.date_to;
-        }
-        this.load();
     }
 
     onDateFromChange(ev) {

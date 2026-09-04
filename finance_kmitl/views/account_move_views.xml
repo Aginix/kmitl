@@ -55,22 +55,45 @@
         groups="accounting_kmitl.group_accounting_kmitl_user"
     />
 
-    <!-- เจ้าหนี้ ▸ ใบล้างเจ้าหนี้ becomes an OWL screen: the register carries both
-         offices' statuses side by side, expands to the journal items of each
-         voucher, and lets the maker submit the ones that are theirs — none of which
-         a plain list does. The act_window it replaces
-         (accounting_kmitl.action_vendor_payment_moves) is left in place; nothing
-         else points at it, and it is one `ref` for anyone who wants the flat list
-         back. -->
-    <record id="action_clearing_queue" model="ir.actions.client">
-        <field name="name">ใบล้างเจ้าหนี้</field>
-        <field name="tag">finance_kmitl.clearing_queue</field>
+    <!-- เจ้าหนี้ ▸ ใบล้างเจ้าหนี้ — the accounting maker's register of the vouchers
+         that clear a payable.
+
+         Read off account.payment rather than account.move even though the menu is
+         about the entries: one payment is one clearing voucher, and the payment is
+         the record that carries *both* offices' statuses side by side (the treasury's
+         finance_state and the accounting office's display_state) plus the หัวจ่าย the
+         money left from. The entry itself is one press away, on the voucher's form.
+
+         It is the finance office's own list and search that are shown, not a second
+         pair: the columns this office needs are the columns that office needed, and
+         the questions they ask — what has been handed over, what is awaiting
+         approval, what is booked — are already filters there. The default filter is
+         what makes it their register rather than the whole payment ledger.
+
+         The act_window this replaces (accounting_kmitl.action_vendor_payment_moves)
+         is left in place; nothing points at it any more, and it is one `ref` for
+         anyone who wants the flat list of entries back. -->
+    <record id="action_vendor_clearing_vouchers" model="ir.actions.act_window">
+        <field name="name">Vendor Clearing Vouchers</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="finance_kmitl.view_account_payment_tree_kmitl" />
+        <field
+            name="search_view_id"
+            ref="finance_kmitl.view_account_payment_search_kmitl"
+        />
+        <field
+            name="domain"
+        >[('partner_type', '=', 'supplier'), ('payment_type', '=', 'outbound')]</field>
+        <field name="context">{'create': False, 'search_default_to_book': 1}</field>
     </record>
 
+    <!-- `action` is a Reference field, so it wants the "model,id" string rather
+         than a bare id — hence eval and not ref. -->
     <record id="accounting_kmitl.menu_vendor_payment_moves" model="ir.ui.menu">
         <field
             name="action"
-            eval="'ir.actions.client,%d' % ref('finance_kmitl.action_clearing_queue')"
+            eval="'ir.actions.act_window,%d' % ref('finance_kmitl.action_vendor_clearing_vouchers')"
         />
     </record>
 
