@@ -187,6 +187,10 @@
                             <field name="procurement_type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="procurement_method_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="budget_commitment_id" invisible="1"/>
+                            <field name="budget_commitment_amount"
+                                   readonly="1"
+                                   attrs="{'invisible': [('budget_commitment_id', '=', False)]}"/>
                             <field name="estimated_cost" readonly="1"/>
                             <field name="payment_type" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <field
