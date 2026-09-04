@@ -103,6 +103,15 @@
                             </div>
                         </div>
 
+                        <div class="row" t-if="o.epayment_note">
+                            <div class="col">
+                                หมายเหตุ <span
+                                    class="ms-2"
+                                    t-out="o.epayment_note"
+                                />
+                            </div>
+                        </div>
+
                         <div class="my-4" />
 
                         <!-- Line Items Table -->

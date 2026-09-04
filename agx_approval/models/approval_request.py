@@ -44,6 +44,11 @@ class ApprovalRequest(models.Model):
 
     is_budget_editable = fields.Boolean(compute="_compute_is_budget_editable")
 
+    # True once the official AR/<be>/#### number has been minted. Used by the
+    # view to freeze account_fiscal_year_id and to swap the title for a "New"
+    # label while the number is still the placeholder.
+    is_number_assigned = fields.Boolean(compute="_compute_is_number_assigned")
+
     hide_reserve_budget_button = fields.Boolean(
         compute="_compute_hide_reserve_budget_button"
     )
@@ -86,6 +91,11 @@ class ApprovalRequest(models.Model):
 
     name = fields.Char(
         string="Name",
+        # Untranslated placeholder, like account.move's "/": the number is minted
+        # later (at submit), so this value sits in the DB and is read back by
+        # users in other locales. Anything translated here would compare unequal
+        # to _() evaluated in the reader's language. The friendly "New" label is
+        # rendered by the form view instead.
         default="/",
         required=True,
         copy=False,
@@ -555,8 +565,41 @@ class ApprovalRequest(models.Model):
         # anywhere. Re-stamped on every pass through this transition, so a request
         # reset to draft (or ดึงกลับ) and re-submitted carries the date it was
         # actually submitted, not the first attempt's.
-        self.write({"state": "to_verify", "date": fields.Date.context_today(self)})
+        vals = {"state": "to_verify", "date": fields.Date.context_today(self)}
+        # Mint the official number on first submission only. Once assigned it is
+        # permanent — a returned/ดึงกลับ request that comes back through here
+        # keeps its number, unlike ``date`` which re-stamps.
+        #
+        # Mirrors procurement_plan.action_send_to_verify: the number's ปีงบ
+        # comes from account_fiscal_year_id, not today — pin both %(year_be)s
+        # interpolation (ir_sequence_date) and the date_range sub-sequence
+        # (sequence_date) to the FY's date_to.
+        if not self.is_number_assigned:
+            fiscal_date = self.account_fiscal_year_id.date_to
+            vals["name"] = self.env["ir.sequence"].with_context(
+                ir_sequence_date=fiscal_date
+            ).next_by_code(
+                "approval.request",
+                sequence_date=fiscal_date,
+            ) or "/"
+        self.write(vals)
         return True
+
+    @api.constrains("account_fiscal_year_id")
+    def _check_fiscal_year_locked_after_submission(self):
+        """Once a request has an official number, its fiscal year is frozen:
+        the number is minted from ``%(year_be)s`` of that FY's ``date_to``, so
+        swapping the FY afterwards would silently desync AR/<year>/#### from
+        the year the money is actually spent under."""
+        for rec in self:
+            if rec.is_number_assigned:
+                raise ValidationError(
+                    _(
+                        "Fiscal year cannot be changed after the request has "
+                        "been submitted (number %s already assigned)."
+                    )
+                    % rec.name
+                )
 
     def action_submit(self):
         for record in self:
@@ -733,12 +776,6 @@ class ApprovalRequest(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get("name", "/") == "/":
-                vals["name"] = self.env["ir.sequence"].next_by_code(
-                    "approval.request"
-                ) or "/"
-
         records = super().create(vals_list)
         for rec in records:
             if rec.budget_commitment_id:
@@ -1024,6 +1061,13 @@ class ApprovalRequest(models.Model):
         # Base has no return-correction mode; bridges override this.
         for rec in self:
             rec.is_correction = False
+
+    @api.depends("name")
+    def _compute_is_number_assigned(self):
+        # "/" is the placeholder a request carries until action_to_verify mints
+        # its number. Kept untranslated on purpose — see the ``name`` field.
+        for rec in self:
+            rec.is_number_assigned = bool(rec.name and rec.name != "/")
 
     @api.depends("line_ids.total_amount")
     def _compute_total_amount(self):

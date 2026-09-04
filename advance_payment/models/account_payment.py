@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import _, fields, models
 
 
 class AccountPayment(models.Model):
@@ -10,6 +10,17 @@ class AccountPayment(models.Model):
         ondelete="set null",
         index=True,
     )
+
+    def action_view_advance_payment(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Advance Payment"),
+            "res_model": "advance.payment",
+            "view_mode": "form",
+            "res_id": self.advance_payment_id.id,
+            "target": "current",
+        }
 
     def action_post(self):
         res = super().action_post()

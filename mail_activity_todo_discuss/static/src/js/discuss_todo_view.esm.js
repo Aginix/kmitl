@@ -245,6 +245,19 @@ export class DiscussTodoView extends LegacyComponent {
         if (!todo.res_model || !todo.res_id) {
             return;
         }
+        // Snapshot the visible list as an ordered, deduped id list so the form
+        // pager can walk from one Todo's source record to the next without the
+        // user going back to รายการงาน. Preserves the on-screen order (search /
+        // grouping do not touch the underlying array); guards on res_model in
+        // case a stray cross-model row slipped past the sidebar filter.
+        const seen = new Set();
+        const resIds = [];
+        for (const t of this.filteredTodos) {
+            if (t.res_model === todo.res_model && t.res_id && !seen.has(t.res_id)) {
+                seen.add(t.res_id);
+                resIds.push(t.res_id);
+            }
+        }
         this.action.doAction(
             {
                 type: "ir.actions.act_window",
@@ -253,11 +266,18 @@ export class DiscussTodoView extends LegacyComponent {
                 views: [[false, "form"]],
                 target: "current",
             },
-            // Clear the breadcrumb trail so repeated Todo → record → systray →
-            // Todo hops don't stack endlessly (Discuss/รายการงาน/record/... ad
-            // infinitum). Each Todo click starts a fresh trail at the record;
-            // the systray reopens Todos when the user wants to go back.
-            { clearBreadcrumbs: true }
+            {
+                // Clear the breadcrumb trail so repeated Todo → record → systray
+                // → Todo hops don't stack endlessly (Discuss/รายการงาน/record/
+                // ... ad infinitum). Each Todo click starts a fresh trail at the
+                // record; the systray reopens Todos when the user wants to go
+                // back.
+                clearBreadcrumbs: true,
+                // Feeds the form controller's pager (action_service spreads
+                // options.props into the view props); action.res_ids on the
+                // action dict is NOT read in Odoo 16.
+                props: { resIds },
+            }
         );
     }
 

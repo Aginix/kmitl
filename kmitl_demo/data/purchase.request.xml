@@ -438,9 +438,6 @@
     <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.purchase_request_3')]" />
     </function>
-    <function model="purchase.request" name="request_validation">
-        <value eval="[ref('kmitl_demo.purchase_request_3')]" />
-    </function>
 
     <!-- purchase Request 3 EGP -->
     <record id="purchase_request_3_egp" model="purchase.request">
@@ -532,9 +529,6 @@
         <value eval="[ref('kmitl_demo.purchase_request_3_egp')]" />
     </function>
     <function model="purchase.request" name="action_reserve_budget">
-        <value eval="[ref('kmitl_demo.purchase_request_3_egp')]" />
-    </function>
-    <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.purchase_request_3_egp')]" />
     </function>
 

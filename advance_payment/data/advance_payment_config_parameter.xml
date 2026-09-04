@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="advance_payment_terms_conditions_param" model="ir.config_parameter">
+            <field name="key">advance_payment.terms_conditions</field>
+            <field name="value"><![CDATA[<p>ข้าพเจ้าสัญญาว่าจะปฏิบัติตามหลักเกณฑ์ของสถาบันทุกประการ และจะนำหลักฐานการจ่ายเงินที่ถูกต้องพร้อมทั้งเงินเหลือจ่าย (ถ้ามี) ส่งคืนภายในระยะเวลาที่กำหนดไว้คือ <strong>ภายใน 15 วัน</strong> นับแต่วันที่ดำเนินการตามที่ขออนุมัติยืมเงินเสร็จเรียบร้อย (แต่หากมีเหตุความจำเป็นไม่สามารถส่งคืนได้ ให้ผู้ยืมชี้แจงเหตุผลความจำเป็นเพื่อขอขยายเวลาการคืนเงินยืมได้แต่ต้องไม่เกิน 30 วัน นับแต่วันที่ดำเนินการตามที่ขออนุมัติยืมเงินเสร็จเรียบร้อย) ถ้าข้าพเจ้าไม่ส่งคืนภายในกำหนด ข้าพเจ้ายินยอมให้หักเงินเดือน ค่าจ้าง บำเหน็จ บำนาญ หรือเงินอื่นใดที่ข้าพเจ้าพึงได้รับจากสถาบัน ชดใช้จำนวนเงินที่ยืมไปจนครบถ้วนได้ทันที และในระหว่างชดใช้เงินยืมจะไม่ได้รับอนุมัติในการยืมครั้งต่อไป</p>]]></field>
+        </record>
+
+        <!-- Seed the approver setting with the admin so a fresh database has a
+             working approver_id default and the Settings page shows a real
+             value rather than an empty picker. noupdate: once the institute
+             names its own approver, an upgrade must not put admin back
+             (ADR-0016). advance.payment._default_approver_id falls back to the
+             same admin if this is ever cleared. -->
+        <record id="advance_payment_default_approver_param" model="ir.config_parameter">
+            <field name="key">advance_payment.default_approver_id</field>
+            <field name="value" eval="ref('base.user_admin')"/>
+        </record>
+    </data>
+</odoo>
