@@ -14,8 +14,8 @@ class AccountMove(models.Model):
         ondelete={"submitted": "set default"},
     )
 
-    partner_company_type = fields.Selection(
-        related="partner_id.company_type",
+    partner_type_id = fields.Many2one(
+        related="partner_id.partner_type_id",
         store=True,
         index=True,
         string="ประเภทคู่ค้า",

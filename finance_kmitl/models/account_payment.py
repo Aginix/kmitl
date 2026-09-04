@@ -74,12 +74,6 @@ class AccountPayment(models.Model):
         "confused with partner_type (customer / supplier), which says which side "
         "of the ledger the voucher is on and nothing about who is paid.",
     )
-    partner_company_type = fields.Selection(
-        related="partner_id.company_type",
-        store=True,
-        index=True,
-        string="ประเภทคู่ค้า",
-    )
     to_reconcile_payment_line_ids = fields.Many2many(
         comodel_name="account.move.line",
         relation="account_payment_to_reconcile_line_rel",

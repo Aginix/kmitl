@@ -244,18 +244,6 @@
 
                 <separator />
                 <filter
-                    string="คู่ค้าบุคคล"
-                    name="partner_type_person"
-                    domain="[('partner_company_type', '=', 'person')]"
-                />
-                <filter
-                    string="คู่ค้าบริษัท"
-                    name="partner_type_company"
-                    domain="[('partner_company_type', '=', 'company')]"
-                />
-
-                <separator />
-                <filter
                     string="ยกเลิก"
                     name="cancelled"
                     domain="[('state', '=', 'cancel')]"
@@ -360,7 +348,7 @@
                         enable_counters="1"
                     />
                     <field
-                        name="partner_company_type"
+                        name="payee_type_id"
                         string="ประเภทคู่ค้า"
                         icon="fa-user"
                         select="multi"
