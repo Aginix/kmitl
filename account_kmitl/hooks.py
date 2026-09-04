@@ -206,6 +206,32 @@ assert len({(entry["account"], entry["method"]) for entry in PAYING_ACCOUNTS}) =
     PAYING_ACCOUNTS
 ), "account_kmitl: PAYING_ACCOUNTS states the same (account, method) pair twice"
 
+# Accounts an inter-account cash route (disbursement_cash_movement_kmitl) may
+# pass through but that are never themselves a หัวจ่าย, so they earn no entry
+# in PAYING_ACCOUNTS and no payment method line — only the institute's own
+# bank account behind them, which is all a route preview needs to name them
+# compactly. Restated here rather than parsed off the chart account's own
+# name, for the same reason PAYING_ACCOUNTS restates its own numbers: that
+# name is not written to one shape (see the comment above it), so a parser
+# would need this table anyway and would fail silently into a wrong number.
+PASS_THROUGH_ACCOUNTS = [
+    # ธ.กรุงไทย /ลาดกระบัง
+    {"account": "1112210001", "bic": "KRTHTHBK", "acc_number": "028-1-03878-3"},
+    # ธ.กรุงศรีอยุธยา /ย่อยเทคโนฯ
+    {"account": "1112210009", "bic": "AYUDTHBK", "acc_number": "507-1-00001-4"},
+]
+
+# The treasury office's own everyday abbreviation for each bank, keyed by the
+# BIC ``data/res_bank.xml`` seeds it under. Kept here, next to the tables that
+# name banks by BIC, rather than only in that data file — see
+# ``_bind_kmitl_bank_data``.
+BANK_SHORT_NAMES = {
+    "SICOTHBK": "SCB",
+    "KRTHTHBK": "KTB",
+    "AYUDTHBK": "BAY",
+    "KASITHBK": "KBANK",
+}
+
 # The voucher (ใบสำคัญ) the paying accounts belong to.
 PAYING_ACCOUNT_JOURNAL_CODE = "PV"
 
@@ -447,10 +473,15 @@ def _setup_payment_method_lines(env, company):
 
 
 def _seed_bank_accounts(env, company):
-    """Create the institute's own bank accounts, the ones money is paid out of.
+    """Create the institute's own bank accounts, the ones money is paid out of
+    or merely passes through.
 
-    Returned keyed by the chart code of the GL account each is booked against,
-    which is how ``_setup_paying_account_lines`` looks them up again.
+    Covers both ``PAYING_ACCOUNTS`` and ``PASS_THROUGH_ACCOUNTS`` — the latter
+    are never a หัวจ่าย, but a cash route (disbursement_cash_movement_kmitl)
+    still needs their bank account to name them. Returned keyed by the chart
+    code of the GL account each is booked against, which is how
+    ``_setup_paying_account_lines`` and ``_bind_kmitl_bank_data`` look them up
+    again.
 
     The bank is matched by BIC against the records ``data/res_bank.xml`` seeds.
     It matters that it resolves: that bank is what auto-matching compares a
@@ -468,7 +499,7 @@ def _seed_bank_accounts(env, company):
     PartnerBank = env["res.partner.bank"]
     accounts = {}
     unknown_bics = []
-    for entry in PAYING_ACCOUNTS:
+    for entry in PAYING_ACCOUNTS + PASS_THROUGH_ACCOUNTS:
         if not entry["acc_number"]:
             continue  # cash: no bank account to seed
         bank = Bank.search([("bic", "=", entry["bic"])], limit=1)
@@ -506,6 +537,35 @@ def _seed_bank_accounts(env, company):
             "; ".join(unknown_bics),
         )
     return accounts
+
+
+def _bind_kmitl_bank_data(env, company):
+    """Give every relevant bank its short name, and every GL account tied to
+    one of the institute's own bank accounts a direct link to it.
+
+    Both are read by a cash route's display chain
+    (disbursement_cash_movement_kmitl) to name an account the way the
+    treasury office says it out loud, for accounts that are a หัวจ่าย and for
+    the ``PASS_THROUGH_ACCOUNTS`` that are not.
+
+    Idempotent, and deliberately safe to call from a module installed later
+    against a database where ``account_kmitl`` already existed: only blank
+    values are set, never overwritten, and ``res.bank``'s own seed file is
+    ``noupdate`` so an upgrade never reaches ``short_name`` on its own.
+    """
+    Bank = env["res.bank"]
+    for bic, short_name in BANK_SHORT_NAMES.items():
+        bank = Bank.search([("bic", "=", bic)], limit=1)
+        if bank and not bank.short_name:
+            bank.short_name = short_name
+
+    Account = env["account.account"]
+    for code, bank_account in _seed_bank_accounts(env, company).items():
+        account = Account.search(
+            [("code", "=", code), ("company_id", "=", company.id)], limit=1
+        )
+        if account and not account.kmitl_bank_account_id:
+            account.kmitl_bank_account_id = bank_account.id
 
 
 def _setup_paying_account_lines(env, company):
@@ -767,6 +827,7 @@ def post_init_hook(cr, registry):
     _create_journals(env, company)
     _setup_payment_method_lines(env, company)
     _setup_paying_account_lines(env, company)
+    _bind_kmitl_bank_data(env, company)
     _register_account_xmlids(env, company)
     _deactivate_default_journals(env, company)
     _create_withholding_taxes(env, company)

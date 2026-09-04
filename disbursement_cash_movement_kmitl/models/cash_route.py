@@ -127,27 +127,71 @@ class KmitlCashRoute(models.Model):
                 )
 
     @api.model
-    def _for_payment(self, payment):
-        """The route this payment's money travels, empty if none is set up.
+    def _for_account_and_source(self, account, source, company):
+        """The route for this (paying account, source of funds, company)
+        triple, empty if none is set up.
 
-        Keyed by the paying account the voucher is actually drawn on
-        (``outstanding_account_id``, which for a KMITL voucher is always the
-        GL of its ``payment_method_line_id``) and the source of funds on the
-        voucher itself. An empty result is not "pays directly" — that is a
-        route whose ``hop_ids`` is empty — it is "nobody has set this up yet".
+        The lookup ``_for_payment`` delegates to, and what a preview shown
+        before any ``account.payment`` exists calls directly — routing only
+        ever needs these three values, never the payment record itself. An
+        empty result is not "pays directly" — that is a route whose
+        ``hop_ids`` is empty — it is "nobody has set this up yet".
         """
-        account = payment.outstanding_account_id
-        source = payment.source_analytic_id
         if not account or not source:
             return self.browse()
         return self.search(
             [
                 ("paying_gl_account_id", "=", account.id),
                 ("source_analytic_ids", "=", source.id),
-                ("company_id", "=", payment.company_id.id),
+                ("company_id", "=", company.id),
             ],
             limit=1,
         )
+
+    @api.model
+    def _for_payment(self, payment):
+        """The route this payment's money travels, empty if none is set up.
+
+        Keyed by the paying account the voucher is actually drawn on
+        (``outstanding_account_id``, which for a KMITL voucher is always the
+        GL of its ``payment_method_line_id``) and the source of funds on the
+        voucher itself.
+        """
+        return self._for_account_and_source(
+            payment.outstanding_account_id,
+            payment.source_analytic_id,
+            payment.company_id,
+        )
+
+    @api.model
+    def _should_have_route(self, paying_account, source):
+        """Whether this (paying account, source of funds) pair ought to
+        resolve a route at all.
+
+        The single definition both ``account.move._is_missing_cash_route``
+        (the non-blocking warning at Submit) and a payment-line preview shown
+        while the paying account is still being chosen call, so the two can
+        never disagree about what counts as a setup gap. False for a pair
+        that is not yet fully chosen — nothing to warn about until both are
+        known — and for เงินสด, which has no bank account to be swept into
+        and so travels no route by design.
+        """
+        if not paying_account or not source:
+            return False
+        return bool(paying_account.bank_account_id)
+
+    def _path_accounts(self):
+        """The full chain of accounts this route describes, source first,
+        paying account last.
+
+        The one place "what is this route's path" is answered: both
+        ``_leg_specs`` (what the ledger records) and ``_display_chain`` (what
+        a human is shown) build on this, so the two cannot drift apart.
+        """
+        self.ensure_one()
+        path = [hop.account_id for hop in self.hop_ids.sorted("sequence")]
+        path.append(self.paying_gl_account_id)
+        return path
 
     def _leg_specs(self, amount_currency, balance):
         """Every cash-movement line this route produces, in ledger order:
@@ -160,20 +204,39 @@ class KmitlCashRoute(models.Model):
         the paying account, debited once).
         """
         self.ensure_one()
-        # Built as a plain list, not by concatenating the recordset's own
-        # Many2one values: accessing a relational field on more than one
-        # record at once goes through ``mapped()``, which silently drops
-        # duplicates — fine for the account *set* a route touches, wrong here
-        # where the same account legitimately repeating in a longer chain
-        # must still produce one leg per hop.
-        path = [hop.account_id for hop in self.hop_ids.sorted("sequence")]
-        path.append(self.paying_gl_account_id)
+        path = self._path_accounts()
         amount_currency, balance = abs(amount_currency), abs(balance)
         specs = []
         for credit_account, debit_account in zip(path, path[1:]):
             specs.append((debit_account, amount_currency, balance))
             specs.append((credit_account, -amount_currency, -balance))
         return specs
+
+    def _display_chain(self):
+        """The route's accounts named the way the treasury office says them
+        out loud: bank abbreviation + the last digits of the account number,
+        arrow-joined from source to paying account.
+
+        Falls back to the GL account's own code for any account that has no
+        institute bank account linked (``account.kmitl_bank_account_id``) or
+        whose bank carries no short name — a route naming an unseeded account
+        still shows something rather than raising.
+        """
+        self.ensure_one()
+        return " → ".join(
+            self._account_label(account) for account in self._path_accounts()
+        )
+
+    @api.model
+    def _account_label(self, account):
+        bank_account = account.kmitl_bank_account_id
+        bank = bank_account.bank_id
+        if not bank_account or not bank.short_name:
+            return account.code
+        groups = (bank_account.acc_number or "").split("-")
+        tail = "-".join(groups[-2:]) if len(groups) >= 2 else bank_account.acc_number
+        tail = "-".join(part.lstrip("0") or "0" for part in tail.split("-"))
+        return "%s %s" % (bank.short_name, tail)
 
     def _leg_vals(self, liquidity_vals, payment):
         """Full ``account.move.line`` create values for every leg, ready to

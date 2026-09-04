@@ -35,6 +35,20 @@ route to it), เรื่องที่จ่าย (picks a paying account, s
 the money came from), central funding chart (a different bridge; see
 [Cash & Revenue Handover](../disbursement_cash_revenue_handover/CONTEXT.md)).
 
+A route is previewed, not only enforced: `disbursement.payment.line` (owned by
+[Disbursement ↔ KMITL Finance](../disbursement_finance_kmitl/CONTEXT.md)) grows
+three non-stored, `compute_sudo=True` fields — `cash_route_state` (a badge:
+routed / direct / not set up) and `cash_route_display` (the accounts, source to
+paying account, named the way the treasury office says them — bank
+abbreviation and the account number's last digits) — so the auditor sees the
+route **while still choosing** หัวจ่าย, on the Payment Execution tab, rather than
+finding out later from the non-blocking exception at Submit. `compute_sudo`
+rather than a wider ACL: the groups that use that tab hold no access to
+`kmitl.cash.route` at all, and what is shown is a read-only derived string, not
+the route record itself. The "is this a setup gap" judgement is one function,
+`kmitl.cash.route._should_have_route()`, called by both the preview and the
+exception, so the two can never disagree.
+
 **บัญชีระหว่างทาง (Intermediate Account)**: an account money passes through
 between the true source and the paying account — `kmitl.cash.route.hop`,
 ordered by `sequence`.
@@ -65,3 +79,13 @@ not use core's outstanding-account reconciliation flow).
   Finance ▸ Settings ▸ Payment Subjects.
 - **Single currency.** A leg's amount is read straight off the payment's own
   liquidity line; multi-currency vouchers are not accounted for.
+- **The preview's short account number is not always what the treasury office
+  says out loud.** `kmitl.cash.route._account_label()` strips leading zeros
+  from the last two dash-separated groups of the account number
+  (`088-3-00581-3` → `SCB 581-3`), which matches how every seeded account is
+  actually called — except `1112110012` (SCB เทคโนฯ, `SA-088-2-60881-2`),
+  where the treasury office says "881-2" but the field has no leading zero to
+  strip and the preview reads `SCB 60881-2`. Accepted rather than special-cased
+  one account; revisit if it causes confusion. An account with no
+  `kmitl_bank_account_id` linked, or whose bank has no `short_name`, falls
+  back to the GL account's own code instead of raising.

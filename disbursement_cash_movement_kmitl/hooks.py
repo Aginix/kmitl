@@ -4,6 +4,8 @@ import logging
 
 from odoo import SUPERUSER_ID, api
 
+from odoo.addons.account_kmitl.hooks import _bind_kmitl_bank_data
+
 _logger = logging.getLogger(__name__)
 
 # แหล่งเงิน 7 รหัส split into the two paths money actually travels: 1/3/5 are
@@ -320,5 +322,12 @@ def _repair_payment_subject_person_budget(env):
 
 def post_init_hook(cr, registry):
     env = api.Environment(cr, SUPERUSER_ID, {})
+    company = env.ref("base.main_company")
+    # account_kmitl's own post_init_hook never re-runs on a database where
+    # that module was already installed before this feature existed, and its
+    # res.bank seed is noupdate — so a route's display chain would otherwise
+    # find every bank's short name and every pass-through account's bank
+    # link blank on any environment but a brand-new install.
+    _bind_kmitl_bank_data(env, company)
     _repair_payment_subject_person_budget(env)
     _seed_cash_routes(env)

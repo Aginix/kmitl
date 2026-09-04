@@ -1,6 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tests.common import TransactionCase, tagged
 
 
@@ -90,10 +90,10 @@ class TestCashMovement(TransactionCase):
         )
         return {str(account.id): 100.0 for account in accounts}
 
-    def _paid(self, source, paying_line, price=1000.0):
-        """A payment authorised from a real disbursement request, drawn on
-        ``paying_line`` and carrying ``source`` as its แหล่งเงิน — the same
-        route lookup a real voucher goes through in production."""
+    def _billed_line(self, source, price=1000.0):
+        """A payment line at ``bills_posted``, before any ``account.payment``
+        exists — the exact point the auditor is choosing a paying account,
+        which is what the live preview has to work from."""
         distribution = self._distribution(source)
         request = self.env["disbursement.request"].create(
             {
@@ -143,12 +143,19 @@ class TestCashMovement(TransactionCase):
         )
         bill.action_post()
         request.payment_subject_id = self.subject
-        request.payment_line_ids.write(
+        return request.payment_line_ids
+
+    def _paid(self, source, paying_line, price=1000.0):
+        """A payment authorised from a real disbursement request, drawn on
+        ``paying_line`` and carrying ``source`` as its แหล่งเงิน — the same
+        route lookup a real voucher goes through in production."""
+        line = self._billed_line(source, price)
+        line.write(
             {"paying_account_id": paying_line.id, "paying_account_match": "manual"}
         )
-        request.action_audit()
-        request.action_authorize()
-        return request.payment_ids
+        line.request_id.action_audit()
+        line.request_id.action_authorize()
+        return line.request_id.payment_ids
 
     # ------------------------------------------------------------------
     # 1. Seed data
@@ -387,3 +394,107 @@ class TestCashMovement(TransactionCase):
                     "hop_ids": [(0, 0, {"account_id": ktb_gl.id})],
                 }
             )
+
+    # ------------------------------------------------------------------
+    # 10. Payment-line preview
+    # ------------------------------------------------------------------
+    def test_preview_updates_live_before_any_payment_exists(self):
+        """The auditor sees the route change the moment they pick a
+        different paying account — no payment created yet, nothing saved."""
+        line = self._billed_line(self.source_rev)
+        # payment_subject_company_revenue is a fixed (non auto-matching)
+        # subject, so choosing it already defaulted every row onto its own
+        # paying account — the 0-hop direct route for this source.
+        self.assertEqual(line.paying_account_id, self.scb_direct_line)
+        self.assertEqual(line.cash_route_state, "direct")
+        line.paying_account_id = self.ktb_line.id
+        self.assertEqual(line.cash_route_state, "routed")
+        self.assertIn("→", line.cash_route_display)
+        line.paying_account_id = self.scb_direct_line.id
+        self.assertEqual(line.cash_route_state, "direct")
+
+    def test_preview_shows_direct_for_a_zero_hop_route(self):
+        payment = self._paid(self.source_rev, self.scb_direct_line)
+        line = payment.disbursement_request_id.payment_line_ids
+        self.assertEqual(line.cash_route_state, "direct")
+        self.assertEqual(line.cash_route_display, "SCB 11066-5")
+
+    def test_preview_shows_missing_when_no_route_is_set_up(self):
+        payment = self._paid(self.source_unrouted, self.ktb_line)
+        line = payment.disbursement_request_id.payment_line_ids
+        self.assertEqual(line.cash_route_state, "missing")
+        self.assertFalse(line.cash_route_display)
+
+    def test_preview_is_blank_for_cash(self):
+        payment = self._paid(self.source_rev, self.cash_line)
+        line = payment.disbursement_request_id.payment_line_ids
+        self.assertFalse(line.cash_route_state)
+        self.assertFalse(line.cash_route_display)
+
+    def test_preview_follows_the_source_not_only_the_paying_account(self):
+        rev_line = self._billed_line(self.source_rev)
+        rev_line.paying_account_id = self.ktb_line.id
+        gov_line = self._billed_line(self.source_gov)
+        gov_line.paying_account_id = self.ktb_line.id
+        self.assertNotEqual(rev_line.cash_route_display, gov_line.cash_route_display)
+
+    def test_preview_state_matches_the_exception_helper(self):
+        """The badge shown while still choosing a paying account and the
+        non-blocking warning at Submit share one definition
+        (``kmitl.cash.route._should_have_route``), so they cannot disagree."""
+        missing = self._paid(self.source_unrouted, self.ktb_line)
+        missing_line = missing.disbursement_request_id.payment_line_ids
+        self.assertEqual(missing_line.cash_route_state, "missing")
+        self.assertTrue(missing.move_id._is_missing_cash_route())
+
+        routed = self._paid(self.source_rev, self.ktb_line)
+        routed_line = routed.disbursement_request_id.payment_line_ids
+        self.assertEqual(routed_line.cash_route_state, "routed")
+        self.assertFalse(routed.move_id._is_missing_cash_route())
+
+        cash = self._paid(self.source_rev, self.cash_line)
+        cash_line = cash.disbursement_request_id.payment_line_ids
+        self.assertFalse(cash_line.cash_route_state)
+        self.assertFalse(cash.move_id._is_missing_cash_route())
+
+    def test_preview_is_readable_by_the_auditor_group_alone(self):
+        """``disbursement.payment.line``'s new fields are ``compute_sudo``:
+        the auditor holds no ACL on ``kmitl.cash.route`` at all, so a plain
+        (non-sudo) compute would raise the moment this tab opened."""
+        line = self._billed_line(self.source_rev)
+        line.paying_account_id = self.ktb_line.id
+        auditor_group = self.env.ref(
+            "disbursement_finance_kmitl.group_disbursement_payment_auditor"
+        )
+        auditor = (
+            self.env["res.users"]
+            .with_context(no_reset_password=True, mail_create_nosubscribe=True)
+            .create(
+                {
+                    "name": "Cash Route Auditor Test",
+                    "login": "cash_movement_auditor_test",
+                    "groups_id": [
+                        (6, 0, [self.env.ref("base.group_user").id, auditor_group.id])
+                    ],
+                }
+            )
+        )
+        with self.assertRaises(AccessError):
+            self.Route.with_user(auditor).search([])
+        self.assertEqual(line.with_user(auditor).cash_route_state, "routed")
+
+    def test_display_chain_names_every_account_by_bank_and_number(self):
+        """No account in any seeded route falls back to its bare GL code —
+        every one has an institute bank account linked and a named bank."""
+        for route in self.Route.search([]):
+            for account in route._path_accounts():
+                self.assertTrue(
+                    account.kmitl_bank_account_id,
+                    "%s (%s) has no institute bank account linked"
+                    % (account.code, route.display_name),
+                )
+                self.assertTrue(
+                    account.kmitl_bank_account_id.bank_id.short_name,
+                    "%s (%s)'s bank has no short name"
+                    % (account.code, route.display_name),
+                )

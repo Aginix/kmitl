@@ -172,3 +172,60 @@ msgstr ""
 "หนึ่งแถวต่อหัวจ่ายและแหล่งเงินที่เส้นทางนั้นรองรับ ระบุบัญชีที่เงินไหลผ่านก่อนจะถึงหัวจ่าย "
 "หัวจ่ายที่จ่ายเงินออกตรง ๆ คือแถวที่ไม่มีบัญชีระหว่างทาง "
 "ส่วนคู่ (หัวจ่าย, แหล่งเงิน) ที่ไม่มีแถวเลยคือจุดที่ยังตั้งค่าไม่ครบ"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,field_description:disbursement_cash_movement_kmitl.field_disbursement_payment_line__cash_route_id
+#: model:ir.model.fields,field_description:disbursement_cash_movement_kmitl.field_disbursement_payment_line__cash_route_display
+msgid "Cash Route"
+msgstr "เส้นทางโยกเงิน"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,help:disbursement_cash_movement_kmitl.field_disbursement_payment_line__cash_route_id
+msgid ""
+"The route this payee's money would travel to reach the chosen paying "
+"account, if one is set up for it."
+msgstr "เส้นทางที่เงินของผู้รับรายนี้จะเดินทางไปถึงหัวจ่ายที่เลือกไว้ ถ้ามีการตั้งเส้นทางไว้แล้ว"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,field_description:disbursement_cash_movement_kmitl.field_disbursement_payment_line__cash_route_state
+msgid "Cash Route Status"
+msgstr "สถานะเส้นทางโยกเงิน"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,help:disbursement_cash_movement_kmitl.field_disbursement_payment_line__cash_route_state
+msgid ""
+"Routed: money travels through one or more intermediate accounts before "
+"reaching the paying account. Direct: the paying account is spent out of "
+"directly, by design. Not Set Up: no route exists yet for this paying "
+"account and source of funds — the voucher's entry will carry a "
+"non-blocking warning at Submit unless this is fixed first."
+msgstr ""
+"มีการโยกเงิน: เงินเดินทางผ่านบัญชีระหว่างทางอย่างน้อยหนึ่งบัญชีก่อนถึงหัวจ่าย "
+"จ่ายตรง: หัวจ่ายนี้จ่ายเงินออกตรง ๆ ตามที่ตั้งใจไว้ "
+"ยังไม่ได้ตั้งเส้นทาง: ยังไม่มีเส้นทางสำหรับหัวจ่ายและแหล่งเงินคู่นี้ — "
+"ใบสำคัญจ่ายจะมีคำเตือนแบบไม่บล็อกตอน Submit ถ้าไม่แก้ไขก่อน"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields.selection,name:disbursement_cash_movement_kmitl.selection__disbursement_payment_line__cash_route_state__routed
+msgid "Routed"
+msgstr "มีการโยกเงิน"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields.selection,name:disbursement_cash_movement_kmitl.selection__disbursement_payment_line__cash_route_state__direct
+msgid "Direct"
+msgstr "จ่ายตรง"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields.selection,name:disbursement_cash_movement_kmitl.selection__disbursement_payment_line__cash_route_state__missing
+msgid "Not Set Up"
+msgstr "ยังไม่ได้ตั้งเส้นทาง"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,help:disbursement_cash_movement_kmitl.field_disbursement_payment_line__cash_route_display
+msgid ""
+"The route's accounts, source to paying account, named the way the "
+"treasury office says them: bank abbreviation and the last digits of the "
+"account number."
+msgstr ""
+"บัญชีในเส้นทาง เรียงจากต้นทางถึงหัวจ่าย เรียกชื่อแบบที่ฝ่ายคลังใช้พูดกัน: "
+"ชื่อย่อธนาคารและเลขบัญชีท้าย"

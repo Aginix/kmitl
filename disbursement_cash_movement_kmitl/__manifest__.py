@@ -19,6 +19,7 @@
         "security/ir.model.access.csv",
         "data/account_move_exception_data.xml",
         "views/cash_route_views.xml",
+        "views/disbursement_request_views.xml",
         "views/menuitem.xml",
     ],
     "post_init_hook": "post_init_hook",
