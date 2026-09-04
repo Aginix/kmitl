@@ -68,8 +68,6 @@ class PurchaseRequest(models.Model):
     def action_create_advance_payment(self):
         """Create a draft advance payment agreement from this purchase request."""
         self.ensure_one()
-        if self.state != "approved":
-            raise UserError(_("Only approved purchase requests can create advance payments."))
         if self.payment_type != "advance":
             raise UserError(_("Payment type must be 'Advance' to create an advance payment."))
         if self.advance_payment_id:

@@ -37,14 +37,16 @@ class AdvancePayment(models.Model):
         for rec in self:
             rec.purchase_request_count = 1 if rec.purchase_request_id else 0
 
+    _ALLOWED_PR_STATES_FOR_LOAN = ("approved", "to_submit", "to_approve", "in_egp")
+
     def _check_reference_status(self):
         res = super()._check_reference_status()
         pr = self.purchase_request_id
-        if pr and pr.state != "approved":
+        if pr and pr.state not in self._ALLOWED_PR_STATES_FOR_LOAN:
             raise ValidationError(
                 _(
-                    "Purchase request %(name)s must be approved before it can"
-                    " back a loan (current status: %(state)s).",
+                    "Purchase request %(name)s cannot back a loan in its"
+                    " current status (%(state)s).",
                     name=pr.name,
                     state=dict(pr._fields["state"].selection).get(pr.state),
                 )
