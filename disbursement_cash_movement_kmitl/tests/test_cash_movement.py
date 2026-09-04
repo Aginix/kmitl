@@ -283,6 +283,27 @@ class TestCashMovement(TransactionCase):
         )
         self.assertIn(rule.id, exception_ids)
 
+    def test_is_missing_cash_route_only_flags_a_real_setup_gap(self):
+        """The rule's own ``code`` field is a single call to this.
+
+        ``safe_eval`` hands that field a bare context — ``self``/``object``/
+        ``obj`` and no ``env`` — so everything that decides the answer has to
+        live here, where it is linted and covered.
+        """
+        gap = self._paid(self.source_unrouted, self.ktb_line)
+        self.assertTrue(gap.move_id._is_missing_cash_route())
+        routed = self._paid(self.source_rev, self.ktb_line)
+        self.assertFalse(routed.move_id._is_missing_cash_route())
+        # A move that is no voucher at all cannot be missing a route.
+        entry = self.env["account.move"].create(
+            {
+                "move_type": "entry",
+                "date": "2026-01-15",
+                "journal_id": self.env.ref("account_kmitl.journal_jv").id,
+            }
+        )
+        self.assertFalse(entry._is_missing_cash_route())
+
     # ------------------------------------------------------------------
     # 6. Cash
     # ------------------------------------------------------------------

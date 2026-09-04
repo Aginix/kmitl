@@ -16,11 +16,13 @@
         <field name="sequence">65</field>
         <field name="model">account.move</field>
         <field name="exception_type">by_py_code</field>
+        <!-- Everything that decides the answer lives in Python, where it is
+             linted and covered by tests: a rule's code field is evaluated by
+             safe_eval against a bare context (self/object/obj only, no env),
+             so anything more than a call here fails at runtime or not at all. -->
         <field name="code">
-payment = obj.payment_id
-if payment and payment.disbursement_request_id and payment.payment_method_line_id.bank_account_id:
-    if not env["kmitl.cash.route"]._for_payment(payment):
-        failed = True
+if obj._is_missing_cash_route():
+    failed = True
         </field>
         <field name="active" eval="True" />
         <field name="is_blocking" eval="False" />
