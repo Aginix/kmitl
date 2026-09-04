@@ -2,7 +2,7 @@
 <odoo noupdate="1">
     <!-- FYI: พ.1 endorsed — notify user_id that the request has been approved -->
     <record id="mail_activity_pr_in_approval_fyi" model="mail.activity.type">
-        <field name="name">แจ้งเตือนแบบขอให้จัดหาได้รับความเห็นชอบ (พ.1)</field>
+        <field name="name">แบบขอให้จัดหาได้รับความเห็นชอบ (พ.1)</field>
         <field name="summary">แบบขอให้จัดหา (พ.1) ได้รับความเห็นชอบแล้ว</field>
         <field name="todo_category">acknowledgement</field>
         <field name="res_model">purchase.request</field>

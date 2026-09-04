@@ -16,7 +16,7 @@
         id="mail_activity_pr_awaiting_sarabun"
         model="mail.activity.type"
     >
-        <field name="name">ดำเนินการสร้างหนังสือขอความเห็นชอบ (พ.1)</field>
+        <field name="name">หนังสือขอความเห็นชอบ แบบขอให้จัดหา (พ.1)</field>
         <field
             name="summary"
         >รอดำเนินการสร้างหนังสือขอความเห็นชอบ (พ.1)</field>
