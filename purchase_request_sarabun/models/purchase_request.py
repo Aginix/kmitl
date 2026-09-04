@@ -74,6 +74,12 @@ class PurchaseRequest(models.Model):
     #   - the live tables (items / budget / attachments / committees) via
     #     _get_sarabun_body_template.
 
+    def _get_sarabun_document_type(self):
+        return self.env.ref(
+            "purchase_request_sarabun.document_type_purchase_request",
+            raise_if_not_found=False,
+        ) or super()._get_sarabun_document_type()
+
     def _get_sarabun_body_template(self):
         """The live body — items table, budget details, enclosure list, committee
         appointments — rendered between the หนังสือ's เนื้อหา and its signatures
