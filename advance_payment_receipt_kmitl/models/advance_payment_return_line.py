@@ -123,7 +123,12 @@ class AdvancePaymentReturnLine(models.Model):
                     "issuing the receipt."
                 )
             )
-        if not agreement.department_analytic_id:
+        # sudo: department_analytic_id is computed from analytic_distribution
+        # by walking account.analytic.plan, which a loan officer has no ACL
+        # read access to — the button's own groups="...loan_officer" already
+        # establishes authority to read the agreement's own dimensions.
+        department_analytic_id = agreement.sudo().department_analytic_id
+        if not department_analytic_id:
             raise UserError(
                 _(
                     "Agreement %s has no department (ส่วนงาน) set. The "
@@ -177,7 +182,7 @@ class AdvancePaymentReturnLine(models.Model):
             # analytic_distribution alone) since it's a required field on
             # kmitl.receipt; analytic_distribution still carries the rest of the
             # agreement's dimensions (fund/source/activity).
-            "department_analytic_id": agreement.department_analytic_id.id,
+            "department_analytic_id": department_analytic_id.id,
             "analytic_distribution": agreement.analytic_distribution,
             "line_ids": [
                 (
