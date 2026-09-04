@@ -157,9 +157,10 @@ class AdvancePaymentReturnLine(models.Model):
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft return lines can be confirmed."))
-            if rec.agreement_id.state != "to_reconcile":
+            if rec.agreement_id.state != "in_progress":
                 raise UserError(
-                    _("Returns can only be confirmed while awaiting reconciliation.")
+                    _("Returns can only be confirmed while the agreement is"
+                      " in progress.")
                 )
             rec.write({"state": "pending_review"})
 
@@ -180,8 +181,6 @@ class AdvancePaymentReturnLine(models.Model):
                 + ref_message,
                 subtype_xmlid="mail.mt_note",
             )
-            # Settle the agreement automatically once fully returned (ADR-0003).
-            rec.agreement_id._try_auto_close()
 
     def action_reject(self):
         for rec in self:

@@ -115,7 +115,7 @@ class TestAdvancePaymentReceiptKmitl(TransactionCase):
         )
 
     def _make_reconcilable(self, loan=1000, expense=600):
-        """An agreement already sitting in to_reconcile with return_amount>0."""
+        """An in_progress agreement with a reported expense and return_amount>0."""
         agreement = self.env["advance.payment"].create(
             {
                 "employee_id": self.employee.id,
@@ -130,7 +130,7 @@ class TestAdvancePaymentReceiptKmitl(TransactionCase):
             }
         )
         agreement.write(
-            {"state": "to_reconcile", "actual_expense_amount": expense}
+            {"state": "in_progress", "actual_expense_amount": expense}
         )
         return agreement
 
@@ -169,9 +169,11 @@ class TestAdvancePaymentReceiptKmitl(TransactionCase):
         self.assertEqual(receipt.advance_return_line_id, line)
         self.assertEqual(receipt.advance_agreement_id, agreement)
         self.assertIn(agreement.name, receipt.description)
-        # fully returned -> agreement auto-closes (ADR-0003)
-        self.assertEqual(agreement.state, "done")
+        # fully returned, but closing is a deliberate loan-officer action
+        self.assertEqual(agreement.state, "in_progress")
         self.assertEqual(agreement.receipt_count, 1)
+        agreement.with_user(self.officer).action_close()
+        self.assertEqual(agreement.state, "done")
 
     def test_missing_config_raises(self):
         self.env["ir.config_parameter"].sudo().set_param(
