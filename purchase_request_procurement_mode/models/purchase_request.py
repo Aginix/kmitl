@@ -15,6 +15,17 @@ class PurchaseRequest(models.Model):
         tracking=True,
     )
 
+    is_procurement_mode_editable = fields.Boolean(
+        compute="_compute_is_procurement_mode_editable",
+        readonly=True,
+        store=False,
+    )
+
+    @api.depends("is_editable")
+    def _compute_is_procurement_mode_editable(self):
+        for rec in self:
+            rec.is_procurement_mode_editable = rec.is_editable
+
     @api.onchange("procurement_mode")
     def _onchange_procurement_mode(self):
         if self.procurement_mode == "by_officer":
