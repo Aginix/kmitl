@@ -28,6 +28,12 @@
     per bank, so no single value on a bank record can be right for every payee;
     SCB's layout now takes the receiving branch from the first three digits of
     the payee's own account number instead, which is where SCB puts it.
+
+    ``short_name`` is the treasury office's own everyday abbreviation, read by
+    nothing but a human — no bank file uses it. Added later than the rest of
+    this record; a database where this file already loaded once needs
+    ``hooks._bind_kmitl_bank_data`` to backfill it, since ``noupdate`` means an
+    upgrade never re-applies a value added here afterwards.
 -->
 <odoo noupdate="1">
 
@@ -36,6 +42,7 @@
         <field name="bic">SICOTHBK</field>
         <field name="country" ref="base.th" />
         <field name="bank_code">014</field>
+        <field name="short_name">SCB</field>
     </record>
 
     <record id="bank_ktb" model="res.bank">
@@ -43,6 +50,7 @@
         <field name="bic">KRTHTHBK</field>
         <field name="country" ref="base.th" />
         <field name="bank_code">006</field>
+        <field name="short_name">KTB</field>
     </record>
 
     <record id="bank_bay" model="res.bank">
@@ -50,6 +58,7 @@
         <field name="bic">AYUDTHBK</field>
         <field name="country" ref="base.th" />
         <field name="bank_code">002</field>
+        <field name="short_name">BAY</field>
     </record>
 
     <record id="bank_kbank" model="res.bank">
@@ -57,6 +66,7 @@
         <field name="bic">KASITHBK</field>
         <field name="country" ref="base.th" />
         <field name="bank_code">004</field>
+        <field name="short_name">KBANK</field>
     </record>
 
 </odoo>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Shows the cash route a payee's paying account would travel, right
+         where the auditor and the finance office pick it — the same badge
+         and chain a non-blocking exception otherwise only surfaces later, to
+         the accounting maker, at Submit. -->
+    <record id="view_disbursement_request_form_inherit_cash_movement" model="ir.ui.view">
+        <field name="name">disbursement.request.form.inherit.cash.movement</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_line_ids']//field[@name='paying_account_match']" position="after">
+                <field
+                    name="cash_route_state"
+                    widget="badge"
+                    decoration-warning="cash_route_state == 'missing'"
+                    decoration-muted="cash_route_state == 'direct'"
+                    decoration-info="cash_route_state == 'routed'"
+                />
+                <field name="cash_route_display" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Fires on the voucher's own move, at Submit — the accounting maker's
+         last chance before Approve = post freezes it. Silent on a route whose
+         hop_ids is empty (pays directly, no leg is expected) and on a paying
+         account with no bank_account_id at all (เงินสด never travels a
+         route) — only a missing row, no route on file at all for this
+         (paying account, source) pair, trips it. -->
+    <record id="excep_cash_route_not_found" model="exception.rule">
+        <field
+            name="name"
+        >ไม่พบเส้นทางโยกเงิน</field>
+        <field
+            name="description"
+        >ใบสำคัญจ่ายนี้ยังไม่มีเส้นทางโยกเงินระหว่างบัญชีตั้งไว้สำหรับหัวจ่ายและแหล่งเงินนี้ ถ้าลงบัญชีต่อไป ใบสำคัญจ่ายจะขาดขาที่แสดงว่าเงินเดินทางมาจากบัญชีใดกว่าจะถึงหัวจ่าย กรุณาตั้งค่าเส้นทางโยกเงินก่อน (บัญชี ▸ ตั้งค่า ▸ เส้นทางโยกเงิน)</field>
+        <field name="sequence">65</field>
+        <field name="model">account.move</field>
+        <field name="exception_type">by_py_code</field>
+        <!-- Everything that decides the answer lives in Python, where it is
+             linted and covered by tests: a rule's code field is evaluated by
+             safe_eval against a bare context (self/object/obj only, no env),
+             so anything more than a call here fails at runtime or not at all. -->
+        <field name="code">
+if obj._is_missing_cash_route():
+    failed = True
+        </field>
+        <field name="active" eval="True" />
+        <field name="is_blocking" eval="False" />
+    </record>
+</odoo>

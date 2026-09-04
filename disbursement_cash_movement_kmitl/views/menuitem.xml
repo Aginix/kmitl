@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem
+        id="menu_config_cash_route_accounting"
+        name="Cash Routes"
+        parent="accounting_kmitl.menu_accounting_config"
+        action="action_cash_route"
+        sequence="65"
+    />
+
+    <menuitem
+        id="menu_config_cash_route_finance"
+        name="Cash Routes"
+        parent="finance_kmitl.menu_settings_payment_data"
+        action="action_cash_route"
+        sequence="40"
+    />
+
+</odoo>
