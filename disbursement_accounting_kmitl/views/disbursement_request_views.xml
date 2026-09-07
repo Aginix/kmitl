@@ -69,6 +69,10 @@
                         <span class="o_stat_text">รายการบัญชี <field name="move_line_count" nolabel="1" /></span>
                     </div>
                 </button>
+                <!-- Referenced by Create Bill / Return to Verification attrs
+                     above. The visible ใบตั้งหนี้ button that used to render
+                     it moved to the unified button in disbursement_finance_kmitl. -->
+                <field name="bill_count" invisible="1" />
             </xpath>
         </field>
     </record>
