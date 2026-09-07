@@ -167,6 +167,33 @@ class DisbursementRequest(models.Model):
         compute="_compute_payment_info",
         string="Payment Move Count",
     )
+    related_move_ids = fields.Many2many(
+        comodel_name="account.move",
+        compute="_compute_related_move_ids",
+        string="Related Journal Entries",
+    )
+    related_move_count = fields.Integer(
+        compute="_compute_related_move_ids",
+        string="Related Move Count",
+    )
+
+    @api.depends(
+        "bill_ids",
+        "bill_ids.state",
+        "payment_move_ids",
+        "payment_move_ids.state",
+        "cash_revenue_handover_move_ids",
+        "cash_revenue_handover_move_ids.state",
+    )
+    def _compute_related_move_ids(self):
+        for rec in self:
+            moves = (
+                rec.bill_ids
+                | rec.payment_move_ids
+                | rec.cash_revenue_handover_move_ids
+            ).filtered(lambda m: m.state != "cancel")
+            rec.related_move_ids = moves
+            rec.related_move_count = len(moves)
 
     @api.depends(
         "payment_ids",
@@ -874,10 +901,10 @@ class DisbursementRequest(models.Model):
             "target": "current",
         }
 
-    def action_view_payment_moves(self):
-        """Open journal entries linked to payments."""
+    def action_view_related_moves(self):
+        """Open every account.move tied to this request in one place."""
         self.ensure_one()
-        moves = self.payment_move_ids
+        moves = self.related_move_ids
         if len(moves) == 1:
             return {
                 "type": "ir.actions.act_window",
@@ -889,7 +916,7 @@ class DisbursementRequest(models.Model):
             }
         return {
             "type": "ir.actions.act_window",
-            "name": _("รายการล้างหนี้"),
+            "name": _("รายการบัญชีที่เกี่ยวข้อง"),
             "res_model": "account.move",
             "domain": [("id", "in", moves.ids)],
             "view_mode": "tree,form",

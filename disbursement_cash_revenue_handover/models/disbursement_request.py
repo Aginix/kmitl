@@ -195,27 +195,3 @@ class DisbursementRequest(models.Model):
             | self.source_analytic_id
         )
         return {str(account.id): 100.0 for account in accounts}
-
-    # ------------------------------------------------------------------
-    # Views
-    # ------------------------------------------------------------------
-    def action_view_cash_revenue_handover(self):
-        self.ensure_one()
-        moves = self.cash_revenue_handover_move_ids
-        if len(moves) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "name": _("Cash & Revenue Handover"),
-                "res_model": "account.move",
-                "res_id": moves.id,
-                "view_mode": "form",
-                "target": "current",
-            }
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Cash & Revenue Handover"),
-            "res_model": "account.move",
-            "domain": [("id", "in", moves.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }

@@ -56,18 +56,10 @@
                         groups="accounting_kmitl.group_accounting_kmitl_user"/>
             </xpath>
 
-            <!-- Bills smart button -->
+            <!-- Move-line smart button. The old "ใบตั้งหนี้" bill button used
+                 to live here alongside it; it is now folded into the unified
+                 "รายการบัญชี" button in disbursement_finance_kmitl. -->
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_view_bill"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-pencil-square-o"
-                        attrs="{'invisible': [('bill_count', '=', 0)]}">
-                    <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">ใบตั้งหนี้ <field name="bill_count" nolabel="1" /></span>
-                        <span class="o_stat_text text-muted small"><field name="bill_status_display" nolabel="1" /></span>
-                    </div>
-                </button>
                 <button name="action_view_move_lines"
                         type="object"
                         class="oe_stat_button"
@@ -77,7 +69,6 @@
                         <span class="o_stat_text">รายการบัญชี <field name="move_line_count" nolabel="1" /></span>
                     </div>
                 </button>
-                <field name="bill_draft_count" invisible="1" />
             </xpath>
         </field>
     </record>

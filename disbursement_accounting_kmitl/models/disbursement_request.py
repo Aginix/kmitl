@@ -279,28 +279,6 @@ class DisbursementRequest(models.Model):
         }
         return action
 
-    def action_view_bill(self):
-        """Open the linked vendor bill(s)"""
-        self.ensure_one()
-        bills = self.bill_ids
-        if len(bills) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "name": _("Vendor Bill"),
-                "res_model": "account.move",
-                "res_id": bills.id,
-                "view_mode": "form",
-                "target": "current",
-            }
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Vendor Bills"),
-            "res_model": "account.move",
-            "domain": [("id", "in", bills.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }
-
     def action_cancel(self):
         """Block cancel if any bill is posted; cancel draft bills first."""
         for record in self:
