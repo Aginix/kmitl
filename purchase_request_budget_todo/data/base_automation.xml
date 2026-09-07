@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+
+    <!-- draft → to_verify: schedule reserve-budget Todo -->
+    <record id="automation_pr_draft_to_verify" model="base.automation">
+        <field name="name">[TODO] พ.1 draft → รอจองงบประมาณ</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "=", "draft")]</field>
+        <field name="filter_domain">[("state", "=", "to_verify")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+role = env.ref("budget_role.role_budget_commitment", raise_if_not_found=False)
+act_type = env.ref("purchase_request_budget_todo.mail_activity_pr_reserve_budget", raise_if_not_found=False)
+if act_type:
+    for rec in records:
+        if rec.activity_ids.filtered(lambda a: a.activity_type_id == act_type):
+            continue
+        summary = "กรุณาจองงบประมาณ สำหรับแบบขอให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ จองเงินงบประมาณ" % (rec.name or "")
+        if role and rec.operating_unit_id:
+            rec.activity_schedule(
+                "purchase_request_budget_todo.mail_activity_pr_reserve_budget",
+                summary=summary,
+                responsible_role_id=role.id,
+                operating_unit_id=rec.operating_unit_id.id,
+            )
+]]></field>
+    </record>
+
+    <!-- to_verify → to_submit: notify PR creator to go create the Sarabun endorsement letter -->
+    <record id="automation_pr_verify_to_submit_notify" model="base.automation">
+        <field name="name">[TODO] พ.1 to_verify → to_submit (แจ้งเตือนเจ้าของสร้างหนังสือขอความเห็นชอบ)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "=", "to_verify")]</field>
+        <field name="filter_domain">[("state", "=", "to_submit")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+for rec in records:
+    if not rec.create_uid:
+        continue
+    summary = "สร้างหนังสือขอความเห็นชอบให้จัดหา (พ.1) เลขที่ %s เพื่อดำเนินการ สร้างหนังสือขอความเห็นชอบให้จัดหา" % (rec.name or "")
+    rec.activity_schedule(
+        "purchase_request_budget_todo.mail_activity_pr_awaiting_sarabun",
+        summary=summary,
+        user_id=rec.create_uid.id,
+    )
+]]></field>
+    </record>
+
+    <!-- to_submit → any: unlink awaiting-endorsement-letter activity -->
+    <record id="automation_pr_leave_to_submit_cleanup" model="base.automation">
+        <field name="name">[TODO] พ.1 ออกจาก to_submit (ล้าง endorsement letter activity)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "=", "to_submit")]</field>
+        <field name="filter_domain">[("state", "!=", "to_submit")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_feedback(["purchase_request_budget_todo.mail_activity_pr_awaiting_sarabun"])
+]]></field>
+    </record>
+
+    <!-- to_verify → to_submit: feedback reserve-budget (จองงบสำเร็จ) -->
+    <record id="automation_pr_verify_to_submit_feedback" model="base.automation">
+        <field name="name">[TODO] พ.1 to_verify → to_submit (จองงบสำเร็จ)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "=", "to_verify")]</field>
+        <field name="filter_domain">[("state", "=", "to_submit")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_feedback(["purchase_request_budget_todo.mail_activity_pr_reserve_budget"])
+]]></field>
+    </record>
+
+    <!-- to_verify → other (ไม่ใช่ to_submit): unlink reserve-budget (ยกเลิก/ไม่สำเร็จ) -->
+    <record id="automation_pr_leave_to_verify_cleanup" model="base.automation">
+        <field name="name">[TODO] พ.1 ออกจาก to_verify ไม่สำเร็จ (ล้าง reserve budget)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "=", "to_verify")]</field>
+        <field name="filter_domain">[("state", "not in", ["to_verify", "to_submit"])]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_unlink(["purchase_request_budget_todo.mail_activity_pr_reserve_budget"])
+]]></field>
+    </record>
+
+</odoo>

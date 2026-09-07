@@ -31,6 +31,7 @@
         "purchase_request_approval_work_acceptance",
         "agx_approval",
         "agx_approval_disbursement",
+        "hr_partner_type_kmitl",
     ],
     "data": [
         "data/company.xml",

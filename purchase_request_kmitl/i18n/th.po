@@ -328,6 +328,7 @@ msgstr "ยกเลิก"
 
 #. module: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__cancelled
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Cancelled"
 msgstr "ยกเลิก"
 
@@ -550,6 +551,7 @@ msgstr "เอกสารแนบ"
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__done
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Done"
 msgstr "จัดซื้อจัดจ้างเสร็จสิ้น"
 
@@ -558,10 +560,11 @@ msgstr "จัดซื้อจัดจ้างเสร็จสิ้น"
 msgid "Downstream Moves"
 msgstr ""
 
-#. module: purchase_request
+#. module: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__draft
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Draft"
 msgstr "ฉบับร่าง"
 
@@ -737,10 +740,16 @@ msgstr ""
 "ถ้าหากไม่พบชื่อผู้ขายที่ต้องการ ให้แจ้งเจ้าหน้าที่พัสดุ/ผู้รับผิดชอบงาน\n"
 "                    เพื่อเพิ่มข้อมูล"
 
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
+msgid "In Approval"
+msgstr "อยู่ระหว่างจัดทำ พจ.1"
+
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "In Progress"
 msgstr "อยู่ระหว่างจัดซื้อจัดจ้าง"
 
@@ -864,7 +873,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "My requests"
-msgstr ""
+msgstr "คำขอของฉัน"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__name
@@ -1461,6 +1470,7 @@ msgstr "ตีกลับ"
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__rejected
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Rejected"
 msgstr "ปฏิเสธ"
 
@@ -1541,6 +1551,7 @@ msgstr "ตีกลับแก้ไข"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__returned
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Returned"
 msgstr "รอการแก้ไข"
 
@@ -1810,6 +1821,7 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "To Approve"
 msgstr "รอพิจารณาให้จัดหา"
 
@@ -1828,6 +1840,11 @@ msgstr ""
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__to_approve
 msgid "To be approved"
 msgstr "รอพิจารณาให้จัดหา"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
+msgid "To be verified"
+msgstr "รอจองงบประมาณ"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__estimated_cost
@@ -1854,12 +1871,12 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Unassigned"
-msgstr ""
+msgstr "ยังไม่ได้มอบหมาย"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Unassigned Request"
-msgstr ""
+msgstr "คำขอที่ยังไม่ได้มอบหมาย"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
@@ -1869,7 +1886,7 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Unread Messages"
-msgstr ""
+msgstr "ข้อความที่ยังไม่ได้อ่าน"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__product_uom_id
@@ -1898,6 +1915,11 @@ msgstr "วันที่ตรวจสอบ"
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.purchase_type_view_form
 msgid "Visible On"
 msgstr "แสดงใน"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
+msgid "Waiting for e-GP"
+msgstr "รอดำเนินการ e-GP"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__website_message_ids
@@ -2305,6 +2327,7 @@ msgstr "สำหรับงานก่อสร้าง"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_submit
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "To Submit"
 msgstr "รอส่งขอความเห็นชอบให้จัดหา"
 

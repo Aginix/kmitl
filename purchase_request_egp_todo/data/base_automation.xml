@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+
+    <!-- any → in_egp (is_egp=True): schedule E-GP number entry Todo -->
+    <record id="automation_pr_to_in_egp" model="base.automation">
+        <field name="name">[TODO] พ.1 → in_egp (สร้าง E-GP Todo)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "!=", "in_egp")]</field>
+        <field name="filter_domain">[("state", "=", "in_egp"), ("is_egp", "=", True)]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+role = env.ref("purchase_user_role.purchase_role_procurement", raise_if_not_found=False)
+for rec in records:
+    summary = "กรุณาดำเนินการ e-GP แบบขอให้จัดหา (พ.1) เลขที่ %s" % (rec.name or "")
+    if role and rec.operating_unit_id:
+        rec.activity_schedule(
+            "purchase_request_egp_todo.mail_activity_pr_egp_number_entry",
+            summary=summary,
+            responsible_role_id=role.id,
+            operating_unit_id=rec.operating_unit_id.id,
+        )
+]]></field>
+    </record>
+
+    <!-- egp_status: any → in_progress: feedback E-GP number entry Todo -->
+    <record id="automation_pr_egp_status_in_progress" model="base.automation">
+        <field name="name">[TODO] พ.1 egp_status → in_progress (ปิด E-GP Todo)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request_egp.field_purchase_request__egp_status')),
+        ]"/>
+        <field name="filter_pre_domain">[("egp_status", "!=", "in_progress")]</field>
+        <field name="filter_domain">[("egp_status", "=", "in_progress")]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_feedback(["purchase_request_egp_todo.mail_activity_pr_egp_number_entry"])
+]]></field>
+    </record>
+
+    <!-- in_egp → any not in_egp or in_progress: unlink E-GP activity -->
+    <record id="automation_pr_to_draft_cleanup" model="base.automation">
+        <field name="name">[TODO] พ.1 → ไม่ใช่ in_egp (ล้าง E-GP activity)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[
+            Command.link(ref('purchase_request.field_purchase_request__state')),
+        ]"/>
+        <field name="filter_pre_domain">[("state", "=", "in_egp")]</field>
+        <field name="filter_domain">[("state", "not in", ["in_egp", "in_progress"])]</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+records.activity_unlink(["purchase_request_egp_todo.mail_activity_pr_egp_number_entry"])
+]]></field>
+    </record>
+
+</odoo>

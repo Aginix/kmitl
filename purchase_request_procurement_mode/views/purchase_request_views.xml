@@ -7,18 +7,19 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
             <field name="vat_included" position="before">
+                <field name="is_procurement_mode_editable" invisible="1" />
                 <field
                     name="procurement_mode"
                     widget="radio"
                     options="{'horizontal': true}"
-                    attrs="{'readonly': [('is_editable', '=', False)]}"
+                    attrs="{'readonly': [('is_procurement_mode_editable', '=', False)]}"
                 />
             </field>
             <field name="partner_id" position="attributes">
                 <attribute name="attrs">{'readonly': [('is_editable', '=', False)], 'invisible': [('procurement_mode', '=', 'by_officer')]}</attribute>
             </field>
             <field name="vat_included" position="attributes">
-                <attribute name="attrs">{'readonly': [('is_editable', '=', False)], 'invisible': [('procurement_mode', '=', 'by_officer')]}</attribute>
+                <attribute name="attrs">{'readonly': [('is_vat_editable', '=', False)], 'invisible': [('procurement_mode', '=', 'by_officer')]}</attribute>
             </field>
             <field name="tax_id" position="attributes">
                 <attribute name="attrs">{'invisible': ['|', ('vat_included', '=', 'exclusive'), ('procurement_mode', '=', 'by_officer')], 'required': ['&amp;', ('vat_included', '=', 'inclusive'), ('procurement_mode', '!=', 'by_officer')], 'readonly': [('is_editable', '=', False)]}</attribute>

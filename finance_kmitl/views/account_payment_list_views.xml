@@ -347,6 +347,13 @@
                         select="multi"
                         enable_counters="1"
                     />
+                    <field
+                        name="payee_type_id"
+                        string="ประเภทคู่ค้า"
+                        icon="fa-user"
+                        select="multi"
+                        enable_counters="1"
+                    />
                 </searchpanel>
             </search>
         </field>

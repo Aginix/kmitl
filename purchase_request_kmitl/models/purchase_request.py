@@ -4,6 +4,17 @@ from odoo import _, api, fields, models
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
+    partner_id_domain = fields.Binary(
+        compute="_compute_partner_id_domain",
+        readonly=True,
+        store=False,
+    )
+
+    @api.depends("payment_type")
+    def _compute_partner_id_domain(self):
+        for rec in self:
+            rec.partner_id_domain = []
+
     state = fields.Selection(
         selection_add=[
             ("to_submit", "To Submit"),

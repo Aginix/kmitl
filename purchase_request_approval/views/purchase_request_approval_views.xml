@@ -34,7 +34,6 @@
                 optional="show"
             />
             <field name="account_fiscal_year_id" optional="show"/>
-            <field name="department_id" optional="show"/>
             <field
                 name="requested_by"
                 widget="many2one_avatar_user"
@@ -187,6 +186,10 @@
                             <field name="procurement_type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="procurement_method_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="budget_commitment_id" invisible="1"/>
+                            <field name="budget_commitment_amount"
+                                   readonly="1"
+                                   attrs="{'invisible': [('budget_commitment_id', '=', False)]}"/>
                             <field name="estimated_cost" readonly="1"/>
                             <field name="payment_type" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <field
@@ -295,9 +298,30 @@
                     string="Approved"
                     domain="[('state', '=', 'approved')]"
                 />
+                <filter
+                    name="returned"
+                    string="Returned"
+                    domain="[('state', '=', 'returned')]"
+                />
+                <filter
+                    name="rejected"
+                    string="Rejected"
+                    domain="[('state', '=', 'rejected')]"
+                />
+                <filter
+                    name="sarabun_returned"
+                    string="Sarabun Returned"
+                    domain="[('state', '=', 'sarabun_returned')]"
+                />
+                <filter
+                    name="pending_pr"
+                    string="Pending PR Revision"
+                    domain="[('state', '=', 'pending_pr')]"
+                />
                 <separator />
-                <filter name="filter_by_fy" string="Fiscal Year" domain="[('account_fiscal_year_id', '!=', False)]"/>
-                <filter name="filter_by_dept" string="Department" domain="[('requesting_department_id', '!=', False)]"/>
+                <filter name="current_fy" string="Current Fiscal Year"
+                        domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()),
+                                 ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator />
                 <filter
                     name="today"
@@ -340,21 +364,12 @@
                         context="{'group_by':'account_fiscal_year_id'}"
                     />
                     <filter
-                        name="group_by_department_id"
-                        string="Department"
-                        domain="[]"
-                        context="{'group_by':'department_id'}"
-                    />
-                    <filter
                         name="group_by_state"
                         string="Status"
                         domain="[]"
                         context="{'group_by':'state'}"
                     />
                 </group>
-                <searchpanel>
-                    <field name="department_id" icon="fa-book" enable_counters="1" />
-                </searchpanel>
             </search>
         </field>
     </record>
