@@ -165,6 +165,7 @@ msgstr ""
 
 #. module: disbursement_finance_kmitl
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
 #, python-format
 msgid ""
 "Choose the payment subject before auditing: it is what decides which account"
