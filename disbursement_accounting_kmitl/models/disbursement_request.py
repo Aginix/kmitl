@@ -3,6 +3,7 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.fields import Command
+from odoo.osv import expression
 
 
 class DisbursementRequest(models.Model):
@@ -68,6 +69,22 @@ class DisbursementRequest(models.Model):
         compute="_compute_move_line_count",
     )
 
+    # Every account.move tied to a request — direct bill, cash & revenue
+    # handover, payment clearing — collected in one place so one smart button
+    # replaces the three that used to live on each bridge. Discovered by
+    # introspecting Many2ones on account.move pointing to disbursement.request,
+    # so bridges downstream (handover, finance) contribute without this module
+    # depending on them, and any new linking field is picked up automatically.
+    related_move_ids = fields.Many2many(
+        comodel_name="account.move",
+        compute="_compute_related_move_ids",
+        string="Related Journal Entries",
+    )
+    related_move_count = fields.Integer(
+        compute="_compute_related_move_ids",
+        string="Related Move Count",
+    )
+
     @api.depends("bill_ids", "bill_ids.state")
     def _compute_bill_count(self):
         """Compute the number of bills linked to this request.
@@ -96,6 +113,36 @@ class DisbursementRequest(models.Model):
             rec.move_line_count = len(active.line_ids.filtered(
                 lambda l: l.display_type not in ("line_section", "line_note")
             ))
+
+    def _related_move_domain(self):
+        """OR domain over every Many2one on account.move that ties a move to a
+        request. Introspection means bridges downstream (handover, finance)
+        contribute without this module depending on them, and any new linking
+        field is picked up automatically.
+        """
+        self.ensure_one()
+        Move = self.env["account.move"]
+        leaves = [
+            [(name, "=", self.id)]
+            for name, field in Move._fields.items()
+            if field.type == "many2one"
+            and field.comodel_name == "disbursement.request"
+        ]
+        if not leaves:
+            return [("id", "=", 0)]
+        return expression.OR(leaves)
+
+    def _compute_related_move_ids(self):
+        Move = self.env["account.move"]
+        for rec in self:
+            moves = Move.search(
+                expression.AND([
+                    rec._related_move_domain(),
+                    [("state", "!=", "cancel")],
+                ])
+            )
+            rec.related_move_ids = moves
+            rec.related_move_count = len(moves)
 
     @api.depends("bill_ids", "bill_ids.state")
     def _compute_pipeline_status(self):
@@ -278,6 +325,28 @@ class DisbursementRequest(models.Model):
             "default_disbursement_request_id": self.id,
         }
         return action
+
+    def action_view_related_moves(self):
+        """Open every account.move tied to this request in one place."""
+        self.ensure_one()
+        moves = self.related_move_ids
+        if len(moves) == 1:
+            return {
+                "type": "ir.actions.act_window",
+                "name": _("Journal Entry"),
+                "res_model": "account.move",
+                "res_id": moves.id,
+                "view_mode": "form",
+                "target": "current",
+            }
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("รายการบันทึกบัญชี"),
+            "res_model": "account.move",
+            "domain": [("id", "in", moves.ids)],
+            "view_mode": "tree,form",
+            "target": "current",
+        }
 
     def action_cancel(self):
         """Block cancel if any bill is posted; cancel draft bills first."""

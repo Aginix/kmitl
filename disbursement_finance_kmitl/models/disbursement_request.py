@@ -158,48 +158,11 @@ class DisbursementRequest(models.Model):
         string="Payment Status",
         compute="_compute_payment_info",
     )
-    payment_move_ids = fields.Many2many(
-        comodel_name="account.move",
-        compute="_compute_payment_info",
-        string="Payment Journal Entries",
-    )
-    payment_move_count = fields.Integer(
-        compute="_compute_payment_info",
-        string="Payment Move Count",
-    )
-    related_move_ids = fields.Many2many(
-        comodel_name="account.move",
-        compute="_compute_related_move_ids",
-        string="Related Journal Entries",
-    )
-    related_move_count = fields.Integer(
-        compute="_compute_related_move_ids",
-        string="Related Move Count",
-    )
-
-    @api.depends(
-        "bill_ids",
-        "bill_ids.state",
-        "payment_move_ids",
-        "payment_move_ids.state",
-        "cash_revenue_handover_move_ids",
-        "cash_revenue_handover_move_ids.state",
-    )
-    def _compute_related_move_ids(self):
-        for rec in self:
-            moves = (
-                rec.bill_ids
-                | rec.payment_move_ids
-                | rec.cash_revenue_handover_move_ids
-            ).filtered(lambda m: m.state != "cancel")
-            rec.related_move_ids = moves
-            rec.related_move_count = len(moves)
 
     @api.depends(
         "payment_ids",
         "payment_ids.state",
         "payment_ids.finance_state",
-        "payment_ids.move_id",
     )
     def _compute_payment_info(self):
         """Payment progress as the finance office means it.
@@ -220,9 +183,6 @@ class DisbursementRequest(models.Model):
             rec.payment_count = total
             paid = len(active.filtered(lambda p: p.finance_state == "paid"))
             rec.payment_status_display = _("จ่ายแล้ว %s/%s", paid, total) if total else ""
-            moves = active.mapped("move_id")
-            rec.payment_move_ids = moves
-            rec.payment_move_count = len(moves)
 
     @api.depends(
         "state",
@@ -897,28 +857,6 @@ class DisbursementRequest(models.Model):
             "name": _("Payments"),
             "res_model": "account.payment",
             "domain": [("id", "in", self.payment_ids.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }
-
-    def action_view_related_moves(self):
-        """Open every account.move tied to this request in one place."""
-        self.ensure_one()
-        moves = self.related_move_ids
-        if len(moves) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "name": _("Journal Entry"),
-                "res_model": "account.move",
-                "res_id": moves.id,
-                "view_mode": "form",
-                "target": "current",
-            }
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("รายการบัญชีที่เกี่ยวข้อง"),
-            "res_model": "account.move",
-            "domain": [("id", "in", moves.ids)],
             "view_mode": "tree,form",
             "target": "current",
         }

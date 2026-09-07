@@ -69,9 +69,17 @@
                         <span class="o_stat_text">รายการบัญชี <field name="move_line_count" nolabel="1" /></span>
                     </div>
                 </button>
+                <button name="action_view_related_moves"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-book"
+                        attrs="{'invisible': [('related_move_count', '=', 0)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">รายการบันทึกบัญชี <field name="related_move_count" nolabel="1" /></span>
+                    </div>
+                </button>
                 <!-- Referenced by Create Bill / Return to Verification attrs
-                     above. The visible ใบตั้งหนี้ button that used to render
-                     it moved to the unified button in disbursement_finance_kmitl. -->
+                     above, invisible so it does not render as a button. -->
                 <field name="bill_count" invisible="1" />
             </xpath>
         </field>

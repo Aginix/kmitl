@@ -14,7 +14,6 @@
         "disbursement",
         "finance_kmitl",
         "disbursement_accounting_kmitl",
-        "disbursement_cash_revenue_handover",
         "accounting_kmitl_workflow",
         "tracking_manager",
     ],
