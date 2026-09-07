@@ -251,6 +251,31 @@
         </li>
     </template>
 
+    <!-- ============================================================
+         พ.1 letterhead — the e-Sarabun no-source layout, bound to
+         document_type_purchase_request via report_template_id
+         (agx_sarabun_layout). Thin wrapper: data only, layout is shared.
+         ============================================================ -->
+    <template id="report_sarabun_document_purchase_request">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="header_title" t-value="'แบบขอให้จัดหา'"/>
+                <t t-set="header_code" t-value="'พ.1'"/>
+                <t t-call="agx_sarabun.sarabun_document_layout"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_sarabun_document_purchase_request" model="ir.actions.report">
+        <field name="name">แบบขอให้จัดหา (พ.1)</field>
+        <field name="model">sarabun.document</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">purchase_request_sarabun.report_sarabun_document_purchase_request</field>
+        <field name="report_file">purchase_request_sarabun.report_sarabun_document_purchase_request</field>
+        <field name="paperformat_id" ref="agx_sarabun.paperformat_sarabun_a4"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
     <template id="report_purchase_request_budget">
         <table class="table table-bordered border table-sm budget">
             <tbody>

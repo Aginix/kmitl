@@ -34,6 +34,7 @@
             <field name="name">หนังสือขอให้จัดหา (พ.1)</field>
             <field name="kind">from_record</field>
             <field name="default_route_id" ref="route_template_purchase_request"/>
+            <field name="report_template_id" ref="action_report_sarabun_document_purchase_request"/>
         </record>
     </data>
 

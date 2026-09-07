@@ -656,7 +656,19 @@ class PurchaseRequestApproval(models.Model):
                 )
         return super()._on_sarabun_cancelled(document)
 
-    def _get_sarabun_report_action(self):
+    # ADR-0015: render through Sarabun's own no-source layout (สารบรรณ owns the
+    # header — เลขที่/หน่วยงาน/เรียน/วันที่ — and the endorsement block). We
+    # therefore DON'T override _get_sarabun_report_action (mixin default →
+    # False), and instead contribute the live tables (items / budget /
+    # committee) via _get_sarabun_body_template — mirroring purchase.request.
+
+    def _get_sarabun_document_type(self):
         return self.env.ref(
-            "purchase_request_approval.action_report_purchase_request_approvals"
-        )
+            "purchase_request_approval.document_type_purchase_request_approval",
+            raise_if_not_found=False,
+        ) or super()._get_sarabun_document_type()
+
+    def _get_sarabun_body_template(self):
+        """The live body — items table, budget details, committee appointments —
+        rendered between the หนังสือ's เนื้อหา and its signatures (ADR-0015)."""
+        return "purchase_request_approval.report_purchase_request_approval_body"

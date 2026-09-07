@@ -1248,6 +1248,12 @@ class SarabunDocument(models.Model):
                     return origin._get_sarabun_report_action()
         return False
 
+    def _get_no_source_report_ref(self):
+        """Report reference for the no-source layout (ADR-0007's own standalone
+        report). Override to swap in a type-specific letterhead — see
+        agx_sarabun_layout's ``sarabun.document.type.report_template_id``."""
+        return "agx_sarabun.action_report_sarabun_document"
+
     def _get_origin_record(self):
         """The origin record as a sudo recordset, or ``False``. Sudo for the same
         reason as :meth:`_get_delegated_report_action` — rendering the official PDF
@@ -1298,7 +1304,7 @@ class SarabunDocument(models.Model):
             )
         else:
             pdf, _dummy = Report._render_qweb_pdf(
-                "agx_sarabun.action_report_sarabun_document", [self.id]
+                self._get_no_source_report_ref(), [self.id]
             )
         return pdf
 
@@ -1322,7 +1328,7 @@ class SarabunDocument(models.Model):
             )
         else:
             html, _dummy = Report._render_qweb_html(
-                "agx_sarabun.action_report_sarabun_document", [self.id]
+                self._get_no_source_report_ref(), [self.id]
             )
         return self._frame_preview_html(html)
 
