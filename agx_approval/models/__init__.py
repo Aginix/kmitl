@@ -6,3 +6,5 @@ from . import approval_request_allocation
 from . import approval_request
 from . import approval_request_exception
 from . import exception_rule
+from . import res_partner
+from . import hr_employee
