@@ -460,6 +460,21 @@
                     attrs="{'invisible': ['|', '|', ('is_cheque_payment', '=', False), ('finance_state', '!=', 'confirmed'), ('cheque_id', '!=', False)]}"
                     groups="finance_kmitl.group_finance_kmitl_user_out"
                 />
+                <button
+                    name="action_view_payment_export"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-university"
+                    attrs="{'invisible': [('payment_export_name', '=', False)]}"
+                >
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">e-Payment File</span>
+                        <span class="o_stat_text"><field
+                                name="payment_export_name"
+                                nolabel="1"
+                            /></span>
+                    </div>
+                </button>
             </xpath>
 
         </field>
