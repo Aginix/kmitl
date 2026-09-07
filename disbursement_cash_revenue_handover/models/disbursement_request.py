@@ -1,6 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 from odoo.fields import Command
 from odoo.tools.misc import formatLang
 
@@ -15,22 +15,6 @@ class DisbursementRequest(models.Model):
         readonly=True,
         copy=False,
     )
-    cash_revenue_handover_count = fields.Integer(
-        string="Handover Count",
-        compute="_compute_cash_revenue_handover_count",
-    )
-
-    @api.depends(
-        "cash_revenue_handover_move_ids",
-        "cash_revenue_handover_move_ids.state",
-    )
-    def _compute_cash_revenue_handover_count(self):
-        for record in self:
-            record.cash_revenue_handover_count = len(
-                record.cash_revenue_handover_move_ids.filtered(
-                    lambda move: move.state != "cancel"
-                )
-            )
 
     # ------------------------------------------------------------------
     # Handover creation
@@ -85,7 +69,7 @@ class DisbursementRequest(models.Model):
         self._apply_handover_line_distribution(move, line_specs)
         self.message_post(
             body=_(
-                'Cash &amp; revenue handover of %(amount)s '
+                "Cash &amp; revenue handover of %(amount)s "
                 '<a href="%(link)s" target="_blank">drafted</a> for %(unit)s.'
             )
             % {

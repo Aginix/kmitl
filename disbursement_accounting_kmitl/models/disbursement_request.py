@@ -54,16 +54,6 @@ class DisbursementRequest(models.Model):
         compute="_compute_bill_count",
     )
 
-    bill_draft_count = fields.Integer(
-        string="Draft Bill Count",
-        compute="_compute_bill_count",
-    )
-
-    bill_status_display = fields.Char(
-        string="Bill Status",
-        compute="_compute_bill_count",
-    )
-
     move_line_count = fields.Integer(
         string="Move Line Count",
         compute="_compute_move_line_count",
@@ -71,10 +61,7 @@ class DisbursementRequest(models.Model):
 
     # Every account.move tied to a request — direct bill, cash & revenue
     # handover, payment clearing — collected in one place so one smart button
-    # replaces the three that used to live on each bridge. Discovered by
-    # introspecting Many2ones on account.move pointing to disbursement.request,
-    # so bridges downstream (handover, finance) contribute without this module
-    # depending on them, and any new linking field is picked up automatically.
+    # replaces the three that used to live on each bridge.
     related_move_ids = fields.Many2many(
         comodel_name="account.move",
         compute="_compute_related_move_ids",
@@ -87,32 +74,21 @@ class DisbursementRequest(models.Model):
 
     @api.depends("bill_ids", "bill_ids.state")
     def _compute_bill_count(self):
-        """Compute the number of bills linked to this request.
-
-        Cancelled bills are excluded so the display reflects active bills.
-        """
+        """Number of non-cancelled bills linked to this request."""
         for record in self:
-            active_bills = record.bill_ids.filtered(
-                lambda b: b.state != "cancel"
-            )
-            total = len(active_bills)
-            unposted = len(active_bills.filtered(
-                lambda b: b.state in ("draft", "submitted")
-            ))
-            posted = len(active_bills.filtered(lambda b: b.state == "posted"))
-            record.bill_count = total
-            record.bill_draft_count = unposted
-            record.bill_status_display = (
-                _("ตั้งหนี้แล้ว %s/%s", posted, total) if total else ""
+            record.bill_count = len(
+                record.bill_ids.filtered(lambda b: b.state != "cancel")
             )
 
     @api.depends("bill_ids", "bill_ids.state", "bill_ids.line_ids")
     def _compute_move_line_count(self):
         for rec in self:
             active = rec.bill_ids.filtered(lambda b: b.state != "cancel")
-            rec.move_line_count = len(active.line_ids.filtered(
-                lambda l: l.display_type not in ("line_section", "line_note")
-            ))
+            rec.move_line_count = len(
+                active.line_ids.filtered(
+                    lambda line: line.display_type not in ("line_section", "line_note")
+                )
+            )
 
     def _related_move_domain(self):
         """OR domain over every Many2one on account.move that ties a move to a
@@ -125,8 +101,7 @@ class DisbursementRequest(models.Model):
         leaves = [
             [(name, "=", self.id)]
             for name, field in Move._fields.items()
-            if field.type == "many2one"
-            and field.comodel_name == "disbursement.request"
+            if field.type == "many2one" and field.comodel_name == "disbursement.request"
         ]
         if not leaves:
             return [("id", "=", 0)]
@@ -136,10 +111,12 @@ class DisbursementRequest(models.Model):
         Move = self.env["account.move"]
         for rec in self:
             moves = Move.search(
-                expression.AND([
-                    rec._related_move_domain(),
-                    [("state", "!=", "cancel")],
-                ])
+                expression.AND(
+                    [
+                        rec._related_move_domain(),
+                        [("state", "!=", "cancel")],
+                    ]
+                )
             )
             rec.related_move_ids = moves
             rec.related_move_count = len(moves)
@@ -173,9 +150,7 @@ class DisbursementRequest(models.Model):
         self.ensure_one()
 
         if self.state != "approved":
-            raise UserError(
-                _("Only approved requests can be used to create bills.")
-            )
+            raise UserError(_("Only approved requests can be used to create bills."))
 
         bills = self._create_bills()
 
@@ -210,8 +185,7 @@ class DisbursementRequest(models.Model):
         bills = self.env["account.move"]
         for partner, lines in partner_lines.items():
             invoice_lines = [
-                Command.create(self._prepare_bill_line_vals(line))
-                for line in lines
+                Command.create(self._prepare_bill_line_vals(line)) for line in lines
             ]
             partner_bank = lines[0].partner_bank_id
             bill = self.env["account.move"].create(
@@ -313,8 +287,7 @@ class DisbursementRequest(models.Model):
         """Open a tree of move.line aggregated from this DR's active bills."""
         self.ensure_one()
         action = self.env["ir.actions.act_window"]._for_xml_id(
-            "disbursement_accounting_kmitl."
-            "action_disbursement_move_lines"
+            "disbursement_accounting_kmitl.action_disbursement_move_lines"
         )
         action["domain"] = [
             ("move_id", "in", self.bill_ids.ids),
@@ -353,9 +326,7 @@ class DisbursementRequest(models.Model):
         for record in self:
             if record.state == "cancel":
                 continue
-            posted_bills = record.bill_ids.filtered(
-                lambda b: b.state == "posted"
-            )
+            posted_bills = record.bill_ids.filtered(lambda b: b.state == "posted")
             if posted_bills:
                 raise UserError(
                     _(
@@ -364,9 +335,7 @@ class DisbursementRequest(models.Model):
                     )
                     % ", ".join(posted_bills.mapped("name"))
                 )
-            draft_bills = record.bill_ids.filtered(
-                lambda b: b.state == "draft"
-            )
+            draft_bills = record.bill_ids.filtered(lambda b: b.state == "draft")
             if draft_bills:
                 draft_bills.button_cancel()
         return super().action_cancel()
@@ -375,9 +344,7 @@ class DisbursementRequest(models.Model):
         """Accounting may return a request to verification only before a bill
         exists; once billed the accountant must cancel the bill(s) first."""
         for record in self:
-            active_bills = record.bill_ids.filtered(
-                lambda b: b.state != "cancel"
-            )
+            active_bills = record.bill_ids.filtered(lambda b: b.state != "cancel")
             if active_bills:
                 raise UserError(
                     _(
