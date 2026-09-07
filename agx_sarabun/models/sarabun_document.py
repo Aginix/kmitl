@@ -59,6 +59,14 @@ class SarabunDocument(models.Model):
         store=True,
         readonly=True,
     )
+    type_allow_manual = fields.Boolean(
+        related="type_id.allow_manual",
+        string="Type Allows Manual",
+        readonly=True,
+        help="Mirror of the type's สร้างด้วยตนเองได้ flag, for the form's attrs: an "
+        "origin-only type is locked on the หนังสือ so a drafter cannot swap the "
+        "classification it was spawned with.",
+    )
 
     # === Header (เรื่อง / เรียน / วันที่) ===
     subject = fields.Text(string="เรื่อง (Subject)", required=True, tracking=True)
