@@ -272,6 +272,9 @@ def _create_dr_pr_with_line(
         else vendor
     )
 
+    if payment_type == "prepaid" and not partner.partner_type_id.is_internal:
+        partner.partner_type_id = env.ref("partner_type_kmitl.partner_type_employee")
+
     pr = env["purchase.request"].create(
         {
             "title": case["title"],
