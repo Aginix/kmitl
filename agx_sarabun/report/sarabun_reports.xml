@@ -151,7 +151,7 @@
                                         <strong>วันที่</strong>
                                     </td>
                                     <td>
-                                        <span t-field="doc.date"/>
+                                        <span t-out="doc.format_date_thai(doc.date)"/>
                                     </td>
                                 </tr>
                             </table>
