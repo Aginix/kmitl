@@ -18,6 +18,12 @@ msgstr ""
 "X-Generator: Poedit 3.8\n"
 
 #. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "%s request(s) approved."
+msgstr "อนุมัติแล้ว %s รายการ"
+
+#. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_disbursement_request_page
 msgid ""
 "<i class=\"fa fa-download\"/>\n"
@@ -37,6 +43,63 @@ msgid ""
 "<i class=\"fa fa-print\"/>\n"
 " Print"
 msgstr ""
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "<p><b>Approval rejected</b></p><p>Reason: <b>%s</b></p>"
+msgstr "<p><b>การอนุมัติถูกตีกลับ</b></p><p>เหตุผล: <b>%s</b></p>"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+#, python-format
+msgid ""
+"<p><b>Returned for correction</b></p><p>Disbursement <b>%(dr)s</b> was "
+"returned by the verification officer.<br/>Reason: "
+"<b>%(reason)s</b><br/>Please correct the payee bank, description or "
+"evidence, then click <b>Confirm Correction</b>.</p>"
+msgstr ""
+"<p><b>ถูกตีกลับเพื่อแก้ไข</b></p><p>ใบขอเบิก <b>%(dr)s</b> "
+"ถูกตีกลับโดยเจ้าหน้าที่ตรวจสอบ<br/>เหตุผล: "
+"<b>%(reason)s</b><br/>กรุณาแก้ไขเลขบัญชีผู้รับเงิน คำอธิบาย หรือหลักฐาน "
+"แล้วกด <b>ยืนยันการแก้ไข</b></p>"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+#, python-format
+msgid ""
+"<p><b>Returned for correction</b></p><p>Returned to the requester and reset "
+"to draft so it can be corrected and resubmitted.<br/>Reason: <b>%s</b></p>"
+msgstr ""
+"<p><b>ตีกลับเพื่อแก้ไข</b></p><p>ตีกลับให้ผู้ขอเบิกและเปลี่ยนสถานะกลับเป็นร่าง"
+" เพื่อแก้ไขและส่งใหม่<br/>เหตุผล: <b>%s</b></p>"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+#, python-format
+msgid ""
+"<p><b>Returned to source for correction</b></p><p>This request was returned "
+"to its source document <b>%(source)s</b> by the verification officer. It "
+"stays under verification until the correction is confirmed.<br/>Reason: "
+"<b>%(reason)s</b></p>"
+msgstr ""
+"<p><b>ตีกลับไปแก้ไขที่ต้นเรื่อง</b></p><p>ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่อง"
+" <b>%(source)s</b> โดยเจ้าหน้าที่ตรวจสอบ และยังคงอยู่ระหว่างการตรวจสอบ "
+"จนกว่าจะมีการยืนยันการแก้ไข<br/>เหตุผล: <b>%(reason)s</b></p>"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+#, python-format
+msgid ""
+"<p><b>Returned to verification</b></p><p>Returned to the verification "
+"officer for re-checking.<br/>Reason: <b>%s</b></p>"
+msgstr ""
+"<p><b>ตีกลับให้หมวดตรวจ</b></p><p>ตีกลับให้เจ้าหน้าที่ตรวจสอบเพื่อตรวจสอบใหม่<br/>เหตุผล:"
+" <b>%s</b></p>"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
@@ -73,9 +136,25 @@ msgid "Action Needed"
 msgstr ""
 
 #. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Actions"
+msgstr "การดำเนินการ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_ids
 msgid "Activities"
 msgstr ""
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_analytic_id
+msgid "Activity"
+msgstr "กิจกรรม"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_exception_decoration
@@ -93,9 +172,19 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__advance
+msgid "Advance"
+msgstr "เงินยืมทดรอง"
+
+#. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_my_disbursement_requests
 msgid "Amount"
 msgstr "จำนวน"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Amount Before WHT"
+msgstr "มูลค่าก่อนหัก"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__analytic_distribution
@@ -121,6 +210,75 @@ msgid "Apply on"
 msgstr ""
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__approval_state
+msgid "Approval"
+msgstr "การอนุมัติ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__approval_reject_reason
+msgid "Approval Reject Reason"
+msgstr "เหตุผลการตีกลับการอนุมัติ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Approval rejected:"
+msgstr "การอนุมัติถูกตีกลับ:"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Approve"
+msgstr "อนุมัติ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Approve (Finance Director)"
+msgstr "อนุมัติ (ผอ.กองคลัง)"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Approve (Rector Delegate)"
+msgstr "อนุมัติ (ผู้รับมอบอำนาจ)"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Approve Selected"
+msgstr "อนุมัติรายการที่เลือก"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__approved
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__approved
+#: model:ir.actions.act_window,name:disbursement.action_disbursement_approved
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_approved
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Approved"
+msgstr "อนุมัติแล้ว"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__pipeline_status__approved
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__approved
+msgid "Approved"
+msgstr "อนุมัติแล้ว"
+
+#. module: disbursement
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_approver
+msgid "Approver"
+msgstr "ผู้อนุมัติ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid ""
+"Are you sure you want to approve? This will obligate and consume the budget."
+msgstr "ยืนยันการอนุมัติ? จะทำการผูกพันและตัดงบประมาณตามยอดรวมของใบขอเบิกนี้"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid ""
+"Are you sure you want to approve? This will obligate and consume the budget."
+msgstr "ยืนยันการอนุมัติ? การอนุมัติจะตัดและใช้งบประมาณ"
+
+#. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "Are you sure you want to validate this request?"
 msgstr ""
@@ -132,43 +290,37 @@ msgstr "จำนวนเอกสารแนบ"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Attachment for Disbursement Request"
+msgstr "เอกสารประกอบใบขอเบิก"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "Attachments"
 msgstr "เอกสารแนบ"
 
 #. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "File Name"
-msgstr "ชื่อไฟล์"
+#: model:ir.actions.client,name:disbursement.action_disbursement_approval_finance
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_approve_finance
+msgid "Awaiting Finance Director"
+msgstr "รอ ผอ.กองคลัง"
 
 #. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Upload Date"
-msgstr "วันที่อัปโหลด"
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Awaiting Finance Director approval"
+msgstr "รออนุมัติ: ผอ.กองคลัง"
 
 #. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Uploaded By"
-msgstr "อัปโหลดโดย"
+#: model:ir.actions.client,name:disbursement.action_disbursement_approval_rector
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_approve_rector
+msgid "Awaiting Rector Delegate"
+msgstr "รอผู้รับมอบอำนาจ"
 
 #. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "WHT Item"
-msgstr "รายการ WHT"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Disburser"
-msgstr "ชื่อคนเบิก"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Amount Before WHT"
-msgstr "มูลค่าก่อนหัก"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "WHT Deduction"
-msgstr "ยอดหัก"
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Awaiting Rector-delegated approval"
+msgstr "รออนุมัติ: ผู้ได้รับมอบอำนาจอธิการบดี"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
@@ -179,6 +331,16 @@ msgstr "ใบตั้งหนี้"
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__bill_count
 msgid "Bill Count"
 msgstr "จำนวนใบตั้งหนี้"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Bill Draft"
+msgstr "รอตั้งหนี้"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Bill Posted"
+msgstr "ตั้งหนี้แล้ว"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
@@ -208,6 +370,11 @@ msgstr "วันที่ตัดงบ"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Budget Information"
+msgstr "ข้อมูลงบประมาณ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -218,6 +385,54 @@ msgid "Cancelled"
 msgstr "ยกเลิกแล้ว"
 
 #. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Cannot cancel a done or already cancelled request."
+msgstr "ไม่สามารถยกเลิกคำขอเบิกที่เสร็จสิ้นหรือยกเลิกไปแล้วได้"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Cannot cancel an already cancelled request."
+msgstr "ไม่สามารถยกเลิกใบขอเบิกที่ถูกยกเลิกแล้วได้"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Cannot cancel: the bill %s is already posted. Reverse the bill first."
+msgstr "ไม่สามารถยกเลิก: ใบตั้งหนี้ %s ถูก post แล้ว กรุณากลับรายการก่อน"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Cannot cancel: there are payments linked to bill %s. Remove payments first."
+msgstr ""
+"ไม่สามารถยกเลิก: มีการจ่ายเงินที่เชื่อมกับใบตั้งหนี้ %s อยู่ "
+"กรุณาลบการจ่ายเงินก่อน"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+#, python-format
+msgid "Cannot resubmit a disbursement request with no lines."
+msgstr "ส่งกลับไม่ได้ เพราะใบขอเบิกไม่มีรายการ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Cannot submit a disbursement request with no lines. Please add at least one "
+"line."
+msgstr ""
+"ไม่สามารถส่งใบขอเบิกที่ไม่มีรายการได้ กรุณาเพิ่มรายการอย่างน้อย 1 รายการ"
+
+#. module: disbursement
 #: model:ir.model.fields,help:disbursement.field_disbursement_request__is_company
 msgid "Check if the contact is a company, otherwise it is a person"
 msgstr ""
@@ -225,8 +440,8 @@ msgstr ""
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid ""
-"Click here to be able to confirm this Disbursement Request regardless of the "
-"exceptions."
+"Click here to be able to confirm this Disbursement Request regardless of the"
+" exceptions."
 msgstr ""
 
 #. module: disbursement
@@ -244,6 +459,45 @@ msgstr "ตั้งค่า"
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_disbursement_request_page
 msgid "Contact"
 msgstr ""
+
+#. module: disbursement
+#: model:mail.activity.type,name:disbursement.mail_activity_source_correct
+msgid "Correct and confirm the returned document"
+msgstr "แก้ไขและยืนยันเอกสารที่ถูกตีกลับ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+msgid "Corrected and returned to verification."
+msgstr "แก้ไขแล้ว ส่งกลับหมวดตรวจ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_return_source_mixin__disbursement_return_bank_id
+msgid "Correction Bank Account"
+msgstr "บัญชีธนาคารที่แก้ไข"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_return_source_mixin__disbursement_return_note
+msgid "Correction Note"
+msgstr "หมายเหตุการแก้ไข"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+#, python-format
+msgid "Correction confirmed; disbursement %s updated."
+msgstr "ยืนยันการแก้ไขแล้ว อัปเดตใบขอเบิก %s เรียบร้อย"
+
+#. module: disbursement
+#: model:mail.activity.type,name:disbursement.mail_activity_source_done
+msgid "Correction submitted to the disbursement officer"
+msgstr "ส่งการแก้ไขให้เจ้าหน้าที่เบิกจ่ายแล้ว"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Could not approve:"
+msgstr "อนุมัติไม่ได้:"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
@@ -288,10 +542,38 @@ msgid "Date"
 msgstr "วันที่"
 
 #. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Date From"
+msgstr "ตั้งแต่วันที่"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Date To"
+msgstr "ถึงวันที่"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__department_analytic_id
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Departments"
+msgstr "ส่วนงาน"
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__name
 msgid "Description"
 msgstr "คำอธิบาย"
 
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__direct
+msgid "Direct paid"
+msgstr "จ่ายตรง"
 
 #. module: disbursement
 #: model:ir.module.category,name:disbursement.module_category_disbursement
@@ -310,6 +592,21 @@ msgid "Disbursement Exception Wizard"
 msgstr ""
 
 #. module: disbursement
+#: model:res.groups,name:disbursement.group_disbursement_finance_director
+msgid "Disbursement Finance Director"
+msgstr "ผอ.กองคลัง (เบิกจ่าย)"
+
+#. module: disbursement
+#: model:res.groups,name:disbursement.group_disbursement_head
+msgid "Disbursement Head"
+msgstr "หัวหน้าหน่วยงาน"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Disbursement Information"
+msgstr "ข้อมูลการเบิก"
+
+#. module: disbursement
 #: model:res.groups,name:disbursement.group_disbursement_manager
 msgid "Disbursement Manager"
 msgstr ""
@@ -318,6 +615,11 @@ msgstr ""
 #: model:res.groups,name:disbursement.group_disbursement_officer
 msgid "Disbursement Officer"
 msgstr ""
+
+#. module: disbursement
+#: model:res.groups,name:disbursement.group_disbursement_rector_delegate
+msgid "Disbursement Rector-delegated Approver"
+msgstr "ผู้ได้รับมอบอำนาจอธิการบดี (เบิกจ่าย)"
 
 #. module: disbursement
 #: model:ir.actions.report,name:disbursement.action_report_disbursement_request
@@ -338,6 +640,11 @@ msgstr "จำนวนใบขอเบิก"
 #: model:ir.model,name:disbursement.model_disbursement_request_line
 msgid "Disbursement Request Line"
 msgstr "รายการใบขอเบิก"
+
+#. module: disbursement
+#: model:ir.model,name:disbursement.model_disbursement_request_signature
+msgid "Disbursement Request Signature"
+msgstr "ลายเซ็นในใบขอเบิก"
 
 #. module: disbursement
 #: model:ir.actions.act_window,name:disbursement.action_disbursement_request
@@ -370,11 +677,36 @@ msgid ""
 msgstr ""
 
 #. module: disbursement
+#: model:mail.activity.type,name:disbursement.mail_activity_dr_await
+msgid "Disbursement returned - awaiting source correction"
+msgstr "ใบขอเบิกถูกตีกลับ - รอการแก้ไขจากต้นเรื่อง"
+
+#. module: disbursement
+#: model:mail.activity.type,name:disbursement.mail_activity_dr_reverify
+msgid "Disbursement returned - please re-verify"
+msgstr "ใบขอเบิกถูกตีกลับ - กรุณาตรวจสอบใหม่"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Disburser"
+msgstr "ชื่อคนเบิก"
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_exception_confirm__display_name
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__display_name
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__display_name
 msgid "Display Name"
 msgstr "ชื่อ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__attachment_ids
+msgid "Document Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Done"
+msgstr "เสร็จสิ้น"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_disbursement_request_page
@@ -414,6 +746,27 @@ msgid "Exceptions to resolve"
 msgstr ""
 
 #. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "File Name"
+msgstr "ชื่อไฟล์"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__finance_approve_date
+msgid "Finance Approved On"
+msgstr "ผอ.กองคลังอนุมัติเมื่อ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__finance_approver_id
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_signature__step__finance_approve
+msgid "Finance Director"
+msgstr "ผอ.กองคลัง"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_approved_search
+msgid "Finance Director Approved"
+msgstr "ผอ.กองคลังอนุมัติแล้ว"
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__account_fiscal_year_id
 msgid "Fiscal Year"
 msgstr "ปีงบประมาณ"
@@ -434,6 +787,16 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
 #. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_approved_search
+msgid "Fully Approved"
+msgstr "อนุมัติครบสองขั้น"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__fund_analytic_id
+msgid "Fund"
+msgstr "กองทุน"
+
+#. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Group By"
 msgstr "จัดกลุ่มตาม"
@@ -442,6 +805,12 @@ msgstr "จัดกลุ่มตาม"
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__has_message
 msgid "Has Message"
 msgstr ""
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Hide filters"
+msgstr "ซ่อนตัวกรอง"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_disbursement_request_page
@@ -520,7 +889,6 @@ msgstr ""
 msgid "Link to the created vendor bill"
 msgstr ""
 
-
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
 msgid "Logo"
@@ -547,6 +915,22 @@ msgid "Messages"
 msgstr ""
 
 #. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "More filters"
+msgstr "ตัวกรองเพิ่มเติม"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Multi-Partner"
+msgstr "ตามรายชื่อการเบิกจ่าย"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__partner_type__multi
+msgid "Multiple Partners"
+msgstr "ตามรายชื่อการเบิกจ่าย"
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr ""
@@ -555,6 +939,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Name"
 msgstr "ชื่อ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_net
+msgid "Net Total"
+msgstr "มูลค่าสุทธิ"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_date_deadline
@@ -570,6 +959,29 @@ msgstr ""
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_type_id
 msgid "Next Activity Type"
 msgstr ""
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "No bill linked. Create a bill first."
+msgstr "ไม่มีใบตั้งหนี้เชื่อมอยู่ กรุณาสร้างใบตั้งหนี้ก่อน"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "No requests pending your approval."
+msgstr "ไม่มีใบขอเบิกที่รอคุณอนุมัติ"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__none
+msgid "None"
+msgstr "ไม่มี"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__note
+msgid "Note"
+msgstr "หมายเหตุ"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__name
@@ -597,11 +1009,82 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Only a rejected request can be re-sent for approval."
+msgstr "ส่งขออนุมัติใหม่ได้เฉพาะใบขอเบิกที่ถูกตีกลับเท่านั้น"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Only a request awaiting approval can be rejected."
+msgstr "ตีกลับได้เฉพาะใบขอเบิกที่กำลังรออนุมัติเท่านั้น"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Only a request awaiting the Rector-delegated approval can be approved."
+msgstr "อนุมัติได้เฉพาะใบขอเบิกที่รอผู้ได้รับมอบอำนาจอธิการบดีอนุมัติเท่านั้น"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+#, python-format
+msgid "Only a request under verification (signed) can be returned."
+msgstr "ตีกลับได้เฉพาะใบที่อยู่ระหว่างหมวดตรวจ (สถานะ signed) เท่านั้น"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+#, python-format
+msgid "Only a returned request in draft can be resubmitted."
+msgstr "ส่งกลับได้เฉพาะใบที่ถูกตีกลับและอยู่สถานะ draft เท่านั้น"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+msgid "Only a verified or approved request can be returned to verification."
+msgstr ""
+"ตีกลับให้หมวดตรวจได้เฉพาะใบที่ตรวจสอบแล้ว (verified) หรืออนุมัติแล้ว "
+"(approved) เท่านั้น"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Only a verified request awaiting the Finance Director can be approved at "
+"this step."
+msgstr ""
+"อนุมัติได้เฉพาะใบขอเบิกที่ตรวจสอบแล้วและรอ ผอ.กองคลัง "
+"อนุมัติในขั้นนี้เท่านั้น"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Only approved requests can be used to create bills."
+msgstr ""
+"สามารถสร้างใบตั้งหนี้ได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"อนุมัติแล้ว\" เท่านั้น"
+
+#. module: disbursement
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
 msgid "Only draft requests can be submitted."
 msgstr "สามารถทำการ ยืนยัน คำขอเบิกจ่ายที่อยู่ในสถานะ \"ฉบับร่าง\" ได้เท่านั้น"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+msgid "Only returned documents can confirm a correction."
+msgstr "ยืนยันการแก้ไขได้เฉพาะเอกสารที่ถูกตีกลับเท่านั้น"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Only signed requests can be validated."
+msgstr "สามารถตรวจสอบได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ลงนามแล้ว\" เท่านั้น"
 
 #. module: disbursement
 #. odoo-python
@@ -614,8 +1097,28 @@ msgstr "สามารถลงนามได้เฉพาะคำขอเ
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
-msgid "Only signed requests can be validated."
-msgstr "สามารถตรวจสอบได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ลงนามแล้ว\" เท่านั้น"
+msgid "Only submitted, sent, or cancelled requests can be reset to draft."
+msgstr ""
+"สามารถกลับไปฉบับร่างได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ยืนยันแล้ว\" "
+"\"ลงนามแล้ว\" หรือ \"ยกเลิก\" เท่านั้น"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Only verified requests can be approved."
+msgstr "สามารถอนุมัติได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ตรวจสอบแล้ว\" เท่านั้น"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Open"
+msgstr "เปิด"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Other Information"
+msgstr "ข้อมูลอื่น ๆ"
 
 #. module: disbursement
 #: model:ir.actions.act_window,name:disbursement.action_disbursement_exception_confirm
@@ -629,12 +1132,97 @@ msgstr ""
 msgid "Partner"
 msgstr "คู่ค้า"
 
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Partner Information"
+msgstr "ข้อมูลคู่ค้า"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_type
+msgid "Partner Type"
+msgstr "จ่ายตาม"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_line.py:0
+#, python-format
+msgid "Partner is required on each line."
+msgstr "ต้องระบุผู้รับเงินในทุกบรรทัด"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Partners"
+msgstr "คู่ค้า"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Payee"
+msgstr "ผู้รับเงิน"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_count
+msgid "Payment Count"
+msgstr "จำนวนการจ่ายเงิน"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Payment Draft"
+msgstr "รอจ่ายเงิน"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Payment Posted"
+msgstr "จ่ายเงินแล้ว"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_type
+msgid "Payment Type"
+msgstr "วิธีการจ่ายเงิน"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Payment complete. Disbursement done."
+msgstr "จ่ายเงินครบ ใบขอเบิกเสร็จสิ้น"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_ids
+msgid "Payments"
+msgstr "การจ่ายเงิน"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__pending_finance
+msgid "Pending Finance Director"
+msgstr "รออนุมัติ ผอ.กองคลัง"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__pending_rector
+msgid "Pending Rector-delegated Approver"
+msgstr "รออนุมัติ ผู้ได้รับมอบอำนาจอธิการบดี"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__pipeline_status
+msgid "Pipeline Status"
+msgstr "สถานะการดำเนินการ"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__access_url
 msgid "Portal Access URL"
 msgstr ""
 
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__pipeline_status__pre_approval
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__pre_approval
+msgid "Pre-approval"
+msgstr "รออนุมัติ"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__prepaid
+msgid "Prepaid"
+msgstr "จ่ายล่วงหน้า"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_disbursement_request_page
@@ -652,9 +1240,41 @@ msgid "Quantity"
 msgstr "จำนวน"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_reject_wizard__reason
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_return_request_wizard__reason
+msgid "Reason"
+msgstr "เหตุผล"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_reject_wizard_form
+msgid "Reason for rejecting this approval…"
+msgstr "เหตุผลในการตีกลับการอนุมัตินี้…"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_return_request_wizard_form
+msgid "Reason for returning this request…"
+msgstr "ระบุเหตุผลที่ตีกลับใบขอเบิกนี้…"
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_bank_id
 msgid "Recipient Bank"
 msgstr "ธนาคารผู้รับ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__rector_approve_date
+msgid "Rector Approved On"
+msgstr "ผู้รับมอบอำนาจอนุมัติเมื่อ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_approved_search
+msgid "Rector-delegated Approved"
+msgstr "ผู้ได้รับมอบอำนาจอนุมัติแล้ว"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__rector_approver_id
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_signature__step__rector_approve
+msgid "Rector-delegated Approver"
+msgstr "ผู้ได้รับมอบอำนาจอธิการบดี"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__ref
@@ -668,9 +1288,47 @@ msgid "Reference Document"
 msgstr "รหัสเอกสาร"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__reference_model_name
+msgid "Reference Document Type"
+msgstr "ประเภทเอกสารอ้างอิง"
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__reference_model
 msgid "Reference Model"
 msgstr ""
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Register Payment"
+msgstr "บันทึกการจ่ายเงิน"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_reject_wizard_form
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Reject"
+msgstr "ตีกลับ"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_reject_wizard_form
+msgid "Reject Approval"
+msgstr "ตีกลับการอนุมัติ"
+
+#. module: disbursement
+#: model:ir.model,name:disbursement.model_disbursement_reject_wizard
+msgid "Reject Disbursement Approval"
+msgstr "ตีกลับการอนุมัติใบขอเบิก"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__rejected
+msgid "Rejected"
+msgstr "ถูกตีกลับ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Request Approval Again"
+msgstr "ขออนุมัติอีกครั้ง"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__line_ids
@@ -693,12 +1351,86 @@ msgstr "กลับไปสถานะร่าง"
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__user_id
 msgid "Responsible"
-msgstr "ผู้รับผิดชอบ"
+msgstr "ผู้สร้างเอกสาร"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_user_id
 msgid "Responsible User"
 msgstr "ผู้รับผิดชอบ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form_return
+msgid "Resubmit to Verification"
+msgstr "ส่งกลับหมวดตรวจ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form_return
+msgid "Return"
+msgstr "ตีกลับ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_return_request_wizard_form
+msgid "Return for Correction"
+msgstr "ตีกลับเพื่อแก้ไข"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__return_source_reason
+msgid "Return to Source Reason"
+msgstr "เหตุผลการตีกลับไปต้นเรื่อง"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form_return
+msgid "Return to Verification"
+msgstr "ตีกลับให้หมวดตรวจ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__return_verification_reason
+msgid "Return to Verification Reason"
+msgstr "เหตุผลการตีกลับให้หมวดตรวจ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__returned_for_edit
+msgid "Returned for Correction"
+msgstr "ถูกตีกลับเพื่อแก้ไข"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+msgid "Returned for correction"
+msgstr "ตีกลับเพื่อแก้ไข"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+#, python-format
+msgid "Returned for correction: %s"
+msgstr "ตีกลับเพื่อแก้ไข: %s"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__returned_to_source
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search_return
+msgid "Returned to Source"
+msgstr "ถูกตีกลับไปต้นเรื่อง"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__returned_to_verification
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search_return
+msgid "Returned to Verification"
+msgstr "ถูกตีกลับให้หมวดตรวจ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Returned to source for correction:"
+msgstr "ถูกตีกลับไปแก้ไขที่ต้นเรื่อง:"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Returned to verification:"
+msgstr "ตีกลับให้หมวดตรวจ:"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__message_has_sms_error
@@ -716,6 +1448,87 @@ msgid "Sequence"
 msgstr "ลำดับ"
 
 #. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Sign"
+msgstr "ลงนาม"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signature_image
+msgid "Signature"
+msgstr "ลายเซ็น"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_signature
+msgid "Signature (snapshot)"
+msgstr "ลายเซ็น (บันทึกไว้)"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__signature_ids
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__request_id
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Signatures"
+msgstr "ลายเซ็น"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__signed
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__signed
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Signed"
+msgstr "ลงนามแล้ว"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_by_id
+msgid "Signed By"
+msgstr "ผู้ลงนาม"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_date
+msgid "Signed On"
+msgstr "ลงนามเมื่อ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_name
+msgid "Signer Name (snapshot)"
+msgstr "ชื่อผู้ลงนาม (บันทึกไว้)"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_position_name
+msgid "Signer Position (snapshot)"
+msgstr "ตำแหน่งผู้ลงนาม (บันทึกไว้)"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__partner_type__single
+msgid "Single Partner"
+msgstr "ตามจ่ายให้"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__source_analytic_id
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Source"
+msgstr "แหล่งเงิน"
+
+#. module: disbursement
+#: model:mail.activity.type,name:disbursement.mail_activity_dr_continue
+msgid "Source corrected - continue verification"
+msgstr "ต้นเรื่องแก้ไขแล้ว - ดำเนินการตรวจสอบต่อ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+msgid ""
+"Source correction applied: payee bank, description and evidence updated. "
+"Please continue verification."
+msgstr ""
+"นำการแก้ไขจากต้นเรื่องมาใช้แล้ว: อัปเดตบัญชีธนาคารผู้รับเงิน คำอธิบาย "
+"และเอกสารหลักฐาน กรุณาดำเนินการตรวจสอบต่อ"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Sources"
+msgstr "แหล่งเงิน"
+
+#. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_my_disbursement_requests
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "State"
@@ -727,6 +1540,11 @@ msgid "Status"
 msgstr "สถานะ"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__display_status
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: disbursement
 #: model:ir.model.fields,help:disbursement.field_disbursement_request__activity_state
 msgid ""
 "Status based on activities\n"
@@ -734,6 +1552,11 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__step
+msgid "Step"
+msgstr "ขั้นตอน"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
@@ -772,6 +1595,13 @@ msgstr "ภาษี"
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
+msgid "The bill must be posted before registering a payment."
+msgstr "ต้อง post ใบตั้งหนี้ก่อนจึงจะบันทึกการจ่ายเงินได้"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
 msgid "The disbursement request '%(name)s' has been unlinked."
 msgstr ""
 
@@ -780,14 +1610,29 @@ msgstr ""
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
 msgid ""
-"The disbursement request <a href=\"%(link)s\" target=\"_blank\">'%(name)s'</"
-"a> has been linked to this record."
+"The disbursement request <a href=\"%(link)s\" "
+"target=\"_blank\">'%(name)s'</a> has been linked to this record."
 msgstr ""
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_my_disbursement_requests
 msgid "There are no disbursement requests."
 msgstr ""
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+msgid "This document cannot be returned in its current state."
+msgstr "ไม่สามารถตีกลับเอกสารนี้ในสถานะปัจจุบันได้"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+msgid ""
+"This request was returned to its source document. Please wait for the "
+"correction to be confirmed before validating."
+msgstr ""
+"ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่องแล้ว กรุณารอการยืนยันการแก้ไขก่อนตรวจสอบ"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_total
@@ -811,6 +1656,16 @@ msgid "Untaxed Amount"
 msgstr "ก่อนภาษี"
 
 #. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Upload Date"
+msgstr "วันที่อัปโหลด"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Uploaded By"
+msgstr "อัปโหลดโดย"
+
+#. module: disbursement
 #: model:ir.module.category,description:disbursement.module_category_disbursement
 msgid "User groups for managing disbursement requests"
 msgstr ""
@@ -821,13 +1676,6 @@ msgid "Validate"
 msgstr "ตรวจสอบ"
 
 #. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__verified
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__verified
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Verified"
-msgstr "ตรวจสอบแล้ว"
-
-#. module: disbursement
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__bill_id
@@ -836,10 +1684,42 @@ msgid "Vendor Bill"
 msgstr "รายการตั้งเจ้าหนี้"
 
 #. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_signature__step__verify
+msgid "Verification Officer"
+msgstr "ผู้ตรวจสอบ"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__verified
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__verified
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "Verified"
+msgstr "ตรวจสอบแล้ว"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__verifier_id
+msgid "Verified By"
+msgstr "ผู้ตรวจสอบ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__verify_date
+msgid "Verified On"
+msgstr "ตรวจสอบเมื่อ"
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__wht_tax_id
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "WHT"
 msgstr "หัก ณ ที่จ่าย"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "WHT Deduction"
+msgstr "ยอดหัก"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "WHT Item"
+msgstr "รายการ WHT"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__website_message_ids
@@ -850,6 +1730,18 @@ msgstr ""
 #: model:ir.model.fields,help:disbursement.field_disbursement_request__website_message_ids
 msgid "Website communication history"
 msgstr ""
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "error"
+msgstr "ข้อผิดพลาด"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "no reason given"
+msgstr "ไม่ระบุเหตุผล"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
@@ -891,7 +1783,6 @@ msgstr ""
 msgid "ภาษีมูลค่าเพิ่ม (VAT 7%)"
 msgstr ""
 
-
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
 msgid "รหัสงบประมาณค่าใช้จ่าย"
@@ -899,12 +1790,12 @@ msgstr ""
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
-msgid "ราคาก่อนรวมภาษีมูลค่าเพิ่ม"
+msgid "ราคา"
 msgstr ""
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
-msgid "ราคา"
+msgid "ราคาก่อนรวมภาษีมูลค่าเพิ่ม"
 msgstr ""
 
 #. module: disbursement
@@ -926,7 +1817,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
 msgid "วันที่"
 msgstr ""
-
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
@@ -959,904 +1849,18 @@ msgid "แหล่งเงิน"
 msgstr ""
 
 #. module: disbursement
+#: model:ir.actions.act_window,help:disbursement.action_disbursement_request
+msgid ""
+"ใบขอเบิกที่กำลังอยู่ในขั้นตอนการอนุมัติ (draft / submitted / signed / "
+"verified)"
+msgstr ""
+
+#. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
 msgid "ใบขอเบิกเงิน"
 msgstr ""
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_net
-msgid "Net Total"
-msgstr "มูลค่าสุทธิ"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_analytic_id
-msgid "Activity"
-msgstr "กิจกรรม"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Budget Information"
-msgstr "ข้อมูลงบประมาณ"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Approve"
-msgstr "อนุมัติ"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__approved
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__approved
-#: model:ir.actions.act_window,name:disbursement.action_disbursement_approved
-#: model:ir.ui.menu,name:disbursement.menu_disbursement_approved
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Approved"
-msgstr "อนุมัติแล้ว"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Bill Draft"
-msgstr "รอตั้งหนี้"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Bill Posted"
-msgstr "ตั้งหนี้แล้ว"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__department_analytic_id
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Department"
-msgstr "ส่วนงาน"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Disbursement Information"
-msgstr "ข้อมูลการเบิก"
-
-#. module: disbursement
-#: model:res.groups,name:disbursement.group_disbursement_head
-msgid "Disbursement Head"
-msgstr "หัวหน้าหน่วยงาน"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Done"
-msgstr "เสร็จสิ้น"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__fund_analytic_id
-msgid "Fund"
-msgstr "กองทุน"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Only approved requests can be used to create bills."
-msgstr "สามารถสร้างใบตั้งหนี้ได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"อนุมัติแล้ว\" เท่านั้น"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Only verified requests can be approved."
-msgstr "สามารถอนุมัติได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ตรวจสอบแล้ว\" เท่านั้น"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Only submitted, sent, or cancelled requests can be reset to draft."
-msgstr "สามารถกลับไปฉบับร่างได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ยืนยันแล้ว\" \"ลงนามแล้ว\" หรือ \"ยกเลิก\" เท่านั้น"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Partner Information"
-msgstr "ข้อมูลคู่ค้า"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_type
-msgid "Partner Type"
-msgstr "จ่ายตาม"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__partner_type__single
-msgid "Single Partner"
-msgstr "ตามจ่ายให้"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__partner_type__multi
-msgid "Multiple Partners"
-msgstr "ตามรายชื่อการเบิกจ่าย"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Multi-Partner"
-msgstr "ตามรายชื่อการเบิกจ่าย"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_ids
-msgid "Payments"
-msgstr "การจ่ายเงิน"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_count
-msgid "Payment Count"
-msgstr "จำนวนการจ่ายเงิน"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Payment Draft"
-msgstr "รอจ่ายเงิน"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Payment Posted"
-msgstr "จ่ายเงินแล้ว"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Payment complete. Disbursement done."
-msgstr "จ่ายเงินครบ ใบขอเบิกเสร็จสิ้น"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__reference_model_name
-msgid "Reference Document Type"
-msgstr "ประเภทเอกสารอ้างอิง"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Register Payment"
-msgstr "บันทึกการจ่ายเงิน"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Sign"
-msgstr "ลงนาม"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__signed
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__signed
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Signed"
-msgstr "ลงนามแล้ว"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__source_analytic_id
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Source"
-msgstr "แหล่งเงิน"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Other Information"
-msgstr "ข้อมูลอื่น ๆ"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Are you sure you want to approve? This will obligate and consume the budget."
-msgstr "ยืนยันการอนุมัติ? จะทำการผูกพันและตัดงบประมาณตามยอดรวมของใบขอเบิกนี้"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Cannot cancel a done or already cancelled request."
-msgstr "ไม่สามารถยกเลิกคำขอเบิกที่เสร็จสิ้นหรือยกเลิกไปแล้วได้"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Cannot cancel: the bill %s is already posted. Reverse the bill first."
-msgstr "ไม่สามารถยกเลิก: ใบตั้งหนี้ %s ถูก post แล้ว กรุณากลับรายการก่อน"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Cannot cancel: there are payments linked to bill %s. Remove payments first."
-msgstr "ไม่สามารถยกเลิก: มีการจ่ายเงินที่เชื่อมกับใบตั้งหนี้ %s อยู่ กรุณาลบการจ่ายเงินก่อน"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "No bill linked. Create a bill first."
-msgstr "ไม่มีใบตั้งหนี้เชื่อมอยู่ กรุณาสร้างใบตั้งหนี้ก่อน"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "The bill must be posted before registering a payment."
-msgstr "ต้อง post ใบตั้งหนี้ก่อนจึงจะบันทึกการจ่ายเงินได้"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__pipeline_status
-msgid "Pipeline Status"
-msgstr "สถานะการดำเนินการ"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__display_status
-msgid "Status"
-msgstr "สถานะ"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__pipeline_status__pre_approval
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__pre_approval
-msgid "Pre-approval"
-msgstr "รออนุมัติ"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__pipeline_status__approved
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__approved
-msgid "Approved"
-msgstr "อนุมัติแล้ว"
-
-#. module: disbursement
 #: model:ir.actions.act_window,help:disbursement.action_disbursement_request
 msgid "ไม่มีใบขอเบิกที่อยู่ระหว่างขออนุมัติ"
 msgstr ""
-
-#. module: disbursement
-#: model:ir.actions.act_window,help:disbursement.action_disbursement_request
-msgid "ใบขอเบิกที่กำลังอยู่ในขั้นตอนการอนุมัติ (draft / submitted / signed / verified)"
-msgstr ""
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Cannot submit a disbursement request with no lines. Please add at least one line."
-msgstr "ไม่สามารถส่งใบขอเบิกที่ไม่มีรายการได้ กรุณาเพิ่มรายการอย่างน้อย 1 รายการ"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Cannot cancel an already cancelled request."
-msgstr "ไม่สามารถยกเลิกใบขอเบิกที่ถูกยกเลิกแล้วได้"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Are you sure you want to approve? This will obligate and consume the budget."
-msgstr "ยืนยันการอนุมัติ? การอนุมัติจะตัดและใช้งบประมาณ"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Attachment for Disbursement Request"
-msgstr "เอกสารประกอบใบขอเบิก"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__attachment_ids
-msgid "Document Attachments"
-msgstr "เอกสารแนบ"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_type
-msgid "Payment Type"
-msgstr "วิธีการจ่ายเงิน"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__direct
-msgid "Direct paid"
-msgstr "จ่ายตรง"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__advance
-msgid "Advance"
-msgstr "เงินยืมทดรอง"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__prepaid
-msgid "Prepaid"
-msgstr "จ่ายล่วงหน้า"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__note
-msgid "Note"
-msgstr "หมายเหตุ"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_line.py:0
-#, python-format
-msgid "Partner is required on each line."
-msgstr "ต้องระบุผู้รับเงินในทุกบรรทัด"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form_return
-msgid "Return"
-msgstr "ตีกลับ"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_assignment.py:0
-#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_return_request_wizard_form
-msgid "Return for Correction"
-msgstr "ตีกลับเพื่อแก้ไข"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__returned_for_edit
-msgid "Returned for Correction"
-msgstr "ถูกตีกลับเพื่อแก้ไข"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_reject_wizard__reason
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_return_request_wizard__reason
-msgid "Reason"
-msgstr "เหตุผล"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_return_request_wizard_form
-msgid "Reason for returning this request…"
-msgstr "ระบุเหตุผลที่ตีกลับใบขอเบิกนี้…"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form_return
-msgid "Resubmit to Verification"
-msgstr "ส่งกลับหมวดตรวจ"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_assignment.py:0
-#, python-format
-msgid "Returned for correction: %s"
-msgstr "ตีกลับเพื่อแก้ไข: %s"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_assignment.py:0
-msgid "Returned for correction"
-msgstr "ตีกลับเพื่อแก้ไข"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_assignment.py:0
-msgid "Corrected and returned to verification."
-msgstr "แก้ไขแล้ว ส่งกลับหมวดตรวจ"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_assignment.py:0
-#, python-format
-msgid "Only a request under verification (signed) can be returned."
-msgstr "ตีกลับได้เฉพาะใบที่อยู่ระหว่างหมวดตรวจ (สถานะ signed) เท่านั้น"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_assignment.py:0
-#, python-format
-msgid "Only a returned request in draft can be resubmitted."
-msgstr "ส่งกลับได้เฉพาะใบที่ถูกตีกลับและอยู่สถานะ draft เท่านั้น"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_assignment.py:0
-#, python-format
-msgid "Cannot resubmit a disbursement request with no lines."
-msgstr "ส่งกลับไม่ได้ เพราะใบขอเบิกไม่มีรายการ"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_assignment.py:0
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form_return
-msgid "Return to Verification"
-msgstr "ตีกลับให้หมวดตรวจ"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__returned_to_verification
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search_return
-msgid "Returned to Verification"
-msgstr "ถูกตีกลับให้หมวดตรวจ"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__return_verification_reason
-msgid "Return to Verification Reason"
-msgstr "เหตุผลการตีกลับให้หมวดตรวจ"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Returned to verification:"
-msgstr "ตีกลับให้หมวดตรวจ:"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_assignment.py:0
-msgid "Only a verified or approved request can be returned to verification."
-msgstr "ตีกลับให้หมวดตรวจได้เฉพาะใบที่ตรวจสอบแล้ว (verified) หรืออนุมัติแล้ว (approved) เท่านั้น"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__returned_to_source
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search_return
-msgid "Returned to Source"
-msgstr "ถูกตีกลับไปต้นเรื่อง"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__return_source_reason
-msgid "Return to Source Reason"
-msgstr "เหตุผลการตีกลับไปต้นเรื่อง"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Returned to source for correction:"
-msgstr "ถูกตีกลับไปแก้ไขที่ต้นเรื่อง:"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_return_source_mixin__disbursement_return_note
-msgid "Correction Note"
-msgstr "หมายเหตุการแก้ไข"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_return_source_mixin__disbursement_return_bank_id
-msgid "Correction Bank Account"
-msgstr "บัญชีธนาคารที่แก้ไข"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_return_source.py:0
-msgid "This document cannot be returned in its current state."
-msgstr "ไม่สามารถตีกลับเอกสารนี้ในสถานะปัจจุบันได้"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_return_source.py:0
-msgid "Only returned documents can confirm a correction."
-msgstr "ยืนยันการแก้ไขได้เฉพาะเอกสารที่ถูกตีกลับเท่านั้น"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_return_source.py:0
-#, python-format
-msgid "Correction confirmed; disbursement %s updated."
-msgstr "ยืนยันการแก้ไขแล้ว อัปเดตใบขอเบิก %s เรียบร้อย"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_return_source.py:0
-msgid ""
-"Source correction applied: payee bank, description and evidence updated. "
-"Please continue verification."
-msgstr "นำการแก้ไขจากต้นเรื่องมาใช้แล้ว: อัปเดตบัญชีธนาคารผู้รับเงิน คำอธิบาย และเอกสารหลักฐาน กรุณาดำเนินการตรวจสอบต่อ"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_return_source.py:0
-msgid ""
-"This request was returned to its source document. Please wait for the "
-"correction to be confirmed before validating."
-msgstr "ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่องแล้ว กรุณารอการยืนยันการแก้ไขก่อนตรวจสอบ"
-
-#. module: disbursement
-#: model:mail.activity.type,name:disbursement.mail_activity_source_correct
-msgid "Correct and confirm the returned document"
-msgstr "แก้ไขและยืนยันเอกสารที่ถูกตีกลับ"
-
-#. module: disbursement
-#: model:mail.activity.type,name:disbursement.mail_activity_source_done
-msgid "Correction submitted to the disbursement officer"
-msgstr "ส่งการแก้ไขให้เจ้าหน้าที่เบิกจ่ายแล้ว"
-
-#. module: disbursement
-#: model:mail.activity.type,name:disbursement.mail_activity_dr_await
-msgid "Disbursement returned - awaiting source correction"
-msgstr "ใบขอเบิกถูกตีกลับ - รอการแก้ไขจากต้นเรื่อง"
-
-#. module: disbursement
-#: model:mail.activity.type,name:disbursement.mail_activity_dr_continue
-msgid "Source corrected - continue verification"
-msgstr "ต้นเรื่องแก้ไขแล้ว - ดำเนินการตรวจสอบต่อ"
-
-#. module: disbursement
-#: model:mail.activity.type,name:disbursement.mail_activity_dr_reverify
-msgid "Disbursement returned - please re-verify"
-msgstr "ใบขอเบิกถูกตีกลับ - กรุณาตรวจสอบใหม่"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_return_source.py:0
-#, python-format
-msgid ""
-"<p><b>Returned to source for correction</b></p>"
-"<p>This request was returned to its source document "
-"<b>%(source)s</b> by the verification officer. It stays under "
-"verification until the correction is confirmed.<br/>"
-"Reason: <b>%(reason)s</b></p>"
-msgstr ""
-"<p><b>ตีกลับไปแก้ไขที่ต้นเรื่อง</b></p>"
-"<p>ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่อง <b>%(source)s</b> "
-"โดยเจ้าหน้าที่ตรวจสอบ และยังคงอยู่ระหว่างการตรวจสอบ "
-"จนกว่าจะมีการยืนยันการแก้ไข<br/>"
-"เหตุผล: <b>%(reason)s</b></p>"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_assignment.py:0
-#, python-format
-msgid ""
-"<p><b>Returned for correction</b></p>"
-"<p>Returned to the requester and reset to draft so it can be "
-"corrected and resubmitted.<br/>Reason: <b>%s</b></p>"
-msgstr ""
-"<p><b>ตีกลับเพื่อแก้ไข</b></p>"
-"<p>ตีกลับให้ผู้ขอเบิกและเปลี่ยนสถานะกลับเป็นร่าง เพื่อแก้ไขและส่งใหม่"
-"<br/>เหตุผล: <b>%s</b></p>"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_request_assignment.py:0
-#, python-format
-msgid ""
-"<p><b>Returned to verification</b></p>"
-"<p>Returned to the verification officer for re-checking."
-"<br/>Reason: <b>%s</b></p>"
-msgstr ""
-"<p><b>ตีกลับให้หมวดตรวจ</b></p>"
-"<p>ตีกลับให้เจ้าหน้าที่ตรวจสอบเพื่อตรวจสอบใหม่"
-"<br/>เหตุผล: <b>%s</b></p>"
-
-#. module: disbursement
-#. odoo-python
-#: code:addons/disbursement/models/disbursement_return_source.py:0
-#, python-format
-msgid ""
-"<p><b>Returned for correction</b></p>"
-"<p>Disbursement <b>%(dr)s</b> was returned by the "
-"verification officer.<br/>Reason: <b>%(reason)s</b><br/>"
-"Please correct the payee bank, description or evidence, then "
-"click <b>Confirm Correction</b>.</p>"
-msgstr ""
-"<p><b>ถูกตีกลับเพื่อแก้ไข</b></p>"
-"<p>ใบขอเบิก <b>%(dr)s</b> ถูกตีกลับโดยเจ้าหน้าที่ตรวจสอบ"
-"<br/>เหตุผล: <b>%(reason)s</b><br/>"
-"กรุณาแก้ไขเลขบัญชีผู้รับเงิน คำอธิบาย หรือหลักฐาน แล้วกด "
-"<b>ยืนยันการแก้ไข</b></p>"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__approval_state
-msgid "Approval"
-msgstr "การอนุมัติ"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__none
-msgid "None"
-msgstr "ไม่มี"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__pending_finance
-msgid "Pending Finance Director"
-msgstr "รออนุมัติ ผอ.กองคลัง"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__pending_rector
-msgid "Pending Rector-delegated Approver"
-msgstr "รออนุมัติ ผู้ได้รับมอบอำนาจอธิการบดี"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__rejected
-msgid "Rejected"
-msgstr "ถูกตีกลับ"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__finance_approver_id
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_signature__step__finance_approve
-msgid "Finance Director"
-msgstr "ผอ.กองคลัง"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__finance_approve_date
-msgid "Finance Approved On"
-msgstr "ผอ.กองคลังอนุมัติเมื่อ"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__rector_approver_id
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_signature__step__rector_approve
-msgid "Rector-delegated Approver"
-msgstr "ผู้ได้รับมอบอำนาจอธิการบดี"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__rector_approve_date
-msgid "Rector Approved On"
-msgstr "ผู้รับมอบอำนาจอนุมัติเมื่อ"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__approval_reject_reason
-msgid "Approval Reject Reason"
-msgstr "เหตุผลการตีกลับการอนุมัติ"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Approve (Finance Director)"
-msgstr "อนุมัติ (ผอ.กองคลัง)"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Approve (Rector Delegate)"
-msgstr "อนุมัติ (ผู้รับมอบอำนาจ)"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Request Approval Again"
-msgstr "ขออนุมัติอีกครั้ง"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_reject_wizard_form
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Reject"
-msgstr "ตีกลับ"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Approval rejected:"
-msgstr "การอนุมัติถูกตีกลับ:"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_reject_wizard_form
-msgid "Reject Approval"
-msgstr "ตีกลับการอนุมัติ"
-
-#. module: disbursement
-#: model:ir.model,name:disbursement.model_disbursement_reject_wizard
-msgid "Reject Disbursement Approval"
-msgstr "ตีกลับการอนุมัติใบขอเบิก"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_reject_wizard_form
-msgid "Reason for rejecting this approval…"
-msgstr "เหตุผลในการตีกลับการอนุมัตินี้…"
-
-#. module: disbursement
-#: model:res.groups,name:disbursement.group_disbursement_finance_director
-msgid "Disbursement Finance Director"
-msgstr "ผอ.กองคลัง (เบิกจ่าย)"
-
-#. module: disbursement
-#: model:res.groups,name:disbursement.group_disbursement_rector_delegate
-msgid "Disbursement Rector-delegated Approver"
-msgstr "ผู้ได้รับมอบอำนาจอธิการบดี (เบิกจ่าย)"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid ""
-"Only a verified request awaiting the Finance Director can be approved at this "
-"step."
-msgstr "อนุมัติได้เฉพาะใบขอเบิกที่ตรวจสอบแล้วและรอ ผอ.กองคลัง อนุมัติในขั้นนี้เท่านั้น"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid ""
-"Only a request awaiting the Rector-delegated approval can be approved."
-msgstr "อนุมัติได้เฉพาะใบขอเบิกที่รอผู้ได้รับมอบอำนาจอธิการบดีอนุมัติเท่านั้น"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Only a request awaiting approval can be rejected."
-msgstr "ตีกลับได้เฉพาะใบขอเบิกที่กำลังรออนุมัติเท่านั้น"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Only a rejected request can be re-sent for approval."
-msgstr "ส่งขออนุมัติใหม่ได้เฉพาะใบขอเบิกที่ถูกตีกลับเท่านั้น"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "<p><b>Approval rejected</b></p><p>Reason: <b>%s</b></p>"
-msgstr "<p><b>การอนุมัติถูกตีกลับ</b></p><p>เหตุผล: <b>%s</b></p>"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "no reason given"
-msgstr "ไม่ระบุเหตุผล"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "%s request(s) approved."
-msgstr "อนุมัติแล้ว %s รายการ"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Could not approve:"
-msgstr "อนุมัติไม่ได้:"
-
-#. module: disbursement
-#: code:addons/disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "error"
-msgstr "ข้อผิดพลาด"
-
-#. module: disbursement
-#: model:ir.ui.menu,name:disbursement.menu_disbursement_approver
-msgid "Approver"
-msgstr "ผู้อนุมัติ"
-
-#. module: disbursement
-#: model:ir.actions.client,name:disbursement.action_disbursement_approval_finance
-#: model:ir.ui.menu,name:disbursement.menu_disbursement_approve_finance
-msgid "Awaiting Finance Director"
-msgstr "รอ ผอ.กองคลัง"
-
-#. module: disbursement
-#: model:ir.actions.client,name:disbursement.action_disbursement_approval_rector
-#: model:ir.ui.menu,name:disbursement.menu_disbursement_approve_rector
-msgid "Awaiting Rector Delegate"
-msgstr "รอผู้รับมอบอำนาจ"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Awaiting Finance Director approval"
-msgstr "รออนุมัติ: ผอ.กองคลัง"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Awaiting Rector-delegated approval"
-msgstr "รออนุมัติ: ผู้ได้รับมอบอำนาจอธิการบดี"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Approve Selected"
-msgstr "อนุมัติรายการที่เลือก"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "No requests pending your approval."
-msgstr "ไม่มีใบขอเบิกที่รอคุณอนุมัติ"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Actions"
-msgstr "การดำเนินการ"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Open"
-msgstr "เปิด"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Payee"
-msgstr "ผู้รับเงิน"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Date From"
-msgstr "ตั้งแต่วันที่"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Date To"
-msgstr "ถึงวันที่"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Departments"
-msgstr "ส่วนงาน"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Sources"
-msgstr "แหล่งเงิน"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Partners"
-msgstr "คู่ค้า"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "More filters"
-msgstr "ตัวกรองเพิ่มเติม"
-
-#. module: disbursement
-#. odoo-javascript
-#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
-msgid "Hide filters"
-msgstr "ซ่อนตัวกรอง"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_approved_search
-msgid "Finance Director Approved"
-msgstr "ผอ.กองคลังอนุมัติแล้ว"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_approved_search
-msgid "Rector-delegated Approved"
-msgstr "ผู้ได้รับมอบอำนาจอนุมัติแล้ว"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_approved_search
-msgid "Fully Approved"
-msgstr "อนุมัติครบสองขั้น"
-
-#. module: disbursement
-#: model:ir.model,name:disbursement.model_disbursement_request_signature
-msgid "Disbursement Request Signature"
-msgstr "ลายเซ็นในใบขอเบิก"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__verifier_id
-msgid "Verified By"
-msgstr "ผู้ตรวจสอบ"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__verify_date
-msgid "Verified On"
-msgstr "ตรวจสอบเมื่อ"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_signature__step__verify
-msgid "Verification Officer"
-msgstr "ผู้ตรวจสอบ"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__signature_ids
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__request_id
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Signatures"
-msgstr "ลายเซ็น"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__step
-msgid "Step"
-msgstr "ขั้นตอน"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_by_id
-msgid "Signed By"
-msgstr "ผู้ลงนาม"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_date
-msgid "Signed On"
-msgstr "ลงนามเมื่อ"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_name
-msgid "Signer Name (snapshot)"
-msgstr "ชื่อผู้ลงนาม (บันทึกไว้)"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_position_name
-msgid "Signer Position (snapshot)"
-msgstr "ตำแหน่งผู้ลงนาม (บันทึกไว้)"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_signature
-msgid "Signature (snapshot)"
-msgstr "ลายเซ็น (บันทึกไว้)"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__active
-msgid "Active"
-msgstr "ใช้งาน"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signature_image
-msgid "Signature"
-msgstr "ลายเซ็น"

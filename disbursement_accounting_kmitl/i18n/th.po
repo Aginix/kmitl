@@ -17,9 +17,73 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: disbursement_accounting_kmitl
-#: model:ir.model,name:disbursement_accounting_kmitl.model_account_move
-msgid "Journal Entry"
-msgstr "รายการบันทึกบัญชี"
+#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_disbursement_request__bill_count
+msgid "Bill Count"
+msgstr "จำนวนใบตั้งหนี้"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__pipeline_status__bill_draft
+#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__display_status__bill_draft
+msgid "Bill Draft"
+msgstr "ตั้งหนี้ - ฉบับร่าง"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__pipeline_status__bill_posted
+#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__display_status__bill_posted
+msgid "Bill Posted"
+msgstr "ตั้งหนี้ - ลงบัญชี"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_disbursement_request__bill_status_display
+msgid "Bill Status"
+msgstr "สถานะการตั้งหนี้"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__state__bills_posted
+#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__display_status__bills_posted
+msgid "Bills Posted"
+msgstr "ตั้งหนี้แล้ว"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_account_move__disbursement_budget_commitment_id
+msgid "Budget Commitment (DR)"
+msgstr "ใบผูกพันงบประมาณ (จาก DR)"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_account_move__disbursement_budget_consumed_amount
+msgid "Budget Consumed (from DR)"
+msgstr "มูลค่างบประมาณที่ตัดไปแล้ว (จาก DR)"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_account_move__disbursement_budget_consumed_date
+msgid "Budget Consumed Date (DR)"
+msgstr "วันที่ตัดงบ (จาก DR)"
+
+#. module: disbursement_accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_account_move_form_inherit_disbursement
+msgid "Budget Consumed from DR"
+msgstr "งบประมาณที่ตัดจาก DR"
+
+#. module: disbursement_accounting_kmitl
+#: code:addons/disbursement_accounting_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Cannot cancel: bill(s) %s already posted. Reverse the bill(s) first."
+msgstr ""
+"ไม่สามารถยกเลิกได้: ใบตั้งหนี้ %s ลงบัญชีแล้ว กรุณายกเลิกใบตั้งหนี้ก่อน"
+
+#. module: disbursement_accounting_kmitl
+#. odoo-python
+#: code:addons/disbursement_accounting_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Cannot return to verification: bill(s) %s exist. Cancel the bill(s) first."
+msgstr ""
+"ตีกลับให้หมวดตรวจไม่ได้: มีใบตั้งหนี้ %s อยู่ กรุณายกเลิกใบตั้งหนี้ก่อน"
+
+#. module: disbursement_accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_disbursement_request_form_inherit_accounting
+msgid "Create Bill"
+msgstr "สร้างใบตั้งหนี้"
 
 #. module: disbursement_accounting_kmitl
 #: model:ir.model,name:disbursement_accounting_kmitl.model_disbursement_request
@@ -42,74 +106,6 @@ msgid "Disbursement Request Number"
 msgstr "เลขที่ใบขอเบิก"
 
 #. module: disbursement_accounting_kmitl
-#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_account_move__disbursement_budget_consumed_amount
-msgid "Budget Consumed (from DR)"
-msgstr "มูลค่างบประมาณที่ตัดไปแล้ว (จาก DR)"
-
-#. module: disbursement_accounting_kmitl
-#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_account_move__disbursement_budget_consumed_date
-msgid "Budget Consumed Date (DR)"
-msgstr "วันที่ตัดงบ (จาก DR)"
-
-#. module: disbursement_accounting_kmitl
-#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_account_move__disbursement_budget_commitment_id
-msgid "Budget Commitment (DR)"
-msgstr "ใบผูกพันงบประมาณ (จาก DR)"
-
-#. module: disbursement_accounting_kmitl
-#: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_account_move_form_inherit_disbursement
-msgid "Budget Consumed from DR"
-msgstr "งบประมาณที่ตัดจาก DR"
-
-#. module: disbursement_accounting_kmitl
-#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_disbursement_request__bill_ids
-msgid "Vendor Bills"
-msgstr "ใบตั้งหนี้ผู้ขาย"
-
-#. module: disbursement_accounting_kmitl
-#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_disbursement_request__bill_count
-msgid "Bill Count"
-msgstr "จำนวนใบตั้งหนี้"
-
-#. module: disbursement_accounting_kmitl
-#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_disbursement_request__bill_draft_count
-msgid "Draft Bill Count"
-msgstr "จำนวนใบตั้งหนี้ฉบับร่าง"
-
-#. module: disbursement_accounting_kmitl
-#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_disbursement_request__bill_status_display
-msgid "Bill Status"
-msgstr "สถานะการตั้งหนี้"
-
-#. module: disbursement_accounting_kmitl
-#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__pipeline_status__bill_draft
-#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__display_status__bill_draft
-msgid "Bill Draft"
-msgstr "ตั้งหนี้ - ฉบับร่าง"
-
-#. module: disbursement_accounting_kmitl
-#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__pipeline_status__bill_posted
-#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__display_status__bill_posted
-msgid "Bill Posted"
-msgstr "ตั้งหนี้ - ลงบัญชี"
-
-#. module: disbursement_accounting_kmitl
-#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__state__bills_posted
-#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__display_status__bills_posted
-msgid "Bills Posted"
-msgstr "ตั้งหนี้ครบ"
-
-#. module: disbursement_accounting_kmitl
-#: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_disbursement_request_form_inherit_accounting
-msgid "Create Bill"
-msgstr "สร้างใบตั้งหนี้"
-
-#. module: disbursement_accounting_kmitl
-#: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_disbursement_request_form_inherit_accounting
-msgid "ใบตั้งหนี้"
-msgstr ""
-
-#. module: disbursement_accounting_kmitl
 #: model:ir.ui.menu,name:disbursement_accounting_kmitl.menu_accounting_disbursement_request
 msgid "Disbursement Requests"
 msgstr "ใบขอเบิก"
@@ -120,20 +116,20 @@ msgid "Disbursement Requests"
 msgstr "ใบขอเบิก"
 
 #. module: disbursement_accounting_kmitl
-#: model:ir.actions.act_window,help:disbursement_accounting_kmitl.action_disbursement_request_accounting
-msgid "ไม่มีใบขอเบิกที่รออนุมัติเบิก"
-msgstr ""
-
-#. module: disbursement_accounting_kmitl
-#: model:ir.actions.act_window,help:disbursement_accounting_kmitl.action_disbursement_request_accounting
-msgid "ใบขอเบิกที่ผู้อนุมัติอนุมัติแล้ว รอเจ้าหน้าที่บัญชีตั้งหนี้"
-msgstr ""
-
-#. module: disbursement_accounting_kmitl
-#: code:addons/disbursement_accounting_kmitl/models/disbursement_request.py:0
+#: code:addons/disbursement_accounting_kmitl/models/accounting_kmitl_dashboard.py:0
 #, python-format
-msgid "ตั้งหนี้แล้ว %s/%s"
-msgstr ""
+msgid "Disbursement requests awaiting billing"
+msgstr "ใบขอเบิกอนุมัติแล้ว รอตั้งหนี้"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_disbursement_request__bill_draft_count
+msgid "Draft Bill Count"
+msgstr "จำนวนใบตั้งหนี้ฉบับร่าง"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model,name:disbursement_accounting_kmitl.model_account_move
+msgid "Journal Entry"
+msgstr "รายการบันทึกบัญชี"
 
 #. module: disbursement_accounting_kmitl
 #: code:addons/disbursement_accounting_kmitl/models/disbursement_request.py:0
@@ -142,10 +138,9 @@ msgid "Only approved requests can be used to create bills."
 msgstr "เฉพาะใบขอเบิกที่อนุมัติแล้วเท่านั้นที่สามารถสร้างใบตั้งหนี้ได้"
 
 #. module: disbursement_accounting_kmitl
-#: code:addons/disbursement_accounting_kmitl/models/disbursement_request.py:0
-#, python-format
-msgid "Vendor Bill <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> has been created."
-msgstr "สร้างใบตั้งหนี้ผู้ขาย <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> เรียบร้อยแล้ว"
+#: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_disbursement_request_form_inherit_accounting
+msgid "Return to Verification"
+msgstr "ตีกลับให้หมวดตรวจ"
 
 #. module: disbursement_accounting_kmitl
 #: code:addons/disbursement_accounting_kmitl/models/disbursement_request.py:0
@@ -156,24 +151,35 @@ msgstr "ใบตั้งหนี้ผู้ขาย"
 #. module: disbursement_accounting_kmitl
 #: code:addons/disbursement_accounting_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "Cannot cancel: bill(s) %s already posted. Reverse the bill(s) first."
-msgstr "ไม่สามารถยกเลิกได้: ใบตั้งหนี้ %s ลงบัญชีแล้ว กรุณายกเลิกใบตั้งหนี้ก่อน"
+msgid ""
+"Vendor Bill <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> has been "
+"created."
+msgstr ""
+"สร้างใบตั้งหนี้ผู้ขาย <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> "
+"เรียบร้อยแล้ว"
 
 #. module: disbursement_accounting_kmitl
-#: code:addons/disbursement_accounting_kmitl/models/accounting_kmitl_dashboard.py:0
+#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_disbursement_request__bill_ids
+msgid "Vendor Bills"
+msgstr "ใบตั้งหนี้ผู้ขาย"
+
+#. module: disbursement_accounting_kmitl
+#: code:addons/disbursement_accounting_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "Disbursement requests awaiting billing"
-msgstr "ใบขอเบิกอนุมัติแล้ว รอตั้งหนี้"
+msgid "ตั้งหนี้แล้ว %s/%s"
+msgstr ""
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.actions.act_window,help:disbursement_accounting_kmitl.action_disbursement_request_accounting
+msgid "ใบขอเบิกที่ผู้อนุมัติอนุมัติแล้ว รอเจ้าหน้าที่บัญชีตั้งหนี้"
+msgstr ""
 
 #. module: disbursement_accounting_kmitl
 #: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_disbursement_request_form_inherit_accounting
-msgid "Return to Verification"
-msgstr "ตีกลับให้หมวดตรวจ"
+msgid "ใบตั้งหนี้"
+msgstr ""
 
 #. module: disbursement_accounting_kmitl
-#. odoo-python
-#: code:addons/disbursement_accounting_kmitl/models/disbursement_request.py:0
-#, python-format
-msgid ""
-"Cannot return to verification: bill(s) %s exist. Cancel the bill(s) first."
-msgstr "ตีกลับให้หมวดตรวจไม่ได้: มีใบตั้งหนี้ %s อยู่ กรุณายกเลิกใบตั้งหนี้ก่อน"
+#: model:ir.actions.act_window,help:disbursement_accounting_kmitl.action_disbursement_request_accounting
+msgid "ไม่มีใบขอเบิกที่รออนุมัติเบิก"
+msgstr ""
