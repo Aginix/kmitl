@@ -5,7 +5,7 @@
         <field name="model">sarabun.document.type</field>
         <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_type_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[@string='Bindings']/div" position="replace">
+            <xpath expr="//div[hasclass('text-muted')]" position="replace">
                 <field name="report_template_id"/>
             </xpath>
         </field>
