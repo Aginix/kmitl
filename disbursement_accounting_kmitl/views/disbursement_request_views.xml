@@ -68,15 +68,6 @@
                         <span class="o_stat_text text-muted small"><field name="bill_status_display" nolabel="1" /></span>
                     </div>
                 </button>
-                <button name="action_view_move_lines"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-list"
-                        attrs="{'invisible': [('move_line_count', '=', 0)]}">
-                    <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">รายการบัญชี <field name="move_line_count" nolabel="1" /></span>
-                    </div>
-                </button>
                 <field name="bill_draft_count" invisible="1" />
             </xpath>
         </field>

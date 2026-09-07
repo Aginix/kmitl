@@ -693,7 +693,7 @@ msgstr "กลับไปสถานะร่าง"
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__user_id
 msgid "Responsible"
-msgstr "ผู้รับผิดชอบ"
+msgstr "ผู้สร้างเอกสาร"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_user_id
