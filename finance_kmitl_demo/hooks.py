@@ -263,6 +263,15 @@ def _create_dr_pr_with_line(
     procurement_type = env.ref(case["proc_type"])
     procurement_method = env.ref("purchase_request_kmitl.procurement_specific")
 
+    # prepaid (สำรองจ่าย) requires an internal-employee partner; use the
+    # admin employee's work contact instead of the external vendor.
+    payment_type = case["payment_type"]
+    partner = (
+        admin_employee.work_contact_id
+        if payment_type == "prepaid"
+        else vendor
+    )
+
     pr = env["purchase.request"].create(
         {
             "title": case["title"],
@@ -270,9 +279,9 @@ def _create_dr_pr_with_line(
             "account_fiscal_year_id": fiscal_year.id,
             "procurement_type_id": procurement_type.id,
             "procurement_method_id": procurement_method.id,
-            "payment_type": case["payment_type"],
+            "payment_type": payment_type,
             "requested_by": admin_user.id,
-            "partner_id": vendor.id,
+            "partner_id": partner.id,
             "user_id": admin_user.id,
             "department_id": department.id,
             "operating_unit_id": operating_unit.id,
