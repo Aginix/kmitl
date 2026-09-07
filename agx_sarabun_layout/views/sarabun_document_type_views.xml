@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sarabun_document_type_form" model="ir.ui.view">
+        <field name="name">sarabun.document.type.form.layout</field>
+        <field name="model">sarabun.document.type</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_type_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@string='Bindings']/div" position="replace">
+                <field name="report_template_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

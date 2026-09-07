@@ -78,192 +78,227 @@
                             </div>
                         </div>
 
-                        <div class="my-4" />
-                        <p style="text-indent: 6em"> ตาม ใบขอซื้อขอจ้าง,PR ต้องการ<span>
-                                <span t-field="o.procurement_type_id" />
-                                <span t-out="o.product_id.name" />
-                            </span>
-                            ด้วยวิธีการ<span
-                                t-field="o.procurement_method_id"
-                            /> เลขที่ <span
-                                t-field="o.request_id"
-                            /> ลงวันที่ 3 กรกฎาคม พ.ศ. 2568
-                            ได้รับอนุมัติหลักการและงบประมาณ <span
-                                t-out="o.product_id.name"
-                            />
-                            งบประมาณ <t
-                                t-out="'{0:,.2f}'.format(o.amount_total)"
-                            /> บาท (<t
-                                t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
-                            />)
-                            นั้น </p>
-
-                        <div class="my-4" />
-
-                        <div class="row">
-                            <div class="col"> เหตุผลความจำเป็น <span
-                                    class="fw-bolder text-decoration-underline"
-                                    t-out="o.description"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col"> โดยใช้งบประมาณ ประจำปีงบประมาณ พ.ศ. <span
-                                    class="fw-bolder text-decoration-underline"
-                                    t-field="o.account_fiscal_year_id"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="my-4" />
-
-                        <table class="table table-bordered table-sm mb-4">
-                            <thead>
-                                <tr>
-                                    <th class="text-center" style="width: 8%">ลำดับ</th>
-                                    <th class="text-center">รายละเอียด</th>
-                                    <th class="text-center">จำนวน</th>
-                                    <th class="text-end">ราคา</th>
-                                    <th class="text-end">จำนวนเงิน</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-set="row_no" t-value="1" />
-                                <t t-foreach="o.line_ids" t-as="line">
-                                    <tr>
-                                        <td
-                                            class="text-center"
-                                            style="width: 8%"
-                                            t-out="row_no"
-                                        />
-                                        <td t-out="line.name" />
-                                        <td class="text-center">
-                                            <span
-                                                t-out="'{0:,.0f}'.format(line.product_qty)"
-                                            />
-                                            <span
-                                                t-out="line.uom_text or line.product_uom_id.name or ''"
-                                            />
-                                        </td>
-                                        <td
-                                            class="text-end"
-                                            t-out="'{0:,.2f}'.format(line.price_unit)"
-                                        />
-                                        <td
-                                            class="text-end"
-                                            t-out="'{0:,.2f}'.format(line.estimated_cost)"
-                                        />
-                                    </tr>
-                                    <t t-set="row_no" t-value="row_no + 1" />
-                                </t>
-                                <tr>
-                                    <td
-                                        colspan="2"
-                                        rowspan="3"
-                                        class="text-center align-middle"
-                                    > ( <t
-                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
-                                        />
-                                        ) </td>
-                                    <td class="text-center" colspan="2">
-                                        ราคาก่อนรวมภาษีมูลค่าเพิ่ม
-                                    </td>
-                                    <td
-                                        class="text-end"
-                                        t-out="'{0:,.2f}'.format(o.amount_untaxed)"
-                                    />
-                                </tr>
-                                <tr>
-                                    <td class="text-center" colspan="2">
-                                        ภาษีมูลค่าเพิ่ม (VAT 7%)
-                                    </td>
-                                    <td
-                                        class="text-end"
-                                        t-out="'{0:,.2f}'.format(o.amount_tax)"
-                                    />
-                                </tr>
-                                <tr>
-                                    <td class="text-center" colspan="2">ราคาสุทธิ</td>
-                                    <td
-                                        class="text-end"
-                                        t-out="'{0:,.2f}'.format(o.amount_total)"
-                                    />
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div class="my-4" />
-                        <p>รายละเอียดงบประมาณ</p>
-
-                        <div class="my-4" />
-                        <div class="mb-2">
-                            และพร้อมกันนี้ได้แนบเอกสารประกอบการพิจารณา ดังนี้
-                        </div>
-                        <ol>
-                            <li> บันทึกเสนอซื้อ/จ้าง (พัสดุ) <span
-                                    class="fw-bolder text-decoration-underline"
-                                >1</span> ชุด </li>
-                            <li> ใบเสนอราคาพัสดุ <span
-                                    class="fw-bolder text-decoration-underline"
-                                    t-out="len(o.request_id.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_rfq')))"
-                                />
-                                ชุด
-                            </li>
-                            <li>
-                                เอกสารคุณสมบัติ จำนวน
-                                <span
-                                    class="fw-bolder text-decoration-underline"
-                                    t-out="len(o.request_id.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_tor')))"
-                                />
-                                ชุด
-                            </li> -->
-                        </ol>
-                        <div class="my-4" />
-                        <p style="text-indent: 6em"> 1.1 ตาม อนุมัติให้จัดซื้อ <span
-                                t-field="o.product_id.name"
-                            /> จำนวน 1 รายการ เป็นเงิน <span
-                                t-out="'{0:,.2f}'.format(o.estimated_cost)"
-                            /> บาท โดยวิธี<span t-field="o.procurement_method_id" />
-                            ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา
-                            56 (2) ข้อ (ข) และกฎกระทรวง เรื่อง
-                            กำหนดวงเงินการจัดซื้อจัดจ้างพัสดุโดยวิธี<span
-                                t-field="o.procurement_method_id"
-                            />วงเงินจัดซื้อจัดจ้างที่ไม่ทำข้อตกลงเป็นหนังสือและวงเงินจัดซื้อจัดจ้างในการแต่งตั้งผู้ตรวจรับพัสดุ
-                            พ.ศ. 2560 ข้อ 1 ซึ่งอยู่ใต้อำนาจจัดซื้อจัดจ้างและบริหารพัสดุภาครัฐ พ.ศ.
-                            2560 และได้ตรวจสอบเอกสารการเงินเป็นที่เรียบร้อยแล้ว โดยขอเบิกจ่ายจาก <span
-                                t-field="o.source_analytic_id.name"
-                            /> ประจำปีพ.ศ. <span
-                                t-field="o.account_fiscal_year_id.name"
-                            />
-                        </p>
-                        <div class="my-4" />
-                        <p>จาก <span t-field="o.partner_id.name" /></p>
-                        <p>เนื่องจากเป็นผู้ประกอบการ</p>
-
-                        <ol>
-                            <li> อนุมัติให้คณะกรรมการตรวจรับพัสดุ ประกอบด้วย <ul
-                                    style="list-style-type: none; margin-left: 20px"
-                                >
-                                    <t t-set="idx" t-value="0" />
-                                    <t
-                                        t-foreach="o.work_acceptance_committee_ids"
-                                        t-as="committee"
-                                    >
-                                        <t t-set="idx" t-value="idx + 1" />
-                                        <li><t t-esc="idx" />. <t
-                                                t-esc="committee.name"
-                                            /></li>
-                                    </t>
-                                </ul>
-                            </li>
-                            <li>บันทึกชี้แจงเพิ่มเติม (ถ้ามี)</li>
-                        </ol>
+                        <t t-call="purchase_request_approval.report_purchase_request_approval_body" />
                     </div>
                 </t>
             </t>
         </t>
     </template>
+
+    <!-- Live body (บรรยาย + ตาราง) — items table + budget/committee sections.
+         Extracted so the Sarabun no-source layout can reuse it as the live
+         origin body fragment (ADR-0015), rendered between the หนังสือ's เนื้อหา
+         and its signatures. Expects `o` (a purchase.request.approval) and
+         `currency` in context. -->
+    <template id="report_purchase_request_approval_body">
+        <t t-set="currency" t-value="o.currency_id" />
+        <div class="my-4" />
+        <p style="text-indent: 6em"> ตาม ใบขอซื้อขอจ้าง,PR ต้องการ<span>
+                <span t-field="o.procurement_type_id" />
+                <span t-out="o.product_id.name" />
+            </span>
+            ด้วยวิธีการ<span
+                t-field="o.procurement_method_id"
+            /> เลขที่ <span
+                t-field="o.request_id"
+            /> ลงวันที่ 3 กรกฎาคม พ.ศ. 2568
+            ได้รับอนุมัติหลักการและงบประมาณ <span
+                t-out="o.product_id.name"
+            />
+            งบประมาณ <t
+                t-out="'{0:,.2f}'.format(o.amount_total)"
+            /> บาท (<t
+                t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
+            />)
+            นั้น </p>
+
+        <div class="my-4" />
+
+        <div class="row">
+            <div class="col"> เหตุผลความจำเป็น <span
+                    class="fw-bolder text-decoration-underline"
+                    t-out="o.description"
+                />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col"> โดยใช้งบประมาณ ประจำปีงบประมาณ พ.ศ. <span
+                    class="fw-bolder text-decoration-underline"
+                    t-field="o.account_fiscal_year_id"
+                />
+            </div>
+        </div>
+
+        <div class="my-4" />
+
+        <table class="table table-bordered table-sm mb-4">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 8%">ลำดับ</th>
+                    <th class="text-center">รายละเอียด</th>
+                    <th class="text-center">จำนวน</th>
+                    <th class="text-end">ราคา</th>
+                    <th class="text-end">จำนวนเงิน</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-set="row_no" t-value="1" />
+                <t t-foreach="o.line_ids" t-as="line">
+                    <tr>
+                        <td
+                            class="text-center"
+                            style="width: 8%"
+                            t-out="row_no"
+                        />
+                        <td t-out="line.name" />
+                        <td class="text-center">
+                            <span
+                                t-out="'{0:,.0f}'.format(line.product_qty)"
+                            />
+                            <span
+                                t-out="line.uom_text or line.product_uom_id.name or ''"
+                            />
+                        </td>
+                        <td
+                            class="text-end"
+                            t-out="'{0:,.2f}'.format(line.price_unit)"
+                        />
+                        <td
+                            class="text-end"
+                            t-out="'{0:,.2f}'.format(line.estimated_cost)"
+                        />
+                    </tr>
+                    <t t-set="row_no" t-value="row_no + 1" />
+                </t>
+                <tr>
+                    <td
+                        colspan="2"
+                        rowspan="3"
+                        class="text-center align-middle"
+                    > ( <t
+                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
+                        />
+                        ) </td>
+                    <td class="text-center" colspan="2">
+                        ราคาก่อนรวมภาษีมูลค่าเพิ่ม
+                    </td>
+                    <td
+                        class="text-end"
+                        t-out="'{0:,.2f}'.format(o.amount_untaxed)"
+                    />
+                </tr>
+                <tr>
+                    <td class="text-center" colspan="2">
+                        ภาษีมูลค่าเพิ่ม (VAT 7%)
+                    </td>
+                    <td
+                        class="text-end"
+                        t-out="'{0:,.2f}'.format(o.amount_tax)"
+                    />
+                </tr>
+                <tr>
+                    <td class="text-center" colspan="2">ราคาสุทธิ</td>
+                    <td
+                        class="text-end"
+                        t-out="'{0:,.2f}'.format(o.amount_total)"
+                    />
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="my-4" />
+        <p>รายละเอียดงบประมาณ</p>
+
+        <div class="my-4" />
+        <div class="mb-2">
+            และพร้อมกันนี้ได้แนบเอกสารประกอบการพิจารณา ดังนี้
+        </div>
+        <ol>
+            <li> บันทึกเสนอซื้อ/จ้าง (พัสดุ) <span
+                    class="fw-bolder text-decoration-underline"
+                >1</span> ชุด </li>
+            <li> ใบเสนอราคาพัสดุ <span
+                    class="fw-bolder text-decoration-underline"
+                    t-out="len(o.request_id.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_rfq')))"
+                />
+                ชุด
+            </li>
+            <li>
+                เอกสารคุณสมบัติ จำนวน
+                <span
+                    class="fw-bolder text-decoration-underline"
+                    t-out="len(o.request_id.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_tor')))"
+                />
+                ชุด
+            </li>
+        </ol>
+        <div class="my-4" />
+        <p style="text-indent: 6em"> 1.1 ตาม อนุมัติให้จัดซื้อ <span
+                t-field="o.product_id.name"
+            /> จำนวน 1 รายการ เป็นเงิน <span
+                t-out="'{0:,.2f}'.format(o.estimated_cost)"
+            /> บาท โดยวิธี<span t-field="o.procurement_method_id" />
+            ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา
+            56 (2) ข้อ (ข) และกฎกระทรวง เรื่อง
+            กำหนดวงเงินการจัดซื้อจัดจ้างพัสดุโดยวิธี<span
+                t-field="o.procurement_method_id"
+            />วงเงินจัดซื้อจัดจ้างที่ไม่ทำข้อตกลงเป็นหนังสือและวงเงินจัดซื้อจัดจ้างในการแต่งตั้งผู้ตรวจรับพัสดุ
+            พ.ศ. 2560 ข้อ 1 ซึ่งอยู่ใต้อำนาจจัดซื้อจัดจ้างและบริหารพัสดุภาครัฐ พ.ศ.
+            2560 และได้ตรวจสอบเอกสารการเงินเป็นที่เรียบร้อยแล้ว โดยขอเบิกจ่ายจาก <span
+                t-field="o.source_analytic_id.name"
+            /> ประจำปีพ.ศ. <span
+                t-field="o.account_fiscal_year_id.name"
+            />
+        </p>
+        <div class="my-4" />
+        <p>จาก <span t-field="o.partner_id.name" /></p>
+        <p>เนื่องจากเป็นผู้ประกอบการ</p>
+
+        <ol>
+            <li> อนุมัติให้คณะกรรมการตรวจรับพัสดุ ประกอบด้วย <ul
+                    style="list-style-type: none; margin-left: 20px"
+                >
+                    <t t-set="idx" t-value="0" />
+                    <t
+                        t-foreach="o.work_acceptance_committee_ids"
+                        t-as="committee"
+                    >
+                        <t t-set="idx" t-value="idx + 1" />
+                        <li><t t-esc="idx" />. <t
+                                t-esc="committee.name"
+                            /></li>
+                    </t>
+                </ul>
+            </li>
+            <li>บันทึกชี้แจงเพิ่มเติม (ถ้ามี)</li>
+        </ol>
+    </template>
+
+    <!-- ============================================================
+         พจ.1 letterhead — the e-Sarabun no-source layout, bound to
+         document_type_purchase_request_approval via report_template_id
+         (agx_sarabun_layout). Reuses the same live body fragment above.
+         ============================================================ -->
+    <template id="report_sarabun_document_purchase_request_approval">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="header_title" t-value="'บันทึกรายงานขอซื้อ/จ้าง'"/>
+                <t t-set="header_code" t-value="'พจ.1'"/>
+                <t t-call="agx_sarabun.sarabun_document_layout"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_sarabun_document_purchase_request_approval" model="ir.actions.report">
+        <field name="name">บันทึกรายงานขอซื้อ/จ้าง (พจ.1)</field>
+        <field name="model">sarabun.document</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">purchase_request_approval.report_sarabun_document_purchase_request_approval</field>
+        <field name="report_file">purchase_request_approval.report_sarabun_document_purchase_request_approval</field>
+        <field name="paperformat_id" ref="agx_sarabun.paperformat_sarabun_a4"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
 
     <template id="report_purchase_request_committee">
         <li> ขออนุมัติแต่งตั้งคณะกรรมการตรวจรับพัสดุ ดังต่อไปนี้ <ol>
