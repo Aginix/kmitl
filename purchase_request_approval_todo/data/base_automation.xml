@@ -11,7 +11,9 @@
             />
             <field name="trigger">on_create</field>
             <field name="state">code</field>
-            <field name="code"><![CDATA[
+            <field
+                name="code"
+            ><![CDATA[
 role = env.ref("purchase_user_role.purchase_role_procurement", raise_if_not_found=False)
 act_type = env.ref("purchase_request_approval_todo.mail_activity_pa_notify_procurement", raise_if_not_found=False)
 if act_type:
@@ -39,32 +41,46 @@ if act_type:
                 ref="purchase_request_approval.model_purchase_request_approval"
             />
             <field name="trigger">on_write</field>
-            <field name="trigger_field_ids" eval="[
+            <field
+                name="trigger_field_ids"
+                eval="[
                 Command.link(ref('purchase_request_approval.field_purchase_request_approval__state')),
-            ]"/>
+            ]"
+            />
             <field name="filter_pre_domain">[("state", "=", "draft")]</field>
             <field name="filter_domain">[("state", "=", "to_approve")]</field>
             <field name="state">code</field>
-            <field name="code"><![CDATA[
+            <field
+                name="code"
+            ><![CDATA[
 records.activity_feedback(["purchase_request_approval_todo.mail_activity_pa_notify_procurement"])
 ]]></field>
         </record>
 
         <!-- ข้อ 2.1 : พจ.1 draft → any → ลบ activity ข้อ 1 -->
         <record id="automation_pa_draft_any" model="base.automation">
-            <field name="name">[TODO] พจ.1 draft → รออนุมัติ: ลบแจ้งเตือนสร้าง</field>
+            <field
+                name="name"
+            >[TODO] พจ.1 draft → รออนุมัติ: ลบแจ้งเตือนสร้าง(ย้อนสถานะ)</field>
             <field
                 name="model_id"
                 ref="purchase_request_approval.model_purchase_request_approval"
             />
             <field name="trigger">on_write</field>
-            <field name="trigger_field_ids" eval="[
+            <field
+                name="trigger_field_ids"
+                eval="[
                 Command.link(ref('purchase_request_approval.field_purchase_request_approval__state')),
-            ]"/>
+            ]"
+            />
             <field name="filter_pre_domain">[("state", "=", "draft")]</field>
-            <field name="filter_domain">[("state", "not in", ["draft", "to_approve"])]</field>
+            <field
+                name="filter_domain"
+            >[("state", "not in", ["draft", "to_approve"])]</field>
             <field name="state">code</field>
-            <field name="code"><![CDATA[
+            <field
+                name="code"
+            ><![CDATA[
 records.activity_unlink(["purchase_request_approval_todo.mail_activity_pa_notify_procurement"])
 ]]></field>
         </record>
@@ -77,13 +93,18 @@ records.activity_unlink(["purchase_request_approval_todo.mail_activity_pa_notify
                 ref="purchase_request_approval.model_purchase_request_approval"
             />
             <field name="trigger">on_write</field>
-            <field name="trigger_field_ids" eval="[
+            <field
+                name="trigger_field_ids"
+                eval="[
                 Command.link(ref('purchase_request_approval.field_purchase_request_approval__state')),
-            ]"/>
+            ]"
+            />
             <field name="filter_pre_domain">[("state", "!=", "approved")]</field>
             <field name="filter_domain">[("state", "=", "approved")]</field>
             <field name="state">code</field>
-            <field name="code"><![CDATA[
+            <field
+                name="code"
+            ><![CDATA[
 role = env.ref("purchase_user_role.purchase_role_procurement", raise_if_not_found=False)
 act_type = env.ref("purchase_request_approval_todo.mail_activity_pa_acknowledgement_notify_procurement", raise_if_not_found=False)
 if act_type:
@@ -111,14 +132,19 @@ if act_type:
                 ref="purchase_request_approval.model_purchase_request_approval"
             />
             <field name="trigger">on_write</field>
-            <field name="trigger_field_ids" eval="[
+            <field
+                name="trigger_field_ids"
+                eval="[
                 Command.link(ref('purchase_request_approval.field_purchase_request_approval__state')),
-            ]"/>
+            ]"
+            />
             <field name="filter_pre_domain">[("state", "!=", "rejected")]</field>
             <field name="filter_domain">[("state", "=", "rejected")]</field>
             <field name="state">code</field>
-            <field name="code"><![CDATA[
-fyi_xmlid = "purchase_request_approval_todo.mail_activity_pr_pa_status_fyi"
+            <field
+                name="code"
+            ><![CDATA[
+fyi_xmlid = "purchase_request_approval_todo.mail_activity_pr_pa_rejected_fyi"
 fyi_type = env.ref(fyi_xmlid, raise_if_not_found=False)
 if fyi_type:
     for rec in records:
@@ -130,7 +156,7 @@ if fyi_type:
         ).unlink()
         pr.activity_schedule(
             fyi_xmlid,
-            summary="แบบรายงานขอให้จัดซื้อจัดจ้าง (พจ.1) %s ถูกปฏิเสธ" % (rec.name or ""),
+            summary="แบบรายงานขอให้จัดซื้อจัดจ้าง (พจ.1) %s ไม่ได้รับอนุมัติ (ถูกปฏิเสธ)" % (rec.name or ""),
             user_id=pr.requested_by.id,
         )
 ]]></field>
@@ -144,14 +170,19 @@ if fyi_type:
                 ref="purchase_request_approval.model_purchase_request_approval"
             />
             <field name="trigger">on_write</field>
-            <field name="trigger_field_ids" eval="[
+            <field
+                name="trigger_field_ids"
+                eval="[
                 Command.link(ref('purchase_request_approval.field_purchase_request_approval__state')),
-            ]"/>
+            ]"
+            />
             <field name="filter_pre_domain">[("state", "!=", "approved")]</field>
             <field name="filter_domain">[("state", "=", "approved")]</field>
             <field name="state">code</field>
-            <field name="code"><![CDATA[
-fyi_xmlid = "purchase_request_approval_todo.mail_activity_pr_pa_status_fyi"
+            <field
+                name="code"
+            ><![CDATA[
+fyi_xmlid = "purchase_request_approval_todo.mail_activity_pr_pa_approved_fyi"
 fyi_type = env.ref(fyi_xmlid, raise_if_not_found=False)
 if fyi_type:
     for rec in records:
