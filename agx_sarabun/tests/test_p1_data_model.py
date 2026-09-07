@@ -118,3 +118,11 @@ class TestP1DataModel(SarabunCommon):
         doc = self._make_doc(doc_type=self.doc_type_from_record, origin=origin)
         self.assertEqual(doc.origin_model, origin._name)
         self.assertEqual(doc.kind, "from_record")
+
+    def test_type_allow_manual_mirrors_the_type(self):
+        """type_allow_manual backs the form's readonly attrs, locking ประเภทเอกสาร on a
+        หนังสือ spawned with an origin-only type."""
+        origin = self.Origin.create({"name": "ต้นทางล็อกประเภท", "test_department_id": self.dept.id})
+        locked = self._make_doc(doc_type=self.doc_type_from_record, origin=origin)
+        self.assertFalse(locked.type_allow_manual)
+        self.assertTrue(self._make_doc().type_allow_manual)
