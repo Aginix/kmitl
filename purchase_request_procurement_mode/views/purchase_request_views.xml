@@ -16,7 +16,7 @@
                 />
             </field>
             <field name="partner_id" position="attributes">
-                <attribute name="attrs">{'readonly': [('is_editable', '=', False)], 'invisible': [('procurement_mode', '=', 'by_officer')]}</attribute>
+                <attribute name="attrs">{'readonly': [('is_editable', '=', False)], 'invisible': [('procurement_mode', '=', 'by_officer')], 'required': [('procurement_mode', '=', 'by_requester')]}</attribute>
             </field>
             <field name="vat_included" position="attributes">
                 <attribute name="attrs">{'readonly': [('is_vat_editable', '=', False)], 'invisible': [('procurement_mode', '=', 'by_officer')]}</attribute>

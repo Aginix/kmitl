@@ -217,12 +217,12 @@
                                     t-out="len(o.request_id.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_tor')))"
                                 />
                                 ชุด
-                            </li> -->
+                            </li>
                         </ol>
                         <div class="my-4" />
                         <p style="text-indent: 6em"> 1.1 ตาม อนุมัติให้จัดซื้อ <span
                                 t-field="o.product_id.name"
-                            /> จำนวน 1 รายการ เป็นเงิน <span
+                            /> จำนวน <t t-out="len(o.line_ids)"/> รายการ เป็นเงิน <span
                                 t-out="'{0:,.2f}'.format(o.estimated_cost)"
                             /> บาท โดยวิธี<span t-field="o.procurement_method_id" />
                             ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา
