@@ -163,7 +163,7 @@
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
                                     <field name="partner_id" required="1" />
-                                    <field name="partner_bank_id" optional="hide" />
+                                    <field name="partner_bank_id" optional="show" />
                                     <!-- Budget codes that carry their own product stamp it
                                          automatically, so the whole column is hidden and only
                                          ordinary disbursements pick a product by hand. -->
