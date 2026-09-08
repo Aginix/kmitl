@@ -312,14 +312,11 @@ class DisbursementRequest(models.Model):
                 "view_mode": "form",
                 "target": "current",
             }
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("รายการบันทึกบัญชี"),
-            "res_model": "account.move",
-            "domain": [("id", "in", moves.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "disbursement_accounting_kmitl.action_disbursement_related_moves"
+        )
+        action["domain"] = [("id", "in", moves.ids)]
+        return action
 
     def action_cancel(self):
         """Block cancel if any bill is posted; cancel draft bills first."""
