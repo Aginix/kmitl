@@ -1,0 +1,5 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_contract_user,purchase.contract user,model_purchase_contract,group_contract_revision_user,1,1,1,0
+access_purchase_contract_manager,purchase.contract manager,model_purchase_contract,group_contract_revision_manager,1,1,1,1
+access_purchase_contract_line_user,purchase.contract.line user,model_purchase_contract_line,group_contract_revision_user,1,1,1,1
+access_purchase_contract_invoice_plan_user,purchase.contract.invoice.plan user,model_purchase_contract_invoice_plan,group_contract_revision_user,1,1,1,1

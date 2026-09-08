@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_contract_revision_user" model="res.groups">
+        <field name="name">Contract Revision / User</field>
+        <field name="category_id" ref="base.module_category_operations_purchase"/>
+        <field name="implied_ids" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+    </record>
+
+    <record id="group_contract_revision_manager" model="res.groups">
+        <field name="name">Contract Revision / Manager</field>
+        <field name="category_id" ref="base.module_category_operations_purchase"/>
+        <field name="implied_ids" eval="[(4, ref('group_contract_revision_user')), (4, ref('purchase.group_purchase_manager'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+</odoo>

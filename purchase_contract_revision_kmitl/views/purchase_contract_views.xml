@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_purchase_contract" model="ir.actions.act_window">
+        <field name="name">Contract Revisions</field>
+        <field name="res_model">purchase.contract</field>
+        <field name="view_mode">tree,kanban,form</field>
+    </record>
+
+    <record id="view_purchase_contract_tree" model="ir.ui.view">
+        <field name="name">purchase.contract.tree</field>
+        <field name="model">purchase.contract</field>
+        <field name="arch" type="xml">
+            <tree string="Contract Revisions" decoration-muted="state == 'cancelled'" decoration-info="state == 'draft'">
+                <field name="purchase_id"/>
+                <field name="revision_display"/>
+                <field name="state"/>
+                <field name="amount_total" widget="monetary"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="applied_by"/>
+                <field name="applied_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_purchase_contract_kanban" model="ir.ui.view">
+        <field name="name">purchase.contract.kanban</field>
+        <field name="model">purchase.contract</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <field name="revision_display"/>
+                <field name="purchase_id"/>
+                <field name="amount_total"/>
+                <field name="currency_id"/>
+                <field name="applied_by"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <strong><field name="revision_display"/></strong>
+                                <span class="float-end"><field name="purchase_id"/></span>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <field name="amount_total" widget="monetary"/>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <field name="applied_by" widget="many2one_avatar_user"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_purchase_contract_form" model="ir.ui.view">
+        <field name="name">purchase.contract.form</field>
+        <field name="model">purchase.contract</field>
+        <field name="arch" type="xml">
+            <form string="Contract Revision">
+                <header>
+                    <button name="action_apply"
+                            type="object"
+                            string="บันทึกการแก้ไข"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"
+                            confirm="ยืนยันบันทึกการแก้ไขสัญญา? ระบบจะเขียนค่าใหม่กลับไปที่ PO ทันที"/>
+                    <button name="action_cancel"
+                            type="object"
+                            string="ยกเลิก"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,applied"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="object" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                                attrs="{'invisible': [('purchase_id', '=', False)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">PO</span>
+                                <span class="o_stat_value"><field name="purchase_id"/></span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="revision_display"/>
+                        <h1><field name="revision_display" readonly="1"/></h1>
+                    </div>
+
+                    <!-- Approval attachment gate (prominent at the top) -->
+                    <div class="alert alert-warning" role="alert"
+                         attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('approval_attachment_ids', '!=', [])]}">
+                        <strong>ต้องแนบเอกสารอนุมัติ</strong> อย่างน้อย 1 ไฟล์ก่อนบันทึกการแก้ไข
+                    </div>
+                    <group string="เอกสารอนุมัติจากภายนอก (บันทึกข้อความ / หนังสือ)">
+                        <field name="approval_attachment_ids"
+                               widget="many2many_binary"
+                               nolabel="1"
+                               attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    </group>
+
+                    <group>
+                        <group>
+                            <field name="purchase_id" readonly="1"/>
+                            <field name="revision_number" readonly="1"/>
+                            <field name="case" readonly="1"/>
+                            <field name="is_original" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="applied_by" attrs="{'invisible': [('state', '!=', 'applied')]}"/>
+                            <field name="applied_date" attrs="{'invisible': [('state', '!=', 'applied')]}"/>
+                            <field name="amount_total" widget="monetary"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="ค่าปรับและค่าควบคุมงาน">
+                            <field name="fines_rate" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="supervision_cost" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                        <group string="ระยะเวลาสัญญา">
+                            <field name="date_order_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="work_start" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="extension_days"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                   help="จำนวนวันที่ขยายเพิ่มในการแก้ครั้งนี้"/>
+                            <field name="work_end" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="รายการสินค้า" name="lines">
+                            <field name="contract_line_ids"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="product_qty"/>
+                                    <field name="product_uom" groups="uom.group_uom"/>
+                                    <field name="price_unit"/>
+                                    <field name="taxes_id" widget="many2many_tags"/>
+                                    <field name="analytic_distribution" widget="analytic_distribution" optional="show"/>
+                                    <field name="subtotal" widget="monetary"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="source_order_line_id" invisible="1"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_total" widget="monetary"/>
+                            </group>
+                        </page>
+
+                        <page string="งวดงาน" name="invoice_plan">
+                            <field name="contract_invoice_plan_ids"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}">
+                                <tree editable="bottom"
+                                      decoration-muted="is_frozen == True"
+                                      decoration-info="is_frozen == False">
+                                    <field name="installment"
+                                           attrs="{'readonly': [('is_frozen', '=', True)]}"/>
+                                    <field name="duration_days"
+                                           attrs="{'readonly': [('is_frozen', '=', True)]}"/>
+                                    <field name="plan_date"
+                                           attrs="{'readonly': [('is_frozen', '=', True)]}"/>
+                                    <field name="amount"
+                                           attrs="{'readonly': [('is_frozen', '=', True)]}"
+                                           widget="monetary"/>
+                                    <field name="percent"
+                                           attrs="{'readonly': [('is_frozen', '=', True)]}"/>
+                                    <field name="is_frozen"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="source_invoice_plan_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="กรรมการตรวจรับ / ผู้ควบคุมงาน" name="committees">
+                            <group>
+                                <group string="กรรมการตรวจรับ">
+                                    <field name="work_acceptance_committee_ids"
+                                           widget="many2many_tags"
+                                           nolabel="1"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                </group>
+                                <group string="ผู้ควบคุมงาน">
+                                    <field name="work_supervisor_ids"
+                                           widget="many2many_tags"
+                                           nolabel="1"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                </group>
+                            </group>
+                            <div class="text-muted">
+                                <em>หมายเหตุ: ในเวอร์ชันนี้ committee snapshot บน revision เป็นข้อมูลบันทึกสำหรับ audit
+                                — การ sync กลับไปยัง PO's procurement.committee records ยังไม่ได้เชื่อม (TODO)</em>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_purchase_contract_search" model="ir.ui.view">
+        <field name="name">purchase.contract.search</field>
+        <field name="model">purchase.contract</field>
+        <field name="arch" type="xml">
+            <search string="Contract Revisions">
+                <field name="purchase_id"/>
+                <field name="revision_number"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="applied" string="Applied" domain="[('state', '=', 'applied')]"/>
+                <filter name="cancelled" string="Cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter name="original" string="ต้นฉบับเท่านั้น" domain="[('is_original', '=', True)]"/>
+                <filter name="amendments" string="เฉพาะแก้ไข" domain="[('is_original', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_po" string="Purchase Order" context="{'group_by': 'purchase_id'}"/>
+                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

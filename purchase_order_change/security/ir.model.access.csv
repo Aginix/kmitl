@@ -1,5 +1,0 @@
-id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_purchase_order_change_manager,purchase_order_change_manager,model_purchase_order_change,,1,1,1,1
-access_purchase_order_change_field_manager,purchase_order_change_field_manager,model_purchase_order_change_field,,1,1,1,1
-access_purchase_change_section_manager,purchase_change_section_manager,model_purchase_change_section,,1,1,1,1
-access_purchase_order_change_wizard_manager,purchase_order_change_wizard_manager,model_purchase_order_change_wizard,,1,1,1,1

@@ -126,6 +126,12 @@ upfront.
   a Receipt Remittance (รายงานนำส่งคลัง) that treasury posts, generating one journal
   entry per receipt with a Remit to Treasury (นำเงินส่งคลัง) leg into the payment
   method's deposit account, alongside the 6D dimensions on every line.
+- [Purchase Contract Revision](./purchase_contract_revision_kmitl/CONTEXT.md) — PO
+  amendment flow as first-class ``purchase.contract`` revision records (N per PO;
+  Rev 0 auto at confirm, Rev N user-initiated). Each revision is a full snapshot of
+  header + lines + งวด + committee; approval happens outside the ERP and enters the
+  record as a required file attachment. Fully replaces the removed
+  ``purchase_order_change`` + ``purchase_order_change_committee`` modules.
 
 ## Relationships
 
