@@ -60,15 +60,6 @@
                  to live here alongside it; it is now folded into the unified
                  "รายการบัญชี" button in disbursement_finance_kmitl. -->
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_view_move_lines"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-list"
-                        attrs="{'invisible': [('move_line_count', '=', 0)]}">
-                    <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">รายการบัญชี <field name="move_line_count" nolabel="1" /></span>
-                    </div>
-                </button>
                 <button name="action_view_related_moves"
                         type="object"
                         class="oe_stat_button"

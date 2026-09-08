@@ -150,7 +150,7 @@
                 <field name="billing_status" optional="show" />
             </xpath>
 
-            <xpath expr="//field[@name='requested_by']" position="after">
+            <xpath expr="//field[@name='department_id']" position="after">
                 <field name="display_purchase_order" optional="show" />
             </xpath>
         </field>

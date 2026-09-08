@@ -132,6 +132,14 @@ class AccountPayment(models.Model):
         "imported into Odoo, so what the system acts on is the finance office's "
         "assertion in Finance Status, and this is one more note beside it.",
     )
+    # What the smart button shows. A Char and not the Many2one itself, for the
+    # same reason as disbursement_request_name in disbursement_finance_kmitl:
+    # Odoo 16 has no read mode, so an editable Many2one in a stat button draws
+    # an input box to type in instead of the value.
+    payment_export_name = fields.Char(
+        related="payment_export_id.name",
+        string="e-Payment File Number",
+    )
     is_cheque_payment = fields.Boolean(
         compute="_compute_settlement",
         help="Read from the paying account's own method, so it cannot disagree "
@@ -775,6 +783,18 @@ class AccountPayment(models.Model):
             action["view_mode"] = "tree,form"
         return action
 
+    def action_view_payment_export(self):
+        """Open the e-Payment file this voucher travelled out to the bank in."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("e-Payment File"),
+            "res_model": "bank.payment.export",
+            "res_id": self.payment_export_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
     def _reconcile_source_invoice_lines(self):
         """Reconcile payment lines with stored source invoice lines."""
         domain = [
@@ -955,7 +975,9 @@ class AccountPayment(models.Model):
         self.ensure_one()
         accounts = (
             self.env["account.analytic.account"]
-            .browse(int(account_id) for account_id in (self.analytic_distribution or {}))
+            .browse(
+                int(account_id) for account_id in (self.analytic_distribution or {})
+            )
             .exists()
         )
         return {account.root_plan_id.code: account for account in accounts}

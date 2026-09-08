@@ -29,6 +29,13 @@
             <field name="target_mode">position</field>
             <field name="position_id" ref="position_pa_approver"/>
         </record>
+
+        <record id="document_type_purchase_request_approval" model="sarabun.document.type">
+            <field name="name">บันทึกรายงานขอซื้อ/จ้าง (พจ.1)</field>
+            <field name="kind">from_record</field>
+            <field name="default_route_id" ref="route_template_purchase_request_approval"/>
+            <field name="report_template_id" ref="action_report_sarabun_document_purchase_request_approval"/>
+        </record>
     </data>
 
 </odoo>

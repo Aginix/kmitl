@@ -1599,9 +1599,17 @@ msgid "an e-payment file"
 msgstr "ไฟล์ e-Payment"
 
 #. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_payment.py:0
 #: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_confirm__payment_export_id
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+#, python-format
 msgid "e-Payment File"
 msgstr "ไฟล์ e-Payment"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__payment_export_name
+msgid "e-Payment File Number"
+msgstr "เลขที่ไฟล์ e-Payment"
 
 #. module: finance_kmitl
 #: code:addons/finance_kmitl/models/bank_payment_export.py:0

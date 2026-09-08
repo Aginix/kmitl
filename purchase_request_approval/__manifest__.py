@@ -1,6 +1,6 @@
 {
     "name": "Purchase Request Approval",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
@@ -12,11 +12,11 @@
         "thai_date_utils",
         "portal",
         "purchase_request_egp",
+        "agx_sarabun_layout",
     ],
     "data": [
         "data/purchase_request_approval_sequence.xml",
         "data/activity.xml",
-        "data/sarabun_route_template_data.xml",
         "security/ir.model.access.csv",
         "security/purchase_request_approval.xml",
         "report/paperformat.xml",
@@ -31,6 +31,7 @@
         "views/purchase_request_views.xml",
         "report/report_purchase_request_approval.xml",
         "report/report_material_withdrawal.xml",
+        "data/sarabun_route_template_data.xml",
     ],
     "assets": {
         "web.assets_backend": ["purchase_request_approval/static/src/**/*"],

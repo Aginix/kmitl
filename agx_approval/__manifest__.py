@@ -28,6 +28,8 @@
         "views/approval_category_views.xml",
         "views/approval_category_group_views.xml",
         "views/approval_request_views.xml",
+        "views/res_partner_views.xml",
+        "views/hr_employee_views.xml",
         "views/approval_menus.xml",
         "data/approval_sequence.xml",
         "data/approval_category_group.xml",
