@@ -1,0 +1,14 @@
+.o_finance_kmitl_report {
+    .o_finance_report_table {
+        font-size: 0.875rem;
+
+        th,
+        td {
+            white-space: nowrap;
+        }
+
+        tbody tr.cursor-pointer {
+            cursor: pointer;
+        }
+    }
+}

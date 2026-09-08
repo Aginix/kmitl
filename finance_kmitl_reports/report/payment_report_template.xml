@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!--
+        One layout for both รายงานฝั่งรายจ่าย. They are the same shape — a
+        filter header, a table of documents folded into one or two levels of
+        totalled bands, and a grand total — and the columns come from the
+        report model, so the only thing that differs is the title. Two copies
+        would have been two places to fix a page break.
+    -->
+    <template id="finance_report_layout">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <style>
+                  * {
+                    font-family: "THSarabun", Arial, sans-serif;
+                  }
+                  h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+                    margin-bottom: 0;
+                  }
+                  table.kmitl-finance-report {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 11pt;
+                  }
+                  table.kmitl-finance-report th,
+                  table.kmitl-finance-report td {
+                    border: 1px solid #000;
+                    padding: 2px 4px;
+                  }
+                  table.kmitl-finance-report thead th {
+                    background-color: #f0f0f0;
+                    text-align: center;
+                    font-weight: bold;
+                  }
+                  table.kmitl-finance-report td.text-right,
+                  table.kmitl-finance-report th.text-right {
+                    text-align: right;
+                  }
+                  table.kmitl-finance-report tr.group-row td {
+                    font-weight: bold;
+                    background-color: #ededed;
+                  }
+                  table.kmitl-finance-report tr.subgroup-row td {
+                    font-weight: bold;
+                    background-color: #f7f7f7;
+                  }
+                  table.kmitl-finance-report tfoot td {
+                    font-weight: bold;
+                    background-color: #f0f0f0;
+                  }
+                </style>
+
+                <div>
+                    <div>
+                        <img
+                            t-if="company.logo"
+                            t-att-src="image_data_uri(company.logo)"
+                            style="max-height: 60px; max-width: 60px;"
+                            alt="Logo"
+                        />
+                    </div>
+                    <div>
+                        <h4 t-out="company.display_name" />
+                        <h5 t-out="report_title" />
+                    </div>
+                </div>
+
+                <div class="footer" style="text-align: right; font-size: 11pt;">
+                    <span class="page" />/<span class="topage" />
+                </div>
+
+                <div class="article">
+                    <div style="text-align: left; font-size: 11pt; margin-bottom: 6px;">
+                        <div t-foreach="filter_lines" t-as="line" t-out="line" />
+                    </div>
+
+                    <table class="kmitl-finance-report">
+                        <thead style="display: table-header-group;">
+                            <tr>
+                                <t t-foreach="columns" t-as="column">
+                                    <th
+                                        t-att-class="'text-right' if column[2] else ''"
+                                        t-out="column[1]"
+                                    />
+                                </t>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="groups" t-as="group">
+                                <tr class="group-row">
+                                    <t t-foreach="columns" t-as="column">
+                                        <td
+                                            t-if="column_index == 0"
+                                            t-out="group['label']"
+                                        />
+                                        <td
+                                            t-elif="column[0] == total_key"
+                                            class="text-right"
+                                            t-out="format_amount(group['total'])"
+                                        />
+                                        <td t-else="" />
+                                    </t>
+                                </tr>
+                                <t t-call="finance_kmitl_reports.finance_report_rows">
+                                    <t t-set="rows" t-value="group['rows']" />
+                                </t>
+                                <t t-foreach="group['subgroups']" t-as="subgroup">
+                                    <tr class="subgroup-row">
+                                        <t t-foreach="columns" t-as="column">
+                                            <td
+                                                t-if="column_index == 0"
+                                                t-out="subgroup['label']"
+                                            />
+                                            <td
+                                                t-elif="column[0] == total_key"
+                                                class="text-right"
+                                                t-out="format_amount(subgroup['total'])"
+                                            />
+                                            <td t-else="" />
+                                        </t>
+                                    </tr>
+                                    <t
+                                        t-call="finance_kmitl_reports.finance_report_rows"
+                                    >
+                                        <t t-set="rows" t-value="subgroup['rows']" />
+                                    </t>
+                                </t>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <t t-foreach="columns" t-as="column">
+                                    <td t-if="column_index == 0">Grand Total</td>
+                                    <td
+                                        t-elif="column[0] == total_key"
+                                        class="text-right"
+                                        t-out="format_amount(grand_total)"
+                                    />
+                                    <td t-else="" />
+                                </t>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <div
+                        t-if="report_note"
+                        style="margin-top: 8px; font-size: 10pt;"
+                        t-out="report_note"
+                    />
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- The detail rows of one band. Called twice above (once for a group with
+         no second level, once per subgroup) so the cell rules live in one
+         place. -->
+    <template id="finance_report_rows">
+        <t t-foreach="rows" t-as="row">
+            <tr>
+                <t t-foreach="columns" t-as="column">
+                    <td
+                        t-if="column[2]"
+                        class="text-right"
+                        t-out="format_amount(row[column[0]])"
+                    />
+                    <td t-else="" t-out="row[column[0]]" />
+                </t>
+            </tr>
+        </t>
+    </template>
+
+    <template id="payment_report_pdf">
+        <t t-call="finance_kmitl_reports.finance_report_layout">
+            <t t-set="report_title">Payment Report</t>
+            <t t-set="total_key" t-value="'amount'" />
+        </t>
+    </template>
+
+</odoo>

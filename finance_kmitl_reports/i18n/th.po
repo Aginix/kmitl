@@ -1,0 +1,411 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* finance_kmitl_reports
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-08 00:00+0000\n"
+"PO-Revision-Date: 2026-09-08 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/report_base.py:0
+#, python-format
+msgid "%(title)s: %(date_from)s – %(date_to)s"
+msgstr ""
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#, python-format
+msgid ""
+"A voucher settled by cheque is counted on the date written on the cheque, "
+"not on the day the cheque was handed over — the same date the withholding-"
+"tax certificate is issued from."
+msgstr ""
+"ใบสำคัญจ่ายที่จ่ายด้วยเช็ค นับตามวันที่บนเช็ค ไม่ใช่วันที่มอบเช็คให้ผู้รับ "
+"ซึ่งเป็นวันเดียวกับที่ใช้ออกหนังสือรับรองการหักภาษี ณ ที่จ่าย"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/report_base.py:0
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Activities"
+msgstr "ด้าน/แผนงาน/กิจกรรม"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#, python-format
+msgid "Actual Payment Date"
+msgstr "วันที่จ่ายจริง"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#, python-format
+msgid "Amount Due"
+msgstr "ยอดคงเหลือ"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#, python-format
+msgid ""
+"Amount Due is what is left of the bill, so a partly-paid bill is carried at "
+"its remaining balance. Days Overdue is counted from today."
+msgstr ""
+"ยอดคงเหลือคือส่วนที่ยังค้างของใบแจ้งหนี้ "
+"ใบที่จ่ายไปบางส่วนจึงแสดงเฉพาะยอดที่เหลือ "
+"และจำนวนวันที่เกินกำหนดนับจากวันนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#, python-format
+msgid "Bill Amount"
+msgstr "จำนวนเงินตามใบแจ้งหนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#, python-format
+msgid "Bill Date"
+msgstr "วันที่ใบแจ้งหนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#, python-format
+msgid "Bill No."
+msgstr "เลขที่ใบแจ้งหนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#, python-format
+msgid "Days Overdue"
+msgstr "เกินกำหนด (วัน)"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/report_base.py:0
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Departments"
+msgstr "ส่วนงาน"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#, python-format
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#, python-format
+msgid "Due Date"
+msgstr "วันครบกำหนด"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Due From"
+msgstr "ครบกำหนดตั้งแต่"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Due To"
+msgstr "ถึงวันที่"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#, python-format
+msgid "Due on or before %s, including everything already overdue"
+msgstr "ครบกำหนดภายในวันที่ %s รวมรายการที่เกินกำหนดแล้วทั้งหมด"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Export Excel"
+msgstr "ส่งออก Excel"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/report_base.py:0
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Funds"
+msgstr "กองทุน"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_reports.finance_report_layout
+#, python-format
+msgid "Grand Total"
+msgstr "รวมทั้งสิ้น"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Group By"
+msgstr "จัดกลุ่มตาม"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#, python-format
+msgid "Grouped by: %s"
+msgstr "จัดกลุ่มตาม: %s"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Include already overdue"
+msgstr "รวมรายการที่เกินกำหนดแล้ว"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#, python-format
+msgid "Net Amount Paid"
+msgstr "จำนวนเงินจ่ายสุทธิ"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#, python-format
+msgid "No payments for the selected criteria."
+msgstr "ไม่มีการจ่ายเงินตามเงื่อนไขที่เลือก"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "None"
+msgstr "ไม่มี"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Nothing falls due in the selected criteria."
+msgstr "ไม่มีรายการถึงกำหนดชำระตามเงื่อนไขที่เลือก"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#, python-format
+msgid "Operation Type"
+msgstr "ประเภทธุรกรรม"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#, python-format
+msgid "Paid From"
+msgstr "จ่ายจริงตั้งแต่"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#, python-format
+msgid "Paid To"
+msgstr "ถึงวันที่"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Partner Type"
+msgstr "ประเภทคู่ค้า"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#, python-format
+msgid "Payables Due"
+msgstr "เจ้าหนี้ถึงกำหนดชำระ"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: model:ir.actions.client,name:finance_kmitl_reports.action_payable_due_report
+#: model:ir.ui.menu,name:finance_kmitl_reports.menu_payable_due_report
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_reports.payable_due_report_pdf
+#, python-format
+msgid "Payables Due Report"
+msgstr "รายงานเจ้าหนี้ถึงกำหนดชำระ"
+
+#. module: finance_kmitl_reports
+#: model:ir.actions.report,name:finance_kmitl_reports.action_report_payable_due_pdf
+msgid "Payables Due Report (PDF)"
+msgstr "รายงานเจ้าหนี้ถึงกำหนดชำระ (PDF)"
+
+#. module: finance_kmitl_reports
+#: model:ir.actions.report,name:finance_kmitl_reports.action_report_payable_due_xlsx
+msgid "Payables Due Report (XLSX)"
+msgstr "รายงานเจ้าหนี้ถึงกำหนดชำระ (XLSX)"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#, python-format
+msgid "Payee"
+msgstr "ผู้รับเงิน"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#, python-format
+msgid "Payee Type"
+msgstr "ประเภทผู้รับเงิน"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#, python-format
+msgid "Paying Account"
+msgstr "หัวจ่าย"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#, python-format
+msgid "Payment Method"
+msgstr "วิธีจ่าย"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#, python-format
+msgid "Payment Reference"
+msgstr "อ้างอิงการจ่าย"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: model:ir.actions.client,name:finance_kmitl_reports.action_payment_report
+#: model:ir.ui.menu,name:finance_kmitl_reports.menu_payment_report
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_reports.payment_report_pdf
+#, python-format
+msgid "Payment Report"
+msgstr "รายงานการจ่ายเงิน"
+
+#. module: finance_kmitl_reports
+#: model:ir.actions.report,name:finance_kmitl_reports.action_report_payment_pdf
+msgid "Payment Report (PDF)"
+msgstr "รายงานการจ่ายเงิน (PDF)"
+
+#. module: finance_kmitl_reports
+#: model:ir.actions.report,name:finance_kmitl_reports.action_report_payment_xlsx
+msgid "Payment Report (XLSX)"
+msgstr "รายงานการจ่ายเงิน (XLSX)"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#, python-format
+msgid "Payment Subject"
+msgstr "เรื่องที่จ่าย"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Print"
+msgstr "พิมพ์"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/report_base.py:0
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Sources"
+msgstr "แหล่งเงิน"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Then By"
+msgstr "แล้วตาม"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Vendor"
+msgstr "เจ้าหนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#, python-format
+msgid "Vendor Reference"
+msgstr "เลขที่อ้างอิงผู้ขาย"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#, python-format
+msgid "Voucher No."
+msgstr "เลขที่ใบสำคัญจ่าย"
