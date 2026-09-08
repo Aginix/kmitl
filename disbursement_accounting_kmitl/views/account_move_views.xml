@@ -59,7 +59,7 @@
         <field name="arch" type="xml">
             <xpath expr="//search" position="inside">
                 <searchpanel>
-                    <field name="journal_id" select="one" icon="fa-book"/>
+                    <field name="journal_id" select="one" icon="fa-book" string="ประเภทใบสำคัญ" />
                 </searchpanel>
             </xpath>
         </field>
