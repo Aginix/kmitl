@@ -19,6 +19,17 @@
                         t-set="dim_cols"
                         t-value="[d for d in dim_labels if d[0] in dim_data['plans']]"
                     />
+                    <!-- The dimension columns share what the five fixed ones
+                         leave. Worked out once here, and handed to ``t-attf``
+                         rather than formatted inside a ``t-att`` expression: a
+                         ``%%`` escape does not survive QWeb's compilation to
+                         Python, so ``'width: %.2f%%' % x`` reaches runtime one
+                         per-cent sign short and raises "incomplete format".
+                         ``t-attf`` escapes the literal sign itself. -->
+                    <t
+                        t-set="dim_width"
+                        t-value="dim_cols and round(49.0 / len(dim_cols), 2)"
+                    />
 
                     <style>
                         * {
@@ -156,7 +167,7 @@
                                         class="text-center"
                                         t-foreach="dim_cols"
                                         t-as="dim"
-                                        t-att-style="'width: %.2f%%' % (49.0 / len(dim_cols))"
+                                        t-attf-style="width: #{dim_width}%"
                                         t-out="dim[1]"
                                     />
                                     <th
