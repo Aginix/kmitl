@@ -146,3 +146,47 @@ class BankPaymentExportLine(models.Model):
 
     def action_mark_epayment_failed(self):
         self._apply_epayment_result("failed")
+
+    # -------------------------------------------------------------------------
+    # The printed รายงานการเบิกจ่าย
+    # -------------------------------------------------------------------------
+    def _report_dimensions(self):
+        """Financial dimensions of these rows, and which columns are worth printing.
+
+        Returns ``{"plans": {plan_code, ...}, "lines": {line_id: {plan_code: account}}}``
+        — the dimensions at least one row carries, and each row's account per
+        dimension. A dimension no row on the file uses gets no column: on a
+        landscape sheet already carrying eleven, an empty one costs the ten that
+        say something.
+
+        Read off ``analytic_distribution`` rather than the convenience
+        ``*_analytic_id`` fields, for the same two reasons
+        ``account.payment._voucher_dimensions`` does: that JSON is the source of
+        truth, and the project and procurement-plan dimensions are added by
+        modules this one does not depend on. Grouped by the *root* plan so a
+        sub-account still answers for its dimension. Browsed in one go — a file of
+        500 payees would otherwise be 3000 reads.
+        """
+        distributions = {
+            line.id: line.payment_id.analytic_distribution or {} for line in self
+        }
+        accounts = (
+            self.env["account.analytic.account"]
+            .browse(
+                {int(account_id) for d in distributions.values() for account_id in d}
+            )
+            .exists()
+        )
+        by_id = {account.id: account for account in accounts}
+        by_line = {
+            line_id: {
+                by_id[int(account_id)].root_plan_id.code: by_id[int(account_id)]
+                for account_id in distribution
+                if int(account_id) in by_id
+            }
+            for line_id, distribution in distributions.items()
+        }
+        return {
+            "plans": {code for dims in by_line.values() for code in dims},
+            "lines": by_line,
+        }
