@@ -308,22 +308,27 @@
                     name="payment_execution"
                     attrs="{'invisible': [('state', 'in', ('draft', 'submitted', 'signed', 'verified', 'approved'))]}"
                 >
+                    <!-- The subject is editable only while the auditor holds the
+                         request. It is not marked required here: the field is
+                         empty for every request that arrives at bills_posted, and
+                         a view-level required blocks the smart buttons the auditor
+                         needs to review the request's other documents first
+                         (form save runs on every object button, dirty or not).
+                         _check_payment_classification is the real gate — it
+                         refuses to audit without a subject — so the alert below
+                         carries the reminder instead. -->
+                    <div class="alert alert-warning mb-2" role="alert"
+                         attrs="{'invisible': ['|', ('state', '!=', 'bills_posted'),
+                                                     ('payment_subject_id', '!=', False)]}">
+                        <i class="fa fa-exclamation-triangle me-1" />
+                        <span>Choose the payment subject before auditing: it is what decides which account each payee is paid from.</span>
+                    </div>
                     <group>
                         <group>
-                            <!-- Required exactly while the auditor holds it: the
-                                 request arrives at bills_posted without one (the
-                                 accounting bridge writes that state), and this is
-                                 the step whose job is to decide where the money
-                                 comes from. The audit action refuses to move on
-                                 without it either — that is what the batch queue
-                                 hits, which never opens this form. -->
                             <field
                                 name="payment_subject_id"
                                 options="{'no_create': True}"
-                                attrs="{
-                                    'readonly': [('state', '!=', 'bills_posted')],
-                                    'required': [('state', '=', 'bills_posted')]
-                                }"
+                                attrs="{'readonly': [('state', '!=', 'bills_posted')]}"
                             />
                             <field name="payment_auto_match" readonly="1" />
                         </group>
