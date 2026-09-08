@@ -6,6 +6,30 @@
                 <t t-call="web.basic_layout">
                     <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
                     <t t-set="currency" t-value="o.currency_id" />
+                    <t
+                        t-set="lines"
+                        t-value="o.export_line_ids.filtered(lambda l: l.state != 'reject')"
+                    />
+                    <t t-set="dim_data" t-value="lines._report_dimensions()" />
+                    <t
+                        t-set="dim_labels"
+                        t-value="[('departments', 'ส่วนงาน'), ('sources', 'แหล่งเงิน'), ('funds', 'กองทุน'), ('activities', 'ด้าน/แผนงาน/กิจกรรม'), ('kmitl_project', 'โครงการ/กิจกรรม'), ('procurement_plan', 'แผนจัดซื้อจัดจ้าง')]"
+                    />
+                    <t
+                        t-set="dim_cols"
+                        t-value="[d for d in dim_labels if d[0] in dim_data['plans']]"
+                    />
+                    <!-- The dimension columns share what the five fixed ones
+                         leave. Worked out once here, and handed to ``t-attf``
+                         rather than formatted inside a ``t-att`` expression: a
+                         ``%%`` escape does not survive QWeb's compilation to
+                         Python, so ``'width: %.2f%%' % x`` reaches runtime one
+                         per-cent sign short and raises "incomplete format".
+                         ``t-attf`` escapes the literal sign itself. -->
+                    <t
+                        t-set="dim_width"
+                        t-value="dim_cols and round(49.0 / len(dim_cols), 2)"
+                    />
 
                     <style>
                         * {
@@ -17,6 +41,17 @@
                         div {
                         font-size: 16pt;
                         line-height: 1.2;
+                        }
+                        table.bpe-lines,
+                        table.bpe-lines th,
+                        table.bpe-lines td,
+                        table.bpe-lines span,
+                        table.bpe-lines div {
+                        font-size: 12pt;
+                        }
+                        table.bpe-lines th,
+                        table.bpe-lines td {
+                        word-break: break-word;
                         }
                     </style>
 
@@ -48,7 +83,7 @@
 
                         <!-- Document Information -->
                         <div class="row pt-8">
-                            <div class="col-8">
+                            <div class="col-4">
                                 เลขที่ <span class="ms-2 fw-normal" t-out="o.name" />
                             </div>
                             <div class="col">
@@ -105,32 +140,45 @@
 
                         <div class="row" t-if="o.epayment_note">
                             <div class="col">
-                                หมายเหตุ <span
-                                    class="ms-2"
-                                    t-out="o.epayment_note"
-                                />
+                                หมายเหตุ <span class="ms-2" t-out="o.epayment_note" />
                             </div>
                         </div>
 
                         <div class="my-4" />
 
                         <!-- Line Items Table -->
-                        <table class="table table-bordered table-sm mb-4">
+                        <table class="table table-bordered table-sm mb-4 bpe-lines">
                             <thead>
                                 <tr>
-                                    <th class="text-center" style="width: 6%">ลำดับ</th>
-                                    <th class="text-center">เลขที่รายการ</th>
-                                    <th class="text-center">ผู้รับเงิน</th>
-                                    <th class="text-center">ธนาคาร/เลขที่บัญชี</th>
-                                    <th class="text-end">จำนวนเงิน</th>
+                                    <th class="text-center" style="width: 4%">ลำดับ</th>
+                                    <th
+                                        class="text-center"
+                                        style="width: 10%"
+                                    >เลขที่รายการ</th>
+                                    <th
+                                        class="text-center"
+                                        style="width: 15%"
+                                    >ผู้รับเงิน</th>
+                                    <th
+                                        class="text-center"
+                                        style="width: 13%"
+                                    >ธนาคาร/เลขที่บัญชี</th>
+                                    <th
+                                        class="text-center"
+                                        t-foreach="dim_cols"
+                                        t-as="dim"
+                                        t-attf-style="width: #{dim_width}%"
+                                        t-out="dim[1]"
+                                    />
+                                    <th
+                                        class="text-end"
+                                        style="width: 9%"
+                                    >จำนวนเงิน</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <t t-set="row_no" t-value="1" />
-                                <t
-                                    t-foreach="o.export_line_ids.filtered(lambda l: l.state != 'reject')"
-                                    t-as="line"
-                                >
+                                <t t-foreach="lines" t-as="line">
                                     <tr>
                                         <td class="text-center" t-out="row_no" />
                                         <td t-out="line.payment_id.name" />
@@ -146,6 +194,22 @@
                                                 />
                                             </t>
                                         </td>
+                                        <t
+                                            t-set="line_dims"
+                                            t-value="dim_data['lines'].get(line.id) or {}"
+                                        />
+                                        <t t-foreach="dim_cols" t-as="dim">
+                                            <t
+                                                t-set="acc"
+                                                t-value="line_dims.get(dim[0])"
+                                            />
+                                            <td>
+                                                <t t-if="acc">
+                                                    <span t-out="acc.code" />
+                                                    <div t-out="acc.name" />
+                                                </t>
+                                            </td>
+                                        </t>
                                         <td
                                             class="text-end"
                                             t-out="'{0:,.2f}'.format(line.payment_amount)"
@@ -156,16 +220,15 @@
 
                                 <!-- Total -->
                                 <tr class="fw-bold">
-                                    <td
-                                        colspan="2"
-                                        rowspan="2"
-                                        class="text-center align-middle"
-                                    >
+                                    <td colspan="2" class="text-center align-middle">
                                         (<t
                                             t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.total_amount)"
                                         />)
                                     </td>
-                                    <td class="text-center" colspan="2">รวมทั้งสิ้น</td>
+                                    <td
+                                        class="text-center"
+                                        t-att-colspan="2 + len(dim_cols)"
+                                    >รวมทั้งสิ้น</td>
                                     <td
                                         class="text-end"
                                         t-out="'{0:,.2f}'.format(o.total_amount)"
