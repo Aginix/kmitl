@@ -33,4 +33,60 @@
         </field>
     </record>
 
+    <!-- Primary-inherit tree view for DR "รายการบันทึกบัญชี" smart button.
+         Same arch as account.view_move_tree; owned as a distinct view id so
+         the DR action can bind it alongside the search panel below without
+         touching the stock tree view. -->
+    <record id="view_move_tree_disbursement_related" model="ir.ui.view">
+        <field name="name">account.move.tree.disbursement.related</field>
+        <field name="model">account.move</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="account.view_move_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="string">รายการบันทึกบัญชี</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Primary-inherit search view adding a journal_id search panel.
+         The stock account.view_account_move_filter is left untouched. -->
+    <record id="view_account_move_filter_disbursement_related" model="ir.ui.view">
+        <field name="name">account.move.select.disbursement.related</field>
+        <field name="model">account.move</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="account.view_account_move_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <searchpanel>
+                    <field name="journal_id" select="one" icon="fa-book" string="ประเภทใบสำคัญ" />
+                </searchpanel>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action opened by the DR "รายการบันทึกบัญชี" smart button. Binds the
+         new primary tree view + search view (with journal_id search panel);
+         form falls back to the stock account.view_move_form. -->
+    <record id="action_disbursement_related_moves" model="ir.actions.act_window">
+        <field name="name">รายการบันทึกบัญชี</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_account_move_filter_disbursement_related"/>
+    </record>
+
+    <record id="action_disbursement_related_moves_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_move_tree_disbursement_related"/>
+        <field name="act_window_id" ref="action_disbursement_related_moves"/>
+    </record>
+
+    <record id="action_disbursement_related_moves_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="account.view_move_form"/>
+        <field name="act_window_id" ref="action_disbursement_related_moves"/>
+    </record>
+
 </odoo>
