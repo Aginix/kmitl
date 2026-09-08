@@ -3,7 +3,7 @@
 
 {
     "name": "Thai Localization - Bank Payment Export SCB",
-    "version": "16.0.1.1.1",
+    "version": "16.0.1.1.2",
     "author": "Ecosoft, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/l10n-thailand",
     "license": "AGPL-3",
