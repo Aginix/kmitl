@@ -64,6 +64,11 @@
                 </header>
                 <field name="name" string="เลขที่ใบสำคัญ" />
                 <field name="date" />
+                <!-- The day the money actually left, beside the day the voucher
+                     was raised. Optional and not sortable: it is read off the
+                     e-payment file, the cheque or the voucher, so there is no
+                     column to order by. -->
+                <field name="paid_date" optional="hide" />
                 <field name="partner_id" string="ผู้รับเงิน" />
                 <field name="kmitl_payment_type_id" optional="show" />
                 <field name="kmitl_payment_subject_id" optional="hide" />
@@ -249,6 +254,13 @@
                     domain="[('state', '=', 'cancel')]"
                 />
                 <filter string="วันที่" name="filter_date" date="date" />
+                <!-- The other date question the office asks: what went out this
+                     month, rather than what was authorised this month. -->
+                <filter
+                    string="วันที่จ่ายจริง"
+                    name="filter_paid_date"
+                    date="paid_date"
+                />
 
                 <group expand="0" string="จัดกลุ่มตาม">
                     <filter
