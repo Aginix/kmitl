@@ -158,21 +158,11 @@ class DisbursementRequest(models.Model):
         string="Payment Status",
         compute="_compute_payment_info",
     )
-    payment_move_ids = fields.Many2many(
-        comodel_name="account.move",
-        compute="_compute_payment_info",
-        string="Payment Journal Entries",
-    )
-    payment_move_count = fields.Integer(
-        compute="_compute_payment_info",
-        string="Payment Move Count",
-    )
 
     @api.depends(
         "payment_ids",
         "payment_ids.state",
         "payment_ids.finance_state",
-        "payment_ids.move_id",
     )
     def _compute_payment_info(self):
         """Payment progress as the finance office means it.
@@ -193,9 +183,6 @@ class DisbursementRequest(models.Model):
             rec.payment_count = total
             paid = len(active.filtered(lambda p: p.finance_state == "paid"))
             rec.payment_status_display = _("จ่ายแล้ว %s/%s", paid, total) if total else ""
-            moves = active.mapped("move_id")
-            rec.payment_move_ids = moves
-            rec.payment_move_count = len(moves)
 
     @api.depends(
         "state",
@@ -870,28 +857,6 @@ class DisbursementRequest(models.Model):
             "name": _("Payments"),
             "res_model": "account.payment",
             "domain": [("id", "in", self.payment_ids.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }
-
-    def action_view_payment_moves(self):
-        """Open journal entries linked to payments."""
-        self.ensure_one()
-        moves = self.payment_move_ids
-        if len(moves) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "name": _("Journal Entry"),
-                "res_model": "account.move",
-                "res_id": moves.id,
-                "view_mode": "form",
-                "target": "current",
-            }
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("รายการล้างหนี้"),
-            "res_model": "account.move",
-            "domain": [("id", "in", moves.ids)],
             "view_mode": "tree,form",
             "target": "current",
         }

@@ -418,20 +418,6 @@
                             /></span>
                     </div>
                 </button>
-                <button
-                    name="action_view_payment_moves"
-                    type="object"
-                    class="oe_stat_button"
-                    icon="fa-book"
-                    attrs="{'invisible': [('payment_move_count', '=', 0)]}"
-                >
-                    <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">รายการล้างหนี้ <field
-                                name="payment_move_count"
-                                nolabel="1"
-                            /></span>
-                    </div>
-                </button>
             </xpath>
         </field>
     </record>
