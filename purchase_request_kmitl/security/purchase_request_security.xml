@@ -4,6 +4,13 @@
         <field name="name">Purchase Request User : Own Documents Only</field>
     </record>
 
+    <record id="purchase.group_purchase_user" model="res.groups">
+        <field
+            name="implied_ids"
+            eval="[(4, ref('purchase_request.group_purchase_request_user'))]"
+        />
+    </record>
+
     <record id="group_purchase_request_user_all" model="res.groups">
         <field name="name">Purchase Request User : All Documents</field>
         <field

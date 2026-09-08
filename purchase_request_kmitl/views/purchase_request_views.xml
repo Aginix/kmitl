@@ -154,7 +154,7 @@
                     states="to_verify,to_submit"
                     string="Return"
                     type="object"
-                    groups="purchase_request_kmitl.group_purchase_request_user_all"
+                    groups="purchase_viewer.group_purchase_viewer"
                 />
             </xpath>
 
