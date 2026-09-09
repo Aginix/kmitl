@@ -30,10 +30,10 @@ class PurchaseRequest(models.Model):
     )
     budget_selection_mode = fields.Selection(
         selection=[
-            ("chart", "ใช้เงินจากแผน (จองงบใหม่)"),
+            ("normal", "ใช้เงินจากแผน (จองงบใหม่)"),
         ],
         string="วิธีเลือกงบประมาณ",
-        default="chart",
+        default="normal",
         copy=False,
         help=(
             "เลือกว่าจะจองงบใหม่โดยเลือกมิติจากผังงบประมาณ "
@@ -75,7 +75,7 @@ class PurchaseRequest(models.Model):
     def _reservation_commitment_mode_domain(self):
         """Per-mode extension point for the ใบจองงบประมาณ picker domain.
 
-        Base ships only the ``chart`` mode (no reservation picker). Bridge
+        Base ships only the ``normal`` mode (no reservation picker). Bridge
         modules adding a mode override this to scope the picker to their own
         commitments (e.g. ``account_id.is_project`` / ``account_id.procurement_plan``)."""
         return []
@@ -232,24 +232,6 @@ class PurchaseRequest(models.Model):
         for line in self:
             line._update_analytic_distribution("sources")
 
-    def button_draft(self):
-        for record in self:
-            if record.budget_commitment_id:
-                try:
-                    record._cancel_budget_commitment()
-                    record.write({"verified_by": "", "date_verified": False})
-                    record.message_post(
-                        body=_("Budget commitment %s has been cancelled")
-                        % record.budget_commitment_id.name
-                    )
-                except UserError as e:
-                    record.message_post(
-                        body=_("Warning: Could not cancel budget commitment: %s")
-                        % str(e)
-                    )
-
-        return super().button_draft()
-
     def action_view_budget_dashboard(self):
         self.ensure_one()
         root = self.budget_account_id
@@ -313,7 +295,7 @@ class PurchaseRequest(models.Model):
 
         # Chose a draw-down mode but picked nothing: say so, instead of falling
         # through to reserve-new against the dimensions the mode switch cleared.
-        if self.budget_selection_mode != "chart":
+        if self.budget_selection_mode != "normal":
             raise UserError(_("กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"))
 
         amount = sum(self.line_ids.mapped("estimated_cost"))
@@ -452,20 +434,19 @@ class PurchaseRequest(models.Model):
 
     @api.onchange("budget_selection_mode")
     def _onchange_budget_selection_mode(self):
-        """Clear whichever side of the choice is now inactive.
+        """Start budget selection fresh whenever the mode changes.
 
         ``budget_selection_mode`` is a **UI affordance only** — the server still
         keys draw-down off the presence of ``reservation_commitment_id``
-        (ADR-0010), never off this field. Always clear the pick (switching
-        between draw-down modes must not carry over a commitment from the
-        wrong picker domain), and clear the chart dimensions whenever the mode
-        is not ``chart`` — leaving them filled would make the form say one
-        thing and the reserve action do another.
+        (ADR-0010), never off this field. Clear both the reservation pick and the
+        accounting dimensions so nothing carries over from the previous mode: in
+        particular, switching back to ``normal`` after picking a ใบจองงบประมาณ
+        must not leave that commitment's dimensions on the form, or the user
+        could reserve new budget against them.
         """
         self.reservation_commitment_id = False
-        if self.budget_selection_mode != "chart":
-            self.budget_account_id = False
-            self.analytic_distribution = False
+        self.budget_account_id = False
+        self.analytic_distribution = False
 
     def _cancel_budget_commitment(self):
         """A drawn reservation belongs to its owner, never to this request — detach
@@ -488,20 +469,31 @@ class PurchaseRequest(models.Model):
     def button_draft(self):
         for record in self:
             if record.budget_commitment_id:
-                try:
-                    record._cancel_budget_commitment()
-                    record.write({"verified_by": "", "date_verified": False})
-                    record.message_post(
-                        body=_("Budget commitment %s has been cancelled")
-                        % record.budget_commitment_id.name
-                    )
-                except UserError as e:
-                    record.message_post(
-                        body=_("Warning: Could not cancel budget commitment: %s")
-                        % str(e)
-                    )
+                if record._release_commitment_on_draft():
+                    try:
+                        name = record.budget_commitment_id.name
+                        record._cancel_budget_commitment()
+                        record.message_post(
+                            body=_("Budget commitment %s has been cancelled") % name
+                        )
+                    except UserError as e:
+                        record.message_post(
+                            body=_("Warning: Could not cancel budget commitment: %s")
+                            % str(e)
+                        )
+                record.write({"verified_by": "", "date_verified": False})
 
         return super().button_draft()
+
+    def _release_commitment_on_draft(self):
+        """Whether ดึงกลับ (Reset) should release this request's budget commitment.
+
+        Base: yes — a normal/own commitment is cancelled on Reset so the budget can
+        be re-selected. Project/plan bridges keep their shared commitment on Reset
+        (recall to edit the request, not to give up the project/plan budget) and
+        release it only on ยกเลิก (Cancel)."""
+        self.ensure_one()
+        return True
 
     def button_rejected(self):
         for record in self:

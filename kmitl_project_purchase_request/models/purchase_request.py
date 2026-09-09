@@ -175,9 +175,19 @@ class PurchaseRequest(models.Model):
             self._enforce_project_budget_cap(project)
         return super()._action_draw_from_reservation()
 
+    def _release_commitment_on_draft(self):
+        """ดึงกลับ (Reset) keeps a project's shared commitment: the request is
+        recalled to be edited, not to give up the project's budget. The commitment
+        is released only on ยกเลิก (Cancel) — see _cancel_budget_commitment."""
+        self.ensure_one()
+        if self.budget_commitment_id.kmitl_project_id:
+            return False
+        return super()._release_commitment_on_draft()
+
     def _cancel_budget_commitment(self):
-        """Never cancel a shared project commitment when a project-driven PR is
-        reset or rejected — just detach this PR from it (frees its headroom)."""
+        """Detach — never cancel — a shared project commitment when a project PR is
+        cancelled or rejected: just release this PR's hold on it (frees its
+        headroom). ดึงกลับ (Reset) keeps it (see _release_commitment_on_draft)."""
         self.ensure_one()
         commitment = self.budget_commitment_id
         if commitment and commitment.kmitl_project_id:

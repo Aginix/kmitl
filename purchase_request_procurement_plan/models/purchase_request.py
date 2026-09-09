@@ -194,9 +194,19 @@ class PurchaseRequest(models.Model):
                 plan.action_in_progress()
         return super()._action_draw_from_reservation()
 
+    def _release_commitment_on_draft(self):
+        """ดึงกลับ (Reset) keeps a plan's shared commitment: the request is recalled
+        to be edited, not to give up the plan's budget. The commitment is released
+        only on ยกเลิก (Cancel) — see _cancel_budget_commitment."""
+        self.ensure_one()
+        if self.budget_commitment_id.procurement_plan_id:
+            return False
+        return super()._release_commitment_on_draft()
+
     def _cancel_budget_commitment(self):
-        """Never cancel a shared plan commitment when a plan-driven PR is reset
-        or rejected — just detach this PR from it (D3)."""
+        """Detach — never cancel — a shared plan commitment when a plan PR is
+        cancelled or rejected: just release this PR's hold on it (D3). ดึงกลับ
+        (Reset) keeps it (see _release_commitment_on_draft)."""
         self.ensure_one()
         commitment = self.budget_commitment_id
         if commitment and commitment.procurement_plan_id:
