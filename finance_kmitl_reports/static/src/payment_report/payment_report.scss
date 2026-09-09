@@ -13,11 +13,20 @@
     }
 
     .o_finance_report_table {
-        font-size: 0.875rem;
-
         th,
         td {
             white-space: nowrap;
+            // 1rem, not the backend's 13px base: Thai carries its vowels and
+            // tone marks above and below the line, and they are the first
+            // thing to collapse when the type is set small. Same size the
+            // Trial Balance settles on. Tabular figures keep the amount
+            // column from jittering as digits change.
+            font-size: 1rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        th {
+            vertical-align: middle;
         }
 
         tbody tr.cursor-pointer {
