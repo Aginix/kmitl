@@ -13,7 +13,7 @@
              (same convention as group_disbursement_manager /
              group_finance_kmitl_manager). -->
         <record id="group_disbursement_payment_auditor" model="res.groups">
-            <field name="name">ผู้ตรวจสอบการเบิกจ่าย (Disbursement Auditor)</field>
+            <field name="name">Disbursement Auditor</field>
             <field name="category_id" ref="disbursement_finance_kmitl.module_category_disbursement_payment"/>
             <field name="implied_ids" eval="[(4, ref('disbursement.group_disbursement_user'))]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
@@ -21,7 +21,7 @@
 
         <!-- Authorizer / rector delegate (ผู้อนุมัติเบิกจ่าย) — step 3 -->
         <record id="group_disbursement_payment_authorizer" model="res.groups">
-            <field name="name">ผู้อนุมัติเบิกจ่าย (มอบอำนาจอธิการ)</field>
+            <field name="name">Disbursement Authorizer</field>
             <field name="category_id" ref="disbursement_finance_kmitl.module_category_disbursement_payment"/>
             <field name="implied_ids" eval="[(4, ref('disbursement.group_disbursement_user'))]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
@@ -29,7 +29,7 @@
 
         <!-- Finance officer (เจ้าหน้าที่การเงินจ่าย) — steps 4-5 -->
         <record id="group_disbursement_payment_finance" model="res.groups">
-            <field name="name">เจ้าหน้าที่การเงินจ่าย (Disbursement Finance)</field>
+            <field name="name">Disbursement Finance</field>
             <field name="category_id" ref="disbursement_finance_kmitl.module_category_disbursement_payment"/>
             <field name="implied_ids" eval="[(4, ref('finance_kmitl.group_finance_kmitl_user_out'))]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>

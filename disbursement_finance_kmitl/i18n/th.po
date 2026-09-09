@@ -77,6 +77,7 @@ msgstr "ตรวจสอบ"
 #. module: disbursement_finance_kmitl
 #: model:ir.actions.act_window,name:disbursement_finance_kmitl.action_dr_audit_queue
 #: model:ir.ui.menu,name:disbursement_finance_kmitl.menu_dr_audit_queue
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
 msgid "Audit Disbursements"
 msgstr "ตรวจสอบการเบิกจ่าย"
 
@@ -98,6 +99,7 @@ msgstr "อนุมัติ"
 #. module: disbursement_finance_kmitl
 #: model:ir.actions.act_window,name:disbursement_finance_kmitl.action_dr_authorize_queue
 #: model:ir.ui.menu,name:disbursement_finance_kmitl.menu_dr_authorize_queue
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
 msgid "Authorize Disbursements"
 msgstr "อนุมัติเบิกจ่าย"
 
@@ -624,22 +626,22 @@ msgstr "ใบขอเบิกไม่ได้อยู่ในขั้น
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
 msgid "จ่ายแล้ว %s/%s"
-msgstr ""
+msgstr "จ่ายแล้ว %s/%s"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_request_finance
 msgid "ยังไม่มีใบขอเบิกที่ตั้งหนี้แล้ว"
-msgstr ""
+msgstr "ยังไม่มีใบขอเบิกที่ตั้งหนี้แล้ว"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_payment_authorized
 msgid "ยังไม่มีใบขอเบิกที่อนุมัติเบิกจ่ายแล้ว"
-msgstr ""
+msgstr "ยังไม่มีใบขอเบิกที่อนุมัติเบิกจ่ายแล้ว"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.ui.menu,name:disbursement_finance_kmitl.menu_finance_payment_authorized
 msgid "รายการที่อนุมัติแล้ว"
-msgstr ""
+msgstr "รายการที่อนุมัติแล้ว"
 
 #. module: disbursement_finance_kmitl
 #: model:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_payment_authorized
@@ -647,6 +649,8 @@ msgid ""
 "รายการนี้เก็บประวัติใบขอเบิกที่ผ่านการอนุมัติเบิกจ่าย "
 "และอยู่ต่อไปหลังจ่ายเงินและล้างหนี้แล้ว"
 msgstr ""
+"รายการนี้เก็บประวัติใบขอเบิกที่ผ่านการอนุมัติเบิกจ่าย "
+"และอยู่ต่อไปหลังจ่ายเงินและล้างหนี้แล้ว"
 
 #. module: disbursement_finance_kmitl
 #: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
@@ -658,3 +662,192 @@ msgstr ""
 msgid ""
 "ใบขอเบิกจะมาปรากฏที่นี่เมื่อบัญชีตั้งหนี้เสร็จ และอยู่ต่อไปตลอดจนล้างหนี้"
 msgstr ""
+"ใบขอเบิกจะมาปรากฏที่นี่เมื่อบัญชีตั้งหนี้เสร็จ และอยู่ต่อไปตลอดจนล้างหนี้"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Cannot cancel: payment(s) %s already posted. Reverse them first."
+msgstr "ไม่สามารถยกเลิกได้: ใบจ่ายเงิน %s ลงบัญชีไปแล้ว กรุณากลับรายการก่อน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+msgid "Cannot cancel: there are payment(s) in progress. Remove them first."
+msgstr ""
+"ไม่สามารถยกเลิกได้: มีใบจ่ายเงินที่ยังดำเนินการอยู่ กรุณาลบใบจ่ายเงินก่อน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Cannot create new payment: existing payment(s) %s are still in progress. "
+"Cancel them first before creating a new one."
+msgstr ""
+"ไม่สามารถสร้างใบจ่ายเงินใหม่ได้: ใบจ่ายเงิน %s ยังดำเนินการอยู่ "
+"กรุณายกเลิกก่อนสร้างใหม่"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Partial payment is not supported. Bill(s) %s are already partially paid."
+msgstr "ระบบไม่รองรับการจ่ายเงินบางส่วน ใบตั้งหนี้ %s จ่ายเงินไปแล้วบางส่วน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "%s request(s) processed."
+msgstr "ดำเนินการใบขอเบิกสำเร็จ %s รายการ"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+msgid "Could not process:"
+msgstr "ไม่สามารถดำเนินการรายการต่อไปนี้:"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+msgid "Disbursement"
+msgstr "การเบิกจ่าย"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/account_move.py:0
+#, python-format
+msgid ""
+"Payment %(payment)s cannot be posted: the disbursement request %(dr)s is "
+"not confirmed paid by finance yet."
+msgstr ""
+"ใบสำคัญจ่าย %(payment)s ยังลงบัญชีไม่ได้: ใบขอเบิก %(dr)s "
+"ยังไม่ได้รับการยืนยันจ่ายสำเร็จจากฝ่ายการเงิน"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_payment_line__bill_id
+msgid "Vendor Bill"
+msgstr "ใบตั้งหนี้"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__partner_bank_id
+msgid ""
+"The payee's account the money is transferred into. Defaulted from the "
+"bill; it is what the payment and the bank export carry."
+msgstr ""
+"บัญชีของผู้รับเงินที่เงินโอนเข้า ค่าเริ่มต้นมาจากใบตั้งหนี้ "
+"และเป็นบัญชีที่ใบจ่ายเงินและไฟล์ e-Payment ใช้"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__paying_account_id
+msgid ""
+"หัวจ่าย — the account the money leaves from, which names the payment "
+"method too. Defaulted from the request's payment subject (the account at "
+"the payee's own bank when the subject auto-matches)."
+msgstr ""
+"หัวจ่าย — บัญชีที่เงินจ่ายออก ซึ่งเป็นตัวกำหนดวิธีจ่ายไปด้วย "
+"ค่าเริ่มต้นมาจากเรื่องที่จ่ายของใบขอเบิก "
+"(เป็นบัญชีที่ตรงธนาคารผู้รับ เมื่อเรื่องที่จ่ายตั้งให้จับคู่อัตโนมัติ)"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__payment_method_id
+msgid ""
+"วิธีจ่าย — a property of the chosen paying account rather than a second "
+"choice, so the two cannot contradict each other."
+msgstr ""
+"วิธีจ่าย — เป็นคุณสมบัติของหัวจ่ายที่เลือกไว้ ไม่ใช่ตัวเลือกที่สอง "
+"จึงไม่มีทางขัดแย้งกันเอง"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_payment_line__allowed_paying_account_ids
+msgid "Allowed Paying Accounts"
+msgstr "หัวจ่ายที่อนุญาต"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__allowed_paying_account_ids
+msgid ""
+"What the paying account may be set to, so the subject's policy is "
+"enforced while choosing instead of rejected afterwards."
+msgstr ""
+"ค่าที่หัวจ่ายสามารถตั้งได้ เพื่อบังคับตามนโยบายของเรื่องที่จ่ายตั้งแต่ตอนเลือก "
+"แทนที่จะถูกปฏิเสธภายหลัง"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__paying_account_match
+msgid ""
+"The provenance of the paying account, so the payees that fell to the "
+"fallback can be spotted and double-checked. Picking the account by hand "
+"marks the row as chosen manually."
+msgstr ""
+"ที่มาของหัวจ่ายที่ได้ เพื่อให้เห็นและตรวจสอบซ้ำผู้รับเงินที่ตกไปใช้บัญชีสำรอง "
+"การเลือกบัญชีเองจะทำเครื่องหมายแถวนั้นว่าเลือกด้วยมือ"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,help:disbursement_finance_kmitl.field_disbursement_payment_line__amount_net
+msgid "What actually leaves the bank for this payee."
+msgstr "จำนวนเงินที่ธนาคารจ่ายออกจริงสำหรับผู้รับเงินรายนี้"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.constraint,message:disbursement_finance_kmitl.constraint_disbursement_payment_line_bill_uniq
+msgid "A bill can only be paid by one payment line."
+msgstr "ใบตั้งหนี้หนึ่งใบสามารถมีรายการจ่ายเงินได้เพียงหนึ่งรายการเท่านั้น"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.module.category,name:disbursement_finance_kmitl.module_category_disbursement_payment
+msgid "Disbursement Payment"
+msgstr "การจ่ายเงินตามใบขอเบิก"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.module.category,description:disbursement_finance_kmitl.module_category_disbursement_payment
+msgid ""
+"Roles for the post-bill payment-execution workflow (audit → authorize → "
+"pay → clear)"
+msgstr ""
+"บทบาทสำหรับขั้นตอนการจ่ายเงินหลังตั้งหนี้ (ตรวจสอบ → อนุมัติ → จ่ายเงิน → "
+"ล้างหนี้)"
+
+#. module: disbursement_finance_kmitl
+#: model:res.groups,name:disbursement_finance_kmitl.group_disbursement_payment_auditor
+msgid "Disbursement Auditor"
+msgstr "ผู้ตรวจสอบการเบิกจ่าย (Disbursement Auditor)"
+
+#. module: disbursement_finance_kmitl
+#: model:res.groups,name:disbursement_finance_kmitl.group_disbursement_payment_authorizer
+msgid "Disbursement Authorizer"
+msgstr "ผู้อนุมัติเบิกจ่าย (มอบอำนาจอธิการ)"
+
+#. module: disbursement_finance_kmitl
+#: model:res.groups,name:disbursement_finance_kmitl.group_disbursement_payment_finance
+msgid "Disbursement Finance"
+msgstr "เจ้าหน้าที่การเงินจ่าย (Disbursement Finance)"
+
+#. module: disbursement_finance_kmitl
+#: model:mail.activity.type,name:disbursement_finance_kmitl.mail_activity_dr_to_audit
+msgid "Disbursement to audit"
+msgstr "ใบขอเบิกรอตรวจสอบ"
+
+#. module: disbursement_finance_kmitl
+#: model:mail.activity.type,summary:disbursement_finance_kmitl.mail_activity_dr_to_audit
+msgid "A disbursement request is billed and waiting for your audit"
+msgstr "ใบขอเบิกตั้งหนี้แล้วและรอการตรวจสอบจากท่าน"
+
+#. module: disbursement_finance_kmitl
+#: model:mail.activity.type,name:disbursement_finance_kmitl.mail_activity_dr_to_authorize
+msgid "Disbursement to authorize"
+msgstr "ใบขอเบิกรออนุมัติเบิกจ่าย"
+
+#. module: disbursement_finance_kmitl
+#: model:mail.activity.type,summary:disbursement_finance_kmitl.mail_activity_dr_to_authorize
+msgid ""
+"A disbursement request was audited and awaits your authorization to pay"
+msgstr "ใบขอเบิกผ่านการตรวจสอบแล้วและรอการอนุมัติเบิกจ่ายจากท่าน"
+
+#. module: disbursement_finance_kmitl
+#: model:mail.activity.type,name:disbursement_finance_kmitl.mail_activity_dr_to_pay
+msgid "Disbursement to pay"
+msgstr "ใบขอเบิกรอจ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
+msgid "Confirm Paid"
+msgstr "ยืนยันจ่ายสำเร็จ"
+
+#. module: disbursement_finance_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
+msgid "Confirm the bank has successfully paid every item?"
+msgstr "ยืนยันว่าธนาคารจ่ายเงินสำเร็จครบทุกรายการแล้ว?"
