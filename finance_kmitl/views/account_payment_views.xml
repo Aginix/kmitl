@@ -44,7 +44,7 @@
             <xpath expr="//button[@name='action_post']" position="before">
                 <button
                     name="action_confirm_for_bank"
-                    string="ยืนยันพร้อมส่งธนาคาร"
+                    string="Confirm for the Bank"
                     type="object"
                     class="oe_highlight"
                     attrs="{'invisible': ['|', ('finance_state', '!=', 'draft'), ('is_cheque_payment', '=', True)]}"
@@ -69,10 +69,10 @@
                      records. -->
                 <button
                     name="action_confirm_paid"
-                    string="ยืนยันจ่ายสำเร็จ"
+                    string="Confirm Paid"
                     type="object"
                     class="btn-success"
-                    confirm="ยืนยันว่าเงินถึงมือผู้รับแล้ว? หลังจากนี้ฝั่งเงินจะแก้ไม่ได้ และใบสำคัญจะส่งต่อให้ห้องบัญชีบันทึก"
+                    confirm="Confirm the money has reached the payee? After this the finance side can no longer be changed, and the voucher will be handed to the accounting office to book."
                     attrs="{'invisible': ['|', ('finance_state', '!=', 'confirmed'), ('is_cheque_payment', '=', True)]}"
                     groups="finance_kmitl.group_finance_kmitl_user_out"
                 />
@@ -80,7 +80,7 @@
                      file the bank has been told what to do. -->
                 <button
                     name="action_unconfirm"
-                    string="ยกเลิกการยืนยัน"
+                    string="Unconfirm"
                     type="object"
                     attrs="{'invisible': ['|', ('finance_state', '!=', 'confirmed'), ('export_status', '!=', 'draft')]}"
                     groups="finance_kmitl.group_finance_kmitl_user_out"
@@ -134,7 +134,7 @@
                      their work happens on the journal entry. -->
                 <field
                     name="display_state"
-                    string="สถานะบัญชี"
+                    string="Accounting Status"
                     readonly="1"
                     attrs="{'invisible': [('finance_state', '!=', 'paid')]}"
                 />
