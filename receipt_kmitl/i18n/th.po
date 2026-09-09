@@ -944,14 +944,14 @@ msgstr "กรุณาระบุเหตุผลที่ปฏิเสธ
 
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_form
-msgid "Post Journal Entries"
-msgstr ""
+msgid "Create Journal Entries"
+msgstr "สร้างใบสำคัญบัญชี"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt_remittance__state__posted
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_search
-msgid "Posted"
-msgstr "ลงบัญชีแล้ว"
+msgid "Journal Created"
+msgstr "สร้างใบสำคัญแล้ว"
 
 #. module: receipt_kmitl
 #. odoo-python

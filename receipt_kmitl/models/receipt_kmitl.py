@@ -663,7 +663,6 @@ class ReceiptKmitl(models.Model):
         for vals in self._prepare_deposit_line_vals():
             line_vals.append((0, 0, vals))
         move = self.env["account.move"].create(self._prepare_move_vals(line_vals))
-        move.action_post()
         return move
 
     def action_cancel(self):
