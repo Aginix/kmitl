@@ -362,18 +362,6 @@ class ApprovalRequest(models.Model):
         ),
     )
 
-    allowed_reservation_commitment_ids = fields.Many2many(
-        "budget.commitment",
-        compute="_compute_allowed_reservation_commitment_ids",
-    )
-
-    @api.depends("category_id", "state", "budget_selection_mode")
-    def _compute_allowed_reservation_commitment_ids(self):
-        for rec in self:
-            rec.allowed_reservation_commitment_ids = self.env["budget.commitment"].search(
-                rec._domain_reservation_commitment_id()
-            )
-
     def _reservation_commitment_mode_domain(self):
         """Which commitments the current ``budget_selection_mode`` may draw.
         Base only ships ``normal`` (reserve-new), which never draws — bridges
