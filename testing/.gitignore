@@ -1,0 +1,7 @@
+.venv
+.vscode/
+.DS_Store
+
+# Real KMITL account credentials — do not commit. Ask a teammate for a copy
+# instead of adding your own here.
+users.csv
