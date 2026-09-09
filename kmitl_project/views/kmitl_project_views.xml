@@ -59,7 +59,8 @@
                         confirm="เมื่อส่งเข้าแผน ระบบจะออกเลขที่โครงการ + ล็อกเฉพาะปีงบประมาณ (รหัสงบ/มิติงบ และรายละเอียดโครงการยังแก้ได้จนกว่าจะจองงบประมาณ) ต้องการยืนยันหรือไม่?" />
                     <button string="จองงบประมาณ" name="action_reserve_budget" type="object" class="oe_highlight"
                         attrs="{'invisible': [('state', '!=', 'to_verify')]}" />
-                    <button string="อนุมัติ" name="action_approve" states="to_send,sent" type="object" class="oe_highlight" />
+                    <button string="อนุมัติ" name="action_approve" states="to_send,sent" type="object" class="oe_highlight"
+                        groups="kmitl_project.group_kmitl_project_manager" />
                     <button string="ปิดโครงการ" name="action_complete" states="in_progress" type="object" class="oe_highlight" />
                     <button string="Reset to Draft" name="action_draft" states="to_verify,to_send,returned" type="object" />
                     <button string="Reset to Draft" name="action_draft" groups="project.group_project_manager" states="rejected,cancel" type="object" />
