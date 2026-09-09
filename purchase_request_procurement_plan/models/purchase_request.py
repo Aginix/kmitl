@@ -15,6 +15,11 @@ class PurchaseRequest(models.Model):
         store=True,
     )
 
+    budget_selection_mode = fields.Selection(
+        selection_add=[("procurement_plan", "แผนจัดซื้อจัดจ้าง")],
+        ondelete={"procurement_plan": "set default"},
+    )
+
     procurement_plan_id = fields.Many2one(
         comodel_name="procurement.plan",
         string="Procurement Plan",
@@ -40,6 +45,20 @@ class PurchaseRequest(models.Model):
 
     def _domain_budget_account_id(self):
         return super()._domain_budget_account_id() + [("procurement_plan", "=", False)]
+
+    def _reservation_commitment_mode_domain(self):
+        # ``verified`` is the plan's only drawable state and expresses ADR-0006's
+        # one-active-PR rule in the picker itself, exactly as ADR-0010 describes
+        # it: drawing moves the plan to ``in_progress``, so a plan that already
+        # has an active PR drops out of the dropdown, and a rejected PR bounces
+        # the plan back to ``verified`` and makes it offerable again.
+        domain = super()._reservation_commitment_mode_domain()
+        if self.budget_selection_mode == "procurement_plan":
+            domain = domain + [
+                ("account_id.procurement_plan", "=", True),
+                ("procurement_plan_id.state", "=", "verified"),
+            ]
+        return domain
 
     def _check_drawable_commitment(self, commitment):
         # A plan's shared commitment sits on a ``procurement_plan`` budget code
@@ -69,6 +88,11 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         super()._compute_is_budget_editable()
         for rec in self:
+            # Once a พ.1 is attributed to a plan its budget is the plan's, in
+            # every state — ดึงกลับ recalls the request for editing, it does not
+            # reopen the แหล่งงบประมาณ (ADR-0015). The PR-first draw is
+            # unaffected: ``use_procurement_plan`` is still False while the slip
+            # is being picked, and is written only by the draw itself.
             if rec.use_procurement_plan:
                 rec.is_budget_editable = False
 
@@ -135,7 +159,14 @@ class PurchaseRequest(models.Model):
         creating their own (D2). Non-plan PRs keep the standard own-commitment
         behaviour (D4)."""
         self.ensure_one()
-        if self.use_procurement_plan and self.procurement_plan_id:
+        # A picked ใบจองงบประมาณ (PR-first, incl. one changed after ดึงกลับ) takes
+        # priority: fall through to the base draw so the *chosen* commitment is
+        # drawn, not the plan's default one.
+        if (
+            self.use_procurement_plan
+            and self.procurement_plan_id
+            and not self.reservation_commitment_id
+        ):
             plan = self.procurement_plan_id
             commitment = plan.budget_commitment_ids.filtered(
                 lambda c: c.state in ("reserved", "partial")
@@ -150,7 +181,11 @@ class PurchaseRequest(models.Model):
             self.budget_commitment_id = commitment.id
             if plan.state == "verified":
                 plan.action_in_progress()
-            self.button_to_approve()
+            # Same rail as the reserve-new path: จองงบ advances to to_submit and
+            # the ขออนุมัติ step is a separate press. (ADR-0006 described this as
+            # to_verify → to_approve, but to_approve_allowed is keyed on
+            # to_submit, so button_to_approve() here always raised.)
+            self.button_to_submit()
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",
@@ -161,9 +196,51 @@ class PurchaseRequest(models.Model):
             }
         return super().action_reserve_budget()
 
+    def _action_draw_from_reservation(self):
+        """PR-first draw of a procurement plan's shared commitment (as opposed
+        to the source-driven ``procurement.plan`` create-from-plan button
+        above): derive the plan, enforce 1-แผน-1-ใบ, link it and copy its
+        procurement method, advance the plan out of ``verified``, then run the
+        base draw — which copies the commitment's dims/account/FY onto the PR
+        + lines, validates via the already-overridden
+        ``_check_drawable_commitment``, and advances state."""
+        plan = self.reservation_commitment_id.procurement_plan_id
+        if plan:
+            # Backstop for the picker domain: a พ.1 may only realise a plan that
+            # is waiting to be realised, and the picker is not the only way in
+            # (context default, RPC) — ADR-0006, budget ADR-0015.
+            if plan.state != "verified":
+                raise UserError(
+                    _(
+                        "แผนจัดซื้อจัดจ้าง %s ไม่อยู่สถานะรอดำเนินการ "
+                        "จึงยังใช้ใบจองงบประมาณของแผนไม่ได้"
+                    )
+                    % plan.display_name
+                )
+            self._check_one_active_pr(plan)
+            self.write(
+                {
+                    "use_procurement_plan": True,
+                    "procurement_plan_id": plan.id,
+                    "procurement_method_id": plan.procurement_method_id.id,
+                }
+            )
+            plan.action_in_progress()
+        return super()._action_draw_from_reservation()
+
+    def _release_commitment_on_draft(self):
+        """ดึงกลับ (Reset) keeps a plan's shared commitment: the request is recalled
+        to be edited, not to give up the plan's budget. The commitment is released
+        only on ยกเลิก (Cancel) — see _cancel_budget_commitment."""
+        self.ensure_one()
+        if self.budget_commitment_id.procurement_plan_id:
+            return False
+        return super()._release_commitment_on_draft()
+
     def _cancel_budget_commitment(self):
-        """Never cancel a shared plan commitment when a plan-driven PR is reset
-        or rejected — just detach this PR from it (D3)."""
+        """Detach — never cancel — a shared plan commitment when a plan PR is
+        cancelled or rejected: just release this PR's hold on it (D3). ดึงกลับ
+        (Reset) keeps it (see _release_commitment_on_draft)."""
         self.ensure_one()
         commitment = self.budget_commitment_id
         if commitment and commitment.procurement_plan_id:
@@ -178,14 +255,10 @@ class PurchaseRequest(models.Model):
             record._link_to_procurement_plan()
         return records
 
-    def _link_to_procurement_plan(self):
-        """A plan-driven PR (created from the plan, ADR-0006) enforces one active
-        PR per plan, links the plan's already-reserved shared commitment, and
-        starts the plan. Reservation itself happened at appropriation post."""
-        self.ensure_one()
-        plan = self.procurement_plan_id
-        if not self.use_procurement_plan:
-            self.use_procurement_plan = True
+    def _check_one_active_pr(self, plan):
+        """Raise unless this PR is the plan's only active (non-rejected) PR
+        (ADR-0006, 1 แผน ต่อ 1 ใบขอซื้อ). Shared by the source-driven
+        create-from-plan link and the PR-first draw-down path."""
         active_others = plan.purchase_request_ids.filtered(
             lambda r: r.id != self.id and r.state != "rejected"
         )
@@ -197,12 +270,41 @@ class PurchaseRequest(models.Model):
                 )
                 % plan.display_name
             )
+
+    def _link_to_procurement_plan(self):
+        """A plan-driven PR (created from the plan, ADR-0006) enforces one active
+        PR per plan, links the plan's already-reserved shared commitment, and
+        starts the plan. Reservation itself happened at appropriation post.
+
+        The plan's budget context — budget account, fiscal year and the full
+        analytic distribution — is written here **server-side** instead of being
+        left to the create-from-plan context defaults: those defaults are wiped
+        by ``_onchange_budget_selection_mode`` on the form's first onchange pass,
+        and only happen to survive today because
+        ``_onchange_procurement_plan_id`` runs after it. Same guarantee a project
+        พ.1 already has in ``_link_to_project`` (budget ADR-0007)."""
+        self.ensure_one()
+        plan = self.procurement_plan_id
+        self._check_one_active_pr(plan)
+        vals = {
+            "use_procurement_plan": True,
+            "budget_account_id": plan.budget_account_id.id,
+            "account_fiscal_year_id": plan.account_fiscal_year_id.id,
+            "analytic_distribution": plan.analytic_distribution or False,
+        }
         if not self.budget_commitment_id:
             commitment = plan.budget_commitment_ids.filtered(
                 lambda c: c.state in ("reserved", "partial")
             )[:1]
             if commitment:
-                self.budget_commitment_id = commitment.id
+                vals["budget_commitment_id"] = commitment.id
+        self.write(vals)
+        # write() does not fire the form's _onchange_analytic_distribution, so
+        # push the plan's distribution onto any existing lines explicitly.
+        if self.line_ids and plan.analytic_distribution:
+            self.line_ids.write(
+                {"analytic_distribution": plan.analytic_distribution}
+            )
         if plan.state == "verified":
             plan.action_in_progress()
 
@@ -320,6 +422,7 @@ class ProcurementPlan(models.Model):
             "target": "current",
             "context": {
                 "default_use_procurement_plan": True,
+                "default_budget_selection_mode": "procurement_plan",
                 "default_procurement_plan_id": self.id,
                 "default_budget_commitment_id": commitment.id,
                 "default_budget_account_id": self.budget_account_id.id,
