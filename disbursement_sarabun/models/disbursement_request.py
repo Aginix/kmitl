@@ -23,9 +23,18 @@ class DisbursementRequest(models.Model):
     # ``submitted`` and a resubmission spawns a new document) — the mixin's default
     # callbacks post the actor + reason note, so no override is needed.
 
-    def _get_sarabun_report_action(self):
-        """Delegate report rendering to disbursement report."""
+    def _get_sarabun_document_type(self):
         return self.env.ref(
-            "disbursement.action_report_disbursement_request",
+            "disbursement_sarabun.document_type_disbursement_request",
             raise_if_not_found=False,
+        ) or super()._get_sarabun_document_type()
+
+    def _get_sarabun_body_template(self):
+        return "disbursement_sarabun.report_disbursement_request_body"
+
+    def _get_sarabun_content(self):
+        self.ensure_one()
+        return self.env["ir.qweb"]._render(
+            "disbursement_sarabun.report_disbursement_request_narrative",
+            {"o": self.with_context(lang="th_TH")},
         )

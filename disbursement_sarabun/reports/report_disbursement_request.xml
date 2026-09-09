@@ -1,28 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ADR-0007: append sarabun's เกษียน trail + signature block at the tail of the
-         disbursement report (the origin embeds sarabun's block). Resolved from the
-         origin via active_sarabun_document_id; renders nothing until steps complete.
-         Injected *before* the origin's own signature block so the หัวหน้าส่วนงาน
-         signature — which happens first — prints above the steps that follow it. -->
-    <template id="report_disbursement_request_sarabun_endorsement"
-              inherit_id="disbursement.report_disbursement_request" priority="99">
-        <xpath expr="//div[hasclass('o_dr_signatures')]" position="before">
-            <t t-call="agx_sarabun.sarabun_endorsement_block">
-                <t t-set="doc" t-value="o.active_sarabun_document_id"/>
-            </t>
-        </xpath>
+
+    <!-- Narrative (บรรยาย) — seeded once at submit into the หนังสือ's editable
+         เนื้อหา (ADR-0015 policy 5A). Authoritative numbers render live via
+         the body template below — never seeded here. Expects `o`
+         (a disbursement.request) in context. -->
+    <template id="report_disbursement_request_narrative">
+        <p>
+            <span class="oe-tabs" style="width: 40px;">&#9;</span>
+            เลขที่ใบขอเบิก
+            <u><strong><span t-out="o.name"/></strong></u>
+            <span class="oe-tabs" style="width: 40px;">&#9;</span>
+            วันที่
+            <u><strong><span t-field="o.date"/></strong></u>
+        </p>
+        <p>
+            <span class="oe-tabs" style="width: 40px;">&#9;</span>
+            วิธีการจ่ายเงิน:
+            <u><strong><span t-field="o.payment_type"/></strong></u>
+        </p>
+        <p t-if="o.ref">
+            <span class="oe-tabs" style="width: 40px;">&#9;</span>
+            อ้างอิง
+            <u><strong><span t-out="o.ref"/></strong></u>
+        </p>
     </template>
 
-    <!-- บันทึกนำ — the optional covering note the หนังสือ carries above the
-         origin's report (rendered just below its title). Nothing prints unless
-         the drafter ticked แนบเนื้อหา and wrote a body. -->
-    <template id="report_disbursement_request_sarabun_covering_note"
-              inherit_id="disbursement.report_disbursement_request" priority="99">
-        <xpath expr="//div[contains(@class,'page-header')]" position="after">
-            <t t-call="agx_sarabun.sarabun_covering_note">
-                <t t-set="doc" t-value="o.active_sarabun_document_id"/>
-            </t>
-        </xpath>
+    <!-- Live body (ตาราง) — budget details, line items grouped by partner,
+         totals. Rendered between the หนังสือ's เนื้อหา and its signatures
+         (ADR-0015); kept live so numbers always match the current state.
+         Expects `o` (a disbursement.request) in context. -->
+    <template id="report_disbursement_request_body">
+        <t t-set="currency" t-value="o.currency_id"/>
+
+        <!-- Budget Details -->
+        <div class="my-4"/>
+        <p>รายละเอียดงบประมาณ</p>
+        <table class="table table-bordered border table-sm budget">
+            <tbody>
+                <tr class="o_field_budget_commitment_id">
+                    <td>เลขที่ใบจองงบประมาณ</td>
+                    <td><span t-field="o.budget_commitment_id"/></td>
+                </tr>
+                <tr class="o_field_budget_account_id">
+                    <td>รหัสงบประมาณค่าใช้จ่าย</td>
+                    <td><span t-field="o.budget_account_id"/></td>
+                </tr>
+                <tr class="o_field_source_analytic_id">
+                    <td>แหล่งเงิน</td>
+                    <td><span t-field="o.source_analytic_id"/></td>
+                </tr>
+                <tr class="o_field_department_analytic_id">
+                    <td>หน่วยงาน</td>
+                    <td><span t-field="o.department_analytic_id"/></td>
+                </tr>
+                <tr class="o_field_activity_analytic_id">
+                    <td>ด้าน/แผนงาน/กิจกรรม</td>
+                    <td><span t-field="o.activity_analytic_id"/></td>
+                </tr>
+                <tr class="o_field_fund_analytic_id">
+                    <td>กองทุน</td>
+                    <td><span t-field="o.fund_analytic_id"/></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="my-4"/>
+
+        <!-- Line Items Grouped by Partner -->
+        <t t-set="partners" t-value="o.line_ids.mapped('partner_id')"/>
+        <t t-set="global_row_no" t-value="1"/>
+        <t t-foreach="partners" t-as="partner">
+            <div class="row mt-3 mb-2">
+                <div class="col">
+                    <strong>ผู้รับเงิน: <span t-out="partner.name"/></strong>
+                </div>
+            </div>
+            <t t-set="partner_lines" t-value="o.line_ids.filtered(lambda l: l.partner_id == partner)"/>
+            <t t-set="partner_bank" t-value="partner_lines[0].partner_bank_id if partner_lines else False"/>
+            <div class="row mb-2" t-if="partner_bank">
+                <div class="col">
+                    ธนาคาร <span class="ms-2" t-out="partner_bank.bank_id.name"/>
+                    เลขที่บัญชี <span class="ms-2" t-out="o._get_masked_acc_number(partner_bank.acc_number)"/>
+                </div>
+            </div>
+            <table class="table table-bordered table-sm mb-4">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 8%">ลำดับ</th>
+                        <th class="text-center">รายละเอียด</th>
+                        <th class="text-center">จำนวน</th>
+                        <th class="text-end">ราคา</th>
+                        <th class="text-end">จำนวนเงิน</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="partner_lines" t-as="line">
+                        <tr>
+                            <td class="text-center" style="width: 8%" t-out="global_row_no"/>
+                            <td t-out="line.name"/>
+                            <td class="text-center" t-out="'{0:,.2f}'.format(line.quantity)"/>
+                            <td class="text-end" t-out="'{0:,.2f} ฿'.format(line.price_unit)"/>
+                            <td class="text-end" t-out="'{0:,.2f} ฿'.format(line.price_subtotal)"/>
+                        </tr>
+                        <t t-set="global_row_no" t-value="global_row_no + 1"/>
+                    </t>
+                </tbody>
+            </table>
+        </t>
+
+        <!-- Totals -->
+        <table class="table table-bordered table-sm mb-4">
+            <tbody>
+                <tr>
+                    <td t-att-rowspan="o.amount_tax and 3 or 1" class="text-center align-middle" style="width: 50%">
+                        <div class="mt-2">
+                            (<t t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"/>)
+                        </div>
+                    </td>
+                    <td class="text-center" style="width: 25%">
+                        <span t-if="o.amount_tax">ราคาก่อนรวมภาษีมูลค่าเพิ่ม</span>
+                        <span t-else="">รวมเป็นเงิน</span>
+                    </td>
+                    <td class="text-end" style="width: 25%" t-out="'{0:,.2f} ฿'.format(o.amount_untaxed if o.amount_tax else o.amount_total)"/>
+                </tr>
+                <tr t-if="o.amount_tax">
+                    <td class="text-center">ภาษีมูลค่าเพิ่ม (VAT 7%)</td>
+                    <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.amount_tax)"/>
+                </tr>
+                <tr t-if="o.amount_tax">
+                    <td class="text-center">ราคาสุทธิ</td>
+                    <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.amount_total)"/>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Notes -->
+        <div class="row" t-if="o.note">
+            <div class="col">
+                <strong>หมายเหตุ:</strong>
+                <span class="ms-2" t-out="o.note"/>
+            </div>
+        </div>
     </template>
+
+    <!-- ============================================================
+         Sarabun no-source layout — bound to document_type_disbursement_request
+         via report_template_id (agx_sarabun_layout). Thin wrapper: data
+         only, layout is shared.
+         ============================================================ -->
+    <template id="report_sarabun_document_disbursement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="header_title" t-value="'การขอเบิก'"/>
+                <t t-call="agx_sarabun.sarabun_document_layout"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_sarabun_document_disbursement" model="ir.actions.report">
+        <field name="name">การขอเบิก</field>
+        <field name="model">sarabun.document</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">disbursement_sarabun.report_sarabun_document_disbursement</field>
+        <field name="report_file">disbursement_sarabun.report_sarabun_document_disbursement</field>
+        <field name="paperformat_id" ref="agx_sarabun.paperformat_sarabun_a4"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
 </odoo>

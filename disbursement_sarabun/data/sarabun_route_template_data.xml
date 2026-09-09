@@ -34,6 +34,13 @@
             <field name="target_mode">position</field>
             <field name="position_id" ref="position_dr_approver"/>
         </record>
+
+        <record id="document_type_disbursement_request" model="sarabun.document.type">
+            <field name="name">หนังสือการขอเบิก</field>
+            <field name="kind">from_record</field>
+            <field name="default_route_id" ref="route_template_disbursement_request"/>
+            <field name="report_template_id" ref="action_report_sarabun_document_disbursement"/>
+        </record>
     </data>
 
 </odoo>
