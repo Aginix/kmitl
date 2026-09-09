@@ -911,10 +911,13 @@ class ApprovalRequest(models.Model):
         Adopts the reservation's budget code and full dimension distribution —
         locked onto the request and its lines — links it as the request's
         commitment, and submits the request exactly like the reserve-new path. No
-        new reservation and no availability re-check: the money is already locked;
-        obligate/consume happen downstream at the disbursement (ADR-0010). The
-        request keeps the ปีงบประมาณ the user chose; the shared commitment carries
-        the fiscal year it was reserved in."""
+        new reservation is created: the money is already locked; obligate/consume
+        happen downstream at the disbursement (ADR-0010). The request keeps the
+        ปีงบประมาณ the user chose; the shared commitment carries the fiscal year
+        it was reserved in. The plan total is checked against what the slip
+        currently has left (``excep_draw_exceeds_available``) — a blocking
+        exception, since drawing more than is available would silently overdraw
+        a commitment that may be shared with other documents."""
         self.ensure_one()
         commitment = self.reservation_commitment_id
         if commitment.state not in ("reserved", "partial"):
@@ -922,6 +925,10 @@ class ApprovalRequest(models.Model):
                 _("ใบจองงบประมาณ %s ไม่อยู่ในสถานะที่หยิบไปใช้ได้") % commitment.name
             )
         self._check_drawable_commitment(commitment)
+        if self.detect_exceptions() and not self.ignore_exception:
+            return self.with_context(
+                agx_exception_action="action_reserve_budget"
+            )._popup_exceptions()
         self.write(
             {
                 "budget_commitment_id": commitment.id,
