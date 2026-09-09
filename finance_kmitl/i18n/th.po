@@ -307,6 +307,12 @@ msgid "Activity"
 msgstr "กิจกรรม"
 
 #. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__paid_date
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Actual Payment Date"
+msgstr "วันที่จ่ายจริง"
+
+#. module: finance_kmitl
 #: code:addons/finance_kmitl/models/bank_payment_export.py:0
 #, python-format
 msgid "All payments must have the same bank payment template."
@@ -1657,6 +1663,24 @@ msgstr "ยืนยันพร้อมออกเช็ค"
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__inbound
 msgid "รับเงิน"
 msgstr "รับเงิน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_account_payment__paid_date
+msgid ""
+"วันที่จ่ายจริง — the day the money left the institute for the payee, read "
+"off the instrument that carried it rather than off the voucher that "
+"authorised it: a transfer's วันที่มีผลที่ธนาคาร, a cheque's วันที่บนเช็ค, "
+"and for cash the voucher's own date, which is the day it was paid across the"
+" counter. Not the voucher date, which is the day the payment was authorised "
+"and is the accounting period it is booked in — the two differ whenever a "
+"file leaves in a later month than the authorisation."
+msgstr ""
+"วันที่จ่ายจริง — วันที่เงินออกจากสถาบันไปถึงผู้รับเงิน "
+"อ่านจากตัวเครื่องมือที่พาเงินไป ไม่ใช่จากใบสำคัญจ่ายที่อนุมัติให้จ่าย "
+"เงินโอนอ่านจากวันที่มีผลที่ธนาคารของไฟล์ e-Payment เช็คอ่านจากวันที่บนเช็ค "
+"ส่วนเงินสดใช้วันที่บนใบสำคัญจ่าย ซึ่งคือวันที่จ่ายข้ามเคาน์เตอร์ "
+"ไม่ใช่วันที่บนใบสำคัญจ่าย ซึ่งเป็นวันที่อนุมัติจ่ายและเป็นงวดบัญชีที่บันทึก "
+"สองวันนี้จะต่างกันเมื่อไฟล์ออกในเดือนหลังจากเดือนที่อนุมัติ"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,help:finance_kmitl.field_account_payment__finance_state

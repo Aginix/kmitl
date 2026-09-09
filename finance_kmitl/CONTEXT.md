@@ -16,8 +16,8 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   it to the bank and vouches for the outcome; the accounting office books it. A
   **รายการ**จ่ายเงิน is not one of these — that is the payee-level row on a disbursement
   request. Never call a voucher "รายการจ่ายเงิน". The **menu** that opens the list of
-  them is spelled **ใบสำคัญจ่าย**, because that is what the office calls the list;
-  a document is still an ใบจ่ายเงิน, and its number is still a ใบสำคัญจ่าย number.
+  them is spelled **ใบสำคัญจ่าย**, because that is what the office calls the list; a
+  document is still an ใบจ่ายเงิน, and its number is still a ใบสำคัญจ่าย number.
 
 - **ฝั่งเงิน / Money side**: the facts the bank acted on — amount, payee, the payee's
   bank account, the paying account (หัวจ่าย), currency, payment and partner type,
@@ -77,6 +77,21 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   later month than the authorisation, and there they are deliberately allowed to differ
   — see `disbursement_finance_kmitl` ADR-0006.
 
+- **วันที่จ่ายจริง / Actual payment date** (`account.payment.paid_date`): the day the
+  money left the institute for the payee — **read off the instrument that carried it,
+  never off a button somebody pressed**. A transfer takes it from its e-payment file's
+  **วันที่มีผลที่ธนาคาร**, a cheque from the **วันที่บนเช็ค**, and cash, which travels
+  in no instrument at all, falls through to the **วันที่บนใบสำคัญจ่าย** — for cash that
+  voucher date _is_ the day it was paid, across the counter. It is what the
+  withholding-tax certificate is dated from and what the payment report's date axis is,
+  so the two can never disagree about the same money. Computed and not stored; see
+  [ADR-0009](./docs/adr/0009-the-day-the-money-left-is-read-off-the-instrument.md).
+  _Avoid_: reading it as "the day ยืนยันจ่ายสำเร็จ was pressed" — that day is recorded
+  nowhere and is not what anything is dated from; and confusing it with the
+  **วันที่บนใบสำคัญจ่าย**, which is the day the payment was authorised, the accounting
+  period, and what numbers the voucher. A voucher that has not been paid yet still has
+  one: the field answers _which day_, not _whether_.
+
 - **ยืนยันจ่ายสำเร็จ / Confirm paid** (`confirmed → paid`): the finance office's
   assertion that the money reached the payee. It is the **Hand-over**, and it is the
   only human confirmation in the whole payment stretch — the bank's result file never
@@ -118,9 +133,9 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   e-payment file is for a transfer payee.
 
 - **วันที่บนเช็ค / Cheque date** (`cheque.register.cheque_date`): the day the payee may
-  present the cheque, which is the day the Revenue Department treats the income as paid —
-  so the **withholding-tax certificate is dated from it**, exactly as it is dated from an
-  e-payment file's effective date for a transfer. Frozen once the cheque is issued,
+  present the cheque, which is the day the Revenue Department treats the income as paid
+  — so the **withholding-tax certificate is dated from it**, exactly as it is dated from
+  an e-payment file's effective date for a transfer. Frozen once the cheque is issued,
   because it is printed on paper this system no longer controls. _Avoid_: confusing it
   with the handover date, which has no tax effect at all: a cheque dated the 25th and
   collected on the 30th is September's withholding either way.
@@ -129,8 +144,8 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   will never pay anyone. Bounced, lost, uncashed until it went out of date, drawn wrong,
   spoiled in the printer — one state and a reason beside it, because to the register
   every death is the same fact. The number stays spent. A cheque that had already been
-  handed over takes its voucher back to `confirmed` with it, and a replacement is written
-  on that **same** voucher: only the instrument died, not the obligation. See
+  handed over takes its voucher back to `confirmed` with it, and a replacement is
+  written on that **same** voucher: only the instrument died, not the obligation. See
   [ADR-0007](./docs/adr/0007-a-dead-cheque-takes-its-voucher-back.md).
 
 - **ประเภทผู้รับเงิน / Payee type** (`account.payment.payee_type_id` →
@@ -209,17 +224,17 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   holds no bank account at all.
 - **Nothing here is told by a bank.** No result file is imported; every outcome in this
   context is a person's word, and the exceptions are settled outside the system. This is
-  also why nothing here follows a cheque after it is handed over: which cheques are still
-  outstanding is a line in the **bank reconciliation**, and that is the accounting
+  also why nothing here follows a cheque after it is handed over: which cheques are
+  still outstanding is a line in the **bank reconciliation**, and that is the accounting
   office's paper.
 - **A cheque number, once spent, is never handed to a second payee.** A cancelled cheque
   keeps the number it was torn off with, which is why cancelling one leaves its row
   behind and why a voucher can end up with several — at most one of them not cancelled.
 - **The way back exists only for a cheque, and only while the entry is unposted.** The
-  phase is otherwise forward-only. A cheque is the one instrument that can fail after the
-  payee is holding it, so its death withdraws the assertion that they were paid instead
-  of being corrected downstream. Once the accounting office has posted, the money has
-  left the books too, and only their reversal can undo it (ADR-0007).
+  phase is otherwise forward-only. A cheque is the one instrument that can fail after
+  the payee is holding it, so its death withdraws the assertion that they were paid
+  instead of being corrected downstream. Once the accounting office has posted, the
+  money has left the books too, and only their reversal can undo it (ADR-0007).
 - **Naming a dimension names everything under it.** A voucher filtered by a faculty, a
   fund or a programme is any voucher on that account _or on any account beneath it_.
   This is the same reading the routing rules use to decide who carries a voucher
@@ -228,5 +243,5 @@ name — the **Hand-over** — and it is documented with the phase that crosses 
   finds none of them, would be one word meaning two things.
 - **A ใบสำคัญจ่าย number, once issued, never changes** — and because Odoo binds the
   number to the voucher's date, that pins the date with it. Anything that has to say
-  when the money actually left says it with the e-payment file's effective date instead
-  of by moving the voucher.
+  when the money actually left says it with **วันที่จ่ายจริง** instead of by moving the
+  voucher.
