@@ -140,6 +140,11 @@ class DimensionFilterMixin(models.AbstractModel):
                     ),
                 }
             )
+        # Debit rows first inside each entry — the side an accountant reads first.
+        # Stable, so each side keeps its ledger order. Not an SQL ``order=``: that
+        # cannot put a zero-value line on the credit side without a stored column.
+        for lines in result.values():
+            lines.sort(key=lambda line: 0 if line["debit"] else 1)
         return result
 
     @api.model
