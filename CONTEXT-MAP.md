@@ -83,12 +83,17 @@ upfront.
   **booking side** split, the finance office's own `finance_state`, and the instrument
   that carries the money — the **ไฟล์ e-Payment** one bank is sent, or the **เช็ค** one
   payee collects. Ends at the **Hand-over**.
-- [KMITL Finance Reports](./finance_kmitl_reports/CONTEXT.md) — the กองคลัง's two
-  outgoing-money reports: **รายงานการจ่ายเงิน**, one row per voucher paid, on the day
-  the money left rather than the day it was authorised; and
-  **รายงานเจ้าหนี้ถึงกำหนดชำระ**, the forward-looking schedule of what falls due, which
-  is deliberately not the backward-looking Aged Payable next door in
-  `accounting_kmitl_reports`. Defines no document — every term is `finance_kmitl`'s.
+- [KMITL Finance Reports](./finance_kmitl_reports/CONTEXT.md) — the กองคลัง's reports
+  on money in both directions. Out: **รายงานการจ่ายเงิน**, one row per voucher paid, on
+  the day the money left rather than the day it was authorised, and
+  **รายงานเจ้าหนี้ถึงกำหนดชำระ**. In: **รายงานการรับเงิน** over the receipts that have
+  reached the treasury (`kmitl.receipt` at `done`), plus **รายงานการตั้งลูกหนี้** and
+  **รายงานลูกหนี้ถึงกำหนดชำระ** over the **ใบตั้งหนี้** — which a receipt never settles,
+  so the two money-in populations never mix. The ถึงกำหนดชำระ pair is deliberately not
+  the backward-looking Aged Payable/Receivable next door in `accounting_kmitl_reports`,
+  and รายงานการรับเงิน is deliberately not `receipt_kmitl_summary_report`: that one is
+  the issuing department's register, this one the treasury's. Defines no document —
+  every term is `finance_kmitl`'s or `receipt_kmitl`'s.
 - [Disbursement ↔ KMITL Finance](./disbursement_finance_kmitl/CONTEXT.md) — the
   post-bill payment-execution phase of a disbursement request (audit → authorize → pay →
   clear); owns the payee-level **รายการจ่ายเงิน** and keeps apart the several records

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 00:00+0000\n"
-"PO-Revision-Date: 2026-09-08 00:00+0000\n"
+"POT-Creation-Date: 2026-09-09 00:00+0000\n"
+"PO-Revision-Date: 2026-09-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -38,8 +38,16 @@ msgstr ""
 #. odoo-javascript
 #. odoo-python
 #: code:addons/finance_kmitl_reports/models/report_base.py:0
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Activities"
 msgstr "ด้าน/แผนงาน/กิจกรรม"
@@ -53,7 +61,16 @@ msgstr "วันที่จ่ายจริง"
 
 #. module: finance_kmitl_reports
 #. odoo-python
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#, python-format
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: finance_kmitl_reports
+#. odoo-python
 #: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
 #, python-format
 msgid "Amount Due"
 msgstr "ยอดคงเหลือ"
@@ -68,6 +85,18 @@ msgid ""
 msgstr ""
 "ยอดคงเหลือคือส่วนที่ยังค้างของใบแจ้งหนี้ "
 "ใบที่จ่ายไปบางส่วนจึงแสดงเฉพาะยอดที่เหลือ "
+"และจำนวนวันที่เกินกำหนดนับจากวันนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
+#, python-format
+msgid ""
+"Amount Due is what is left of the invoice, so a partly-paid invoice is "
+"carried at its remaining balance. Days Overdue is counted from today."
+msgstr ""
+"ยอดคงเหลือคือส่วนที่ยังไม่ได้รับชำระของใบตั้งหนี้ "
+"ใบที่ได้รับชำระบางส่วนจึงแสดงเฉพาะยอดที่เหลือ "
 "และจำนวนวันที่เกินกำหนดนับจากวันนี้"
 
 #. module: finance_kmitl_reports
@@ -95,13 +124,36 @@ msgstr "เลขที่ใบแจ้งหนี้"
 #. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Clear filters"
 msgstr "ล้างตัวกรอง"
 
 #. module: finance_kmitl_reports
 #. odoo-python
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
+#, python-format
+msgid "Customer"
+msgstr "ลูกหนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
+#, python-format
+msgid "Customer Reference"
+msgstr "เลขที่อ้างอิงลูกหนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-python
 #: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
 #, python-format
 msgid "Days Overdue"
 msgstr "เกินกำหนด (วัน)"
@@ -112,8 +164,14 @@ msgstr "เกินกำหนด (วัน)"
 #: code:addons/finance_kmitl_reports/models/report_base.py:0
 #: code:addons/finance_kmitl_reports/models/payment_report.py:0
 #: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Departments"
 msgstr "ส่วนงาน"
@@ -129,6 +187,7 @@ msgstr "ใบขอเบิก"
 #. module: finance_kmitl_reports
 #. odoo-python
 #: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
 #, python-format
 msgid "Due Date"
 msgstr "วันครบกำหนด"
@@ -136,6 +195,7 @@ msgstr "วันครบกำหนด"
 #. module: finance_kmitl_reports
 #. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Due From"
 msgstr "ครบกำหนดตั้งแต่"
@@ -143,6 +203,7 @@ msgstr "ครบกำหนดตั้งแต่"
 #. module: finance_kmitl_reports
 #. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Due To"
 msgstr "ถึงวันที่"
@@ -150,6 +211,7 @@ msgstr "ถึงวันที่"
 #. module: finance_kmitl_reports
 #. odoo-python
 #: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
 #, python-format
 msgid "Due on or before %s, including everything already overdue"
 msgstr "ครบกำหนดภายในวันที่ %s รวมรายการที่เกินกำหนดแล้วทั้งหมด"
@@ -158,6 +220,9 @@ msgstr "ครบกำหนดภายในวันที่ %s รวม�
 #. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Export Excel"
 msgstr "ส่งออก Excel"
@@ -166,6 +231,9 @@ msgstr "ส่งออก Excel"
 #. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Fewer filters"
 msgstr "ซ่อนตัวกรอง"
@@ -176,6 +244,9 @@ msgstr "ซ่อนตัวกรอง"
 #: code:addons/finance_kmitl_reports/models/report_base.py:0
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Funds"
 msgstr "กองทุน"
@@ -183,10 +254,12 @@ msgstr "กองทุน"
 #. module: finance_kmitl_reports
 #. odoo-javascript
 #. odoo-python
-#: code:addons/finance_kmitl_reports/models/payment_report.py:0
-#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/models/report_base.py:0
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #: model_terms:ir.ui.view,arch_db:finance_kmitl_reports.finance_report_layout
 #, python-format
 msgid "Grand Total"
@@ -196,6 +269,9 @@ msgstr "รวมทั้งสิ้น"
 #. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Group By"
 msgstr "จัดกลุ่มตาม"
@@ -204,6 +280,9 @@ msgstr "จัดกลุ่มตาม"
 #. odoo-python
 #: code:addons/finance_kmitl_reports/models/payment_report.py:0
 #: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
 #, python-format
 msgid "Grouped by: %s"
 msgstr "จัดกลุ่มตาม: %s"
@@ -211,14 +290,77 @@ msgstr "จัดกลุ่มตาม: %s"
 #. module: finance_kmitl_reports
 #. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Include already overdue"
 msgstr "รวมรายการที่เกินกำหนดแล้ว"
 
 #. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
+#, python-format
+msgid "Invoice Amount"
+msgstr "จำนวนเงินตามใบตั้งหนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
+#, python-format
+msgid "Invoice Date"
+msgstr "วันที่ใบตั้งหนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#, python-format
+msgid "Invoice Date From"
+msgstr "วันที่ใบตั้งหนี้ตั้งแต่"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#, python-format
+msgid "Invoice Date To"
+msgstr "ถึงวันที่"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
+#, python-format
+msgid "Invoice No."
+msgstr "เลขที่ใบตั้งหนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#, python-format
+msgid ""
+"Invoice Amount is the full amount raised; Amount Due is what remains of "
+"it, for an invoice that has since been paid in part."
+msgstr ""
+"จำนวนเงินตามใบตั้งหนี้คือยอดเต็มที่ตั้งหนี้ไว้ "
+"ส่วนยอดคงเหลือคือส่วนที่ยังไม่ได้รับชำระ "
+"สำหรับใบตั้งหนี้ที่ได้รับชำระบางส่วนแล้ว"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#, python-format
+msgid "Issuing Department"
+msgstr "หน่วยงานผู้ออกใบเสร็จ"
+
+#. module: finance_kmitl_reports
 #. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "More filters"
 msgstr "ตัวกรองเพิ่มเติม"
@@ -232,6 +374,13 @@ msgstr "จำนวนเงินจ่ายสุทธิ"
 
 #. module: finance_kmitl_reports
 #. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#, python-format
+msgid "No invoices for the selected criteria."
+msgstr "ไม่มีใบตั้งหนี้ตามเงื่อนไขที่เลือก"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #, python-format
 msgid "No payments for the selected criteria."
@@ -239,8 +388,18 @@ msgstr "ไม่มีการจ่ายเงินตามเงื่อ
 
 #. module: finance_kmitl_reports
 #. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#, python-format
+msgid "No receipts for the selected criteria."
+msgstr "ไม่มีใบเสร็จตามเงื่อนไขที่เลือก"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "None"
 msgstr "ไม่มี"
@@ -248,9 +407,23 @@ msgstr "ไม่มี"
 #. module: finance_kmitl_reports
 #. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Nothing falls due in the selected criteria."
 msgstr "ไม่มีรายการถึงกำหนดชำระตามเงื่อนไขที่เลือก"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#, python-format
+msgid ""
+"Only receipts the treasury has recorded as remitted are counted — a "
+"receipt still waiting on its remittance is money in a department's "
+"drawer, not yet the treasury's."
+msgstr ""
+"นับเฉพาะใบเสร็จที่กองคลังบันทึกว่านำส่งแล้วเท่านั้น "
+"ใบเสร็จที่ยังรอการนำส่งยังเป็นเงินที่อยู่ในมือหน่วยงาน "
+"ไม่ใช่เงินของกองคลัง"
 
 #. module: finance_kmitl_reports
 #. odoo-javascript
@@ -279,7 +452,11 @@ msgstr "ถึงวันที่"
 #. odoo-javascript
 #. odoo-python
 #: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Partner Type"
 msgstr "ประเภทคู่ค้า"
@@ -330,13 +507,13 @@ msgid "Payee Type"
 msgstr "ประเภทผู้รับเงิน"
 
 #. module: finance_kmitl_reports
-#. odoo-javascript
 #. odoo-python
-#: code:addons/finance_kmitl_reports/models/payment_report.py:0
-#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
 #, python-format
-msgid "Paying Account"
-msgstr "หัวจ่าย"
+msgid "Payer"
+msgstr "ผู้ชำระเงิน"
 
 #. module: finance_kmitl_reports
 #. odoo-javascript
@@ -344,8 +521,8 @@ msgstr "หัวจ่าย"
 #: code:addons/finance_kmitl_reports/models/payment_report.py:0
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #, python-format
-msgid "Payment Method"
-msgstr "วิธีจ่าย"
+msgid "Paying Account"
+msgstr "หัวจ่าย"
 
 #. module: finance_kmitl_reports
 #. odoo-python
@@ -384,12 +561,135 @@ msgid "Payment Subject"
 msgstr "เรื่องที่จ่าย"
 
 #. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#, python-format
+msgid "Payment Type"
+msgstr "ประเภทการชำระ"
+
+#. module: finance_kmitl_reports
 #. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Print"
 msgstr "พิมพ์"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#, python-format
+msgid "Receipt No."
+msgstr "เลขที่ใบเสร็จ"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#: model:ir.actions.client,name:finance_kmitl_reports.action_receipt_report
+#: model:ir.ui.menu,name:finance_kmitl_reports.menu_receipt_report
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_reports.receipt_report_pdf
+#, python-format
+msgid "Receipt Report"
+msgstr "รายงานการรับเงิน"
+
+#. module: finance_kmitl_reports
+#: model:ir.actions.report,name:finance_kmitl_reports.action_report_receipt_pdf
+msgid "Receipt Report (PDF)"
+msgstr "รายงานการรับเงิน (PDF)"
+
+#. module: finance_kmitl_reports
+#: model:ir.actions.report,name:finance_kmitl_reports.action_report_receipt_xlsx
+msgid "Receipt Report (XLSX)"
+msgstr "รายงานการรับเงิน (XLSX)"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
+#, python-format
+msgid "Receivables Due"
+msgstr "ลูกหนี้ถึงกำหนดชำระ"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
+#: model:ir.actions.client,name:finance_kmitl_reports.action_receivable_due_report
+#: model:ir.ui.menu,name:finance_kmitl_reports.menu_receivable_due_report
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_reports.receivable_due_report_pdf
+#, python-format
+msgid "Receivables Due Report"
+msgstr "รายงานลูกหนี้ถึงกำหนดชำระ"
+
+#. module: finance_kmitl_reports
+#: model:ir.actions.report,name:finance_kmitl_reports.action_report_receivable_due_pdf
+msgid "Receivables Due Report (PDF)"
+msgstr "รายงานลูกหนี้ถึงกำหนดชำระ (PDF)"
+
+#. module: finance_kmitl_reports
+#: model:ir.actions.report,name:finance_kmitl_reports.action_report_receivable_due_xlsx
+msgid "Receivables Due Report (XLSX)"
+msgstr "รายงานลูกหนี้ถึงกำหนดชำระ (XLSX)"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#, python-format
+msgid "Receivables Raised"
+msgstr "การตั้งลูกหนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: model:ir.actions.client,name:finance_kmitl_reports.action_receivable_raised_report
+#: model:ir.ui.menu,name:finance_kmitl_reports.menu_receivable_raised_report
+#: model_terms:ir.ui.view,arch_db:finance_kmitl_reports.receivable_raised_report_pdf
+#, python-format
+msgid "Receivables Raised Report"
+msgstr "รายงานการตั้งลูกหนี้"
+
+#. module: finance_kmitl_reports
+#: model:ir.actions.report,name:finance_kmitl_reports.action_report_receivable_raised_pdf
+msgid "Receivables Raised Report (PDF)"
+msgstr "รายงานการตั้งลูกหนี้ (PDF)"
+
+#. module: finance_kmitl_reports
+#: model:ir.actions.report,name:finance_kmitl_reports.action_report_receivable_raised_xlsx
+msgid "Receivables Raised Report (XLSX)"
+msgstr "รายงานการตั้งลูกหนี้ (XLSX)"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#, python-format
+msgid "Received From"
+msgstr "รับเงินตั้งแต่"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#, python-format
+msgid "Received To"
+msgstr "ถึงวันที่"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#, python-format
+msgid "Receiving Method"
+msgstr "วิธีรับเงิน"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#, python-format
+msgid "Remittance"
+msgstr "ใบนำส่ง"
 
 #. module: finance_kmitl_reports
 #. odoo-javascript
@@ -397,8 +697,14 @@ msgstr "พิมพ์"
 #: code:addons/finance_kmitl_reports/models/report_base.py:0
 #: code:addons/finance_kmitl_reports/models/payment_report.py:0
 #: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Sources"
 msgstr "แหล่งเงิน"
@@ -407,6 +713,9 @@ msgstr "แหล่งเงิน"
 #. odoo-javascript
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
 #: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
 #, python-format
 msgid "Then By"
 msgstr "แล้วตาม"

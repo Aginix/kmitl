@@ -15,9 +15,34 @@
         <field name="tag">finance_kmitl_payable_due_report</field>
     </record>
 
-    <!-- Both hang off the empty Reports menu finance_kmitl left waiting, and
-         both carry their own group: the parent is only a container, and a leaf
-         that inherits its visibility is a leaf nobody notices is unguarded. -->
+    <!-- รายงานการรับเงิน: the daily and the monthly receipt report, one report
+         with two date ranges — the money-in mirror of the payment report. -->
+    <record id="action_receipt_report" model="ir.actions.client">
+        <field name="name">Receipt Report</field>
+        <field name="tag">finance_kmitl_receipt_report</field>
+    </record>
+
+    <!-- รายงานการตั้งลูกหนี้: a register of debt raised against a customer,
+         whether or not it has since been collected. -->
+    <record id="action_receivable_raised_report" model="ir.actions.client">
+        <field name="name">Receivables Raised Report</field>
+        <field name="tag">finance_kmitl_receivable_raised_report</field>
+    </record>
+
+    <!-- รายงานลูกหนี้ถึงกำหนดชำระ: the mirror of the payables due report —
+         what is owed to KMITL, and by when. Not Aged Receivable — CONTEXT.md. -->
+    <record id="action_receivable_due_report" model="ir.actions.client">
+        <field name="name">Receivables Due Report</field>
+        <field name="tag">finance_kmitl_receivable_due_report</field>
+    </record>
+
+    <!-- All five hang off the empty Reports menu finance_kmitl left waiting,
+         and each carries its own group: the parent is only a container, and a
+         leaf that inherits its visibility is a leaf nobody notices is
+         unguarded. The money-in reports use group_finance_kmitl_user_in
+         rather than _out: they read kmitl.receipt and out_invoice, which the
+         paying side has no business seeing without also holding the in
+         group. -->
     <menuitem
         id="menu_payment_report"
         name="Payment Report"
@@ -33,6 +58,30 @@
         action="action_payable_due_report"
         sequence="20"
         groups="finance_kmitl.group_finance_kmitl_user_out"
+    />
+    <menuitem
+        id="menu_receipt_report"
+        name="Receipt Report"
+        parent="finance_kmitl.menu_finance_reports"
+        action="action_receipt_report"
+        sequence="30"
+        groups="finance_kmitl.group_finance_kmitl_user_in"
+    />
+    <menuitem
+        id="menu_receivable_raised_report"
+        name="Receivables Raised Report"
+        parent="finance_kmitl.menu_finance_reports"
+        action="action_receivable_raised_report"
+        sequence="40"
+        groups="finance_kmitl.group_finance_kmitl_user_in"
+    />
+    <menuitem
+        id="menu_receivable_due_report"
+        name="Receivables Due Report"
+        parent="finance_kmitl.menu_finance_reports"
+        action="action_receivable_due_report"
+        sequence="50"
+        groups="finance_kmitl.group_finance_kmitl_user_in"
     />
 
 </odoo>

@@ -118,13 +118,17 @@
 
     <!-- Empty on purpose: Odoo hides a parent with no reachable child, so this
          stays invisible until a reporting module hangs its menus off it — the
-         same arrangement accounting_kmitl has with accounting_kmitl_reports. -->
+         same arrangement accounting_kmitl has with accounting_kmitl_reports.
+         Carries both finance groups: finance_kmitl_reports hangs its money-out
+         reports off group_finance_kmitl_user_out and its money-in reports off
+         group_finance_kmitl_user_in, and each leaf below still carries its own
+         group besides — this is only the container. -->
     <menuitem
         id="menu_finance_reports"
         name="Reports"
         parent="menu_payment_root"
         sequence="80"
-        groups="finance_kmitl.group_finance_kmitl_user_out"
+        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_user_in"
     />
 
     <!-- Settings submenu (manager only), in three groups: the banks and accounts

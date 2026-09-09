@@ -1,0 +1,36 @@
+.o_finance_kmitl_report {
+    // Group the filter controls in a light panel, set apart from the data —
+    // the same treatment the Trial Balance gives its filter bar.
+    .o_finance_report_filters {
+        padding: 0.75rem 0.75rem 0.5rem;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e3e8;
+        border-radius: 0.5rem;
+    }
+
+    .o_finance_report_more {
+        white-space: nowrap;
+    }
+
+    .o_finance_report_table {
+        th,
+        td {
+            white-space: nowrap;
+            // 1rem, not the backend's 13px base: Thai carries its vowels and
+            // tone marks above and below the line, and they are the first
+            // thing to collapse when the type is set small. Same size the
+            // Trial Balance settles on. Tabular figures keep the amount
+            // column from jittering as digits change.
+            font-size: 1rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        th {
+            vertical-align: middle;
+        }
+
+        tbody tr.cursor-pointer {
+            cursor: pointer;
+        }
+    }
+}

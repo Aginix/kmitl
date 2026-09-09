@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_report_receivable_raised_pdf" model="ir.actions.report">
+        <field name="name">Receivables Raised Report (PDF)</field>
+        <field name="model">finance_kmitl_reports.receivable.raised.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">finance_kmitl_reports.receivable_raised_report_pdf</field>
+        <field name="report_file">finance_kmitl_reports.receivable_raised_report_pdf</field>
+        <field name="paperformat_id" ref="paperformat_finance_report_kmitl" />
+        <field name="binding_model_id" eval="False" />
+    </record>
+
+    <record id="action_report_receivable_raised_xlsx" model="ir.actions.report">
+        <field name="name">Receivables Raised Report (XLSX)</field>
+        <field name="model">finance_kmitl_reports.receivable.raised.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">finance_kmitl_reports.receivable_raised_report_xlsx</field>
+        <field name="report_file">finance_kmitl_reports.receivable_raised_report_xlsx</field>
+        <field name="binding_model_id" eval="False" />
+    </record>
+</odoo>

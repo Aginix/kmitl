@@ -260,86 +260,14 @@ class PaymentReportXlsx(models.AbstractModel):
 
     def generate_xlsx_report(self, workbook, data, objs):
         options = (data or {}).get("options") or {}
-        report = self.env[REPORT_MODEL]
-        result = report.get_report_data(options)
-        company = self.env["res.company"].browse(
-            options.get("company_id") or self.env.company.id
+        self.env["finance_kmitl_reports.report.base"]._kmitl_write_xlsx(
+            workbook,
+            options,
+            REPORT_MODEL,
+            _("Payment Report"),
+            _("Payment Report"),
+            "amount",
         )
-        columns = report.get_columns()
-
-        sheet = workbook.add_worksheet(_("Payment Report"))
-        bold = workbook.add_format({"bold": True})
-        head = workbook.add_format(
-            {"bold": True, "bg_color": "#F0F0F0", "border": 1, "align": "center"}
-        )
-        group = workbook.add_format({"bold": True, "bg_color": "#EDEDED"})
-        group_num = workbook.add_format(
-            {"bold": True, "bg_color": "#EDEDED", "num_format": "#,##0.00"}
-        )
-        sub = workbook.add_format({"bold": True, "bg_color": "#F7F7F7"})
-        sub_num = workbook.add_format(
-            {"bold": True, "bg_color": "#F7F7F7", "num_format": "#,##0.00"}
-        )
-        cell = workbook.add_format({"border": 1})
-        num = workbook.add_format({"border": 1, "num_format": "#,##0.00"})
-        total_fmt = workbook.add_format({"bold": True, "num_format": "#,##0.00"})
-
-        last_col = len(columns) - 1
-        total_col = [key for key, _h, _a, _w in columns].index("amount")
-
-        sheet.merge_range(0, 0, 0, last_col, company.display_name, bold)
-        sheet.merge_range(1, 0, 1, last_col, _("Payment Report"), bold)
-        row_index = 2
-        for line in report.get_filter_lines(options):
-            sheet.merge_range(row_index, 0, row_index, last_col, line)
-            row_index += 1
-        sheet.merge_range(row_index, 0, row_index, last_col, report.get_report_note())
-        row_index += 2
-
-        for col, (_key, heading, _is_amount, _width) in enumerate(columns):
-            sheet.write(row_index, col, heading, head)
-        row_index += 1
-
-        def write_band(index, label, total, label_fmt, total_format):
-            for col in range(len(columns)):
-                sheet.write(index, col, "", label_fmt)
-            sheet.write(index, 0, label, label_fmt)
-            sheet.write_number(index, total_col, total, total_format)
-            return index + 1
-
-        def write_rows(index, rows):
-            for row in rows:
-                for col, (key, _heading, is_amount, _width) in enumerate(columns):
-                    if is_amount:
-                        amount = row.get(key) or 0.0
-                        if abs(amount) >= 0.005:
-                            sheet.write_number(index, col, amount, num)
-                        else:
-                            sheet.write_blank(index, col, None, num)
-                    else:
-                        sheet.write(index, col, row.get(key) or "", cell)
-                index += 1
-            return index
-
-        for group_data in result.get("groups", []):
-            row_index = write_band(
-                row_index, group_data["label"], group_data["total"], group, group_num
-            )
-            row_index = write_rows(row_index, group_data.get("rows", []))
-            for sub_data in group_data.get("subgroups", []):
-                row_index = write_band(
-                    row_index, sub_data["label"], sub_data["total"], sub, sub_num
-                )
-                row_index = write_rows(row_index, sub_data.get("rows", []))
-
-        row_index += 1
-        sheet.write(row_index, 0, _("Grand Total"), bold)
-        sheet.write_number(
-            row_index, total_col, result.get("grand_total", 0), total_fmt
-        )
-
-        for col, (_key, _heading, _is_amount, width) in enumerate(columns):
-            sheet.set_column(col, col, width)
 
 
 class PaymentReportPdf(models.AbstractModel):
