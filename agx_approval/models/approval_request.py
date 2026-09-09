@@ -340,15 +340,14 @@ class ApprovalRequest(models.Model):
     )
     budget_selection_mode = fields.Selection(
         selection=[
-            ("chart", "เลือกจากผังงบประมาณ (จองงบใหม่)"),
-            ("reservation", "หยิบจากใบจองงบประมาณที่มีอยู่"),
+            ("normal", "ใช้เงินจากแผน (จองงบใหม่)"),
         ],
         string="วิธีเลือกงบประมาณ",
-        default="chart",
+        default="normal",
         copy=False,
         help=(
-            "เลือกว่าจะจองงบใหม่โดยเลือกมิติจากผังงบประมาณ "
-            "หรือหยิบใบจองงบประมาณที่หน่วยงานอื่นจองไว้ให้แล้วไปใช้"
+            "เลือกวิธีจัดหางบประมาณของคำขอนี้ — ฐานระบบมีเฉพาะการจองงบใหม่จากผังงบประมาณ "
+            "โมดูลเสริมอาจเพิ่มวิธีอื่น เช่น หยิบใบจองงบประมาณของโครงการที่อนุมัติแล้วไปใช้"
         ),
     )
     reservation_commitment_id = fields.Many2one(
@@ -368,32 +367,29 @@ class ApprovalRequest(models.Model):
         compute="_compute_allowed_reservation_commitment_ids",
     )
 
-    @api.depends("category_id", "state")
+    @api.depends("category_id", "state", "budget_selection_mode")
     def _compute_allowed_reservation_commitment_ids(self):
         for rec in self:
             rec.allowed_reservation_commitment_ids = self.env["budget.commitment"].search(
                 rec._domain_reservation_commitment_id()
             )
 
+    def _reservation_commitment_mode_domain(self):
+        """Which commitments the current ``budget_selection_mode`` may draw.
+        Base only ships ``normal`` (reserve-new), which never draws — bridges
+        add their own mode (e.g. a project's shared slip) and gate it here."""
+        return [("id", "=", False)]
+
     def _domain_reservation_commitment_id(self):
-        """Reservations this request may draw down (phase-1 dropdown). OU
-        visibility (owner or beneficiary unit) is enforced by the record rules
-        (ADR-0011). Plan/project shared commitments are drawn only through their
-        dedicated create-from-source flows (ADR-0006/0007), so they are excluded
-        here — guarded by field existence since agx_approval does not depend on
-        procurement_plan / kmitl_project."""
+        """Reservations this request may draw down (phase-1 dropdown), gated by
+        the active ``budget_selection_mode`` via
+        ``_reservation_commitment_mode_domain``. OU visibility (owner or
+        beneficiary unit) is enforced by the record rules (ADR-0011)."""
         domain = [
             ("state", "in", ("reserved", "partial")),
             ("available_to_obligate", ">", 0),
         ]
-        Commitment = self.env["budget.commitment"]
-        for fname in ("procurement_plan_id", "kmitl_project_id"):
-            if fname in Commitment._fields:
-                domain.append((fname, "=", False))
-        account_ids = (
-            self.env["budget.account"].search(self._reservation_account_domain()).ids
-        )
-        domain.append(("account_id", "in", account_ids))
+        domain += self._reservation_commitment_mode_domain()
         return domain
 
     def action_open_reservation_picker(self):
@@ -819,6 +815,13 @@ class ApprovalRequest(models.Model):
         Override in bridge modules to inject e.g. operating_unit_id."""
         return {}
 
+    def _advance_after_reserved(self):
+        """Fired once a commitment is attached to the request — reserved new or
+        drawn. Base always proceeds through the normal approval routing
+        (→ to_send). A bridge may override this to skip routing instead — e.g.
+        a project-funded expense whose spending was already cleared upstream."""
+        return self.action_submit()
+
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
@@ -828,10 +831,10 @@ class ApprovalRequest(models.Model):
         if self.reservation_commitment_id:
             return self._action_draw_from_reservation()
 
-        # Chose "หยิบจากใบจอง" but picked nothing: say so, instead of falling
-        # through to reserve-new and complaining about the dimensions the mode
-        # switch deliberately cleared.
-        if self.budget_selection_mode == "reservation":
+        # Chose a draw-down mode (anything but "normal") but picked nothing: say
+        # so, instead of falling through to reserve-new and complaining about
+        # the dimensions the mode switch deliberately cleared.
+        if self.budget_selection_mode != "normal":
             raise UserError(_("กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"))
 
         # รหัสงบประมาณ / มิติทางบัญชี ไม่บังคับกรอกในฟอร์ม — ตรวจครบที่เดียว
@@ -889,7 +892,7 @@ class ApprovalRequest(models.Model):
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
             )
-            self.action_submit()
+            self._advance_after_reserved()
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "approval.request",
@@ -937,7 +940,7 @@ class ApprovalRequest(models.Model):
         self.message_post(
             body=_("หยิบใบจองงบประมาณ %s มาใช้ (draw down)") % commitment.name
         )
-        self.action_submit()
+        self._advance_after_reserved()
         return {
             "type": "ir.actions.act_window",
             "res_model": "approval.request",
@@ -980,20 +983,18 @@ class ApprovalRequest(models.Model):
 
     @api.onchange("budget_selection_mode")
     def _onchange_budget_selection_mode(self):
-        """Clear whichever side of the choice is now inactive.
+        """Clear every budget-selection input on any mode switch.
 
         ``budget_selection_mode`` is a **UI affordance only** — the server still
         keys draw-down off the presence of ``reservation_commitment_id``
-        (ADR-0010), never off this field. Leaving the unused side filled would
-        make the form say one thing and the reserve action do another: a stale
-        chart selection under "หยิบจากใบจอง", or a stale slip under "เลือกจากผัง"
-        that would silently draw instead of reserving.
+        (ADR-0010), never off this field. Leaving a prior mode's input filled
+        would make the form say one thing and the reserve action do another: a
+        stale chart selection under a draw-down mode, or a stale slip under
+        "ใช้เงินจากแผน" that would silently draw instead of reserving.
         """
-        if self.budget_selection_mode == "chart":
-            self.reservation_commitment_id = False
-        else:
-            self.budget_account_id = False
-            self.analytic_distribution = False
+        self.reservation_commitment_id = False
+        self.budget_account_id = False
+        self.analytic_distribution = False
 
     def _cancel_budget_commitment(self):
         """A drawn reservation belongs to its owner, never to this request — detach

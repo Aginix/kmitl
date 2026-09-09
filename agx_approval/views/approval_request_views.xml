@@ -159,29 +159,29 @@
                             widget="budget_commitment_info"
                             domain="[('id', 'in', allowed_reservation_commitment_ids)]"
                             options="{'no_create': True, 'no_open': True}"
-                            attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '!=', 'reservation'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                            attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '=', 'normal'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
                             placeholder="เลือกใบจองงบประมาณที่จะหยิบไปใช้" />
 
                         <button name="action_open_reservation_picker" type="object"
                             string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
                             class="btn btn-primary mb-2" icon="fa-sitemap" colspan="2"
-                            attrs="{'invisible': ['|', '|', ('is_budget_editable', '=', False), ('reservation_commitment_id', '!=', False), ('budget_selection_mode', '!=', 'chart')]}" />
+                            attrs="{'invisible': ['|', '|', ('is_budget_editable', '=', False), ('reservation_commitment_id', '!=', False), ('budget_selection_mode', '!=', 'normal')]}" />
                         <!-- Only while budget is still being chosen from the chart:
                              once reserved the same values are in the card above, and
                              under the reservation mode they come from the slip. -->
                         <field name="budget_account_id" readonly="1"
                             options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
                         <field name="activity_analytic_id" readonly="1"
                             options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
                         <field name="department_analytic_id" readonly="1"
                             options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
                         <field name="fund_analytic_id" widget="selection" readonly="1"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
                         <field name="source_analytic_id" widget="selection" readonly="1"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
                         <field name="account_fiscal_year_id" readonly="1"
                             options="{'no_open': True}"
                             attrs="{'invisible': ['&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />

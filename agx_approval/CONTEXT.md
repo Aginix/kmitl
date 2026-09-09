@@ -54,6 +54,14 @@ _Avoid_: the recipient's loan, borrower's loan (it may be someone else's), auto-
 The clerk returning a *not-yet-sent* request to `draft` (via a confirm wizard, releasing the budget reservation), available only before the หนังสือ is sent to e-Saraban. **Distinct** from e-Saraban's own ดึงกลับ/ตีกลับ, which act on a *circulating* หนังสือ and land the request in `returned`.
 _Avoid_: recall (that is e-Saraban's, on a circulating document), reset
 
+**Budget Selection Mode (วิธีเลือกงบประมาณ)**:
+The up-front choice of how a request gets its budget (`budget_selection_mode`). Base ships **`normal`** (ใช้เงินจากแผน — reserve a new commitment from the budget chart, scoped by the category's non-procurement baseline and any pinned code, [ADR-0004](docs/adr/0004-budget-code-selection-scoped-by-category-non-procurement.md)). A bridge (`kmitl_project_agx_approval`) adds **`project`** (โครงการ/กิจกรรม — draw down a commitment a `kmitl.project` already reserved for itself; the category pin does not apply). A UI affordance only — the server always keys draw-down off `reservation_commitment_id`, never off this field.
+_Avoid_: the removed generic "draw any existing reservation" mode — each mode now scopes its own draw-eligible slips
+
+**Project-Funded Request (คำขอใช้งบโครงการ)**:
+An approval request in `project` mode. Its money was already authorized when the `kmitl.project` itself was approved (kmitl_project [ADR-0005](../kmitl_project/docs/adr/0005-approval-gated-lifecycle-esaraban.md)), so spending it is bookkeeping, not a fresh authorization — the request **skips e-Saraban entirely**, jumping `to_verify → approved` on draw ([ADR-0005](docs/adr/0005-project-mode-auto-approve-skips-esaraban.md)). No expense-side manager approval, no หนังสือ, no expense-side PDF (the project's own letter is the authority).
+_Avoid_: assuming every request routes through e-Saraban when the Sarabun bridge is installed — project mode is the one path that deliberately does not
+
 **Disbursement Voucher Cover Sheet (งบหน้าใบสำคัญคู่จ่าย)**:
 The **PDF report** (`report_disbursement_voucher`) over the Actual Expense Allocation — grouped per recipient × expense type, with withholding-tax columns (from the recipient's partner-type WHT) and the dean's signature. Each recipient may have made their own loan or fronted their own money, so there is no single ผู้ทดรองจ่าย designation.
 _Avoid_: disbursement request (that is the payment document itself)

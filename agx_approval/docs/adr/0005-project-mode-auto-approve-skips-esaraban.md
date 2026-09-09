@@ -1,0 +1,21 @@
+# Project-mode approval requests are auto-approved on budget draw, skipping e-Saraban
+
+The budget step (`budget_selection_mode`) is now an explicit up-front choice between exactly two ways to fund a request: `normal` (ใช้เงินจากแผน — reserve a new commitment from the budget chart) and, when `kmitl_project_agx_approval` is installed, `project` (โครงการ/กิจกรรม — draw down a `budget.commitment` a `kmitl.project` already reserved for itself). The generic draw-any-existing-reservation mode this replaced is removed outright: base `agx_approval` never draws (`_reservation_commitment_mode_domain` defaults to `[("id", "=", False)]`), and each bridge scopes its own mode to exactly the slips it is entitled to.
+
+`project` mode is more than a different draw source: **it also skips e-Saraban entirely.** A project that reached `in_progress` already passed its own formal approval (จัดโครงการ + ขอใช้เงิน) and holds a reserved commitment for it (kmitl_project [ADR-0005](../../../kmitl_project/docs/adr/0005-approval-gated-lifecycle-esaraban.md)). Spending that money through an expense request is bookkeeping against an already-authorized budget, not a fresh authorization request — routing it through a second หนังสือ would ask the same institute to approve the same money twice. `kmitl_project_agx_approval_sarabun` overrides the new `_advance_after_reserved()` seam: for `project` mode it sets `state = "approved"` directly instead of calling `super()` (which submits to `to_send`). The request never rests in `to_send`, so `agx_approval_sarabun`'s routing button and `_sarabun_submit_guard` (which only fires from `to_send`) never see it — no code in that module needed to change.
+
+The category's pinned `budget_account_id` ([ADR-0004](0004-budget-code-selection-scoped-by-category-non-procurement.md)) constrains `normal` mode only. `project` mode instead validates `commitment.account_id.is_project` and ignores the pin — the category classifies what a *new* reservation may spend on; a project's own budget code was already vetted when the project itself reserved it.
+
+## Considered Options
+
+- **Keep a single generic "draw existing" mode and let project slips fall into it.** Rejected: it would still route through e-Saraban like any other draw, contradicting the "already approved upstream" rationale, and would force the picker to mix project and non-project slips under one unclear label.
+- **Auto-approve any draw-down, not just project mode.** Rejected: a non-project reservation drawn from another unit was not itself independently approved — only a project's own commitment carries an approval that makes a second one redundant.
+- **Model the skip as a state-machine shortcut inside base `agx_approval`** (e.g. a `kmitl_project_id` check baked into `_advance_after_reserved`). Rejected: base `agx_approval` has no dependency on `kmitl_project` and must not acquire one; the seam exists precisely so a bridge can express this without base knowing projects exist.
+
+## Consequences
+
+- No expense-side manager approval and no หนังสือ for project-funded requests — `action_approve` never becomes reachable (the request skips `to_send`/`sent` entirely) and the statusbar simply jumps `to_verify → approved`.
+- No expense-side PDF for project mode: the project's own e-Saraban letter is the authority. `agx_approval_sarabun`'s report/body-fragment plumbing is guarded by `sarabun_state`/document presence and degrades to empty for an approved-without-document request — verified, not patched.
+- Cancel/reset never cancels the shared project commitment, only detaches this request from it (base `_cancel_budget_commitment`, unchanged) — a second request can still draw the same slip afterwards.
+- No draw-time cap beyond `available_to_obligate > 0`: real availability is enforced by `budget.controller` at disbursement (obligate/consume), since a draw only adopts the slip.
+- `budget_selection_mode` is a UI affordance only, never the server's source of truth for draw-down (that remains `reservation_commitment_id`, ADR-0010) — `_onchange_budget_selection_mode` clears every selection input on any mode switch so the form can never show one path while the reserve action takes another.
