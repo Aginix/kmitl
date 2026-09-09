@@ -583,17 +583,45 @@ class ReceiptKmitl(models.Model):
             rec.state = "done"
         return True
 
-    def _prepare_debit_line_vals(self):
+    def _prepare_debit_line_vals(self, line):
         self.ensure_one()
         method = self.payment_method_id
         return {
             "name": _("Receipt %s") % self.name,
             "account_id": method.account_id.id,
-            "debit": self.amount_total,
+            "debit": line.amount,
             "credit": 0.0,
             "partner_id": self.partner_id.id,
             "currency_id": self.currency_id.id,
+            "analytic_distribution": line.analytic_distribution,
         }
+
+    def _prepare_deposit_line_vals(self):
+        """Dr/Cr pair remitting the receipt's full total from the Cash
+        Account to the Deposit Bank Account (นำเงินส่งคลัง)."""
+        self.ensure_one()
+        method = self.payment_method_id
+        name = _("Receipt %s") % self.name
+        return [
+            {
+                "name": name,
+                "account_id": method.deposit_account_id.id,
+                "debit": self.amount_total,
+                "credit": 0.0,
+                "partner_id": self.partner_id.id,
+                "currency_id": self.currency_id.id,
+                "analytic_distribution": self.analytic_distribution,
+            },
+            {
+                "name": name,
+                "account_id": method.account_id.id,
+                "debit": 0.0,
+                "credit": self.amount_total,
+                "partner_id": self.partner_id.id,
+                "currency_id": self.currency_id.id,
+                "analytic_distribution": self.analytic_distribution,
+            },
+        ]
 
     def _prepare_move_line_vals(self, line):
         self.ensure_one()
@@ -622,11 +650,18 @@ class ReceiptKmitl(models.Model):
         method = self.payment_method_id
         if not method.account_id:
             raise UserError(
-                _("Payment method '%s' has no debit account.") % method.name
+                _("Payment method '%s' has no Cash Account.") % method.name
             )
-        line_vals = [(0, 0, self._prepare_debit_line_vals())]
+        if not method.deposit_account_id:
+            raise UserError(
+                _("Payment method '%s' has no Deposit Bank Account.") % method.name
+            )
+        line_vals = []
         for line in self.line_ids:
+            line_vals.append((0, 0, self._prepare_debit_line_vals(line)))
             line_vals.append((0, 0, self._prepare_move_line_vals(line)))
+        for vals in self._prepare_deposit_line_vals():
+            line_vals.append((0, 0, vals))
         move = self.env["account.move"].create(self._prepare_move_vals(line_vals))
         move.action_post()
         return move
