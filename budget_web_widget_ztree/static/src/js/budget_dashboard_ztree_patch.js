@@ -5,13 +5,8 @@ import { Ztree } from "@app_web_widget_ztree/js/ztree";
 import { BudgetDashboard } from "@budget/dashboard/budget_dashboard";
 import { BudgetReservationPicker } from "@budget/reservation_picker/budget_reservation_picker";
 
-// Same field choices as the budget.commitment form (budget_web_widget_ztree's
-// view inherit): code feeds the "[code] name" tree-node label, complete_name
-// feeds the bare value shown once a node is picked.
 const DIM_ZTREE_OPTIONS = {
     parent_key: "parent_id",
-    code_field: "code",
-    display_field: "complete_name",
     expend_level: "1",
     order: "code",
 };
@@ -21,11 +16,11 @@ patch(BudgetDashboard, "budget_web_widget_ztree.BudgetDashboard.static", {
 });
 
 patch(BudgetDashboard.prototype, "budget_web_widget_ztree.BudgetDashboard", {
-    // Tree-shaped nodes (id/name/pId/display_value) straight from
-    // search_ztree, scoped to the dimension's analytic plan — in place of the
-    // core's flat {label, accountId} options built via searchRead. No
-    // "— ทั้งหมด —" node: clearing the filter still goes through onDimInput
-    // (delete the input text), same as before.
+    // Tree-shaped nodes (id/name/pId) straight from search_ztree, scoped to
+    // the dimension's analytic plan — in place of the core's flat
+    // {label, accountId} options built via searchRead. No "— ทั้งหมด —" node:
+    // clearing the filter still goes through onDimInput (delete the input
+    // text), same as before.
     sourcesFor(dim) {
         return [
             {
@@ -68,7 +63,7 @@ patch(BudgetDashboard.prototype, "budget_web_widget_ztree.BudgetDashboard", {
             return;
         }
         this.state.filters[dimKey] = node.id;
-        this.state.filterLabels[dimKey] = node.display_value || node.name;
+        this.state.filterLabels[dimKey] = node.name;
         this.load();
     },
 });
