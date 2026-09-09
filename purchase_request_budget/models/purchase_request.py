@@ -30,14 +30,15 @@ class PurchaseRequest(models.Model):
     )
     budget_selection_mode = fields.Selection(
         selection=[
-            ("normal", "ใช้เงินจากแผน (จองงบใหม่)"),
+            ("normal", "จองงบใหม่จากผังงบประมาณ"),
         ],
-        string="วิธีเลือกงบประมาณ",
+        string="แหล่งงบประมาณ",
         default="normal",
         copy=False,
         help=(
-            "เลือกว่าจะจองงบใหม่โดยเลือกมิติจากผังงบประมาณ "
-            "หรือหยิบใบจองงบประมาณที่มีอยู่ไปใช้ (ตัวเลือกเพิ่มเติมจากโมดูลเสริม)"
+            "งบของใบขอซื้อนี้มาจากไหน — จองใหม่จากผังงบประมาณ หรือหยิบใบจองงบประมาณ "
+            "ของโครงการ/แผนจัดซื้อจัดจ้างไปใช้ (แต่ละแหล่งเป็นของโมดูลที่เป็นเจ้าของ "
+            "ต้นทางนั้น) ใบจองที่ไม่มีต้นทางใช้กับใบขอซื้อไม่ได้ — budget ADR-0015"
         ),
     )
     reservation_commitment_id = fields.Many2one(
@@ -201,29 +202,21 @@ class PurchaseRequest(models.Model):
             else:
                 rec.is_budget_editable = rec.is_editable
 
-    @api.depends(
-        "state",
-        "budget_commitment_id",
-        "budget_commitment_id.state",
-        "is_budget_editable",
-    )
+    @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
     def _compute_hide_reserve_budget_button(self):
+        # Only at the budget step, and only while no live commitment exists —
+        # cancel-then-reserve-again is reachable, so the state of the linked
+        # commitment is part of the condition, not just its presence.
+        # ดึงกลับ (Reset) deliberately does *not* reopen this: a recalled
+        # project/plan พ.1 keeps its shared commitment and stays on its source,
+        # so there is nothing to re-draw in draft (ADR-0015).
         for rec in self:
-            at_reserve_stage = rec.state == "to_approve" and (
-                not rec.budget_commitment_id
-                or rec.budget_commitment_id.state == "cancel"
-            )
-            # A recalled project/plan PR keeps its (active) commitment but reopens
-            # budget selection in draft (ดึงกลับ) — offer the จองงบ button so a
-            # changed ใบจองงบประมาณ can be re-drawn.
-            recalled_reselect = (
-                rec.state == "draft"
-                and rec.is_budget_editable
-                and rec.budget_commitment_id
-                and rec.budget_commitment_id.state != "cancel"
-            )
             rec.hide_reserve_budget_button = not (
-                at_reserve_stage or recalled_reselect
+                rec.state == "to_approve"
+                and (
+                    not rec.budget_commitment_id
+                    or rec.budget_commitment_id.state == "cancel"
+                )
             )
 
     def _inverse_activity_analytic(self):
@@ -406,20 +399,22 @@ class PurchaseRequest(models.Model):
     def _check_drawable_commitment(self, commitment):
         """Raise if this document may not draw ``commitment``.
 
-        Base blocks any budget code the request could not itself select
-        (purchasable, product-backed — draw-down writes budget_account_id
-        directly, bypassing the UI-only field domain). Plan/project bridges
-        extend this to block their own shared commitments, which are drawn only
-        through their dedicated create-from-source flow (ADR-0006/0007).
+        A พ.1 may only spend a reservation backed by a โครงการ or a
+        แผนจัดซื้อจัดจ้าง — money reserved with nothing behind it does not
+        satisfy ระเบียบการจัดซื้อจัดจ้าง (ADR-0015, withdrawing ADR-0010's
+        standalone draw-down for this document only; ``approval.request`` keeps
+        it). The base therefore refuses **every** slip and each source bridge
+        overrides this for its own, so the rule holds even for a slip injected
+        through a context default or RPC — where ``budget_selection_mode``, a UI
+        affordance only (ADR-0010), is never consulted.
         """
-        if not self.env["budget.account"].search_count(
-            self._reservation_account_domain()
-            + [("id", "=", commitment.account_id.id)]
-        ):
-            raise UserError(
-                _("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้")
+        raise UserError(
+            _(
+                "ใบจองงบประมาณ %s ไม่มีต้นทางโครงการหรือแผนจัดซื้อจัดจ้าง "
+                "จึงใช้กับใบขอซื้อไม่ได้ตามระเบียบการจัดซื้อจัดจ้าง"
             )
-        return True
+            % commitment.display_name
+        )
 
     @api.onchange("reservation_commitment_id")
     def _onchange_reservation_commitment_id(self):
@@ -448,15 +443,22 @@ class PurchaseRequest(models.Model):
 
     @api.onchange("budget_selection_mode")
     def _onchange_budget_selection_mode(self):
-        """Start budget selection fresh whenever the mode changes.
+        """Start budget selection fresh whenever the แหล่งงบประมาณ changes.
 
         ``budget_selection_mode`` is a **UI affordance only** — the server still
         keys draw-down off the presence of ``reservation_commitment_id``
         (ADR-0010), never off this field. Clear both the reservation pick and the
-        accounting dimensions so nothing carries over from the previous mode: in
-        particular, switching back to ``normal`` after picking a ใบจองงบประมาณ
+        accounting dimensions so nothing carries over from the previous source:
+        in particular, switching back to ``normal`` after picking a ใบจองงบประมาณ
         must not leave that commitment's dimensions on the form, or the user
         could reserve new budget against them.
+
+        Note this also runs on the **first onchange of a new record** (Odoo fires
+        every onchange when the client asks with no field name), so it wipes any
+        ``default_budget_account_id`` / ``default_analytic_distribution`` a
+        create-from-source action passed in. Source bridges must therefore write
+        their budget context **server-side** on create rather than relying on
+        those context defaults surviving (ADR-0007).
         """
         self.reservation_commitment_id = False
         self.budget_account_id = False

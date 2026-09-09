@@ -23,6 +23,12 @@ upfront.
     budget-transfer feature (การโอนงบ) split out of core `budget`. `budget.transfer` is
     a 1:1 delegated `budget.move` (the `account.payment` ↔ `account.move` pattern) with
     its lines folded into `budget.move.line`; see budget ADR-0013.
+  - **`purchase_request_budget`** + its source bridges `kmitl_project_purchase_request`
+    and `purchase_request_procurement_plan` (no own glossary — part of the Budget
+    context): give a ใบขอซื้อ (พ.1) its **แหล่งงบประมาณ** — reserve anew from the
+    ผังงบประมาณ, or draw the reservation of a โครงการ or a แผนจัดซื้อจัดจ้าง. Each bridge
+    owns its own answer; a source-less ใบจองงบประมาณ is not an option here (budget
+    ADR-0015).
 - [Budget Appropriation Summary](./budget_appropriation_summary/CONTEXT.md) —
   institution-wide roll-up of unit appropriations for one fiscal year × source
   (สรุปภาพรวมสถาบัน gathering รวมเล่มหน่วยงาน), rendering the F-series summary reports

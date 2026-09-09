@@ -47,9 +47,17 @@ class PurchaseRequest(models.Model):
         return super()._domain_budget_account_id() + [("procurement_plan", "=", False)]
 
     def _reservation_commitment_mode_domain(self):
+        # ``verified`` is the plan's only drawable state and expresses ADR-0006's
+        # one-active-PR rule in the picker itself, exactly as ADR-0010 describes
+        # it: drawing moves the plan to ``in_progress``, so a plan that already
+        # has an active PR drops out of the dropdown, and a rejected PR bounces
+        # the plan back to ``verified`` and makes it offerable again.
         domain = super()._reservation_commitment_mode_domain()
         if self.budget_selection_mode == "procurement_plan":
-            domain = domain + [("account_id.procurement_plan", "=", True)]
+            domain = domain + [
+                ("account_id.procurement_plan", "=", True),
+                ("procurement_plan_id.state", "=", "verified"),
+            ]
         return domain
 
     def _check_drawable_commitment(self, commitment):
@@ -80,10 +88,12 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         super()._compute_is_budget_editable()
         for rec in self:
-            # Lock the budget while a plan PR is live, but reopen it once recalled
-            # to draft (ดึงกลับ keeps the commitment — see
-            # _release_commitment_on_draft) so the user can change the ใบจองงบประมาณ.
-            if rec.use_procurement_plan and rec.state != "draft":
+            # Once a พ.1 is attributed to a plan its budget is the plan's, in
+            # every state — ดึงกลับ recalls the request for editing, it does not
+            # reopen the แหล่งงบประมาณ (ADR-0015). The PR-first draw is
+            # unaffected: ``use_procurement_plan`` is still False while the slip
+            # is being picked, and is written only by the draw itself.
+            if rec.use_procurement_plan:
                 rec.is_budget_editable = False
 
     @api.onchange("use_procurement_plan", "procurement_plan_id")
@@ -171,7 +181,11 @@ class PurchaseRequest(models.Model):
             self.budget_commitment_id = commitment.id
             if plan.state == "verified":
                 plan.action_in_progress()
-            self.button_to_approve()
+            # Same rail as the reserve-new path: จองงบ advances to to_submit and
+            # the ขออนุมัติ step is a separate press. (ADR-0006 described this as
+            # to_verify → to_approve, but to_approve_allowed is keyed on
+            # to_submit, so button_to_approve() here always raised.)
+            self.button_to_submit()
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",
@@ -192,6 +206,17 @@ class PurchaseRequest(models.Model):
         ``_check_drawable_commitment``, and advances state."""
         plan = self.reservation_commitment_id.procurement_plan_id
         if plan:
+            # Backstop for the picker domain: a พ.1 may only realise a plan that
+            # is waiting to be realised, and the picker is not the only way in
+            # (context default, RPC) — ADR-0006, budget ADR-0015.
+            if plan.state != "verified":
+                raise UserError(
+                    _(
+                        "แผนจัดซื้อจัดจ้าง %s ไม่อยู่สถานะรอดำเนินการ "
+                        "จึงยังใช้ใบจองงบประมาณของแผนไม่ได้"
+                    )
+                    % plan.display_name
+                )
             self._check_one_active_pr(plan)
             self.write(
                 {
@@ -200,8 +225,7 @@ class PurchaseRequest(models.Model):
                     "procurement_method_id": plan.procurement_method_id.id,
                 }
             )
-            if plan.state == "verified":
-                plan.action_in_progress()
+            plan.action_in_progress()
         return super()._action_draw_from_reservation()
 
     def _release_commitment_on_draft(self):
@@ -250,18 +274,37 @@ class PurchaseRequest(models.Model):
     def _link_to_procurement_plan(self):
         """A plan-driven PR (created from the plan, ADR-0006) enforces one active
         PR per plan, links the plan's already-reserved shared commitment, and
-        starts the plan. Reservation itself happened at appropriation post."""
+        starts the plan. Reservation itself happened at appropriation post.
+
+        The plan's budget context — budget account, fiscal year and the full
+        analytic distribution — is written here **server-side** instead of being
+        left to the create-from-plan context defaults: those defaults are wiped
+        by ``_onchange_budget_selection_mode`` on the form's first onchange pass,
+        and only happen to survive today because
+        ``_onchange_procurement_plan_id`` runs after it. Same guarantee a project
+        พ.1 already has in ``_link_to_project`` (budget ADR-0007)."""
         self.ensure_one()
         plan = self.procurement_plan_id
-        if not self.use_procurement_plan:
-            self.use_procurement_plan = True
         self._check_one_active_pr(plan)
+        vals = {
+            "use_procurement_plan": True,
+            "budget_account_id": plan.budget_account_id.id,
+            "account_fiscal_year_id": plan.account_fiscal_year_id.id,
+            "analytic_distribution": plan.analytic_distribution or False,
+        }
         if not self.budget_commitment_id:
             commitment = plan.budget_commitment_ids.filtered(
                 lambda c: c.state in ("reserved", "partial")
             )[:1]
             if commitment:
-                self.budget_commitment_id = commitment.id
+                vals["budget_commitment_id"] = commitment.id
+        self.write(vals)
+        # write() does not fire the form's _onchange_analytic_distribution, so
+        # push the plan's distribution onto any existing lines explicitly.
+        if self.line_ids and plan.analytic_distribution:
+            self.line_ids.write(
+                {"analytic_distribution": plan.analytic_distribution}
+            )
         if plan.state == "verified":
             plan.action_in_progress()
 

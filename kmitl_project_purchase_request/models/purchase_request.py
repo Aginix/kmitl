@@ -62,9 +62,18 @@ class PurchaseRequest(models.Model):
         return super()._domain_budget_account_id() + [("is_project", "=", False)]
 
     def _reservation_commitment_mode_domain(self):
+        # The project's approval gate rides in the picker itself, so an
+        # ineligible slip is never offered (ADR-0010's precedent: the picker
+        # excludes plan slips that already have an active PR). Needed because
+        # the reservation is minted at the project's to_verify → to_send step —
+        # a project still awaiting its signed หนังสือ therefore holds a live
+        # commitment that must not be spendable yet (kmitl_project ADR-0005).
         domain = super()._reservation_commitment_mode_domain()
         if self.budget_selection_mode == "project":
-            domain = domain + [("account_id.is_project", "=", True)]
+            domain = domain + [
+                ("account_id.is_project", "=", True),
+                ("kmitl_project_id.state", "=", "in_progress"),
+            ]
         return domain
 
     def _check_drawable_commitment(self, commitment):
@@ -89,10 +98,12 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         super()._compute_is_budget_editable()
         for rec in self:
-            # Lock the budget while a project PR is live, but reopen it once
-            # recalled to draft (ดึงกลับ keeps the commitment — see
-            # _release_commitment_on_draft) so the user can change the ใบจองงบประมาณ.
-            if rec.use_project and rec.state != "draft":
+            # Once a พ.1 is attributed to a project its budget is the project's,
+            # in every state — ดึงกลับ recalls the request for editing, it does
+            # not reopen the แหล่งงบประมาณ (ADR-0015). The PR-first draw is
+            # unaffected: ``use_project`` is still False while the slip is being
+            # picked, and is written only by the draw itself.
+            if rec.use_project:
                 rec.is_budget_editable = False
 
     # No _onchange to prefill from the project on purpose. A project-driven พ.1 is
@@ -159,7 +170,11 @@ class PurchaseRequest(models.Model):
                 )
             self._enforce_project_budget_cap(project)
             self.budget_commitment_id = commitment.id
-            self.button_to_approve()
+            # Same rail as the reserve-new path: จองงบ advances to to_submit and
+            # the ขออนุมัติ step is a separate press. (ADR-0006 described this as
+            # to_verify → to_approve, but to_approve_allowed is keyed on
+            # to_submit, so button_to_approve() here always raised.)
+            self.button_to_submit()
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",
@@ -181,6 +196,17 @@ class PurchaseRequest(models.Model):
         ``is_budget_editable`` (both keyed on ``use_project``) behave."""
         project = self.reservation_commitment_id.kmitl_project_id
         if project:
+            # Backstop for the picker domain: a พ.1 may only be raised from an
+            # approved project, and the picker is not the only way in (context
+            # default, RPC) — kmitl_project ADR-0005, budget ADR-0015.
+            if project.state != "in_progress":
+                raise UserError(
+                    _(
+                        "โครงการ %s ยังไม่ได้รับอนุมัติและกำลังดำเนินการ "
+                        "จึงยังใช้ใบจองงบประมาณของโครงการไม่ได้"
+                    )
+                    % project.display_name
+                )
             self.write({"use_project": True, "kmitl_project_id": project.id})
             self._enforce_project_budget_cap(project)
         return super()._action_draw_from_reservation()
