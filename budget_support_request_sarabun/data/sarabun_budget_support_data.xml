@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Placeholder approving position, seeded with no holder — assign the
+         real holder(s) in Configuration ▸ Positions before go-live.
+         noupdate="1" so the holder assignment survives module upgrades. -->
+    <data noupdate="1">
+        <record id="position_budget_support_request_approver" model="sarabun.position">
+            <field name="name">ผู้อนุมัติการสนับสนุนงบประมาณ (Budget Support Request Approver)</field>
+        </record>
+    </data>
+
+    <data noupdate="0">
+        <!-- Seed route: one gating/signature step, อนุมัติ. -->
+        <record id="route_template_budget_support_request" model="sarabun.route.template">
+            <field name="name">ขออนุมัติสนับสนุนงบประมาณ</field>
+            <field name="description">Route template for budget support request approval (สนับสนุนงบประมาณ)</field>
+            <!-- Documentation only — the origin_model auto-matcher is dormant
+                 (find_matching_templates is never called). The live wiring is
+                 the document type's default_route_id below. -->
+            <field name="origin_model">budget.support.request</field>
+            <field name="sequence">10</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="route_template_line_budget_support_request_approve" model="sarabun.route.template.line">
+            <field name="template_id" ref="route_template_budget_support_request"/>
+            <field name="order">10</field>
+            <field name="verb" ref="agx_sarabun.verb_approve"/>
+            <field name="target_mode">position</field>
+            <field name="position_id" ref="position_budget_support_request_approver"/>
+        </record>
+
+        <!-- THE live wiring: type.default_route_id → template. -->
+        <record id="document_type_budget_support_request" model="sarabun.document.type">
+            <field name="name">ขออนุมัติสนับสนุนงบประมาณ</field>
+            <field name="kind">from_record</field>
+            <field name="default_route_id" ref="route_template_budget_support_request"/>
+        </record>
+    </data>
+
+</odoo>

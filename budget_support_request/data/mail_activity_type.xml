@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- approved -> officer: fulfil (โอน/จอง) the approved request -->
+    <record id="mail_activity_support_fulfil" model="mail.activity.type">
+        <field name="name">ดำเนินการจัดสรรงบประมาณ</field>
+        <field
+            name="summary"
+        >Fulfil the approved budget support request by transfer (โอน) or reservation (จอง)</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">budget.support.request</field>
+        <field name="icon">fa-share-square-o</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- done -> requester: acknowledge the allocation made -->
+    <record id="mail_activity_support_ack" model="mail.activity.type">
+        <field name="name">รับทราบผลการจัดสรร</field>
+        <field
+            name="summary"
+        >Acknowledge the allocation central has made for your budget support request</field>
+        <field name="todo_category">acknowledgement</field>
+        <field name="res_model">budget.support.request</field>
+        <field name="icon">fa-check-square-o</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>
