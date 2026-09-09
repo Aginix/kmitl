@@ -69,7 +69,7 @@ class PurchaseGuarantee(models.Model):
 
         if self.has_active_payment:
             raise UserError(
-                _("หลักประกันนี้มีใบ Payment ที่ใช้งานอยู่แล้ว ไม่สามารถสร้างใหม่ได้")
+                _("This guarantee already has an active payment. A new one cannot be created.")
             )
 
         vals = self._prepare_account_payment_vals()
