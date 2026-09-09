@@ -5,9 +5,10 @@
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["budget", "app_web_widget_ztree"],
+    "depends": ["budget", "budget_transfer", "app_web_widget_ztree"],
     "data": [
         "views/budget_commitment_views.xml",
+        "views/budget_transfer_views.xml",
     ],
     "assets": {
         "web.assets_backend": [
