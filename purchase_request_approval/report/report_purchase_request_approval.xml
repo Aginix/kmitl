@@ -209,6 +209,7 @@
 
         <div class="my-4" />
         <p>รายละเอียดงบประมาณ</p>
+        <t t-call="purchase_request_approval.report_purchase_request_budget" />
 
         <div class="my-4" />
         <div class="mb-2">
@@ -256,21 +257,7 @@
         <p>เนื่องจากเป็นผู้ประกอบการ</p>
 
         <ol>
-            <li> อนุมัติให้คณะกรรมการตรวจรับพัสดุ ประกอบด้วย <ul
-                    style="list-style-type: none; margin-left: 20px"
-                >
-                    <t t-set="idx" t-value="0" />
-                    <t
-                        t-foreach="o.work_acceptance_committee_ids"
-                        t-as="committee"
-                    >
-                        <t t-set="idx" t-value="idx + 1" />
-                        <li><t t-esc="idx" />. <t
-                                t-esc="committee.name"
-                            /></li>
-                    </t>
-                </ul>
-            </li>
+            <t t-call="purchase_request_approval.report_purchase_request_committee" />
             <li>บันทึกชี้แจงเพิ่มเติม (ถ้ามี)</li>
         </ol>
     </template>
