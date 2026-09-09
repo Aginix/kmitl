@@ -86,14 +86,17 @@ no document and no state, and every term it uses is theirs.
 
 ## Rules
 
-- **An ใบเสร็จรับเงิน never settles an ใบตั้งหนี้.** A receipt books **Dr cash/bank**
-  (`payment_method_id.account_id`) / **Cr income** (`line.account_id`) and touches no
-  receivable at all (`kmitl.receipt._prepare_debit_line_vals` /
-  `_prepare_move_line_vals`), so receipting a customer who is paying an invoice would
-  book the revenue a second time. The two money-in reports therefore read two different
-  documents and never mix them: การรับเงิน counts receipts, การตั้งลูกหนี้ and
-  ลูกหนี้ถึงกำหนดชำระ count invoices. Money that settles an ใบตั้งหนี้ is outside every
-  report here until that settlement has a workflow of its own.
+- **An ใบเสร็จรับเงิน never settles an ใบตั้งหนี้.** A receipt's entry is a **Dr Cash
+  Account / Cr revenue** pair per line (`payment_method_id.account_id` against
+  `line.account_id`) and a **Dr Deposit Bank Account / Cr Cash Account** remittance leg
+  for the total (`payment_method_id.deposit_account_id`) — see `receipt_kmitl`
+  [ADR-0004](../receipt_kmitl/docs/adr/0004-treasury-remittance-leg-in-the-receipt-entry.md).
+  Not one of the three legs is a receivable, so receipting a customer who is paying an
+  invoice would book the revenue a second time and leave the invoice open. The two
+  money-in reports therefore read two different documents and never mix them:
+  การรับเงิน counts receipts, การตั้งลูกหนี้ and ลูกหนี้ถึงกำหนดชำระ count invoices.
+  Money that settles an ใบตั้งหนี้ is outside every report here until that settlement
+  has a workflow of its own.
 - **The report is not a second opinion about what a record means.** Which bills and
   invoices are still owed is `accounting.kmitl.dashboard._UNPAID_STATES`, borrowed
   rather than restated, so the card the accounting office reads every morning and these

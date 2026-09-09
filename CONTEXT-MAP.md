@@ -115,6 +115,11 @@ upfront.
   (สัญญายืมเงิน); a single-disbursement loan to one borrower, tracked from request
   through clearing to closure. A borrower may hold only one active agreement at a time,
   so multi-activity needs are met by serial borrowing.
+- [Receipt KMITL](./receipt_kmitl/CONTEXT.md) — cash receipting and central-posting
+  workflow (ใบเสร็จรับเงิน สจล.); a department issues receipts and bundles them into
+  a Receipt Remittance (รายงานนำส่งคลัง) that treasury posts, generating one journal
+  entry per receipt with a Remit to Treasury (นำเงินส่งคลัง) leg into the payment
+  method's deposit account, alongside the 6D dimensions on every line.
 
 ## Relationships
 
@@ -231,3 +236,10 @@ upfront.
   พ.1/`budget.move` carries the **beneficiary's OU** (budget ADR-0010, ADR-0011).
   Consuming documents (`purchase.request`, `approval.request`) may **pick** any drawable
   commitment — standalone, plan or project — instead of reserving their own.
+- **Receipt KMITL → GL**: posting a `kmitl.receipt.remittance` (treasury action)
+  creates one `account.move` per receipt directly — no budget or disbursement layer
+  in between. Every line carries the receipt's 6D `analytic_distribution`, including
+  the Remit to Treasury (นำเงินส่งคลัง) pair that moves the cash received into the
+  payment method's Deposit Bank Account; that pair shares its dimensions with the
+  revenue line it mirrors, so its analytic balance nets to zero by design
+  (`receipt_kmitl` ADR-0004).

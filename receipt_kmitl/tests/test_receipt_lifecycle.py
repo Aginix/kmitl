@@ -42,23 +42,96 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
         self.assertTrue(receipt.move_id)
         self.assertEqual(receipt.move_id.state, "posted")
 
-        debit_lines = receipt.move_id.line_ids.filtered(lambda l: l.debit > 0)
-        self.assertEqual(debit_lines.account_id, self.cash_account)
-        self.assertEqual(sum(debit_lines.mapped("debit")), 5200.0)
+        cash_debit_lines = receipt.move_id.line_ids.filtered(
+            lambda l: l.account_id == self.cash_account and l.debit
+        )
+        self.assertEqual(sum(cash_debit_lines.mapped("debit")), 5200.0)
 
-        credit_lines = receipt.move_id.line_ids.filtered(lambda l: l.credit > 0)
+        credit_lines = receipt.move_id.line_ids.filtered(
+            lambda l: l.credit > 0 and l.account_id != self.cash_account
+        )
         self.assertEqual(
             set(credit_lines.mapped("account_id")),
             {self.income_tuition, self.income_other},
         )
         self.assertEqual(sum(credit_lines.mapped("credit")), 5200.0)
 
+        # Every debit is mirrored by a credit of the same total: N revenue
+        # pairs plus the treasury-remittance pair.
+        debit_lines = receipt.move_id.line_ids.filtered(lambda l: l.debit > 0)
+        self.assertEqual(sum(debit_lines.mapped("debit")), 5200.0 * 2)
+
     def test_post_uses_payment_method_account(self):
         receipt = self._make_receipt(method=self.pm_transfer)
         receipt._action_post()
-        debit_lines = receipt.move_id.line_ids.filtered(lambda l: l.debit > 0)
-        self.assertEqual(debit_lines.account_id, self.bank_account)
+        cash_debit_line = receipt.move_id.line_ids.filtered(
+            lambda l: l.account_id == self.bank_account and l.debit
+        )
+        self.assertEqual(len(cash_debit_line), 1)
+        self.assertEqual(cash_debit_line.debit, receipt.amount_total)
         self.assertEqual(receipt.move_id.journal_id, self.bank_journal)
+
+    def test_post_matches_treasury_voucher_pattern(self):
+        """Reproduces ledger voucher #3607097: Dr Cash Account paired 1:1
+        with each revenue line, then a Dr Deposit Bank Account / Cr Cash
+        Account pair remitting the full total to the treasury.
+        """
+        amounts = [4200.0, 1810.0, 20180.0, 4170.0]
+        receipt = self._make_receipt(
+            method=self.pm_transfer,
+            lines=[(self.product_tuition, 1, amount) for amount in amounts],
+        )
+        receipt._action_post()
+        lines = receipt.move_id.line_ids
+        self.assertEqual(len(lines), 2 * len(receipt.line_ids) + 2)
+
+        for line in receipt.line_ids:
+            cash_debit = lines.filtered(
+                lambda l: l.account_id == self.bank_account and l.debit == line.amount
+            )
+            revenue_credit = lines.filtered(
+                lambda l: l.account_id == line.account_id and l.credit == line.amount
+            )
+            self.assertEqual(len(cash_debit), 1)
+            self.assertEqual(len(revenue_credit), 1)
+            self.assertEqual(
+                cash_debit.analytic_distribution, line.analytic_distribution
+            )
+            self.assertEqual(
+                revenue_credit.analytic_distribution, line.analytic_distribution
+            )
+
+        deposit_debit = lines.filtered(
+            lambda l: l.account_id == self.deposit_account and l.debit
+        )
+        deposit_credit = lines.filtered(
+            lambda l: l.account_id == self.bank_account and l.credit
+        )
+        self.assertEqual(len(deposit_debit), 1)
+        self.assertEqual(len(deposit_credit), 1)
+        self.assertEqual(deposit_debit.debit, receipt.amount_total)
+        self.assertEqual(deposit_credit.credit, receipt.amount_total)
+        self.assertEqual(
+            deposit_debit.analytic_distribution, receipt.analytic_distribution
+        )
+        self.assertEqual(
+            deposit_credit.analytic_distribution, receipt.analytic_distribution
+        )
+
+        self.assertEqual(sum(lines.mapped("debit")), sum(lines.mapped("credit")))
+        for line in lines:
+            self.assertTrue(line.analytic_distribution)
+
+    def test_deposit_account_must_differ_from_cash_account(self):
+        with self.assertRaises(ValidationError):
+            self.env["kmitl.payment.method"].create(
+                {
+                    "name": "Bad Method",
+                    "journal_id": self.cash_journal.id,
+                    "account_id": self.cash_account.id,
+                    "deposit_account_id": self.cash_account.id,
+                }
+            )
 
     def test_cancel_only_from_draft(self):
         receipt = self._make_receipt()
