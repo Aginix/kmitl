@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="budget_commitment_form_view" model="ir.ui.view">
+        <field name="name">budget.commitment.form.ztree</field>
+        <field name="model">budget.commitment</field>
+        <field name="inherit_id" ref="budget.budget_commitment_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_analytic_id'][1]" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_code_field': 'code', 'ztree_display_field': 'complete_name', 'ztree_expend_level': '1'}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='activity_analytic_id'][1]" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_code_field': 'code', 'ztree_display_field': 'complete_name', 'ztree_expend_level': '1'}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='fund_analytic_id'][1]" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_code_field': 'code', 'ztree_display_field': 'complete_name', 'ztree_expend_level': '1'}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
