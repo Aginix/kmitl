@@ -251,7 +251,7 @@
             <xpath expr="//button[@name='action_draft']" position="before">
                 <button
                     name="action_audit"
-                    string="ตรวจสอบการเบิกจ่าย"
+                    string="Audit Disbursements"
                     type="object"
                     class="oe_highlight"
                     attrs="{'invisible': [('state', '!=', 'bills_posted')]}"
@@ -259,7 +259,7 @@
                 />
                 <button
                     name="action_authorize"
-                    string="อนุมัติเบิกจ่าย"
+                    string="Authorize Disbursements"
                     type="object"
                     class="oe_highlight"
                     confirm="Authorize this disbursement? The payment vouchers will be raised and numbered for every payee at once, ready to go to the bank."
@@ -290,10 +290,10 @@
                      crosses, all in one. -->
                 <button
                     name="action_confirm_paid"
-                    string="ยืนยันจ่ายสำเร็จ"
+                    string="Confirm Paid"
                     type="object"
                     class="oe_highlight"
-                    confirm="ยืนยันว่าธนาคารจ่ายเงินสำเร็จครบทุกรายการแล้ว?"
+                    confirm="Confirm the bank has successfully paid every item?"
                     attrs="{'invisible': ['|', ('state', '!=', 'payment_authorized'), ('payment_count', '=', 0)]}"
                     groups="base.group_no_one"
                 />

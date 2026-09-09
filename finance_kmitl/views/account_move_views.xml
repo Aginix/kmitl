@@ -28,7 +28,7 @@
     </record>
 
     <record id="action_account_move_to_book" model="ir.actions.act_window">
-        <field name="name">ใบจ่ายรอบันทึกบัญชี</field>
+        <field name="name">Payment vouchers to book</field>
         <field name="res_model">account.move</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_account_move_to_book_tree" />
@@ -38,17 +38,17 @@
         <field name="context">{'create': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                ไม่มีใบจ่ายที่รอบันทึกบัญชี
+                No payment vouchers waiting to be booked
             </p>
             <p>
-                ใบสำคัญจ่ายที่ฝ่ายการเงินยืนยันจ่ายสำเร็จแล้ว รอผู้จัดทำตรวจมิติ/ประเภทธุรกรรม แล้วส่งอนุมัติ
+                Payment vouchers the finance office has confirmed paid, waiting for the maker to check the dimensions/operation type and submit
             </p>
         </field>
     </record>
 
     <menuitem
         id="menu_account_move_to_book"
-        name="ใบจ่ายรอบันทึกบัญชี"
+        name="Payment vouchers to book"
         parent="accounting_kmitl.menu_accounting_root"
         action="action_account_move_to_book"
         sequence="22"

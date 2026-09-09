@@ -1490,12 +1490,12 @@ msgstr "ไม่ขึ้นเงินจนเกินกำหนด"
 #. module: finance_kmitl
 #: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_out
 msgid "User การเงินจ่าย (Payment Out)"
-msgstr ""
+msgstr "User การเงินจ่าย (Payment Out)"
 
 #. module: finance_kmitl
 #: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_in
 msgid "User การเงินรับ (Payment In)"
-msgstr ""
+msgstr "User การเงินรับ (Payment In)"
 
 #. module: finance_kmitl
 #: model:ir.actions.act_window,name:finance_kmitl.action_vendor_clearing_vouchers
@@ -1630,7 +1630,7 @@ msgstr "เช่น PV/2026/00014 โอนไม่สำเร็จ บั�
 #. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__outbound
 msgid "จ่ายเงิน"
-msgstr ""
+msgstr "จ่ายเงิน"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,help:finance_kmitl.field_account_payment__payee_type_id
@@ -1651,12 +1651,12 @@ msgstr ""
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
 msgid "ยืนยันพร้อมออกเช็ค"
-msgstr ""
+msgstr "ยืนยันพร้อมออกเช็ค"
 
 #. module: finance_kmitl
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__inbound
 msgid "รับเงิน"
-msgstr ""
+msgstr "รับเงิน"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,help:finance_kmitl.field_account_payment__finance_state
@@ -1699,3 +1699,549 @@ msgid ""
 "— a guess from the last one used. Overtype it if the\n"
 "                            paper says otherwise."
 msgstr "— เดาจากเลขล่าสุดที่ใช้ไป ถ้ากระดาษไม่ตรง ให้พิมพ์ทับได้เลย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_res_bank__cheque_layout_id
+msgid ""
+"Print calibration for this bank's cheque form. Used when printing any "
+"cheque drawn on a book held here."
+msgstr ""
+"ค่าปรับเทียบการพิมพ์สำหรับแบบฟอร์มเช็คของธนาคารนี้ "
+"ใช้เมื่อพิมพ์เช็คที่มาจากเล่มที่ผูกกับธนาคารนี้"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_bank_payment_export__paying_account_id
+msgid ""
+"The account this file debits. One file is uploaded to one bank and debits "
+"one account, so it is chosen first and the payments that can be picked "
+"into the file are narrowed to the ones paid from it."
+msgstr ""
+"บัญชีที่ไฟล์นี้ตัดเงิน ไฟล์หนึ่งอัปโหลดไปธนาคารเดียวและตัดเงินจากบัญชีเดียว "
+"จึงต้องเลือกก่อน แล้วรายการจ่ายเงินที่จะเลือกเข้าไฟล์จะถูกจำกัดเฉพาะที่จ่ายจากบัญชีนี้"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register_assign_numbers__cheque_book_id
+msgid "Numbers run within one book, so a run is numbered within one too."
+msgstr "เลขเช็คไล่กันภายในเล่มเดียว การไล่เลขครั้งหนึ่งจึงทำภายในเล่มเดียวเช่นกัน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_layout__bank_ids
+msgid "The banks whose printed cheque form this calibration is for."
+msgstr "ธนาคารที่ใช้ค่าปรับเทียบนี้กับแบบฟอร์มเช็คที่พิมพ์"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_kmitl_payment_type__journal_id
+msgid ""
+"ใบสำคัญ this kind of operation is normally recorded under, for payments "
+"that are not driven by a paying account (a guarantee receipt, an "
+"advance). When a paying account is chosen it wins, because a paying "
+"account belongs to exactly one voucher journal."
+msgstr ""
+"ใบสำคัญที่ธุรกรรมประเภทนี้มักถูกบันทึกไว้ สำหรับรายการที่ไม่ได้ถูกกำหนดโดยหัวจ่าย "
+"(เช่น ใบรับหลักประกัน ใบยืมเงิน) เมื่อมีการเลือกหัวจ่าย ค่านั้นจะมีผลเหนือกว่า "
+"เพราะหัวจ่ายหนึ่งบัญชีขึ้นกับสมุดรายวันใบสำคัญเพียงเล่มเดียว"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register_assign_numbers__first_number
+msgid ""
+"The number printed on the first piece of paper in the run. The rest are "
+"counted on from it, keeping the same width."
+msgstr ""
+"เลขที่พิมพ์อยู่บนกระดาษใบแรกของชุดนี้ ที่เหลือจะไล่ต่อจากเลขนี้ "
+"โดยคงความยาวหลักเท่าเดิม"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register_cancel__replace
+msgid ""
+"Keep the same payment voucher and start another cheque for it, numbered "
+"next in the book. Leave this off only when the payee is no longer to be "
+"paid at all."
+msgstr ""
+"คงใบสำคัญจ่ายเดิมไว้และออกเช็คใบใหม่แทน โดยใช้เลขถัดไปในเล่ม "
+"ปิดตัวเลือกนี้เฉพาะเมื่อไม่ต้องจ่ายเงินให้ผู้รับรายนี้อีกแล้วเท่านั้น"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_layout__date_buddhist_year
+msgid "Print the year in the Buddhist Era (พ.ศ.) instead of the Gregorian year."
+msgstr "พิมพ์ปีเป็น พ.ศ. แทนปี ค.ศ."
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register_cancel__was_handed_over
+msgid ""
+"Drives the warning: cancelling a cheque the payee already took withdraws "
+"the claim that they were paid."
+msgstr ""
+"เป็นตัวกำหนดคำเตือน: การยกเลิกเช็คที่ผู้รับรับไปแล้วเป็นการถอนคำยืนยันว่าได้จ่ายเงินให้ผู้รับแล้ว"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_layout__date_spacing
+msgid ""
+"Letter spacing between the 8 date digits so they line up with the pre-"
+"printed boxes."
+msgstr ""
+"ระยะห่างตัวอักษรระหว่างเลขวันที่ทั้ง 8 หลัก เพื่อให้ตรงกับช่องที่พิมพ์ไว้ล่วงหน้า"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register_assign_numbers__last_number
+msgid ""
+"Where the run ends, so the officer can check it against the book in "
+"their hand before pressing."
+msgstr ""
+"เลขที่ชุดนี้จะสิ้นสุด เพื่อให้เจ้าหน้าที่ตรวจกับเล่มเช็คในมือก่อนกดยืนยัน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_kmitl_payment_subject__default_payment_method_id
+msgid ""
+"วิธีจ่าย this subject is normally paid by. It says which of a bank's "
+"paying accounts auto-matching means — it does not restrict what the "
+"auditor may choose for an individual payee."
+msgstr ""
+"วิธีจ่ายที่เรื่องที่จ่ายนี้มักใช้จ่าย เป็นตัวบอกว่าการจับคู่อัตโนมัติหมายถึงหัวจ่ายชุดใดของธนาคาร "
+"ไม่ได้จำกัดสิ่งที่ผู้ตรวจสอบจะเลือกให้ผู้รับเงินแต่ละรายได้"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_bank_payment_export__transfer_proof_ids
+msgid ""
+"What the bank sent back once the file had been uploaded — a slip, a "
+"statement page, a screen. It has a field of its own because the exported "
+"file is attached to this record too, and the office is being asked for "
+"the opposite document: not what the bank was told to do, but what it "
+"did. Anything attached here is also listed with the record's other "
+"attachments."
+msgstr ""
+"สิ่งที่ธนาคารตอบกลับมาหลังอัปโหลดไฟล์ — สลิป หน้ารายการเดินบัญชี หรือภาพหน้าจอ "
+"แยกเป็นช่องของตัวเองเพราะไฟล์ที่ส่งออกก็แนบอยู่ในรายการนี้เช่นกัน "
+"และสิ่งที่ต้องการที่นี่คือเอกสารด้านตรงข้าม คือไม่ใช่สิ่งที่สั่งธนาคารไป แต่เป็นสิ่งที่ธนาคารทำ "
+"ไฟล์ที่แนบไว้ที่นี่จะปรากฏในไฟล์แนบอื่นของรายการนี้ด้วย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_kmitl_payment_subject__auto_match_payee_bank
+msgid ""
+"จับคู่หัวจ่ายตามธนาคารผู้รับ — pay each payee from the allowed account "
+"held at the bank of their own bank account; a payee whose bank matches "
+"none of them is paid from the fallback account. When off, every payee is "
+"paid from the main paying account."
+msgstr ""
+"จับคู่หัวจ่ายตามธนาคารผู้รับ — จ่ายผู้รับแต่ละรายจากหัวจ่ายที่อนุญาตซึ่งอยู่ที่ธนาคารเดียวกับบัญชีของผู้รับ "
+"ผู้รับที่ธนาคารไม่ตรงกับหัวจ่ายใดเลยจะจ่ายจากบัญชีสำรอง "
+"เมื่อปิดตัวเลือกนี้ ผู้รับทุกรายจะจ่ายจากหัวจ่ายหลัก"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register__payment_id
+msgid ""
+"ใบสำคัญจ่าย this cheque was written for. One cheque pays one voucher, and "
+"the voucher is what carries the payee, the amount and the paying account "
+"— so the cheque restates none of them."
+msgstr ""
+"ใบสำคัญจ่ายที่เช็คใบนี้ออกให้ เช็คหนึ่งใบจ่ายหนึ่งใบสำคัญ "
+"และใบสำคัญจ่ายเป็นตัวบอกผู้รับ จำนวนเงิน และหัวจ่าย เช็คจึงไม่ต้องระบุซ้ำ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_kmitl_payment_subject__default_paying_account_id
+msgid ""
+"With auto-match off: the one account (หัวจ่ายหลัก) every payee is paid "
+"from. With auto-match on: the fallback (หัวจ่ายสำรอง) for a payee whose "
+"bank matches no allowed account."
+msgstr ""
+"เมื่อปิดจับคู่อัตโนมัติ: เป็นบัญชีเดียว (หัวจ่ายหลัก) ที่ผู้รับทุกรายจะจ่ายจาก "
+"เมื่อเปิดจับคู่อัตโนมัติ: เป็นบัญชีสำรอง (หัวจ่ายสำรอง) สำหรับผู้รับที่ธนาคารไม่ตรงกับบัญชีที่อนุญาตใดเลย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_bank_payment_export__epayment_note
+msgid ""
+"A free note about this file — the reason it was cut apart from the "
+"month's run, an instruction from above, or what was done with a payee "
+"the bank could not credit. Editable at any state; the confirm-transfer "
+"wizard also writes here when the file is closed, and the office can "
+"amend it afterwards."
+msgstr ""
+"หมายเหตุอิสระเกี่ยวกับไฟล์นี้ — เหตุผลที่แยกออกจากรอบเดือน คำสั่งจากผู้บังคับบัญชา "
+"หรือวิธีจัดการผู้รับที่ธนาคารโอนเงินให้ไม่ได้ แก้ไขได้ทุกสถานะ "
+"ตัวช่วยยืนยันการโอนเงินก็เขียนที่นี่เมื่อปิดไฟล์เช่นกัน และห้องการเงินสามารถแก้ไขเพิ่มเติมได้ภายหลัง"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_kmitl_payment_subject__allowed_paying_account_ids
+msgid ""
+"หัวจ่ายที่อนุญาต — what a payee of this subject may be paid from, and "
+"what auto-match picks between. Left empty, any paying account may be "
+"chosen by hand."
+msgstr ""
+"หัวจ่ายที่อนุญาต — ผู้รับเงินของเรื่องที่จ่ายนี้จะจ่ายจากบัญชีใดได้บ้าง "
+"และเป็นชุดที่การจับคู่อัตโนมัติเลือกจาก ถ้าเว้นว่างไว้ จะเลือกหัวจ่ายใดก็ได้ด้วยมือ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__to_reconcile_payment_line_ids
+msgid "Lines to Reconcile"
+msgstr "รายการที่รอกระทบยอด"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/account_move.py:0
+#: code:addons/finance_kmitl/models/account_payment.py:0
+#, python-format
+msgid "Payment must be exported to bank before posting."
+msgstr "ต้องส่งออกไฟล์ไปธนาคารก่อนจึงจะลงบัญชีได้"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_account_payment__amount_wht
+msgid ""
+"Total withholding tax withheld on this payment. Derived from the payment "
+"move lines carrying a WHT tax, so it is visible in every state (the "
+"native withholding moves are only created on posting)."
+msgstr ""
+"ยอดภาษีหัก ณ ที่จ่ายทั้งหมดของรายการจ่ายเงินนี้ "
+"คำนวณจากบรรทัดบัญชีของใบจ่ายที่มีภาษีหัก ณ ที่จ่ายติดอยู่ จึงเห็นได้ทุกสถานะ "
+"(รายการหักภาษีจริงของระบบจะถูกสร้างขึ้นเมื่อลงบัญชีเท่านั้น)"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register__amount
+msgid ""
+"What the cheque is written for — the net amount the voucher pays, after "
+"withholding tax."
+msgstr "จำนวนเงินที่เช็คใบนี้ออกให้ — ยอดสุทธิที่ใบสำคัญจ่ายจ่าย หลังหักภาษี ณ ที่จ่ายแล้ว"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_account_payment__amount_before_wht
+msgid ""
+"Gross amount before withholding tax (net amount paid plus the "
+"withholding tax)."
+msgstr "ยอดเงินก่อนหักภาษี ณ ที่จ่าย (ยอดจ่ายสุทธิบวกภาษีหัก ณ ที่จ่าย)"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register__paying_account_id
+msgid "หัวจ่าย the voucher is paid from, which is what names the cheque book below."
+msgstr "หัวจ่ายที่ใบสำคัญจ่ายนี้จ่ายออกจาก ซึ่งเป็นตัวกำหนดเล่มเช็คด้านล่าง"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register__cheque_book_id
+msgid ""
+"เล่มเช็ค — the institute's own bank account this cheque is drawn on, "
+"which is what a cheque book is. It is the paying account's bank account, "
+"never the journal: a journal is a voucher type (ใบสำคัญ) and holds no "
+"bank account at all. Numbers run without repeating within one book and "
+"say nothing across books."
+msgstr ""
+"เล่มเช็ค — บัญชีธนาคารของสถาบันที่เช็คใบนี้เบิกจาก ซึ่งคือความหมายของเล่มเช็ค "
+"เป็นบัญชีธนาคารของหัวจ่าย ไม่ใช่สมุดรายวัน เพราะสมุดรายวันเป็นเพียงประเภทใบสำคัญ (ใบสำคัญ) "
+"และไม่มีบัญชีธนาคารเลย เลขที่ไล่กันไม่ซ้ำภายในเล่มเดียวและไม่เกี่ยวข้องกันระหว่างเล่ม"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__bank_result_status
+msgid "Bank Result"
+msgstr "ผลการจ่าย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_account_payment__bank_result_status
+msgid ""
+"ผลการจ่าย — the outcome as the finance office noted it for this voucher. "
+"Nothing gates on it: the bank's own result file is never imported into "
+"Odoo, so what the system acts on is the finance office's assertion in "
+"Finance Status, and this is one more note beside it."
+msgstr ""
+"ผลการจ่าย — ผลลัพธ์ที่ฝ่ายการเงินบันทึกไว้สำหรับใบสำคัญจ่ายนี้ ไม่มีเงื่อนไขใดผูกกับค่านี้ "
+"ไฟล์ผลลัพธ์จริงจากธนาคารไม่ได้ถูกนำเข้า Odoo ระบบจึงทำงานตามคำยืนยันของฝ่ายการเงินในสถานะฝั่งการเงิน "
+"ส่วนนี้เป็นเพียงหมายเหตุเพิ่มเติมข้างกัน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register__bank_id
+msgid "Which bank's printed form this is, and therefore which print calibration is used."
+msgstr "แบบฟอร์มนี้เป็นของธนาคารใด ซึ่งเป็นตัวกำหนดค่าปรับเทียบการพิมพ์ที่ใช้"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register__cheque_number
+msgid "The number pre-printed on the paper, read off it rather than issued here."
+msgstr "เลขที่พิมพ์ไว้ล่วงหน้าบนกระดาษ อ่านจากกระดาษ ไม่ได้ออกเลขที่นี่"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_account_payment__is_cheque_payment
+msgid ""
+"Read from the paying account's own method, so it cannot disagree with "
+"how the money actually leaves."
+msgstr "อ่านจากวิธีจ่ายของหัวจ่ายเอง จึงไม่มีทางขัดแย้งกับวิธีที่เงินออกจริง"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register__next_cheque_number
+msgid ""
+"A guess at what the number should be — one past the highest already "
+"used in this cheque book. Nothing is reserved and nothing is counted: "
+"overtype it whenever the paper says otherwise."
+msgstr ""
+"เลขที่คาดเดาไว้ — เลขถัดจากเลขสูงสุดที่ใช้แล้วในเล่มนี้ ไม่มีการจองหรือนับเลขใด ๆ "
+"พิมพ์ทับได้ทุกเมื่อที่กระดาษไม่ตรง"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_account_payment__needs_bank_export
+msgid ""
+"Only an outbound bank transfer does. Cheques are handed over and cash is "
+"paid at the counter, so neither can ever gain an export and neither may "
+"be held back by the export gate — the finance office confirms those "
+"results by hand instead."
+msgstr ""
+"มีเฉพาะเงินโอนขาออกเท่านั้น เช็คถูกมอบให้ผู้รับและเงินสดจ่ายที่เคาน์เตอร์ "
+"ทั้งสองแบบจึงไม่มีวันถูกส่งออกไฟล์และไม่ถูกด่านส่งออกกักไว้ ฝ่ายการเงินยืนยันผลด้วยมือแทน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register__cheque_date
+msgid ""
+"วันที่บนเช็ค — the day the payee may present it, which is the day the "
+"law treats the income as paid. The withholding-tax certificate is dated "
+"from it, so it is the cheque's counterpart to an e-payment file's "
+"effective date. Not the day the cheque was handed over, which has no "
+"tax effect at all."
+msgstr ""
+"วันที่บนเช็ค — วันที่ผู้รับสามารถนำเช็คไปขึ้นเงินได้ ซึ่งกฎหมายถือว่าเป็นวันที่ได้รับเงิน "
+"หนังสือรับรองหัก ณ ที่จ่ายจะลงวันที่ตามนี้ จึงเทียบเท่ากับวันที่มีผลของไฟล์ e-Payment "
+"ไม่ใช่วันที่มอบเช็ค ซึ่งไม่มีผลทางภาษีแต่อย่างใด"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_account_payment__cheque_ids
+msgid ""
+"Every cheque ever written for this voucher, including the ones that died "
+"and were replaced — each of those still holds the number it spent out "
+"of the book."
+msgstr ""
+"เช็คทุกใบที่เคยออกให้ใบสำคัญจ่ายนี้ รวมถึงใบที่ตายและถูกแทนที่แล้ว "
+"แต่ละใบยังคงกินเลขที่ใช้ไปจากเล่มอยู่"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register__handover_date
+msgid ""
+"The day the payee actually took the cheque. Internal control only — it "
+"dates nothing in the books and nothing in a tax filing."
+msgstr ""
+"วันที่ผู้รับมารับเช็คไปจริง ใช้เพื่อควบคุมภายในเท่านั้น "
+"ไม่มีผลต่อวันที่ทางบัญชีหรือการยื่นภาษีใด ๆ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_account_payment__cheque_id
+msgid ""
+"The one cheque that can still pay this voucher, if it has been written "
+"yet. A voucher never has two at once."
+msgstr ""
+"เช็คใบเดียวที่ยังสามารถจ่ายใบสำคัญจ่ายนี้ได้ ถ้าออกไว้แล้ว "
+"ใบสำคัญจ่ายหนึ่งใบจะไม่มีเช็คสองใบพร้อมกัน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register__crossed
+msgid "Print the 'A/C PAYEE ONLY' crossing when printing the cheque."
+msgstr "พิมพ์ขีดคร่อม 'A/C PAYEE ONLY' เมื่อพิมพ์เช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_account_payment__finance_state_cheque
+msgid ""
+"The same lifecycle as Finance Status, in the words that fit a cheque. A "
+"voucher settled on paper goes to no bank, so 'Confirmed for the Bank' "
+"names an errand nobody runs for it — and its Confirmed covers two "
+"different situations, one where the cheque has still to be written and "
+"one where it is written and waiting to be collected. Read-only and "
+"unstored: it says nothing finance_state and the cheque do not already "
+"say between them."
+msgstr ""
+"วงจรสถานะเดียวกับสถานะฝั่งการเงิน แต่ใช้คำที่เหมาะกับเช็ค "
+"ใบสำคัญจ่ายที่ชำระด้วยกระดาษไม่ผ่านธนาคาร คำว่า 'พร้อมส่งธนาคาร' จึงเป็นชื่องานที่ไม่มีใครต้องทำ "
+"และสถานะพร้อมส่งธนาคารของเช็คครอบคลุมสองกรณี คือยังไม่ได้ออกเช็ค กับออกแล้วรอผู้รับมารับ "
+"อ่านอย่างเดียวและไม่ถูกเก็บ เพราะไม่ได้บอกอะไรเพิ่มจากที่ finance_state และตัวเช็คบอกอยู่แล้ว"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register__strike_bearer
+msgid "Strike out the pre-printed 'หรือผู้ถือ' (or bearer) wording when printing the cheque."
+msgstr "ขีดฆ่าข้อความ 'หรือผู้ถือ' ที่พิมพ์ไว้ล่วงหน้า เมื่อพิมพ์เช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_cheque_register__cancel_reason
+msgid ""
+"Why this cheque will never pay anyone. It is a note beside the "
+"cancellation, not a status of its own: to the register every death is "
+"the same fact — the number was spent and nobody was paid."
+msgstr ""
+"เหตุผลที่เช็คใบนี้จะไม่มีวันจ่ายเงินให้ใครได้ เป็นเพียงหมายเหตุประกอบการยกเลิก "
+"ไม่ใช่สถานะของตัวเอง เพราะสำหรับทะเบียนแล้ว การตายของเช็คทุกใบคือข้อเท็จจริงเดียวกัน "
+"คือเลขถูกใช้ไปแล้วและไม่มีใครได้รับเงิน"
+
+#. module: finance_kmitl
+#: model:ir.module.category,description:finance_kmitl.module_category_finance_kmitl
+msgid "User groups for KMITL finance operations"
+msgstr "กลุ่มผู้ใช้สำหรับงานฝ่ายการเงิน KMITL"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "e.g. KTB Cheque"
+msgstr "เช่น เช็คธนาคารกรุงไทย (KTB)"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_assign_numbers_form
+msgid "e.g. 0512007"
+msgstr "เช่น 0512007"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+msgid "Remarks..."
+msgstr "หมายเหตุ..."
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_payment_subject_view_form
+msgid "e.g. Advance / Reimbursement"
+msgstr "เช่น เงินยืมทดรอง / เบิกเงินคืน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_assign_numbers_form
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_cancel_form
+msgid "Discard"
+msgstr "ยกเลิก"
+
+#. module: finance_kmitl
+#: model_terms:ir.actions.act_window,help:finance_kmitl.action_kmitl_paying_account
+msgid ""
+"A paying account is where money leaves the institute from — it ties a "
+"voucher, a payment method, the institute's bank account and a GL account "
+"together."
+msgstr ""
+"หัวจ่ายคือจุดที่เงินออกจากสถาบัน โดยผูกใบสำคัญ วิธีจ่าย "
+"บัญชีธนาคารของสถาบัน และบัญชีแยกประเภทเข้าไว้ด้วยกัน"
+
+#. module: finance_kmitl
+#: model:kmitl.payment.type,name:finance_kmitl.payment_type_normal_inbound
+msgid "Receive Money"
+msgstr "รับเงินเข้า"
+
+#. module: finance_kmitl
+#: model:kmitl.payment.type,name:finance_kmitl.payment_type_guarantee_receive
+msgid "Receive Contract Guarantee"
+msgstr "รับเงินค้ำประกันสัญญา"
+
+#. module: finance_kmitl
+#: model:kmitl.payment.type,name:finance_kmitl.payment_type_bid_guarantee_receive
+msgid "Receive Bid Guarantee"
+msgstr "รับเงินหลักประกันการเสนอราคา"
+
+#. module: finance_kmitl
+#: model:kmitl.payment.type,name:finance_kmitl.payment_type_normal_outbound
+msgid "Pay Money"
+msgstr "จ่ายเงินออก"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_payment_type_view_form
+msgid "e.g. Receive Contract Guarantee"
+msgstr "เช่น รับเงินประกันสัญญา"
+
+#. module: finance_kmitl
+#: model:cheque.layout,name:finance_kmitl.cheque_layout_scb
+msgid "SCB Cheque"
+msgstr "เช็คธนาคารไทยพาณิชย์ (SCB)"
+
+#. module: finance_kmitl
+#: model:ir.actions.report,name:finance_kmitl.action_report_bank_payment_export
+msgid "Disbursement Report"
+msgstr "รายงานการเบิกจ่าย"
+
+#. module: finance_kmitl
+#: model_terms:ir.actions.act_window,help:finance_kmitl.action_account_move_to_book
+msgid "No payment vouchers waiting to be booked"
+msgstr "ไม่มีใบจ่ายที่รอบันทึกบัญชี"
+
+#. module: finance_kmitl
+#: model_terms:ir.actions.act_window,help:finance_kmitl.action_account_move_to_book
+msgid ""
+"Payment vouchers the finance office has confirmed paid, waiting for the "
+"maker to check the dimensions/operation type and submit"
+msgstr ""
+"ใบสำคัญจ่ายที่ฝ่ายการเงินยืนยันจ่ายสำเร็จแล้ว รอผู้จัดทำตรวจมิติ/ประเภทธุรกรรม แล้วส่งอนุมัติ"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_tree_kmitl
+msgid "Voucher Number"
+msgstr "เลขที่ใบสำคัญ"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_tree_kmitl
+msgid "Recipient Bank"
+msgstr "บัญชีธนาคารผู้รับ"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Voucher Number / Payee"
+msgstr "เลขที่ใบสำคัญ / ผู้รับเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Already Paid"
+msgstr "จ่ายสำเร็จแล้ว"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Awaiting e-Payment File"
+msgstr "รอใส่ไฟล์ e-Payment"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Already in a File"
+msgstr "อยู่ในไฟล์แล้ว"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Handed Over, Awaiting Booking"
+msgstr "ส่งมอบแล้ว รอบันทึกบัญชี"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Awaiting Accounting Approval"
+msgstr "รออนุมัติบัญชี"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Posted"
+msgstr "ลงบัญชีแล้ว"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Transfer"
+msgstr "เงินโอน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Cash"
+msgstr "เงินสด"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Date"
+msgstr "วันที่"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_tree_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Accounting Status"
+msgstr "สถานะบัญชี"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_search_kmitl
+msgid "Counterparty Type"
+msgstr "ประเภทคู่ค้า"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Confirm for the Bank"
+msgstr "ยืนยันพร้อมส่งธนาคาร"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid ""
+"Confirm the money has reached the payee? After this the finance side "
+"can no longer be changed, and the voucher will be handed to the "
+"accounting office to book."
+msgstr ""
+"ยืนยันว่าเงินถึงมือผู้รับแล้ว? หลังจากนี้ฝั่งเงินจะแก้ไม่ได้ และใบสำคัญจะส่งต่อให้ห้องบัญชีบันทึก"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Unconfirm"
+msgstr "ยกเลิกการยืนยัน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+msgid ""
+"Confirm the payee has received the cheque? The voucher will be marked "
+"paid and handed to the accounting office to book."
+msgstr ""
+"ยืนยันว่าผู้รับได้รับเช็คไปแล้ว? ใบสำคัญจ่ายจะถูกบันทึกว่าจ่ายแล้ว และส่งต่อให้ห้องบัญชีบันทึกบัญชี"

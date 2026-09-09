@@ -17,7 +17,7 @@
     -->
     <data noupdate="1">
         <record id="cheque_layout_scb" model="cheque.layout">
-            <field name="name">เช็คธนาคารไทยพาณิชย์ (SCB)</field>
+            <field name="name">SCB Cheque</field>
             <field name="font_size">14.0</field>
             <!-- Thai cheques carry the Buddhist Era year in the date boxes. -->
             <field name="date_buddhist_year" eval="True" />

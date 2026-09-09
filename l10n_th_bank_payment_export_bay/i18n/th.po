@@ -1,0 +1,91 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_th_bank_payment_export_bay
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_bay.field_bank_payment_export__bay_company_id
+msgid "BAY Company ID"
+msgstr "รหัสบริษัท BAY"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_bay.field_bank_payment_export__bay_is_editable
+msgid "BAY Editable"
+msgstr "แก้ไข BAY ได้"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields,help:l10n_th_bank_payment_export_bay.field_bank_payment_export__bay_sender_name
+msgid ""
+"Not written into the file. CashLink leaves the twenty characters after "
+"the originating account empty -- every file KMITL sends the bank does "
+"-- and a name written there is the only structural difference between "
+"a file the bank took and one it refused with 'user account product "
+"linkage is not available'. Kept only because the form has always "
+"offered it."
+msgstr ""
+"ไม่ได้เขียนลงไฟล์ CashLink เว้นช่องยี่สิบตัวอักษรหลังเลขบัญชีต้นทางไว้ว่างเสมอ "
+"— ทุกไฟล์ที่ KMITL ส่งให้ธนาคารเป็นแบบนี้ — "
+"และการเขียนชื่อลงในช่องนั้นเป็นความต่างเดียวที่ทำให้ไฟล์ถูกธนาคารปฏิเสธด้วยข้อความ "
+"'user account product linkage is not available' ยังคงมีช่องนี้ไว้เพียงเพราะฟอร์มมีให้กรอกมาแต่เดิม"
+
+#. module: l10n_th_bank_payment_export_bay
+#: code:addons/l10n_th_bank_payment_export_bay/models/bank_payment_export.py:0
+#, python-format
+msgid "Recipient Bank with {} is not selected."
+msgstr "ยังไม่ได้เลือกธนาคารผู้รับสำหรับ {}"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_bay.bank_payment_export_view_form
+msgid "Service Type"
+msgstr "ประเภทบริการ"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_bay.selection__bank_payment_export__bay_service_type__01
+msgid "01 - Salary, Wages, Gratuity, Pension"
+msgstr "01 - เงินเดือน ค่าจ้าง บำเหน็จ บำนาญ"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_bay.selection__bank_payment_export__bay_service_type__02
+msgid "02 - Dividend"
+msgstr "02 - เงินปันผล"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_bay.selection__bank_payment_export__bay_service_type__03
+msgid "03 - Interest"
+msgstr "03 - ดอกเบี้ย"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_bay.selection__bank_payment_export__bay_service_type__04
+msgid "04 - Goods and Services"
+msgstr "04 - ค่าสินค้า บริการ"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_bay.selection__bank_payment_export__bay_service_type__05
+msgid "05 - Sale of Securities"
+msgstr "05 - ขายหลักทรัพย์"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_bay.selection__bank_payment_export__bay_service_type__06
+msgid "06 - Tax Refund"
+msgstr "06 - คืนภาษี"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_bay.selection__bank_payment_export__bay_service_type__07
+msgid "07 - Loan"
+msgstr "07 - เงินกู้"
+
+#. module: l10n_th_bank_payment_export_bay
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_bay.selection__bank_payment_export__bay_service_type__59
+msgid "59 - Other"
+msgstr "59 - อื่น ๆ"

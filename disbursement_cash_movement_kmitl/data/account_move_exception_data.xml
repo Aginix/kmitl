@@ -9,10 +9,10 @@
     <record id="excep_cash_route_not_found" model="exception.rule">
         <field
             name="name"
-        >ไม่พบเส้นทางโยกเงิน</field>
+        >Cash route not found</field>
         <field
             name="description"
-        >ใบสำคัญจ่ายนี้ยังไม่มีเส้นทางโยกเงินระหว่างบัญชีตั้งไว้สำหรับหัวจ่ายและแหล่งเงินนี้ ถ้าลงบัญชีต่อไป ใบสำคัญจ่ายจะขาดขาที่แสดงว่าเงินเดินทางมาจากบัญชีใดกว่าจะถึงหัวจ่าย กรุณาตั้งค่าเส้นทางโยกเงินก่อน (บัญชี ▸ ตั้งค่า ▸ เส้นทางโยกเงิน)</field>
+        >This voucher has no inter-account cash route set up yet for this paying account and source of funds. If posted as is, the voucher's entry will be missing the leg that shows which account the money traveled from before reaching the paying account. Please set up a cash route first (Accounting ▸ Configuration ▸ Cash Routes).</field>
         <field name="sequence">65</field>
         <field name="model">account.move</field>
         <field name="exception_type">by_py_code</field>

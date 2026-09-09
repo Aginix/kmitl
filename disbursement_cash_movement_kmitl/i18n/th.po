@@ -229,3 +229,31 @@ msgid ""
 msgstr ""
 "บัญชีในเส้นทาง เรียงจากต้นทางถึงหัวจ่าย เรียกชื่อแบบที่ฝ่ายคลังใช้พูดกัน: "
 "ชื่อย่อธนาคารและเลขบัญชีท้าย"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:ir.model.fields,help:disbursement_cash_movement_kmitl.field_account_move_line__is_cash_movement_line
+msgid ""
+"This line pays nobody — it is one leg of the inter-account cash route the "
+"voucher's money travels through on its way to the paying account. Its "
+"Dr/Cr mirror always nets to zero."
+msgstr ""
+"บรรทัดนี้ไม่ได้จ่ายเงินให้ใคร แต่เป็นหนึ่งขาของเส้นทางโยกเงินระหว่างบัญชีที่เงินของใบสำคัญจ่าย"
+"เดินทางผ่านก่อนจะถึงหัวจ่าย ยอดเดบิต/เครดิตคู่ของมันจะหักล้างกันเป็นศูนย์เสมอ"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:exception.rule,name:disbursement_cash_movement_kmitl.excep_cash_route_not_found
+msgid "Cash route not found"
+msgstr "ไม่พบเส้นทางโยกเงิน"
+
+#. module: disbursement_cash_movement_kmitl
+#: model:exception.rule,description:disbursement_cash_movement_kmitl.excep_cash_route_not_found
+msgid ""
+"This voucher has no inter-account cash route set up yet for this paying "
+"account and source of funds. If posted as is, the voucher's entry will be "
+"missing the leg that shows which account the money traveled from before "
+"reaching the paying account. Please set up a cash route first (Accounting "
+"▸ Configuration ▸ Cash Routes)."
+msgstr ""
+"ใบสำคัญจ่ายนี้ยังไม่มีเส้นทางโยกเงินระหว่างบัญชีตั้งไว้สำหรับหัวจ่ายและแหล่งเงินนี้ "
+"ถ้าลงบัญชีต่อไป ใบสำคัญจ่ายจะขาดขาที่แสดงว่าเงินเดินทางมาจากบัญชีใดกว่าจะถึงหัวจ่าย "
+"กรุณาตั้งค่าเส้นทางโยกเงินก่อน (บัญชี ▸ ตั้งค่า ▸ เส้นทางโยกเงิน)"

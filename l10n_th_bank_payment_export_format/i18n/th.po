@@ -269,3 +269,39 @@ msgstr "ค่า"
 #: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_export_format_line__value_type
 msgid "Value Type"
 msgstr "ชนิดของค่า"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,help:l10n_th_bank_payment_export_format.field_bank_export_format_line__display_type
+msgid "Technical field for UX purpose."
+msgstr "ฟิลด์ทางเทคนิคเพื่อวัตถุประสงค์ด้าน UX เท่านั้น"
+
+#. module: l10n_th_bank_payment_export_format
+#: code:addons/l10n_th_bank_payment_export_format/models/bank_export_format.py:0
+#, python-format
+msgid "Value %(value)s is longer than lenght %(lenght)s"
+msgstr "ค่า %(value)s ยาวเกินความยาว %(lenght)s ที่กำหนดไว้"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_payment_export_line__sending_bank_id
+msgid "Sending Bank"
+msgstr "ธนาคารต้นทาง"
+
+#. module: l10n_th_bank_payment_export_format
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_format.field_bank_payment_export_line__sending_acc_number
+msgid "Sending A/C Number"
+msgstr "เลขบัญชีต้นทาง"
+
+#. module: l10n_th_bank_payment_export_format
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_format.view_bank_export_format_form
+msgid "Add a line"
+msgstr "เพิ่มบรรทัด"
+
+#. module: l10n_th_bank_payment_export_format
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_format.view_bank_export_format_form
+msgid "Add a section"
+msgstr "เพิ่มหัวข้อ"
+
+#. module: l10n_th_bank_payment_export_format
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_format.view_bank_export_format_form
+msgid "Add a note"
+msgstr "เพิ่มหมายเหตุ"

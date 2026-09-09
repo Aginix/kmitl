@@ -1,0 +1,646 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_th_bank_payment_export_scb
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_export_format__bank
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__bank
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_template__bank
+msgid "Bank"
+msgstr "ธนาคาร"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_company_id
+msgid "SCB Company ID"
+msgstr "รหัสบริษัท SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_is_editable
+msgid "SCB Editable"
+msgstr "แก้ไข SCB ได้"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_beneficiary_charge
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_line_view_tree
+msgid "Beneficiary Charge"
+msgstr "ให้ผู้รับเงินเป็นผู้ชำระค่าธรรมเนียม"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_remark
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_view_form
+msgid "Remark"
+msgstr "หมายเหตุ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_res_partner__scb_beneficiary_noti
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_res_users__scb_beneficiary_noti
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_line_view_tree
+msgid "Beneficiary Notification"
+msgstr "การแจ้งผู้รับเงิน"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_res_partner__scb_email_partner
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_res_users__scb_email_partner
+msgid "Default Email"
+msgstr "อีเมลเริ่มต้น"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_res_partner__scb_phone_partner
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_res_users__scb_phone_partner
+msgid "Default Fax"
+msgstr "แฟกซ์เริ่มต้น"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_res_partner__scb_sms_partner
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_res_users__scb_sms_partner
+msgid "Default SMS"
+msgstr "SMS เริ่มต้น"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_bank_type
+msgid "Scb Bank Type"
+msgstr "ประเภทธนาคาร SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_product_code
+msgid "Scb Product Code"
+msgstr "รหัสผลิตภัณฑ์ SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_delivery_mode
+msgid "Scb Delivery Mode"
+msgstr "วิธีนำส่งเอกสาร SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_pickup_location
+msgid "Scb Pickup Location"
+msgstr "จุดรับเอกสาร SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_service_type
+msgid "Scb Service Type"
+msgstr "ประเภทบริการ SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_service_type_bahtnet
+msgid "Scb Service Type Bahtnet"
+msgstr "ประเภทบริการ SCB (Bahtnet)"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_invoice_language
+msgid "Scb Invoice Language"
+msgstr "ภาษาใบแจ้งหนี้ SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_is_invoice_present
+msgid "Scb Is Invoice Present"
+msgstr "แนบรายละเอียดใบแจ้งหนี้ SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_is_wht_present
+msgid "Scb Is Wht Present"
+msgstr "แนบเอกสารหัก ณ ที่จ่าย SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_is_credit_advice
+msgid "Scb Is Credit Advice"
+msgstr "ต้องการ Credit Advice ของ SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_wht_signatory
+msgid "Scb Wht Signatory"
+msgstr "ผู้ลงนามหัก ณ ที่จ่าย SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_payment_type_code
+msgid "Scb Payment Type Code"
+msgstr "รหัสประเภทการจ่ายเงิน SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export_line__scb_beneficiary_noti
+msgid "Scb Beneficiary Noti"
+msgstr "การแจ้งผู้รับเงิน SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export_line__scb_beneficiary_phone
+msgid "Scb Beneficiary Phone"
+msgstr "เบอร์โทร/แฟกซ์ผู้รับเงิน SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export_line__scb_beneficiary_email
+msgid "Scb Beneficiary Email"
+msgstr "อีเมลผู้รับเงิน SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_scb.field_bank_payment_export_line__scb_beneficiary_charge
+msgid "Scb Beneficiary Charge"
+msgstr "ให้ผู้รับเงินเป็นผู้ชำระค่าธรรมเนียม SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_view_form
+msgid "Product Code"
+msgstr "รหัสผลิตภัณฑ์"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_view_form
+msgid "Bank Type"
+msgstr "ประเภทธนาคาร"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_view_form
+msgid "Payment Type"
+msgstr "ประเภทการจ่ายเงิน"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_view_form
+msgid "Delivery Mode"
+msgstr "วิธีนำส่งเอกสาร"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_view_form
+msgid "Pickup Location"
+msgstr "จุดรับเอกสาร"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_view_form
+msgid "Service Type"
+msgstr "ประเภทบริการ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_view_form
+msgid "Service Type (BahtNet)"
+msgstr "ประเภทบริการ (Bahtnet)"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_view_form
+msgid "Invoice Details Present"
+msgstr "แนบรายละเอียดใบแจ้งหนี้"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_view_form
+msgid "WHT Present"
+msgstr "แนบเอกสารหัก ณ ที่จ่าย"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_view_form
+msgid "Credit Advice Required"
+msgstr "ต้องการ Credit Advice"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_line_view_tree
+msgid "Phone/Fax"
+msgstr "เบอร์โทร/แฟกซ์"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.bank_payment_export_line_view_tree
+msgid "Email"
+msgstr "อีเมล"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.view_partner_form
+msgid "SCB Configuration"
+msgstr "ตั้งค่า SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_scb.view_partner_form
+msgid "Domestic Fund Transfer"
+msgstr "โอนเงินในประเทศ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: code:addons/l10n_th_bank_payment_export_scb/models/bank_payment_export.py:0
+#, python-format
+msgid "Account Number must only be 10 digits."
+msgstr "เลขที่บัญชีต้องมี 10 หลักเท่านั้น"
+
+#. module: l10n_th_bank_payment_export_scb
+#: code:addons/l10n_th_bank_payment_export_scb/models/bank_payment_export.py:0
+#, python-format
+msgid "Recipient Bank with %(payment)s is not selected."
+msgstr "ยังไม่ได้เลือกธนาคารผู้รับสำหรับ %(payment)s"
+
+#. module: l10n_th_bank_payment_export_scb
+#: code:addons/l10n_th_bank_payment_export_scb/models/bank_payment_export.py:0
+#, python-format
+msgid "The length of an email %(payment)s cannot exceed 64 characters."
+msgstr "ความยาวอีเมลของ %(payment)s ต้องไม่เกิน 64 ตัวอักษร"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_bank_type__1
+msgid "1 - Next Day"
+msgstr "1 - วันถัดไป"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_bank_type__2
+msgid "2 - Same Day Afternoon"
+msgstr "2 - วันเดียวกัน (ช่วงบ่าย)"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_product_code__bnt
+msgid "BNT - Bahtnet"
+msgstr "BNT - บาทเนต"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_product_code__dcp
+msgid "DCP - Direct Credit"
+msgstr "DCP - โอนเข้าบัญชีโดยตรง"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_product_code__mcl
+msgid "MCL - Media Clearing"
+msgstr "MCL - เคลียริ่งสื่อ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_product_code__pay
+msgid "PAY - Payroll"
+msgstr "PAY - จ่ายเงินเดือน"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_product_code__pa2
+msgid "PA2 - Payroll 2"
+msgstr "PA2 - จ่ายเงินเดือน 2"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_product_code__pa3
+msgid "PA3 - Payroll 3"
+msgstr "PA3 - จ่ายเงินเดือน 3"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_product_code__pa4
+msgid "PA4 - MediaClearing Payroll"
+msgstr "PA4 - จ่ายเงินเดือนผ่านเคลียริ่งสื่อ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_product_code__pa5
+msgid "PA5 - MediaClearing Payroll 2"
+msgstr "PA5 - จ่ายเงินเดือนผ่านเคลียริ่งสื่อ 2"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_product_code__pa6
+msgid "PA6 - MediaClearing Payroll 3"
+msgstr "PA6 - จ่ายเงินเดือนผ่านเคลียริ่งสื่อ 3"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_delivery_mode__m
+msgid "M - Send by Registered mail"
+msgstr "M - ส่งทางไปรษณีย์ลงทะเบียน"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_delivery_mode__c
+msgid "C - Send by messenger to Customer"
+msgstr "C - ส่งพนักงานส่งเอกสารถึงลูกค้า"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_delivery_mode__p
+msgid "P - Receiving pickup at SCB branch"
+msgstr "P - รับด้วยตนเองที่สาขา SCB"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_delivery_mode__s
+msgid "S - Send back to SCBBusinessNet"
+msgstr "S - ส่งกลับผ่าน SCB Business Net"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__00
+msgid "00 - Other"
+msgstr "00 - อื่น ๆ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__01
+msgid "01 - Freight"
+msgstr "01 - ค่าขนส่ง"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__02
+msgid "02 - Insurance Premium"
+msgstr "02 - เบี้ยประกันภัย"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__03
+msgid "03 - Trasportation Cost"
+msgstr "03 - ค่าขนส่งเดินทาง"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__04
+msgid "04 - Travelling Expenses (Thai)"
+msgstr "04 - ค่าใช้จ่ายเดินทาง (คนไทย)"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__05
+msgid "05 - Forign Tourist Expenses"
+msgstr "05 - ค่าใช้จ่ายนักท่องเที่ยวต่างชาติ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__06
+msgid "06 - Interest Paid"
+msgstr "06 - ดอกเบี้ยจ่าย"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__07
+msgid "07 - Dividened"
+msgstr "07 - เงินปันผล"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__08
+msgid "08 - Education"
+msgstr "08 - การศึกษา"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__09
+msgid "09 - Royalty Fee"
+msgstr "09 - ค่าลิขสิทธิ์"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__10
+msgid "10 - Agency Expenses"
+msgstr "10 - ค่าใช้จ่ายตัวแทน"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__11
+msgid "11 - Advertising Fee"
+msgstr "11 - ค่าโฆษณา"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__12
+msgid "12 - Communication Cost"
+msgstr "12 - ค่าสื่อสาร"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__13
+msgid "13 - Personal Remittance / Family Support"
+msgstr "13 - เงินโอนส่วนบุคคล / เลี้ยงดูครอบครัว"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__14
+msgid "14 - Money Transfer for Government"
+msgstr "14 - เงินโอนของราชการ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__15
+msgid "15 - Embassy / Military / Government Expenses"
+msgstr "15 - ค่าใช้จ่ายสถานทูต / ทหาร / ราชการ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__16
+msgid "16 - Thai Lobour Money Transfer"
+msgstr "16 - เงินโอนแรงงานไทย"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__17
+msgid "17 - Salary"
+msgstr "17 - เงินเดือน"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__18
+msgid "18 - Commission Fee"
+msgstr "18 - ค่านายหน้า"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__19
+msgid "19 - Loan"
+msgstr "19 - เงินกู้"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__20
+msgid "20 - Direct Investment"
+msgstr "20 - เงินลงทุนโดยตรง"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__21
+msgid "21 - Portfolio Investment"
+msgstr "21 - เงินลงทุนในหลักทรัพย์"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__22
+msgid "22 - Trade Transaction"
+msgstr "22 - ธุรกรรมการค้า"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type_bahtnet__23
+msgid "23 - Fixed Asset Investment"
+msgstr "23 - เงินลงทุนในสินทรัพย์ถาวร"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_invoice_language__t
+msgid "T - Thai"
+msgstr "T - ไทย"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_invoice_language__e
+msgid "E - English"
+msgstr "E - อังกฤษ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_wht_signatory__b
+msgid "B - Bank"
+msgstr "B - ธนาคาร"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_wht_signatory__c
+msgid "C - Corporate"
+msgstr "C - นิติบุคคล"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__csh
+msgid "CSH - Cash"
+msgstr "CSH - เงินสด"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__bcq
+msgid "BCQ - Branch or other bank chqs"
+msgstr "BCQ - เช็คสาขาอื่นหรือธนาคารอื่น"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__hcq
+msgid "HCQ - Home chqs"
+msgstr "HCQ - เช็คสาขาเจ้าของบัญชี"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__dca
+msgid "DCA - Current A/C"
+msgstr "DCA - บัญชีกระแสรายวัน"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__dsa
+msgid "DSA - Saving A/C"
+msgstr "DSA - บัญชีออมทรัพย์"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__bca
+msgid "BCA - Current A/C - other branch"
+msgstr "BCA - บัญชีกระแสรายวัน - ต่างสาขา"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__bsa
+msgid "BSA - Saving A/C - other branch"
+msgstr "BSA - บัญชีออมทรัพย์ - ต่างสาขา"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__fca
+msgid "FCA - Foreign cur. Current A/C"
+msgstr "FCA - บัญชีกระแสรายวันเงินตราต่างประเทศ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__fsa
+msgid "FSA - Foreign cur. Saving A/C"
+msgstr "FSA - บัญชีออมทรัพย์เงินตราต่างประเทศ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__spd
+msgid "SPD - Suspense debtor"
+msgstr "SPD - พักลูกหนี้"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__spc
+msgid "SPC - Suspense creditor"
+msgstr "SPC - พักเจ้าหนี้"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__ust
+msgid "UST - Unsettled"
+msgstr "UST - ยังไม่ชำระ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__ofa
+msgid "OFA - Offline Account"
+msgstr "OFA - บัญชีออฟไลน์"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_payment_type_code__fwd
+msgid "FWD - Forward Value"
+msgstr "FWD - วันที่มีผลล่วงหน้า"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export_line__scb_beneficiary_noti__n
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__res_partner__scb_beneficiary_noti__n
+msgid "N - None"
+msgstr "N - ไม่แจ้ง"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export_line__scb_beneficiary_noti__f
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__res_partner__scb_beneficiary_noti__f
+msgid "F - Fax"
+msgstr "F - แฟกซ์"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export_line__scb_beneficiary_noti__s
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__res_partner__scb_beneficiary_noti__s
+msgid "S - SMS"
+msgstr "S - SMS"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export_line__scb_beneficiary_noti__e
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__res_partner__scb_beneficiary_noti__e
+msgid "E - Email"
+msgstr "E - อีเมล"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_pickup_location__c001
+msgid "C001 - Ratchayothin"
+msgstr "C001 - รัชโยธิน"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_pickup_location__c002
+msgid "C002 - Chidlom"
+msgstr "C002 - ชิดลม"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_pickup_location__c003
+msgid "C003 - Map Ta Phut"
+msgstr "C003 - มาบตาพุด"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_pickup_location__c004
+msgid "C004 - Lat Krabang"
+msgstr "C004 - ลาดกระบัง"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_pickup_location__c005
+msgid "C005 - Tha Phae"
+msgstr "C005 - ท่าแพ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_pickup_location__c006
+msgid "C006 - Asoke"
+msgstr "C006 - อโศก"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_pickup_location__c007
+msgid "C007 - Pattaya Sai 2"
+msgstr "C007 - พัทยา สาย2"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_pickup_location__c008
+msgid "C008 - Rama 4"
+msgstr "C008 - พระราม 4"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_pickup_location__c009
+msgid "C009 - Thanon Cherd Wutthakat"
+msgstr "C009 - ถนนเชิดวุฒากาศ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_pickup_location__c010
+msgid "C010 - Laem Chabang"
+msgstr "C010 - แหลมฉบัง"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_pickup_location__c011
+msgid "C011 - IT Square (Lak Si)"
+msgstr "C011 - ไอทีสแควร์ (หลักสี่)"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_pickup_location__c012
+msgid "C012 - Suvarnabhumi"
+msgstr "C012 - สุวรรณภูมิ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type__01
+msgid "01 - Salary, Wages, Gratuity, Pension"
+msgstr "01 - เงินเดือน, ค่าจ้าง, บำเหน็จ, บำนาญ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type__02
+msgid "02 - Dividend"
+msgstr "02 - เงินปันผล"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type__03
+msgid "03 - Interest"
+msgstr "03 - ดอกเบี้ย"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type__04
+msgid "04 - Goods and Services"
+msgstr "04 - ค่าสินค้า, บริการ"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type__05
+msgid "05 - Sale of Securities"
+msgstr "05 - ขายหลักทรัพย์"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type__06
+msgid "06 - Tax Refund"
+msgstr "06 - คืนภาษี"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type__07
+msgid "07 - Loan"
+msgstr "07 - เงินกู้"
+
+#. module: l10n_th_bank_payment_export_scb
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_scb.selection__bank_payment_export__scb_service_type__59
+msgid "59 - Other"
+msgstr "59 - อื่น ๆ"

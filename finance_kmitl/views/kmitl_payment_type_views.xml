@@ -25,7 +25,7 @@
                         <label for="name" />
                         <h1><field
                                 name="name"
-                                placeholder="e.g. รับเงินประกันสัญญา"
+                                placeholder="e.g. Receive Contract Guarantee"
                             /></h1>
                     </div>
                     <group>
