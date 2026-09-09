@@ -371,14 +371,36 @@ class ApprovalRequest(models.Model):
     def _domain_reservation_commitment_id(self):
         """Reservations this request may draw down (phase-1 dropdown), gated by
         the active ``budget_selection_mode`` via
-        ``_reservation_commitment_mode_domain``. OU visibility (owner or
-        beneficiary unit) is enforced by the record rules (ADR-0011)."""
+        ``_reservation_commitment_mode_domain``. Restricted to this request's own
+        ปีงบประมาณ — a slip reserved in another year would silently pull the
+        request's money out of the year it declares (excep_account_fiscal_year_
+        not_match_budget_commitment blocks it server-side). OU visibility (owner
+        or beneficiary unit) is enforced by the record rules (ADR-0011)."""
         domain = [
             ("state", "in", ("reserved", "partial")),
             ("available_to_obligate", ">", 0),
+            ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
         ]
         domain += self._reservation_commitment_mode_domain()
         return domain
+
+    reservation_commitment_domain = fields.Binary(
+        compute="_compute_reservation_commitment_domain",
+        help=(
+            "Record-aware domain for the ใบจองงบประมาณ dropdown. A static field "
+            "domain can neither see this request's own account_fiscal_year_id "
+            "nor be extended per budget_selection_mode by a bridge, so the "
+            "dropdown is driven by this computed domain instead — same pattern "
+            "as purchase_request_budget."
+        ),
+    )
+
+    @api.depends("account_fiscal_year_id", "budget_selection_mode")
+    def _compute_reservation_commitment_domain(self):
+        for rec in self:
+            rec.reservation_commitment_domain = (
+                rec._domain_reservation_commitment_id()
+            )
 
     def action_open_reservation_picker(self):
         """Browse the picker in only-selectable mode: the requester may pick only
