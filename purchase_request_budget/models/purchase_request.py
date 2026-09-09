@@ -30,15 +30,14 @@ class PurchaseRequest(models.Model):
     )
     budget_selection_mode = fields.Selection(
         selection=[
-            ("chart", "เลือกจากผังงบประมาณ (จองงบใหม่)"),
-            ("reservation", "หยิบจากใบจองงบประมาณที่มีอยู่"),
+            ("chart", "ใช้เงินจากแผน (จองงบใหม่)"),
         ],
         string="วิธีเลือกงบประมาณ",
         default="chart",
         copy=False,
         help=(
             "เลือกว่าจะจองงบใหม่โดยเลือกมิติจากผังงบประมาณ "
-            "หรือหยิบใบจองงบประมาณที่หน่วยงานอื่นจองไว้ให้แล้วไปใช้"
+            "หรือหยิบใบจองงบประมาณที่มีอยู่ไปใช้ (ตัวเลือกเพิ่มเติมจากโมดูลเสริม)"
         ),
     )
     reservation_commitment_id = fields.Many2one(
@@ -71,7 +70,15 @@ class PurchaseRequest(models.Model):
             ("account_id.purchase_ok", "=", True),
             ("account_id.product_id", "!=", False),
             ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
-        ]
+        ] + self._reservation_commitment_mode_domain()
+
+    def _reservation_commitment_mode_domain(self):
+        """Per-mode extension point for the ใบจองงบประมาณ picker domain.
+
+        Base ships only the ``chart`` mode (no reservation picker). Bridge
+        modules adding a mode override this to scope the picker to their own
+        commitments (e.g. ``account_id.is_project`` / ``account_id.procurement_plan``)."""
+        return []
 
     reservation_commitment_domain = fields.Binary(
         compute="_compute_reservation_commitment_domain",
@@ -82,7 +89,7 @@ class PurchaseRequest(models.Model):
         ),
     )
 
-    @api.depends("account_fiscal_year_id")
+    @api.depends("account_fiscal_year_id", "budget_selection_mode")
     def _compute_reservation_commitment_domain(self):
         for rec in self:
             rec.reservation_commitment_domain = rec._domain_reservation_commitment_id()
@@ -304,9 +311,9 @@ class PurchaseRequest(models.Model):
         if self.reservation_commitment_id:
             return self._action_draw_from_reservation()
 
-        # Chose "หยิบจากใบจอง" but picked nothing: say so, instead of falling
+        # Chose a draw-down mode but picked nothing: say so, instead of falling
         # through to reserve-new against the dimensions the mode switch cleared.
-        if self.budget_selection_mode == "reservation":
+        if self.budget_selection_mode != "chart":
             raise UserError(_("กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"))
 
         amount = sum(self.line_ids.mapped("estimated_cost"))
@@ -449,14 +456,14 @@ class PurchaseRequest(models.Model):
 
         ``budget_selection_mode`` is a **UI affordance only** — the server still
         keys draw-down off the presence of ``reservation_commitment_id``
-        (ADR-0010), never off this field. Leaving the unused side filled would
-        make the form say one thing and the reserve action do another: a stale
-        chart selection under "หยิบจากใบจอง", or a stale slip under "เลือกจากผัง"
-        that would silently draw instead of reserving.
+        (ADR-0010), never off this field. Always clear the pick (switching
+        between draw-down modes must not carry over a commitment from the
+        wrong picker domain), and clear the chart dimensions whenever the mode
+        is not ``chart`` — leaving them filled would make the form say one
+        thing and the reserve action do another.
         """
-        if self.budget_selection_mode == "chart":
-            self.reservation_commitment_id = False
-        else:
+        self.reservation_commitment_id = False
+        if self.budget_selection_mode != "chart":
             self.budget_account_id = False
             self.analytic_distribution = False
 

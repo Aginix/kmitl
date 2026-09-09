@@ -15,6 +15,11 @@ class PurchaseRequest(models.Model):
         store=True,
     )
 
+    budget_selection_mode = fields.Selection(
+        selection_add=[("procurement_plan", "แผนจัดซื้อจัดจ้าง")],
+        ondelete={"procurement_plan": "set default"},
+    )
+
     procurement_plan_id = fields.Many2one(
         comodel_name="procurement.plan",
         string="Procurement Plan",
@@ -40,6 +45,12 @@ class PurchaseRequest(models.Model):
 
     def _domain_budget_account_id(self):
         return super()._domain_budget_account_id() + [("procurement_plan", "=", False)]
+
+    def _reservation_commitment_mode_domain(self):
+        domain = super()._reservation_commitment_mode_domain()
+        if self.budget_selection_mode == "procurement_plan":
+            domain = domain + [("account_id.procurement_plan", "=", True)]
+        return domain
 
     def _check_drawable_commitment(self, commitment):
         # A plan's shared commitment sits on a ``procurement_plan`` budget code
@@ -161,6 +172,28 @@ class PurchaseRequest(models.Model):
             }
         return super().action_reserve_budget()
 
+    def _action_draw_from_reservation(self):
+        """PR-first draw of a procurement plan's shared commitment (as opposed
+        to the source-driven ``procurement.plan`` create-from-plan button
+        above): derive the plan, enforce 1-แผน-1-ใบ, link it and copy its
+        procurement method, advance the plan out of ``verified``, then run the
+        base draw — which copies the commitment's dims/account/FY onto the PR
+        + lines, validates via the already-overridden
+        ``_check_drawable_commitment``, and advances state."""
+        plan = self.reservation_commitment_id.procurement_plan_id
+        if plan:
+            self._check_one_active_pr(plan)
+            self.write(
+                {
+                    "use_procurement_plan": True,
+                    "procurement_plan_id": plan.id,
+                    "procurement_method_id": plan.procurement_method_id.id,
+                }
+            )
+            if plan.state == "verified":
+                plan.action_in_progress()
+        return super()._action_draw_from_reservation()
+
     def _cancel_budget_commitment(self):
         """Never cancel a shared plan commitment when a plan-driven PR is reset
         or rejected — just detach this PR from it (D3)."""
@@ -178,14 +211,10 @@ class PurchaseRequest(models.Model):
             record._link_to_procurement_plan()
         return records
 
-    def _link_to_procurement_plan(self):
-        """A plan-driven PR (created from the plan, ADR-0006) enforces one active
-        PR per plan, links the plan's already-reserved shared commitment, and
-        starts the plan. Reservation itself happened at appropriation post."""
-        self.ensure_one()
-        plan = self.procurement_plan_id
-        if not self.use_procurement_plan:
-            self.use_procurement_plan = True
+    def _check_one_active_pr(self, plan):
+        """Raise unless this PR is the plan's only active (non-rejected) PR
+        (ADR-0006, 1 แผน ต่อ 1 ใบขอซื้อ). Shared by the source-driven
+        create-from-plan link and the PR-first draw-down path."""
         active_others = plan.purchase_request_ids.filtered(
             lambda r: r.id != self.id and r.state != "rejected"
         )
@@ -197,6 +226,16 @@ class PurchaseRequest(models.Model):
                 )
                 % plan.display_name
             )
+
+    def _link_to_procurement_plan(self):
+        """A plan-driven PR (created from the plan, ADR-0006) enforces one active
+        PR per plan, links the plan's already-reserved shared commitment, and
+        starts the plan. Reservation itself happened at appropriation post."""
+        self.ensure_one()
+        plan = self.procurement_plan_id
+        if not self.use_procurement_plan:
+            self.use_procurement_plan = True
+        self._check_one_active_pr(plan)
         if not self.budget_commitment_id:
             commitment = plan.budget_commitment_ids.filtered(
                 lambda c: c.state in ("reserved", "partial")
@@ -320,6 +359,7 @@ class ProcurementPlan(models.Model):
             "target": "current",
             "context": {
                 "default_use_procurement_plan": True,
+                "default_budget_selection_mode": "procurement_plan",
                 "default_procurement_plan_id": self.id,
                 "default_budget_commitment_id": commitment.id,
                 "default_budget_account_id": self.budget_account_id.id,

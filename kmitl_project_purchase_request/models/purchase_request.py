@@ -15,6 +15,11 @@ class PurchaseRequest(models.Model):
         store=True,
     )
 
+    budget_selection_mode = fields.Selection(
+        selection_add=[("project", "โครงการ/กิจกรรม")],
+        ondelete={"project": "set default"},
+    )
+
     kmitl_project_id = fields.Many2one(
         comodel_name="kmitl.project",
         string="โครงการ/กิจกรรม",
@@ -55,6 +60,12 @@ class PurchaseRequest(models.Model):
         # are reserved through projects (ADR-0007). Project-driven PRs prefill the
         # code (read-only), so the domain never blocks them.
         return super()._domain_budget_account_id() + [("is_project", "=", False)]
+
+    def _reservation_commitment_mode_domain(self):
+        domain = super()._reservation_commitment_mode_domain()
+        if self.budget_selection_mode == "project":
+            domain = domain + [("account_id.is_project", "=", True)]
+        return domain
 
     def _check_drawable_commitment(self, commitment):
         # A project's shared commitment sits on an ``is_project`` budget code this
@@ -103,6 +114,25 @@ class PurchaseRequest(models.Model):
             "target": "current",
         }
 
+    def _enforce_project_budget_cap(self, project):
+        """Raise if this PR would push the project's total drawn amount over
+        its reserved ``budget_amount`` (ADR-0007). Shared by the source-driven
+        create-from-project flow and the PR-first draw-down path."""
+        pr_total = project._project_pr_total()
+        this_pr = sum(self.line_ids.mapped("estimated_cost"))
+        if pr_total > project.budget_amount:
+            raise UserError(
+                _(
+                    "ใบขอซื้อนี้ (%s) เกินงบประมาณคงเหลือของโครงการ "
+                    "(คงเหลือ %s จากงบ %s)"
+                )
+                % (
+                    "{:,.2f}".format(this_pr),
+                    "{:,.2f}".format(project.budget_amount - (pr_total - this_pr)),
+                    "{:,.2f}".format(project.budget_amount),
+                )
+            )
+
     def action_reserve_budget(self):
         """Project-driven PRs draw the project's shared commitment instead of
         creating their own. Many PRs may share one project commitment, capped at
@@ -117,20 +147,7 @@ class PurchaseRequest(models.Model):
                 raise UserError(
                     _("โครงการยังไม่ได้จองงบประมาณ ไม่สามารถดำเนินการได้")
                 )
-            pr_total = project._project_pr_total()
-            this_pr = sum(self.line_ids.mapped("estimated_cost"))
-            if pr_total > project.budget_amount:
-                raise UserError(
-                    _(
-                        "ใบขอซื้อนี้ (%s) เกินงบประมาณคงเหลือของโครงการ "
-                        "(คงเหลือ %s จากงบ %s)"
-                    )
-                    % (
-                        "{:,.2f}".format(this_pr),
-                        "{:,.2f}".format(project.budget_amount - (pr_total - this_pr)),
-                        "{:,.2f}".format(project.budget_amount),
-                    )
-                )
+            self._enforce_project_budget_cap(project)
             self.budget_commitment_id = commitment.id
             self.button_to_approve()
             return {
@@ -142,6 +159,21 @@ class PurchaseRequest(models.Model):
                 "context": self.env.context,
             }
         return super().action_reserve_budget()
+
+    def _action_draw_from_reservation(self):
+        """PR-first draw of a project's shared commitment (as opposed to the
+        source-driven ``kmitl.project`` create-from-project button above):
+        link the project, enforce its budget cap, then run the base draw —
+        which copies the commitment's dims/account/FY onto the PR + lines,
+        validates via the already-overridden ``_check_drawable_commitment``,
+        and advances state. ``kmitl_project_id`` is written first so the cap
+        check counts this PR and so ``_cancel_budget_commitment`` /
+        ``is_budget_editable`` (both keyed on ``use_project``) behave."""
+        project = self.reservation_commitment_id.kmitl_project_id
+        if project:
+            self.write({"use_project": True, "kmitl_project_id": project.id})
+            self._enforce_project_budget_cap(project)
+        return super()._action_draw_from_reservation()
 
     def _cancel_budget_commitment(self):
         """Never cancel a shared project commitment when a project-driven PR is
@@ -291,6 +323,7 @@ class KmitlProject(models.Model):
             "target": "current",
             "context": {
                 "default_use_project": True,
+                "default_budget_selection_mode": "project",
                 "default_kmitl_project_id": self.id,
                 "default_budget_commitment_id": commitment.id,
                 "default_budget_account_id": self.budget_account_id.id,
