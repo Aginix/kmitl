@@ -92,6 +92,14 @@ msgid "Bill No."
 msgstr "เลขที่ใบแจ้งหนี้"
 
 #. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Clear filters"
+msgstr "ล้างตัวกรอง"
+
+#. module: finance_kmitl_reports
 #. odoo-python
 #: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
 #, python-format
@@ -156,6 +164,14 @@ msgstr "ส่งออก Excel"
 
 #. module: finance_kmitl_reports
 #. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "Fewer filters"
+msgstr "ซ่อนตัวกรอง"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
 #. odoo-python
 #: code:addons/finance_kmitl_reports/models/report_base.py:0
 #: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
@@ -198,6 +214,14 @@ msgstr "จัดกลุ่มตาม: %s"
 #, python-format
 msgid "Include already overdue"
 msgstr "รวมรายการที่เกินกำหนดแล้ว"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#, python-format
+msgid "More filters"
+msgstr "ตัวกรองเพิ่มเติม"
 
 #. module: finance_kmitl_reports
 #. odoo-python

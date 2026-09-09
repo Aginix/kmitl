@@ -1,4 +1,17 @@
 .o_finance_kmitl_report {
+    // Group the filter controls in a light panel, set apart from the data —
+    // the same treatment the Trial Balance gives its filter bar.
+    .o_finance_report_filters {
+        padding: 0.75rem 0.75rem 0.5rem;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e3e8;
+        border-radius: 0.5rem;
+    }
+
+    .o_finance_report_more {
+        white-space: nowrap;
+    }
+
     .o_finance_report_table {
         font-size: 0.875rem;
 

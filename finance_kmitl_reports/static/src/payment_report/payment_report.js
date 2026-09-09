@@ -31,7 +31,14 @@ const RECORD_KEYS = [
  */
 export class PaymentReport extends Component {
     setup() {
-        this.controlPanelDisplay = {"top-left": true, "bottom-right": false};
+        // top-right off: the filters moved into the report body (core caps that
+        // slot at half the width), and leaving it on would render core's own
+        // SearchBar, which a client action has no search model for.
+        this.controlPanelDisplay = {
+            "top-left": true,
+            "top-right": false,
+            "bottom-right": false,
+        };
         this.orm = useService("orm");
         this.action = useService("action");
         this.company = useService("company");
@@ -45,6 +52,7 @@ export class PaymentReport extends Component {
             dateTo: false,
             groupBy: "paid_date",
             groupBy2: "",
+            showAdvanced: false,
             departments: [],
             sources: [],
             funds: [],
@@ -66,6 +74,9 @@ export class PaymentReport extends Component {
             groupBy: _t("Group By"),
             groupBy2: _t("Then By"),
             none: _t("None"),
+            moreFilters: _t("More filters"),
+            fewerFilters: _t("Fewer filters"),
+            clearFilters: _t("Clear filters"),
             grandTotal: _t("Grand Total"),
             departments: _t("Departments"),
             sources: _t("Sources"),
@@ -164,6 +175,26 @@ export class PaymentReport extends Component {
             this.state[key] = selected;
             this.load();
         }
+    }
+
+    toggleAdvanced() {
+        this.state.showAdvanced = !this.state.showAdvanced;
+    }
+
+    /** How many pickers are narrowing the report — shown on the collapse
+     * toggle so a filter set while the panel was open is not invisible once
+     * it is closed again. */
+    get activeFilterCount() {
+        return [...DIMENSION_KEYS, ...RECORD_KEYS].filter(
+            (key) => this.state[key].length
+        ).length;
+    }
+
+    clearFilters() {
+        for (const key of [...DIMENSION_KEYS, ...RECORD_KEYS]) {
+            this.state[key] = [];
+        }
+        this.load();
     }
 
     openPayment(row) {

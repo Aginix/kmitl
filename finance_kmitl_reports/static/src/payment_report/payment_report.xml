@@ -40,36 +40,46 @@
                         </button>
                     </div>
                 </t>
-                <t t-set-slot="control-panel-top-right">
-                    <div class="d-flex flex-wrap gap-2 align-items-end">
-                        <div>
-                            <label class="form-label-sm mb-1">
+            </ControlPanel>
+            <div class="o_content p-3">
+                <!-- The filter bar lives here rather than in the control panel's
+                     top-right slot: core caps that slot at 50% of the width
+                     (web/…/control_panel.scss), which is right for the one
+                     search input it was written for and wrong for fifteen
+                     controls. Same arrangement as the Trial Balance. -->
+                <div class="o_finance_report_filters mb-3">
+                    <div class="row g-3">
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="finance_pay_date_from">
                                 <t t-esc="labels.dateFrom" />
                             </label>
                             <input
+                                id="finance_pay_date_from"
                                 type="date"
-                                class="form-control form-control-sm"
+                                class="form-control"
                                 t-att-value="state.dateFrom"
                                 t-on-change="onDateFromChange"
                             />
                         </div>
-                        <div>
-                            <label class="form-label-sm mb-1">
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="finance_pay_date_to">
                                 <t t-esc="labels.dateTo" />
                             </label>
                             <input
+                                id="finance_pay_date_to"
                                 type="date"
-                                class="form-control form-control-sm"
+                                class="form-control"
                                 t-att-value="state.dateTo"
                                 t-on-change="onDateToChange"
                             />
                         </div>
-                        <div>
-                            <label class="form-label-sm mb-1">
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="finance_pay_group_by">
                                 <t t-esc="labels.groupBy" />
                             </label>
                             <select
-                                class="form-select form-select-sm"
+                                id="finance_pay_group_by"
+                                class="form-select"
                                 t-on-change="onGroupByChange"
                             >
                                 <t t-foreach="axes" t-as="axis" t-key="axis.value">
@@ -82,12 +92,13 @@
                                 </t>
                             </select>
                         </div>
-                        <div>
-                            <label class="form-label-sm mb-1">
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="finance_pay_group_by_2">
                                 <t t-esc="labels.groupBy2" />
                             </label>
                             <select
-                                class="form-select form-select-sm"
+                                id="finance_pay_group_by_2"
+                                class="form-select"
                                 t-on-change="onGroupBy2Change"
                             >
                                 <option value=""><t t-esc="labels.none" /></option>
@@ -101,126 +112,157 @@
                                 </t>
                             </select>
                         </div>
-                        <div style="min-width: 170px;">
-                            <label class="form-label-sm mb-1">
-                                <t t-esc="labels.payingAccount" />
-                            </label>
-                            <MultiRecordSelect
-                                resModel="'account.payment.method.line'"
-                                domain="[['payment_type', '=', 'outbound']]"
-                                placeholder="labels.payingAccount"
-                                selected="state.payingAccounts"
-                                onChange="(sel) => this.onSelectionChange('payingAccounts', sel)"
-                            />
+                        <div
+                            class="col-12 col-lg-4 d-flex align-items-end justify-content-lg-end gap-2"
+                        >
+                            <button
+                                class="btn btn-link p-0 o_finance_report_more"
+                                t-on-click="toggleAdvanced"
+                            >
+                                <i
+                                    t-att-class="state.showAdvanced ? 'fa fa-caret-down me-1' : 'fa fa-caret-right me-1'"
+                                />
+                                <t t-if="state.showAdvanced">
+                                    <t t-esc="labels.fewerFilters" />
+                                </t>
+                                <t t-else=""><t t-esc="labels.moreFilters" /></t>
+                                <span
+                                    t-if="activeFilterCount"
+                                    class="badge bg-primary ms-1"
+                                    t-esc="activeFilterCount"
+                                />
+                            </button>
+                            <button
+                                t-if="activeFilterCount"
+                                class="btn btn-link p-0 text-muted"
+                                t-on-click="clearFilters"
+                            >
+                                <i class="fa fa-times me-1" />
+                                <t t-esc="labels.clearFilters" />
+                            </button>
                         </div>
-                        <div style="min-width: 150px;">
-                            <label class="form-label-sm mb-1">
-                                <t t-esc="labels.method" />
-                            </label>
-                            <MultiRecordSelect
-                                resModel="'account.payment.method'"
-                                domain="[['payment_type', '=', 'outbound']]"
-                                placeholder="labels.method"
-                                selected="state.methods"
-                                onChange="(sel) => this.onSelectionChange('methods', sel)"
-                            />
-                        </div>
-                        <div style="min-width: 170px;">
-                            <label class="form-label-sm mb-1">
-                                <t t-esc="labels.payee" />
-                            </label>
-                            <MultiRecordSelect
-                                resModel="'res.partner'"
-                                placeholder="labels.payee"
-                                selected="state.partners"
-                                onChange="(sel) => this.onSelectionChange('partners', sel)"
-                            />
-                        </div>
-                        <div style="min-width: 150px;">
-                            <label class="form-label-sm mb-1">
-                                <t t-esc="labels.payeeType" />
-                            </label>
-                            <MultiRecordSelect
-                                resModel="'res.partner.type'"
-                                placeholder="labels.payeeType"
-                                selected="state.payeeTypes"
-                                onChange="(sel) => this.onSelectionChange('payeeTypes', sel)"
-                            />
-                        </div>
-                        <div style="min-width: 170px;">
-                            <label class="form-label-sm mb-1">
-                                <t t-esc="labels.subject" />
-                            </label>
-                            <MultiRecordSelect
-                                resModel="'kmitl.payment.subject'"
-                                placeholder="labels.subject"
-                                selected="state.subjects"
-                                onChange="(sel) => this.onSelectionChange('subjects', sel)"
-                            />
-                        </div>
-                        <div style="min-width: 150px;">
-                            <label class="form-label-sm mb-1">
-                                <t t-esc="labels.operationType" />
-                            </label>
-                            <MultiRecordSelect
-                                resModel="'kmitl.payment.type'"
-                                placeholder="labels.operationType"
-                                selected="state.operationTypes"
-                                onChange="(sel) => this.onSelectionChange('operationTypes', sel)"
-                            />
-                        </div>
-                        <div style="min-width: 170px;">
-                            <label class="form-label-sm mb-1">
-                                <t t-esc="labels.departments" />
-                            </label>
-                            <MultiRecordSelect
-                                resModel="'account.analytic.account'"
-                                domain="[['root_plan_id.code', '=', 'departments']]"
-                                placeholder="labels.departments"
-                                selected="state.departments"
-                                onChange="(sel) => this.onSelectionChange('departments', sel)"
-                            />
-                        </div>
-                        <div style="min-width: 150px;">
-                            <label class="form-label-sm mb-1">
-                                <t t-esc="labels.sources" />
-                            </label>
-                            <MultiRecordSelect
-                                resModel="'account.analytic.account'"
-                                domain="[['root_plan_id.code', '=', 'sources']]"
-                                placeholder="labels.sources"
-                                selected="state.sources"
-                                onChange="(sel) => this.onSelectionChange('sources', sel)"
-                            />
-                        </div>
-                        <div style="min-width: 150px;">
-                            <label class="form-label-sm mb-1">
-                                <t t-esc="labels.funds" />
-                            </label>
-                            <MultiRecordSelect
-                                resModel="'account.analytic.account'"
-                                domain="[['root_plan_id.code', '=', 'funds']]"
-                                placeholder="labels.funds"
-                                selected="state.funds"
-                                onChange="(sel) => this.onSelectionChange('funds', sel)"
-                            />
-                        </div>
-                        <div style="min-width: 170px;">
-                            <label class="form-label-sm mb-1">
-                                <t t-esc="labels.activities" />
-                            </label>
-                            <MultiRecordSelect
-                                resModel="'account.analytic.account'"
-                                domain="[['root_plan_id.code', '=', 'activities']]"
-                                placeholder="labels.activities"
-                                selected="state.activities"
-                                onChange="(sel) => this.onSelectionChange('activities', sel)"
-                            />
-                        </div>
+
+                        <t t-if="state.showAdvanced">
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.payingAccount" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'account.payment.method.line'"
+                                    domain="[['payment_type', '=', 'outbound']]"
+                                    placeholder="labels.payingAccount"
+                                    selected="state.payingAccounts"
+                                    onChange="(sel) => this.onSelectionChange('payingAccounts', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.method" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'account.payment.method'"
+                                    domain="[['payment_type', '=', 'outbound']]"
+                                    placeholder="labels.method"
+                                    selected="state.methods"
+                                    onChange="(sel) => this.onSelectionChange('methods', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.payee" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'res.partner'"
+                                    placeholder="labels.payee"
+                                    selected="state.partners"
+                                    onChange="(sel) => this.onSelectionChange('partners', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.payeeType" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'res.partner.type'"
+                                    placeholder="labels.payeeType"
+                                    selected="state.payeeTypes"
+                                    onChange="(sel) => this.onSelectionChange('payeeTypes', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.subject" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'kmitl.payment.subject'"
+                                    placeholder="labels.subject"
+                                    selected="state.subjects"
+                                    onChange="(sel) => this.onSelectionChange('subjects', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.operationType" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'kmitl.payment.type'"
+                                    placeholder="labels.operationType"
+                                    selected="state.operationTypes"
+                                    onChange="(sel) => this.onSelectionChange('operationTypes', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.departments" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'account.analytic.account'"
+                                    domain="[['root_plan_id.code', '=', 'departments']]"
+                                    placeholder="labels.departments"
+                                    selected="state.departments"
+                                    onChange="(sel) => this.onSelectionChange('departments', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.sources" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'account.analytic.account'"
+                                    domain="[['root_plan_id.code', '=', 'sources']]"
+                                    placeholder="labels.sources"
+                                    selected="state.sources"
+                                    onChange="(sel) => this.onSelectionChange('sources', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.funds" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'account.analytic.account'"
+                                    domain="[['root_plan_id.code', '=', 'funds']]"
+                                    placeholder="labels.funds"
+                                    selected="state.funds"
+                                    onChange="(sel) => this.onSelectionChange('funds', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.activities" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'account.analytic.account'"
+                                    domain="[['root_plan_id.code', '=', 'activities']]"
+                                    placeholder="labels.activities"
+                                    selected="state.activities"
+                                    onChange="(sel) => this.onSelectionChange('activities', sel)"
+                                />
+                            </div>
+                        </t>
                     </div>
-                </t>
-            </ControlPanel>
-            <div class="o_content p-3">
+                </div>
+
                 <t t-if="state.loading">
                     <div class="text-center p-5">
                         <span class="spinner-border" role="status" />
