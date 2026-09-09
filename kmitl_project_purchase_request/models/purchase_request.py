@@ -89,7 +89,10 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         super()._compute_is_budget_editable()
         for rec in self:
-            if rec.use_project:
+            # Lock the budget while a project PR is live, but reopen it once
+            # recalled to draft (ดึงกลับ keeps the commitment — see
+            # _release_commitment_on_draft) so the user can change the ใบจองงบประมาณ.
+            if rec.use_project and rec.state != "draft":
                 rec.is_budget_editable = False
 
     # No _onchange to prefill from the project on purpose. A project-driven พ.1 is
@@ -138,7 +141,14 @@ class PurchaseRequest(models.Model):
         creating their own. Many PRs may share one project commitment, capped at
         the project's reserved budget_amount (ADR-0007)."""
         self.ensure_one()
-        if self.use_project and self.kmitl_project_id:
+        # A picked ใบจองงบประมาณ (PR-first, incl. one changed after ดึงกลับ) takes
+        # priority: fall through to the base draw so the *chosen* commitment is
+        # drawn, not the project's default one.
+        if (
+            self.use_project
+            and self.kmitl_project_id
+            and not self.reservation_commitment_id
+        ):
             project = self.kmitl_project_id
             commitment = project.budget_commitment_ids.filtered(
                 lambda c: c.state in ("reserved", "partial")

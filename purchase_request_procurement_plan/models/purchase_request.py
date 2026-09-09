@@ -80,7 +80,10 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         super()._compute_is_budget_editable()
         for rec in self:
-            if rec.use_procurement_plan:
+            # Lock the budget while a plan PR is live, but reopen it once recalled
+            # to draft (ดึงกลับ keeps the commitment — see
+            # _release_commitment_on_draft) so the user can change the ใบจองงบประมาณ.
+            if rec.use_procurement_plan and rec.state != "draft":
                 rec.is_budget_editable = False
 
     @api.onchange("use_procurement_plan", "procurement_plan_id")
@@ -146,7 +149,14 @@ class PurchaseRequest(models.Model):
         creating their own (D2). Non-plan PRs keep the standard own-commitment
         behaviour (D4)."""
         self.ensure_one()
-        if self.use_procurement_plan and self.procurement_plan_id:
+        # A picked ใบจองงบประมาณ (PR-first, incl. one changed after ดึงกลับ) takes
+        # priority: fall through to the base draw so the *chosen* commitment is
+        # drawn, not the plan's default one.
+        if (
+            self.use_procurement_plan
+            and self.procurement_plan_id
+            and not self.reservation_commitment_id
+        ):
             plan = self.procurement_plan_id
             commitment = plan.budget_commitment_ids.filtered(
                 lambda c: c.state in ("reserved", "partial")

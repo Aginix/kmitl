@@ -34,6 +34,7 @@
             <xpath expr="//field[@name='source_analytic_id']" position="after">
                 <field
                     name="project_analytic_id"
+                    invisible="1"
                     readonly="1"
                     options="{'no_open': True}"
                 />

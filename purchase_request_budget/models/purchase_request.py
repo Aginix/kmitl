@@ -201,16 +201,30 @@ class PurchaseRequest(models.Model):
             else:
                 rec.is_budget_editable = rec.is_editable
 
-    @api.depends("state", "budget_commitment_id")
+    @api.depends(
+        "state",
+        "budget_commitment_id",
+        "budget_commitment_id.state",
+        "is_budget_editable",
+    )
     def _compute_hide_reserve_budget_button(self):
         for rec in self:
-            if rec.state in ("to_approve") and (
-                rec.budget_commitment_id.state == "cancel"
-                or not rec.budget_commitment_id
-            ):
-                rec.hide_reserve_budget_button = False
-            else:
-                rec.hide_reserve_budget_button = True
+            at_reserve_stage = rec.state == "to_approve" and (
+                not rec.budget_commitment_id
+                or rec.budget_commitment_id.state == "cancel"
+            )
+            # A recalled project/plan PR keeps its (active) commitment but reopens
+            # budget selection in draft (ดึงกลับ) — offer the จองงบ button so a
+            # changed ใบจองงบประมาณ can be re-drawn.
+            recalled_reselect = (
+                rec.state == "draft"
+                and rec.is_budget_editable
+                and rec.budget_commitment_id
+                and rec.budget_commitment_id.state != "cancel"
+            )
+            rec.hide_reserve_budget_button = not (
+                at_reserve_stage or recalled_reselect
+            )
 
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
