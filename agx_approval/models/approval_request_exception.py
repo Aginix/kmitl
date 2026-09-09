@@ -41,10 +41,20 @@ class ApprovalRequest(models.Model):
         reserved minus already-obligated). False when reserving new instead of
         drawing (no reservation_commitment_id), since a new commitment's own
         availability is checked separately (``_check_budget_availability``).
+
+        A gate on the *draw*, not a standing invariant: once the slip is drawn
+        (``budget_commitment_id`` is that slip) the check goes quiet. Every
+        later ``detect_exceptions()`` — notably agx_approval_disbursement's
+        action_create_disbursement_request — would otherwise re-test the *plan*
+        total against an availability that legitimately shrank meanwhile (a
+        shared project slip drawn by sibling requests), blocking a request whose
+        แผน can no longer be edited (is_plan_editable) and whose actual spend may
+        well fit. Obligate-level availability is enforced by budget.controller at
+        disbursement.
         """
         self.ensure_one()
         commitment = self.reservation_commitment_id
-        if not commitment:
+        if not commitment or self.budget_commitment_id == commitment:
             return False
         return (
             self.currency_id.compare_amounts(
