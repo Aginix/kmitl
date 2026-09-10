@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sarabun_standard_comment_user,sarabun.standard.comment.user,model_sarabun_standard_comment,agx_sarabun.group_sarabun_user,1,0,0,0
+access_sarabun_standard_comment_manager,sarabun.standard.comment.manager,model_sarabun_standard_comment,agx_sarabun.group_sarabun_manager,1,1,1,1

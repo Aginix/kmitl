@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sarabun_standard_comment_tree" model="ir.ui.view">
+        <field name="name">sarabun.standard.comment.tree</field>
+        <field name="model">sarabun.standard.comment</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="body"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_sarabun_standard_comment_form" model="ir.ui.view">
+        <field name="name">sarabun.standard.comment.form</field>
+        <field name="model">sarabun.standard.comment</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="เช่น เพื่อโปรดพิจารณา"/></h1>
+                    </div>
+                    <group>
+                        <field name="sequence"/>
+                        <field name="active" widget="boolean_toggle"/>
+                    </group>
+                    <group string="ข้อความ (Comment text)">
+                        <field name="body" nolabel="1"
+                               placeholder="เช่น เพื่อโปรดพิจารณาดำเนินการต่อไป"/>
+                    </group>
+                    <div class="text-muted">
+                        The text above is written into the <strong>เกษียน / Comment</strong>
+                        box of the Act-on-step window when an actor picks this standard
+                        comment (it <strong>replaces</strong> whatever is there). A
+                        <strong>Verb</strong> may name one as its default, pre-filled when a
+                        step of that verb is acted on. Plain text only — the comment box is
+                        not rich text.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sarabun_standard_comment" model="ir.actions.act_window">
+        <field name="name">ข้อความมาตรฐาน (Standard Comments)</field>
+        <field name="res_model">sarabun.standard.comment</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_sarabun_standard_comment"
+              name="ข้อความมาตรฐาน (Standard Comments)"
+              parent="agx_sarabun.menu_sarabun_config"
+              action="action_sarabun_standard_comment"
+              sequence="26"/>
+</odoo>

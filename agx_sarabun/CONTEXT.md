@@ -142,6 +142,9 @@ _Avoid_: signature (reserve for the act/data, not the rendered block); splitting
 The accumulated endorsement/signing history (who, when, in what capacity, with what comment). As of **ADR-0008 it is audit-only** — kept on the Routing Steps + chatter and visible in the Route, **no longer rendered onto the official document** (the document shows **signatures only** — the `show_signature` steps). A signing step's own ความเห็น still shows **under its signature block**, but non-signing checks (ตรวจสอบ / พิจารณา / ส่งต่อ) leave no mark on the letter.
 _Avoid_: history, log; printing the trail on the official document (superseded — ADR-0008); rendering **backward-move** events (ดึงกลับ / ยกเลิกการส่ง / ตีกลับ / ปฏิเสธ) anywhere on the หนังสือ — those are internal routing history kept in the audit/chatter with their required reason
 
+**ข้อความมาตรฐาน (Standard comment)**:
+Admin-configurable canned text for the เกษียน note, offered as a picker in the Act-on-step wizard (it **replaces** the comment on select, which stays freely editable). A **verb** may name one as its **default**, pre-filled when a step of that verb is acted on. Owned by the optional `agx_sarabun_standard_comment` extension — the core wizard works unchanged without it.
+
 ### Access
 
 **Route visibility (the reach ledger, `reached_user_ids`)**:
