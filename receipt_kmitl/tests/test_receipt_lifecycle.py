@@ -40,7 +40,7 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
 
         self.assertEqual(receipt.state, "done")
         self.assertTrue(receipt.move_id)
-        self.assertEqual(receipt.move_id.state, "posted")
+        self.assertEqual(receipt.move_id.state, "draft")
 
         cash_debit_lines = receipt.move_id.line_ids.filtered(
             lambda l: l.account_id == self.cash_account and l.debit

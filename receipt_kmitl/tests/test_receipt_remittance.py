@@ -47,6 +47,9 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         self.assertTrue(r1.move_id)
         self.assertTrue(r2.move_id)
         self.assertNotEqual(r1.move_id, r2.move_id)
+        # Journal entries are created as draft, not posted automatically.
+        self.assertEqual(r1.move_id.state, "draft")
+        self.assertEqual(r2.move_id.state, "draft")
 
     def test_pull_appends_to_existing_set(self):
         r1 = self._make_receipt()
