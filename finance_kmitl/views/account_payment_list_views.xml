@@ -15,7 +15,7 @@
         <field name="model">account.payment</field>
         <field name="arch" type="xml">
             <tree
-                string="ใบสำคัญจ่าย"
+                string="Payment Vouchers"
                 default_order="date desc, name desc"
                 decoration-muted="state == 'cancel'"
                 sample="1"
@@ -62,25 +62,30 @@
                         groups="accounting_kmitl.group_accounting_kmitl_user"
                     />
                 </header>
-                <field name="name" string="เลขที่ใบสำคัญ" />
+                <field name="name" string="Voucher Number" />
                 <field name="date" />
-                <field name="partner_id" string="ผู้รับเงิน" />
+                <!-- The day the money actually left, beside the day the voucher
+                     was raised. Optional and not sortable: it is read off the
+                     e-payment file, the cheque or the voucher, so there is no
+                     column to order by. -->
+                <field name="paid_date" optional="hide" />
+                <field name="partner_id" string="Payee" />
                 <field name="kmitl_payment_type_id" optional="show" />
                 <field name="kmitl_payment_subject_id" optional="hide" />
                 <!-- Which money it comes out of, ahead of the account it
                      physically leaves from. Carries its own Thai label from
                      analytic.distribution.mixin. -->
                 <field name="source_analytic_id" optional="show" />
-                <field name="payment_method_line_id" string="หัวจ่าย" optional="show" />
-                <field name="payment_method_id" string="วิธีจ่าย" optional="hide" />
+                <field name="payment_method_line_id" string="Paying Account" optional="show" />
+                <field name="payment_method_id" string="Payment Method" optional="hide" />
                 <field
                     name="partner_bank_id"
-                    string="บัญชีธนาคารผู้รับ"
+                    string="Recipient Bank"
                     optional="hide"
                 />
                 <field name="amount_before_wht" optional="hide" />
                 <field name="amount_wht" optional="hide" />
-                <field name="amount" string="จำนวนเงิน" sum="Total" />
+                <field name="amount" string="Amount" sum="Total" />
                 <!-- The two offices, side by side: whose turn it is, and how far
                      each has got. -->
                 <field
@@ -92,7 +97,7 @@
                 />
                 <field
                     name="export_status"
-                    string="ไฟล์ e-Payment"
+                    string="e-Payment File"
                     widget="badge"
                     decoration-info="export_status == 'draft'"
                     decoration-warning="export_status == 'to_export'"
@@ -103,14 +108,14 @@
                 <field name="payment_export_id" optional="hide" />
                 <field
                     name="display_state"
-                    string="สถานะบัญชี"
+                    string="Accounting Status"
                     widget="badge"
                     decoration-warning="display_state == 'to_approve'"
                     decoration-success="display_state == 'posted'"
                     optional="show"
                 />
                 <field name="bank_result_status" optional="hide" />
-                <field name="journal_id" string="ใบสำคัญ" optional="hide" />
+                <field name="journal_id" string="Voucher" optional="hide" />
                 <field name="ref" optional="hide" />
                 <!-- Carried for the modifiers and the monetary columns only. -->
                 <field name="needs_bank_export" invisible="1" />
@@ -135,18 +140,18 @@
         <field name="name">account.payment.search.kmitl</field>
         <field name="model">account.payment</field>
         <field name="arch" type="xml">
-            <search string="ใบสำคัญจ่าย">
+            <search string="Payment Vouchers">
                 <field
                     name="name"
-                    string="เลขที่ใบสำคัญ / ผู้รับเงิน"
+                    string="Voucher Number / Payee"
                     filter_domain="['|', '|', ('name', 'ilike', self), ('partner_id', 'ilike', self), ('ref', 'ilike', self)]"
                 />
-                <field name="partner_id" string="ผู้รับเงิน" />
+                <field name="partner_id" string="Payee" />
                 <field name="payee_type_id" />
-                <field name="payment_method_line_id" string="หัวจ่าย" />
+                <field name="payment_method_line_id" string="Paying Account" />
                 <field name="kmitl_payment_type_id" />
                 <field name="kmitl_payment_subject_id" />
-                <field name="payment_export_id" string="ไฟล์ e-Payment" />
+                <field name="payment_export_id" string="e-Payment File" />
                 <field name="amount" />
 
                 <!-- The six things a voucher is routed by, so the office can ask
@@ -179,17 +184,17 @@
 
                 <separator />
                 <filter
-                    string="ร่าง"
+                    string="Draft"
                     name="finance_draft"
                     domain="[('finance_state', '=', 'draft')]"
                 />
                 <filter
-                    string="พร้อมส่งธนาคาร"
+                    string="Confirmed for the Bank"
                     name="finance_confirmed"
                     domain="[('finance_state', '=', 'confirmed')]"
                 />
                 <filter
-                    string="จ่ายสำเร็จแล้ว"
+                    string="Already Paid"
                     name="finance_paid"
                     domain="[('finance_state', '=', 'paid')]"
                 />
@@ -198,76 +203,83 @@
                 <!-- The finance office's own worklist: confirmed for the bank,
                      travels in a file, and not in one yet. -->
                 <filter
-                    string="รอใส่ไฟล์ e-Payment"
+                    string="Awaiting e-Payment File"
                     name="to_export"
                     domain="[('finance_state', '=', 'confirmed'), ('needs_bank_export', '=', True), ('export_status', '=', 'draft')]"
                 />
                 <filter
-                    string="อยู่ในไฟล์แล้ว"
+                    string="Already in a File"
                     name="in_file"
                     domain="[('export_status', 'in', ('to_export', 'exported'))]"
                 />
                 <!-- Handed over, still nobody's entry: what the accounting office
                      has been asked for and not yet done. -->
                 <filter
-                    string="ส่งมอบแล้ว รอบันทึกบัญชี"
+                    string="Handed Over, Awaiting Booking"
                     name="to_book"
                     domain="[('finance_state', '=', 'paid'), ('state', '=', 'draft')]"
                 />
                 <filter
-                    string="รออนุมัติบัญชี"
+                    string="Awaiting Accounting Approval"
                     name="to_approve"
                     domain="[('workflow_state', '=', 'to_approve')]"
                 />
                 <filter
-                    string="ลงบัญชีแล้ว"
+                    string="Posted"
                     name="posted"
                     domain="[('state', '=', 'posted')]"
                 />
 
                 <separator />
                 <filter
-                    string="เงินโอน"
+                    string="Transfer"
                     name="method_transfer"
                     domain="[('payment_method_line_id.payment_method_id.code', '=', 'kmitl_transfer')]"
                 />
                 <filter
-                    string="เช็ค"
+                    string="Cheque"
                     name="method_cheque"
                     domain="[('payment_method_line_id.payment_method_id.code', '=', 'kmitl_cheque')]"
                 />
                 <filter
-                    string="เงินสด"
+                    string="Cash"
                     name="method_cash"
                     domain="[('payment_method_line_id.payment_method_id.code', '=', 'kmitl_cash')]"
                 />
 
                 <separator />
                 <filter
-                    string="ยกเลิก"
+                    string="Cancelled"
                     name="cancelled"
                     domain="[('state', '=', 'cancel')]"
                 />
-                <filter string="วันที่" name="filter_date" date="date" />
+                <filter string="Date" name="filter_date" date="date" />
+                <!-- The other date question the office asks: what went out this
+                     month, rather than what was authorised this month. -->
+                <filter
+                    string="Actual Payment Date"
+                    name="filter_paid_date"
+                    date="paid_date"
+                />
 
-                <group expand="0" string="จัดกลุ่มตาม">
+                <group expand="0" string="Group By">
                     <filter
-                        string="สถานะฝั่งการเงิน"
+                        string="Finance Status"
                         name="group_finance_state"
                         context="{'group_by': 'finance_state'}"
                     />
                     <filter
-                        string="สถานะบัญชี"
+                        string="Accounting Status"
                         name="group_display_state"
                         context="{'group_by': 'display_state'}"
                     />
                     <filter
-                        string="หัวจ่าย"
+                        string="Paying Account"
                         name="group_paying_account"
                         context="{'group_by': 'payment_method_line_id'}"
                     />
                     <filter
-                        string="ผู้รับเงิน"
+                        string="Payee"
                         name="group_partner"
                         context="{'group_by': 'partner_id'}"
                     />
@@ -297,7 +309,7 @@
                         context="{'group_by': 'activity_analytic_id'}"
                     />
                     <filter
-                        string="ประเภทธุรกรรม"
+                        string="Operation Type"
                         name="group_payment_type"
                         context="{'group_by': 'kmitl_payment_type_id'}"
                     />
@@ -307,12 +319,12 @@
                         context="{'group_by': 'kmitl_payment_subject_id'}"
                     />
                     <filter
-                        string="ไฟล์ e-Payment"
+                        string="e-Payment File"
                         name="group_export"
                         context="{'group_by': 'payment_export_id'}"
                     />
                     <filter
-                        string="วันที่"
+                        string="Date"
                         name="group_date"
                         context="{'group_by': 'date'}"
                     />
@@ -349,7 +361,7 @@
                     />
                     <field
                         name="payee_type_id"
-                        string="ประเภทคู่ค้า"
+                        string="Counterparty Type"
                         icon="fa-user"
                         select="multi"
                         enable_counters="1"

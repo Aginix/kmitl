@@ -59,5 +59,33 @@ if self._exception_submit_date_outside_fy():
             <field name="active" eval="True"/>
         </record>
 
+        <record id="excep_draw_exceeds_available" model="exception.rule">
+            <field name="name">ยอดค่าใช้จ่ายรวมเกินยอดคงเหลือของใบจองงบประมาณ</field>
+            <field name="description">จำนวนเงินค่าใช้จ่ายรวมตามแผนต้องไม่เกินยอดคงเหลือที่หยิบไปใช้ได้ (available_to_obligate) ของใบจองงบประมาณที่เลือก</field>
+            <field name="sequence">50</field>
+            <field name="model">approval.request</field>
+            <field name="exception_type">by_py_code</field>
+            <field name="code">
+if self._exception_draw_exceeds_available():
+    failed = True
+            </field>
+            <field name="is_blocking" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="excep_account_fiscal_year_not_match_budget_commitment" model="exception.rule">
+            <field name="name">ปีงบประมาณไม่ตรงกับใบจองงบประมาณ</field>
+            <field name="description">ปีงบประมาณที่เลือกไม่ตรงกับปีงบประมาณของใบจองงบประมาณ</field>
+            <field name="sequence">60</field>
+            <field name="model">approval.request</field>
+            <field name="exception_type">by_py_code</field>
+            <field name="code">
+if self.account_fiscal_year_id and self.reservation_commitment_id and self.account_fiscal_year_id != self.reservation_commitment_id.account_fiscal_year_id:
+    failed = True
+            </field>
+            <field name="is_blocking" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+
     </data>
 </odoo>

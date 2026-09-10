@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- kmitl.receipt, its remittance and its payment method are readable
+         only by receipt_kmitl.group_receipt_kmitl_viewer, which
+         group_finance_kmitl_user_in does not imply — finance_kmitl itself has
+         no dependency on receipt_kmitl to declare this from. Declared here,
+         from the module that needs it.
+
+         Side effect accepted: a treasury officer who can run the receipt
+         report also gains read access to the Receipts app's own screens,
+         since the viewer group is the same one that gates them. -->
+    <record id="finance_kmitl.group_finance_kmitl_user_in" model="res.groups">
+        <field
+            name="implied_ids"
+            eval="[(4, ref('receipt_kmitl.group_receipt_kmitl_viewer'))]"
+        />
+    </record>
+</odoo>

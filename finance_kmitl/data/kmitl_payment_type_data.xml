@@ -9,27 +9,27 @@
 <odoo noupdate="1">
 
     <record id="payment_type_normal_inbound" model="kmitl.payment.type">
-        <field name="name">รับเงินเข้า</field>
+        <field name="name">Receive Money</field>
         <field name="direction">inbound</field>
         <field name="sequence">10</field>
     </record>
 
     <record id="payment_type_guarantee_receive" model="kmitl.payment.type">
-        <field name="name">รับเงินค้ำประกันสัญญา</field>
+        <field name="name">Receive Contract Guarantee</field>
         <field name="direction">inbound</field>
         <field name="sequence">20</field>
         <field name="override_account_id" search="[('code', '=', '2150000006')]" model="account.account"/>
     </record>
 
     <record id="payment_type_bid_guarantee_receive" model="kmitl.payment.type">
-        <field name="name">รับเงินหลักประกันการเสนอราคา</field>
+        <field name="name">Receive Bid Guarantee</field>
         <field name="direction">inbound</field>
         <field name="sequence">30</field>
         <field name="override_account_id" search="[('code', '=', '2150000006')]" model="account.account"/>
     </record>
 
     <record id="payment_type_normal_outbound" model="kmitl.payment.type">
-        <field name="name">จ่ายเงินออก</field>
+        <field name="name">Pay Money</field>
         <field name="direction">outbound</field>
         <field name="sequence">40</field>
     </record>

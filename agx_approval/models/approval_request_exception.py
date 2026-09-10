@@ -35,6 +35,34 @@ class ApprovalRequest(models.Model):
         today = fields.Date.context_today(self)
         return not (fy.date_from <= today <= fy.date_to)
 
+    def _exception_draw_exceeds_available(self):
+        """True when the plan total (แผนค่าใช้จ่าย) would draw more than the
+        picked ใบจองงบประมาณ currently has left (``available_to_obligate`` —
+        reserved minus already-obligated). False when reserving new instead of
+        drawing (no reservation_commitment_id), since a new commitment's own
+        availability is checked separately (``_check_budget_availability``).
+
+        A gate on the *draw*, not a standing invariant: once the slip is drawn
+        (``budget_commitment_id`` is that slip) the check goes quiet. Every
+        later ``detect_exceptions()`` — notably agx_approval_disbursement's
+        action_create_disbursement_request — would otherwise re-test the *plan*
+        total against an availability that legitimately shrank meanwhile (a
+        shared project slip drawn by sibling requests), blocking a request whose
+        แผน can no longer be edited (is_plan_editable) and whose actual spend may
+        well fit. Obligate-level availability is enforced by budget.controller at
+        disbursement.
+        """
+        self.ensure_one()
+        commitment = self.reservation_commitment_id
+        if not commitment or self.budget_commitment_id == commitment:
+            return False
+        return (
+            self.currency_id.compare_amounts(
+                self.total_amount, commitment.available_to_obligate
+            )
+            > 0
+        )
+
     @api.model
     def _get_popup_action(self):
         return self.env.ref(
