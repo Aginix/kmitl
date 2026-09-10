@@ -19,20 +19,26 @@
         </field>
     </record>
 
-    <!-- User-facing "My Route Templates" — scoped by the read ir.rule;
-         new records default to personal visibility so users don't accidentally
-         publish templates they intend to keep private. -->
+    <!-- Unified "Route Templates" menu at root — visible to every sarabun user.
+         Rows are scoped per user by the read ir.rule, and the create-default
+         (personal for users, public for managers) comes from the model's
+         _default_visibility, so no context override is needed here. -->
     <record id="action_sarabun_my_route_template" model="ir.actions.act_window">
-        <field name="name">แม่แบบเส้นทางของฉัน (My Route Templates)</field>
+        <field name="name">แม่แบบเส้นทางอนุมัติ (Route Templates)</field>
         <field name="res_model">sarabun.route.template</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{'default_visibility': 'personal'}</field>
     </record>
 
     <menuitem id="menu_sarabun_my_templates"
-              name="แม่แบบเส้นทางของฉัน"
+              name="แม่แบบเส้นทางอนุมัติ"
               parent="agx_sarabun.menu_sarabun_root"
               action="action_sarabun_my_route_template"
               groups="agx_sarabun.group_sarabun_user"
               sequence="15"/>
+
+    <!-- Hide the original manager-only entry under Configuration — the root
+         menu above replaces it for both roles. -->
+    <record id="agx_sarabun.menu_sarabun_route_template" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 </odoo>

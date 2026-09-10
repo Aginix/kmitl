@@ -17,7 +17,7 @@ The **living, ordered chain of steps that lives on the Document** and flows thro
 _Avoid_: workflow, approval flow (those imply a fixed pre-planned graph)
 
 **Route Template**:
-A reusable preset that *seeds* a Route's steps at send time (e.g. a standard PR-approval chain). It is a convenience pre-fill only — it does **not** own or constrain the flow once seeded. Templates now carry per-record **visibility** (`personal` / `unit` / `public`) and an **owner** (`owner_id`): regular users can author their own templates in "แม่แบบเส้นทางของฉัน"; managers administer the institute-wide catalogue (always `public`). The template model carries chatter (`mail.thread`) and a `description` field for documentation. See `agx_sarabun_user_template` (ADR-0016).
+A reusable preset that *seeds* a Route's steps at send time (e.g. a standard PR-approval chain). It is a convenience pre-fill only — it does **not** own or constrain the flow once seeded. Templates now carry per-record **visibility** (`personal` / `unit` / `public`) and an **owner** (`owner_id`): regular users author personal/unit templates and managers administer the institute-wide `public` catalogue, all from a single unified "แม่แบบเส้นทางอนุมัติ" menu at the e-Sarabun root (the old manager-only entry under Configuration is hidden). The template model carries chatter (`mail.thread`) and a `description` field for documentation. See `agx_sarabun_user_template` (ADR-0016).
 _Avoid_: workflow definition, process (it is not the source of truth for the flow); assuming all templates are manager-owned or globally visible (they can be personal or unit-scoped)
 
 **Routing Step (`sarabun.routing.step`)**:

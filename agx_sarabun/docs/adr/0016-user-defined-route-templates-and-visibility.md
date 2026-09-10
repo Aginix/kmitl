@@ -151,11 +151,30 @@ be reassigned. An explicit `owner_id` is more inspectable and follows establishe
 in this codebase.
 
 **`res.config.settings` panel**: Rejected — a settings panel is for global configuration,
-not per-user template management. A dedicated "My Route Templates" menu + action is the
-correct UX.
+not per-user template management. A dedicated top-level menu + action is the correct UX.
 
 **Supplementing the read rule**: Rejected — OR-combining with `[(1,'=',1)]` makes the
 new domain a no-op. The wide original domain must be replaced.
+
+**Two parallel menus (Configuration + "My Templates")**: Rejected — see revision below.
+
+---
+
+## Revision (2026-09-10): Single Unified Menu
+
+The initial cut kept the original manager-only "Route Templates" entry under **Configuration**
+alongside a new user-facing "แม่แบบเส้นทางของฉัน" at the root, so managers and users landed
+in different places for what is now the same shared catalogue.
+
+**Decision:** collapse to **one root-level menu — "แม่แบบเส้นทางอนุมัติ"** — reachable by
+both roles. The old `agx_sarabun.menu_sarabun_route_template` under Configuration is
+deactivated (`<field name="active" eval="False"/>`) rather than deleted, so its `action_*`
+xmlid stays intact for any external reference.
+
+Also removed: the `context={'default_visibility':'personal'}` override on the action.
+`_default_visibility()` on the model already returns `personal` for regular users and
+`public` for managers/superuser, so the context override was forcing managers into
+`personal` unnecessarily. Deleting it lets the model default win for both roles.
 
 ---
 
@@ -163,10 +182,11 @@ new domain a no-op. The wide original domain must be replaced.
 
 - Existing manager/seed templates with no `owner_id` remain readable by all users via
   `visibility='public'` (the default). No data migration required.
-- Regular users get a "แม่แบบเส้นทางของฉัน" menu; new templates created there default
-  to `personal` visibility (via `context={'default_visibility':'personal'}`).
+- Both managers and regular users use the same root-level menu ("แม่แบบเส้นทางอนุมัติ");
+  the read ir.rule scopes what each role sees, and `_default_visibility()` picks the right
+  create-default per role.
 - The `find_matching_templates` engine call is automatically scoped by the ir.rules —
   a user calling it at send time will only see templates they can read, which is the
   correct behaviour for user-created personal/unit templates.
-- Manager templates created via Configuration menu continue to default `visibility='public'`
-  and remain visible system-wide.
+- The deactivated Configuration entry (`menu_sarabun_route_template`) stays in the DB
+  but is hidden from the sidebar; managers reach the same catalogue via the root menu.
