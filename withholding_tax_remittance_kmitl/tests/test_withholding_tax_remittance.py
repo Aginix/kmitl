@@ -449,6 +449,123 @@ class TestWithholdingTaxRemittance(WithholdingTaxRemittanceCommon):
         with self.assertRaises(UserError):
             remittance.action_post()
 
+    def test_cert_reads_only_its_own_payee_distribution(self):
+        """หนึ่ง JE หักภาษีสองคู่ค้า → หนึ่งใบรับรองต่อคู่ค้า อ่านมิติของตัวเองเท่านั้น"""
+        move = self.env["account.move"].create(
+            {
+                "journal_id": self.journal_general.id,
+                "date": "2026-01-15",
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "name": "Vendor bill A",
+                            "account_id": self.expense_account.id,
+                            "debit": 300.0,
+                            "credit": 0.0,
+                            "partner_id": self.vendor.id,
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "name": "Vendor bill B",
+                            "account_id": self.expense_account.id,
+                            "debit": 150.0,
+                            "credit": 0.0,
+                            "partner_id": self.vendor_2.id,
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "name": "WHT vendor A",
+                            "account_id": self.wht_account_53.id,
+                            "debit": 0.0,
+                            "credit": 300.0,
+                            "wht_tax_id": self.wht_tax_53.id,
+                            "analytic_distribution": self.distribution_a,
+                            "partner_id": self.vendor.id,
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "name": "WHT vendor B",
+                            "account_id": self.wht_account_53.id,
+                            "debit": 0.0,
+                            "credit": 150.0,
+                            "wht_tax_id": self.wht_tax_53.id,
+                            "analytic_distribution": self.distribution_source_2,
+                            "partner_id": self.vendor_2.id,
+                        },
+                    ),
+                ],
+            }
+        )
+        move.action_post()
+        cert_a = self._make_cert(
+            amount=300.0, partner=self.vendor, source_move=move
+        )
+        cert_b = self._make_cert(
+            amount=150.0, partner=self.vendor_2, source_move=move
+        )
+
+        # ก่อนแก้ไข: ทั้งสองใบจะเห็นมิติของทั้งสองคู่ค้าปนกัน → นับเป็นหลายแหล่งเงิน
+        # และถูกปฏิเสธเป็น multi-source ทั้งที่แต่ละใบมีแหล่งเงินเดียวจริง ๆ
+        self.assertEqual(
+            self.env["withholding.tax.remittance"]._cert_source_ids(cert_a),
+            {self.source_1.id},
+        )
+        self.assertEqual(
+            self.env["withholding.tax.remittance"]._cert_source_ids(cert_b),
+            {self.source_2.id},
+        )
+
+        remittance_a = self._set_bank_accounts(
+            self._make_remittance(cert_a, source=self.source_1)
+        )
+        remittance_b = self._set_bank_accounts(
+            self._make_remittance(cert_b, source=self.source_2)
+        )
+        remittance_a.action_post()
+        remittance_b.action_post()
+
+        self.assertFalse(
+            remittance_a.move_id.line_ids.filtered(
+                lambda l: l.analytic_distribution != self.distribution_a
+            )
+        )
+        self.assertFalse(
+            remittance_b.move_id.line_ids.filtered(
+                lambda l: l.analytic_distribution != self.distribution_source_2
+            )
+        )
+
+    def test_period_year_selection_has_fixed_floor(self):
+        selection = dict(
+            self.env["withholding.tax.remittance"]._get_period_year_selection()
+        )
+        self.assertIn("2560", selection)
+        self.assertNotIn("2559", selection)
+
+    def test_create_remittance_from_old_cert_does_not_raise(self):
+        # 2018-01-15 = พ.ศ. 2561: เกินหน้าต่างเลื่อน "base - 3" ของโค้ดเดิม
+        # (2566 ในปีปัจจุบัน) แต่ยังอยู่เหนือพื้นล่างตายตัว 2560 ของโค้ดใหม่
+        cert = self._make_cert(
+            amount=300.0,
+            date="2018-01-15",
+            analytic_distribution=self.distribution_a,
+        )
+        action = cert.action_create_remittance()
+        remittance = self.env["withholding.tax.remittance"].browse(action["res_id"])
+        self.assertEqual(remittance.state, "draft")
+        self.assertEqual(remittance.period_year, "2561")
+
     def test_load_pending_certs_filters_by_period(self):
         cert_jan = self._make_cert(amount=100.0, date="2026-01-10")
         self._make_cert(amount=200.0, date="2026-02-10")

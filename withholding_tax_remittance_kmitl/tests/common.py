@@ -82,6 +82,7 @@ class WithholdingTaxRemittanceCommon(TransactionCase):
         )
 
         cls.vendor = cls.env["res.partner"].create({"name": "Test Vendor"})
+        cls.vendor_2 = cls.env["res.partner"].create({"name": "Test Vendor 2"})
         cls.rd_partner = cls.env["res.partner"].create({"name": "กรมสรรพากร"})
 
         Plan = cls.env["account.analytic.plan"]
@@ -174,6 +175,7 @@ class WithholdingTaxRemittanceCommon(TransactionCase):
         name=None,
         analytic_distribution=None,
         source_move=None,
+        partner=None,
     ):
         """``analytic_distribution=None`` = ใช้ ``distribution_a`` (มีแหล่งเงิน)
 
@@ -184,7 +186,7 @@ class WithholdingTaxRemittanceCommon(TransactionCase):
         if analytic_distribution is None:
             analytic_distribution = self.distribution_a
         vals = {
-            "partner_id": self.vendor.id,
+            "partner_id": (partner or self.vendor).id,
             "income_tax_form": income_tax_form,
             "date": date,
             "wht_line": [

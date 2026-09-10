@@ -17,6 +17,8 @@ from odoo.addons.thai_date_utils.models.thai_date_mixin import MONTHS_TH_SHORT
 
 INCOME_TAX_FORM_LABELS = dict(INCOME_TAX_FORM)
 
+PERIOD_YEAR_MIN_BE = 2560
+
 MONTHS_EN = [
     "",
     "January",
@@ -179,7 +181,7 @@ class WithholdingTaxRemittance(models.Model):
     @api.model
     def _get_period_year_selection(self):
         base = fields.Date.context_today(self).year + 543
-        return [(str(y), str(y)) for y in range(base - 3, base + 2)]
+        return [(str(y), str(y)) for y in range(PERIOD_YEAR_MIN_BE, base + 2)]
 
     @api.depends("period_month", "period_year")
     def _compute_period(self):
@@ -463,6 +465,12 @@ class WithholdingTaxRemittance(models.Model):
         lines = cert.move_id.line_ids.filtered(
             lambda l: l.wht_tax_id and l.account_id.wht_account
         )
+        # l10n_th_account_tax._preapare_wht_certs สร้างใบรับรองหนึ่งใบต่อคู่ค้าหนึ่ง
+        # รายจาก JE เดียวกัน แต่ทุกใบชี้ move_id เดียวกัน — กรองเหลือเฉพาะบรรทัดของ
+        # คู่ค้าตนเอง ไม่งั้นจะอ่านมิติของคู่ค้ารายอื่นปนมาด้วย; ถ้าบรรทัดไม่มี
+        # partner_id เลย (คีย์ JE มือ) ใช้ชุดเดิมทั้งหมดตามพฤติกรรมเดิม
+        own = lines.filtered(lambda l: l.partner_id == cert.partner_id)
+        lines = own or lines
         groups = {}
         for line in lines:
             key = json.dumps(line.analytic_distribution or {}, sort_keys=True)
@@ -591,17 +599,6 @@ class WithholdingTaxRemittance(models.Model):
             cert_amounts = {
                 cert: rec._cert_distribution_amounts(cert) for cert in rec.cert_ids
             }
-            missing = [
-                cert.name for cert, amounts in cert_amounts.items() if not amounts
-            ]
-            if missing:
-                raise UserError(
-                    _(
-                        "Certificate(s) %s have no analytic dimensions on their "
-                        "source entry."
-                    )
-                    % ", ".join(missing)
-                )
             if rec.name in (False, "/"):
                 rec.name = rec._get_sequence().next_by_id()
             move = rec._create_move(cert_amounts)
