@@ -21,10 +21,6 @@
                     groups="purchase_request.group_purchase_request_user"
                 />
             </button>
-            <button name="button_to_approve" position="attributes">
-                <attribute name="states" />
-                <attribute name="invisible">1</attribute>
-            </button>
             <button name="button_approved" position="attributes">
                 <attribute name="invisible">1</attribute>
             </button>
