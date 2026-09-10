@@ -236,6 +236,11 @@ msgid "Draft"
 msgstr "ฉบับร่าง"
 
 #. module: withholding_tax_remittance_kmitl
+#: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_search
+msgid "Empty Drafts"
+msgstr "ฉบับร่างที่ยังไม่มีใบรับรอง"
+
+#. module: withholding_tax_remittance_kmitl
 #. odoo-python
 #: code:addons/withholding_tax_remittance_kmitl/models/withholding_tax_remittance.py:0
 #, python-format
@@ -544,6 +549,11 @@ msgstr "ใบนำส่งที่ยืนยันแล้วไม่ส
 #: model:ir.model.fields,field_description:withholding_tax_remittance_kmitl.field_withholding_tax_remittance__rd_ref
 msgid "RD Reference"
 msgstr "เลขอ้างอิงกรมสรรพากร"
+
+#. module: withholding_tax_remittance_kmitl
+#: model_terms:ir.ui.view,arch_db:withholding_tax_remittance_kmitl.view_withholding_tax_remittance_search
+msgid "Ready to Post"
+msgstr "พร้อมยืนยัน"
 
 #. module: withholding_tax_remittance_kmitl
 #. odoo-python

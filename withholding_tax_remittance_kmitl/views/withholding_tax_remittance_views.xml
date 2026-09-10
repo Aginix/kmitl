@@ -169,6 +169,20 @@
             <search>
                 <field name="name" />
                 <field name="source_analytic_id" />
+                <field name="cheque_no" />
+                <field name="rd_ref" />
+                <separator />
+                <filter
+                    string="Ready to Post"
+                    name="ready_to_post"
+                    domain="[('state', '=', 'draft'), ('cert_ids', '!=', False)]"
+                />
+                <filter
+                    string="Empty Drafts"
+                    name="empty_drafts"
+                    domain="[('state', '=', 'draft'), ('cert_ids', '=', False)]"
+                />
+                <separator />
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />
                 <filter
                     string="Posted"
@@ -180,7 +194,9 @@
                     name="cancelled"
                     domain="[('state', '=', 'cancelled')]"
                 />
-                <group expand="0" string="Group By">
+                <separator />
+                <filter string="Remittance Date" name="date_remit" date="date_remit" />
+                <group name="group_by" expand="0" string="Group By">
                     <filter
                         string="Form"
                         name="group_form"
@@ -196,7 +212,41 @@
                         name="group_state"
                         context="{'group_by': 'state'}"
                     />
+                    <filter
+                        string="Year (B.E.)"
+                        name="group_period_year"
+                        context="{'group_by': 'period_year'}"
+                    />
+                    <filter
+                        string="Tax Month"
+                        name="group_period_month"
+                        context="{'group_by': 'period_month'}"
+                    />
+                    <filter
+                        string="Remittance Date"
+                        name="group_date_remit"
+                        context="{'group_by': 'date_remit:month'}"
+                    />
+                    <filter
+                        string="WHT Payable Account"
+                        name="group_wht_account"
+                        context="{'group_by': 'wht_account_id'}"
+                    />
                 </group>
+                <searchpanel>
+                    <field
+                        name="source_analytic_id"
+                        icon="fa-money"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="income_tax_form"
+                        icon="fa-file-text-o"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>
