@@ -65,9 +65,7 @@
             </tbody>
         </table>
 
-        <div class="my-4"/>
-
-        <!-- Line Items Grouped by Partner -->
+        <!-- Line Items Grouped by Partner + Totals -->
         <t t-set="partners" t-value="o.line_ids.mapped('partner_id')"/>
         <t t-set="global_row_no" t-value="1"/>
         <t t-foreach="partners" t-as="partner">
@@ -84,7 +82,7 @@
                     เลขที่บัญชี <span class="ms-2" t-out="o._get_masked_acc_number(partner_bank.acc_number)"/>
                 </div>
             </div>
-            <table class="table table-bordered table-sm mb-4">
+            <table class="table table-bordered table-sm" t-attf-class="{{ '' if partner_last else 'mb-4' }}">
                 <thead>
                     <tr>
                         <th class="text-center" style="width: 8%">ลำดับ</th>
@@ -105,35 +103,33 @@
                         </tr>
                         <t t-set="global_row_no" t-value="global_row_no + 1"/>
                     </t>
+                    <!-- Totals — appended to the last partner's table -->
+                    <t t-if="partner_last">
+                        <tr>
+                            <td colspan="2" t-att-rowspan="o.amount_tax and 3 or 1"
+                                class="text-center align-middle">
+                                <div class="mt-2">
+                                    (<t t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"/>)
+                                </div>
+                            </td>
+                            <td class="text-center" colspan="2">
+                                <span t-if="o.amount_tax">ราคาก่อนรวมภาษีมูลค่าเพิ่ม</span>
+                                <span t-else="">รวมเป็นเงิน</span>
+                            </td>
+                            <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.amount_untaxed if o.amount_tax else o.amount_total)"/>
+                        </tr>
+                        <tr t-if="o.amount_tax">
+                            <td class="text-center" colspan="2">ภาษีมูลค่าเพิ่ม (VAT 7%)</td>
+                            <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.amount_tax)"/>
+                        </tr>
+                        <tr t-if="o.amount_tax">
+                            <td class="text-center" colspan="2">ราคาสุทธิ</td>
+                            <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.amount_total)"/>
+                        </tr>
+                    </t>
                 </tbody>
             </table>
         </t>
-
-        <!-- Totals -->
-        <table class="table table-bordered table-sm mb-4">
-            <tbody>
-                <tr>
-                    <td t-att-rowspan="o.amount_tax and 3 or 1" class="text-center align-middle" style="width: 50%">
-                        <div class="mt-2">
-                            (<t t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"/>)
-                        </div>
-                    </td>
-                    <td class="text-center" style="width: 25%">
-                        <span t-if="o.amount_tax">ราคาก่อนรวมภาษีมูลค่าเพิ่ม</span>
-                        <span t-else="">รวมเป็นเงิน</span>
-                    </td>
-                    <td class="text-end" style="width: 25%" t-out="'{0:,.2f} ฿'.format(o.amount_untaxed if o.amount_tax else o.amount_total)"/>
-                </tr>
-                <tr t-if="o.amount_tax">
-                    <td class="text-center">ภาษีมูลค่าเพิ่ม (VAT 7%)</td>
-                    <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.amount_tax)"/>
-                </tr>
-                <tr t-if="o.amount_tax">
-                    <td class="text-center">ราคาสุทธิ</td>
-                    <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.amount_total)"/>
-                </tr>
-            </tbody>
-        </table>
 
         <!-- Notes -->
         <div class="row" t-if="o.note">
