@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ADR-0015: after the request is routed through e-Sarabun the หนังสือ
+     becomes the official document. Unbind the original disbursement report
+     from the Print menu so users don't print an unsigned document that
+     competes with the หนังสือ. The report action itself stays registered
+     (other code may still reference it); only the Print binding is removed. -->
+<odoo>
+    <record id="disbursement.action_report_disbursement_request" model="ir.actions.report">
+        <field name="binding_model_id" eval="False"/>
+    </record>
+</odoo>
