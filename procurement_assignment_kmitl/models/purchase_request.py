@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import api, fields, models
 
 from .assignment import AssignedOfficerMixin
 
@@ -18,3 +18,7 @@ class PurchaseRequest(AssignedOfficerMixin, models.Model):
     assignment_can_assign_me = fields.Boolean(
         compute="_compute_assignment_can_assign_me",
     )
+
+    @api.depends("assigned_to")
+    def _compute_assignment_can_assign_me(self):
+        return super()._compute_assignment_can_assign_me()
