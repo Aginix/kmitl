@@ -1,0 +1,4 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_work_acceptance_viewer,work acceptance viewer,purchase_work_acceptance.model_work_acceptance,purchase_viewer.group_purchase_viewer,1,0,0,0
+access_work_acceptance_line_viewer,work acceptance line viewer,purchase_work_acceptance.model_work_acceptance_line,purchase_viewer.group_purchase_viewer,1,0,0,0
+access_work_acceptance_committee_viewer,work acceptance committee viewer,purchase_work_acceptance_kmitl.model_work_acceptance_committee,purchase_viewer.group_purchase_viewer,1,0,0,0
