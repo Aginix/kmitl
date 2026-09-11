@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- Rendered once per dropdown option, inside the autocomplete <a> item.
+         `option` is in scope. Record options carry option.visibility
+         (from the batched read on sarabun.route.template); action rows
+         (Create…/Search More…) do not — fall back to their plain label. -->
+    <t t-name="agx_sarabun_route_template_widget.Option" owl="1">
+        <t t-if="option.visibility">
+            <div class="o_sarabun_route_tpl_option d-flex align-items-center gap-2">
+                <span class="flex-grow-1 text-truncate" t-esc="option.label"/>
+                <span class="badge"
+                      t-att-class="option.visibilityClass"
+                      t-esc="option.visibilityLabel"/>
+            </div>
+        </t>
+        <t t-else="">
+            <t t-esc="option.label"/>
+        </t>
+    </t>
+</templates>
