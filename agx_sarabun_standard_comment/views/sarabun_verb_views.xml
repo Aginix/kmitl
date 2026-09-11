@@ -5,7 +5,7 @@
         <field name="model">sarabun.verb</field>
         <field name="inherit_id" ref="agx_sarabun.view_sarabun_verb_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[@string='พฤติกรรม (Behaviour)']" position="after">
+            <xpath expr="//field[@name='is_signature']/../.." position="after">
                 <group string="ข้อความมาตรฐาน (Standard comment)">
                     <field name="default_standard_comment_id"
                            options="{'no_create': True, 'no_edit': True}"/>
