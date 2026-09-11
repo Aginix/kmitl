@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree: show installment_display, hide raw installment, add split button -->
+    <record id="view_purchase_invoice_plan_tree_sub" model="ir.ui.view">
+        <field name="name">view.purchase.invoice.plan.tree.subinstallment</field>
+        <field name="model">purchase.invoice.plan</field>
+        <field name="inherit_id" ref="purchase_invoice_plan.view_purchase_invoice_plan_tree"/>
+        <field name="arch" type="xml">
+            <field name="installment" position="before">
+                <field name="parent_id" invisible="1"/>
+                <field name="has_children" invisible="1"/>
+                <field name="is_sub" invisible="1"/>
+                <field name="state" invisible="1"/>
+                <field name="installment_display" readonly="1" string="Installment"/>
+            </field>
+            <field name="installment" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <xpath expr="/tree" position="inside">
+                <button name="action_open_add_sub_wizard"
+                        type="object"
+                        string="แบ่งงวดย่อย"
+                        icon="fa-sitemap"
+                        attrs="{'invisible': ['|', '|', ('is_sub', '=', True), ('no_edit', '=', True), ('state', '!=', 'draft')]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Form: surface parent_id + sub_installment + split button -->
+    <record id="view_purchase_invoice_plan_form_sub" model="ir.ui.view">
+        <field name="name">view.purchase.invoice.plan.form.subinstallment</field>
+        <field name="model">purchase.invoice.plan</field>
+        <field name="inherit_id" ref="purchase_invoice_plan.view_purchase_invoice_plan_form"/>
+        <field name="arch" type="xml">
+            <field name="installment" position="after">
+                <field name="parent_id" readonly="1"
+                       attrs="{'invisible': [('parent_id', '=', False)]}"/>
+                <field name="sub_installment" readonly="1"
+                       attrs="{'invisible': [('parent_id', '=', False)]}"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>
