@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_budget_transfer_form" model="ir.ui.view">
+        <field name="name">budget.transfer.form.ztree</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget_transfer.view_budget_transfer_form"/>
+        <field name="arch" type="xml">
+            <!-- Header: ส่วนงาน (source department). แหล่งเงิน stays a flat select.
+                 Scoped by the dimension_info group: department_analytic_id also
+                 appears (read-only) in the FROM/TO line trees and (invisible) in
+                 the FROM line form — a plain [1] index is not safe here since
+                 each of those is the sole match under its own parent. -->
+            <xpath expr="//group[@name='dimension_info']/field[@name='department_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '1'}</attribute>
+            </xpath>
+            <!-- Transfer FROM line editor: department is inherited from the header (invisible here). -->
+            <xpath expr="//field[@name='from_line_ids']//form//field[@name='activity_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '1'}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='from_line_ids']//form//field[@name='fund_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '1'}</attribute>
+            </xpath>
+            <!-- Transfer TO line editor: destination department can differ from the header. -->
+            <xpath expr="//field[@name='to_line_ids']//form//field[@name='department_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '1'}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='to_line_ids']//form//field[@name='activity_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '1'}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='to_line_ids']//form//field[@name='fund_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '1'}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

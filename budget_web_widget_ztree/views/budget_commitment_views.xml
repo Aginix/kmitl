@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="budget_commitment_form_view" model="ir.ui.view">
+        <field name="name">budget.commitment.form.ztree</field>
+        <field name="model">budget.commitment</field>
+        <field name="inherit_id" ref="budget.budget_commitment_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Scoped to the Budget Details group: a plain [1] index is not
+                 safe here — activity/fund/department also appear (read-only)
+                 in the Ledger Lines tree below, and each occurrence is the
+                 sole match under its own parent, so [1] would match both. -->
+            <xpath expr="//group[@name='budget_details']/field[@name='department_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '1'}</attribute>
+            </xpath>
+            <xpath expr="//group[@name='budget_details']/field[@name='activity_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '1'}</attribute>
+            </xpath>
+            <xpath expr="//group[@name='budget_details']/field[@name='fund_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '1'}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
