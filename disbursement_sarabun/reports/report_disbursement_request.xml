@@ -82,7 +82,7 @@
                     เลขที่บัญชี <span class="ms-2" t-out="o._get_masked_acc_number(partner_bank.acc_number)"/>
                 </div>
             </div>
-            <table class="table table-bordered table-sm" t-attf-class="{{ '' if partner_last else 'mb-4' }}">
+            <table class="table table-bordered table-sm" t-att-style="'' if partner_last else 'margin-bottom: 1rem'">
                 <thead>
                     <tr>
                         <th class="text-center" style="width: 8%">ลำดับ</th>
