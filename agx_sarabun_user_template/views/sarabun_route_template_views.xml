@@ -19,6 +19,30 @@
         </field>
     </record>
 
+    <!-- Surface visibility on the tree — both the menu list and the "Search More"
+         dialog reached from the document form's route_template_id picker share
+         this view. Colours mirror the picker widget's badges: personal=muted,
+         unit=info, public=success. Row-level decoration tints the whole row so
+         a long list is scannable; the badge column repeats the label. -->
+    <record id="view_sarabun_route_template_tree_inherit_user_template" model="ir.ui.view">
+        <field name="name">sarabun.route.template.tree.user_template</field>
+        <field name="model">sarabun.route.template</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_route_template_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-muted">visibility == 'personal'</attribute>
+                <attribute name="decoration-info">visibility == 'unit'</attribute>
+                <attribute name="decoration-success">visibility == 'public'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='active']" position="before">
+                <field name="visibility" widget="badge"
+                       decoration-info="visibility == 'unit'"
+                       decoration-success="visibility == 'public'"
+                       decoration-muted="visibility == 'personal'"/>
+            </xpath>
+        </field>
+    </record>
+
     <!-- Unified "Route Templates" menu at root — visible to every sarabun user.
          Rows are scoped per user by the read ir.rule, and the create-default
          (personal for users, public for managers) comes from the model's
