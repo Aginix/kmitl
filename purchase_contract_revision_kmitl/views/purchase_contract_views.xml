@@ -71,15 +71,6 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,applied"/>
                 </header>
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="object" type="object" class="oe_stat_button" icon="fa-file-text-o"
-                                attrs="{'invisible': [('purchase_id', '=', False)]}">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">PO</span>
-                                <span class="o_stat_value"><field name="purchase_id"/></span>
-                            </div>
-                        </button>
-                    </div>
                     <div class="oe_title">
                         <label for="revision_display"/>
                         <h1><field name="revision_display" readonly="1"/></h1>
