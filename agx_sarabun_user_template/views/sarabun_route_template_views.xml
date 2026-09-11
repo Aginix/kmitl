@@ -21,19 +21,15 @@
 
     <!-- Surface visibility on the tree — both the menu list and the "Search More"
          dialog reached from the document form's route_template_id picker share
-         this view. Colours mirror the picker widget's badges: personal=muted,
-         unit=info, public=success. Row-level decoration tints the whole row so
-         a long list is scannable; the badge column repeats the label. -->
+         this view. Colours are scoped to the badge cell itself (via widget=badge
+         + per-value decorations) rather than tinting the whole row, mirroring
+         the picker widget's badge look without noising up the surrounding
+         columns. -->
     <record id="view_sarabun_route_template_tree_inherit_user_template" model="ir.ui.view">
         <field name="name">sarabun.route.template.tree.user_template</field>
         <field name="model">sarabun.route.template</field>
         <field name="inherit_id" ref="agx_sarabun.view_sarabun_route_template_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
-                <attribute name="decoration-muted">visibility == 'personal'</attribute>
-                <attribute name="decoration-info">visibility == 'unit'</attribute>
-                <attribute name="decoration-success">visibility == 'public'</attribute>
-            </xpath>
             <xpath expr="//field[@name='active']" position="before">
                 <field name="visibility" widget="badge"
                        decoration-info="visibility == 'unit'"
