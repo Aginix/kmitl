@@ -59,6 +59,14 @@ class SarabunDocument(models.Model):
         store=True,
         readonly=True,
     )
+    type_allow_manual = fields.Boolean(
+        related="type_id.allow_manual",
+        string="Type Allows Manual",
+        readonly=True,
+        help="Mirror of the type's สร้างด้วยตนเองได้ flag, for the form's attrs: an "
+        "origin-only type is locked on the หนังสือ so a drafter cannot swap the "
+        "classification it was spawned with.",
+    )
 
     # === Header (เรื่อง / เรียน / วันที่) ===
     subject = fields.Text(string="เรื่อง (Subject)", required=True, tracking=True)
@@ -1116,6 +1124,24 @@ class SarabunDocument(models.Model):
         fn = getattr(origin, method, None)
         if fn:
             fn(*args)
+
+    # === Classification integrity ===
+    @api.constrains("type_id", "origin_model")
+    def _check_manual_creation_allowed(self):
+        """A type flagged not manual-creatable (allow_manual=False — the from_record
+        types, base + consumer-seeded) must arise from an origin record, never be
+        hand-composed. The form already hides such types from the manual-create
+        dropdown; this is the server-side twin that also blocks the import / RPC /
+        default-context back doors. Manual memo/circular (allow_manual=True) carry no
+        origin and are unaffected."""
+        for doc in self:
+            if doc.type_id and not doc.type_id.allow_manual and not doc.origin_model:
+                raise ValidationError(_(
+                    "ประเภทหนังสือ '%(type)s' ต้องสร้างจากเอกสารต้นทางเท่านั้น "
+                    "ไม่สามารถสร้างด้วยตนเองจากหน้าฟอร์มได้\n"
+                    "Document type '%(type)s' can only be created from a source "
+                    "record, not composed manually."
+                ) % {"type": doc.type_id.display_name})
 
     # === Numbering / Register (P3 — ADR-0002 §4) ===
     @api.constrains("numbering_mode", "kind")
