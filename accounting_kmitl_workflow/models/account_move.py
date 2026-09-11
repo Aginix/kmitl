@@ -114,11 +114,13 @@ class AccountMove(models.Model):
     # Report helper
     # ------------------------------------------------------------------
     def _kmitl_voucher_lines(self):
-        """Return the journal items to print (no sections / notes)."""
+        """Return the journal items to print (no sections / notes), debit rows
+        first — an accountant reads the debit side of an entry first. Stable
+        sort, so each side keeps the order the entry was keyed in."""
         self.ensure_one()
         return self.line_ids.filtered(
             lambda line: line.display_type not in ("line_section", "line_note")
-        )
+        ).sorted(lambda line: 0 if line.debit else 1)
 
     # ------------------------------------------------------------------
     # Workflow actions

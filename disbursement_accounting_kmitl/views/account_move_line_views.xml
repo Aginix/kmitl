@@ -10,7 +10,7 @@
                   decoration-muted="parent_state == 'cancel'"
                   decoration-info="parent_state == 'draft'"
                   decoration-success="parent_state == 'posted'"
-                  default_order="move_id, id">
+                  default_order="move_id, credit, id">
                 <field name="move_id"/>
                 <field name="parent_state" optional="hide"/>
                 <field name="partner_id"/>
