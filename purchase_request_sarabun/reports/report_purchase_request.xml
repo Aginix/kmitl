@@ -143,7 +143,7 @@
                     <t t-set="currency" t-value="o.currency_id" />
                     <td
                         colspan="2"
-                        rowspan="3"
+                        t-att-rowspan="3 if o.amount_tax else 2"
                         class="text-center align-middle"
                     >
                         (
@@ -160,7 +160,7 @@
                         t-out="'{0:,.2f}'.format(o.amount_untaxed)"
                     />
                 </tr>
-                <tr>
+                <tr t-if="o.amount_tax">
                     <td class="text-center" colspan="2">
                         ภาษีมูลค่าเพิ่ม (VAT 7%)
                     </td>
