@@ -7,8 +7,9 @@ _logger = logging.getLogger(__name__)
 
 # States in which a loan is a live debt the borrower still holds — the debt
 # starts at effective_date (waiting_transfer is pre-debt, done/cancel are
-# closed). Countdown, followup list and digest all key off this set.
-DEBTOR_STATES = ("in_progress", "to_verify_report", "to_reconcile")
+# closed). Reporting and returning both happen freely within in_progress, so
+# it's the only debtor state. Countdown, followup list and digest key off it.
+DEBTOR_STATES = ("in_progress",)
 
 # Generic "To Do" activity type — matched together with its summary so a
 # weekly re-run of the digest cron never piles up duplicate reminders on the

@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <tree string="สัญญายืมเงิน" decoration-info="state == 'draft'"
                 decoration-muted="state == 'cancel'"
-                decoration-warning="state in ('to_verify', 'to_approve', 'to_verify_report', 'to_reconcile')"
+                decoration-warning="state in ('to_verify', 'to_approve')"
                 decoration-primary="state in ('waiting_transfer', 'in_progress')"
                 decoration-success="state == 'done'">
                 <field name="create_date" optional="show" />
@@ -21,7 +21,7 @@
                 <field name="return_due_date" optional="show" />
                 <field name="state" widget="badge"
                     decoration-info="state == 'draft'"
-                    decoration-warning="state in ('to_verify', 'to_approve', 'to_verify_report', 'to_reconcile')"
+                    decoration-warning="state in ('to_verify', 'to_approve')"
                     decoration-primary="state in ('waiting_transfer', 'in_progress')"
                     decoration-success="state == 'done'"
                     decoration-danger="state == 'cancel'" />
@@ -50,8 +50,8 @@
                     attrs="{'invisible': [('state', '!=', 'waiting_transfer')]}">
                     <strong>อนุมัติแล้ว</strong> — รอฝ่ายการเงินดำเนินการโอนเงิน </div>
                 <div class="alert alert-info" role="alert" style="margin-bottom:0px;"
-                    attrs="{'invisible': [('state', '!=', 'to_reconcile')]}">
-                    <strong>รอคืนเงิน</strong> — ยอดคงเหลือที่ต้องคืน <field name="return_amount"
+                    attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('amount_remaining', '&lt;=', 0)]}">
+                    <strong>รอคืนเงิน</strong> — ยอดคงเหลือที่ต้องคืน <field name="amount_remaining"
                         class="oe_inline" /> บาท </div>
                 <header>
                     <field name="is_requester" invisible="1" />
@@ -65,8 +65,7 @@
                         class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('can_submit', '=', False)]}" />
                     <button name="action_recall" string="Reset to draft" type="object"
-                        confirm="ต้องการตั้งคำขอกลับเป็นแบบร่างหรือไม่?"
-                        attrs="{'invisible': ['|', ('state', 'not in', ['to_verify', 'to_approve']), ('is_requester', '=', False)]}" />
+                        attrs="{'invisible': ['|', ('state', 'not in', ['to_verify', 'to_approve', 'cancel']), ('is_requester', '=', False)]}" />
                     <button name="action_verify" string="ยืนยันการตรวจสอบ" type="object"
                         class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('can_verify', '=', False)]}"
@@ -85,18 +84,19 @@
                     <button name="action_submit_report" string="นำส่งรายงานค่าใช้จ่าย"
                         type="object" class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('is_requester', '=', False)]}" />
-                    <button name="action_accept_report" string="ตรวจรับรายงาน" type="object"
-                        class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'to_verify_report')]}"
-                        groups="advance_payment.group_advance_payment_loan_officer" />
                     <button name="action_open_return_wizard" string="แจ้งคืนเงิน" type="object"
-                        attrs="{'invisible': ['|', ('state', '!=', 'to_reconcile'), ('is_requester', '=', False)]}" />
+                        attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), '|', ('is_requester', '=', False), ('amount_remaining', '&lt;=', 0)]}" />
                     <button name="action_confirm_donation" string="ยืนยันบริจาคส่วนเกิน"
                         type="object" class="btn-primary"
                         confirm="ยืนยันบริจาคเงินส่วนเกินให้สถาบัน?"
-                        attrs="{'invisible': ['|', ('state', '!=', 'to_reconcile'), ('excess_amount', '&lt;=', 0)]}" />
+                        attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('excess_amount', '&lt;=', 0)]}" />
+                    <button name="action_close" string="ปิดสัญญา" type="object"
+                        class="btn-primary"
+                        confirm="ต้องการปิดสัญญานี้หรือไม่?"
+                        attrs="{'invisible': [('state', '!=', 'in_progress')]}"
+                        groups="advance_payment.group_advance_payment_loan_officer" />
                     <button name="action_open_cancel_wizard" string="ยกเลิกสัญญา" type="object"
-                        attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_approve', 'waiting_transfer', 'in_progress', 'to_verify_report', 'to_reconcile'])]}"
+                        attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_approve', 'waiting_transfer', 'in_progress'])]}"
                         groups="advance_payment.group_advance_payment_manager" />
                     <button name="action_reopen" string="เปิดสัญญาอีกครั้ง" type="object"
                         confirm="ต้องการเปิดสัญญาอีกครั้งหรือไม่?"
@@ -111,7 +111,7 @@
                         confirm="ต้องการยกเลิกสัญญานี้หรือไม่?"
                         attrs="{'invisible': [('state', '!=', 'draft')]}" />
                     <field name="state" widget="statusbar"
-                        statusbar_visible="draft,to_verify,to_approve,waiting_transfer,in_progress,to_verify_report,to_reconcile,done" />
+                        statusbar_visible="draft,to_verify,to_approve,waiting_transfer,in_progress,done" />
                 </header>
                 <sheet>
                     <div name="button_box" class="oe_button_box">
@@ -223,13 +223,12 @@
                         <page string="รายการคืนเงิน" name="return_lines"
                             attrs="{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer'])]}">
                             <field name="return_line_ids"
-                                attrs="{'readonly': [('state', '!=', 'to_reconcile')]}">
+                                attrs="{'readonly': [('state', '!=', 'in_progress')]}">
                                 <tree>
                                     <field name="date" />
                                     <field name="currency_id" invisible="1" />
                                     <field name="amount" />
                                     <field name="note" />
-                                    <field name="payment_id" optional="show" />
                                     <field name="state" widget="badge"
                                         decoration-info="state == 'draft'"
                                         decoration-warning="state == 'pending_review'"
@@ -272,15 +271,13 @@
                     domain="[('state','=','waiting_transfer')]" />
                 <filter string="อยู่ในสัญญา" name="in_progress"
                     domain="[('state','=','in_progress')]" />
-                <filter string="รอตรวจรับรายงาน" name="to_verify_report"
-                    domain="[('state','=','to_verify_report')]" />
-                <filter string="รอคืนเงิน" name="to_reconcile"
-                    domain="[('state','=','to_reconcile')]" />
+                <filter string="มียอดค้างคืน" name="pending_return"
+                    domain="[('state','=','in_progress'),('amount_remaining','&gt;',0)]" />
                 <filter string="ปิดสัญญา" name="done" domain="[('state','=','done')]" />
                 <filter string="ยกเลิก" name="cancelled" domain="[('state','=','cancel')]" />
                 <separator />
                 <filter string="ยังไม่ปิด (active)" name="active_agreements"
-                    domain="[('state','in',['to_verify','to_approve','waiting_transfer','in_progress','to_verify_report','to_reconcile'])]" />
+                    domain="[('state','in',['to_verify','to_approve','waiting_transfer','in_progress'])]" />
                 <group expand="0" name="group_by" string="Group By">
                     <filter string="State" name="group_state" context="{'group_by':'state'}" />
                     <filter string="Loan Type" name="group_loan_type"
