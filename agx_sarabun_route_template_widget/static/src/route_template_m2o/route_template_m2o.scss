@@ -1,0 +1,11 @@
+// The option markup lives inside <a class="dropdown-item … text-truncate">,
+// which clamps to one line. Undo that for our items only, scoped by the
+// o_sarabun_route_tpl_item class set on the <li> in route_template_m2o.js.
+.o_sarabun_route_tpl_item {
+    .dropdown-item {
+        white-space: normal;
+        overflow: visible;
+        height: auto;
+        line-height: 1.3;
+    }
+}

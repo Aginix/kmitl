@@ -24,6 +24,7 @@
                     <div class="oe_title">
                         <h1><field name="name" placeholder="e.g. PR Approval (&lt; 100k)"/></h1>
                     </div>
+                    <field name="description" placeholder="รายละเอียดหรือคำอธิบายแม่แบบเส้นทาง..." nolabel="1"/>
                     <group>
                         <group string="Scope (auto-match for from_record)">
                             <field name="document_type_id"/>
@@ -63,6 +64,11 @@
                         </tree>
                     </field>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>

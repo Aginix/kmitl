@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend the core template form to surface owner + visibility fields. -->
+    <record id="view_sarabun_route_template_form_inherit_user_template" model="ir.ui.view">
+        <field name="name">sarabun.route.template.form.user_template</field>
+        <field name="model">sarabun.route.template</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_route_template_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[field[@name='sequence']]" position="inside">
+                <field name="owner_id" readonly="1"/>
+                <field name="visibility"/>
+            </xpath>
+            <!-- Require department_id when visibility=unit, so a "unit" template
+                 can't silently become effectively-personal (matches nobody). -->
+            <xpath expr="//group[field[@name='origin_model_id']]/field[@name='department_id']"
+                   position="attributes">
+                <attribute name="attrs">{'required': [('visibility','=','unit')]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Surface visibility on the tree — both the menu list and the "Search More"
+         dialog reached from the document form's route_template_id picker share
+         this view. Colours are scoped to the badge cell itself (via widget=badge
+         + per-value decorations) rather than tinting the whole row, mirroring
+         the picker widget's badge look without noising up the surrounding
+         columns. -->
+    <record id="view_sarabun_route_template_tree_inherit_user_template" model="ir.ui.view">
+        <field name="name">sarabun.route.template.tree.user_template</field>
+        <field name="model">sarabun.route.template</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_route_template_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='active']" position="before">
+                <field name="visibility" widget="badge"
+                       decoration-info="visibility == 'unit'"
+                       decoration-success="visibility == 'public'"
+                       decoration-muted="visibility == 'personal'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Unified "Route Templates" menu at root — visible to every sarabun user.
+         Rows are scoped per user by the read ir.rule, and the create-default
+         (personal for users, public for managers) comes from the model's
+         _default_visibility, so no context override is needed here. -->
+    <record id="action_sarabun_my_route_template" model="ir.actions.act_window">
+        <field name="name">แม่แบบเส้นทางอนุมัติ (Route Templates)</field>
+        <field name="res_model">sarabun.route.template</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_sarabun_my_templates"
+              name="แม่แบบเส้นทางอนุมัติ"
+              parent="agx_sarabun.menu_sarabun_root"
+              action="action_sarabun_my_route_template"
+              groups="agx_sarabun.group_sarabun_user"
+              sequence="15"/>
+
+    <!-- Hide the original manager-only entry under Configuration — the root
+         menu above replaces it for both roles. -->
+    <record id="agx_sarabun.menu_sarabun_route_template" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+</odoo>
