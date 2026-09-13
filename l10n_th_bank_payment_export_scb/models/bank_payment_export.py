@@ -200,7 +200,7 @@ class BankPaymentExport(models.Model):
     @api.depends("bank")
     def _compute_required_effective_date(self):
         res = super()._compute_required_effective_date()
-        for rec in self.filtered(lambda l: l.bank == "SICOTHBK"):
+        for rec in self.filtered(lambda export: export.bank == "SICOTHBK"):
             rec.is_required_effective_date = True
         return res
 
@@ -262,7 +262,7 @@ class BankPaymentExport(models.Model):
 
     def _check_constraint_confirm(self):
         res = super()._check_constraint_confirm()
-        for rec in self.filtered(lambda l: l.bank == "SICOTHBK"):
+        for rec in self.filtered(lambda export: export.bank == "SICOTHBK"):
             if rec.scb_product_code == "DCP" and any(
                 len(sanitize_account_number(line.payment_partner_bank_id.acc_number))
                 != 10
@@ -283,10 +283,7 @@ class BankPaymentExport(models.Model):
                             "payment": line.payment_id.name,
                         }
                     )
-                if (
-                    line.scb_beneficiary_email
-                    and len(line.scb_beneficiary_email) > 64
-                ):
+                if line.scb_beneficiary_email and len(line.scb_beneficiary_email) > 64:
                     raise UserError(
                         _(
                             "The length of an email %(payment)s cannot exceed 64 characters."
@@ -295,4 +292,8 @@ class BankPaymentExport(models.Model):
                             "payment": line.payment_id.name,
                         }
                     )
+            # DCP credits SCB accounts and the layout writes 014 itself; every
+            # other product reads the code off the payee's bank.
+            if self.scb_product_code != "DCP":
+                self._check_receiving_bank_code(self.export_line_ids)
         return res
