@@ -110,7 +110,7 @@
                   </t>
                   <t t-else="">
                       <span class="text-muted">
-                        <b>No number</b>
+                        <b>ไม่มีเลขทะเบียน</b>
                       </span>
                   </t>
                 </td>
