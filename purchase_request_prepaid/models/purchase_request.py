@@ -33,8 +33,7 @@ class PurchaseRequest(models.Model):
             if self.vat_included != "exclusive":
                 self.vat_included = "exclusive"
                 self.tax_id = False
-            if self.partner_id and not self.partner_id.partner_type_id.is_internal:
-                self.partner_id = False
+            self.partner_id = self.requested_by.partner_id
 
     @api.constrains(
         "payment_type", "procurement_mode", "partner_id", "vat_included"
