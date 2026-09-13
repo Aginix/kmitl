@@ -7,6 +7,9 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     'depends': ['base_state_leadtime', 'purchase_request_kmitl'],
+    'data': [
+        'views/purchase_request_view.xml',
+    ],
     'application': False,
     'installable': True,
     'auto_install': False,

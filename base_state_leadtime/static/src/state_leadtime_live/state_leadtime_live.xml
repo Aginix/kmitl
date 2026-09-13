@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="base_state_leadtime.StateLeadtimeLive" owl="1">
+        <span class="o_state_leadtime_live o_stat_info o_stat_value" t-esc="state.display"/>
+        <span class="o_stat_text" t-esc="label"/>
+    </t>
+
+</templates>
