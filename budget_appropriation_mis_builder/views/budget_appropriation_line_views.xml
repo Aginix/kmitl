@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Tree view for budget.appropriation.line with debit/credit columns
+         (for verifying mis_builder integration) -->
+    <record id="view_budget_appropriation_line_mis_tree" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.mis.tree</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false" delete="false" sample="1">
+                <field name="appropriation_id" optional="show" />
+                <field name="date" optional="show" />
+                <field name="budget_type" optional="show" />
+                <field name="account_id" />
+                <field name="department_analytic_id" optional="show" />
+                <field name="activity_analytic_id" optional="hide" />
+                <field name="fund_analytic_id" optional="hide" />
+                <field name="source_analytic_id" optional="hide" />
+                <field name="deduct" optional="show" />
+                <field name="debit" sum="รวมเดบิต" />
+                <field name="credit" sum="รวมเครดิต" />
+                <field name="balance" sum="รวมยอด" optional="hide" />
+                <field name="parent_state" optional="show" />
+                <field name="company_id" optional="hide" groups="base.group_multi_company" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_budget_appropriation_line_mis" model="ir.actions.act_window">
+        <field name="name">รายการการจัดสรรงบประมาณ (Debit/Credit)</field>
+        <field name="res_model">budget.appropriation.line</field>
+        <field name="view_mode">tree,pivot,graph</field>
+        <field name="view_id" ref="view_budget_appropriation_line_mis_tree" />
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
