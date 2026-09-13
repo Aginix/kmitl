@@ -25,7 +25,7 @@
                     type="object"
                     class="btn-primary"
                     attrs="{'invisible': ['|', '|', '|',
-                        ('state', '!=', 'approved'),
+                        ('state', 'not in', ['approved', 'to_submit', 'to_approve', 'in_egp']),
                         ('payment_type', '!=', 'advance'),
                         ('advance_payment_count', '!=', 0),
                         ('is_requested_by_current_user', '=', False)]}"/>

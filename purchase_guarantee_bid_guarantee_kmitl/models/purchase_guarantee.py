@@ -59,10 +59,7 @@ class PurchaseGuarantee(models.Model):
         if self.reference:
             states = []
             if self.reference._name == "purchase.request":
-                if self.id:
-                    states.extend(["approved", "in_progress", "done"])
-                else:
-                    states.extend(["approved", "in_progress"])
+                states.extend(["approved", "in_progress", "done"])
             if states and self.reference.state not in states:
                 raise UserError(
                     _("%(ref)s must be in status: %(state)s")
