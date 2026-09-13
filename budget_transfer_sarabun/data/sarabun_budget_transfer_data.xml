@@ -37,6 +37,7 @@
             <field name="name">ขออนุมัติโอนงบประมาณ</field>
             <field name="kind">from_record</field>
             <field name="default_route_id" ref="route_template_budget_transfer"/>
+            <field name="origin_model_id" ref="budget_transfer.model_budget_transfer"/>
         </record>
     </data>
 

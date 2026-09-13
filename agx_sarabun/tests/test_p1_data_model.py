@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """P1 — core data model: kind/type split, position holders, references, enclosures."""
 from odoo.exceptions import ValidationError
-from odoo.tests.common import tagged
+from odoo.tests.common import Form, tagged
 
 from odoo.addons.agx_sarabun.tests.common import SarabunCommon
 
@@ -70,3 +70,71 @@ class TestP1DataModel(SarabunCommon):
         doc = self._make_doc(content="<p>เรียนเพื่อโปรดพิจารณาอนุมัติ</p>")
         self.assertIn("โปรดพิจารณา", doc.content)
         self.assertTrue(doc.is_editable)  # draft is editable
+
+    def test_origin_model_id_only_for_from_record_type(self):
+        """origin_model_id is meaningless outside kind = from_record."""
+        origin_model = self.env["ir.model"]._get("test.sarabun.origin")
+        with self.assertRaises(ValidationError):
+            self.env["sarabun.document.type"].create({
+                "name": "ประเภททดสอบ", "kind": "memo", "origin_model_id": origin_model.id,
+            })
+
+    def test_route_template_origin_model_must_match_type(self):
+        """A template bound to a type with a declared origin model can't point elsewhere."""
+        origin_model = self.env["ir.model"]._get("test.sarabun.origin")
+        typed = self.env["sarabun.document.type"].create({
+            "name": "ประเภทผูกโมเดล", "kind": "from_record", "origin_model_id": origin_model.id,
+        })
+        with self.assertRaises(ValidationError):
+            self.Template.create({
+                "name": "แม่แบบผิดโมเดล",
+                "document_type_id": typed.id,
+                "origin_model": "res.partner",
+            })
+
+    def test_route_template_origin_model_autofills_from_type(self):
+        """Picking a type that declares a model fills the template's origin_model."""
+        origin_model = self.env["ir.model"]._get("test.sarabun.origin")
+        typed = self.env["sarabun.document.type"].create({
+            "name": "ประเภทผูกโมเดล 2", "kind": "from_record", "origin_model_id": origin_model.id,
+        })
+        with Form(self.Template) as form:
+            form.name = "แม่แบบเติมอัตโนมัติ"
+            form.document_type_id = typed
+        self.assertEqual(form.origin_model, "test.sarabun.origin")
+
+    def test_document_origin_model_must_match_type(self):
+        """A หนังสือ's origin_model must agree with its type's declared origin model."""
+        origin_model = self.env["ir.model"]._get("test.sarabun.origin")
+        typed = self.env["sarabun.document.type"].create({
+            "name": "ประเภทผูกโมเดล 3", "kind": "from_record", "origin_model_id": origin_model.id,
+        })
+        with self.assertRaises(ValidationError):
+            self._make_doc(doc_type=typed, origin_model="res.partner", origin_res_id=1)
+
+    def test_reselecting_route_template_does_not_delete_before_save(self):
+        """Regression: re-picking route_template_id (even the SAME value) in a
+        Form must not delete the document's real routing steps outside of an
+        explicit save. Calling ``unlink()`` imperatively inside an onchange
+        resolves the NewId-wrapped records back to their real underlying ids
+        and deletes them from the database immediately — before Save/Discard
+        ever runs — which is the bug this guards against."""
+        template = self.Template.create({
+            "name": "เส้นทางทดสอบ",
+            "line_ids": [(0, 0, {
+                "order": 10, "verb": self._verb("sign_approve").id,
+                "target_mode": "person", "employee_id": self.emp_a.id,
+            })],
+        })
+        doc = self._make_doc(route_template_id=template.id)
+        doc.action_seed_route_from_template()  # persists real template steps now
+        live_step_ids = doc.routing_step_ids.ids
+        self.assertEqual(len(live_step_ids), 2)  # originator + template step
+
+        with Form(doc) as form:
+            form.route_template_id = template  # re-select the SAME template
+            # Must still exist in the DB — no premature real delete mid-onchange.
+            self.assertTrue(self.Step.browse(live_step_ids).exists())
+
+        doc.invalidate_recordset()
+        self.assertEqual(len(doc.routing_step_ids), 2)  # originator + fresh template step
