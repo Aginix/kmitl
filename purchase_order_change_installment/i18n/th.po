@@ -1,0 +1,173 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_order_change_installment
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-17 00:00+0000\n"
+"PO-Revision-Date: 2026-06-17 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields.selection,name:purchase_order_change_installment.selection__purchase_order_change_installment_wizard_line__wa_state__accept
+msgid "Accepted"
+msgstr "ตรวจรับแล้ว"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields.selection,name:purchase_order_change_installment.selection__purchase_order_change_installment_snapshot__snapshot_type__after
+msgid "After"
+msgstr "ใหม่"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_snapshot__amount
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_wizard_line__amount
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields.selection,name:purchase_order_change_installment.selection__purchase_order_change_installment_snapshot__snapshot_type__before
+msgid "Before"
+msgstr "เดิม"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields.selection,name:purchase_order_change_installment.selection__purchase_order_change_installment_wizard_line__wa_state__cancel
+msgid "Cancelled"
+msgstr "ยกเลิก"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_snapshot__change_id
+msgid "Change"
+msgstr "การแก้ไขสัญญา"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_snapshot__deliverables
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_wizard_line__deliverables
+msgid "Deliverables"
+msgstr "สิ่งของที่ต้องส่งมอบ"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields.selection,name:purchase_order_change_installment.selection__purchase_order_change_installment_wizard_line__wa_state__draft
+msgid "Draft"
+msgstr "ร่าง"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_snapshot__duration_days
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_wizard_line__duration_days
+msgid "Duration (Days)"
+msgstr "ระยะเวลา (วัน)"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_wizard_line__has_wa
+msgid "Has WA"
+msgstr "มีใบตรวจรับแล้ว"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change__has_installment_snapshot
+msgid "Has Installment Snapshot"
+msgstr "มีภาพรวมงวดงาน"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_snapshot__installment_id
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_wizard_line__installment_id
+msgid "Installment"
+msgstr "งวดงาน"
+
+#. module: purchase_order_change_installment
+#: model:ir.model,name:purchase_order_change_installment.model_purchase_order_change_installment_snapshot
+msgid "Installment Change Snapshot"
+msgstr "ภาพรวมการแก้ไขงวดงาน"
+
+#. module: purchase_order_change_installment
+#: model:ir.model,name:purchase_order_change_installment.model_purchase_order_change_installment_wizard_line
+msgid "Installment Change Wizard Line"
+msgstr "รายการหน้าต่างแก้ไขงวดงาน"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_snapshot__installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_wizard_line__installment
+msgid "Installment No."
+msgstr "งวดที่"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change__installment_snapshot_ids
+msgid "Installment Snapshots"
+msgstr "ภาพรวมงวดงาน"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_wizard__installment_line_ids
+#: model_terms:ir.ui.view,arch_db:purchase_order_change_installment.view_purchase_order_change_form_installment
+#: model_terms:ir.ui.view,arch_db:purchase_order_change_installment.view_purchase_order_change_installment_wizard
+msgid "Installments"
+msgstr "งวดงาน"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change__new_installment_snapshot_ids
+#: model_terms:ir.ui.view,arch_db:purchase_order_change_installment.view_purchase_order_change_form_installment
+msgid "Installments (After)"
+msgstr "งวดงาน (ใหม่)"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change__old_installment_snapshot_ids
+#: model_terms:ir.ui.view,arch_db:purchase_order_change_installment.view_purchase_order_change_form_installment
+msgid "Installments (Before)"
+msgstr "งวดงาน (เดิม)"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields.selection,name:purchase_order_change_installment.selection__purchase_order_change_installment_wizard_line__wa_state__in_review
+msgid "In Review"
+msgstr "อยู่ระหว่างการตรวจรับ"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_snapshot__percent
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_wizard_line__percent
+msgid "Percent"
+msgstr "ร้อยละ"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_snapshot__plan_date
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_wizard_line__plan_date
+msgid "Plan Date"
+msgstr "วันที่กำหนด"
+
+#. module: purchase_order_change_installment
+#: model:ir.model,name:purchase_order_change_installment.model_purchase_order_change
+msgid "Purchase Order Change"
+msgstr "การแก้ไขสัญญา"
+
+#. module: purchase_order_change_installment
+#: model:ir.model,name:purchase_order_change_installment.model_purchase_order_change_wizard
+msgid "PurchaseOrderChangeWizard"
+msgstr "หน้าต่างแก้ไขสัญญา"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_wizard__show_installment
+msgid "Show Installment"
+msgstr "แสดงงวดงาน"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_wizard_line__po_amount_total
+msgid "Total Amount"
+msgstr "ยอดรวม"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_wizard_line__wa_id
+msgid "Work Acceptance Reference"
+msgstr "อ้างอิงใบตรวจรับ"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_wizard_line__wa_state
+msgid "Work Acceptance Status"
+msgstr "สถานะใบตรวจรับ"
+
+#. module: purchase_order_change_installment
+#: model:ir.model.fields,field_description:purchase_order_change_installment.field_purchase_order_change_installment_wizard_line__po_work_start
+msgid "Work Start"
+msgstr "วันที่เริ่มงาน"

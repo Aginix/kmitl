@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record
+        id="view_purchase_order_change_installment_wizard"
+        model="ir.ui.view"
+    >
+        <field name="name">purchase.order.change.wizard.form.installment</field>
+        <field name="model">purchase.order.change.wizard</field>
+        <field
+            name="inherit_id"
+            ref="purchase_order_change.view_purchase_order_change_wizard"
+        />
+        <field name="arch" type="xml">
+            <field name="show_fines_fields" position="after">
+                <field name="show_installment" invisible="1" />
+            </field>
+            <xpath expr="//form/group" position="after">
+                <separator
+                    string="Installments"
+                    attrs="{'invisible': [('show_installment', '=', False)]}"
+                />
+                <field
+                    name="installment_line_ids"
+                    nolabel="1"
+                    attrs="{'invisible': [('show_installment', '=', False)]}"
+                >
+                    <tree editable="bottom" create="false" delete="false">
+                        <field name="installment_id" invisible="1" />
+                        <field name="has_wa" invisible="1" />
+                        <field name="po_amount_total" invisible="1" />
+                        <field name="po_work_start" invisible="1" />
+                        <field name="currency_id" invisible="1" />
+                        <field name="installment" readonly="1" />
+                        <field
+                            name="duration_days"
+                            attrs="{'readonly': [('has_wa', '=', True)]}"
+                        />
+                        <field
+                            name="plan_date"
+                            attrs="{'readonly': [('has_wa', '=', True)]}"
+                        />
+                        <field
+                            name="percent"
+                            attrs="{'readonly': [('has_wa', '=', True)]}"
+                        />
+                        <field name="amount" readonly="1" />
+                        <field
+                            name="deliverables"
+                            attrs="{'readonly': [('has_wa', '=', True)]}"
+                        />
+                        <field name="wa_id" readonly="1" />
+                        <field name="wa_state" 
+                            readonly="1" 
+                            widget="badge"
+                            decoration-info="wa_state == 'draft'"
+                            decoration-success="wa_state == 'accept'"/>
+                    </tree>
+                </field>
+            </xpath>
+        </field>
+    </record>
+</odoo>
