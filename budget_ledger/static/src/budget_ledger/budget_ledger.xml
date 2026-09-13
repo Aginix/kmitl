@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="budget_ledger.BudgetLedger" owl="1">
+        <div class="o_budget_ledger">
+
+            <!-- ===== header + control panel ===== -->
+            <div class="o_bl_header">
+                <div class="o_bl_title">
+                    <h2>สมุดรายการเคลื่อนไหวงบประมาณ</h2>
+                    <span class="o_bl_subtitle">การจัดสรร · โอน · เบิกจ่าย เรียงตามช่วงเวลา</span>
+                </div>
+                <div class="o_bl_filters">
+                    <div class="o_bl_filter">
+                        <label>ปีงบประมาณ</label>
+                        <select t-on-change="onFiscalYearChange">
+                            <t t-foreach="state.fiscalYears" t-as="fy" t-key="fy.id">
+                                <option t-att-value="fy.id" t-att-selected="fy.id === state.fiscalYearId">
+                                    <t t-esc="fy.name"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="o_bl_filter">
+                        <label>รหัสงบประมาณ</label>
+                        <select t-on-change="onAccountChange">
+                            <option value="">ทั้งหมด</option>
+                            <t t-foreach="state.accounts" t-as="acc" t-key="acc.id">
+                                <option t-att-value="acc.id" t-att-selected="acc.id === state.accountId">
+                                    <t t-esc="acc.display_name"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+
+                    <!-- one multi-select per dimension -->
+                    <t t-foreach="dimFilters" t-as="dim" t-key="dim.field">
+                        <div class="o_bl_filter o_bl_dim">
+                            <label t-esc="dim.label"/>
+                            <div class="o_bl_dim_wrap">
+                                <button class="o_bl_dim_btn" t-on-click="() => this.toggleDropdown(dim.field)">
+                                    <span t-esc="dimLabel(dim.field)"/>
+                                    <i class="fa fa-caret-down"/>
+                                </button>
+                                <t t-if="state.openDropdown === dim.field">
+                                    <div class="o_bl_dim_backdrop" t-on-click="closeDropdown"/>
+                                    <div class="o_bl_dim_panel">
+                                        <div class="o_bl_dim_actions">
+                                            <a t-on-click="() => this.clearDim(dim.field)">ล้าง</a>
+                                        </div>
+                                        <div class="o_bl_dim_list">
+                                            <t t-foreach="state.dims[dim.field] || []" t-as="opt" t-key="opt.id">
+                                                <label class="o_bl_dim_item">
+                                                    <input type="checkbox"
+                                                           t-att-checked="isDimChecked(dim.field, opt.id)"
+                                                           t-on-change="() => this.toggleDim(dim.field, opt.id)"/>
+                                                    <span t-esc="opt.display_name"/>
+                                                </label>
+                                            </t>
+                                            <div t-if="!(state.dims[dim.field] || []).length" class="o_bl_dim_empty">
+                                                ไม่มีตัวเลือก
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+
+                    <div class="o_bl_filter o_bl_kinds">
+                        <label>ประเภทรายการ</label>
+                        <div class="o_bl_kind_checks">
+                            <label><input type="checkbox" t-att-checked="state.kinds.appropriation"
+                                          t-on-change="() => this.toggleKind('appropriation')"/> จัดสรร</label>
+                            <label><input type="checkbox" t-att-checked="state.kinds.transfer"
+                                          t-on-change="() => this.toggleKind('transfer')"/> โอน</label>
+                            <label><input type="checkbox" t-att-checked="state.kinds.consume"
+                                          t-on-change="() => this.toggleKind('consume')"/> เบิกจ่าย</label>
+                        </div>
+                    </div>
+
+                    <div class="o_bl_filter o_bl_draft">
+                        <label class="o_bl_draft_lbl">
+                            <input type="checkbox" t-att-checked="state.includeDraft" t-on-change="toggleDraft"/>
+                            รวมรายการที่ยังไม่ผ่านรายการ
+                        </label>
+                    </div>
+                    <div class="o_bl_filter o_bl_export">
+                        <button class="o_bl_export_btn" t-on-click="exportXlsx">
+                            <i class="fa fa-file-excel-o"/> Export Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== summary bar (from รายงานตรวจสอบงบประมาณ) ===== -->
+            <div class="o_bl_summary" t-if="hasSummary()">
+                <div class="o_bl_sum_item">
+                    <span class="o_bl_sum_lbl">งบปัจจุบัน</span>
+                    <span class="o_bl_sum_val" t-esc="format(state.summary.current)"/>
+                </div>
+                <div class="o_bl_sum_item">
+                    <span class="o_bl_sum_lbl">จอง</span>
+                    <span class="o_bl_sum_val" t-esc="format(state.summary.reserved)"/>
+                </div>
+                <div class="o_bl_sum_item">
+                    <span class="o_bl_sum_lbl">เบิกจ่าย</span>
+                    <span class="o_bl_sum_val" t-esc="format(state.summary.consumed)"/>
+                </div>
+                <div class="o_bl_sum_item o_bl_sum_remain">
+                    <span class="o_bl_sum_lbl">คงเหลือ (f)</span>
+                    <span class="o_bl_sum_val"
+                          t-att-class="(state.summary.remaining || 0) &lt; 0 ? 'o_bl_neg' : ''"
+                          t-esc="format(state.summary.remaining)"/>
+                </div>
+                <div class="o_bl_sum_note">คงเหลือ (f) หักเงินจองแล้ว · จากรายงานตรวจสอบงบประมาณ</div>
+            </div>
+
+            <div t-if="state.loading" class="o_bl_loading">กำลังโหลด...</div>
+
+            <t t-else="">
+                <!-- ===== timeline ===== -->
+                <div class="o_bl_timeline" t-if="state.months.length">
+                    <t t-foreach="state.months" t-as="month" t-key="month.key">
+                        <div class="o_bl_month">
+                            <div class="o_bl_month_head" t-on-click="() => this.toggleMonth(month.key)">
+                                <i t-att-class="isMonthCollapsed(month.key) ? 'fa fa-caret-right' : 'fa fa-caret-down'"/>
+                                <span class="o_bl_month_lbl" t-esc="month.label"/>
+                                <span class="o_bl_month_sub">
+                                    <span class="o_bl_pos">+<t t-esc="format(month.debit)"/></span>
+                                    <span class="o_bl_neg">-<t t-esc="format(month.credit)"/></span>
+                                </span>
+                            </div>
+                            <div class="o_bl_rows" t-if="!isMonthCollapsed(month.key)">
+                                <t t-foreach="month.rows" t-as="row" t-key="row.id">
+                                    <div class="o_bl_row" t-att-class="!row.posted ? 'o_bl_row_draft' : ''">
+                                        <div class="o_bl_row_main" t-on-click="() => this.toggleRow(row.id)">
+                                            <span class="o_bl_date">
+                                                <t t-esc="row.date"/>
+                                                <span class="o_bl_time" t-if="row.time" t-esc="row.time"/>
+                                            </span>
+                                            <span class="o_bl_badge" t-att-class="kindClass(row.kind)" t-esc="row.kind_label"/>
+                                            <span class="o_bl_acc">
+                                                <b t-esc="row.account_code"/> <t t-esc="row.account_name"/>
+                                            </span>
+                                            <span class="o_bl_amount"
+                                                  t-att-class="row.amount &lt; 0 ? 'o_bl_neg' : 'o_bl_pos'"
+                                                  t-esc="signed(row.amount)"/>
+                                            <span class="o_bl_running" t-if="row.running !== null" t-esc="format(row.running)"/>
+                                            <span class="o_bl_running o_bl_muted" t-else="">—</span>
+                                            <i class="o_bl_caret"
+                                               t-att-class="isExpanded(row.id) ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"/>
+                                        </div>
+                                        <div class="o_bl_row_dims">
+                                            <t t-foreach="dimEntries(row)" t-as="d" t-key="d.label">
+                                                <span class="o_bl_chip">
+                                                    <span class="o_bl_chip_k" t-esc="d.label"/>: <t t-esc="d.value"/>
+                                                </span>
+                                            </t>
+                                            <span class="o_bl_cp o_bl_cp_in"
+                                                  t-if="row.kind === 'transfer_in' and row.counterparty">
+                                                ← รับโอนจาก: <t t-esc="row.counterparty"/>
+                                            </span>
+                                            <span class="o_bl_cp o_bl_cp_out"
+                                                  t-if="row.kind === 'transfer_out' and row.counterparty">
+                                                → โอนไป: <t t-esc="row.counterparty"/>
+                                            </span>
+                                        </div>
+                                        <div class="o_bl_row_detail" t-if="isExpanded(row.id)">
+                                            <div class="o_bl_det_item">
+                                                <span class="o_bl_det_k">เลขที่ใบ</span>
+                                                <a t-on-click="() => this.openMove(row)" t-esc="row.move_name"/>
+                                            </div>
+                                            <div class="o_bl_det_item" t-if="row.ref">
+                                                <span class="o_bl_det_k">อ้างอิง</span>
+                                                <span t-esc="row.ref"/>
+                                            </div>
+                                            <div class="o_bl_det_item" t-if="row.note">
+                                                <span class="o_bl_det_k">หมายเหตุ</span>
+                                                <span t-esc="row.note"/>
+                                            </div>
+                                            <div class="o_bl_det_item" t-if="row.source_name">
+                                                <span class="o_bl_det_k">เอกสารต้นทาง</span>
+                                                <a t-on-click="() => this.openSource(row)">
+                                                    <t t-esc="row.source_name"/> <i class="fa fa-external-link"/>
+                                                </a>
+                                            </div>
+                                            <div class="o_bl_det_item" t-if="!row.posted">
+                                                <span class="o_bl_det_k">สถานะ</span>
+                                                <span class="o_bl_draft_tag">ยังไม่ผ่านรายการ</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+                <div t-else="" class="o_bl_empty">ไม่มีรายการเคลื่อนไหวตามเงื่อนไขที่เลือก</div>
+            </t>
+        </div>
+    </t>
+
+</templates>
