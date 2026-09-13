@@ -20,6 +20,7 @@ class PurchaseRequest(models.Model):
         compute="_compute_is_requested_by_current_user",
     )
 
+    @api.depends("payment_type")
     def _compute_partner_id_domain(self):
         super()._compute_partner_id_domain()
         for rec in self:
