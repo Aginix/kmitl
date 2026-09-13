@@ -30,6 +30,10 @@
         <record id="group_budget_commitment" model="res.groups">
             <field name="name">Can reserve/commit budget</field>
             <field name="category_id" ref="base.module_category_hidden" />
+            <!-- Self-sufficient reserve role: grant the read access the reservation
+                 flow + picker need, so this group can reserve budget without also
+                 being a Budget User (write ACLs added in ir.model.access.csv). -->
+            <field name="implied_ids" eval="[(4, ref('group_budget_viewer'))]"/>
         </record>
     </data>
 </odoo>
