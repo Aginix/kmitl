@@ -19,7 +19,7 @@
                     name="action_view_purchase_requisition"
                     type="object"
                     class="oe_stat_button"
-                    icon="fa-file-text-o"
+                    icon="fa-gavel"
                     attrs="{'invisible':[('requisition_count','=',0)]}"
                 >
                     <field name="requisition_count" widget="statinfo" string="TEs" />
