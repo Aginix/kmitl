@@ -9,6 +9,7 @@
     "installable": True,
     "application": False,
     "summary": "Allows storing information about employee's education history",
+    "description": "Allows storing information about employee's education history",
     "depends": ["hr"],
     "data": [
         "data/data_resource_education_level.xml",

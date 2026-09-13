@@ -6,7 +6,7 @@
             <field name="model">hr.employee</field>
             <field name="inherit_id" ref="hr.view_employee_form" />
             <field name="arch" type="xml">
-                <xpath expr="//div[@class='oe_chatter']" position="attributes">
+                <xpath expr="//div[hasclass('oe_chatter')]" position="attributes">
                     <attribute
                         name='groups'
                     >hr_employee_security_role.group_hr_central_user</attribute>
