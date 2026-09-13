@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Portal "My Account" home tile -->
+    <template id="portal_my_home_budget_transfer" name="Portal My Home: Budget Transfer" inherit_id="portal.portal_my_home" priority="45">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">โอน/เปลี่ยนแปลงงบประมาณ</t>
+                <t t-set="url" t-value="'/my/budget-transfers'"/>
+                <t t-set="placeholder_count" t-value="'budget_transfer_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- List of budget transfers -->
+    <template id="portal_my_budget_transfers" name="My Budget Transfers">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">โอน/เปลี่ยนแปลงงบประมาณ</t>
+            </t>
+
+            <t t-if="not transfers">
+                <div class="alert alert-warning mt-3" role="alert">
+                    ไม่มีรายการโอน/เปลี่ยนแปลงงบประมาณ
+                </div>
+            </t>
+            <t t-if="transfers" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>เลขที่</th>
+                        <th>วันที่</th>
+                        <th>ส่วนงาน</th>
+                        <th class="text-end">จำนวนเงิน</th>
+                        <th>สถานะ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="transfers" t-as="transfer">
+                        <tr>
+                            <td>
+                                <a t-att-href="transfer.get_portal_url()">
+                                    <t t-esc="transfer.name"/>
+                                </a>
+                            </td>
+                            <td>
+                                <span t-field="transfer.date" t-options='{"widget": "date"}'/>
+                            </td>
+                            <td>
+                                <span t-field="transfer.department_analytic_id"/>
+                            </td>
+                            <td class="text-end">
+                                <span t-field="transfer.amount" t-options='{"widget": "monetary", "display_currency": transfer.currency_id}'/>
+                            </td>
+                            <td>
+                                <span t-field="transfer.state" class="badge rounded-pill"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </t>
+        </t>
+    </template>
+
+    <!-- Single budget transfer detail page with an inline PDF preview -->
+    <template id="portal_budget_transfer_page" name="Portal Budget Transfer Page" inherit_id="portal.portal_sidebar" primary="True">
+        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+            <t t-set="o_portal_fullwidth_alert" groups="budget.group_budget_user">
+                <t t-call="portal.portal_back_in_edit_mode">
+                    <t t-set="backend_url" t-value="'/web#model=budget.transfer&amp;id=%s&amp;action=&amp;view_type=form' % (budget_transfer.id)"/>
+                </t>
+            </t>
+
+            <div class="row mt16 o_portal_budget_transfer_sidebar">
+                <!-- Sidebar -->
+                <t t-call="portal.portal_record_sidebar">
+                    <t t-set="classes" t-value="'col-lg-auto d-print-none'"/>
+                    <t t-set="title">
+                        <h2 class="mb-0">
+                            <b t-field="budget_transfer.amount" t-options='{"widget": "monetary", "display_currency": budget_transfer.currency_id}'/>
+                        </h2>
+                        <div class="small">
+                            <span t-field="budget_transfer.state" class="badge rounded-pill"/>
+                        </div>
+                    </t>
+
+                    <t t-set="entries">
+                        <ul class="list-group list-group-flush flex-wrap flex-row flex-lg-column">
+                            <li class="list-group-item flex-grow-1">
+                                <div class="o_download_pdf btn-toolbar flex-sm-nowrap">
+                                    <div class="btn-group flex-grow-1 me-1 mb-1">
+                                        <a class="btn btn-secondary btn-block o_download_btn" t-att-href="budget_transfer.get_portal_url(report_type='pdf', download=True)" title="Download">
+                                            <i class="fa fa-download"/> ดาวน์โหลด</a>
+                                    </div>
+                                    <div class="btn-group flex-grow-1 mb-1">
+                                        <a class="btn btn-secondary btn-block o_print_btn" t-att-href="budget_transfer.get_portal_url(report_type='pdf')" title="Print" target="_blank">
+                                            <i class="fa fa-print"/> พิมพ์</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li t-if="budget_transfer.user_id" class="list-group-item flex-grow-1">
+                                <div class="small mb-1">
+                                    <strong class="text-muted">ผู้รับผิดชอบ</strong>
+                                </div>
+                                <div class="row">
+                                    <div class="col flex-grow-0 pe-2">
+                                        <img class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(budget_transfer.user_id.avatar_128)" alt="Contact"/>
+                                    </div>
+                                    <div class="col ps-0">
+                                        <span t-field="budget_transfer.user_id" t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'/>
+                                        <a href="#discussion" class="small">
+                                            <i class="fa fa-fw fa-comments"/>
+                                            <b>ส่งข้อความ</b>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </t>
+                </t>
+
+                <div id="portal_budget_transfer_content" class="col-12 col-lg">
+                    <div class="o_portal_html_view shadow p-3">
+                        <iframe id="budget_transfer_pdf" class="mt8 mb8" width="100%" style="height: 82vh; min-height: 700px;" frameborder="0" t-att-src="budget_transfer.get_portal_url(report_type='pdf')"/>
+                    </div>
+                    <!-- chatter -->
+                    <div id="budget_transfer_communication" class="mt-4">
+                        <h2>ประวัติ</h2>
+                        <t t-call="portal.message_thread">
+                            <t t-set="object" t-value="budget_transfer"/>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
