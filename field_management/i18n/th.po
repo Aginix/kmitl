@@ -1,0 +1,332 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* field_management
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-12 08:29+0000\n"
+"PO-Revision-Date: 2026-03-12 08:29+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__active
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__active
+#: model:ir.model.fields,field_description:field_management.field_required_management__active
+msgid "Active"
+msgstr "ใช้งานอยู่"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__apply_on_domain
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__apply_on_domain
+#: model:ir.model.fields,field_description:field_management.field_required_management__apply_on_domain
+msgid "Apply On Domain"
+msgstr "นำไปใช้ในโดเมน"
+
+#. module: field_management
+#: model:ir.model,name:field_management.model_base
+msgid "Base"
+msgstr "พื้นฐาน"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__create_uid
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__create_uid
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__create_uid
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__create_uid
+#: model:ir.model.fields,field_description:field_management.field_required_management__create_uid
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__create_date
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__create_date
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__create_date
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__create_date
+#: model:ir.model.fields,field_description:field_management.field_required_management__create_date
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__display_name
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__display_name
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__display_name
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__display_name
+#: model:ir.model.fields,field_description:field_management.field_required_management__display_name
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__display_name
+msgid "Display Name"
+msgstr "ชื่อที่แสดง"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__domain
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__domain
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__domain
+#: model_terms:ir.ui.view,arch_db:field_management.view_invisible_management_fields_form
+#: model_terms:ir.ui.view,arch_db:field_management.view_invisible_management_form
+#: model_terms:ir.ui.view,arch_db:field_management.view_readonly_management_fields_form
+#: model_terms:ir.ui.view,arch_db:field_management.view_readonly_management_form
+#: model_terms:ir.ui.view,arch_db:field_management.view_required_management_fields_form
+#: model_terms:ir.ui.view,arch_db:field_management.view_required_management_form
+msgid "Domain"
+msgstr "โดเมน"
+
+#. module: field_management
+#: model:ir.model.fields,help:field_management.field_invisible_management_fields__domain
+msgid "Domain to specify when the field should be invisible."
+msgstr "โดเมนเพื่อระบุเมื่อฟิลด์ควรจะมองไม่เห็น"
+
+#. module: field_management
+#: model:ir.model.fields,help:field_management.field_readonly_management_fields__domain
+msgid "Domain to specify when the field should be readonly."
+msgstr "โดเมนเพื่อระบุเมื่อฟิลด์ควรจะเป็นแบบอ่านอย่างเดียว"
+
+#. module: field_management
+#: model:ir.model.fields,help:field_management.field_required_management_fields__domain
+msgid "Domain to specify when the field should be required."
+msgstr "โดเมนเพื่อระบุเมื่อฟิลด์ควรจะเป็นแบบจำเป็น"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__field_id
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__field_id
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__field_id
+#: model_terms:ir.ui.view,arch_db:field_management.view_invisible_management_form
+#: model_terms:ir.ui.view,arch_db:field_management.view_readonly_management_form
+#: model_terms:ir.ui.view,arch_db:field_management.view_required_management_form
+msgid "Field"
+msgstr "ฟิลด์"
+
+#. module: field_management
+#: model:ir.ui.menu,name:field_management.menu_field_management
+msgid "Field Management"
+msgstr "การจัดการฟิลด์"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__field_ids
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__field_ids
+#: model:ir.model.fields,field_description:field_management.field_required_management__field_ids
+#: model_terms:ir.ui.view,arch_db:field_management.view_invisible_management_form
+#: model_terms:ir.ui.view,arch_db:field_management.view_readonly_management_form
+#: model_terms:ir.ui.view,arch_db:field_management.view_required_management_form
+msgid "Fields"
+msgstr "ฟิลด์"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__force_invisible
+msgid "Force Invisible"
+msgstr "บังคับให้ไม่เห็น"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__force_readonly
+msgid "Force Readonly"
+msgstr "บังคับให้เป็นแบบอ่านอย่างเดียว"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__force_required
+msgid "Force Required"
+msgstr ""
+
+#. module: field_management
+#: model_terms:ir.ui.view,arch_db:field_management.view_invisible_management_fields_search
+#: model_terms:ir.ui.view,arch_db:field_management.view_invisible_management_search
+#: model_terms:ir.ui.view,arch_db:field_management.view_readonly_management_fields_search
+#: model_terms:ir.ui.view,arch_db:field_management.view_readonly_management_search
+#: model_terms:ir.ui.view,arch_db:field_management.view_required_management_fields_search
+#: model_terms:ir.ui.view,arch_db:field_management.view_required_management_search
+msgid "Group By"
+msgstr "จัดกลุ่มตาม"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__id
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__id
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__id
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__id
+#: model:ir.model.fields,field_description:field_management.field_required_management__id
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__id
+msgid "ID"
+msgstr "ID"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__management_id
+msgid "Invisible Config"
+msgstr "การกำหนดค่าที่ไม่เห็น"
+
+#. module: field_management
+#: model:ir.actions.act_window,name:field_management.action_invisible_management
+#: model:ir.model,name:field_management.model_invisible_management
+#: model:ir.ui.menu,name:field_management.menu_invisible_management_settings
+#: model_terms:ir.ui.view,arch_db:field_management.view_invisible_management_form
+msgid "Invisible Management"
+msgstr "การจัดการฟิลด์ที่ไม่เห็น"
+
+#. module: field_management
+#: model:ir.actions.act_window,name:field_management.action_invisible_management_fields
+#: model:ir.model,name:field_management.model_invisible_management_fields
+#: model_terms:ir.ui.view,arch_db:field_management.view_invisible_management_fields_form
+msgid "Invisible Management Fields"
+msgstr "ฟิลด์การจัดการที่ไม่เห็น"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management____last_update
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields____last_update
+#: model:ir.model.fields,field_description:field_management.field_readonly_management____last_update
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields____last_update
+#: model:ir.model.fields,field_description:field_management.field_required_management____last_update
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขล่าสุดเมื่อ"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__write_uid
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__write_uid
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__write_uid
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__write_uid
+#: model:ir.model.fields,field_description:field_management.field_required_management__write_uid
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__write_uid
+msgid "Last Updated by"
+msgstr "แก้ไขล่าสุดโดย"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__write_date
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__write_date
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__write_date
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__write_date
+#: model:ir.model.fields,field_description:field_management.field_required_management__write_date
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__write_date
+msgid "Last Updated on"
+msgstr "แก้ไขล่าสุดเมื่อ"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__model_id
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__model_name
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__model_id
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__model_name
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__model_id
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__model_name
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__model_id
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__model_name
+#: model:ir.model.fields,field_description:field_management.field_required_management__model_id
+#: model:ir.model.fields,field_description:field_management.field_required_management__model_name
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__model_id
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__model_name
+msgid "Model"
+msgstr "โมเดล"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__name
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__name
+#: model:ir.model.fields,field_description:field_management.field_required_management__name
+#: model_terms:ir.ui.view,arch_db:field_management.view_invisible_management_search
+#: model_terms:ir.ui.view,arch_db:field_management.view_readonly_management_search
+#: model_terms:ir.ui.view,arch_db:field_management.view_required_management_search
+msgid "Name"
+msgstr "ชื่อ"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management__note
+#: model:ir.model.fields,field_description:field_management.field_readonly_management__note
+#: model:ir.model.fields,field_description:field_management.field_required_management__note
+#: model_terms:ir.ui.view,arch_db:field_management.view_invisible_management_form
+#: model_terms:ir.ui.view,arch_db:field_management.view_readonly_management_form
+#: model_terms:ir.ui.view,arch_db:field_management.view_required_management_form
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__management_id
+msgid "Readonly Config"
+msgstr "การกำหนดค่าแบบอ่านอย่างเดียว"
+
+#. module: field_management
+#: model:ir.actions.act_window,name:field_management.action_readonly_management
+#: model:ir.model,name:field_management.model_readonly_management
+#: model:ir.ui.menu,name:field_management.menu_readonly_management_settings
+#: model_terms:ir.ui.view,arch_db:field_management.view_readonly_management_form
+msgid "Readonly Management"
+msgstr "การจัดการแบบอ่านอย่างเดียว"
+
+#. module: field_management
+#: model:ir.actions.act_window,name:field_management.action_readonly_management_fields
+#: model:ir.model,name:field_management.model_readonly_management_fields
+#: model_terms:ir.ui.view,arch_db:field_management.view_readonly_management_fields_form
+msgid "Readonly Management Fields"
+msgstr "ฟิลด์การจัดการแบบอ่านอย่างเดียว"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__management_id
+msgid "Required Config"
+msgstr "การกำหนดค่าบังคับกรอก"
+
+#. module: field_management
+#: model:ir.actions.act_window,name:field_management.action_required_management
+#: model:ir.model,name:field_management.model_required_management
+#: model:ir.ui.menu,name:field_management.menu_required_management_settings
+#: model_terms:ir.ui.view,arch_db:field_management.view_required_management_form
+msgid "Required Management"
+msgstr "การจัดการบังคับกรอก"
+
+#. module: field_management
+#: model:ir.actions.act_window,name:field_management.action_required_management_fields
+#: model:ir.model,name:field_management.model_required_management_fields
+#: model_terms:ir.ui.view,arch_db:field_management.view_required_management_fields_form
+msgid "Required Management Fields"
+msgstr "ฟิลด์การจัดการบังคับกรอก"
+
+#. module: field_management
+#: model_terms:ir.actions.act_window,help:field_management.action_invisible_management_fields
+msgid ""
+"There is no examples click here to add new Invisible Management Fields."
+msgstr ""
+"ไม่มีตัวอย่าง คลิกที่นี่เพื่อเพิ่มฟิลด์การจัดการที่ไม่เห็นใหม่"
+
+#. module: field_management
+#: model_terms:ir.actions.act_window,help:field_management.action_invisible_management
+msgid "There is no examples click here to add new Invisible Management."
+msgstr "ไม่มีตัวอย่าง คลิกที่นี่เพื่อเพิ่มการจัดการที่ไม่เห็นใหม่"
+
+#. module: field_management
+#: model_terms:ir.actions.act_window,help:field_management.action_readonly_management_fields
+msgid "There is no examples click here to add new Readonly Management Fields."
+msgstr "ไม่มีตัวอย่าง คลิกที่นี่เพื่อเพิ่มฟิลด์การจัดการแบบอ่านอย่างเดียวใหม่"
+
+#. module: field_management
+#: model_terms:ir.actions.act_window,help:field_management.action_readonly_management
+msgid "There is no examples click here to add new Readonly Management."
+msgstr "ไม่มีตัวอย่าง คลิกที่นี่เพื่อเพิ่มการจัดการแบบอ่านอย่างเดียวใหม่"
+
+#. module: field_management
+#: model_terms:ir.actions.act_window,help:field_management.action_required_management_fields
+msgid "There is no examples click here to add new Required Management Fields."
+msgstr "ไม่มีตัวอย่าง คลิกที่นี่เพื่อเพิ่มฟิลด์การจัดการบังคับกรอกใหม่"
+
+#. module: field_management
+#: model_terms:ir.actions.act_window,help:field_management.action_required_management
+msgid "There is no examples click here to add new Required Management."
+msgstr "ไม่มีตัวอย่าง คลิกที่นี่เพื่อเพิ่มการจัดการบังคับกรอกใหม่"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__used_field_ids
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__used_field_ids
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__used_field_ids
+msgid "Used Field"
+msgstr "ฟิลด์ที่ใช้"
+
+#. module: field_management
+#: model:ir.model.fields,field_description:field_management.field_invisible_management_fields__used_model
+#: model:ir.model.fields,field_description:field_management.field_readonly_management_fields__used_model
+#: model:ir.model.fields,field_description:field_management.field_required_management_fields__used_model
+msgid "Used Model"
+msgstr "โมเดลที่ใช้"
+
+#. module: field_management
+#: model_terms:ir.ui.view,arch_db:field_management.view_invisible_management_fields_search
+#: model_terms:ir.ui.view,arch_db:field_management.view_readonly_management_fields_search
+#: model_terms:ir.ui.view,arch_db:field_management.view_required_management_fields_search
+msgid "field_id"
+msgstr "ฟิลด์"
