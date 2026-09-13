@@ -1,0 +1,25 @@
+<odoo>
+    <record
+        id="mail_act_purchase_request_notify_requester"
+        model="mail.activity.type"
+        forcecreate="1"
+    >
+        <field name="name">Requester Reminder</field>
+        <field name="icon">fa-bell</field>
+    </record>
+
+    <record id="email_purchase_request_notify_requester" model="mail.template">
+        <field name="name">PR To Approve Email</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request" />
+        <field name="subject">PR ${object.name} รออนุมัติ</field>
+        <field name="email_from">${object.company_id.partner_id.email_formatted}</field>
+        <field name="email_to">${object.requested_by.work_email}</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>เรียนคุณ ${object.requested_by.name},</p>
+                <p>เอกสาร <strong>${object.name}</strong> รออนุมัติแล้ว</p>
+                <p>ขอบคุณ</p>
+            </div>
+        </field>
+    </record>
+</odoo>
