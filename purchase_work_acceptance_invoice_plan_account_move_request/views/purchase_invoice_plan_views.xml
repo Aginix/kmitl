@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+    <record id="view_purchase_invoice_plan_tree" model="ir.ui.view">
+        <field name="name">view.purchase.invoice.plan.tree</field>
+        <field name="model">purchase.invoice.plan</field>
+        <field name="inherit_id" ref="purchase_invoice_plan.view_purchase_invoice_plan_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="move_request_id" />
+                <button name="action_move_request" type="object" string="Create bill" class="oe_highlight" attrs="{'invisible': ['|', ('wa_state', '!=', 'accept'), ('move_request_id', '!=' , False)]}" />
+            </xpath>
+        </field>
+    </record>
+  </odoo>
