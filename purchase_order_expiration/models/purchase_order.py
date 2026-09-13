@@ -1,45 +1,50 @@
-# -*- coding: utf-8 -*-
 import logging
-from datetime import timedelta
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
+ACTIVITY_TYPE_XMLID = "purchase_order_expiration.mail_activity_type_po_expiring"
+
+_EXPIRY_TRIGGER_FIELDS = {"state", "work_end", "user_id"}
+
+
 class PurchaseOrder(models.Model):
-    _inherit = 'purchase.order'
+    _inherit = "purchase.order"
 
     days_to_expire = fields.Integer(
-        string="Days to Expire",
-        compute="_compute_days_to_expire",
-        store=True
+        string="Days to Expire", compute="_compute_days_to_expire", store=True
     )
-    
-    expire_range = fields.Selection([
-        ('0-15', '0-15 Days'),
-        ('16-30', '16-30 Days'),
-        ('31-60', '31-60 Days'),
-        ('60+', 'Morethan 60 Days'),
-    ], string="Expire Range", compute="_compute_expire_range", store=True)
+
+    expire_range = fields.Selection(
+        [
+            ("0-15", "0-15 Days"),
+            ("16-30", "16-30 Days"),
+            ("31-60", "31-60 Days"),
+            ("60+", "Morethan 60 Days"),
+        ],
+        string="Expire Range",
+        compute="_compute_expire_range",
+        store=True,
+    )
 
     days_to_expire_display = fields.Char(
-        string="Days to Expire",
-        compute="_compute_days_to_expire_display",
-        store=False
+        string="Days to Expire", compute="_compute_days_to_expire_display", store=False
     )
 
     def action_recompute_expire(self):
-        records = self.search([('work_end', '!=', False)])
+        records = self.search([("work_end", "!=", False)])
         records._compute_days_to_expire()
         records._compute_expire_range()
 
-    @api.depends('work_end', 'days_to_expire')
+    @api.depends("work_end", "days_to_expire")
     def _compute_days_to_expire_display(self):
         for record in self:
-            record.days_to_expire_display = str(record.days_to_expire) if record.work_end else ''
+            record.days_to_expire_display = (
+                str(record.days_to_expire) if record.work_end else ""
+            )
 
-    @api.depends('work_end')
+    @api.depends("work_end")
     def _compute_days_to_expire(self):
         today = fields.Date.today()
         for record in self:
@@ -47,71 +52,82 @@ class PurchaseOrder(models.Model):
                 record.days_to_expire = (record.work_end - today).days
             else:
                 record.days_to_expire = 0
-    
-    @api.depends('days_to_expire')
+
+    @api.depends("days_to_expire")
     def _compute_expire_range(self):
         for record in self:
             days = record.days_to_expire
             if days <= 15:
-                record.expire_range = '0-15'
+                record.expire_range = "0-15"
             elif days <= 30:
-                record.expire_range = '16-30'
+                record.expire_range = "16-30"
             elif days <= 60:
-                record.expire_range = '31-60'
+                record.expire_range = "31-60"
             else:
-                record.expire_range = '60+'
+                record.expire_range = "60+"
 
-    # Notification
-    def _domain_contract_expiration(self):
-        today = fields.Date.today()
-        notify_before_days = int(
-            self.env['ir.config_parameter'].sudo().get_param(
-                'purchase_order_expiration.notify_before_days',
-                default=15,
-            )
-        )
-        return [
-            ('state', 'in', ['draft', 'purchase']),
-            ('work_end', '>=', today),
-            ('work_end', '<=', today + timedelta(days=notify_before_days)),
-        ]
+    # ------------------------------------------------------------------
+    # Expiry Todo (mail_activity_todo)
+    # ------------------------------------------------------------------
+    def _expiry_activity_wanted(self):
+        self.ensure_one()
+        return self.state == "purchase"
 
-    def _cron_notify_contract_expire(self):
-        purchase_orders = self.search(self._domain_contract_expiration())
+    def _expiry_activity_user(self):
+        self.ensure_one()
+        return self.user_id
 
-        if not purchase_orders:
+    def _expiry_activity_deadline(self):
+        self.ensure_one()
+        return self.work_end
+
+    def _expiry_activity_summary(self):
+        self.ensure_one()
+        return _("Purchase Order %s expires on %s") % (self.name, self.work_end)
+
+    def _sync_expiry_activity(self):
+        activity_type = self.env.ref(ACTIVITY_TYPE_XMLID, raise_if_not_found=False)
+        if not activity_type:
             return
-
-        action = self.env.ref('purchase_order_expiration.action_contracts_expiring')
-        odoobot_user = self.env.ref('base.user_root')
-        orders_by_user = {}
-
-        for order in purchase_orders:
-            if not order.user_id:
+        Activity = self.env["mail.activity"].sudo()
+        for po in self:
+            existing = Activity.search(
+                [
+                    ("res_model", "=", po._name),
+                    ("res_id", "=", po.id),
+                    ("activity_type_id", "=", activity_type.id),
+                ],
+                limit=1,
+            )
+            if not po._expiry_activity_wanted():
+                existing.unlink()
                 continue
-            orders_by_user.setdefault(order.user_id, self.env['purchase.order'])
-            orders_by_user[order.user_id] |= order
-
-        for user, orders in orders_by_user.items():
-            if user == odoobot_user:
+            owner = po._expiry_activity_user()
+            deadline = po._expiry_activity_deadline()
+            if not owner or not deadline:
+                existing.unlink()
                 continue
-            body = _(
-                'There are %s contracts that are about to expire. '
-                '<a href="/web#action=%s">Click to review</a>'
-            ) % (len(orders), action.id)
-            try:
-                with self.env.cr.savepoint():
-                    channel_data = self.env['mail.channel'].sudo().channel_get(
-                        [odoobot_user.partner_id.id, user.partner_id.id]
-                    )
-                    channel = self.env['mail.channel'].sudo().browse(channel_data['id'])
-                    channel.sudo().with_user(odoobot_user).message_post(
-                        body=body,
-                        message_type='comment',
-                        subtype_xmlid='mail.mt_comment',
-                        author_id=odoobot_user.partner_id.id,
-                    )
-            except Exception:
-                _logger.warning(
-                    "Failed to notify user %s of expiring contracts", user.name, exc_info=True
+            summary = po._expiry_activity_summary()
+            if existing:
+                vals = {}
+                if existing.user_id != owner:
+                    vals["user_id"] = owner.id
+                if existing.date_deadline != deadline:
+                    vals["date_deadline"] = deadline
+                if existing.summary != summary:
+                    vals["summary"] = summary
+                if vals:
+                    existing.write(vals)
+            else:
+                po.activity_schedule(
+                    act_type_xmlid=ACTIVITY_TYPE_XMLID,
+                    user_id=owner.id,
+                    date_deadline=deadline,
+                    summary=summary,
                 )
+
+    def write(self, vals):
+        res = super().write(vals)
+        if _EXPIRY_TRIGGER_FIELDS & set(vals):
+            self._sync_expiry_activity()
+        return res
