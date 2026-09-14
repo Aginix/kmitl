@@ -31,7 +31,7 @@ Covering a multi-activity need with a *sequence* of single-draw agreements (borr
 _Avoid_: partial borrowing, installment, drawdown
 
 **ADV Running Number**:
-The record's running identifier (`ADV/<BE year>/####`), assigned when the request is first submitted (draft → to_verify). Identifies the data row throughout its life.
+The record's running identifier (`ADV/<BE year>/####`), assigned when the request is first submitted (draft → to_endorse). Identifies the data row throughout its life.
 _Avoid_: contract number, agreement number
 
 **Contract Number (เลขที่สัญญา)**:
@@ -39,15 +39,19 @@ The formal loan-contract number, assigned only when the disbursement transfer co
 _Avoid_: ADV number, running number
 
 **Effective Date (วันที่มีผลของสัญญา)**:
-The date the disbursement transfer to the borrower completes. At this moment the agreement enters `in_progress`, becomes a formal debt ("ลูกหนี้โดยสมบูรณ์"), and receives its Contract Number.
+The date the disbursement transfer to the borrower completes. At this moment the agreement enters `in_progress` (from `approved`), becomes a formal debt ("ลูกหนี้โดยสมบูรณ์"), and receives its Contract Number.
 _Avoid_: approval date, disbursement request date
 
+**Endorse (เห็นชอบ)**:
+The borrower's own first-line supervisor's sign-off at `to_endorse`, the step right after submit and before Verify. Distinct from Approve — Endorse is the supervisor confirming the request is legitimate before it reaches the finance officer; Approve is the Deputy Rector's final release to disbursement. The endorser is the borrower's line manager, `employee_id.manager_id`, snapshotted at submit into `endorser_id` (`res.users`) so a later manager reorg does not retarget an in-flight request. Only `endorser_id` (or an admin) may `action_endorse`/`action_endorse_reject`, and submitting without a manager (or a manager with no linked user) is a blocking exception. This is the *supervisor* tier only of the org-routed Endorse → Approve chain ADR-0006 deferred; the Dean/ผอ.กองคลัง tier above `to_approve` is still deferred (ADR-0020).
+_Avoid_: approve, verify, validate
+
 **Verify (ตรวจสอบ)**:
-The finance officer's check of the submitted request against the real paper documents, at `to_verify`. Distinct from Approve. On failure the officer returns the request to the borrower to edit (back to `draft`). Only the officer named in the record's `loan_verifier_id` (or an admin) may verify (ADR-0013); submitting the request raises a To Do activity for that officer, which verifying marks **done** and which cancel / ส่งกลับแก้ไข / ดึงกลับ **drop** unfinished, so the officer's inbox only ever holds requests they can actually act on (ADR-0015). `loan_verifier_id` defaults from the standing assignee configured in Settings, else from the sole officer when there is only one (ADR-0015).
+The finance officer's check of the submitted request against the real paper documents, at `to_verify` — reached after the supervisor's Endorse, not directly from submit. Distinct from Approve. On failure the officer returns the request to the borrower to edit (back to `draft`). Only the officer named in the record's `loan_verifier_id` (or an admin) may verify (ADR-0013); endorsing raises a To Do activity for that officer, which verifying marks **done** and which cancel / ส่งกลับแก้ไข / ดึงกลับ **drop** unfinished, so the officer's inbox only ever holds requests they can actually act on (ADR-0015). `loan_verifier_id` defaults from the standing assignee configured in Settings, else from the sole officer when there is only one (ADR-0015).
 _Avoid_: approve, review, validate
 
 **Approve (อนุมัติ)**:
-The sign-off at `to_approve` that releases the request to disbursement — a **single step**, a manual click by `action_approve`, which creates the disbursement `account.payment` and moves the loan to `waiting_transfer`. The multi-tier Endorse → Approve chain routed by org unit (Faculty: Dean endorses → Deputy Rector approves; สนอ.: ผอ.กองคลัง endorses → Deputy Rector approves) is **not implemented**. There is no `rejected` state on the loan itself — a request that does not pass goes back to `draft`/`to_verify` (ส่งกลับแก้ไข) or to `cancel`. (An e-Saraban approval bridge, `advance_payment_sarabun`, was prototyped and removed for now — see ADR-0011.)
+The sign-off at `to_approve` — now the **second** tier, the Deputy Rector's — that releases the request to disbursement — a **single step**, a manual click by `action_approve`, which creates the disbursement `account.payment` and moves the loan to `approved`. The org-routed chain above this step (Faculty: Dean → Deputy Rector; สนอ.: ผอ.กองคลัง → Deputy Rector) is **still deferred** — only the supervisor's Endorse below `to_verify` was reintroduced (ADR-0020). There is no `rejected` state on the loan itself — a request that does not pass goes back to `draft`/`to_endorse`/`to_verify` (ส่งกลับแก้ไข) or to `cancel`. (An e-Saraban approval bridge, `advance_payment_sarabun`, was prototyped and removed for now — see ADR-0011.)
 Each record names its expected approver in `approver_id` (defaulted from the standing approver configured in Settings, else the admin), and finishing verification raises a To Do for that person; approving marks it done, cancel/ดึงกลับ drop it (ADR-0016). `action_approve` is restricted to that specific approver (or an admin) — not any `group_advance_payment_loan_approver` member — mirroring how ADR-0013 narrowed verify to the named officer (ADR-0017; supersedes ADR-0016's original "routing target, not an authority check").
 _Avoid_: verify, confirm, endorse
 
@@ -56,12 +60,13 @@ What the borrower owes the institute. Created when the disbursement transfers on
 _Avoid_: balance, loan (the loan is the agreement, the debt is the owed amount)
 
 **Clearing (ล้างหนี้)**:
-Reducing the debt during the report/return stage, by (a) verified actual expenses and (b) returned leftover cash. Internal to the agreement — it does **not** involve a Disbursement Request (ใบเบิก/DR).
-_Avoid_: settlement, reconciliation, reimbursement
+Reducing the debt during the report/return stage, by (a) verified actual expenses and (b) returned leftover cash. Internal to the agreement — it does **not** involve a Disbursement Request (ใบเบิก/DR). ส่งเบิก (`action_submit_report`, `in_progress → reported`) is the borrower's act of *submitting* the clearing report — not to be confused with a Disbursement Request.
+_Avoid_: settlement, reconciliation, reimbursement, ใบเบิก/DR (that is a different document entirely)
 
 **Reset to draft (ตั้งกลับเป็นแบบร่าง)**:
-Any transition that puts a request back in `draft`, keeping the ADV number. Three distinct paths, deliberately sharing one UI verb because they are the same thing from the borrower's point of view — the request is editable again:
-- the **borrower's own** pull-back (`action_recall`, from `to_verify`/`to_approve`) — withdrawing a not-yet-approved request to edit or drop it;
+Any transition that puts a request back in `draft`, keeping the ADV number. Four distinct paths, deliberately sharing one UI verb because they are the same thing from the borrower's point of view — the request is editable again:
+- the **borrower's own** pull-back (`action_recall`, from `to_endorse`/`to_verify`/`to_approve`) — withdrawing a not-yet-approved request to edit or drop it;
+- the **supervisor's ส่งกลับแก้ไข** (`action_endorse_reject`, from `to_endorse`) — sending it back before it even reaches the finance officer (ADR-0020);
 - the **loan officer's ส่งกลับแก้ไข** (`action_reset_to_draft` / `_action_do_reject`, from `to_verify`) — sending it back for the borrower to fix;
 - the **manager's un-cancel** (`action_reset_cancel_to_draft`, from `cancel`) — ad-hoc recovery of a request cancelled before the money moved.
 _Avoid_: recall / ดึงกลับ (reserved for e-Saraban's own ดึงกลับ — see ADR-0011), withdraw, reopen (that is `action_reopen`: `done` → `in_progress`/`to_reconcile`)
