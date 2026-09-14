@@ -1,0 +1,20 @@
+.o_approval_category_tree {
+    max-width: 900px;
+    margin: 0 auto;
+
+    .o_act_group_header {
+        cursor: pointer;
+
+        &:hover {
+            color: $o-brand-primary;
+        }
+    }
+
+    .o_act_category_link {
+        display: inline-block;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
