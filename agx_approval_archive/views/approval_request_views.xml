@@ -6,7 +6,7 @@
         <field name="model">approval.request</field>
         <field name="inherit_id" ref="agx_approval.approval_request_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//sheet" position="before">
+            <xpath expr="//sheet/*[1]" position="before">
                 <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
                     attrs="{'invisible': [('active', '=', True)]}" />
             </xpath>
