@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="approval_request_view_form_archive" model="ir.ui.view">
+        <field name="name">approval.request.view.form.archive</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="agx_approval.approval_request_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                    attrs="{'invisible': [('active', '=', True)]}" />
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <field name="active" invisible="1" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
