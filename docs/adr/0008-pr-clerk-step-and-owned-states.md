@@ -102,14 +102,21 @@ migration-ordering hazard that creates).
 - **`purchase_request_approval`'s ตีกลับ/แก้ไข ([ADR-0007]) now returns the
   PR to `to_verify`, not `to_submit`.** A returned request re-enters at the
   ธุรการ step and must walk ธุรการ → จองงบ → to_approve again before a new
-  หนังสือ can be created; `action_reserve_budget` will find the previous
-  commitment still live, since a return does not cancel it.
-- **Downstream bridges that call `button_to_approve()` directly**
+  หนังสือ can be created. Reserving is the *only* way forward out of
+  `to_verify_budget`, and a return leaves the previous commitment live, so
+  `action_reserve_budget`'s reserve-new branch now short-circuits on a live
+  `budget_commitment_id`: it logs to the chatter and advances, instead of
+  minting a second slip and orphaning the first one still eating budget.
+  (Cancelled/draft commitments are untouched — they still take the
+  `_reuse_cancelled_commitment` path.)
+- **Downstream bridges that reserve on their own source's commitment**
   (`kmitl_project_purchase_request`, `purchase_request_procurement_plan`)
-  needed no code change — they already call it right after writing
-  `budget_commitment_id`, which happens while the record sits at
-  `to_verify_budget`, exactly where the relocated
-  `_compute_to_approve_allowed` now expects them.
+  swap their `button_to_submit()` call for `button_to_approve()`. They make
+  the call right after writing `budget_commitment_id`, which happens while
+  the record sits at `to_verify_budget`, exactly where the relocated
+  `_compute_to_approve_allowed` now expects them — so the one-line swap is
+  the whole change, and it also unblocks the two bridges that ADR-0006 left
+  raising "purchase request which is empty".
 - **`statusbar_visible` is maintained as one list on `purchase_request_kmitl`'s
   view** rather than three modules each appending their own state. A widget
   silently drops any value in the list that isn't in the field's current

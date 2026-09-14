@@ -74,9 +74,16 @@ class PurchaseRequest(models.Model):
     def write(self, vals):
         # Freeze the fiscal year once the PR number has been assigned. The
         # number's year is derived from the fiscal year, so allowing FY changes
-        # after minting would make the number inconsistent.
+        # after minting would make the number inconsistent. Only an actual
+        # change is refused: the draw-down path re-writes the field with the
+        # commitment's own (identical) fiscal year on every press, and a bare
+        # presence check would make จองงบประมาณ unusable on any numbered พ.1.
         if "account_fiscal_year_id" in vals:
-            numbered = self.filtered(lambda r: r.name and r.name != "/")
+            numbered = self.filtered(
+                lambda r: r.name
+                and r.name != "/"
+                and r.account_fiscal_year_id.id != vals["account_fiscal_year_id"]
+            )
             if numbered:
                 raise UserError(
                     _(

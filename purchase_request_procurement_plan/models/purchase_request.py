@@ -181,11 +181,11 @@ class PurchaseRequest(models.Model):
             self.budget_commitment_id = commitment.id
             if plan.state == "verified":
                 plan.action_in_progress()
-            # Same rail as the reserve-new path: จองงบ advances to to_submit and
-            # the ขออนุมัติ step is a separate press. (ADR-0006 described this as
-            # to_verify → to_approve, but to_approve_allowed is keyed on
-            # to_submit, so button_to_approve() here always raised.)
-            self.button_to_submit()
+            # Same rail as the reserve-new path: จองงบ advances to to_approve
+            # (จองแล้ว รอสร้างหนังสือ) and สร้างหนังสือ is a separate press.
+            # to_approve_allowed is keyed on to_verify_budget, which is exactly
+            # where the record sits when this runs (ADR-0008).
+            self.button_to_approve()
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",

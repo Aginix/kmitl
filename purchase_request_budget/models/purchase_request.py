@@ -351,6 +351,29 @@ class PurchaseRequest(models.Model):
         if self.budget_selection_mode != "normal":
             raise UserError(_("กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"))
 
+        # ตีกลับ/แก้ไข (ADR-0007) sends the request back through this step with
+        # its commitment deliberately left live, and reserving is the only way
+        # forward out of to_verify_budget. Reserving anew would mint a second
+        # slip and orphan the first one still eating budget — the money is
+        # already locked, so just advance.
+        if self.budget_commitment_id and self.budget_commitment_id.state not in (
+            "cancel",
+            "draft",
+        ):
+            self.message_post(
+                body=_("งบประมาณจองไว้แล้วตามใบจอง %s — ข้ามการจองซ้ำ")
+                % self.budget_commitment_id.display_name
+            )
+            self.button_to_approve()
+            return {
+                "type": "ir.actions.act_window",
+                "res_model": "purchase.request",
+                "view_mode": "form",
+                "res_id": self.id,
+                "target": "current",
+                "context": self.env.context,
+            }
+
         amount = sum(self.line_ids.mapped("estimated_cost"))
 
         # ปีงบยึดตามเอกสาร: check/reserve against this request's own fiscal year
