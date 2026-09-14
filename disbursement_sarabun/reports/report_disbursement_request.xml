@@ -155,9 +155,23 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t t-set="header_title" t-value="'การขอเบิก'"/>
+                <!-- Show prefix + "/" during draft so the field is informative before
+                     the number is officially assigned at completion. -->
+                <t t-set="doc_ref_override"
+                   t-value="doc.name if doc.name != '/' else ((doc.sequence_id.prefix or '') + doc.name)"/>
                 <t t-call="agx_sarabun.sarabun_document_layout"/>
             </t>
         </t>
+    </template>
+
+    <!-- Override "ที่" in the shared layout: use doc_ref_override when set (disbursement
+         context), fall back to doc.name for all other Sarabun document types. -->
+    <template id="report_disbursement_request_sarabun_doc_ref"
+              inherit_id="agx_sarabun.sarabun_document_layout" priority="20">
+        <xpath expr="//td/span[@t-field='doc.name']" position="replace">
+            <span t-if="doc_ref_override" t-out="doc_ref_override"/>
+            <span t-else="" t-field="doc.name"/>
+        </xpath>
     </template>
 
     <record id="action_report_sarabun_document_disbursement" model="ir.actions.report">
