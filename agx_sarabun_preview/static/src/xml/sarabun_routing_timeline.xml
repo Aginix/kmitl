@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!--
+      Main timeline component: optional header with collapse toggle + history
+      link, then stages stacked top-to-bottom with a down-arrow connector
+      between them. Each step card carries state color, holder chips, and when
+      done: who acted + when + truncated เกษียน note (full in title tooltip).
+      Read-only by design — no click handler on step cards.
+    -->
+    <t t-name="agx_sarabun_preview.SarabunRoutingTimeline" owl="1">
+        <div class="o_sarabun_timeline">
+            <div class="o_sarabun_timeline_header d-flex align-items-center mb-2">
+                <button t-if="props.showToggle" type="button"
+                        class="btn btn-link p-0 me-2 o_sarabun_timeline_toggle"
+                        t-on-click="() => props.onToggle and props.onToggle()">
+                    <i t-att-class="props.open ? 'fa fa-caret-down' : 'fa fa-caret-right'"/>
+                    <span class="ms-1">เส้นทางการเดินเรื่อง (Preview)</span>
+                </button>
+                <span t-if="!props.showToggle" class="fw-bold">เส้นทางการเดินเรื่อง (Preview)</span>
+                <span t-if="props.data and props.data.has_history"
+                      class="ms-auto text-muted small">
+                    <a href="#"
+                       class="text-decoration-none"
+                       t-on-click.prevent="() => props.onOpenHistory and props.onOpenHistory()">
+                        ครั้งที่ <t t-esc="props.data.attempt_seq"/>
+                        (มีประวัติ <t t-esc="props.data.attempt_seq - 1"/> ครั้งก่อนหน้า)
+                    </a>
+                </span>
+            </div>
+
+            <div t-if="props.open" class="o_sarabun_timeline_body">
+                <t t-if="!props.data or !props.data.stages or !props.data.stages.length">
+                    <div class="text-muted fst-italic p-3">
+                        ยังไม่มีขั้นตอนการเดินเรื่อง (เพิ่มได้ในตารางด้านล่าง หรือกด "โหลดเส้นทางจากแม่แบบ")
+                    </div>
+                </t>
+                <t t-else="">
+                    <t t-foreach="props.data.stages" t-as="stage" t-key="stage.order">
+                        <div class="o_sarabun_timeline_stage">
+                            <div class="o_sarabun_timeline_stage_label text-muted small mb-1">
+                                ลำดับ <t t-esc="stage.order"/>
+                                <t t-if="stage.steps.length > 1">
+                                    — ขนาน <t t-esc="stage.steps.length"/> คน
+                                </t>
+                            </div>
+                            <div class="o_sarabun_timeline_stage_row d-flex flex-wrap gap-2">
+                                <t t-foreach="stage.steps" t-as="step" t-key="step.id">
+                                    <div t-att-class="stepClass(step)">
+                                        <div class="o_sarabun_step_header d-flex align-items-center flex-wrap gap-1">
+                                            <span class="fw-bold">
+                                                <t t-esc="step.verb_name"/>
+                                            </span>
+                                            <span t-if="step.is_originator"
+                                                  class="badge o_sarabun_originator_chip">🖊 ผู้จัดทำ</span>
+                                            <span t-if="step.for_info"
+                                                  class="badge o_sarabun_cc_chip">📎 CC</span>
+                                            <span class="badge o_sarabun_state_chip ms-auto">
+                                                <t t-esc="stateLabel(step)"/>
+                                            </span>
+                                        </div>
+                                        <div class="o_sarabun_step_target text-muted small">
+                                            <t t-if="step.target_mode === 'position'">ตำแหน่ง: </t>
+                                            <t t-if="step.target_mode === 'person'">บุคลากร: </t>
+                                            <t t-if="step.target_mode === 'unit'">หน่วยงาน: </t>
+                                            <t t-esc="step.target_name"/>
+                                        </div>
+                                        <div t-if="step.holders and step.holders.length"
+                                             class="o_sarabun_step_holders mt-1 d-flex flex-wrap gap-1">
+                                            <t t-foreach="step.holders" t-as="holder" t-key="holder.id">
+                                                <span class="badge o_sarabun_holder_chip">
+                                                    <t t-esc="holder.name"/>
+                                                </span>
+                                            </t>
+                                        </div>
+                                        <div t-if="step.acted_by" class="o_sarabun_step_acted small mt-1">
+                                            <span class="text-muted">โดย </span>
+                                            <span t-esc="step.acted_by.name"/>
+                                            <span t-if="step.acted_date" class="text-muted">
+                                                &#160;•&#160;<t t-esc="step.acted_date"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="!step.acted_by and step.activated_date"
+                                             class="o_sarabun_step_activated small text-muted mt-1">
+                                            ได้รับ <t t-esc="step.activated_date"/>
+                                        </div>
+                                        <div t-if="step.delegated_to"
+                                             class="o_sarabun_step_delegated small mt-1">
+                                            <span class="text-muted">มอบให้ </span>
+                                            <span t-esc="step.delegated_to.name"/>
+                                        </div>
+                                        <div t-if="step.note_short"
+                                             class="o_sarabun_step_note small mt-1 fst-italic"
+                                             t-att-title="step.note_full">
+                                            "<t t-esc="step.note_short"/>"
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        <div t-if="!stage_last" class="o_sarabun_timeline_arrow text-center text-muted">
+                            <i class="fa fa-long-arrow-down"/>
+                        </div>
+                    </t>
+                </t>
+            </div>
+        </div>
+    </t>
+
+    <!-- Widget wrapper: parses JSON from record, owns collapse state. -->
+    <t t-name="agx_sarabun_preview.SarabunRoutingTimelineWidget" owl="1">
+        <div class="o_sarabun_timeline_widget">
+            <SarabunRoutingTimeline
+                data="payload"
+                open="state.open"
+                showToggle="true"
+                onToggle="() => this.toggle()"
+                onOpenHistory="() => this.openHistory()"/>
+        </div>
+    </t>
+
+    <!-- Archive modal: one <details> per archived attempt. -->
+    <t t-name="agx_sarabun_preview.SarabunRoutingTimelineDialog" owl="1">
+        <Dialog title="'ประวัติการเดินเรื่อง'" size="'xl'">
+            <div class="o_sarabun_timeline_history">
+                <t t-if="!attempts.length">
+                    <div class="text-muted fst-italic p-3">ไม่มีประวัติการเดินเรื่อง</div>
+                </t>
+                <t t-else="">
+                    <t t-foreach="attempts" t-as="attempt" t-key="attempt.attempt_seq">
+                        <details class="mb-3" t-att-open="attempt_first ? 'open' : undefined">
+                            <summary class="fw-bold">
+                                ครั้งที่ <t t-esc="attempt.attempt_seq"/>
+                                (<t t-esc="attempt.stages.length"/> ลำดับ)
+                            </summary>
+                            <div class="mt-2">
+                                <SarabunRoutingTimeline
+                                    data="attempt"
+                                    open="true"
+                                    showToggle="false"/>
+                            </div>
+                        </details>
+                    </t>
+                </t>
+            </div>
+        </Dialog>
+    </t>
+
+</templates>

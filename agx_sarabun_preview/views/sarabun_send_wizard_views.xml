@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sarabun_send_wizard_form_preview" model="ir.ui.view">
+        <field name="name">sarabun.send.wizard.form.preview</field>
+        <field name="model">sarabun.send.wizard</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_send_wizard_form"/>
+        <field name="arch" type="xml">
+            <!-- Insert the full routing timeline before the originator_sign_mode
+                 radio so the sender sees the whole เส้นทาง before pressing ยืนยันส่ง.
+                 Default open on the wizard (the widget reads the context). -->
+            <field name="originator_sign_mode" position="before">
+                <field name="routing_preview_json" invisible="1"/>
+                <widget name="sarabun_routing_timeline"/>
+            </field>
+        </field>
+    </record>
+</odoo>
