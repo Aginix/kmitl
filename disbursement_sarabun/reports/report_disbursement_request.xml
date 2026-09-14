@@ -32,11 +32,17 @@
          Expects `o` (a disbursement.request) in context. -->
     <template id="report_disbursement_request_body">
         <t t-set="currency" t-value="o.currency_id"/>
+        <style>
+            table.budget, table.table-bordered { border-collapse: collapse !important; border: none !important; width: 100%; }
+            table.budget td, table.budget th,
+            table.table-bordered td, table.table-bordered th { border: 1px solid #bfbfbf !important; padding: 2px 4px; }
+            table.budget td:first-child { width: 30%; }
+        </style>
 
         <!-- Budget Details -->
         <div class="my-4"/>
         <p>รายละเอียดงบประมาณ</p>
-        <table class="table table-bordered border table-sm budget">
+        <table class="budget">
             <tbody>
                 <tr class="o_field_budget_commitment_id">
                     <td>เลขที่ใบจองงบประมาณ</td>
