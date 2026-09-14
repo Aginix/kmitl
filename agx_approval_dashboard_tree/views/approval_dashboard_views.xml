@@ -4,6 +4,7 @@
     <record id="approval_category_dashboard_tree" model="ir.ui.view">
         <field name="name">approval.category.dashboard.tree</field>
         <field name="model">approval.category</field>
+        <field name="priority">99</field>
         <field name="arch" type="xml">
             <tree js_class="approval_category_tree" create="false" limit="1000">
                 <field name="name"/>
