@@ -37,10 +37,5 @@
         "data/approval_request_exception_data.xml",
         "reports/report_approval_request.xml",
     ],
-    "assets": {
-        "web.assets_backend": [
-            "agx_approval/static/src/components/no_open_readonly_x2many.esm.js",
-        ],
-    },
     "license": "LGPL-3",
 }
