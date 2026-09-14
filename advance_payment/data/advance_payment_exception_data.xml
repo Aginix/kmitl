@@ -44,4 +44,15 @@
         <field name="active" eval="True"/>
     </record>
 
+    <record id="excep_missing_manager" model="exception.rule">
+        <field name="name">ไม่พบผู้บังคับบัญชาขั้นต้น</field>
+        <field name="description">ผู้ยืมยังไม่มีผู้บังคับบัญชา (หรือผู้บังคับบัญชายังไม่มีบัญชีผู้ใช้) กรุณาตั้งค่าก่อนส่งคำขอ</field>
+        <field name="sequence">32</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">['|', ('employee_id.manager_id', '=', False), ('employee_id.manager_id.user_id', '=', False)]</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+
 </odoo>
