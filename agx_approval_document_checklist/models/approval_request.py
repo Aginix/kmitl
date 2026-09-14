@@ -12,13 +12,6 @@ class ApprovalRequest(models.Model):
         copy=False,
     )
 
-    # agx_approval_disbursement's bucket is now the *untyped* half of the pair:
-    # once the category declares its documents, anything still landing here is
-    # by definition something no requirement covers.
-    disbursement_attachment_ids = fields.Many2many(
-        string="เอกสารแนบอื่น ๆ",
-    )
-
     # -- checklist materialisation -----------------------------------------
     def _sync_disbursement_documents(self):
         """สร้างรายการเอกสารแนบใหม่จาก category_id.disbursement_document_ids โดยถ่าย
