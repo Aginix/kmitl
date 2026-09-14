@@ -76,6 +76,11 @@ class ReceiptKmitl(models.Model):
         store=True,
         index=True,
         required=True,
+        # Odoo defaults `copy` to False for stored computed fields, so
+        # duplicate would strip this from copy_data and rely on the compute
+        # to rebuild it from analytic_distribution — leaving it empty and
+        # tripping the required check. Copy it explicitly.
+        copy=True,
         compute_sudo=True,
         tracking=True,
         states=READONLY_STATES,
@@ -642,6 +647,7 @@ class ReceiptKmitl(models.Model):
             "date": self.date,
             "journal_id": self.payment_method_id.journal_id.id,
             "company_id": self.company_id.id,
+            "analytic_distribution": self.analytic_distribution,
             "line_ids": line_vals,
         }
 

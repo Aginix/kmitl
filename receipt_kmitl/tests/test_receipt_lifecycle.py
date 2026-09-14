@@ -155,6 +155,29 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
         with self.assertRaises(UserError):
             receipt.unlink()
 
+    def test_copy_preserves_required_department(self):
+        """department_analytic_id is a stored computed Many2one — Odoo's
+        default strips it from copy_data, and rebuilding it from the
+        copied analytic_distribution is not guaranteed. The explicit
+        copy=True on the field must keep the required dimension across
+        duplicate so the copy saves without user intervention.
+        """
+        source = self._make_receipt(
+            extra_vals={
+                "source_analytic_id": self.source_a.id,
+                "fund_analytic_id": self.fund_a.id,
+            }
+        )
+        copy = source.copy()
+        self.assertEqual(copy.state, "draft")
+        self.assertEqual(copy.department_analytic_id, source.department_analytic_id)
+        self.assertEqual(copy.analytic_distribution, source.analytic_distribution)
+        self.assertEqual(len(copy.line_ids), len(source.line_ids))
+        self.assertNotEqual(copy.name, source.name)
+        self.assertNotEqual(copy.name, "/")
+        self.assertFalse(copy.move_id)
+        self.assertFalse(copy.remittance_id)
+
     def test_header_analytic_syncs_to_lines(self):
         receipt = self._make_receipt()
         line = receipt.line_ids[0]
