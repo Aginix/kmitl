@@ -62,6 +62,12 @@ class KmitlProject(models.Model):
         self.ensure_one()
         return "%s/my/kmitl-project/%s" % (self.get_base_url(), self.id)
 
+    def _get_sarabun_document_type(self):
+        return self.env.ref(
+            "kmitl_project_sarabun.document_type_kmitl_project",
+            raise_if_not_found=False,
+        ) or super()._get_sarabun_document_type()
+
     def _get_sarabun_route_template(self):
         """เส้นทาง seed ที่ตรงกับอำนาจอนุมัติ (เรียนหัวหน้าส่วนงาน / เรียนอธิการบดี),
         เลือกด้วยเกณฑ์เดียวกับ ``_get_sarabun_addressee`` เพื่อให้เรียนกับผู้ลงนามตรงกัน."""
