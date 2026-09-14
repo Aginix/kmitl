@@ -6,7 +6,7 @@
      5101020128, 5101020129, 5104010221, 5104020009. -->
 <odoo noupdate="1">
     <record id="approval_category_5102010000" model="approval.category">
-        <field name="name">ฝึกอบรมในประเทศ</field>
+        <field name="name">ค่าใช้จ่ายด้านการฝึกอบรมภายในประเทศ</field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="multi_product">True</field>
         <field name="has_period">True</field>
@@ -16,7 +16,7 @@
     </record>
 
     <record id="approval_category_5102020000" model="approval.category">
-        <field name="name">ฝึกอบรมต่างประเทศ</field>
+        <field name="name">ค่าใช้จ่ายด้านการฝึกอบรมต่างประเทศ</field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="multi_product">True</field>
         <field name="has_period">True</field>
@@ -26,7 +26,7 @@
     </record>
 
     <record id="approval_category_5103010000" model="approval.category">
-        <field name="name">เดินทางในประเทศ</field>
+        <field name="name">ค่าใช้จ่ายเดินทางเพื่องานราชการในประเทศ</field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="multi_product">True</field>
         <field name="has_period">True</field>
@@ -36,7 +36,7 @@
     </record>
 
     <record id="approval_category_5103020000" model="approval.category">
-        <field name="name">เดินทางต่างประเทศ</field>
+        <field name="name">ค่าใช้จ่ายเดินทางเพื่องานราชการต่างประเทศ</field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="multi_product">True</field>
         <field name="has_period">True</field>
@@ -46,7 +46,7 @@
     </record>
 
     <record id="approval_category_5107010021" model="approval.category">
-        <field name="name">ทุนอุดหนุนเดินทางเสนอบทความ</field>
+        <field name="name">ทุนอุดหนุนการเดินทางไปเสนอบทความทางวิชาการ</field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="multi_product">True</field>
         <field name="has_period">True</field>
@@ -692,7 +692,7 @@
     </record>
 
     <record id="approval_category_5108000037" model="approval.category">
-        <field name="name">ค่าใช้จ่ายการจัดสอบมาตรฐานความรู้ภาษาอังกฤษก่อนจบการศึกษา(Exit - Exam )</field>
+        <field name="name">ค่าใช้จ่ายการจัดสอบมาตรฐานความรู้ภาษาอังกฤษก่อนจบการศึกษา(Exit - Exam)</field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000037')]).ids)]"/>
     </record>
