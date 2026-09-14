@@ -72,6 +72,15 @@ $timeline-indent: 30px;   // padding-left for step content (dot + gap)
         margin-bottom: 0.25rem;
     }
 
+    // Arrow between stages — centered, muted, sits inside the padded body
+    // so it aligns with the step cards (not the dot).
+    .o_sarabun_timeline_arrow {
+        text-align: center;
+        color: #adb5bd;
+        font-size: 1rem;
+        padding: 0.125rem 0;
+    }
+
     // Step cards fill the available width.
     .o_sarabun_step {
         flex: 1 1 auto;

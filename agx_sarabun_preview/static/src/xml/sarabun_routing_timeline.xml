@@ -42,7 +42,7 @@
                                  class="o_sarabun_timeline_stage_label text-muted small mb-1">
                                 ขนาน <t t-esc="stage.steps.length"/> คน
                             </div>
-                            <div class="o_sarabun_timeline_stage_row d-flex flex-wrap gap-2">
+                            <div class="o_sarabun_timeline_stage_row d-flex flex-column gap-2">
                                 <t t-foreach="stage.steps" t-as="step" t-key="step.id">
                                     <div t-att-class="stepClass(step)">
                                         <div class="o_sarabun_step_header d-flex align-items-center flex-wrap gap-1">
@@ -95,6 +95,10 @@
                                     </div>
                                 </t>
                             </div>
+                        </div>
+                        <!-- Arrow between stages showing direction of flow. -->
+                        <div t-if="!stage_last" class="o_sarabun_timeline_arrow">
+                            <i class="fa fa-arrow-down"/>
                         </div>
                     </t>
                 </t>
