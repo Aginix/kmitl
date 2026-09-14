@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Extend the core template form to surface owner + visibility fields. -->
+    <!-- Extend the core template form to surface owner + visibility fields,
+         and gate every editable field on can_edit so users who only see the
+         template via public/unit visibility get a readonly form instead of an
+         AccessError at save time. -->
     <record id="view_sarabun_route_template_form_inherit_user_template" model="ir.ui.view">
         <field name="name">sarabun.route.template.form.user_template</field>
         <field name="model">sarabun.route.template</field>
@@ -8,13 +11,52 @@
         <field name="arch" type="xml">
             <xpath expr="//group[field[@name='sequence']]" position="inside">
                 <field name="owner_id" readonly="1"/>
-                <field name="visibility"/>
+                <field name="visibility"
+                       attrs="{'readonly': [('can_edit', '=', False)]}"/>
             </xpath>
-            <!-- Require department_id when visibility=unit, so a "unit" template
-                 can't silently become effectively-personal (matches nobody). -->
+            <!-- Require department_id when visibility=unit (so a "unit" template
+                 can't silently become effectively-personal), and readonly when
+                 the user can't edit the record. -->
             <xpath expr="//group[field[@name='origin_model_id']]/field[@name='department_id']"
                    position="attributes">
-                <attribute name="attrs">{'required': [('visibility','=','unit')]}</attribute>
+                <attribute name="attrs">{'required': [('visibility','=','unit')], 'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <!-- can_edit drives readonly for every editable field below;
+                 keep it invisible on the form. -->
+            <xpath expr="//sheet" position="inside">
+                <field name="can_edit" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='description']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='document_type_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='origin_model_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <!-- Two condition_domain fields (widget=domain when a model is
+                 picked, plain text otherwise) — merge readonly into each
+                 existing invisible attrs. -->
+            <xpath expr="//field[@name='condition_domain'][@widget='domain']"
+                   position="attributes">
+                <attribute name="attrs">{'invisible': [('origin_model', '=', False)], 'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='condition_domain'][not(@widget)]"
+                   position="attributes">
+                <attribute name="attrs">{'invisible': [('origin_model', '!=', False)], 'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='sequence']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='active']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
             </xpath>
         </field>
     </record>

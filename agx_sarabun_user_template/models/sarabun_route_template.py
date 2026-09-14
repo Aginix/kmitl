@@ -24,6 +24,19 @@ class SarabunRouteTemplate(models.Model):
         required=True,
         index=True,
     )
+    # Mirrors the write ir.rule (manager, or owner) so the form can render
+    # fields readonly for users who only see the template via public/unit
+    # visibility — surfaces the "no edit" state upfront instead of failing at
+    # save time with AccessError.
+    can_edit = fields.Boolean(compute="_compute_can_edit")
+
+    @api.depends("owner_id")
+    @api.depends_context("uid")
+    def _compute_can_edit(self):
+        is_manager = self.env.user.has_group("agx_sarabun.group_sarabun_manager")
+        uid = self.env.user.id
+        for record in self:
+            record.can_edit = is_manager or record.owner_id.id == uid
 
     def _default_visibility(self):
         if self.env.su or self.env.user.has_group(
