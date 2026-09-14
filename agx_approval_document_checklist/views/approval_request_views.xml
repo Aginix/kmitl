@@ -5,7 +5,12 @@
         <field name="model">approval.request</field>
         <field name="inherit_id" ref="agx_approval.approval_request_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='actual_expenses']" position="inside">
+            <!-- Typed checklist first, the untyped bucket after it: a file only
+                 belongs in "อื่น ๆ" once it fits no declared requirement. -->
+            <xpath expr="//group[@name='attachment_for_disbursement']" position="attributes">
+                <attribute name="string">เอกสารแนบอื่น ๆ</attribute>
+            </xpath>
+            <xpath expr="//group[@name='attachment_for_disbursement']" position="before">
                 <group name="disbursement_document_checklist"
                     string="เอกสารแนบที่ใช้ในการเบิกจ่าย"
                     attrs="{'invisible': [('state', 'not in', ['approved', 'to_disburse', 'billed', 'returned'])]}">
