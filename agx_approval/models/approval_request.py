@@ -241,6 +241,30 @@ class ApprovalRequest(models.Model):
         copy=False,
     )
 
+    allocation_direct_ids = fields.One2many(
+        "approval.request.allocation",
+        "request_id",
+        domain=[("payment_type", "=", "direct")],
+        string="จ่ายตรง",
+        copy=False,
+    )
+
+    allocation_prepaid_ids = fields.One2many(
+        "approval.request.allocation",
+        "request_id",
+        domain=[("payment_type", "=", "prepaid")],
+        string="สำรองจ่าย",
+        copy=False,
+    )
+
+    allocation_advance_ids = fields.One2many(
+        "approval.request.allocation",
+        "request_id",
+        domain=[("payment_type", "=", "advance")],
+        string="เงินยืม",
+        copy=False,
+    )
+
     has_period = fields.Boolean(
         related='category_id.has_period'
     )

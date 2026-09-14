@@ -39,8 +39,7 @@
     ],
     "assets": {
         "web.assets_backend": [
-            "agx_approval/static/src/components/allocation_grouped/allocation_grouped.esm.js",
-            "agx_approval/static/src/components/allocation_grouped/allocation_grouped.xml",
+            "agx_approval/static/src/components/no_open_readonly_x2many.esm.js",
         ],
     },
     "license": "LGPL-3",
