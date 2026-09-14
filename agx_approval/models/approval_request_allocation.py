@@ -77,8 +77,8 @@ class ApprovalRequestAllocation(models.Model):
         string="ประเภทการจ่ายเงิน",
         required=True,
         default="prepaid",
-        help="วิธีที่จ่ายเงินของแถวนี้ — จ่ายตรง/สำรองจ่าย จะเข้าใบเบิก (DR); "
-        "เงินยืม จะไม่เข้าใบเบิก แต่ไปเคลียร์กับสัญญายืม (ดู ADR-0002)",
+        help="วิธีที่จ่ายเงินของแถวนี้ — ทุกประเภทเข้าใบเบิก (DR) โดย 1 ใบเบิก "
+        "รับได้ 1 ประเภทเท่านั้น (ดู agx_approval_disbursement ADR-0002)",
     )
 
     company_id = fields.Many2one(

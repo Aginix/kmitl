@@ -132,7 +132,9 @@ class ApprovalRequest(models.Model):
     )
     def _compute_billing_status(self):
         for record in self:
-            disbursements = record.disbursement_request_ids
+            disbursements = record.disbursement_request_ids.filtered(
+                lambda d: d.state != "cancel"
+            )
             if not disbursements:
                 record.billing_status = "no"
             elif record._pending_disbursement_payment_types():
@@ -217,6 +219,10 @@ class ApprovalRequest(models.Model):
         """Bill (on first call) and create the single DR for ``payment_type``.
         Called by the wizard — never directly by a button."""
         self.ensure_one()
+        if self.state not in ("to_disburse", "billed"):
+            raise UserError(
+                _("สร้างใบเบิกได้เฉพาะคำขอสถานะรอส่งเบิกหรือเบิกแล้ว")
+            )
         if payment_type not in self._pending_disbursement_payment_types():
             raise UserError(
                 _("ประเภทการจ่ายเงินนี้ไม่พร้อมสร้างใบเบิกแล้ว")
