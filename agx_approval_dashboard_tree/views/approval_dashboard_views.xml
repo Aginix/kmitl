@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="approval_category_dashboard_tree" model="ir.ui.view">
+        <field name="name">approval.category.dashboard.tree</field>
+        <field name="model">approval.category</field>
+        <field name="arch" type="xml">
+            <tree js_class="approval_category_tree" create="false" limit="1000">
+                <field name="name"/>
+                <field name="group_id"/>
+                <field name="sequence"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="agx_approval.action_approval_dashboard" model="ir.actions.act_window">
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="approval_category_dashboard_tree"/>
+        <field name="search_view_id" ref="agx_approval.approval_category_view_search"/>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
