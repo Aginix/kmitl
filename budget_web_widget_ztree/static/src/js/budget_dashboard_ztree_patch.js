@@ -9,6 +9,7 @@ const DIM_ZTREE_OPTIONS = {
     parent_key: "parent_id",
     expend_level: "1",
     order: "code",
+    name_format: "[{code}] {name}",
 };
 
 patch(BudgetDashboard, "budget_web_widget_ztree.BudgetDashboard.static", {
@@ -63,7 +64,11 @@ patch(BudgetDashboard.prototype, "budget_web_widget_ztree.BudgetDashboard", {
             return;
         }
         this.state.filters[dimKey] = node.id;
-        this.state.filterLabels[dimKey] = node.name;
+        // selected_name mirrors the field widget's onSelect (vendor
+        // ztree_many2x.js): falls back to display_name server-side, so the
+        // filter echoes the same text a normal m2o field would, not the
+        // tree's "[code] name" node label.
+        this.state.filterLabels[dimKey] = node.selected_name || node.name;
         this.load();
     },
 });
