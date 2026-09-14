@@ -13,7 +13,7 @@ The downstream payment document (`disbursement.request`) created from a billed A
 _Avoid_: bill, payment request
 
 **Bill**:
-The act of turning an approved Approval Request into a Disbursement Request; moves the AR to `billed`.
+The act of turning an approved Approval Request into a Disbursement Request; moves the AR to `billed`. One DR covers exactly one **payment type** (จ่ายตรง/สำรองจ่าย/เงินยืม), chosen via a wizard — an AR with several payment types on its actual-expense rows is billed once per type, and the "Submit for Disbursement" button stays available until every type present has its own DR (see [ADR-0002](docs/adr/0002-advance-is-a-disbursed-payment-type.md)).
 _Avoid_: invoice, charge
 
 **Return (ตีกลับ)**:

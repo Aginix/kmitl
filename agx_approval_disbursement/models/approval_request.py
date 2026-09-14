@@ -7,15 +7,8 @@ class ApprovalRequest(models.Model):
     _inherit = ["approval.request", "disbursement.return.source.mixin"]
     _disbursement_return_state = "billed"
 
-    # A DR is "billed" once its budget has been committed at ``approved`` and
-    # stays billed through every downstream state a finance/accounting bridge
-    # may add (bills_posted, payment_*, paid, cleared) — those states are not
-    # owned by this module and must never be enumerated here. Excluding the
-    # states that precede budget commitment, plus ``cancel``, is the only
-    # comparison that stays correct regardless of which bridges are installed.
-    _DISBURSEMENT_NOT_BILLED_STATES = (
-        "draft", "submitted", "signed", "verified", "cancel",
-    )
+    # Canonical order payment types are checked/offered in.
+    _DISBURSEMENT_PAYMENT_TYPES = ("direct", "prepaid", "advance")
 
     # -- return-correction editability (D3) --------------------------------
     def _compute_is_correction(self):
@@ -102,11 +95,26 @@ class ApprovalRequest(models.Model):
         compute="_compute_has_active_disbursement",
     )
 
+    has_pending_disbursement_type = fields.Boolean(
+        compute="_compute_has_pending_disbursement_type",
+    )
+
     @api.depends("disbursement_request_ids.state")
     def _compute_has_active_disbursement(self):
         for record in self:
             record.has_active_disbursement = any(
                 d.state != "cancel" for d in record.disbursement_request_ids
+            )
+
+    @api.depends(
+        "allocation_ids.payment_type",
+        "disbursement_request_ids.state",
+        "disbursement_request_ids.payment_type",
+    )
+    def _compute_has_pending_disbursement_type(self):
+        for record in self:
+            record.has_pending_disbursement_type = bool(
+                record._pending_disbursement_payment_types()
             )
 
     @api.depends("disbursement_request_ids")
@@ -116,19 +124,21 @@ class ApprovalRequest(models.Model):
                 record.disbursement_request_ids
             )
 
-    @api.depends("disbursement_request_ids", "disbursement_request_ids.state")
+    @api.depends(
+        "disbursement_request_ids",
+        "allocation_ids.payment_type",
+        "disbursement_request_ids.state",
+        "disbursement_request_ids.payment_type",
+    )
     def _compute_billing_status(self):
         for record in self:
             disbursements = record.disbursement_request_ids
-            billed = disbursements.filtered(
-                lambda d: d.state not in self._DISBURSEMENT_NOT_BILLED_STATES
-            )
-            if not disbursements or not billed:
+            if not disbursements:
                 record.billing_status = "no"
-            elif billed == disbursements:
-                record.billing_status = "full"
-            else:
+            elif record._pending_disbursement_payment_types():
                 record.billing_status = "partial"
+            else:
+                record.billing_status = "full"
 
     def write(self, vals):
         result = super().write(vals)
@@ -138,27 +148,41 @@ class ApprovalRequest(models.Model):
             ).write({"is_disbursement_evidence": True})
         return result
 
-    def _billable_allocations(self):
-        """Allocation rows that become disbursement lines — everything except
-        `advance` (เงินยืม), which is money already lent and clears against the
-        borrower's สัญญายืม instead of being disbursed again (ADR-0002)."""
-        return self.allocation_ids.filtered(lambda a: a.payment_type != "advance")
+    def _allocations_of_type(self, payment_type):
+        return self.allocation_ids.filtered(
+            lambda a: a.payment_type == payment_type
+        )
 
-    def _prepare_disbursement_request_vals(self):
-        """Build a single multi-partner DR from the billable actual-expense
-        allocation — one DR line per direct/prepaid row (recipient × product ×
-        actual × bank); `advance` rows are excluded. The header carries
-        `payment_type='direct'` as an interim: the DR module does not yet support
-        mixed/per-line payment types, so direct and prepaid share one DR
-        (ADR-0002)."""
+    def _disbursable_payment_types(self):
+        """Payment types that have at least one allocation row, in display
+        order — the "has a value" check driving what the wizard may offer."""
+        self.ensure_one()
+        present = self.allocation_ids.mapped("payment_type")
+        return [t for t in self._DISBURSEMENT_PAYMENT_TYPES if t in present]
+
+    def _pending_disbursement_payment_types(self):
+        """Disbursable types that do not already have a non-cancelled DR."""
+        self.ensure_one()
+        billed_types = set(
+            self.disbursement_request_ids.filtered(
+                lambda d: d.state != "cancel"
+            ).mapped("payment_type")
+        )
+        return [
+            t for t in self._disbursable_payment_types() if t not in billed_types
+        ]
+
+    def _prepare_disbursement_request_vals(self, payment_type):
+        """Build a single-type, multi-partner DR — one DR line per allocation
+        row of ``payment_type`` (recipient × product × actual × bank)."""
         return {
             "reference": "approval.request,%d" % self.id,
             "approval_request_id": self.id,
             "partner_type": "multi",
-            "payment_type": "direct",
+            "payment_type": payment_type,
             "line_ids": [
                 Command.create(alloc._prepare_disbursement_request_line_vals())
-                for alloc in self._billable_allocations()
+                for alloc in self._allocations_of_type(payment_type)
             ],
             "ref": self.name,
             "note": self.description,
@@ -173,29 +197,41 @@ class ApprovalRequest(models.Model):
             raise UserError(
                 _("กรุณาบันทึกค่าใช้จ่ายจริงอย่างน้อย 1 รายการก่อนส่งเบิก")
             )
-        missing = self._billable_allocations().filtered(
-            lambda a: not a.partner_bank_id
-        )
+        if not self._pending_disbursement_payment_types():
+            raise UserError(
+                _("ไม่มีประเภทการจ่ายเงินที่รอสร้างใบเบิกแล้ว")
+            )
+        wizard = self.env["disbursement.type.wizard"].create({
+            "approval_request_id": self.id,
+        })
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("เลือกประเภทการจ่ายเงิน"),
+            "res_model": "disbursement.type.wizard",
+            "view_mode": "form",
+            "res_id": wizard.id,
+            "target": "new",
+        }
+
+    def _create_disbursement_for_type(self, payment_type):
+        """Bill (on first call) and create the single DR for ``payment_type``.
+        Called by the wizard — never directly by a button."""
+        self.ensure_one()
+        if payment_type not in self._pending_disbursement_payment_types():
+            raise UserError(
+                _("ประเภทการจ่ายเงินนี้ไม่พร้อมสร้างใบเบิกแล้ว")
+            )
+        allocations = self._allocations_of_type(payment_type)
+        missing = allocations.filtered(lambda a: not a.partner_bank_id)
         if missing:
             raise UserError(
                 _("กรุณาเลือกบัญชีธนาคารของผู้รับเงินให้ครบทุกรายการก่อนส่งเบิก: %s")
                 % ", ".join(missing.mapped("partner_id.name"))
             )
-        self.action_bill()
+        if self.state == "to_disburse":
+            self.action_bill()
 
-        if not self._billable_allocations():
-            # Every row is เงินยืม → nothing to disburse; those rows clear against
-            # the สัญญายืม (deferred to the advance overhaul, ADR-0002). Bill the
-            # request without creating an empty disbursement.
-            self.message_post(
-                body=_(
-                    "ทุกรายการเป็นเงินยืม — ไม่ได้สร้างใบเบิก (รอเคลียร์กับสัญญายืม)"
-                ),
-                message_type="comment",
-            )
-            return True
-
-        vals = self._prepare_disbursement_request_vals()
+        vals = self._prepare_disbursement_request_vals(payment_type)
         disbursement = self.env["disbursement.request"].create(vals)
         self._copy_attachments_to_disbursement(disbursement)
 
@@ -216,14 +252,7 @@ class ApprovalRequest(models.Model):
             ),
             message_type="comment",
         )
-
-        return {
-            "type": "ir.actions.act_window",
-            "res_model": "disbursement.request",
-            "view_mode": "form",
-            "res_id": disbursement.id,
-            "target": "current",
-        }
+        return disbursement
 
     def action_view_disbursement_request(self):
         self.ensure_one()

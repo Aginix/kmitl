@@ -16,11 +16,12 @@
             </xpath>
             <xpath expr="//header/field[@name='is_correction']" position="after">
                 <field name="has_active_disbursement" invisible="1" />
+                <field name="has_pending_disbursement_type" invisible="1" />
             </xpath>
             <xpath expr="//header/button[@name='action_bill']" position="attributes">
                 <attribute name="name">action_create_disbursement_request</attribute>
                 <attribute name="groups">disbursement.group_disbursement_user</attribute>
-                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'to_disburse'), ('has_active_disbursement', '=', True)]}</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['to_disburse', 'billed']), ('has_pending_disbursement_type', '=', False)]}</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_cancel']" position="after">
                 <button

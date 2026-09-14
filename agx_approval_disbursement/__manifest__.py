@@ -8,6 +8,7 @@
         "security/ir.model.access.csv",
         "data/mail_activity_type_data.xml",
         "data/approval_request_exception_data.xml",
+        "wizard/disbursement_type_wizard_views.xml",
         "views/approval_request_views.xml",
         "views/disbursement_request_views.xml",
     ],
