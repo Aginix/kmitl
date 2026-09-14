@@ -195,7 +195,7 @@
                             </group>
                             <group string="Planned Expenses" attrs="{'invisible': [('multi_product', '=', False)]}">
                                 <!-- <separator /> -->
-                                <field name="line_ids" widget="no_open_readonly_x2many" nolabel="1"
+                                <field name="line_ids" nolabel="1"
                                     colspan="2"
                                     attrs="{'readonly': [('is_plan_editable', '=', False)]}">
                                     <tree editable="bottom">
@@ -210,7 +210,7 @@
                             </group>
                             <group>
                                 <separator string="รายชื่อบุคลากรภายใน" />
-                                <field name="internal_participant_ids" widget="no_open_readonly_x2many" nolabel="1"
+                                <field name="internal_participant_ids" nolabel="1"
                                     colspan="2"
                                     context="{'default_participant_type': 'internal'}"
                                     attrs="{'readonly': [('is_plan_editable', '=', False)]}">
@@ -226,7 +226,7 @@
                                     </tree>
                                 </field>
                                 <separator string="รายชื่อบุคคลภายนอก" />
-                                <field name="external_participant_ids" widget="no_open_readonly_x2many" nolabel="1"
+                                <field name="external_participant_ids" nolabel="1"
                                     colspan="2"
                                     context="{'default_participant_type': 'external'}"
                                     attrs="{'readonly': [('is_plan_editable', '=', False)]}">
@@ -252,11 +252,14 @@
                             <group string="เปรียบเทียบแผน / จ่ายจริง" name="plan_actual_comparison">
                                 <field name="plan_actual_comparison_html" nolabel="1" colspan="2" />
                             </group>
-                            <separator string="บันทึกค่าใช้จ่ายจริง" />
-                            <field name="allocation_ids" widget="allocation_grouped"
+                            <field name="allocation_ids" invisible="1" />
+                            <separator string="จ่ายตรง" />
+                            <field name="allocation_direct_ids"
+                                nolabel="1" colspan="2"
+                                context="{'default_payment_type': 'direct'}"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
-                                <tree editable="bottom" default_order="partner_id">
-                                    <field name="allowed_recipient_ids" invisible="1" />
+                                <tree editable="bottom">
+                                    <field name="partner_id_domain" invisible="1" />
                                     <field name="allowed_product_ids" invisible="1" />
                                     <field name="sequence" widget="handle" />
                                     <field name="currency_id" invisible="1" />
@@ -266,9 +269,53 @@
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="description"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="payment_type"
+                                    <field name="amount" sum="รวม"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="amount"
+                                    <field name="partner_bank_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                        attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}" />
+                                </tree>
+                            </field>
+                            <separator string="สำรองจ่าย" />
+                            <field name="allocation_prepaid_ids"
+                                nolabel="1" colspan="2"
+                                context="{'default_payment_type': 'prepaid'}"
+                                attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
+                                <tree editable="bottom">
+                                    <field name="partner_id_domain" invisible="1" />
+                                    <field name="allowed_product_ids" invisible="1" />
+                                    <field name="sequence" widget="handle" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="partner_id"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="product_id"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="description"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="amount" sum="รวม"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="partner_bank_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                        attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}" />
+                                </tree>
+                            </field>
+                            <separator string="เงินยืม" />
+                            <field name="allocation_advance_ids"
+                                nolabel="1" colspan="2"
+                                context="{'default_payment_type': 'advance'}"
+                                attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
+                                <tree editable="bottom">
+                                    <field name="partner_id_domain" invisible="1" />
+                                    <field name="allowed_product_ids" invisible="1" />
+                                    <field name="sequence" widget="handle" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="partner_id"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="product_id"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="description"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="amount" sum="รวม"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="partner_bank_id"
                                         options="{'no_create': True, 'no_create_edit': True}"
