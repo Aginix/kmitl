@@ -1,6 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, models
+from odoo import models
 
 
 class DisbursementRequest(models.Model):
@@ -8,7 +8,14 @@ class DisbursementRequest(models.Model):
     _inherit = ["disbursement.request", "sarabun.document.mixin"]
 
     def _get_sarabun_subject(self):
-        return _("Disbursement Request: %s") % self.name
+        source_name = (self.source_analytic_id.complete_name or "").replace(" / ", "")
+        fy_name = self.account_fiscal_year_id.name or ""
+        return f"ขออนุมัติเบิกเงิน{source_name} ประจำปีงบประมาณ พ.ศ.{fy_name}"
+
+    def _prepare_sarabun_document_vals(self):
+        vals = super()._prepare_sarabun_document_vals()
+        vals["addressee"] = "อธิการบดี"
+        return vals
 
     def _sarabun_submit_guard(self):
         return self.state == "submitted"
@@ -34,7 +41,10 @@ class DisbursementRequest(models.Model):
 
     def _get_sarabun_content(self):
         self.ensure_one()
-        return self.env["ir.qweb"]._render(
-            "disbursement_sarabun.report_disbursement_request_narrative",
-            {"o": self.with_context(lang="th_TH")},
+        o = self.with_context(lang="th_TH")
+        dept_name = (o.department_analytic_id.complete_name or "").replace(" / ", "")
+        return (
+            f"<p>​ด้วย{dept_name} "
+            "สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง "
+            "มีความประสงค์ขอเบิกเงิน  ตามรายละเอียดดังนี้</p>"
         )
