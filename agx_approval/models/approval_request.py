@@ -255,6 +255,14 @@ class ApprovalRequest(models.Model):
         for rec in self:
             if rec.multi_product or not rec.category_id or not rec.is_plan_editable:
                 continue
+            # No amount yet means nothing is planned yet: drop the mirrored
+            # line rather than write a 0, which approval.request.line's
+            # _check_total_amount_positive rejects — otherwise a draft could
+            # not be saved before the requester fills the amount in.
+            if not rec.plan_amount:
+                if rec.line_ids:
+                    rec.line_ids = [(5, 0, 0)]
+                continue
             vals = {
                 "product_id": rec.category_id.allowed_product_ids[:1].id,
                 "total_amount": rec.plan_amount,
