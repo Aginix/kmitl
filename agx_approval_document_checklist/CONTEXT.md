@@ -43,6 +43,10 @@ _Avoid_: disbursement document checklist
   `participant_ids` are, so a category edited months later cannot change what an
   in-flight request was asked for. Re-synced only when `category_id` itself changes, plus
   a one-shot top-up on entering `approved` for requests that predate this module.
+  Requests already sitting in `approved` at install time never cross that write —
+  `approved` is the actual-expense stage they linger longest in — so `post_init_hook`
+  materialises their rows once, or the gate would pass silently on exactly the
+  population the top-up was written for.
 - **Explicit gate, not an `exception.rule`** — `detect_exceptions()` re-evaluates *every*
   rule of `approval.request`, including `excep_submit_date_outside_fy` (which compares
   **today** against ปีงบประมาณ). A request approved late in ปีงบ N and reimbursed after
@@ -52,3 +56,7 @@ _Avoid_: disbursement document checklist
   `res_id = 0` while the row is unsaved, and `ir.attachment.check()` then hides such a
   file from everyone but its uploader. `_adopt_orphan_attachments` re-points them so the
   ACL falls back to read access on the row, which the verifier and finance both have.
+  That also moves the files out from under `approval_request_own_rule`, which only
+  fences `res_model = approval.request` — so `security/security.xml` re-fences the row
+  model with the same Own/User pair, or a self-service user could pull any requester's
+  สำเนาบัตรประชาชน straight off `/web/content/<id>`.
