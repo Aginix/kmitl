@@ -20,6 +20,11 @@ class PurchaseRequest(models.Model):
         compute="_compute_is_requested_by_current_user",
     )
 
+    @api.onchange("payment_type")
+    def _onchange_payment_type_advance(self):
+        if self.payment_type == "advance" and self.requested_by:
+            self.partner_id = self.requested_by.partner_id
+
     @api.depends("requested_by")
     def _compute_is_requested_by_current_user(self):
         for rec in self:
