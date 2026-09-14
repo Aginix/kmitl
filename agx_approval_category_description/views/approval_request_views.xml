@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="approval_request_view_form_guideline" model="ir.ui.view">
+        <field name="name">approval.request.view.form.guideline</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="agx_approval.approval_request_view_form"/>
+        <field name="arch" type="xml">
+            <group name="approval_details" position="before">
+                <field name="show_category_guideline" invisible="1"/>
+                <div class="alert alert-info" role="alert"
+                     attrs="{'invisible': [('show_category_guideline', '=', False)]}">
+                    <field name="category_guideline" readonly="1" nolabel="1"/>
+                </div>
+            </group>
+        </field>
+    </record>
+</odoo>
