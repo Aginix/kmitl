@@ -44,7 +44,7 @@ class DisbursementRequest(models.Model):
         o = self.with_context(lang="th_TH")
         dept_name = (o.department_analytic_id.complete_name or "").replace(" / ", "")
         return (
-            f"<p>​ด้วย{dept_name} "
+            f"<p><span class='oe-tabs'>​ด้วย{dept_name} "
             "สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง "
-            "มีความประสงค์ขอเบิกเงิน  ตามรายละเอียดดังนี้</p>"
+            "มีความประสงค์ขอเบิกเงิน  ตามรายละเอียดดังนี้</span></p>"
         )
