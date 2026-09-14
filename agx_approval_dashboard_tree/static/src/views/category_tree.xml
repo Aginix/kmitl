@@ -14,7 +14,11 @@
                     <ul t-if="isOpen(group.id)" class="list-unstyled ms-4 mb-0">
                         <li t-foreach="group.categories" t-as="cat" t-key="cat.id" class="py-1">
                             <a href="#" class="o_act_category_link"
-                               t-on-click.prevent="() => this.openCategory(cat.id)" t-esc="cat.name"/>
+                               t-on-click.prevent="() => this.openCategory(cat.id)">
+                                <span t-esc="cat.name"/>
+                                <i t-if="cat.budgetAccountName" class="fa fa-money fa-fw text-muted small ms-1"
+                                   t-att-title="cat.budgetAccountName"/>
+                            </a>
                         </li>
                     </ul>
                 </section>

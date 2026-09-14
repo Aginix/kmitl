@@ -44,10 +44,12 @@ export class ApprovalCategoryTreeRenderer extends Component {
                     categories: [],
                 });
             }
+            const budgetAccount = record.data.budget_account_id;
             byGroup.get(groupId).categories.push({
                 id: record.resId,
                 name: record.data.name,
                 sequence: record.data.sequence || 0,
+                budgetAccountName: budgetAccount ? budgetAccount[1] : false,
             });
         }
         const groups = [...byGroup.values()];
