@@ -108,8 +108,10 @@ class SarabunCommon(TransactionCase):
         cls.Template = cls.env["sarabun.route.template"]
         cls.Origin = cls.env["test.sarabun.origin"]
 
-        # Document type — the seeded from_record type (kind=from_record, auto numbering).
-        cls.doc_type = cls.env.ref("agx_sarabun.document_type_from_record")
+        # Document type — memo (allow_manual=True) is the safe default for test helpers.
+        cls.doc_type = cls.env.ref("agx_sarabun.document_type_memo")
+        # Kept separately for tests that specifically exercise from_record behaviour.
+        cls.doc_type_from_record = cls.env.ref("agx_sarabun.document_type_from_record")
 
         # Issuing unit + its register (so action_send can allocate).
         cls.dept = cls.env["hr.department"].create({"name": "กองทดสอบ"})

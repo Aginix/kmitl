@@ -85,7 +85,7 @@
             <xpath expr="//field[@name='line_ids']" position="attributes">
                 <attribute
                     name="attrs"
-                >{'readonly': [('is_editable', '=', False)]}</attribute>
+                >{'readonly': [('state', 'not in', ('draft', 'returned'))]}</attribute>
             </xpath>
 
             <xpath expr="//field[@name='line_ids']" position="before">

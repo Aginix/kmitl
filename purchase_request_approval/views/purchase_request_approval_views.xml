@@ -93,7 +93,7 @@
                         states="draft"
                         string="ตีกลับ/แก้ไข"
                         type="object"
-                        groups="purchase_request.group_purchase_request_manager"
+                        groups="purchase.group_purchase_user"
                     />
                     <button
                         name="button_cancel"

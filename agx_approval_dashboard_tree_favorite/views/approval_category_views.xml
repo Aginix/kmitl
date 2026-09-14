@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="approval_category_dashboard_tree_favorite" model="ir.ui.view">
+        <field name="name">approval.category.dashboard.tree.favorite</field>
+        <field name="model">approval.category</field>
+        <field name="inherit_id" ref="agx_approval_dashboard_tree.approval_category_dashboard_tree"/>
+        <field name="arch" type="xml">
+            <field name="budget_account_id" position="after">
+                <field name="is_favorite"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>
