@@ -46,8 +46,18 @@ class SarabunDocument(models.Model):
     def _compute_routing_preview_json(self):
         """Serialize the live Route for the SarabunRoutingTimeline OWL widget.
         Both the form and the send wizard read this — the wizard's field is a
-        ``related`` mirror so one payload feeds both surfaces uniformly."""
+        ``related`` mirror so one payload feeds both surfaces uniformly.
+
+        Skip computation for NewId records (unsaved drafts in onchange context):
+        Odoo's onchange checks has_changed() on every field including computed
+        ones, triggering this compute before the record is persisted. Sub-records
+        (routing steps, holders, etc.) may also carry NewId at that point and
+        would fail JSON serialization. An empty payload is the correct fallback —
+        the widget renders "no steps yet" which is accurate for an unsaved draft."""
         for record in self:
+            if not isinstance(record.id, int):
+                record.routing_preview_json = False
+                continue
             record.routing_preview_json = json.dumps(
                 record._build_routing_preview_payload(record.routing_step_ids),
                 ensure_ascii=False,
