@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="finance_kmitl_reports.ReceiptReportRows" owl="1">
+        <t t-foreach="rows" t-as="row" t-key="row.id">
+            <tr class="cursor-pointer" t-on-click="() => this.openReceipt(row)">
+                <t t-foreach="state.columns" t-as="column" t-key="column[0]">
+                    <td t-att-class="column[2] ? 'text-end' : ''">
+                        <t t-esc="cell(row, column)" />
+                    </td>
+                </t>
+            </tr>
+        </t>
+    </t>
+
+    <t t-name="finance_kmitl_reports.ReceiptReportBand" owl="1">
+        <tr t-att-class="bandClass">
+            <t t-foreach="state.columns" t-as="column" t-key="column[0]">
+                <td t-if="column_index === 0"><t t-esc="band.label" /></td>
+                <td t-elif="column[0] === totalKey" class="text-end">
+                    <t t-esc="format(band.total)" />
+                </td>
+                <td t-else="" />
+            </t>
+        </tr>
+    </t>
+
+    <t t-name="finance_kmitl_reports.ReceiptReport" owl="1">
+        <div class="o_action o_finance_kmitl_report">
+            <ControlPanel display="controlPanelDisplay">
+                <t t-set-slot="control-panel-bottom-left-buttons">
+                    <div class="o_cp_buttons">
+                        <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
+                            <i class="fa fa-file-excel-o me-1" /><t
+                                t-esc="labels.exportExcel"
+                            />
+                        </button>
+                        <button class="btn btn-primary" t-on-click="printReport">
+                            <i class="fa fa-print me-1" /><t t-esc="labels.print" />
+                        </button>
+                    </div>
+                </t>
+            </ControlPanel>
+            <div class="o_content p-3">
+                <!-- The filter bar lives here rather than in the control
+                     panel's top-right slot: core caps that slot at 50% of the
+                     width (web/…/control_panel.scss), which is right for the
+                     one search input it was written for and wrong for a dozen
+                     controls. Same arrangement as the Trial Balance. -->
+                <div class="o_finance_report_filters mb-3">
+                    <div class="row g-3">
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="finance_rcpt_date_from">
+                                <t t-esc="labels.dateFrom" />
+                            </label>
+                            <input
+                                id="finance_rcpt_date_from"
+                                type="date"
+                                class="form-control"
+                                t-att-value="state.dateFrom"
+                                t-on-change="onDateFromChange"
+                            />
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="finance_rcpt_date_to">
+                                <t t-esc="labels.dateTo" />
+                            </label>
+                            <input
+                                id="finance_rcpt_date_to"
+                                type="date"
+                                class="form-control"
+                                t-att-value="state.dateTo"
+                                t-on-change="onDateToChange"
+                            />
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="finance_rcpt_group_by">
+                                <t t-esc="labels.groupBy" />
+                            </label>
+                            <select
+                                id="finance_rcpt_group_by"
+                                class="form-select"
+                                t-on-change="onGroupByChange"
+                            >
+                                <t t-foreach="axes" t-as="axis" t-key="axis.value">
+                                    <option
+                                        t-att-value="axis.value"
+                                        t-att-selected="state.groupBy === axis.value"
+                                    >
+                                        <t t-esc="axis.label" />
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="finance_rcpt_group_by_2">
+                                <t t-esc="labels.groupBy2" />
+                            </label>
+                            <select
+                                id="finance_rcpt_group_by_2"
+                                class="form-select"
+                                t-on-change="onGroupBy2Change"
+                            >
+                                <option value=""><t t-esc="labels.none" /></option>
+                                <t t-foreach="axes" t-as="axis" t-key="axis.value">
+                                    <option
+                                        t-att-value="axis.value"
+                                        t-att-selected="state.groupBy2 === axis.value"
+                                    >
+                                        <t t-esc="axis.label" />
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div
+                            class="col-12 col-lg-4 d-flex align-items-end justify-content-lg-end gap-2"
+                        >
+                            <button
+                                class="btn btn-link p-0 o_finance_report_more"
+                                t-on-click="toggleAdvanced"
+                            >
+                                <i
+                                    t-att-class="state.showAdvanced ? 'fa fa-caret-down me-1' : 'fa fa-caret-right me-1'"
+                                />
+                                <t t-if="state.showAdvanced">
+                                    <t t-esc="labels.fewerFilters" />
+                                </t>
+                                <t t-else=""><t t-esc="labels.moreFilters" /></t>
+                                <span
+                                    t-if="activeFilterCount"
+                                    class="badge bg-primary ms-1"
+                                    t-esc="activeFilterCount"
+                                />
+                            </button>
+                            <button
+                                t-if="activeFilterCount"
+                                class="btn btn-link p-0 text-muted"
+                                t-on-click="clearFilters"
+                            >
+                                <i class="fa fa-times me-1" />
+                                <t t-esc="labels.clearFilters" />
+                            </button>
+                        </div>
+
+                        <t t-if="state.showAdvanced">
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.method" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'kmitl.payment.method'"
+                                    placeholder="labels.method"
+                                    selected="state.methods"
+                                    onChange="(sel) => this.onSelectionChange('methods', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.payer" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'res.partner'"
+                                    placeholder="labels.payer"
+                                    selected="state.partners"
+                                    onChange="(sel) => this.onSelectionChange('partners', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.issuingDepartment" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'account.analytic.account'"
+                                    domain="[['root_plan_id.code', '=', 'departments']]"
+                                    placeholder="labels.issuingDepartment"
+                                    selected="state.issuingDepartments"
+                                    onChange="(sel) => this.onSelectionChange('issuingDepartments', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.remittance" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'kmitl.receipt.remittance'"
+                                    placeholder="labels.remittance"
+                                    selected="state.remittances"
+                                    onChange="(sel) => this.onSelectionChange('remittances', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.departments" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'account.analytic.account'"
+                                    domain="[['root_plan_id.code', '=', 'departments']]"
+                                    placeholder="labels.departments"
+                                    selected="state.departments"
+                                    onChange="(sel) => this.onSelectionChange('departments', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.sources" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'account.analytic.account'"
+                                    domain="[['root_plan_id.code', '=', 'sources']]"
+                                    placeholder="labels.sources"
+                                    selected="state.sources"
+                                    onChange="(sel) => this.onSelectionChange('sources', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.funds" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'account.analytic.account'"
+                                    domain="[['root_plan_id.code', '=', 'funds']]"
+                                    placeholder="labels.funds"
+                                    selected="state.funds"
+                                    onChange="(sel) => this.onSelectionChange('funds', sel)"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="o_form_label">
+                                    <t t-esc="labels.activities" />
+                                </label>
+                                <MultiRecordSelect
+                                    resModel="'account.analytic.account'"
+                                    domain="[['root_plan_id.code', '=', 'activities']]"
+                                    placeholder="labels.activities"
+                                    selected="state.activities"
+                                    onChange="(sel) => this.onSelectionChange('activities', sel)"
+                                />
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <t t-if="state.loading">
+                    <div class="text-center p-5">
+                        <span class="spinner-border" role="status" />
+                    </div>
+                </t>
+                <t t-elif="!state.groups.length">
+                    <div class="text-center text-muted p-5">
+                        <t t-esc="labels.empty" />
+                    </div>
+                </t>
+                <t t-else="">
+                    <table
+                        class="table table-sm table-hover align-middle mb-0 o_finance_report_table"
+                    >
+                        <thead class="table-light">
+                            <tr>
+                                <t
+                                    t-foreach="state.columns"
+                                    t-as="column"
+                                    t-key="column[0]"
+                                >
+                                    <th t-att-class="column[2] ? 'text-end' : ''">
+                                        <t t-esc="column[1]" />
+                                    </th>
+                                </t>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.groups" t-as="group" t-key="group.key">
+                                <t t-call="finance_kmitl_reports.ReceiptReportBand">
+                                    <t t-set="band" t-value="group" />
+                                    <t
+                                        t-set="bandClass"
+                                        t-value="'table-secondary fw-bold'"
+                                    />
+                                </t>
+                                <t t-call="finance_kmitl_reports.ReceiptReportRows">
+                                    <t t-set="rows" t-value="group.rows" />
+                                </t>
+                                <t
+                                    t-foreach="group.subgroups"
+                                    t-as="subgroup"
+                                    t-key="subgroup.key"
+                                >
+                                    <t t-call="finance_kmitl_reports.ReceiptReportBand">
+                                        <t t-set="band" t-value="subgroup" />
+                                        <t
+                                            t-set="bandClass"
+                                            t-value="'table-light fw-bold'"
+                                        />
+                                    </t>
+                                    <t t-call="finance_kmitl_reports.ReceiptReportRows">
+                                        <t t-set="rows" t-value="subgroup.rows" />
+                                    </t>
+                                </t>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr class="fw-bold table-primary">
+                                <t
+                                    t-foreach="state.columns"
+                                    t-as="column"
+                                    t-key="column[0]"
+                                >
+                                    <td t-if="column_index === 0">
+                                        <t t-esc="labels.grandTotal" />
+                                    </td>
+                                    <td
+                                        t-elif="column[0] === totalKey"
+                                        class="text-end"
+                                    >
+                                        <t t-esc="format(state.grandTotal)" />
+                                    </td>
+                                    <td t-else="" />
+                                </t>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

@@ -7,6 +7,10 @@ class WithholdingTaxCert(models.Model):
     _inherit = "withholding.tax.cert"
 
     @api.depends(
+        "payment_id.paid_date",
+        # The two records วันที่จ่ายจริง is read off, restated here so the
+        # certificate is recomputed even where the trigger through a
+        # non-stored computed field would not reach it.
         "payment_id.payment_export_id.effective_date",
         "payment_id.cheque_id.cheque_date",
     )
@@ -22,19 +26,12 @@ class WithholdingTaxCert(models.Model):
 
         The withholding, though, is dated by law from the day the payee was paid:
         ภ.ง.ด.3/53 is filed by the 7th of the month **following the month the
-        income was paid**. Which record holds that day depends on how the money
-        went:
-
-        - a transfer: the e-payment file's **effective date**, the day the bank
-          was told to move it;
-        - a cheque: the **date written on the cheque**, because that is the day
-          the payee may present it and therefore the day the Revenue Department
-          treats the income as paid. Deliberately not the day the cheque was
-          handed over, which has no tax effect — a cheque dated the 25th and
-          collected on the 30th is September's withholding either way.
-
-        Cash falls through to the base behaviour, the voucher's own date, which is
-        the day it was paid across the counter.
+        income was paid**. Which record holds that day is not this method's
+        business to know — it is **วันที่จ่ายจริง** (``account.payment.paid_date``),
+        which reads it off the instrument that carried the money: an e-payment
+        file's effective date for a transfer, the date written on the cheque for
+        a cheque, and the voucher's own date for cash, which is the day it was
+        paid across the counter. See ADR-0009.
 
         The base ``@api.depends`` is not repeated: overriding a compute keeps the
         method name, and Odoo unions the dependencies declared for it across the
@@ -42,9 +39,6 @@ class WithholdingTaxCert(models.Model):
         """
         super()._compute_wht_cert_data()
         for rec in self:
-            paid_on = (
-                rec.payment_id.payment_export_id.effective_date
-                or rec.payment_id.cheque_id.cheque_date
-            )
+            paid_on = rec.payment_id.paid_date
             if paid_on:
                 rec.date = paid_on

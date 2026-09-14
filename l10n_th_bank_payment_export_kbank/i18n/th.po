@@ -50,3 +50,60 @@ msgstr "ยังไม่ได้เลือกธนาคารผู้ร
 #: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_kbank.bank_payment_export_view_form
 msgid "Service Type"
 msgstr "ประเภทบริการ"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_kbank.field_bank_payment_export__kbank_company_id
+msgid "KBANK Originator Code"
+msgstr "รหัสต้นทาง KBANK"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields,help:l10n_th_bank_payment_export_kbank.field_bank_payment_export__kbank_company_id
+msgid ""
+"7-digit KBANK originator code (Company/Originator ID) printed in each "
+"detail and the trailer record. Zero-padded to 7 digits on export. TODO: "
+"confirm the exact source/meaning against the official K-Cash Connect "
+"Plus file-format specification."
+msgstr ""
+"รหัสต้นทาง KBANK 7 หลัก (Company/Originator ID) ที่พิมพ์อยู่ในทุกรายการย่อยและบรรทัดสรุปท้ายไฟล์ "
+"เติมศูนย์ข้างหน้าให้ครบ 7 หลักตอนส่งออกไฟล์ "
+"TODO: ยืนยันที่มา/ความหมายที่แน่นอนกับสเปกไฟล์ K-Cash Connect Plus ฉบับทางการอีกครั้ง"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_kbank.selection__bank_payment_export__kbank_service_type__01
+msgid "01 - Salary, Wages, Gratuity, Pension"
+msgstr "01 - เงินเดือน ค่าจ้าง บำเหน็จ บำนาญ"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_kbank.selection__bank_payment_export__kbank_service_type__02
+msgid "02 - Dividend"
+msgstr "02 - เงินปันผล"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_kbank.selection__bank_payment_export__kbank_service_type__03
+msgid "03 - Interest"
+msgstr "03 - ดอกเบี้ย"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_kbank.selection__bank_payment_export__kbank_service_type__04
+msgid "04 - Goods and Services"
+msgstr "04 - ค่าสินค้า บริการ"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_kbank.selection__bank_payment_export__kbank_service_type__05
+msgid "05 - Sale of Securities"
+msgstr "05 - ขายหลักทรัพย์"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_kbank.selection__bank_payment_export__kbank_service_type__06
+msgid "06 - Tax Refund"
+msgstr "06 - คืนภาษี"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_kbank.selection__bank_payment_export__kbank_service_type__07
+msgid "07 - Loan"
+msgstr "07 - เงินกู้"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields.selection,name:l10n_th_bank_payment_export_kbank.selection__bank_payment_export__kbank_service_type__59
+msgid "59 - Other"
+msgstr "59 - อื่น ๆ"

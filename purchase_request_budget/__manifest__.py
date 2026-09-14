@@ -1,6 +1,6 @@
 {
     "name": "Purchase Request Budget",
-    "version": "16.0.1.5.1",
+    "version": "16.0.1.6.0",
     "summary": """ Purchase Request Budget Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",

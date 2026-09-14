@@ -10,6 +10,7 @@
                 <field name="payment_type"/>
                 <field name="journal_id"/>
                 <field name="account_id"/>
+                <field name="deposit_account_id"/>
                 <field name="active" widget="boolean_toggle"/>
                 <field name="company_id" groups="base.group_multi_company"/>
             </tree>
@@ -35,6 +36,7 @@
                         <group>
                             <field name="journal_id"/>
                             <field name="account_id"/>
+                            <field name="deposit_account_id"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>

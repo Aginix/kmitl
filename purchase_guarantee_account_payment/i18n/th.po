@@ -18,7 +18,7 @@ msgstr ""
 #. module: purchase_guarantee_account_payment
 #: model:ir.model.fields,field_description:purchase_guarantee_account_payment.field_purchase_guarantee__payment_count
 msgid "Payment Count"
-msgstr ""
+msgstr "จำนวนการชำระเงิน"
 
 #. module: purchase_guarantee_account_payment
 #: model:ir.model,name:purchase_guarantee_account_payment.model_account_payment
@@ -31,7 +31,7 @@ msgstr "การชำระเงิน"
 #: model:ir.model,name:purchase_guarantee_account_payment.model_purchase_guarantee
 #: model:ir.model.fields,field_description:purchase_guarantee_account_payment.field_account_payment__purchase_guarantee_id
 msgid "Purchase Guarantee"
-msgstr ""
+msgstr "หลักประกัน"
 
 #. module: purchase_guarantee_account_payment
 #: model_terms:ir.ui.view,arch_db:purchase_guarantee_account_payment.view_purchase_guarantee_form
@@ -44,3 +44,10 @@ msgstr "สร้างใบส่งเงิน"
 #, python-format
 msgid "ไม่สามารถสร้างใบส่งเงินสำหรับประเภทหลักประกัน '%s' ได้"
 msgstr "ไม่สามารถสร้างใบส่งเงินสำหรับประเภทหลักประกัน '%s' ได้"
+
+#. module: purchase_guarantee_account_payment
+#. odoo-python
+#: code:addons/purchase_guarantee_account_payment/models/purchase_guarantee.py:0
+#, python-format
+msgid "This guarantee already has an active payment. A new one cannot be created."
+msgstr "หลักประกันนี้มีใบ Payment ที่ใช้งานอยู่แล้ว ไม่สามารถสร้างใหม่ได้"

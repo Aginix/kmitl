@@ -23,7 +23,7 @@ class ReceiptRemittance(models.Model):
             ("draft", "Draft"),
             ("submitted", "Submitted"),
             ("approved", "Approved"),
-            ("posted", "Posted"),
+            ("posted", "Journal Created"),
             ("cancelled", "Cancelled"),
         ],
         default="draft",
@@ -291,15 +291,20 @@ class ReceiptRemittance(models.Model):
                         _("Only managers can reset posted remittances to draft.")
                     )
                 for receipt in rec.receipt_ids:
-                    if receipt.move_id:
-                        receipt.move_id._reverse_moves(
+                    move = receipt.move_id
+                    if not move:
+                        continue
+                    if move.state == "posted":
+                        move._reverse_moves(
                             default_values_list=[{
                                 "date": fields.Date.context_today(rec),
-                                "ref": _("Reversal of: %s") % receipt.move_id.name,
+                                "ref": _("Reversal of: %s") % move.name,
                             }],
                             cancel=True,
                         )
-                        receipt.write({"move_id": False})
+                    else:
+                        move.unlink()  # unposted draft — just delete it
+                    receipt.write({"move_id": False})
             if rec.state in ("draft", "cancelled"):
                 pass
             elif rec.state not in ("submitted", "approved", "posted"):

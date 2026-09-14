@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 
 class PurchaseRequest(models.Model):
@@ -13,7 +14,10 @@ class PurchaseRequest(models.Model):
             fiscal_year = fy_id.name[-2:] if fy_id else fields.Date.today().strftime("%y")
 
             department = self.env["hr.department"].browse(vals.get("department_id"))
-            short_name = department.short_name or ""
+            short_name = department.short_name
+
+            if not short_name:
+                raise ValidationError(_("Department short name is missing."))
 
             seq_code = f"purchase.request.{fiscal_year}.{short_name}"
 
