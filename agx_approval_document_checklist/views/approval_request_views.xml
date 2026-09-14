@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="approval_request_view_form_disbursement_document" model="ir.ui.view">
+        <field name="name">approval.request.view.form.disbursement.document</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="agx_approval.approval_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='actual_expenses']" position="inside">
+                <group name="disbursement_document_checklist"
+                    string="เอกสารแนบที่ใช้ในการเบิกจ่าย"
+                    attrs="{'invisible': [('state', 'not in', ['approved', 'to_disburse', 'billed', 'returned'])]}">
+                    <field name="disbursement_document_ids" nolabel="1" colspan="2"
+                        attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
+                        <tree create="false" delete="false"
+                            decoration-danger="required and not is_fulfilled">
+                            <field name="name" readonly="1"/>
+                            <field name="required" readonly="1"/>
+                            <field name="attachment_count" readonly="1"/>
+                            <field name="is_fulfilled" readonly="1" widget="boolean_toggle"/>
+                        </tree>
+                        <form string="เอกสารแนบที่ใช้ในการเบิกจ่าย">
+                            <group>
+                                <field name="name" readonly="1"/>
+                                <field name="required" readonly="1"/>
+                            </group>
+                            <field name="attachment_ids" nolabel="1" widget="many2many_binary"/>
+                        </form>
+                    </field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
