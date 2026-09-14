@@ -11,9 +11,7 @@ class ApprovalCategory(models.Model):
         "user_id",
         string="Favorited By",
     )
-    is_favorite = fields.Boolean(
-        compute="_compute_is_favorite", compute_sudo=True, string="Favorite"
-    )
+    is_favorite = fields.Boolean(compute="_compute_is_favorite", string="Favorite")
 
     @api.depends("favorite_user_ids")
     @api.depends_context("uid")
