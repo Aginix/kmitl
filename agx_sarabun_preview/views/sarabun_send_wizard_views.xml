@@ -5,13 +5,13 @@
         <field name="model">sarabun.send.wizard</field>
         <field name="inherit_id" ref="agx_sarabun.view_sarabun_send_wizard_form"/>
         <field name="arch" type="xml">
-            <!-- Insert the full routing timeline before the originator_sign_mode
-                 radio so the sender sees the whole เส้นทาง before pressing ยืนยันส่ง.
-                 Default open on the wizard (the widget reads the context). -->
-            <field name="originator_sign_mode" position="before">
+            <!-- Place the routing timeline AFTER the existing radio + description,
+                 before the footer buttons — so the original layout stays intact and
+                 the sender sees the full เส้นทาง right before pressing ยืนยันส่ง. -->
+            <footer position="before">
                 <field name="routing_preview_json" invisible="1"/>
                 <widget name="sarabun_routing_timeline"/>
-            </field>
+            </footer>
         </field>
     </record>
 </odoo>

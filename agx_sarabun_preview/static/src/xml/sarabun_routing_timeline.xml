@@ -37,12 +37,10 @@
                 </t>
                 <t t-else="">
                     <t t-foreach="props.data.stages" t-as="stage" t-key="stage.order">
-                        <div class="o_sarabun_timeline_stage">
-                            <div class="o_sarabun_timeline_stage_label text-muted small mb-1">
-                                ลำดับ <t t-esc="stage.order"/>
-                                <t t-if="stage.steps.length > 1">
-                                    — ขนาน <t t-esc="stage.steps.length"/> คน
-                                </t>
+                        <div t-att-class="stageClass(stage)">
+                            <div t-if="stage.steps.length > 1"
+                                 class="o_sarabun_timeline_stage_label text-muted small mb-1">
+                                ขนาน <t t-esc="stage.steps.length"/> คน
                             </div>
                             <div class="o_sarabun_timeline_stage_row d-flex flex-wrap gap-2">
                                 <t t-foreach="stage.steps" t-as="step" t-key="step.id">
@@ -97,9 +95,6 @@
                                     </div>
                                 </t>
                             </div>
-                        </div>
-                        <div t-if="!stage_last" class="o_sarabun_timeline_arrow text-center text-muted">
-                            <i class="fa fa-long-arrow-down"/>
                         </div>
                     </t>
                 </t>

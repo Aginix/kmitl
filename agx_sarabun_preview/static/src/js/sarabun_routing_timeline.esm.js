@@ -41,6 +41,15 @@ export class SarabunRoutingTimeline extends Component {
         return classes.join(" ");
     }
 
+    stageClass(stage) {
+        const hasActive = stage.steps.some(s => s.state === "active");
+        const allDone = stage.steps.every(s => s.state === "done" || s.state === "skipped");
+        const cls = ["o_sarabun_timeline_stage"];
+        if (hasActive) cls.push("o_sarabun_timeline_stage--active");
+        else if (allDone) cls.push("o_sarabun_timeline_stage--done");
+        return cls.join(" ");
+    }
+
     stateLabel(step) {
         if (step.state === "active") return "🎯 อยู่ที่นี่";
         if (step.state === "waiting") return "รอ";

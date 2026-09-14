@@ -1,6 +1,10 @@
-// Routing timeline preview for agx_sarabun_preview.
-// Colors align with agx_sarabun's tree decoration-info/success/muted palette
-// so the two surfaces never disagree.
+// Routing timeline preview — vertical line + dot layout.
+// Colors align with agx_sarabun's tree decoration-info/success/muted palette.
+
+$timeline-line-color: #dee2e6;
+$timeline-dot-size: 14px;
+$timeline-line-left: 7px; // half of dot-size, centers the line on the dot
+$timeline-indent: 30px;   // padding-left for step content (dot + gap)
 
 .o_sarabun_timeline {
     .o_sarabun_timeline_toggle {
@@ -9,20 +13,68 @@
         &:hover { text-decoration: underline; }
     }
 
+    // The body carries the vertical connector line.
+    .o_sarabun_timeline_body {
+        position: relative;
+        padding-left: $timeline-indent;
+        margin-left: 2px;
+
+        // Vertical connector line — runs the full height behind the dots.
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: $timeline-line-left;
+            width: 2px;
+            background-color: $timeline-line-color;
+        }
+    }
+
+    // Each stage carries a dot on the vertical line.
     .o_sarabun_timeline_stage {
+        position: relative;
+        padding-bottom: 1rem;
+
+        // Dot (circle) on the line.
+        &::before {
+            content: "";
+            position: absolute;
+            left: -#{$timeline-indent};
+            top: 4px;
+            width: $timeline-dot-size;
+            height: $timeline-dot-size;
+            border-radius: 50%;
+            background-color: $timeline-line-color;
+            border: 2px solid #fff;
+            z-index: 1;
+        }
+
+        // Last stage: no bottom padding (tighten the tail).
+        &:last-child {
+            padding-bottom: 0;
+        }
+
+        // Active stage — blue dot with pulse.
+        &--active::before {
+            background-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+            animation: sarabun-dot-pulse 2s ease-in-out infinite;
+        }
+
+        // Done stage — green dot.
+        &--done::before {
+            background-color: #198754;
+        }
+    }
+
+    .o_sarabun_timeline_stage_label {
         margin-bottom: 0.25rem;
     }
 
-    .o_sarabun_timeline_arrow {
-        font-size: 1.25rem;
-        line-height: 1;
-        margin: 0.25rem 0;
-    }
-
+    // Step cards fill the available width.
     .o_sarabun_step {
-        min-width: 240px;
-        max-width: 340px;
-        flex: 1 1 240px;
+        flex: 1 1 auto;
         padding: 0.5rem 0.75rem;
         border: 1px solid #dee2e6;
         border-radius: 0.375rem;
@@ -36,12 +88,11 @@
             border-color: #dee2e6;
         }
 
-        // active — blue pulse; "🎯 อยู่ที่นี่" state chip
+        // active — blue highlight
         &--active {
             border-color: #0d6efd;
             background-color: #f0f7ff;
-            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
-            animation: sarabun-pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
             .o_sarabun_state_chip {
                 background-color: #0d6efd;
                 color: #fff;
@@ -55,7 +106,7 @@
             .o_sarabun_state_chip { background-color: #198754; color: #fff; }
         }
 
-        // done delegate — purple badge to distinguish from plain complete
+        // done delegate — purple badge
         &--done-delegate {
             border-color: #198754;
             background-color: #f0fbf4;
@@ -76,7 +127,7 @@
             .o_sarabun_state_chip { background-color: #dc3545; color: #fff; }
         }
 
-        // skipped — strikethrough on the verb label
+        // skipped — strikethrough
         &--skipped {
             background-color: #f8f9fa;
             color: #adb5bd;
@@ -89,7 +140,7 @@
             border-left-style: solid;
         }
 
-        // CC — dashed border on top of state colour
+        // CC — dashed border
         &--cc {
             border-style: dashed;
         }
@@ -121,16 +172,15 @@
     }
 }
 
-@keyframes sarabun-pulse {
-    0%   { box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2); }
+@keyframes sarabun-dot-pulse {
+    0%   { box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25); }
     50%  { box-shadow: 0 0 0 6px rgba(13, 110, 253, 0.1); }
-    100% { box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2); }
+    100% { box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25); }
 }
 
-// Narrow viewports: stack parallel step cards vertically instead of side-by-side.
+// Narrow viewports: stack parallel step cards vertically.
 @media (max-width: 576px) {
     .o_sarabun_timeline .o_sarabun_timeline_stage_row {
         flex-direction: column;
-        .o_sarabun_step { max-width: 100%; }
     }
 }
