@@ -28,18 +28,14 @@
                         <group string="Scope (auto-match for from_record)">
                             <field name="document_type_id"/>
                             <field name="department_id"/>
-                            <field name="origin_model_id" options="{'no_create': True}"/>
+                            <field name="type_origin_model_id" invisible="1"/>
+                            <field name="origin_model_id" options="{'no_create': True}"
+                                   attrs="{'readonly': [('type_origin_model_id', '!=', False)]}"/>
                             <!-- invisible origin_model backs the domain widget's model
                                  option (it resolves the technical name from this field). -->
                             <field name="origin_model" invisible="1"/>
-                            <!-- show interactive domain builder only when a model is selected;
-                                 fall back to plain text so model-agnostic templates remain editable. -->
                             <field name="condition_domain" widget="domain"
-                                   options="{'model': 'origin_model'}"
-                                   attrs="{'invisible': [('origin_model', '=', False)]}"/>
-                            <field name="condition_domain"
-                                   placeholder="[('amount_total', '&gt;=', 100000)]"
-                                   attrs="{'invisible': [('origin_model', '!=', False)]}"/>
+                                   options="{'model': 'origin_model'}"/>
                         </group>
                         <group>
                             <field name="sequence"/>

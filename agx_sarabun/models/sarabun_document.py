@@ -135,6 +135,12 @@ class SarabunDocument(models.Model):
         string="Sender Suffix",
         help="Sub-unit name or extension (e.g. 'สำนักงานคณบดี', 'ต่อ 1234').",
     )
+    sender_master_department_id = fields.Many2one(
+        comodel_name="hr.department",
+        related="sender_department_id.master_department_id",
+        string="ส่วนงาน (Master Department)",
+        help="ส่วนงานระดับบนสุดของหน่วยงานผู้ส่ง — ใช้จำกัดแม่แบบเส้นทางให้เห็นเฉพาะของส่วนงานตัวเอง.",
+    )
 
     # === Lifecycle (state field; the state MACHINE is P2 — ADR-0002) ===
     state = fields.Selection(
@@ -938,14 +944,45 @@ class SarabunDocument(models.Model):
             for line in template.line_ids
         ]
 
-    def action_seed_route_from_template(self):
-        """Button (draft/returned): (re)load the Route from ``route_template_id``.
+    def _replace_route_from_template(self):
+        """Wipe the current living เส้นทาง (the locked ผู้จัดทำ/originator step is
+        preserved) and replace it with ``route_template_id``'s steps in a single
+        field assignment, so it truly *replaces* the route rather than appending
+        to it.
 
-        Selecting a template alone is inert — the seed only materialises at ส่ง.
-        This gives the composer an explicit "apply now" so the chosen template's
-        steps appear immediately, wiping the current live เส้นทาง first (the locked
-        ผู้จัดทำ/originator step is preserved) so it truly *replaces* the route
-        rather than appending to it."""
+        Deliberately NOT ``.unlink()`` then a separate assignment: inside an
+        onchange, ``self.routing_step_ids`` holds NewId-wrapped records, but
+        ``.ids`` unwraps them back to their REAL underlying ids (``origin_ids``)
+        — so calling the imperative ``.unlink()`` method deletes the live rows
+        from the database immediately, before Save/Discard even runs. A plain
+        ``(2, id)`` command assigned via ``=``, by contrast, is staged through
+        the field's cache conversion and only ever persists on an actual write()
+        (i.e. it stays virtual for the duration of an onchange)."""
+        self.ensure_one()
+        self._ensure_originator_step()
+        template = self.route_template_id or self.type_id.default_route_id
+        if not template:
+            return
+        self.route_template_id = template
+        to_remove = self.routing_step_ids.filtered(lambda s: not s.is_originator)
+        self.routing_step_ids = [(2, step.id) for step in to_remove] + [
+            (0, 0, dict(line._seed_vals(), attempt_seq=self.attempt_seq or 1))
+            for line in template.line_ids
+        ]
+
+    @api.onchange("route_template_id")
+    def _onchange_route_template_id(self):
+        """Picking a template applies it immediately — clear the Route and set it
+        entirely from the newly chosen template (only while draft/returned, which
+        is also when the field itself is editable)."""
+        if not self.route_template_id or self.state not in ("draft", "returned"):
+            return
+        self._replace_route_from_template()
+
+    def action_seed_route_from_template(self):
+        """Button (draft/returned): manually (re)apply ``route_template_id`` — e.g.
+        to reload it after its lines changed elsewhere, since re-picking the same
+        value in the field doesn't re-trigger the onchange above."""
         self.ensure_one()
         if self.state not in ("draft", "returned"):
             raise UserError(_(
@@ -953,9 +990,7 @@ class SarabunDocument(models.Model):
             ))
         if not self.route_template_id:
             raise UserError(_("Select a route template (แม่แบบเส้นทาง) first."))
-        self._ensure_originator_step()
-        self.routing_step_ids.filtered(lambda s: not s.is_originator).unlink()
-        self._seed_route_from_template()
+        self._replace_route_from_template()
         return True
 
     def _shift_stages_from(self, order):
@@ -1126,6 +1161,21 @@ class SarabunDocument(models.Model):
                     "from_record documents register automatically; "
                     "reserved numbering is for manual compose only."
                 ))
+
+    @api.constrains("type_id", "origin_model")
+    def _check_type_origin_model(self):
+        # เฉพาะกรณี "ขัดกันจริง" — ประเภทประกาศโมเดลไว้ และหนังสือมี origin คนละโมเดล
+        # ไม่บังคับกรณี origin_model ว่าง เพื่อไม่ให้ฟอร์มพังตอนผู้ใช้เลือกประเภทก่อนมี origin
+        for doc in self:
+            type_model = doc.type_id.origin_model_id
+            if type_model and doc.origin_model and doc.origin_model != type_model.model:
+                raise ValidationError(_(
+                    'ประเภทเอกสาร "%(doc_type)s" บังคับระบบงานต้นทางเป็น "%(model)s" '
+                    "— หนังสือฉบับนี้มีระบบงานต้นทางไม่ตรงกัน."
+                ) % {
+                    "doc_type": doc.type_id.name,
+                    "model": type_model.model,
+                })
 
     def _resolve_sequence(self):
         """Resolve the เล่มทะเบียน this หนังสือ issues from (ADR-0012): the book chosen

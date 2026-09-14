@@ -153,11 +153,13 @@
                     <field name="has_signed" invisible="1"/>
                     <field name="can_withdraw" invisible="1"/>
                     <field name="my_active_step_id" invisible="1"/>
+                    <field name="sender_master_department_id" invisible="1"/>
                     <notebook>
                         <page string="การเดินเรื่อง (Routing)" name="routing">
                             <group>
                                 <group>
                                     <field name="route_template_id"
+                                           domain="['|', ('department_id', '=', False), ('department_id', 'child_of', sender_master_department_id)]"
                                            attrs="{'readonly': [('is_editable', '=', False)]}"/>
                                     <button name="action_seed_route_from_template"
                                             type="object"

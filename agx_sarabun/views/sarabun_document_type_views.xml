@@ -26,6 +26,8 @@
                         <group>
                             <field name="kind"/>
                             <field name="sequence"/>
+                            <field name="origin_model_id" options="{'no_create': True}"
+                                   attrs="{'invisible': [('kind', '!=', 'from_record')]}"/>
                         </group>
                         <group>
                             <field name="active" widget="boolean_toggle"/>
