@@ -122,7 +122,7 @@
                         <td t-out="line.name" style="white-space: pre-wrap" />
                         <td class="text-center">
                             <span
-                                t-out="'{0:,.0f}'.format(line.product_qty)"
+                                t-out="'{0:,g}'.format(line.product_qty)"
                             />
                             <span
                                 t-out="line.uom_text or line.product_uom_id.name or ''"
