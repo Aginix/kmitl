@@ -111,7 +111,7 @@
                         </group>
                     </group>
                     <group name="header"
-                           attrs="{'invisible': [('state', '!=', 'draft')]}">
+                           attrs="{'invisible': [('is_editable', '=', False)]}">
                         <field name="subject" placeholder="เรื่อง..."
                                attrs="{'readonly': [('is_editable', '=', False)]}"/>
                         <field name="addressee_prefix_id" nolabel="1" widget="selection" required="1"
@@ -125,20 +125,20 @@
                          the หนังสือ has been sent (a draft previews via the header
                          button instead). Placed before the เนื้อหา section. -->
                     <widget name="sarabun_pdf_inline"
-                            attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                            attrs="{'invisible': [('is_editable', '=', True)]}"/>
                     <!-- เนื้อหา — the composed body. A no-source Document always shows
                          it; a from_record one is OFF by default (its origin report is
                          the body) but the drafter can tick แนบเนื้อหา to add a covering
                          note above the origin's report. -->
                     <label string="มีเนื้อหา" for="include_content"
-                           attrs="{'invisible': ['|', ('origin_model', '=', False), ('state', '!=', 'draft')]}"/>
+                           attrs="{'invisible': ['|', ('origin_model', '=', False), ('is_editable', '=', False)]}"/>
                     <field name="include_content"
-                           attrs="{'invisible': ['|', ('origin_model', '=', False), ('state', '!=', 'draft')], 'readonly': [('is_editable', '=', False)]}"/>
+                           attrs="{'invisible': ['|', ('origin_model', '=', False), ('is_editable', '=', False)], 'readonly': [('is_editable', '=', False)]}"/>
                     <separator string="เนื้อหา (Content)"
-                               attrs="{'invisible': ['|', ('include_content', '=', False), ('state', '!=', 'draft')]}"/>
+                               attrs="{'invisible': ['|', ('include_content', '=', False), ('is_editable', '=', False)]}"/>
                     <field name="content" nolabel="1" class="o_sarabun_content"
                            placeholder="พิมพ์เนื้อหาหนังสือ..."
-                           attrs="{'invisible': ['|', ('include_content', '=', False), ('state', '!=', 'draft')], 'readonly': [('is_editable', '=', False)]}"/>
+                           attrs="{'invisible': ['|', ('include_content', '=', False), ('is_editable', '=', False)], 'readonly': [('is_editable', '=', False)]}"/>
                     <group>
                       <field name="remark" placeholder="หมายเหตุภายใน (ไม่บังคับ)..." attrs="{'readonly': [('is_editable', '=', False)]}"/>
                     </group>
