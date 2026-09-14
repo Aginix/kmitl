@@ -38,7 +38,7 @@ class PurchaseRequest(models.Model):
     def _compute_can_resume_returned_sarabun(self):
         for rec in self:
             rec.can_resume_returned_sarabun = (
-                rec.state == "to_submit"
+                rec.state == "to_approve"
                 and any(
                     pa.state == "pending_pr" for pa in rec.request_approval_ids
                 )

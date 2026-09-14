@@ -11,6 +11,11 @@ class PurchaseRequest(models.Model):
     _name = "purchase.request"
     _inherit = ["purchase.request", "budget.commitment.mixin", "analytic.mixin"]
 
+    state = fields.Selection(
+        selection_add=[("to_verify",), ("to_verify_budget", "To Verify Budget")],
+        ondelete={"to_verify_budget": "set default"},
+    )
+
     budget_commitment_id = fields.Many2one(
         "budget.commitment",
         string="Budget Commitment",
@@ -193,9 +198,7 @@ class PurchaseRequest(models.Model):
         # selection: the user must be able to un-pick.
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
-            if rec.state == "to_submit":
-                rec.is_budget_editable = False
-            elif rec.state == "to_verify" and can_edit:
+            if rec.state == "to_verify_budget" and can_edit:
                 rec.is_budget_editable = True
             elif rec.state == "to_approve" and (
                 not rec.budget_commitment_id
@@ -219,7 +222,7 @@ class PurchaseRequest(models.Model):
         # naming this branch settles on (see purchase_request_kmitl's own
         # to_verify ownership, still unabsorbed upstream).
         for rec in self:
-            if rec.state == "to_verify":
+            if rec.state == "to_verify_budget":
                 rec.hide_reserve_budget_button = False
             elif rec.state == "to_approve" and (
                 rec.budget_commitment_id.state == "cancel"
@@ -228,6 +231,28 @@ class PurchaseRequest(models.Model):
                 rec.hide_reserve_budget_button = False
             else:
                 rec.hide_reserve_budget_button = True
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        # to_verify_budget is this module's own state (the officer working the
+        # reservation) — kmitl's editable_states can't know about it, so extend
+        # it here rather than teaching kmitl about a state it doesn't own.
+        super()._compute_is_editable()
+        for rec in self:
+            if rec.state == "to_verify_budget":
+                rec.is_editable = True
+
+    @api.depends("state", "requested_by")
+    def _compute_can_reset_to_draft(self):
+        super()._compute_can_reset_to_draft()
+        is_manager = self.env.user.has_group(
+            "purchase_request.group_purchase_request_manager"
+        )
+        for rec in self:
+            if rec.state == "to_verify_budget":
+                rec.can_reset_to_draft = (
+                    is_manager or rec.requested_by == self.env.user
+                )
 
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
@@ -300,6 +325,17 @@ class PurchaseRequest(models.Model):
             return "[%s] %s" % (self.name, base)
         return self.name or base
 
+    def button_to_approve(self):
+        """แทรกขั้น รอจองงบประมาณ คั่นก่อน to_approve
+
+        ปุ่มส่งต่อของธุรการที่ ``to_verify`` ส่งเรื่องให้เจ้าหน้าที่งบ ไม่ใช่กระโดด
+        ไป ``to_approve`` ตรง ๆ — การเขียน ``to_approve`` จริงเกิดที่
+        ``action_reserve_budget`` หลังมี commitment แล้ว
+        """
+        to_budget = self.filtered(lambda r: r.state == "to_verify")
+        to_budget.write({"state": "to_verify_budget"})
+        return super(PurchaseRequest, self - to_budget).button_to_approve()
+
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
@@ -351,7 +387,7 @@ class PurchaseRequest(models.Model):
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
             )
-            self.button_to_submit()
+            self.button_to_approve()
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",
@@ -396,7 +432,7 @@ class PurchaseRequest(models.Model):
         self.message_post(
             body=_("หยิบใบจองงบประมาณ %s มาใช้ (draw down)") % commitment.name
         )
-        self.button_to_submit()
+        self.button_to_approve()
         return {
             "type": "ir.actions.act_window",
             "res_model": "purchase.request",
@@ -488,7 +524,7 @@ class PurchaseRequest(models.Model):
     def _compute_to_approve_allowed(self):
         super()._compute_to_approve_allowed()
         for rec in self:
-            rec.to_approve_allowed = rec.state == "to_submit" and any(
+            rec.to_approve_allowed = rec.state == "to_verify_budget" and any(
                 not line.cancelled and line.product_qty for line in rec.line_ids
             )
 

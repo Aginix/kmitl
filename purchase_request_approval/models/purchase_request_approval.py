@@ -496,7 +496,8 @@ class PurchaseRequestApproval(models.Model):
 
         - PA → ``pending_pr`` (name preserved; ``_transition_after_sarabun_approve``
           flips it back to ``draft`` when the fresh sarabun re-completes).
-        - PR → ``to_submit`` (budget commitment stays intact).
+        - PR → ``to_verify`` (budget commitment stays intact; ตีกลับ = back to
+          ธุรการ for a fresh look before it goes to budget and out again).
         - PR's active sarabun is CANCELLED (state=cancelled) so it no longer
           counts as live. The user then explicitly clicks
           ``action_resume_returned_sarabun`` on the PR to revive it — that
@@ -513,7 +514,7 @@ class PurchaseRequestApproval(models.Model):
         ) % {"pa": self.name, "reason": reason}
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
         self._cancel_request_sarabun(reason)
-        self.request_id.write({"state": "to_submit"})
+        self.request_id.write({"state": "to_verify"})
         self.write({"state": "pending_pr"})
         return self._redirect_to_request()
 

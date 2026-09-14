@@ -18,7 +18,6 @@ class PurchaseRequest(models.Model):
     state = fields.Selection(
         selection_add=[
             ("to_verify", "To be verified"),
-            ("to_submit", "To Submit"),
             ("to_approve",),
             ("cancelled", "Cancelled"),
             ("returned", "Returned"),
@@ -30,7 +29,6 @@ class PurchaseRequest(models.Model):
         copy=False,
         ondelete={
             "to_verify": "set default",
-            "to_submit": "set default",
             "cancelled": "set default",
             "returned": "set default",
         },
@@ -189,7 +187,7 @@ class PurchaseRequest(models.Model):
     @api.depends("state")
     def _compute_is_editable(self):
         super()._compute_is_editable()
-        editable_states = ("draft", "to_verify", "to_submit", "returned")
+        editable_states = ("draft", "to_verify", "returned")
         for record in self:
             record.is_editable = record.state in editable_states
 
@@ -207,7 +205,7 @@ class PurchaseRequest(models.Model):
         for rec in self:
             if rec.state == "to_approve":
                 rec.can_reset_to_draft = is_manager
-            elif rec.state in ("to_verify", "to_submit"):
+            elif rec.state == "to_verify":
                 rec.can_reset_to_draft = is_manager or rec.requested_by == self.env.user
             else:
                 rec.can_reset_to_draft = False
@@ -245,9 +243,6 @@ class PurchaseRequest(models.Model):
     def button_approved(self):
         self._apply_sarabun_approve_metadata()
         return super().button_approved()
-
-    def button_to_submit(self):
-        return self.write({"state": "to_submit"})
 
     def button_cancel(self):
         self.ensure_one()

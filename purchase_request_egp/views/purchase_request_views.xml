@@ -82,7 +82,7 @@
                 <field
                     name="state"
                     widget="statusbar"
-                    statusbar_visible="draft,to_verify,to_submit,to_approve,in_egp,in_progress,done"
+                    statusbar_visible="draft,to_verify,to_verify_budget,to_approve,sent,in_egp,in_progress,done"
                     attrs="{'invisible': [('is_egp', '=', False)]}"
                 />
             </xpath>

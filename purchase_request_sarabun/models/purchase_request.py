@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, models
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 
@@ -11,6 +11,11 @@ class PurchaseRequest(models.Model):
     # todo: refactor move out to individual module
     _state_from = [""]
     _state_to = [""]
+
+    state = fields.Selection(
+        selection_add=[("to_approve",), ("sent", "Sent")],
+        ondelete={"sent": "set default"},
+    )
 
     def _compute_access_url(self):
         """Compute the access URL for portal access."""
@@ -37,7 +42,7 @@ class PurchaseRequest(models.Model):
         return self.department_id or super()._get_sarabun_sender_department()
 
     def _on_sarabun_circulating(self, document):
-        self.write({"state": "to_approve"})
+        self.write({"state": "sent"})
         return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):

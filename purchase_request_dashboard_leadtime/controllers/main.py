@@ -12,7 +12,8 @@ class PurchaseRequestDashboardLeadtimeController(http.Controller):
 
     TRACKED_TRANSITIONS = [
         ("draft", "to_verify", "จัดทำคำขอ"),
-        ("to_verify", "to_approve", "จองเงิน"),
+        ("to_verify", "to_verify_budget", "ธุรการตรวจ"),
+        ("to_verify_budget", "to_approve", "จองเงิน"),
         ("to_approve", "approved", "ขออนุมัติคำขอ"),
         ("approved", "in_progress", "จัดซื้อจัดจ้าง"),
         ("in_progress", "done", "จัดทำสัญญา"),

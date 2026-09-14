@@ -137,6 +137,13 @@
                 <attribute name="invisible">1</attribute>
             </button>
 
+            <!-- ธุรการตรวจ: the base button becomes the ส่งต่อ action out of
+                 to_verify, sending the request on to budget reservation. -->
+            <button name="button_to_approve" position="attributes">
+                <attribute name="states">to_verify</attribute>
+                <attribute name="string">ส่งต่อ</attribute>
+            </button>
+
             <button name="button_to_approve" position="after">
                 <button
                     name="button_to_verify"
@@ -159,14 +166,14 @@
             <xpath expr="//button[@name='button_draft']" position="after">
                 <button
                     name="button_cancel"
-                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress,returned"
+                    states="draft,to_verify,to_verify_budget,to_approve,sent,in_egp,in_approval,in_progress,returned"
                     string="Cancel"
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
                 <button
                     name="button_return"
-                    states="to_verify,to_submit"
+                    states="to_verify,to_verify_budget"
                     string="Return"
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
@@ -176,7 +183,7 @@
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,to_verify,to_submit,to_approve,in_approval,in_progress,done</attribute>
+                >draft,to_verify,to_verify_budget,to_approve,sent,in_approval,in_progress,done</attribute>
             </xpath>
 
             <xpath expr="//h1/field[@name='name']" position="attributes">
