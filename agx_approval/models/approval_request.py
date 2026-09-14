@@ -211,6 +211,64 @@ class ApprovalRequest(models.Model):
         copy=True,
     )
 
+    # Single-product categories (the overwhelming majority) hide the line
+    # table entirely: the requester types one amount + description, which is
+    # mirrored onto the sole `approval.request.line` behind the scenes.
+    # `line_ids` stays the single source of truth (budget reserve,
+    # _compute_total_amount, plan/actual comparison) — these two fields are
+    # just the bare-amount UI for the single-product case.
+    multi_product = fields.Boolean(
+        related="category_id.multi_product",
+        string="มีรายการย่อย",
+    )
+
+    plan_amount = fields.Monetary(
+        string="จำนวนเงิน",
+        currency_field="currency_id",
+        compute="_compute_plan_single",
+        inverse="_inverse_plan_single",
+    )
+
+    plan_description = fields.Text(
+        string="รายละเอียด",
+        compute="_compute_plan_single",
+        inverse="_inverse_plan_single",
+    )
+
+    @api.depends("line_ids.total_amount", "line_ids.description", "category_id.multi_product")
+    def _compute_plan_single(self):
+        for rec in self:
+            if not rec.multi_product and rec.line_ids:
+                first = rec.line_ids[0]
+                rec.plan_amount = first.total_amount
+                rec.plan_description = first.description
+            else:
+                rec.plan_amount = 0.0
+                rec.plan_description = False
+
+    def _inverse_plan_single(self):
+        """Mirror the bare amount/description onto the single line behind a
+        single-product category. Guarded on ``category_id`` and
+        ``is_plan_editable`` so this never fires destructively before a
+        category is chosen or once the plan is locked (see memory
+        odoo16-first-onchange-runs-every-method-wipes-defaults)."""
+        for rec in self:
+            if rec.multi_product or not rec.category_id or not rec.is_plan_editable:
+                continue
+            vals = {
+                "product_id": rec.category_id.allowed_product_ids[:1].id,
+                "total_amount": rec.plan_amount,
+                "description": rec.plan_description,
+            }
+            line = rec.line_ids[:1]
+            if line:
+                extra = rec.line_ids - line
+                if extra:
+                    extra.unlink()
+                line.write(vals)
+            else:
+                rec.line_ids = [(0, 0, vals)]
+
     participant_ids = fields.One2many(
         "approval.request.participant",
         "request_id",

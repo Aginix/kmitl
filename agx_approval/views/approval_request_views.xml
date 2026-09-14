@@ -186,7 +186,14 @@
                     </group>
                     <notebook>
                         <page string="Expense Details (Plan)" name="expense_details">
-                            <group string="Planned Expenses">
+                            <field name="multi_product" invisible="1" />
+                            <group string="ค่าใช้จ่าย" attrs="{'invisible': [('multi_product', '=', True)]}">
+                                <field name="plan_amount"
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
+                                <field name="plan_description"
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
+                            </group>
+                            <group string="Planned Expenses" attrs="{'invisible': [('multi_product', '=', False)]}">
                                 <!-- <separator /> -->
                                 <field name="line_ids" widget="no_open_readonly_x2many" nolabel="1"
                                     colspan="2"
@@ -200,6 +207,8 @@
                                         <field name="total_amount" sum="Total" />
                                     </tree>
                                 </field>
+                            </group>
+                            <group>
                                 <separator string="รายชื่อบุคลากรภายใน" />
                                 <field name="internal_participant_ids" widget="no_open_readonly_x2many" nolabel="1"
                                     colspan="2"

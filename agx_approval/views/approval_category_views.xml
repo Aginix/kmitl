@@ -14,6 +14,7 @@
                         <field name="has_period" />
                         <field name="has_city" />
                         <field name="has_country_id" />
+                        <field name="multi_product" />
                         <field name="allowed_product_ids" widget="many2many_tags"/>
                         <field name="allowed_partner_type_ids" widget="many2many_tags"/>
                         <field name="budget_account_id" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>

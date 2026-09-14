@@ -1,692 +1,807 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Rewritten per-code taxonomy (~90 fine-grained expense types + 5
+     multi-product travel/training types), grouped by 5 budget หมวด.
+     4 codes from the source taxonomy have no matching budget.account /
+     product.product in this repo and are intentionally omitted:
+     5101020128, 5101020129, 5104010221, 5104020009. -->
 <odoo noupdate="1">
-    <record id="approval_category_01" model="approval.category">
-        <field name="name">ขออนุมัติปฏิบัติงานนอกสถานที่</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติปฏิบัติงานนอกสถานที่ </field>
-        <field name="group_id" ref="approve_category_group_outside" />
+    <record id="approval_category_5102010000" model="approval.category">
+        <field name="name">ฝึกอบรมในประเทศ</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="multi_product">True</field>
         <field name="has_period">True</field>
         <field name="has_city">True</field>
         <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5103010001','5103010002','5103010003','5103010099'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5102010001', '5102010002', '5102010003', '5102010004', '5102010099'])]).ids)]"/>
     </record>
 
-    <record id="approval_category_02" model="approval.category">
-        <field name="name">ใบขออนุมัติเดินทางไปต่างประเทศ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเดินทางไปต่างประเทศ </field>
-        <field name="group_id" ref="approve_category_group_abroad" />
+    <record id="approval_category_5102020000" model="approval.category">
+        <field name="name">ฝึกอบรมต่างประเทศ</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="multi_product">True</field>
         <field name="has_period">True</field>
         <field name="has_city">False</field>
         <field name="has_country_id">True</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5103020001','5103020002','5103020003','5103020099'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5102020001', '5102020002', '5102020003', '5102020004', '5102020099'])]).ids)]"/>
     </record>
 
-    <record id="approval_category_03" model="approval.category">
-        <field name="name">ใบขออนุมัติค่าใช้จ่ายในการประชุม</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการประชุม </field>
-        <field name="group_id" ref="approve_category_group_meeting" />
+    <record id="approval_category_5103010000" model="approval.category">
+        <field name="name">เดินทางในประเทศ</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="multi_product">True</field>
         <field name="has_period">True</field>
-        <field name="has_city">False</field>
+        <field name="has_city">True</field>
         <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104010202','5104010209','5104010210','5104010211','5104030201'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5103010001', '5103010002', '5103010003', '5103010099'])]).ids)]"/>
     </record>
 
-    <record id="approval_category_04" model="approval.category">
-        <field name="name">ค่าใช้จ่ายสนับสนุนการดำเนินงาน</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายสนับสนุนการดำเนินงาน </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000003'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_05" model="approval.category">
-        <field name="name">ค่าใช้จ่ายสนับสนุนพิธีกรรม/พิธีกร</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายสนับสนุนพิธีกรรม/พิธีกร </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000004','5108000005','5108000007','5108000028'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_06" model="approval.category">
-        <field name="name">ค่าใช้จ่ายเกี่ยวกับนักศึกษา</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายเกี่ยวกับนักศึกษา </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000018','5108000023','5108000032'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_07" model="approval.category">
-        <field name="name">ค่าใช้จ่ายในการรับสมัครสอบคัดเลือกนักศึกษา</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการรับสมัครสอบคัดเลือกนักศึกษา </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000008','5108000009'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_08" model="approval.category">
-        <field name="name">ค่าใช้จ่ายในการจัดทำระบบการประกันคุณภาพ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการจัดทำระบบการประกันคุณภาพ </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000010'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_09" model="approval.category">
-        <field name="name">ค่าใช้จ่ายในการบริหารจัดการกลาง</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการบริหารจัดการกลาง </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000024'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_10" model="approval.category">
-        <field name="name">ค่าใช้จ่ายการจัดสอบมาตราฐานความรู้ภาษาอังกฤษก่อนจบการศึกษา (Exit-Exam)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายการจัดสอบมาตราฐานความรู้ภาษาอังกฤษก่อนจบการศึกษา (Exit-Exam) </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000037'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_11" model="approval.category">
-        <field name="name">โครงการพิเศษรายจ่ายอื่น</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายโครงการพิเศษรายจ่ายอื่น </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000019'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_12" model="approval.category">
-        <field name="name">ค่าใช้จ่ายในการจัดทำรายงานประจำปี</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการจัดทำรายงานประจำปี </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000013'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_13" model="approval.category">
-        <field name="name">ค่าใช้จ่ายโครงงานนักศึกษา</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายโครงงานนักศึกษา </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000022'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_14" model="approval.category">
-        <field name="name">ค่าใช้จ่ายในการตรวจสอบบัญชี</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการตรวจสอบบัญชี </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000015'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_15" model="approval.category">
-        <field name="name">ค่าใช้จ่ายโครงการอื่นๆ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายโครงการอื่นๆ </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000006','5108000011','5108000031'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_16" model="approval.category">
-        <field name="name">ค่าใช้จ่ายอื่นๆที่เกี่ยวกับบุคลากร</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายอื่นๆที่เกี่ยวกับบุคลากร </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000026','5108000035','5108000036'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_17" model="approval.category">
-        <field name="name">ค่าใช้จ่ายการเรียนและการสอบภาษาอังกฤษ (พิเศษ)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายการเรียนและการสอบภาษาอังกฤษ (พิเศษ) </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000029'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_18" model="approval.category">
-        <field name="name">ค่าใช้จ่ายจากเงิน ทอท.</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายจากเงิน ทอท. </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000025'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_19" model="approval.category">
-        <field name="name">ค่าใช้จ่ายอื่น</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายอื่น </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000014','5108000017'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_20" model="approval.category">
-        <field name="name">ค่าใช้จ่ายอัตราผลตอบแทนชดใช้เงินสถาบัน</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายอัตราผลตอบแทนชดใช้เงินสถาบัน </field>
-        <field name="group_id" ref="approve_category_group_other" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5108000038'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_21" model="approval.category">
-        <field name="name">ค่าสมาชิก/ค่าสมาคม</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าสมาชิก/ค่าสมาคม </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010001','5107010002','5107010003','5107010004','5107010005','5107010044'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_22" model="approval.category">
-        <field name="name">เงินอุดหนุนเพื่อสนับสนุนนโยบายด้านการศึกษา</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกเงินอุดหนุนเพื่อสนับสนุนนโยบายด้านการศึกษา </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010059','5107010060','5107010061'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_23" model="approval.category">
-        <field name="name">เงินอุดหนุนทุนการศึกษา (นักศึกษา)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกเงินอุดหนุนทุนการศึกษา (นักศึกษา) </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010006','5107010022','5107010048','5107010052','5107030003'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_24" model="approval.category">
-        <field name="name">เงินอุดหนุนทุนการศึกษา (บุคลากร)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกเงินอุดหนุนทุนการศึกษา (บุคลากร) </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010025','5107030004','5107030005'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_25" model="approval.category">
-        <field name="name">เงินอุดหนุนเพื่อสนับสนุนนโยบายด้านพัฒนาศักยภาพทุนมนุษย์</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกเงินอุดหนุนเพื่อสนับสนุนนโยบายด้านพัฒนาศักยภาพทุนมนุษย์ </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010062','5107010063','5107010064'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_26" model="approval.category">
-        <field name="name">ทุนอุดหนุนการเดินทางไปเสนอบทความทางวิชาการ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกทุนอุดหนุนการเดินทางไปเสนอบทความทางวิชาการ </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010101','5107010102','5107010103','5107010104','5107010106'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_27" model="approval.category">
-        <field name="name">เงินอุดหนุนเพื่อการวิจัย</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกเงินอุดหนุนเพื่อการวิจัย </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010200','5107010201','5107010202','5107010203','5107010204','5107010291'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_28" model="approval.category">
-        <field name="name">รายละเอียดค่าใช้จ่ายโครงการวิจัย</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายโครงการวิจัย </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010211','5107010221','5107010222','5107010231','5107010241','5107010251','5107010261','5107010271','5107010281','5107010282','5107010292','5107010293','5107010295'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_29" model="approval.category">
-        <field name="name">ค่าใช้จ่ายโครงการวิจัย (ตามชื่อโครงการ)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายโครงการวิจัย (ตามชื่อโครงการ) </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010300','5107010301','5107010302','5107010303','5107010304'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_30" model="approval.category">
-        <field name="name">ค่าใช้จ่ายเงินอุดหนุนโครงการยุทธศาสตร์</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายเงินอุดหนุนโครงการยุทธศาสตร์ </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010501'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_31" model="approval.category">
-        <field name="name">ค่าใช้จ่ายในการดำเนินกิจการของสถาบัน</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการดำเนินกิจการของสถาบัน </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010065'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_32" model="approval.category">
-        <field name="name">ค่าใช้จ่ายโอนเข้ากองทุน</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายโอนเข้ากองทุน </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010054','5107010055','5107010058','5107010066','5107010294'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_33" model="approval.category">
-        <field name="name">เงินอุดหนุนโครงการ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกเงินอุดหนุนโครงการ </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010087','5107010088','5107010089','5107010091','5107010092'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_34" model="approval.category">
-        <field name="name">ค่าใช้จ่ายดำเนินงานโครงการบูรณาการ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายดำเนินงานโครงการบูรณาการ </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010401'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_35" model="approval.category">
-        <field name="name">ค่าใช้จ่ายช่วยเหลือทางมาตราการของรัฐ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายช่วยเหลือทางมาตราการของรัฐ </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010095','5107010098'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_36" model="approval.category">
-        <field name="name">ค่าใช้จ่ายด้านทุนการศึกษาเสนอบทความทางวิชาการ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายด้านทุนการศึกษาเสนอบทความทางวิชาการ </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010105'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_37" model="approval.category">
-        <field name="name">ค่าใช้จ่ายเงินอุดหนุนอื่น</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายเงินอุดหนุนอื่น </field>
-        <field name="group_id" ref="approve_category_group_support" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010010','5107010045','5107010047','5107010049','5107010094','5107010099'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_38" model="approval.category">
-        <field name="name">ใบขออนุมัติฝึกอบรม/สัมมนา (ในประเทศ)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติฝึกอบรม/สัมมนา (ในประเทศ) </field>
-        <field name="group_id" ref="approve_category_group_conference" />
-        <field name="has_period">True</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5102010001','5102010002','5102010003','5102010004','5102010099'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_39" model="approval.category">
-        <field name="name">ใบขออนุมัติฝึกอบรม/สัมมนา (ต่างประเทศ)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติฝึกอบรม/สัมมนา (ต่างประเทศ) </field>
-        <field name="group_id" ref="approve_category_group_conference" />
+    <record id="approval_category_5103020000" model="approval.category">
+        <field name="name">เดินทางต่างประเทศ</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="multi_product">True</field>
         <field name="has_period">True</field>
         <field name="has_city">False</field>
         <field name="has_country_id">True</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5102020001','5102020002','5102020003','5102020004','5102020099'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5103020001', '5103020002', '5103020003', '5103020099'])]).ids)]"/>
     </record>
 
-    <record id="approval_category_40" model="approval.category">
-        <field name="name">ขออนุมัติค่าใช้จ่ายจากงานบริการ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายจากงานบริการ </field>
-        <field name="group_id" ref="approve_category_group_service" />
-        <field name="has_period">False</field>
+    <record id="approval_category_5107010021" model="approval.category">
+        <field name="name">ทุนอุดหนุนเดินทางเสนอบทความ</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="multi_product">True</field>
+        <field name="has_period">True</field>
         <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5109000002','5109100010','5109100016'])]).ids)]"/>
+        <field name="has_country_id">True</field>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5107010101', '5107010102', '5107010103', '5107010104', '5107010106'])]).ids)]"/>
     </record>
 
-    <record id="approval_category_41" model="approval.category">
-        <field name="name">ขออนุมัติค่าใช้จ่ายสาธารณูปโภค</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายสาธารณูปโภค </field>
-        <field name="group_id" ref="approve_category_group_utility" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104020001','5104020003','5104020005','5104020006','5104020008','5104020099'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_42" model="approval.category">
-        <field name="name">ค่าตอบแทนบุคลากร</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนบุคลากร </field>
+    <record id="approval_category_5101020126" model="approval.category">
+        <field name="name">ค่าตอบแทนคณะกรรมการสำหรับประเมินคุณภาพผลงานวิทยานิพนธ์</field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101010010','5101020015','5101020030'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020126')]).ids)]"/>
     </record>
 
-    <record id="approval_category_43" model="approval.category">
-        <field name="name">ค่าสอนพิเศษ (ภายใน/ภายนอก)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าสอนพิเศษ (ภายใน/ภายนอก) </field>
+    <record id="approval_category_5101020127" model="approval.category">
+        <field name="name">ค่าตอบแทนสำหรับโครงการ K-Engineering WIL</field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020012','5101020013'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020127')]).ids)]"/>
     </record>
 
-    <record id="approval_category_44" model="approval.category">
-        <field name="name">ค่าคุมสอบ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าคุมสอบ </field>
+    <record id="approval_category_5101020013" model="approval.category">
+        <field name="name">ค่าสอนพิเศษนักศึกษาระดับปริญญาโท-เอก</field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020019','5101020020'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020013')]).ids)]"/>
     </record>
 
-    <record id="approval_category_45" model="approval.category">
-        <field name="name">ค่ากรรมการสอบต่างๆ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่ากรรมการสอบต่างๆ </field>
+    <record id="approval_category_5101020014" model="approval.category">
+        <field name="name">ค่าตรวจและประเมินผลงานทางวิชาการ/ปัญหาพิเศษ</field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020018','5101020021','5101020023'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020014')]).ids)]"/>
     </record>
 
-    <record id="approval_category_46" model="approval.category">
-        <field name="name">ค่าตอบแทนอาจารย์ (ภายใน)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนอาจารย์ (ภายใน) </field>
+    <record id="approval_category_5101020015" model="approval.category">
+        <field name="name">ค่าตอบแทนเจ้าหน้าที่ปฏิบัติภาคฤดูร้อน</field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020026','5101020027','5101020044','5101020114'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020015')]).ids)]"/>
     </record>
 
-    <record id="approval_category_47" model="approval.category">
-        <field name="name">ค่าตอบแทนผู้ช่วยสอน (ภายใน/ภายนอก)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนผู้ช่วยสอน (ภายใน/ภายนอก) </field>
+    <record id="approval_category_5101020016" model="approval.category">
+        <field name="name">ค่าตรวจกระดาษคำตอบนักศึกษาระดับปริญญาตรี</field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020022'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020016')]).ids)]"/>
     </record>
 
-    <record id="approval_category_48" model="approval.category">
-        <field name="name">ค่าตอบแทนวิทยากร (เกี่ยวกับการจัดการสอน)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนวิทยากร (เกี่ยวกับการจัดการสอน) </field>
+    <record id="approval_category_5101020017" model="approval.category">
+        <field name="name">ค่าตรวจกระดาษคำตอบนักศึกษาระดับปริญญาโท-เอก</field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020011'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020017')]).ids)]"/>
     </record>
 
-    <record id="approval_category_49" model="approval.category">
-        <field name="name">ค่าตอบแทนตำรา</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนตำรา </field>
+    <record id="approval_category_5101020018" model="approval.category">
+        <field name="name">ค่าตรวจและคุมวิทยานิพนธ์/โครงการศึกษากรณีพิเศษ</field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020024','5101020115'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020018')]).ids)]"/>
     </record>
 
-    <record id="approval_category_50" model="approval.category">
-        <field name="name">ค่าตอบแทนเสนอบทความทางวิชาการ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนเสนอบทความทางวิชาการ </field>
-        <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020025'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_51" model="approval.category">
-        <field name="name">ค่าตอบแทนผู้ทรงคุณวุฒิอ่านบทความวิชาการ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนผู้ทรงคุณวุฒิอ่านบทความวิชาการ </field>
-        <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020104'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_52" model="approval.category">
-        <field name="name">ค่าสอนบริการ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าสอนบริการ </field>
-        <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020111','5101020112'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_53" model="approval.category">
+    <record id="approval_category_5104030201" model="approval.category">
         <field name="name">ค่าเบี้ยประชุม</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าเบี้ยประชุม </field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104030201'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104030201')]).ids)]"/>
     </record>
 
-    <record id="approval_category_54" model="approval.category">
-        <field name="name">ค่าตอบแทนนักศึกษาช่วยปฏิบัติงาน</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนนักศึกษาช่วยปฏิบัติงาน </field>
+    <record id="approval_category_5101020019" model="approval.category">
+        <field name="name">ค่าคุมสอบระดับปริญญาตรี (ค่าใช้จ่ายในการดำเนินการจัดสอบประจำภาค)</field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020037'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020019')]).ids)]"/>
     </record>
 
-    <record id="approval_category_55" model="approval.category">
+    <record id="approval_category_5101020009" model="approval.category">
         <field name="name">ค่าตอบแทนนายแพทย์</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนนายแพทย์ </field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020009'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020009')]).ids)]"/>
     </record>
 
-    <record id="approval_category_56" model="approval.category">
-        <field name="name">ค่าสอนว่ายน้ำ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าสอนว่ายน้ำ </field>
+    <record id="approval_category_5101020020" model="approval.category">
+        <field name="name">ค่าคุมสอบระดับปริญญาโท-เอก (ค่าใช้จ่ายในการดำเนินการจัดสอบประจำภาค)</field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020010'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020020')]).ids)]"/>
     </record>
 
-    <record id="approval_category_57" model="approval.category">
-        <field name="name">ค่าเงินรางวัล</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าเงินรางวัล </field>
+    <record id="approval_category_5101020021" model="approval.category">
+        <field name="name">ค่าสอบสัมมนาระดับปริญญาโท-เอก (ค่าใช้จ่ายในการดำเนินการจัดสอบประจำภาค)</field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020031','5101020106'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020021')]).ids)]"/>
     </record>
 
-    <record id="approval_category_58" model="approval.category">
-        <field name="name">ค่าตรวจและประเมินผลงานทางวิชาการ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตรวจและประเมินผลงานทางวิชาการ </field>
+    <record id="approval_category_5101020022" model="approval.category">
+        <field name="name">ค่าตอบแทนผู้ช่วยคณาจารย์บัณฑิตศึกษา</field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020014'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020022')]).ids)]"/>
     </record>
 
-    <record id="approval_category_59" model="approval.category">
+    <record id="approval_category_5101020023" model="approval.category">
+        <field name="name">ค่าพิจารณาหัวข้อและเค้าโครงวิทยานิพนธ์/สาระนิพนธ์/ปัญหาพิเศษ</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020023')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020024" model="approval.category">
+        <field name="name">ค่าเขียนตำรา</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020024')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020025" model="approval.category">
+        <field name="name">ค่าตอบแทนการเสนอบทความทางวิชาการ (ค่าตอบแทนบุคลากรภายในเสนอบทความฯ)</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020025')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020026" model="approval.category">
+        <field name="name">ค่าตอบแทนอาจารย์ที่ปรึกษา</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020026')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020027" model="approval.category">
+        <field name="name">ค่าตอบแทนอาจารย์ที่ปรึกษาชมรม</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020027')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020028" model="approval.category">
+        <field name="name">ค่าตรวจบทความของนักศึกษาระดับปริญญาตรี</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020028')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020029" model="approval.category">
+        <field name="name">ค่าตรวจบทความของนักศึกษาระดับปริญญาโท-เอก</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020029')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020030" model="approval.category">
+        <field name="name">ค่ากรรมการตรวจการจ้าง ควบคุมงานและค่าออกแบบ (บุคคลภายใน)</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020030')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020031" model="approval.category">
+        <field name="name">ค่าเงินรางวัลกรรมการสอบ</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020031')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020117" model="approval.category">
+        <field name="name">ค่าสมนาคุณผู้ป่วยจำลอง</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020117')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020033" model="approval.category">
+        <field name="name">ค่าใช้จ่ายบุคลากรอื่น (รวมการจ้างพยาบาลภายนอก)</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020033')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020037" model="approval.category">
+        <field name="name">ค่าตอบแทนนักศึกษาช่วยปฏิบัติงาน</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020037')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020044" model="approval.category">
+        <field name="name">ค่าตอบแทนอาจารย์พี่เลี้ยง/บุคลากรพี่เลี้ยง (ให้คำปรึกษาหรือแนะนำการทำงานวิจัยฯลฯ)</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020044')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020104" model="approval.category">
+        <field name="name">ค่าตอบแทนผู้ทรงคุณวุฒิอ่านบทความวิชาการ (เชิญผู้ทรงคุณวุฒิทั้งภายในและภายนอกอ่านบทความฯ)</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020104')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020106" model="approval.category">
+        <field name="name">เงินรางวัลให้กับบุคลากรที่ทำชื่อเสียงให้สถาบัน</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020106')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020114" model="approval.category">
+        <field name="name">ค่าตอบแทนอาจารย์ผู้ดำเนินการหลักสูตรตามกรอบมาตรฐานอุดมศึกษา</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020114')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020115" model="approval.category">
+        <field name="name">ค่าใช้จ่ายเงินสนับสนุนการผลิตตำราและหนังสือที่เผยแพร่แล้ว</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020115')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020118" model="approval.category">
+        <field name="name">ค่าสมนาคุณกรรมการคุมสอบ</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020118')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020119" model="approval.category">
+        <field name="name">ค่าใช้จ่ายเงินสนับสนุนการเรียนกายวิภาคศาสตร์</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020119')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020120" model="approval.category">
+        <field name="name">ค่าตอบแทนคณะกรรมการจัดทำวารสารวิชาการ</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020120')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020121" model="approval.category">
+        <field name="name">ค่าตอบแทนที่ปรึกษา</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020121')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020122" model="approval.category">
+        <field name="name">ค่าป่วยการพยาน</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020122')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020123" model="approval.category">
+        <field name="name">ค่าตอบแทนกรรมการสอบประมวลความรู้</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020123')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020124" model="approval.category">
+        <field name="name">ค่าตอบแทนกรรมการสอบวัดคุณสมบัติ</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020124')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020125" model="approval.category">
+        <field name="name">ค่าตอบแทนกรรมการสอบและคุมการค้นคว้าอิสระ</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020125')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020046" model="approval.category">
+        <field name="name">ค่าตอบแทนผู้รับผิดชอบด้านพลังงาน</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020046')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101010010" model="approval.category">
+        <field name="name">ค่าล่วงเวลา</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101010010')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020008" model="approval.category">
+        <field name="name">ค่าเช่าบ้านข้าราชการ</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020008')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020010" model="approval.category">
+        <field name="name">ค่าสอนว่ายน้ำ/ผู้ฝึกสอนชมรมกีฬา</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020010')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020011" model="approval.category">
+        <field name="name">ค่าตอบแทนวิทยากร</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020011')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020012" model="approval.category">
+        <field name="name">ค่าสอนพิเศษนักศึกษาระดับปริญญาตรี</field>
+        <field name="group_id" ref="approve_category_group_compensation" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020012')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5101020032" model="approval.category">
         <field name="name">ค่าตอบแทนอื่นๆ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนอื่นๆ </field>
         <field name="group_id" ref="approve_category_group_compensation" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5101020032','5101020033','5101020046'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5101020032')]).ids)]"/>
     </record>
 
-    <record id="approval_category_60" model="approval.category">
-        <field name="name">ค่าธรรมเนียม</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าธรรมเนียม </field>
-        <field name="group_id" ref="approve_category_group_expense" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104010201','5104010212','5104010216'])]).ids)]"/>
-    </record>
-
-    <record id="approval_category_61" model="approval.category">
+    <record id="approval_category_5104010202" model="approval.category">
         <field name="name">ค่ารับรองและพิธีการ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่ารับรองและพิธีการ </field>
         <field name="group_id" ref="approve_category_group_expense" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104010202'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010202')]).ids)]"/>
     </record>
 
-    <record id="approval_category_62" model="approval.category">
+    <record id="approval_category_5104010203" model="approval.category">
+        <field name="name">ค่าจ้างเหมาบริการ</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010203')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010204" model="approval.category">
+        <field name="name">ค่าซ่อมแซมและบำรุงรักษาครุภัณฑ์</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010204')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010205" model="approval.category">
+        <field name="name">ค่าซ่อมแซมและบำรุงรักษายานพาหนะ</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010205')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010206" model="approval.category">
+        <field name="name">ค่าซ่อมแซมและบำรุงรักษาสิ่งก่อสร้าง</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010206')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010207" model="approval.category">
         <field name="name">ค่าสมาชิกและแข่งขัน</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าสมาชิกและแข่งขัน </field>
         <field name="group_id" ref="approve_category_group_expense" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104010207'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010207')]).ids)]"/>
     </record>
 
-    <record id="approval_category_63" model="approval.category">
-        <field name="name">ค่าเดินทาง/ค่าที่พัก (บุคคลภายนอก)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าเดินทาง/ค่าที่พัก (บุคคลภายนอก) </field>
+    <record id="approval_category_5104010208" model="approval.category">
+        <field name="name">ค่าเช่าทรัพย์สิน</field>
         <field name="group_id" ref="approve_category_group_expense" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104010209','5104010210'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010208')]).ids)]"/>
     </record>
 
-    <record id="approval_category_64" model="approval.category">
-        <field name="name">ค่าใช้จ่ายในการตีพิมพ์บทความในวารสารวิชาการระดับนานาชาติ (Page charge)</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการตีพิมพ์บทความในวารสารวิชาการระดับนานาชาติ (Page charge) </field>
+    <record id="approval_category_5104010209" model="approval.category">
+        <field name="name">ค่าที่พัก อ.พิเศษ / ผู้เชี่ยวชาญต่างประเทศ</field>
         <field name="group_id" ref="approve_category_group_expense" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104010285'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010209')]).ids)]"/>
     </record>
 
-    <record id="approval_category_65" model="approval.category">
+    <record id="approval_category_5104010210" model="approval.category">
+        <field name="name">ค่าเดินทาง อ.พิเศษ/กรรมการตรวจวิทยานิพนธ์</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010210')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010211" model="approval.category">
+        <field name="name">ค่าใช้จ่ายในการจัดประชุมที่สถาบันเป็นผู้จัด (ยกเว้นไม่รวมค่าเบี้ยประชุมกรรมการ)</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010211')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010212" model="approval.category">
+        <field name="name">ค่าธรรมเนียมธนาคาร</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010212')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010214" model="approval.category">
+        <field name="name">ค่าใช้จ่ายในการจัดอบรมของหน่วยงาน (หน่วยงานเป็นเจ้าภาพโดยร่วมประชุมวิชาการ ฝึกอบรม)</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010214')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010215" model="approval.category">
+        <field name="name">ค่าคัดสำเนา/รับรองสำเนา</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010215')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010216" model="approval.category">
+        <field name="name">ค่าธรรมเนียมในการตรวจสอบบัญชี</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010216')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010218" model="approval.category">
         <field name="name">ค่าใช้จ่ายในการศึกษาดูงานในหลักสูตรบัณฑิตศึกษา</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการศึกษาดูงานในหลักสูตรบัณฑิตศึกษา </field>
         <field name="group_id" ref="approve_category_group_expense" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104010218'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010218')]).ids)]"/>
     </record>
 
-    <record id="approval_category_66" model="approval.category">
-        <field name="name">ค่าใช้จ่ายที่ปรึกษา ค่าผู้เชี่ยวชาญ ค่าปรึกษากฎหมาย</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายที่ปรึกษา ค่าผู้เชี่ยวชาญ ค่าปรึกษากฎหมาย </field>
+    <record id="approval_category_5104010285" model="approval.category">
+        <field name="name">ค่าใช้จ่ายในการตีพิมพ์บทความในวารสารวิชาการระดับนานาชาติ (Page Charge)</field>
         <field name="group_id" ref="approve_category_group_expense" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104030202'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010285')]).ids)]"/>
     </record>
 
-    <record id="approval_category_67" model="approval.category">
-        <field name="name">ค่าใช้สอยอื่นๆ</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้สอยอื่นๆ </field>
+    <record id="approval_category_5104010291" model="approval.category">
+        <field name="name">ค่าลิขสิทธิ์ ซอฟแวร์ (หมายถึงการเช่า license ที่มีระยะเวลา 1 ปี)</field>
         <field name="group_id" ref="approve_category_group_expense" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104010299'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010291')]).ids)]"/>
     </record>
 
-    <record id="approval_category_68" model="approval.category">
-        <field name="name">ค่าใช้จ่ายในการจัดอบรมของหน่วยงาน</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการจัดอบรมของหน่วยงาน </field>
+    <record id="approval_category_5104010298" model="approval.category">
+        <field name="name">ค่าเช่าพื้นที่</field>
         <field name="group_id" ref="approve_category_group_expense" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104010214'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010298')]).ids)]"/>
     </record>
 
-    <record id="approval_category_69" model="approval.category">
+    <record id="approval_category_5104030202" model="approval.category">
+        <field name="name">ค่าใช้จ่ายที่ปรึกษา ค่าผู้เชี่ยวชาญ ค่าที่ปรึกษากฎหมาย</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104030202')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104030203" model="approval.category">
         <field name="name">ค่าเบี้ยประกันภัย</field>
-        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าเบี้ยประกันภัย </field>
         <field name="group_id" ref="approve_category_group_expense" />
-        <field name="has_period">False</field>
-        <field name="has_city">False</field>
-        <field name="has_country_id">False</field>
-        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', 'in', ['5104030203'])]).ids)]"/>
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104030203')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010219" model="approval.category">
+        <field name="name">ค่าชาร์จพลังงานไฟฟ้า</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010219')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010220" model="approval.category">
+        <field name="name">ค่าของที่ระลึก</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010220')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104030101" model="approval.category">
+        <field name="name">ค่าประชาสัมพันธ์</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104030101')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104030102" model="approval.category">
+        <field name="name">ค่าจัดพิมพ์</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104030102')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104010299" model="approval.category">
+        <field name="name">ค่าใช้สอยอื่น</field>
+        <field name="group_id" ref="approve_category_group_expense" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104010299')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104020001" model="approval.category">
+        <field name="name">ค่าไฟฟ้าสำหรับใช้งาน</field>
+        <field name="group_id" ref="approve_category_group_utility" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104020001')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104020003" model="approval.category">
+        <field name="name">ค่าน้ำประปาสำหรับใช้งาน</field>
+        <field name="group_id" ref="approve_category_group_utility" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104020003')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104020005" model="approval.category">
+        <field name="name">ค่าโทรศัพท์สำหรับใช้งาน</field>
+        <field name="group_id" ref="approve_category_group_utility" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104020005')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104020006" model="approval.category">
+        <field name="name">ค่าใช้จ่ายค่าบริการ Internet</field>
+        <field name="group_id" ref="approve_category_group_utility" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104020006')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104020008" model="approval.category">
+        <field name="name">ค่าไปรษณีย์โทรเลข</field>
+        <field name="group_id" ref="approve_category_group_utility" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104020008')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5104020099" model="approval.category">
+        <field name="name">ค่าสาธารณูปโภคอื่น ๆ</field>
+        <field name="group_id" ref="approve_category_group_utility" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5104020099')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010001" model="approval.category">
+        <field name="name">ค่าสมาชิกสมาคมมหาวิทยาลัยระหว่างชาติ</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010001')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010002" model="approval.category">
+        <field name="name">ค่าสมาชิกสมาคมอุดมศึกษาเอเชียอาคเนย์</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010002')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010003" model="approval.category">
+        <field name="name">ค่าสมาชิกชมรมไฟฟ้าแสงสว่างประเทศไทย</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010003')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010004" model="approval.category">
+        <field name="name">ค่าสมาชิกกีฬามหาวิทยาลัยแห่งประเทศไทย</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010004')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010005" model="approval.category">
+        <field name="name">ค่าสมาชิกสมาคมกิจการนักศึกษานานาชาติ</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010005')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010006" model="approval.category">
+        <field name="name">ทุนอุดหนุนโครงการความร่วมมือ (ASEA-UNINET)</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010006')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010010" model="approval.category">
+        <field name="name">เงินอุดหนุนอื่นๆ</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010010')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010015" model="approval.category">
+        <field name="name">ค่าใช้จ่ายจากกองทุนสวัสดิการสำรองเลี้ยงชีพ ค่ารักษาพยาบาลและอื่นๆ</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010015')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010022" model="approval.category">
+        <field name="name">เงินอุดหนุนทุนการศึกษา</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010022')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010044" model="approval.category">
+        <field name="name">ค่าสมาชิก/ค่าสมาคม</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010044')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010045" model="approval.category">
+        <field name="name">ค่าใช้จ่ายเงินอุดหนุนเจรจาธุรกิจ</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010045')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010047" model="approval.category">
+        <field name="name">ค่าใช้จ่ายอื่นโครงการ Love 4</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010047')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010048" model="approval.category">
+        <field name="name">ค่าใช้จ่ายสนับสนุนทุนการศึกษาจากโครงการ love 4</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010048')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010049" model="approval.category">
+        <field name="name">ค่าใช้จ่ายสนับสนุนการจัดประชุมวิชาการระดับนานาชาติ</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010049')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010054" model="approval.category">
+        <field name="name">ค่าใช้จ่ายโอนเข้ากองทุนเพื่อการการศึกษา- กองกิจ</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010054')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010059" model="approval.category">
+        <field name="name">เงินอุดหนุนเพื่อสนับสนุนนโยบายด้านการศึกษา (โครงการปริญญาตรีต่อเนื่อง)</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010059')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010060" model="approval.category">
+        <field name="name">เงินอุดหนุนเพื่อสนับสนุนนโยบายด้านการศึกษา (โครงการเครือข่ายอุดมศึกษาพี่เลี้ยง)</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010060')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010061" model="approval.category">
+        <field name="name">เงินอุดหนุนเพื่อสนับสนุนนโยบายด้านการศึกษา (โครงการประเมินความสามารถด้านการใช้ภาษาอังกฤษ)</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010061')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010062" model="approval.category">
+        <field name="name">เงินอุดหนุนเพื่อสนับสนุนนโยบายด้านพัฒนาศักยภาพทุนมนุษย์</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010062')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010065" model="approval.category">
+        <field name="name">ค่าใช้จ่ายในการดำเนินกิจการของสถาบัน</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010065')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010066" model="approval.category">
+        <field name="name">ค่าใช้จ่ายโอนเข้ากองทุนเพื่อสนับสนุนการบริหารงานบุคคลของสถาบัน</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010066')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010067" model="approval.category">
+        <field name="name">ค่าใช้จ่ายสนับสนุนการบริหารจัดการรายวิชา</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010067')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010068" model="approval.category">
+        <field name="name">ค่าใช้จ่ายสนับสนุนพัฒนาแพทยศาสตรศึกษา</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010068')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010069" model="approval.category">
+        <field name="name">ค่าใช้จ่ายสนับสนุนการสอบ Comprehensive Exam</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010069')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010088" model="approval.category">
+        <field name="name">ค่าใช้จ่ายเงินอุดหนุนโครงการแลกเปลี่ยนนักศึกษานานาชาติ</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010088')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010089" model="approval.category">
+        <field name="name">ค่าใช้จ่ายโครงการเตรียมความพร้อมสู่ประชาคมอาเซียน</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010089')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010091" model="approval.category">
+        <field name="name">ค่าใช้จ่ายเงินอุดหนุนโครงการศิลปวัฒนธรรม</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010091')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5107010092" model="approval.category">
+        <field name="name">ค่าใช้จ่ายเงินอุดหนุนโครงการบริการวิชาการ</field>
+        <field name="group_id" ref="approve_category_group_support" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5107010092')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000010" model="approval.category">
+        <field name="name">ค่าใช้จ่ายในการจัดทำระบบการประกันคุณภาพ</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000010')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000037" model="approval.category">
+        <field name="name">ค่าใช้จ่ายการจัดสอบมาตรฐานความรู้ภาษาอังกฤษก่อนจบการศึกษา(Exit - Exam )</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000037')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000005" model="approval.category">
+        <field name="name">ค่าใช้จ่ายสนับสนุนกีฬาบุคลากร</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000005')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000006" model="approval.category">
+        <field name="name">ค่าใช้จ่ายโครงการความร่วมมือสถาบันฯ ต่างประเทศ</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000006')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000007" model="approval.category">
+        <field name="name">ค่าใช้จ่ายสนับสนุนกีฬามหาวิทยาลัย</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000007')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000013" model="approval.category">
+        <field name="name">ค่าใช้จ่ายในการทำรายงานประจำปี</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000013')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000017" model="approval.category">
+        <field name="name">ขาดทุนจากอัตราแลกเปลี่ยนเงินตราต่างประเทศ</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000017')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000031" model="approval.category">
+        <field name="name">ค่าใช้จ่ายดำเนินการสถานการณ์การฉุกเฉิน (อุทกภัย อัคคีภัย ฯลฯ)</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000031')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000036" model="approval.category">
+        <field name="name">ค่าใช้จ่ายผลประโยชน์พนักงานหลังออกจากงาน</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000036')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000038" model="approval.category">
+        <field name="name">ค่าใช้จ่ายอัตราผลตอบแทนชดใช้เงินสถาบันฯ</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000038')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000009" model="approval.category">
+        <field name="name">ค่าใช้จ่ายในการรับสมัครและสอบคัดเลือกนักศึกษาปริญญาโท-เอก (สอบคัดเลือกนักศึกษาเข้าใหม่ทุกประเภท)</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000009')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000003" model="approval.category">
+        <field name="name">ค่าสนับสนุนการดำเนินงานที่ประชุมสภาคณาจารย์/สภาคณบดี/หรือเทียบเท่า</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000003')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000023" model="approval.category">
+        <field name="name">ค่าใช้จ่ายที่เกี่ยวกับการพัฒนาคุณภาพนักศึกษา</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000023')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000011" model="approval.category">
+        <field name="name">ค่าใช้จ่ายในการดำเนินงานโครงการวิเคราะห์ข้อมูลวิจัยสถาบันเพื่อการวางแผน</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000011')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000012" model="approval.category">
+        <field name="name">ค่าใช้จ่ายในการดำเนินการปรับเปลี่ยนเป็นมหาวิทยาลัยในกำกับ</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000012')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000008" model="approval.category">
+        <field name="name">ค่าใช้จ่ายในการรับสมัครและสอบคัดเลือกนักศึกษาปริญญาตรี (สอบคัดเลือกนักศึกษาเข้าใหม่ทุกประเภท)</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000008')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000022" model="approval.category">
+        <field name="name">ค่าใช้จ่ายโครงงานนักศึกษา</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000022')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000024" model="approval.category">
+        <field name="name">ค่าใช้จ่ายในการบริหารจัดการกลาง</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000024')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000029" model="approval.category">
+        <field name="name">ค่าใช้จ่ายการเรียนและการสอนภาษาอังกฤษ(พิเศษ)</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000029')]).ids)]"/>
+    </record>
+
+    <record id="approval_category_5108000004" model="approval.category">
+        <field name="name">ค่าใช้จ่ายพิธีพระราชทานปริญญาบัตร</field>
+        <field name="group_id" ref="approve_category_group_other" />
+        <field name="allowed_product_ids" model="base" eval="[(6, 0, obj().env['product.product'].search([('default_code', '=', '5108000004')]).ids)]"/>
     </record>
 </odoo>
