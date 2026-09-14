@@ -30,11 +30,12 @@ required row is satisfied by ≥1 file. Filled in `approved`; missing required d
 hard-block `approved → to_disburse` (ส่งให้การเงินตรวจสอบ).
 _Avoid_: live-linked requirement, plan attachment
 
-**Other Attachments (เอกสารแนบอื่นๆ)**:
-The untyped `attachment_ids` bucket on the request (base `agx_approval`) — plan-stage
-files that fit no declared requirement. `agx_approval_disbursement`'s
-"เอกสารแนบสำหรับการเบิก" (`disbursement_attachment_ids`) is its disbursement-stage
-counterpart; the checklist sits beside it, typed.
+**Other Attachments (เอกสารแนบอื่น ๆ)**:
+The untyped buckets — `attachment_ids` on the request (base `agx_approval`) for the plan
+stage, and `agx_approval_disbursement`'s `disbursement_attachment_ids` for the
+disbursement stage. The latter was "เอกสารแนบสำหรับการเบิก" until this module gave the
+stage a typed list; it is now relabelled "เอกสารแนบอื่น ๆ" and sits directly *below* the
+checklist, so a file lands there only once it fits no declared requirement.
 _Avoid_: disbursement document checklist
 
 ## Decisions
@@ -52,6 +53,11 @@ _Avoid_: disbursement document checklist
   **today** against ปีงบประมาณ). A request approved late in ปีงบ N and reimbursed after
   1 ต.ค. is entirely normal and would have been blocked for an unrelated reason. See
   `approval.request._check_disbursement_documents`.
+- **Depends on `agx_approval_disbursement`** — the checklist is the typed half of a
+  pair; it has to sit immediately above `disbursement_attachment_ids` and relabel it
+  "เอกสารแนบอื่น ๆ", and neither is expressible without the field and its
+  `attachment_for_disbursement` group to anchor against. The rename belongs here, not
+  there: "อื่น ๆ" only means anything once a typed list exists.
 - **Attachments are stamped onto their checklist row** — `many2many_binary` uploads with
   `res_id = 0` while the row is unsaved, and `ir.attachment.check()` then hides such a
   file from everyone but its uploader. `_adopt_orphan_attachments` re-points them so the

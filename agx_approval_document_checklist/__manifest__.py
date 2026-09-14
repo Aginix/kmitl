@@ -5,7 +5,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "depends": ["agx_approval"],
+    "depends": ["agx_approval", "agx_approval_disbursement"],
     "data": [
         "security/ir.model.access.csv",
         "security/security.xml",
