@@ -44,7 +44,10 @@ Approve, and with both steps reading อนุมัติ the statusbar would n
 - **Endorse is distinct from Approve.** The glossary reserves อนุมัติ/"confirm" for Approve
   (`to_approve`); the new step is เห็นชอบ, state key `to_endorse` (follows the repo's `to_<verb>`
   convention), action `action_endorse`. `_check_endorse_permission` mirrors
-  `_check_verify_permission`/`_check_approve_permission`: only `endorser_id` or an admin.
+  `_check_verify_permission`/`_check_approve_permission`: only `endorser_id` or an admin, and
+  the step stamps its own `date_endorsed` next to the existing `date_submitted` /
+  `date_verified` / `date_approved` — the chatter records the act too, but only a column is
+  queryable for lead-time reporting. `action_reset_cancel_to_draft` clears it with its siblings.
 - **Blocking exception at submit**, not a soft warning: a borrower with no manager, or whose
   manager has no linked `res.users`, cannot submit at all (`excep_missing_manager`, mirrors
   `excep_missing_bank_account`'s shape). Silently letting `endorser_id` come back empty would

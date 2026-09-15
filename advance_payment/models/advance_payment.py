@@ -627,6 +627,7 @@ class AdvancePayment(models.Model):
     )
 
     date_submitted = fields.Datetime(string="Date Submitted", readonly=True, copy=False)
+    date_endorsed = fields.Datetime(string="Date Endorsed", readonly=True, copy=False)
     date_verified = fields.Datetime(string="Date Verified", readonly=True, copy=False)
     date_approved = fields.Datetime(string="Date Approved", readonly=True, copy=False)
     date_closed = fields.Datetime(string="Date Closed", readonly=True, copy=False)
@@ -1056,7 +1057,7 @@ class AdvancePayment(models.Model):
         for rec in self:
             if rec.state != "to_endorse":
                 raise UserError(_("Only agreements awaiting endorsement can be endorsed."))
-            rec.state = "to_verify"
+            rec.write({"state": "to_verify", "date_endorsed": fields.Datetime.now()})
             rec._done_workflow_activity(
                 "to_endorse",
                 _("เห็นชอบคำขอเรียบร้อย โดย %s", self.env.user.name),
@@ -1323,6 +1324,7 @@ class AdvancePayment(models.Model):
                     "state": "draft",
                     "cancel_reason": False,
                     "date_submitted": False,
+                    "date_endorsed": False,
                     "date_verified": False,
                     "date_approved": False,
                 }

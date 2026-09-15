@@ -445,6 +445,14 @@ class TestAdvancePayment(TransactionCase):
         ap.with_user(self.supervisor).action_endorse()
         self.assertEqual(ap.state, "to_verify")
 
+    def test_endorse_stamps_date(self):
+        """Every other step records its own timestamp; so does this one."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        self.assertFalse(ap.date_endorsed)
+        ap.with_user(self.supervisor).action_endorse()
+        self.assertTrue(ap.date_endorsed)
+
     def test_other_supervisor_cannot_endorse(self):
         ap = self._make(requested_by=self.user, as_user=self.user)
         ap.with_user(self.user).action_submit()
