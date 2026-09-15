@@ -117,6 +117,17 @@ migration-ordering hazard that creates).
   `_compute_to_approve_allowed` now expects them — so the one-line swap is
   the whole change, and it also unblocks the two bridges that ADR-0006 left
   raising "purchase request which is empty".
+- **`purchase_request_verify_state` is retired.** Its `to_examine` was an
+  opt-in (config-parameter gated) review step for the procurement officer
+  sitting between `draft` and `to_verify` — exactly the slot the ธุรการ step
+  now occupies unconditionally, so keeping both meant two review states with
+  one purpose. The module's directory is deleted and the same
+  `purchase_request_kmitl` pre-migration purges it: rows still at
+  `to_examine` are moved to `to_verify` (both mean "submitted, awaiting a
+  reviewer"). The move has to be explicit — the module's
+  `ondelete={'to_examine': 'set default'}` cannot fire, because
+  `_process_ondelete` reads `ondelete` off the field in the *registry*, which
+  no longer declares the value at all.
 - **`statusbar_visible` is maintained as one list on `purchase_request_kmitl`'s
   view** rather than three modules each appending their own state. A widget
   silently drops any value in the list that isn't in the field's current

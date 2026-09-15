@@ -93,10 +93,10 @@ class PurchaseRequest(models.Model):
                 )
         res = super().write(vals)
         # Mint the document number on any transition out of draft, no matter
-        # which button (or server-side write) triggers it — button_to_verify
-        # is only one of several exits from draft (base's button_to_approve,
-        # purchase_request_verify_state's to_examine path, ...), so hooking
-        # a single button leaves the others with a dangling "/" name.
+        # which button (or server-side write) triggers it — button_to_verify is
+        # only one of several exits from draft (base's button_to_approve, a
+        # bridge writing state server-side, ...), so hooking a single button
+        # leaves the others with a dangling "/" name.
         if vals.get("state"):
             for record in self:
                 if record.state not in self._NO_NUMBER_STATES:
