@@ -175,7 +175,7 @@
               name="เส้นทางหน่วยงาน"
               parent="menu_sarabun_route_template_setup"
               action="action_sarabun_route_template_unit"
-              groups="agx_sarabun.group_sarabun_user"
+              groups="agx_sarabun.group_sarabun_manager"
               sequence="20"/>
 
     <!-- Restore the original manager-only entry under Configuration and
