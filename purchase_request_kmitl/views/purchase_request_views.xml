@@ -216,18 +216,6 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='exception_ids']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='ignore_exception']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='operating_unit_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
             <!-- === Purchase Request Details group === -->
             <xpath expr="//h1" position="after">
                 <group
