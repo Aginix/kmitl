@@ -91,18 +91,6 @@
         </field>
     </record>
 
-    <!-- View purchase.request kanban -->
-    <record id="view_purchase_request_kanban" model="ir.ui.view">
-        <field name="name">view.purchase.request.kanban (e-GP)</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_kanban" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='state']" position="after">
-                <field name="is_egp" invisible="1" />
-            </xpath>
-        </field>
-    </record>
-
     <!-- View purchase.request search -->
     <record id="view_purchase_request_search" model="ir.ui.view">
         <field name="name">view.purchase.request.search</field>
@@ -118,10 +106,13 @@
 
     <!-- View purchase.request kanban -->
     <record id="view_purchase_request_kanban" model="ir.ui.view">
-        <field name="name">view.purchase.request.kanban</field>
+        <field name="name">view.purchase.request.kanban (e-GP)</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_kanban" />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="is_egp" invisible="1" />
+            </xpath>
             <xpath expr="//div[hasclass('o_kanban_record_bottom')]" position="after">
                 <div class="o_kanban_record_bottom">
                     <div class="oe_kanban_bottom_left">
