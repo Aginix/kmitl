@@ -386,11 +386,12 @@ def _create_pr_with_line(
     fund = env.ref(case["fund"])
     source = env.ref(case["source"])
     vendor = env.ref(case["vendor"])
-    if case["payment_type"] == "prepaid":
-        # purchase_request_prepaid requires the vendor on สำรองจ่าย to be
-        # an internal person (partner_type_id.is_internal). Substitute the
-        # supervisor employee's work contact for the vendor defined in
-        # the case, which points at an external supplier company.
+    if case["payment_type"] in ("prepaid", "advance"):
+        # purchase_request_prepaid / purchase_request_advance_payment require
+        # the vendor on สำรองจ่าย / เงินยืมทดรอง to be an internal person
+        # (partner_type_id.is_internal). Substitute the supervisor employee's
+        # work contact for the vendor defined in the case, which points at an
+        # external supplier company.
         vendor = supervisor_employee.work_contact_id or vendor
     procurement_type = env.ref(case["proc_type"])
     procurement_method = env.ref(case["proc_method"])
