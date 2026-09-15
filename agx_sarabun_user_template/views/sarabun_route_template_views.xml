@@ -11,7 +11,15 @@
         <field name="arch" type="xml">
             <xpath expr="//group[field[@name='sequence']]" position="inside">
                 <field name="owner_id" readonly="1"/>
+                <!-- widget=sarabun_visibility_selection (from
+                     agx_sarabun_route_template_widget) hides 'public' from
+                     the dropdown for non-manager users at render time; if
+                     that module is not installed the client falls back to
+                     the stock Selection widget and shows every option
+                     (still safe — @api.constrains blocks a non-manager
+                     save either way). -->
                 <field name="visibility"
+                       widget="sarabun_visibility_selection"
                        attrs="{'readonly': [('can_edit', '=', False)]}"/>
             </xpath>
             <!-- Require department_id when visibility=unit (so a "unit" template
