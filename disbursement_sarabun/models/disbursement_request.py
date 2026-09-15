@@ -9,8 +9,9 @@ class DisbursementRequest(models.Model):
 
     def _get_sarabun_subject(self):
         source_name = (self.source_analytic_id.complete_name or "").replace(" / ", "")
+        department_name = (self.department_analytic_id.complete_name or "").replace(" / ", "")
         fy_name = self.account_fiscal_year_id.name or ""
-        return f"ขออนุมัติเบิกเงิน{source_name} ประจำปีงบประมาณ พ.ศ.{fy_name}"
+        return f"ขออนุมัติเบิกเงิน{source_name} {department_name} ประจำปีงบประมาณ พ.ศ. {fy_name}"
 
     def _prepare_sarabun_document_vals(self):
         vals = super()._prepare_sarabun_document_vals()
@@ -42,9 +43,11 @@ class DisbursementRequest(models.Model):
     def _get_sarabun_content(self):
         self.ensure_one()
         o = self.with_context(lang="th_TH")
+        source_name = (o.source_analytic_id.complete_name or "").replace(" / ", "")
         dept_name = (o.department_analytic_id.complete_name or "").replace(" / ", "")
+        fy_name = self.account_fiscal_year_id.name or ""
         return (
             f"<p style='text-indent: 2em;'>ด้วย{dept_name} "
             "สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง "
-            "มีความประสงค์ขอเบิกเงิน ตามรายละเอียดดังนี้</p>"
+            "มีความประสงค์ขอเบิกเงิน{source_name} ประจำปีงบประมาณ พ.ศ. {fy_name} ตามรายละเอียดดังนี้</p>"
         )

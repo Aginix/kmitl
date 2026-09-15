@@ -42,7 +42,7 @@
         <!-- Budget Details -->
         <div class="my-4"/>
         <p>รายละเอียดงบประมาณ</p>
-        <table class="budget">
+        <table border="0" class="budget">
             <tbody>
                 <tr class="o_field_budget_commitment_id">
                     <td>เลขที่ใบจองงบประมาณ</td>
@@ -88,7 +88,7 @@
                     เลขที่บัญชี <span class="ms-2" t-out="o._get_masked_acc_number(partner_bank.acc_number)"/>
                 </div>
             </div>
-            <table class="table table-bordered table-sm" t-att-style="'' if partner_last else 'margin-bottom: 1rem'">
+            <table border="0" class="table table-bordered table-sm" t-att-style="'' if partner_last else 'margin-bottom: 1rem'">
                 <thead>
                     <tr>
                         <th class="text-center" style="width: 8%">ลำดับ</th>
@@ -154,24 +154,13 @@
     <template id="report_sarabun_document_disbursement">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <t t-set="header_title" t-value="'การขอเบิก'"/>
+                <t t-set="header_title" t-value="'ใบขอเบิก'"/>
                 <!-- Show prefix + "/" during draft so the field is informative before
                      the number is officially assigned at completion. -->
-                <t t-set="doc_ref_override"
-                   t-value="doc.name if doc.name != '/' else ((doc.sequence_id.prefix or '') + doc.name)"/>
+                <t t-set="header_code" t-value="doc.origin_reference"/>
                 <t t-call="agx_sarabun.sarabun_document_layout"/>
             </t>
         </t>
-    </template>
-
-    <!-- Override "ที่" in the shared layout: use doc_ref_override when set (disbursement
-         context), fall back to doc.name for all other Sarabun document types. -->
-    <template id="report_disbursement_request_sarabun_doc_ref"
-              inherit_id="agx_sarabun.sarabun_document_layout" priority="20">
-        <xpath expr="//td/span[@t-field='doc.name']" position="replace">
-            <span t-if="doc_ref_override" t-out="doc_ref_override"/>
-            <span t-else="" t-field="doc.name"/>
-        </xpath>
     </template>
 
     <record id="action_report_sarabun_document_disbursement" model="ir.actions.report">
