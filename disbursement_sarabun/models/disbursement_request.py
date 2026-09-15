@@ -49,5 +49,5 @@ class DisbursementRequest(models.Model):
         return (
             f"<p style='text-indent: 2em;'>ด้วย{dept_name} "
             "สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง "
-            "มีความประสงค์ขอเบิกเงิน{source_name} ประจำปีงบประมาณ พ.ศ. {fy_name} ตามรายละเอียดดังนี้</p>"
+            f"มีความประสงค์ขอเบิกเงิน{source_name} ประจำปีงบประมาณ พ.ศ. {fy_name} ตามรายละเอียดดังนี้</p>"
         )
