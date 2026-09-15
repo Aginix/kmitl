@@ -3,7 +3,9 @@
 
 Covers:
   - personal: owner-only visibility
-  - unit: dept + ancestor dept visibility via parent_path
+  - unit: readable by every sarabun user (dept scoping happens at the
+    picker via the view-level domain on route_template_id, keyed off the
+    document's sender_department_id — not by the reading user's dept)
   - public: visible to all sarabun users
   - constraint: non-manager cannot set visibility=public
   - write/unlink isolation: user A cannot touch user B's personal template
@@ -78,28 +80,26 @@ class TestUserTemplateVisibility(TransactionCase):
         )
         self.assertNotIn(tmpl.id, self._visible_ids(self.user_b))
 
-    # ── 2. unit visibility (hierarchy) ───────────────────────────────────────
+    # ── 2. unit visibility (dept-agnostic at ir.rule level) ──────────────────
+    # Dept scoping for unit templates moved to the picker's view domain
+    # (keyed off the document's sender_department_id). At the ir.rule level a
+    # unit template is readable by every sarabun user, regardless of their own
+    # dept — a user preparing a document for another dept still needs to see
+    # that dept's unit templates in the picker.
 
-    def test_unit_visible_to_sub_department_member(self):
-        # Template shared at dept_x; user_a is in dept_y (child) → must see it.
+    def test_unit_visible_to_any_user_regardless_of_dept(self):
+        # Template shared at dept_x. Both user_a (dept_y, child of dept_x) and
+        # user_b (dept_z, unrelated tree) must be able to read it.
         tmpl = self.Template.with_user(self.manager).create(
             {"name": "Unit X", "visibility": "unit", "department_id": self.dept_x.id}
         )
-        self.assertIn(
-            tmpl.id,
-            self._visible_ids(self.user_a),
-            "sub-dept member should see a unit template shared at an ancestor dept",
-        )
-
-    def test_unit_invisible_to_unrelated_department(self):
-        tmpl = self.Template.with_user(self.manager).create(
-            {"name": "Unit X2", "visibility": "unit", "department_id": self.dept_x.id}
-        )
-        self.assertNotIn(
-            tmpl.id,
-            self._visible_ids(self.user_b),
-            "user in an unrelated dept must not see a unit template from another tree",
-        )
+        for user in (self.user_a, self.user_b):
+            self.assertIn(
+                tmpl.id,
+                self._visible_ids(user),
+                "%s should see any unit template — dept scoping now lives on "
+                "the picker's view domain, not the ir.rule" % user.login,
+            )
 
     # ── 3. public visibility ──────────────────────────────────────────────────
 

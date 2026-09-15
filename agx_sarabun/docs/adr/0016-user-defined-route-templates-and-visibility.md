@@ -178,6 +178,36 @@ Also removed: the `context={'default_visibility':'personal'}` override on the ac
 
 ---
 
+## Revision (2026-09-15): Dept Scoping Moved from ir.rule to Picker Domain
+
+UAT surfaced a mismatch between the original decision and the actual usage pattern.
+Decision 4 (Unit Sharing via `hr.department.parent_path`) scoped visibility by the
+**reading user's** dept tree — a user in คณะวิทย์ could not see a template attached to
+คณะวิศวะ even when preparing a document whose `sender_department_id` was คณะวิศวะ. In
+practice the "matching dept" the user cares about is the **document's** dept, not the
+picker's own employee dept — a user often prepares docs on behalf of another unit.
+
+**Decision:** shift the dept scope from the ir.rule to a view-level domain on the
+picker.
+
+- **ir.rule (read)** — every sarabun user may read any `unit` template (same as
+  `public`); domain simplifies to `['|', ('visibility','in',['public','unit']),
+  ('owner_id','=',user.id)]`. Personal remains owner-only, write/create/unlink still
+  narrowed to `owner_id = user.id` for regular users.
+- **Picker view domain** — `route_template_id` on the document form gains a domain
+  that filters to (a) templates whose `document_type_id` is empty or matches the
+  document's `type_id`, and (b) for `visibility='unit'`, templates whose
+  `department_id` is empty or a `parent_of` the document's `sender_department_id`
+  (hierarchy walk via `hr.department.parent_path`).
+- **`sarabun_shared_department_ids` on `res.users`** — dead after this move; deleted
+  along with `agx_sarabun_user_template/models/res_users.py`.
+
+**Consequence:** a unit template surfaces in the picker when the document's dept
+(not the picker user's) matches. Broader read access is intentional — a template's
+name/steps are not sensitive, and the picker filter is the authoritative UX gate.
+
+---
+
 ## Consequences
 
 - Existing manager/seed templates with no `owner_id` remain readable by all users via
