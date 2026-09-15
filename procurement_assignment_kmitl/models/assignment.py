@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api
+from odoo import _
 from odoo.exceptions import AccessError, UserError
 from odoo.tools.misc import str2bool
 
@@ -12,17 +12,21 @@ TAKEOVER_PARAM = "procurement_assignment_kmitl.allow_takeover_assigned"
 
 class AssignedOfficerMixin:
     """Shared behaviour for documents carrying an Assigned Officer
-    (เจ้าหน้าที่ผู้รับผิดชอบ), stored in ``assigned_to``.
+    (เจ้าหน้าที่ผู้รับผิดชอบ).
 
-    This is a *plain Python* mixin used only to share method code between
-    ``purchase.request`` and ``purchase.order``. It is intentionally **not** an
-    Odoo ``AbstractModel``: when a non-purchase document needs the same
-    behaviour, lift this into an ``assignment.mixin`` parameterised by the two
-    group hooks below. See docs/adr/0001-assigned-officer-model.md.
+    This is a *plain Python* mixin used to share method code between
+    ``purchase.request``, ``purchase.request.approval`` and
+    ``purchase.order``. It is intentionally **not** an Odoo ``AbstractModel``:
+    when a non-purchase document needs the same behaviour, lift this into an
+    ``assignment.mixin`` parameterised by the three hooks below. See
+    docs/adr/0001-assigned-officer-model.md and
+    docs/adr/0006-pa-independent-assigned-officer.md.
 
     Each consuming model must declare:
-      * the ``assigned_to`` field (Many2one res.users),
-      * the ``assignment_can_assign_me`` computed Boolean, and
+      * a Many2one field to ``res.users`` holding the officer (name given by
+        ``_assign_field``; defaults to ``assigned_to``),
+      * the ``assignment_can_assign_me`` computed Boolean *with its own*
+        ``@api.depends`` referring to the consumer's own field name, and
       * the two group hooks ``_assign_user_group`` / ``_assign_manager_group``.
     """
 
@@ -33,8 +37,18 @@ class AssignedOfficerMixin:
     __slots__ = ()
 
     # Override per consuming model.
+    _assign_field = "assigned_to"  # name of the res.users Many2one holding the officer
     _assign_user_group = None  # group allowed to self-claim unassigned work
     _assign_manager_group = None  # group allowed to assign others / unassign
+
+    # -- accessors --------------------------------------------------------
+    def _assignment_get_officer(self):
+        self.ensure_one()
+        return self[self._assign_field]
+
+    def _assignment_set_officer(self, user):
+        self.ensure_one()
+        self[self._assign_field] = user
 
     # -- guards ------------------------------------------------------------
     def _assignment_takeover_allowed(self):
@@ -50,13 +64,13 @@ class AssignedOfficerMixin:
     def _assignment_can_claim(self):
         """Whether the current user may self-assign this single record."""
         self.ensure_one()
-        if not self.assigned_to:
+        officer = self._assignment_get_officer()
+        if not officer:
             return True
-        if self.assigned_to == self.env.user:
+        if officer == self.env.user:
             return False
         return self._assignment_is_manager() or self._assignment_takeover_allowed()
 
-    @api.depends("assigned_to")
     def _compute_assignment_can_assign_me(self):
         for rec in self:
             rec.assignment_can_assign_me = rec._assignment_can_claim()
@@ -89,25 +103,30 @@ class AssignedOfficerMixin:
     def action_assignment_assign_me(self):
         me = self.env.user
         for rec in self:
-            if rec.assigned_to == me:
+            officer = rec._assignment_get_officer()
+            if officer == me:
                 continue
             if not rec._assignment_can_claim():
                 raise UserError(
                     _("This document is already assigned to %s.")
-                    % rec.assigned_to.display_name
+                    % officer.display_name
                 )
-            if rec.assigned_to:
-                rec._assignment_clear_activity(rec.assigned_to)
-            rec.assigned_to = me
+            if officer:
+                rec._assignment_clear_activity(officer)
+            rec._assignment_set_officer(me)
+            # Schedule a Todo for the assignee unconditionally so the doc lands
+            # in their unified inbox (mail_activity_todo). See ADR-0001 note.
+            rec._assignment_notify(me)
         return True
 
     def action_assignment_unassign(self):
         if not self._assignment_is_manager():
             raise AccessError(_("Only a manager can unassign the officer."))
         for rec in self:
-            if rec.assigned_to:
-                rec._assignment_clear_activity(rec.assigned_to)
-            rec.assigned_to = False
+            officer = rec._assignment_get_officer()
+            if officer:
+                rec._assignment_clear_activity(officer)
+            rec._assignment_set_officer(self.env["res.users"])
         return True
 
     def action_assignment_open_wizard(self):
