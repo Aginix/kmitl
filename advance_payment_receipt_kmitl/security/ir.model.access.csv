@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_kmitl_receipt_ap_loan_officer,kmitl.receipt advance-payment loan officer,receipt_kmitl.model_kmitl_receipt,advance_payment.group_advance_payment_loan_officer,1,0,0,0
+access_kmitl_receipt_line_ap_loan_officer,kmitl.receipt.line advance-payment loan officer,receipt_kmitl.model_kmitl_receipt_line,advance_payment.group_advance_payment_loan_officer,1,0,0,0
