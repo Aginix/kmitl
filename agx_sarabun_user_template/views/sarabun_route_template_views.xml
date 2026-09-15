@@ -169,9 +169,13 @@
               groups="agx_sarabun.group_sarabun_user"
               sequence="20"/>
 
-    <!-- Hide the original manager-only entry under Configuration — the
-         new "ตั้งค่าใช้งาน" tree above replaces it for both roles. -->
+    <!-- Restore the original manager-only entry under Configuration and
+         rename it to "เส้นทางเดินเอกสาร". Managers get a consolidated view
+         of every template (no owner-split domain) here, alongside the
+         per-owner "ตั้งค่าใช้งาน" tree that both roles use. Visibility is
+         still inherited from the Configuration parent (group_sarabun_manager). -->
     <record id="agx_sarabun.menu_sarabun_route_template" model="ir.ui.menu">
-        <field name="active" eval="False"/>
+        <field name="active" eval="True"/>
+        <field name="name">เส้นทางเดินเอกสาร</field>
     </record>
 </odoo>
