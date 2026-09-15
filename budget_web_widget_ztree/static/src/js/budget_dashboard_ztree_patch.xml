@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-inherit="budget.BudgetDashboard" t-inherit-mode="extension" owl="1">
+        <xpath expr="//AutoComplete" position="replace">
+            <Ztree
+                setting="ztreeSettingFor(dim.key)"
+                data="ztreeDataFor(dim.key)"
+                value="state.filterLabels[dim.key] || ''"
+                sources="sourcesFor(dim)"
+                placeholder="dim.label"
+                onSelect="(ev, params) => this.onDimSelect(dim.key, params)"
+                onInput="(args) => this.onDimInput(dim.key, args)"
+            />
+        </xpath>
+    </t>
+
+    <t t-inherit="budget.BudgetReservationPicker" t-inherit-mode="extension" owl="1">
+        <xpath expr="//AutoComplete" position="replace">
+            <Ztree
+                setting="ztreeSettingFor(dim.key)"
+                data="ztreeDataFor(dim.key)"
+                value="state.filterLabels[dim.key] || ''"
+                sources="sourcesFor(dim)"
+                placeholder="dim.label"
+                onSelect="(ev, params) => this.onDimSelect(dim.key, params)"
+                onInput="(args) => this.onDimInput(dim.key, args)"
+            />
+        </xpath>
+    </t>
+
+</templates>
