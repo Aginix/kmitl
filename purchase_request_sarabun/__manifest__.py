@@ -2,7 +2,7 @@
 {
     "name": "Purchase Request Sarabun Integration",
     "summary": "Integrate Purchase Request with Sarabun document routing",
-    "version": "16.0.1.1.0",
+    "version": "16.0.2.0.0",
     "category": "Purchases",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",

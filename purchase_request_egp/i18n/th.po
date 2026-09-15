@@ -76,7 +76,7 @@ msgid "e-GP"
 msgstr "จัดซื้อผ่านระบบ e-GP"
 
 #. module: purchase_request_egp
-#: model_terms:ir.ui.view,arch_db:purchase_request_egp.view_purchase_request_form_ux
+#: model_terms:ir.ui.view,arch_db:purchase_request_egp.view_purchase_request_form
 msgid "If e-GP procurement is selected, an internal Purchase Request approval (พจ.1) is not required."
 msgstr "ถ้าเลือกจัดซื้อผ่านระบบ e-GP จะไม่ต้องเสนอขออนุมัติจัดซื้อจัดจ้าง (พจ.1) ภายในระบบ"
 

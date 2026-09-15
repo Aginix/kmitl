@@ -20,11 +20,12 @@ class SarabunRouteTemplate(models.Model):
     _name = "sarabun.route.template"
     _description = "Sarabun Route Template (seed)"
     _order = "sequence, name"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
 
-    name = fields.Char(required=True)
-    active = fields.Boolean(default=True)
+    name = fields.Char(required=True, tracking=True)
+    active = fields.Boolean(default=True, tracking=True)
     sequence = fields.Integer(default=10, help="Match priority (lower = higher).")
-    description = fields.Text()
+    description = fields.Text(string="รายละเอียด/คำอธิบาย", tracking=True)
 
     # Scope (for from_record auto-matching)
     department_id = fields.Many2one("hr.department", string="Department")
