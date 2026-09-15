@@ -31,8 +31,8 @@ class ReceiptKmitl(models.Model):
                 vals["operating_unit_id"] = self.operating_unit_id.id
         return vals_list
 
-    def _prepare_move_line_vals(self, line):
-        vals = super()._prepare_move_line_vals(line)
+    def _prepare_move_line_vals(self, line, split=None):
+        vals = super()._prepare_move_line_vals(line, split)
         if self.operating_unit_id:
             vals["operating_unit_id"] = self.operating_unit_id.id
         return vals
