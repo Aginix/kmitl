@@ -132,7 +132,7 @@
                 }
             </style>
             <div class="page">
-                <div t-if="header_code" style="position:absolute; top:0; right:0;" t-out="header_code"/>
+                <div t-if="header_code" style="position:absolute; top:0; right:0; text-align: right;" t-raw="header_code"/>
                 <div class="doc-title">
                     <table style="width:100%; margin-bottom:4px; border:none;">
                         <tr>
