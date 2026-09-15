@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend the core template form to surface owner + visibility fields,
+         and gate every editable field on can_edit so users who only see the
+         template via public/unit visibility get a readonly form instead of an
+         AccessError at save time. -->
+    <record id="view_sarabun_route_template_form_inherit_user_template" model="ir.ui.view">
+        <field name="name">sarabun.route.template.form.user_template</field>
+        <field name="model">sarabun.route.template</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_route_template_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[field[@name='sequence']]" position="inside">
+                <field name="owner_id" readonly="1"/>
+                <field name="visibility"
+                       attrs="{'readonly': [('can_edit', '=', False)]}"/>
+            </xpath>
+            <!-- Require department_id when visibility=unit (so a "unit" template
+                 can't silently become effectively-personal), and readonly when
+                 the user can't edit the record. -->
+            <xpath expr="//group[field[@name='origin_model_id']]/field[@name='department_id']"
+                   position="attributes">
+                <attribute name="attrs">{'required': [('visibility','=','unit')], 'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <!-- can_edit drives readonly for every editable field below;
+                 keep it invisible on the form. -->
+            <xpath expr="//sheet" position="inside">
+                <field name="can_edit" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='description']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='document_type_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='origin_model_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <!-- Two condition_domain fields (widget=domain when a model is
+                 picked, plain text otherwise) — merge readonly into each
+                 existing invisible attrs. -->
+            <xpath expr="//field[@name='condition_domain'][@widget='domain']"
+                   position="attributes">
+                <attribute name="attrs">{'invisible': [('origin_model', '=', False)], 'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='condition_domain'][not(@widget)]"
+                   position="attributes">
+                <attribute name="attrs">{'invisible': [('origin_model', '!=', False)], 'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='sequence']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='active']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']" position="attributes">
+                <attribute name="attrs">{'readonly': [('can_edit', '=', False)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Surface visibility on the tree — both the menu list and the "Search More"
+         dialog reached from the document form's route_template_id picker share
+         this view. Colours are scoped to the badge cell itself (via widget=badge
+         + per-value decorations) rather than tinting the whole row, mirroring
+         the picker widget's badge look without noising up the surrounding
+         columns. -->
+    <record id="view_sarabun_route_template_tree_inherit_user_template" model="ir.ui.view">
+        <field name="name">sarabun.route.template.tree.user_template</field>
+        <field name="model">sarabun.route.template</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_route_template_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='active']" position="before">
+                <field name="visibility" widget="badge"
+                       decoration-info="visibility == 'unit'"
+                       decoration-success="visibility == 'public'"
+                       decoration-muted="visibility == 'personal'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search view — split templates into "mine" vs "others" so users can tell
+         which rows they own (and can edit) versus rows they only see because of
+         public/unit visibility. Also groups by visibility/owner/department for
+         quick scanning of a long catalogue. -->
+    <record id="view_sarabun_route_template_search_user_template" model="ir.ui.view">
+        <field name="name">sarabun.route.template.search.user_template</field>
+        <field name="model">sarabun.route.template</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="document_type_id"/>
+                <field name="department_id"/>
+                <field name="owner_id"/>
+                <filter name="my_templates" string="แม่แบบของฉัน"
+                        domain="[('owner_id', '=', uid)]"/>
+                <filter name="others_templates" string="แม่แบบของคนอื่น"
+                        domain="[('owner_id', '!=', uid)]"/>
+                <separator/>
+                <filter name="visibility_personal" string="ส่วนตัว"
+                        domain="[('visibility', '=', 'personal')]"/>
+                <filter name="visibility_unit" string="สังกัด"
+                        domain="[('visibility', '=', 'unit')]"/>
+                <filter name="visibility_public" string="ทุกคน"
+                        domain="[('visibility', '=', 'public')]"/>
+                <separator/>
+                <filter name="archived" string="Archived"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="จัดกลุ่มตาม">
+                    <filter name="group_visibility" string="การมองเห็น"
+                            context="{'group_by': 'visibility'}"/>
+                    <filter name="group_owner" string="เจ้าของ"
+                            context="{'group_by': 'owner_id'}"/>
+                    <filter name="group_department" string="สังกัด"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter name="group_document_type" string="ประเภทหนังสือ"
+                            context="{'group_by': 'document_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Split templates into two per-owner views under a shared grouper —
+         "เส้นทางส่วนบุคคล" for the user's own rows, "เส้นทางหน่วยงาน" for
+         everything else the read ir.rule surfaces (public + dept-shared unit
+         from other owners, plus null-owner seed rows). The read ir.rule
+         still scopes visibility on top of these domains — the domains
+         just split "mine" vs "others" inside what the user is allowed to
+         see. -->
+    <record id="action_sarabun_route_template_personal" model="ir.actions.act_window">
+        <field name="name">เส้นทางส่วนบุคคล (My Route Templates)</field>
+        <field name="res_model">sarabun.route.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('owner_id', '=', uid)]</field>
+    </record>
+
+    <record id="action_sarabun_route_template_unit" model="ir.actions.act_window">
+        <field name="name">เส้นทางหน่วยงาน (Department Route Templates)</field>
+        <field name="res_model">sarabun.route.template</field>
+        <field name="view_mode">tree,form</field>
+        <!-- Only unit-visibility templates — the read ir.rule already scopes
+             these to the user's dept tree (parent_path walk), so the domain
+             just narrows the tier. -->
+        <field name="domain">[('visibility', '=', 'unit')]</field>
+    </record>
+
+    <!-- Sub-parent grouper under the new "ตั้งค่าใช้งาน" (declared in
+         agx_sarabun.menu_sarabun_settings). No action — just the label
+         above the two per-owner views. -->
+    <menuitem id="menu_sarabun_route_template_setup"
+              name="ตั้งค่าเส้นทางเดินเอกสาร"
+              parent="agx_sarabun.menu_sarabun_settings"
+              groups="agx_sarabun.group_sarabun_user"
+              sequence="10"/>
+
+    <menuitem id="menu_sarabun_route_template_personal"
+              name="เส้นทางส่วนบุคคล"
+              parent="menu_sarabun_route_template_setup"
+              action="action_sarabun_route_template_personal"
+              groups="agx_sarabun.group_sarabun_user"
+              sequence="10"/>
+
+    <menuitem id="menu_sarabun_route_template_unit"
+              name="เส้นทางหน่วยงาน"
+              parent="menu_sarabun_route_template_setup"
+              action="action_sarabun_route_template_unit"
+              groups="agx_sarabun.group_sarabun_manager"
+              sequence="20"/>
+
+    <!-- Restore the original manager-only entry under Configuration and
+         rename it to "เส้นทางเดินเอกสาร". Managers get a consolidated view
+         of every template (no owner-split domain) here, alongside the
+         per-owner "ตั้งค่าใช้งาน" tree that both roles use. Visibility is
+         still inherited from the Configuration parent (group_sarabun_manager). -->
+    <record id="agx_sarabun.menu_sarabun_route_template" model="ir.ui.menu">
+        <field name="active" eval="True"/>
+        <field name="name">เส้นทางเดินเอกสาร</field>
+    </record>
+</odoo>

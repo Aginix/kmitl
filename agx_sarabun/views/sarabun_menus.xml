@@ -20,6 +20,16 @@
               action="action_sarabun_document"
               sequence="10"/>
 
+    <!-- Settings (ตั้งค่าใช้งาน) — end-user reachable configuration (e.g.
+         personal route templates). Sits just before the manager-only
+         Configuration menu; its children are added by extension modules
+         (see agx_sarabun_user_template). -->
+    <menuitem id="menu_sarabun_settings"
+              name="ตั้งค่าใช้งาน"
+              parent="menu_sarabun_root"
+              sequence="85"
+              groups="group_sarabun_user"/>
+
     <!-- Configuration -->
     <menuitem id="menu_sarabun_config"
               name="Configuration"
