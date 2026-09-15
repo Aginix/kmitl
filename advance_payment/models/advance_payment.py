@@ -406,13 +406,30 @@ class AdvancePayment(models.Model):
 
     endorser_id = fields.Many2one(
         comodel_name="res.users",
-        string="ผู้บังคับบัญชาขั้นต้น",
-        readonly=True,
+        string="ผู้บังคับบัญชา",
+        compute="_compute_endorser_id",
+        store=True,
         copy=False,
         tracking=True,
-        help="ผู้บังคับบัญชาขั้นต้นของผู้ยืม (ADR-0020) — snapshotted at submit"
-        " from employee_id.manager_id.user_id, never manager-edited.",
+        help="ผู้บังคับบัญชาของผู้ยืม (ADR-0020) — ติดตาม employee_id.manager_id"
+        " ขณะยังเป็นแบบร่าง แล้วตรึงค่าตั้งแต่ส่งคำขอเป็นต้นไป",
     )
+
+    @api.depends("employee_id.manager_id.user_id", "state")
+    def _compute_endorser_id(self):
+        """Track the borrower's line manager while the request is still a
+        draft — so the borrower sees who will endorse (and notices a missing
+        manager) before submitting — then freeze it: once the request is out
+        of their hands a manager reorg must not retarget it (ADR-0020).
+
+        Re-opens with the draft: action_recall / action_endorse_reject put the
+        request back in the borrower's hands, so the endorser is re-evaluated.
+        """
+        for rec in self:
+            if rec.state == "draft":
+                rec.endorser_id = rec.employee_id.manager_id.user_id
+            else:
+                rec.endorser_id = rec.endorser_id
 
     @api.model
     def _loan_officer_candidates(self):
@@ -996,7 +1013,8 @@ class AdvancePayment(models.Model):
             if rec.name == _("New"):
                 rec.name = self.env["ir.sequence"].next_by_code("advance.payment")
             rec.date_submitted = fields.Datetime.now()
-            rec.endorser_id = rec.employee_id.manager_id.user_id
+            # endorser_id already tracks the borrower's manager in draft and
+            # freezes itself on this write (_compute_endorser_id, ADR-0020).
             rec.state = "to_endorse"
             rec.message_post(
                 body=_(
@@ -1060,9 +1078,14 @@ class AdvancePayment(models.Model):
                 raise UserError(
                     _("Only agreements awaiting endorsement can be sent back.")
                 )
-            rec.state = "draft"
+            # Drop the To-Do first, then sudo the transition: the own-only
+            # rule only grants the endorser access outside draft, so from the
+            # write on the endorser can no longer read or post on the record.
+            # Authority was established just above, and sudo() keeps env.uid,
+            # so the chatter entry is still authored by the real actor.
             rec._drop_workflow_activities()
-            rec.message_post(
+            rec.sudo().write({"state": "draft"})
+            rec.sudo().message_post(
                 body=_("ส่งกลับแก้ไข โดยผู้บังคับบัญชา <b>%(user)s</b>.",
                        user=self.env.user.name),
                 subtype_xmlid="mail.mt_note",

@@ -30,11 +30,16 @@ unchanged.
 
 ## Design
 
-- **Endorser identity is snapshotted, not computed.** `endorser_id` (`res.users`, readonly,
-  `copy=False`, `tracking=True`) is set once in `action_submit()` from
-  `employee_id.manager_id.user_id` — mirroring how `approver_id`/`loan_verifier_id` are named
-  fields rather than live lookups. A manager reorg after submission does not retarget an
-  in-flight request.
+- **Endorser identity is prefilled in draft, then frozen.** `endorser_id` (`res.users`,
+  `store=True`, `copy=False`, `tracking=True`) is a stored compute over
+  `employee_id.manager_id.user_id`: it tracks the borrower while the request is `draft`, and
+  keeps its value in every later state. A plain `default=` would not do — the `user` tier may
+  draft on behalf and `employee_id` stays editable in draft, so the default (evaluated from the
+  *creator*) would name the wrong manager. Prefilling lets the borrower see who will endorse,
+  and notice a missing manager, before hitting `excep_missing_manager` at submit; freezing keeps
+  the ADR-0020 guarantee that a manager reorg does not retarget an in-flight request. Going back
+  to `draft` (`action_recall` / `action_endorse_reject`) re-evaluates it, which is correct — the
+  request is in the borrower's hands again.
 - **Endorse is distinct from Approve.** The glossary reserves อนุมัติ/"confirm" for Approve
   (`to_approve`); the new step is เห็นชอบ, state key `to_endorse` (follows the repo's `to_<verb>`
   convention), action `action_endorse`. `_check_endorse_permission` mirrors
@@ -45,7 +50,13 @@ unchanged.
   leave the To-Do with no assignee and the request stuck with nobody able to act on it.
 - **Own-only rule ORs in the endorser**, the same shape as ADR-0014's drafter extension: a
   supervisor with no other role in the module can still see and endorse a subordinate's request
-  purely by being named `endorser_id`.
+  purely by being named `endorser_id` — but the branch is ANDed with `state != 'draft'`, because
+  the field is now prefilled in draft and a borrower's unsubmitted draft must stay private.
+- **The endorser needs a menu of their own.** The tier is own-only, so neither สัญญาของฉัน (own
+  records) nor สัญญาเงินยืมทั้งหมด (`group_advance_payment_user`) reaches the requests they must
+  act on; without one the only route in is the To-Do activity. Hence the `รอฉันเห็นชอบ` filter
+  (`endorser_id = uid` and `state = to_endorse`) plus its action and menu. Verify and Approve
+  need no equivalent: both groups imply `group_advance_payment_user` and already see everything.
 - **`action_endorse_reject`** (ส่งกลับแก้ไข) is endorser/admin-gated, `to_endorse → draft`, same
   shape as `action_reset_to_draft`. `action_recall` (the borrower's own pull-back) now also works
   from `to_endorse`.

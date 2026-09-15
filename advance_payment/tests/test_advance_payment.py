@@ -500,6 +500,42 @@ class TestAdvancePayment(TransactionCase):
         ap.with_user(self.supervisor).action_endorse()
         self.assertEqual(ap.state, "to_verify")
 
+    def test_endorser_prefilled_in_draft(self):
+        """The borrower sees who will endorse before submitting (ADR-0020)."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        self.assertEqual(ap.state, "draft")
+        self.assertEqual(ap.endorser_id, self.supervisor)
+
+    def test_endorser_follows_employee_change_in_draft(self):
+        """Prefill tracks employee_id, so the `user` tier drafting on behalf
+        of somebody else does not leave the drafter's own manager behind."""
+        ap = self._make(requested_by=self.user)
+        other_emp = self.env["hr.employee"].create(
+            {"name": "Other Borrower", "manager_id": self.emp[self.officer.id].id}
+        )
+        ap.employee_id = other_emp
+        self.assertEqual(ap.endorser_id, self.officer)
+
+    def test_endorser_frozen_after_submit(self):
+        """A manager reorg must not retarget an in-flight request."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        self.emp[self.user.id].manager_id = self.emp[self.officer.id]
+        ap.invalidate_recordset()
+        self.assertEqual(ap.endorser_id, self.supervisor)
+
+    def test_endorser_cannot_see_draft(self):
+        """Prefilling endorser_id must not leak a borrower's unsubmitted
+        draft to their manager — the own-only rule excludes draft."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        self.assertEqual(ap.endorser_id, self.supervisor)
+        visible = (
+            self.env["advance.payment"]
+            .with_user(self.supervisor)
+            .search([("id", "=", ap.id)])
+        )
+        self.assertFalse(visible)
+
     # ------------------------------------------------------------------ #
     # verify / approve guards                                              #
     # ------------------------------------------------------------------ #
