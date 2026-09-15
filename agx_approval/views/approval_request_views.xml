@@ -259,6 +259,11 @@
                                 context="{'default_payment_type': 'direct'}"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                                 <tree editable="bottom">
+                                    <!-- Set from this field's context, never shown as a column, but
+                                         it must stay in the view: onchange only recomputes a field
+                                         whose dependencies are themselves in the view, and
+                                         partner_id_domain depends on payment_type. -->
+                                    <field name="payment_type" invisible="1" />
                                     <field name="partner_id_domain" invisible="1" />
                                     <field name="allowed_product_ids" invisible="1" />
                                     <field name="sequence" widget="handle" />
@@ -282,6 +287,11 @@
                                 context="{'default_payment_type': 'prepaid'}"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                                 <tree editable="bottom">
+                                    <!-- Set from this field's context, never shown as a column, but
+                                         it must stay in the view: onchange only recomputes a field
+                                         whose dependencies are themselves in the view, and
+                                         partner_id_domain depends on payment_type. -->
+                                    <field name="payment_type" invisible="1" />
                                     <field name="partner_id_domain" invisible="1" />
                                     <field name="allowed_product_ids" invisible="1" />
                                     <field name="sequence" widget="handle" />
@@ -305,6 +315,11 @@
                                 context="{'default_payment_type': 'advance'}"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                                 <tree editable="bottom">
+                                    <!-- Set from this field's context, never shown as a column, but
+                                         it must stay in the view: onchange only recomputes a field
+                                         whose dependencies are themselves in the view, and
+                                         partner_id_domain depends on payment_type. -->
+                                    <field name="payment_type" invisible="1" />
                                     <field name="partner_id_domain" invisible="1" />
                                     <field name="allowed_product_ids" invisible="1" />
                                     <field name="sequence" widget="handle" />
