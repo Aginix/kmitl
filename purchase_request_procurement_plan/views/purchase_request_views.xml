@@ -5,7 +5,7 @@
     <record id="view_purchase_request_form_procurement_plan" model="ir.ui.view">
         <field name="name">view.purchase.request.form (Procurement Plan)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
+        <field name="inherit_id" ref="purchase_request_budget.view_purchase_request_form" />
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <field name="procurement_plan_id" invisible="1" />

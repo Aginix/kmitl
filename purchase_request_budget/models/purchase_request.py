@@ -12,7 +12,7 @@ class PurchaseRequest(models.Model):
     _inherit = ["purchase.request", "budget.commitment.mixin", "analytic.mixin"]
 
     state = fields.Selection(
-        selection_add=[("to_verify",), ("to_verify_budget", "To Verify Budget")],
+        selection_add=[("to_verify",), ("to_verify_budget", "To Verify Budget"), ("to_approve",)],
         ondelete={"to_verify_budget": "set default"},
     )
 

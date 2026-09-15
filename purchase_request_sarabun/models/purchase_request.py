@@ -7,13 +7,8 @@ class PurchaseRequest(models.Model):
     _name = 'purchase.request'
     _inherit = ["purchase.request", "sarabun.document.mixin", "portal.mixin", 'thai.date.mixin']
 
-    # To disable tier validation
-    # todo: refactor move out to individual module
-    _state_from = [""]
-    _state_to = [""]
-
     state = fields.Selection(
-        selection_add=[("to_approve",), ("sent", "Sent")],
+        selection_add=[("to_approve",), ("sent", "Sent"), ("in_progress",)],
         ondelete={"sent": "set default"},
     )
 

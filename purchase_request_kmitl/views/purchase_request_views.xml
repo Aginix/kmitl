@@ -128,23 +128,13 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <button name="button_rejected" position="attributes">
-                <attribute name="states" />
-                <attribute name="invisible">1</attribute>
-            </button>
-
-            <button name="button_approved" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </button>
-
-            <!-- ธุรการตรวจ: the base button becomes the ส่งต่อ action out of
-                 to_verify, sending the request on to budget reservation. -->
             <button name="button_to_approve" position="attributes">
                 <attribute name="states">to_verify</attribute>
-                <attribute name="string">ส่งต่อ</attribute>
+                <attribute name="groups">purchase_request_kmitl.group_purchase_request_verify</attribute>
+                <attribute name="string">ตรวจสอบ</attribute>
             </button>
 
-            <button name="button_to_approve" position="after">
+            <button name="button_to_approve" position="before">
                 <button
                     name="button_to_verify"
                     states="draft"
@@ -163,7 +153,7 @@
                 >{'invisible': [('can_reset_to_draft', '=', False)]}</attribute>
             </xpath>
 
-            <xpath expr="//button[@name='button_draft']" position="after">
+            <xpath expr="//header" position="inside">
                 <button
                     name="button_cancel"
                     states="draft,to_verify,to_verify_budget,to_approve,sent,in_egp,in_approval,in_progress,returned"
@@ -183,7 +173,7 @@
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,to_verify,to_verify_budget,to_approve,sent,in_approval,in_progress,done</attribute>
+                >draft,to_verify,to_approve,sent,in_approval,in_progress,done</attribute>
             </xpath>
 
             <xpath expr="//h1/field[@name='name']" position="attributes">
@@ -401,11 +391,6 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
-
-            <button name="button_to_approve" position="attributes">
-                <attribute name="states" />
-                <attribute name="invisible">1</attribute>
-            </button>
 
             <xpath expr="//button[@name='button_in_progress']" position="attributes">
                 <attribute name="invisible">1</attribute>
