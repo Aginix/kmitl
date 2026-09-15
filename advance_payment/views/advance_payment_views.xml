@@ -275,7 +275,7 @@
                     domain="[('main_exception_id','!=',False)]" />
                 <separator />
                 <filter string="Draft" name="draft" domain="[('state','=','draft')]" />
-                <filter string="รอผู้บังคับบัญชาขั้นต้นอนุมัติ" name="to_endorse"
+                <filter string="รอผู้บังคับบัญชาเห็นชอบ" name="to_endorse"
                     domain="[('state','=','to_endorse')]" />
                 <filter string="รอตรวจสอบ" name="to_verify" domain="[('state','=','to_verify')]" />
                 <filter string="รออนุมัติ" name="to_approve" domain="[('state','=','to_approve')]" />

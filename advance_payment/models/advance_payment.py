@@ -98,7 +98,7 @@ class AdvancePayment(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "แบบร่าง"),
-            ("to_endorse", "รอผู้บังคับบัญชาขั้นต้นอนุมัติ"),
+            ("to_endorse", "รอผู้บังคับบัญชาเห็นชอบ"),
             ("to_verify", "รอตรวจสอบคำขอ"),
             ("to_approve", "รอรองอธิการบดีอนุมัติ"),
             ("approved", "รอโอนเงิน"),
@@ -813,7 +813,14 @@ class AdvancePayment(models.Model):
 
     @api.constrains("ignore_exception", "loan_amount", "state")
     def advance_payment_check_exception(self):
-        records = self.filtered(lambda s: s.state == "to_endorse")
+        # Both pending states the record can sit in while its material fields
+        # are still correctable: to_endorse is where action_submit lands it,
+        # and to_verify is where the loan officer may still fix loan_amount /
+        # bank_id / reference (ADR-0005) — those edits have to face the same
+        # blocking rules the borrower did. excep_missing_manager scopes itself
+        # out of to_verify, so a manager leaving mid-flight cannot false-block
+        # the officer.
+        records = self.filtered(lambda s: s.state in ("to_endorse", "to_verify"))
         if records:
             records._check_exception()
 
