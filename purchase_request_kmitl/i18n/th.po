@@ -176,9 +176,13 @@ msgstr "หน่วยงาน"
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__description
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__description
-#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_line__name
 msgid "Description"
 msgstr "เหตุผล/ความจำเป็น"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_line__name
+msgid "Description"
+msgstr "รายการ"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__direct
