@@ -28,6 +28,7 @@ class PurchaseRequest(models.Model):
             "returned": "set default",
         },
     )
+    date_start = fields.Date(default=False)
 
     line_ids = fields.One2many(
         states={
@@ -207,6 +208,14 @@ class PurchaseRequest(models.Model):
     def button_approved(self):
         self._apply_sarabun_approve_metadata()
         return super().button_approved()
+
+    def button_to_verify(self):
+        return self.write(
+            {
+                "date_start": fields.Date.context_today(self),
+                "state": "to_verify",
+            }
+        )
 
     def button_to_submit(self):
         return self.write({"state": "to_submit"})
