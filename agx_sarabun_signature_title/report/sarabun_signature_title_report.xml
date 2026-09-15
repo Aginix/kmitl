@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template
+        id="sarabun_endorsement_block_title"
+        inherit_id="agx_sarabun.sarabun_endorsement_block"
+    >
+        <xpath
+            expr="//span[@t-out='sig.signed_name or sig.acted_by_id.employee_id.name or sig.acted_by_id.name']"
+            position="replace"
+        >
+            <span t-out="sig._signed_display_name()"/>
+        </xpath>
+    </template>
+</odoo>
