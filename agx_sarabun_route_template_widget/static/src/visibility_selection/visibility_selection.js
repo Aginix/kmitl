@@ -1,10 +1,7 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import {
-    SelectionField,
-    selectionField,
-} from "@web/views/fields/selection/selection_field";
+import { SelectionField } from "@web/views/fields/selection/selection_field";
 import { useService } from "@web/core/utils/hooks";
 import { onWillStart, useState } from "@odoo/owl";
 
@@ -15,7 +12,14 @@ import { onWillStart, useState } from "@odoo/owl";
 // values to their label. The server-side @api.constrains in
 // agx_sarabun_user_template remains the enforcement; this is UI polish.
 
-class SarabunVisibilitySelectionField extends SelectionField {
+// Register the class directly — Odoo 16.0 does not yet expose the
+// `selectionField` object wrapper (that pattern lands in a later version),
+// so `registry.add("...", { ...selectionField, component: ... })` produces
+// an object Odoo cannot `new()` at Field render time ("C is not a
+// constructor" in owl's ComponentNode). Matches the class-registration
+// pattern used by the other widgets in this repo (agx_partner_autocomplete
+// etc.).
+export class SarabunVisibilitySelectionField extends SelectionField {
     setup() {
         super.setup();
         this.userService = useService("user");
@@ -36,11 +40,6 @@ class SarabunVisibilitySelectionField extends SelectionField {
     }
 }
 
-export const sarabunVisibilitySelectionField = {
-    ...selectionField,
-    component: SarabunVisibilitySelectionField,
-};
-
 registry
     .category("fields")
-    .add("sarabun_visibility_selection", sarabunVisibilitySelectionField);
+    .add("sarabun_visibility_selection", SarabunVisibilitySelectionField);
