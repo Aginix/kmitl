@@ -415,7 +415,6 @@ export class PurchaseRequestDashboard extends Component {
         const builtinClasses = {
             draft: "text-dark",
             to_verify: "text-info",
-            to_submit: "text-info",
             to_approve: "text-warning",
             in_approval: "text-warning",
             in_progress: "text-primary",
