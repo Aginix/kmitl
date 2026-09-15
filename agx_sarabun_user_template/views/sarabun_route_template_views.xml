@@ -110,6 +110,8 @@
                 <filter name="archived" string="Archived"
                         domain="[('active', '=', False)]"/>
                 <group expand="0" string="จัดกลุ่มตาม">
+                    <filter name="group_mine_bucket" string="ของฉัน / ของคนอื่น"
+                            context="{'group_by': 'mine_bucket'}"/>
                     <filter name="group_visibility" string="การมองเห็น"
                             context="{'group_by': 'visibility'}"/>
                     <filter name="group_owner" string="เจ้าของ"
