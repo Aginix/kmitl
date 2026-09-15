@@ -171,6 +171,7 @@
                         </group>
                         <group name="processing_dates" string="ข้อมูลการดำเนินการ">
                             <field name="date_submitted" />
+                            <field name="date_endorsed" attrs="{'invisible': [('state', '=', 'draft')]}" />
                             <field name="date_verified" attrs="{'invisible': [('state', '=', 'draft')]}" />
                             <field name="date_approved" attrs="{'invisible': [('state', '=', 'draft')]}" />
                             <field name="return_due_date"
