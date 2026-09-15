@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="procurement_plan_report.MultiRecordSelect" owl="1">
+        <div class="o_ppr_ms" t-ref="root">
+            <div class="o_ppr_ms_box form-control">
+                <span
+                    t-foreach="selected"
+                    t-as="rec"
+                    t-key="rec.id"
+                    class="badge text-bg-primary o_ppr_ms_tag"
+                >
+                    <t t-esc="rec.name" />
+                    <span class="o_ppr_ms_x" t-on-click="() => this.remove(rec.id)">×</span>
+                </span>
+                <input
+                    type="text"
+                    class="o_ppr_ms_input"
+                    t-att-placeholder="props.placeholder"
+                    t-att-value="state.query"
+                    t-on-focus="onFocus"
+                    t-on-input="onInput"
+                />
+            </div>
+            <div class="o_ppr_ms_dropdown" t-if="state.open and state.options.length">
+                <div
+                    t-foreach="state.options"
+                    t-as="opt"
+                    t-key="opt.id"
+                    class="o_ppr_ms_option"
+                    t-on-click="() => this.add(opt)"
+                >
+                    <t t-esc="opt.name" />
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="procurement_plan_report.ProcurementPlanReport" owl="1">
+        <Layout display="{ controlPanel: { 'top-right': false, 'bottom-right': false } }">
+            <t t-set-slot="control-panel-bottom-left">
+                <div class="o_ppr_filters d-flex flex-wrap align-items-end gap-2">
+                    <div>
+                        <label class="o_form_label small mb-0">ปีงบประมาณ</label>
+                        <select class="form-select form-select-sm" t-on-change="onFiscalYearChange">
+                            <option value="">/</option>
+                            <option
+                                t-foreach="fiscalYears"
+                                t-as="fy"
+                                t-key="fy.id"
+                                t-att-value="fy.id"
+                                t-att-selected="fy.id === state.fiscalYearId"
+                            >
+                                <t t-esc="fy.name" />
+                            </option>
+                        </select>
+                    </div>
+                    <div class="o_ppr_dim">
+                        <label class="o_form_label small mb-0">หน่วยงาน</label>
+                        <MultiRecordSelect
+                            resModel="'account.analytic.account'"
+                            domain="[['root_plan_id.code', '=', 'departments']]"
+                            placeholder="labels.departments"
+                            selected="state.departments"
+                            onChange="(sel) => this.onDepartmentChange(sel)"
+                        />
+                    </div>
+                    <button class="btn btn-secondary btn-sm" t-on-click="exportXlsx">
+                        <i class="fa fa-file-excel-o me-1" />Export Excel
+                    </button>
+                </div>
+            </t>
+
+            <div class="o_ppr_body p-3">
+                <t t-if="state.loading">
+                    <div class="text-center text-muted p-4">Loading...</div>
+                </t>
+                <t t-elif="!state.data or !state.data.groups.length">
+                    <div class="text-center text-muted p-4">ไม่พบข้อมูล</div>
+                </t>
+                <t t-else="">
+                    <div class="o_ppr_report_head text-center mb-3">
+                        <div class="fw-bold" t-esc="state.data.title" />
+                        <div>แผนการดำเนินการจัดซื้อ/จัดจ้าง ประจำปีงบประมาณ พ.ศ. <t t-esc="state.data.fiscal_year_name" /></div>
+                        <div t-esc="state.data.expense" />
+                        <div t-esc="state.data.company_name" />
+                    </div>
+
+                    <div
+                        t-foreach="state.data.groups"
+                        t-as="group"
+                        t-key="group_index"
+                        class="o_ppr_group card shadow-sm mb-4"
+                    >
+                        <div class="o_ppr_group_head card-header py-2">
+                            <div><span class="text-muted">หน่วยงาน :</span> <t t-esc="group.department_name" /></div>
+                            <div><span class="text-muted">แหล่งเงิน :</span> <t t-esc="group.source_name" /></div>
+                            <div><span class="text-muted">แผนงาน :</span> <t t-esc="group.program_name" /></div>
+                            <div><span class="text-muted">ผลผลิต :</span> <t t-esc="group.output_name" /></div>
+                            <div><span class="text-muted">กิจกรรม :</span> <t t-esc="group.activity_name" /></div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered o_ppr_table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            t-foreach="columns"
+                                            t-as="col"
+                                            t-key="col.key"
+                                            t-att-class="col.cls"
+                                            t-esc="col.label"
+                                        />
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="group.items" t-as="item" t-key="item.id">
+                                        <tr
+                                            t-foreach="itemRows(item)"
+                                            t-as="row"
+                                            t-key="item.id + '_' + row_index"
+                                            t-att-class="row.cls"
+                                        >
+                                            <td
+                                                t-foreach="columns"
+                                                t-as="col"
+                                                t-key="col.key"
+                                                t-att-class="col.cls"
+                                                t-esc="cellValue(col, row.cells)"
+                                            />
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </Layout>
+    </t>
+
+</templates>
