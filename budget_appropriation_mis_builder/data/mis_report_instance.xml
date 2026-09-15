@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- Default Report Instance for the Budget Appropriation Expense Report -->
+    <record
+        id="mis_report_instance_budget_appropriation_expense"
+        model="mis.report.instance"
+    >
+        <field name="name">รายงานการจัดสรรงบประมาณรายจ่าย แยกตามประเภทงบประมาณ</field>
+        <field name="report_id" ref="mis_report_budget_appropriation_expense" />
+        <field name="target_move">all</field>
+        <field name="temporary" eval="False" />
+    </record>
+
+    <!-- Single period showing current fiscal year -->
+    <record
+        id="mis_report_instance_period_current_year"
+        model="mis.report.instance.period"
+    >
+        <field name="name">ปีปัจจุบัน</field>
+        <field
+            name="report_instance_id"
+            ref="mis_report_instance_budget_appropriation_expense"
+        />
+        <field name="source">actuals</field>
+        <field name="mode">relative</field>
+        <field name="type">y</field>
+        <field name="offset">0</field>
+        <field name="duration">1</field>
+        <field name="sequence">10</field>
+    </record>
+
+</odoo>
