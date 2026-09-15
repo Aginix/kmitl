@@ -75,17 +75,15 @@
                     class="btn-primary"
                 />
             </xpath>
-            <xpath expr="//form/header/field[@name='state']" position="attributes">
-                <attribute name="attrs">{'invisible': [('is_egp', '=', True)]}</attribute>
-            </xpath>
-            <xpath expr="//form/header/field[@name='state']" position="after">
-                <field
-                    name="state"
-                    widget="statusbar"
-                    statusbar_visible="draft,to_verify,to_verify_budget,to_approve,sent,in_egp,in_progress,done"
-                    attrs="{'invisible': [('is_egp', '=', False)]}"
-                />
-            </xpath>
+            <!-- ไม่มี statusbar ตัวที่สองสำหรับ e-GP แล้ว: สองแถบเดิมต่างกันแค่
+                 in_egp กับ in_approval ซึ่งเป็น state ของ "สาขา" ที่ พ.1 หนึ่งใบ
+                 เดินได้ทางเดียว การใส่ทั้งคู่ในแถบเดียวจะโชว์สาขาที่ไม่ได้เดิน
+                 จึงไม่ใส่ทั้งคู่ แล้วอาศัยกฎของ widget ที่ว่า "ค่าปัจจุบันแสดงเสมอ
+                 แม้ไม่อยู่ใน statusbar_visible" (statusbar_field.js) — in_egp จะ
+                 โผล่เองตอนที่ พ.1 อยู่สถานะนั้นจริง และอยู่ถูกตำแหน่งเพราะลำดับ
+                 selection ถูกปักไว้ที่ purchase_request_approval แล้ว
+                 การรวมเหลือแถบเดียวคือเงื่อนไขที่ทำให้แต่ละโมดูลต่อ state ของ
+                 ตัวเองด้วย add= ได้ — สองแถบต้องต่อสองที่และ drift แน่นอน -->
         </field>
     </record>
 
@@ -144,5 +142,4 @@
             </xpath>
         </field>
     </record>
-
 </odoo>

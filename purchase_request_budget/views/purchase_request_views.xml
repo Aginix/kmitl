@@ -5,6 +5,14 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form" />
         <field name="arch" type="xml">
+            <!-- state ที่โมดูลนี้เป็นเจ้าของ ต่อเข้า statusbar เอง -->
+            <xpath expr="//form/header/field[@name='state']" position="attributes">
+                <attribute
+                    name="statusbar_visible"
+                    add="to_verify_budget"
+                    separator=","
+                />
+            </xpath>
             <xpath expr="//button[@name='button_draft']" position="before">
                 <field name="hide_reserve_budget_button" invisible="1" />
                 <button

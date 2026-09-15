@@ -170,10 +170,19 @@
                 />
             </xpath>
 
+            <!-- statusbar_visible เป็น "เซ็ต" ไม่ใช่ "ลำดับ": widget เอาลิสต์นี้ไป
+                 กรอง selection ของ field ลำดับที่แสดงจึงมาจากลำดับ selection
+                 (คุมด้วย selection_add anchors) ทุกโมดูลจึงต่อ state ของตัวเอง
+                 ด้วย add= ได้โดยไม่ต้องสนลำดับ และไม่ต้องแก้ลิสต์กลาง
+                 ที่นี่: เพิ่ม to_verify ที่โมดูลนี้เป็นเจ้าของ และถอด approved ของ
+                 OCA ออก เพราะ flow ของ KMITL ข้ามขั้นนั้น (button_approved ซ่อน) -->
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,to_verify,to_approve,sent,in_approval,in_progress,done</attribute>
+                    add="to_verify"
+                    remove="approved"
+                    separator=","
+                />
             </xpath>
 
             <xpath expr="//h1/field[@name='name']" position="attributes">

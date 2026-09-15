@@ -11,7 +11,17 @@ class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
     state = fields.Selection(
-        selection_add=[("in_approval", "In Approval"), ("approved",)],
+        # โมดูลนี้เป็นที่เดียวที่มองเห็นทั้งสองสาขา (depends ทั้ง purchase_request_egp
+        # และ purchase_request_sarabun และโหลดท้ายสุด) จึงเป็นคนปักลำดับ
+        # sent < in_egp < in_approval < approved ให้ทั้งคู่ — purchase_request_egp
+        # ปักเองไม่ได้เพราะไม่ได้ depend sarabun และการ anchor ค่าที่โมดูลตัวเอง
+        # ไม่รู้จักจะพังตอนสร้าง field (labels[value] KeyError)
+        selection_add=[
+            ("sent",),
+            ("in_egp",),
+            ("in_approval", "In Approval"),
+            ("approved",),
+        ],
         ondelete={"in_approval": "set default"},
     )
 

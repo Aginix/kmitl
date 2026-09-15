@@ -128,12 +128,38 @@ migration-ordering hazard that creates).
   `ondelete={'to_examine': 'set default'}` cannot fire, because
   `_process_ondelete` reads `ondelete` off the field in the *registry*, which
   no longer declares the value at all.
-- **`statusbar_visible` is maintained as one list on `purchase_request_kmitl`'s
-  view** rather than three modules each appending their own state. A widget
-  silently drops any value in the list that isn't in the field's current
-  selection, so this is safe even though `to_verify_budget` and `sent` are
-  declared by other modules — same pattern the repo already used for the
-  pre-existing list.
+- **Statusbar order and statusbar visibility are two different mechanisms, and
+  each module owns its own entry in both.** `statusbar_visible` is a *set*, not
+  an order: the widget uses it to filter the field's `selection`, so what the
+  user sees is ordered by the selection, and a value listed but absent from the
+  selection is silently dropped. Each module therefore appends its own state
+  with `<attribute name="statusbar_visible" add="..." separator=","/>` instead
+  of one central list — order-independent, so it does not matter which view is
+  applied first. `purchase_request_kmitl` adds `to_verify` and removes OCA's
+  `approved` (the KMITL flow skips it); `purchase_request_budget` adds
+  `to_verify_budget`; `purchase_request_sarabun` adds `sent`.
+- **Order is pinned by `selection_add` anchors, and the anchor must be the
+  value that would otherwise slip in front.** `merge_sequences` is a
+  topological sort whose only constraints are the adjacent pairs of each
+  `selection_add` list, so a bare `("x",)` tuple is an ordering anchor. Anchor
+  a new state on *both* sides. `("to_approve",), ("sent", …), ("in_progress",)`
+  looked right but let OCA's `approved` — which already sits between
+  `to_approve` and `in_progress` — and both branch states slip in front of
+  `sent`; the anchor has to be `("approved",)`. `purchase_request_egp` cannot
+  anchor `in_egp` behind `sent` because it does not depend on
+  `purchase_request_sarabun`, and anchoring on a value the module does not know
+  raises `KeyError` while the field is built, so `purchase_request_approval` —
+  the only module depending on both branches — pins
+  `sent < in_egp < in_approval < approved` for both.
+- **The e-GP dual statusbar is collapsed into one.** The two bars differed only
+  in `in_egp` vs `in_approval`, i.e. the branch a given พ.1 takes, which is why
+  neither can sit in a shared list. Both are left out of `statusbar_visible`
+  entirely and surface through the widget's "the current value is always shown"
+  rule, so each appears exactly while the request is in it. Two bars would have
+  meant every module appending its state twice — they had already drifted
+  (`to_verify_budget` present in one, missing from the other). Accepted cost: a
+  request at `in_progress`/`done` no longer shows the branch step it passed
+  through.
 
 [ADR-0005]: 0005-post-sarabun-state-split.md
 [ADR-0007]: 0007-pa-return-for-revision.md

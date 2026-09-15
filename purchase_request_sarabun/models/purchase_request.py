@@ -8,7 +8,11 @@ class PurchaseRequest(models.Model):
     _inherit = ["purchase.request", "sarabun.document.mixin", "portal.mixin", 'thai.date.mixin']
 
     state = fields.Selection(
-        selection_add=[("to_approve",), ("sent", "Sent"), ("in_progress",)],
+        # หมุดท้ายต้องเป็น approved ไม่ใช่ in_progress: approved ของ OCA คั่นอยู่
+        # ระหว่าง to_approve กับ in_progress อยู่แล้ว ข้อจำกัด sent < in_progress
+        # จึงไม่ได้ห้าม approved/in_egp/in_approval แทรกมาก่อน sent
+        # (merge_sequences เป็น topological sort — คู่ที่ติดกันคือข้อจำกัดเดียวที่มี)
+        selection_add=[("to_approve",), ("sent", "Sent"), ("approved",)],
         ondelete={"sent": "set default"},
     )
 
