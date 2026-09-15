@@ -18,8 +18,8 @@
                 <field name="can_edit_egp" invisible="1" />
             </xpath>
             <xpath
-                expr="//group[@name='purchase_request_group']//field[@name='operating_unit_id']"
-                position="before"
+                expr="//group[@name='purchase_request_group']//field[@name='payment_type']"
+                position="after"
             >
                 <field
                     name="is_egp"
