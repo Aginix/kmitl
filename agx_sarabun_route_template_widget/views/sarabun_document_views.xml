@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Apply the visibility-badge Many2one widget to the route template picker
+         on the document form. Scoped to the single field; the button and
+         everything else around it stays as-is. -->
+    <record id="view_sarabun_document_form_inherit_route_template_widget"
+            model="ir.ui.view">
+        <field name="name">sarabun.document.form.route_template_widget</field>
+        <field name="model">sarabun.document</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='route_template_id']" position="attributes">
+                <attribute name="widget">sarabun_route_template_m2o</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

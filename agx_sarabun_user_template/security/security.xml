@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Override the core read rule (originally [(1,'=',1)]) with a
+             visibility-aware domain. OR-combination is required because the
+             original wide domain must be REPLACED, not merely supplemented.
+             Three branches: public visible to all, personal visible to owner only,
+             unit visible to members of the template's dept or any ancestor dept
+             (matched via sarabun_shared_department_ids which walks parent_path). -->
+        <record id="agx_sarabun.sarabun_route_template_read_rule" model="ir.rule">
+            <field name="domain_force">['|','|',
+                ('visibility','=','public'),
+                ('owner_id','=',user.id),
+                '&amp;',('visibility','=','unit'),
+                    ('department_id','in',user.sarabun_shared_department_ids.ids)]</field>
+        </record>
+
+        <!-- Managers bypass the user-group visibility rule — full access to all
+             templates (read/write/create/unlink).  Required because group_sarabun_manager
+             implies group_sarabun_user, so managers are subject to the user-group rules
+             above; this manager rule ORs with them, restoring unconditional access. -->
+        <record id="sarabun_route_template_manager_rule" model="ir.rule">
+            <field name="name">Sarabun Route Template: Manager Full Access</field>
+            <field name="model_id" ref="agx_sarabun.model_sarabun_route_template"/>
+            <field name="groups" eval="[(4, ref('agx_sarabun.group_sarabun_manager'))]"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+        </record>
+
+        <!-- Users may write/create/unlink only their own templates (owner_id = user). -->
+        <record id="sarabun_route_template_owner_write_rule" model="ir.rule">
+            <field name="name">Sarabun Route Template: Owner Write</field>
+            <field name="model_id" ref="agx_sarabun.model_sarabun_route_template"/>
+            <field name="groups" eval="[(4, ref('agx_sarabun.group_sarabun_user'))]"/>
+            <field name="domain_force">[('owner_id','=',user.id)]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Line model — read: scoped to readable templates (same 3-branch domain). -->
+        <record id="sarabun_route_template_line_read_rule" model="ir.rule">
+            <field name="name">Sarabun Route Template Line: User Read</field>
+            <field name="model_id" ref="agx_sarabun.model_sarabun_route_template_line"/>
+            <field name="groups" eval="[(4, ref('agx_sarabun.group_sarabun_user'))]"/>
+            <field name="domain_force">['|','|',
+                ('template_id.visibility','=','public'),
+                ('template_id.owner_id','=',user.id),
+                '&amp;',('template_id.visibility','=','unit'),
+                    ('template_id.department_id','in',user.sarabun_shared_department_ids.ids)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Line model — write/create/unlink: owner of the parent template only. -->
+        <record id="sarabun_route_template_line_owner_write_rule" model="ir.rule">
+            <field name="name">Sarabun Route Template Line: Owner Write</field>
+            <field name="model_id" ref="agx_sarabun.model_sarabun_route_template_line"/>
+            <field name="groups" eval="[(4, ref('agx_sarabun.group_sarabun_user'))]"/>
+            <field name="domain_force">[('template_id.owner_id','=',user.id)]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Line model — manager full access (same rationale as template manager rule). -->
+        <record id="sarabun_route_template_line_manager_rule" model="ir.rule">
+            <field name="name">Sarabun Route Template Line: Manager Full Access</field>
+            <field name="model_id" ref="agx_sarabun.model_sarabun_route_template_line"/>
+            <field name="groups" eval="[(4, ref('agx_sarabun.group_sarabun_manager'))]"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+        </record>
+    </data>
+</odoo>
