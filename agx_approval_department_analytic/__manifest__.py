@@ -6,4 +6,5 @@
     "license": "LGPL-3",
     "depends": ["agx_approval"],
     "data": ["views/approval_request_views.xml"],
+    "installable": True,
 }
