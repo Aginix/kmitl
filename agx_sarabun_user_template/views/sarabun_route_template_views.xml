@@ -141,9 +141,10 @@
         <field name="name">เส้นทางหน่วยงาน (Department Route Templates)</field>
         <field name="res_model">sarabun.route.template</field>
         <field name="view_mode">tree,form</field>
-        <!-- SQL treats owner_id != uid as NULL for null-owner rows, so OR
-             an explicit False branch to keep seed templates visible. -->
-        <field name="domain">['|', ('owner_id', '=', False), ('owner_id', '!=', uid)]</field>
+        <!-- Only unit-visibility templates — the read ir.rule already scopes
+             these to the user's dept tree (parent_path walk), so the domain
+             just narrows the tier. -->
+        <field name="domain">[('visibility', '=', 'unit')]</field>
     </record>
 
     <!-- Sub-parent grouper under the new "ตั้งค่าใช้งาน" (declared in
