@@ -82,43 +82,24 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
 
-            <xpath expr="//field[@name='line_ids']" position="attributes">
-                <attribute
-                    name="attrs"
-                >{'readonly': [('state', 'not in', ('draft', 'returned'))]}</attribute>
+            <!-- === Header buttons === -->
+            <button name="button_to_approve" position="attributes">
+                <attribute name="states" />
+                <attribute name="invisible">1</attribute>
+            </button>
+
+            <xpath expr="//button[@name='button_in_progress']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='line_ids']" position="before">
-                <group>
-                    <group>
-                        <field name="partner_id_domain" invisible="1" />
-                        <field
-                            name="partner_id"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
-                            domain="partner_id_domain"
-                            options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                        />
-                    </group>
-                </group>
-                <group name="warning_prepaid">
-                    <group>
-                        <div
-                            colspan="2"
-                            class="alert alert-warning show"
-                            role="alert"
-                            attrs="{'invisible': [('payment_type', '!=', 'prepaid')]}"
-                        >
-                            When payment type is Prepaid, please select the advance
-                            payer's name in the Vendor field.
-                        </div>
-                    </group>
-                </group>
+            <xpath expr="//button[@name='button_done']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//form" position="inside">
-                <field name="hide_create_po_button" invisible="1" />
-                <field name="can_reset_to_draft" invisible="1" />
-            </xpath>
+            <button name="button_rejected" position="attributes">
+                <attribute name="states" />
+                <attribute name="invisible">1</attribute>
+            </button>
 
             <xpath
                 expr="//button[@name='%(purchase_request.action_purchase_request_line_make_purchase_order)d']"
@@ -127,11 +108,6 @@
                 <attribute name="states" />
                 <attribute name="invisible">1</attribute>
             </xpath>
-
-            <button name="button_rejected" position="attributes">
-                <attribute name="states" />
-                <attribute name="invisible">1</attribute>
-            </button>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
                 <attribute name="states" />
@@ -164,6 +140,19 @@
                 >draft,to_verify,to_submit,to_approve,in_approval,in_progress,done</attribute>
             </xpath>
 
+            <!-- === Smart buttons === -->
+            <xpath expr="//button[@name='action_show_details']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//button[@name='action_view_purchase_request_line']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- === Title & sheet fields === -->
             <xpath expr="//h1/field[@name='name']" position="attributes">
                 <attribute name="readonly">1</attribute>
             </xpath>
@@ -172,35 +161,49 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='name']"
-                position="attributes"
-            >
-                <attribute name="required">1</attribute>
+            <xpath expr="//field[@name='picking_type_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='product_qty']"
-                position="attributes"
-            >
+            <xpath expr="//field[@name='group_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute
                     name="attrs"
-                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
+                >{'invisible': [('origin', '=', False)]}</attribute>
             </xpath>
 
-            <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
-                position="attributes"
-            >
-                <attribute
-                    name="attrs"
-                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
+            <xpath expr="//field[@name='date_start']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='line_ids']//tree" position="attributes">
-                <attribute name="no_open">1</attribute>
+            <xpath expr="//field[@name='description']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='department_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='requested_by']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='exception_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='ignore_exception']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='operating_unit_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- === Purchase Request Details group === -->
             <xpath expr="//h1" position="after">
                 <group
                     string="Purchase Request Details"
@@ -268,6 +271,110 @@
                         />
                     </group>
                 </group>
+            </xpath>
+
+            <!-- === Vendor / warnings before line_ids === -->
+            <xpath expr="//field[@name='line_ids']" position="before">
+                <group>
+                    <group>
+                        <field name="partner_id_domain" invisible="1" />
+                        <field
+                            name="partner_id"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            domain="partner_id_domain"
+                            options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
+                        />
+                    </group>
+                </group>
+                <group name="warning_prepaid">
+                    <group>
+                        <div
+                            colspan="2"
+                            class="alert alert-warning show"
+                            role="alert"
+                            attrs="{'invisible': [('payment_type', '!=', 'prepaid')]}"
+                        >
+                            When payment type is Prepaid, please select the advance
+                            payer's name in the Vendor field.
+                        </div>
+                    </group>
+                </group>
+            </xpath>
+
+            <xpath expr="//field[@name='line_ids']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('state', 'not in', ('draft', 'returned'))]}</attribute>
+            </xpath>
+
+            <!-- === Lines tree tweaks === -->
+            <xpath expr="//field[@name='line_ids']//tree" position="attributes">
+                <attribute name="no_open">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='name']"
+                position="attributes"
+            >
+                <attribute name="required">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='product_qty']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='product_uom_id'][@groups='uom.group_uom']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
+                position="after"
+            >
+                <field
+                    name="uom_text"
+                    required="1"
+                    attrs="{'readonly': [('parent.state', '!=', 'draft')]}"
+                />
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='date_required']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='purchased_qty']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='purchase_state']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <!-- === Attachment group (before notebook, ends up under Budget Details) === -->
@@ -356,10 +463,6 @@
                         </tree>
                     </field>
                 </page>
-            </xpath>
-
-            <!-- === Notebook Operation pages === -->
-            <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="operation" string="Operation">
                     <group>
                         <group>
@@ -371,119 +474,11 @@
                     </group>
                 </page>
             </xpath>
-        </field>
-    </record>
 
-    <record id="view_purchase_request_hide_form" model="ir.ui.view">
-        <field name="name">purchase.request.form (KMITL Hide)</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
-        <field name="arch" type="xml">
-
-            <button name="button_to_approve" position="attributes">
-                <attribute name="states" />
-                <attribute name="invisible">1</attribute>
-            </button>
-
-            <xpath expr="//button[@name='button_in_progress']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//button[@name='button_done']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='product_uom_id'][@groups='uom.group_uom']"
-                position="attributes"
-            >
-                <attribute name="invisible">1</attribute>
-                <attribute name="column_invisible">1</attribute>
-            </xpath>
-
-            <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
-                position="after"
-            >
-                <field
-                    name="uom_text"
-                    required="1"
-                    attrs="{'readonly': [('parent.state', '!=', 'draft')]}"
-                />
-            </xpath>
-
-            <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='date_required']"
-                position="attributes"
-            >
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='purchased_qty']"
-                position="attributes"
-            >
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='purchase_state']"
-                position="attributes"
-            >
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//button[@name='action_show_details']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath
-                expr="//button[@name='action_view_purchase_request_line']"
-                position="attributes"
-            >
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-             <xpath expr="//field[@name='picking_type_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='group_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='origin']" position="attributes">
-                <attribute
-                    name="attrs"
-                >{'invisible': [('origin', '=', False)]}</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='date_start']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='description']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='department_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='requested_by']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='exception_ids']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='ignore_exception']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='operating_unit_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
+            <!-- === Hidden compute helpers === -->
+            <xpath expr="//form" position="inside">
+                <field name="hide_create_po_button" invisible="1" />
+                <field name="can_reset_to_draft" invisible="1" />
             </xpath>
 
         </field>
@@ -512,6 +507,8 @@
         sequence="3"
     />
 
+    <!-- Clear default context {"search_default_requested_by":uid} so the list
+         shows all PRs by default instead of only the current user's. -->
     <function name="write" model="ir.actions.act_window">
         <value
             model="ir.actions.act_window"
