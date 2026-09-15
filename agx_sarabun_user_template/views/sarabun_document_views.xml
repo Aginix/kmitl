@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Narrow the route_template_id dropdown on the document form to
+         templates that make sense for this document:
+
+           1. document_type match — the template must be untyped or match
+              the document's type_id (e.g. an "ขออนุมัติโอนงบ" document
+              hides templates authored for "คำขอเบิก");
+           2. dept scoping for unit-visibility — a unit template must be
+              attached to the document's sender_department_id or any of
+              its ancestor departments (parent_path walk). Public and
+              personal templates skip this dept check (public is
+              institute-wide; personal is scoped by owner via ir.rule).
+
+         The read ir.rule still narrows by user permission on top of this
+         — the domain is UX filtering, not security. -->
+    <record id="view_sarabun_document_form_route_template_domain"
+            model="ir.ui.view">
+        <field name="name">sarabun.document.form.route_template_domain</field>
+        <field name="model">sarabun.document</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='route_template_id']" position="attributes">
+                <attribute name="domain">[
+                    '&amp;',
+                        '|', ('document_type_id', '=', False),
+                             ('document_type_id', '=', type_id),
+                        '|', ('visibility', '!=', 'unit'),
+                        '|', ('department_id', '=', False),
+                             ('department_id', 'parent_of', sender_department_id)
+                ]</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

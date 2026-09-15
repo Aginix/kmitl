@@ -14,6 +14,7 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "views/sarabun_route_template_views.xml",
+        "views/sarabun_document_views.xml",
     ],
     "application": False,
     "installable": True,
