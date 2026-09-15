@@ -146,6 +146,7 @@
         <field name="name">Journal Items</field>
         <field name="res_model">account.move.line</field>
         <field name="view_mode">tree,pivot,graph,kanban,form</field>
+        <field name="view_id" ref="view_move_line_tree_debit_first"/>
         <field name="search_view_id" ref="account.view_account_move_line_filter"/>
         <field name="domain">[('display_type', 'not in', ('line_section', 'line_note'))]</field>
         <field name="context">{'search_default_group_by_move': 1, 'create': 0}</field>
