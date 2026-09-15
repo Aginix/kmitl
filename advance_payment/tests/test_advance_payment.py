@@ -221,10 +221,11 @@ class TestAdvancePayment(TransactionCase):
             cls.emp[u.id] = existing or Employee.create(
                 {"name": u.name, "user_id": u.id}
             )
-        # Every borrower's first-line supervisor (ADR-0020) — endorser_id
-        # snapshots to cls.supervisor's user on submit.
+        # Every borrower's first-line supervisor (ADR-0020). hr.employee's
+        # line manager is parent_id — manager_id lives on hr.department.
+        # endorser_id prefills to cls.supervisor's user already in draft.
         for u in (cls.manager, cls.user, cls.user2, cls.staff, cls.officer):
-            cls.emp[u.id].manager_id = cls.emp[cls.supervisor.id]
+            cls.emp[u.id].parent_id = cls.emp[cls.supervisor.id]
         cls.banks = {}
         for rec in (cls.manager, cls.user, cls.user2, cls.staff, cls.officer):
             cls.banks[rec.id] = cls.env["res.partner.bank"].create(
@@ -420,7 +421,7 @@ class TestAdvancePayment(TransactionCase):
         employee = self.env["hr.employee"].create(
             {
                 "name": "Employee With Userless Manager",
-                "manager_id": userless_manager.id,
+                "parent_id": userless_manager.id,
             }
         )
         ap = self.env["advance.payment"].create(
@@ -511,7 +512,7 @@ class TestAdvancePayment(TransactionCase):
         of somebody else does not leave the drafter's own manager behind."""
         ap = self._make(requested_by=self.user)
         other_emp = self.env["hr.employee"].create(
-            {"name": "Other Borrower", "manager_id": self.emp[self.officer.id].id}
+            {"name": "Other Borrower", "parent_id": self.emp[self.officer.id].id}
         )
         ap.employee_id = other_emp
         self.assertEqual(ap.endorser_id, self.officer)
@@ -520,7 +521,7 @@ class TestAdvancePayment(TransactionCase):
         """A manager reorg must not retarget an in-flight request."""
         ap = self._make(requested_by=self.user, as_user=self.user)
         ap.with_user(self.user).action_submit()
-        self.emp[self.user.id].manager_id = self.emp[self.officer.id]
+        self.emp[self.user.id].parent_id = self.emp[self.officer.id]
         ap.invalidate_recordset()
         self.assertEqual(ap.endorser_id, self.supervisor)
 
@@ -556,7 +557,7 @@ class TestAdvancePayment(TransactionCase):
         ap = self._make(amount=1000)
         ap.action_submit()
         ap.action_endorse()
-        self.emp[self.manager.id].manager_id = False
+        self.emp[self.manager.id].parent_id = False
         ap.with_user(self.officer).write({"loan_amount": 4200})
         self.assertEqual(ap.loan_amount, 4200)
 
@@ -1169,7 +1170,7 @@ class TestAdvancePayment(TransactionCase):
                 # Give it a real manager so this test only exercises submit
                 # permission, not the separate missing-manager exception
                 # (ADR-0020, tested on its own below).
-                "manager_id": self.emp[self.officer.id].id,
+                "parent_id": self.emp[self.officer.id].id,
             }
         )
         ap = self.env["advance.payment"].create(

@@ -10,7 +10,7 @@ requirements, leaving `draft → to_verify` go straight from the borrower to the
 officer's document check.
 
 KMITL now confirms the **first tier only**: the borrower's own line manager
-(`employee_id.manager_id`) must **endorse** (เห็นชอบ) the request before the finance officer's
+(`employee_id.parent_id`) must **endorse** (เห็นชอบ) the request before the finance officer's
 Verify step. The org-routed Dean/ผอ.กองคลัง → Deputy Rector routing above `to_approve` stays
 **deferred** — ADR-0006's reasoning against a placeholder `base_tier_validation` chain for that
 tier is unaffected.
@@ -33,7 +33,7 @@ Approve, and with both steps reading อนุมัติ the statusbar would n
 
 - **Endorser identity is prefilled in draft, then frozen.** `endorser_id` (`res.users`,
   `store=True`, `copy=False`, `tracking=True`) is a stored compute over
-  `employee_id.manager_id.user_id`: it tracks the borrower while the request is `draft`, and
+  `employee_id.parent_id.user_id`: it tracks the borrower while the request is `draft`, and
   keeps its value in every later state. A plain `default=` would not do — the `user` tier may
   draft on behalf and `employee_id` stays editable in draft, so the default (evaluated from the
   *creator*) would name the wrong manager. Prefilling lets the borrower see who will endorse,

@@ -411,11 +411,11 @@ class AdvancePayment(models.Model):
         store=True,
         copy=False,
         tracking=True,
-        help="ผู้บังคับบัญชาของผู้ยืม (ADR-0020) — ติดตาม employee_id.manager_id"
+        help="ผู้บังคับบัญชาของผู้ยืม (ADR-0020) — ติดตาม employee_id.parent_id"
         " ขณะยังเป็นแบบร่าง แล้วตรึงค่าตั้งแต่ส่งคำขอเป็นต้นไป",
     )
 
-    @api.depends("employee_id.manager_id.user_id", "state")
+    @api.depends("employee_id.parent_id.user_id", "state")
     def _compute_endorser_id(self):
         """Track the borrower's line manager while the request is still a
         draft — so the borrower sees who will endorse (and notices a missing
@@ -427,7 +427,7 @@ class AdvancePayment(models.Model):
         """
         for rec in self:
             if rec.state == "draft":
-                rec.endorser_id = rec.employee_id.manager_id.user_id
+                rec.endorser_id = rec.employee_id.parent_id.user_id
             else:
                 rec.endorser_id = rec.endorser_id
 

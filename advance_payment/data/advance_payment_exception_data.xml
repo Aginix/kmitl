@@ -53,7 +53,7 @@
         <!-- Scoped to the states before endorsement: past to_endorse the
              endorser is already named on the record, so a manager leaving
              must not block the loan officer's own corrections in to_verify. -->
-        <field name="domain">['&amp;', ('state', 'in', ['draft', 'to_endorse']), '|', ('employee_id.manager_id', '=', False), ('employee_id.manager_id.user_id', '=', False)]</field>
+        <field name="domain">['&amp;', ('state', 'in', ['draft', 'to_endorse']), '|', ('employee_id.parent_id', '=', False), ('employee_id.parent_id.user_id', '=', False)]</field>
         <field name="is_blocking" eval="True"/>
         <field name="active" eval="True"/>
     </record>
