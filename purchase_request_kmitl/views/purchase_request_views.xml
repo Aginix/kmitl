@@ -153,17 +153,21 @@
                 >{'invisible': [('can_reset_to_draft', '=', False)]}</attribute>
             </xpath>
 
+            <!-- states ที่นี่คือของโมดูลนี้เท่านั้น (draft/in_progress ของ OCA,
+                 to_verify/to_approve/returned ของ kmitl) โมดูลที่เพิ่ม state
+                 ของตัวเอง (budget/sarabun/egp/approval) ต่อเข้า states นี้เอง
+                 ด้วย add= เหมือน statusbar_visible -->
             <xpath expr="//header" position="inside">
                 <button
                     name="button_cancel"
-                    states="draft,to_verify,to_verify_budget,to_approve,sent,in_egp,in_approval,in_progress,returned"
+                    states="draft,to_verify,to_approve,in_progress,returned"
                     string="Cancel"
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
                 <button
                     name="button_return"
-                    states="to_verify,to_verify_budget"
+                    states="to_verify"
                     string="Return"
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"

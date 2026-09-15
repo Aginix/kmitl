@@ -13,6 +13,12 @@
                     separator=","
                 />
             </xpath>
+            <xpath expr="//button[@name='button_cancel']" position="attributes">
+                <attribute name="states" add="to_verify_budget" separator="," />
+            </xpath>
+            <xpath expr="//button[@name='button_return']" position="attributes">
+                <attribute name="states" add="to_verify_budget" separator="," />
+            </xpath>
             <xpath expr="//button[@name='button_draft']" position="before">
                 <field name="hide_reserve_budget_button" invisible="1" />
                 <button
