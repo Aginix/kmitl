@@ -104,3 +104,10 @@ class AdvancePayment(models.Model):
                 subtype_xmlid="mail.mt_note",
             )
         return res
+
+    def _action_do_cancel(self, reason):
+        """Reject the backing purchase request when its loan is cancelled."""
+        self.ensure_one()
+        if self.purchase_request_id:
+            self.purchase_request_id.button_rejected()
+        return super()._action_do_cancel(reason)
