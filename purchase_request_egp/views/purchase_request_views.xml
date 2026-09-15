@@ -3,7 +3,7 @@
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">view.purchase.request.form (e-GP)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='origin']" position="before">
                 <field
@@ -16,10 +16,18 @@
                     attrs="{'invisible': [('egp_status', '=', False)]}"
                 />
                 <field name="can_edit_egp" invisible="1" />
+            </xpath>
+            <xpath
+                expr="//group[@name='purchase_request_group']//field[@name='operating_unit_id']"
+                position="before"
+            >
                 <field
                     name="is_egp"
-                    attrs="{'readonly': ['|', ('estimated_cost', '>', 100000), ('is_editable', '=', False)]}"
+                    attrs="{'readonly': ['|', ('estimated_cost', '&gt;', 100000), ('is_editable', '=', False)]}"
                 />
+                <div colspan="2" class="alert alert-info mb-0" role="alert">
+                    If e-GP procurement is selected, an internal Purchase Request approval (พจ.1) is not required.
+                </div>
             </xpath>
             <xpath expr="//sheet/notebook" position="inside">
                 <page
@@ -28,7 +36,6 @@
                     attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', 'not in', ('approved', 'in_progress', 'in_egp', 'done'))]}"
                 >
                     <group>
-                        <!-- remove required in attrs -->
                         <field
                             name="egp_project_id"
                             attrs="{
@@ -66,6 +73,17 @@
                     attrs="{'invisible': [('show_egp_create_purchase_order_button', '=', False)]}"
                     groups="purchase.group_purchase_user"
                     class="btn-primary"
+                />
+            </xpath>
+            <xpath expr="//form/header/field[@name='state']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_egp', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//form/header/field[@name='state']" position="after">
+                <field
+                    name="state"
+                    widget="statusbar"
+                    statusbar_visible="draft,to_verify,to_submit,to_approve,in_egp,in_progress,done"
+                    attrs="{'invisible': [('is_egp', '=', False)]}"
                 />
             </xpath>
         </field>
@@ -127,57 +145,4 @@
         </field>
     </record>
 
-    <!-- UX override: move is_egp into the purchase_request_group (defined in
-         purchase_request_kmitl.view_purchase_request_form_ux). This view inherits from
-         the UX view so it is applied right after the UX restructure. -->
-    <record id="view_purchase_request_form_ux" model="ir.ui.view">
-        <field name="name">view.purchase.request.form.ux (e-GP)</field>
-        <field name="model">purchase.request</field>
-        <field
-            name="inherit_id"
-            ref="purchase_request_kmitl.view_purchase_request_form"
-        />
-        <field name="arch" type="xml">
-            <!-- Hide is_egp from its original position (near origin) -->
-            <xpath expr="//field[@name='is_egp']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <!-- Re-add is_egp into the custom group, before operating_unit_id -->
-            <xpath
-                expr="//group[@name='purchase_request_group']//field[@name='operating_unit_id']"
-                position="before"
-            >
-                <field
-                    name="is_egp"
-                    attrs="{'readonly': ['|', ('estimated_cost', '&gt;', 100000), ('is_editable', '=', False)]}"
-                />
-                <div
-                    colspan="2"
-                    class="alert alert-info mb-0"
-                    role="alert"
-                >
-                    If e-GP procurement is selected, an internal Purchase Request approval (พจ.1) is not required.
-                </div>
-            </xpath>
-
-            <!-- Dual statusbar: KMITL view already sets the non-e-GP list;
-                 here we make it invisible when is_egp=True and add an e-GP
-                 statusbar after it. is_egp is present in this view via the
-                 xpath above. -->
-            <xpath expr="//form/header/field[@name='state']" position="attributes">
-                <attribute
-                    name="attrs"
-                >{'invisible': [('is_egp', '=', True)]}</attribute>
-            </xpath>
-
-            <xpath expr="//form/header/field[@name='state']" position="after">
-                <field
-                    name="state"
-                    widget="statusbar"
-                    statusbar_visible="draft,to_verify,to_submit,to_approve,in_egp,in_progress,done"
-                    attrs="{'invisible': [('is_egp', '=', False)]}"
-                />
-            </xpath>
-        </field>
-    </record>
 </odoo>
