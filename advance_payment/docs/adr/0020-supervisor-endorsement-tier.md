@@ -26,7 +26,8 @@ draft → to_endorse → to_verify → to_approve → approved → in_progress
 Two existing states are also renamed for clarity, independent of the endorsement work:
 `waiting_transfer → approved` and `to_verify_report → reported`. `to_approve`'s label changes
 to รอรองอธิการบดีอนุมัติ (naming the Deputy Rector as the approver); the state key itself is
-unchanged.
+unchanged. `to_endorse` is labelled รอผู้บังคับบัญชาเห็นชอบ, not …อนุมัติ: the glossary reserves อนุมัติ for
+Approve, and with both steps reading อนุมัติ the statusbar would not tell them apart.
 
 ## Design
 
@@ -47,7 +48,10 @@ unchanged.
 - **Blocking exception at submit**, not a soft warning: a borrower with no manager, or whose
   manager has no linked `res.users`, cannot submit at all (`excep_missing_manager`, mirrors
   `excep_missing_bank_account`'s shape). Silently letting `endorser_id` come back empty would
-  leave the To-Do with no assignee and the request stuck with nobody able to act on it.
+  leave the To-Do with no assignee and the request stuck with nobody able to act on it. The rule
+  scopes itself to `state in ('draft', 'to_endorse')`: past the endorsement the endorser is
+  already named on the record, so a manager leaving must not false-block the loan officer's own
+  corrections in `to_verify`.
 - **Own-only rule ORs in the endorser**, the same shape as ADR-0014's drafter extension: a
   supervisor with no other role in the module can still see and endorse a subordinate's request
   purely by being named `endorser_id` — but the branch is ANDed with `state != 'draft'`, because
@@ -66,15 +70,21 @@ unchanged.
   exception: it stays editable through `draft`, `to_endorse` and `to_verify` (`REASON_READONLY_STATES`
   does **not** add `to_endorse`), since the officer may still send it back for wording fixes
   without having touched the endorsement.
-- **`advance_payment_check_exception`**'s guarded state moves from `to_verify` to `to_endorse` —
-  it is the constraint's job to catch the blocking exceptions at the point `action_submit` now
-  actually lands the record.
+- **`advance_payment_check_exception`** guards `to_endorse` *and* `to_verify` — `to_endorse`
+  because that is where `action_submit` now lands the record, `to_verify` because ADR-0005 lets
+  the loan officer still correct `loan_amount` / `bank_id` / `reference` there, and those edits
+  must face the same blocking rules the borrower's submit did. Guarding only the new state would
+  have opened a hole the pre-ADR-0020 code did not have.
 
 ## Consequences
 
 - No migration and no manifest version bump: the module is still pre-production. A UAT database
   needs a manual SQL fixup (or reinstall) to remap `waiting_transfer`/`to_verify_report` rows and
-  backfill `endorser_id`.
+  backfill `endorser_id` — the initial compute only fills rows still in `draft`, every in-flight
+  row keeps a NULL endorser by design.
+- `data/advance_payment_exception_data.xml` is `noupdate="1"`, so a database that already
+  installed an earlier cut of this branch keeps the first version of `excep_missing_manager`
+  (unscoped domain, old name). Reinstall or fix that one rule by hand; a fresh install is fine.
 - Every place that referenced `waiting_transfer` or `to_verify_report` by string had to be found
   and renamed — the model, both bridge modules (`advance_payment_followup`,
   `purchase_request_advance_payment`), and every view attrs/domain that listed them. There is no

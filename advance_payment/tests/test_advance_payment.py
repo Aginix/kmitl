@@ -182,17 +182,17 @@ class TestAdvancePayment(TransactionCase):
                 ],
             }
         )
+        # The "wrong endorser" foil. `user` tier, not own-only, exactly like
+        # officer2/approver2: own-only would not even be able to *read* a
+        # request they are not named on, so the AccessError would mask the
+        # endorser check these tests are meant to exercise.
         cls.other_supervisor = Users.create(
             {
                 "name": "Other Supervisor",
                 "login": "other_supervisor_ap",
                 "email": "other_supervisor@test.local",
                 "groups_id": [
-                    (
-                        6,
-                        0,
-                        [cls.env.ref("advance_payment.group_advance_payment_own_only").id],
-                    )
+                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_user").id])
                 ],
             }
         )
@@ -535,6 +535,30 @@ class TestAdvancePayment(TransactionCase):
             .search([("id", "=", ap.id)])
         )
         self.assertFalse(visible)
+
+    # ------------------------------------------------------------------ #
+    # Blocking exceptions on the officer's own corrections                 #
+    # ------------------------------------------------------------------ #
+
+    def test_officer_amount_edit_in_to_verify_is_checked(self):
+        """The officer may correct loan_amount in to_verify (ADR-0005), so
+        that edit faces the same blocking rules the borrower's submit did."""
+        ap = self._make(amount=1000)
+        ap.action_submit()
+        ap.action_endorse()
+        with self.assertRaises(ValidationError):
+            ap.with_user(self.officer).write({"loan_amount": 60000})
+
+    def test_missing_manager_does_not_block_officer_in_to_verify(self):
+        """excep_missing_manager is scoped to draft/to_endorse: past the
+        endorsement the endorser is already named, so a manager leaving must
+        not lock the loan officer out of their own corrections."""
+        ap = self._make(amount=1000)
+        ap.action_submit()
+        ap.action_endorse()
+        self.emp[self.manager.id].manager_id = False
+        ap.with_user(self.officer).write({"loan_amount": 4200})
+        self.assertEqual(ap.loan_amount, 4200)
 
     # ------------------------------------------------------------------ #
     # verify / approve guards                                              #
