@@ -3,8 +3,15 @@ from collections import defaultdict
 from odoo import http
 from odoo.http import request
 
+from odoo.addons.purchase_request_dashboard.controllers import main as dashboard_main
 from odoo.addons.purchase_request_dashboard.controllers.main import (
     PurchaseRequestDashboardController,
+)
+
+# Insert the to_verify_budget state between to_verify (seq=20) and to_approve
+# (seq=40). This runs at module import time, before any HTTP request is handled.
+dashboard_main._EXTRA_SUMMARY_STATES.append(
+    (25, "to_verify_budget", "รอจองงบประมาณ")
 )
 
 

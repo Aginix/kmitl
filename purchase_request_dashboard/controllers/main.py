@@ -7,9 +7,10 @@ from odoo.http import request
 # insert between them). Extensions append (seq, state_key, label) tuples here.
 _BASE_SUMMARY_STATES = [
     (10, "draft",       "ฉบับร่าง"),
-    (20, "to_verify",   "รอจองงบประมาณ"),
-    (30, "to_submit",   "รอส่งขอความเห็นชอบให้จัดหา"),
-    (40, "to_approve",  "รอพิจารณาให้จัดหา"),
+    (20, "to_verify",   "รอธุรการตรวจสอบ"),
+    # seq 25: to_verify_budget (purchase_request_dashboard_budget)
+    (40, "to_approve",  "รอส่งขอความเห็นชอบให้จัดหา"),
+    # seq 42: sent (purchase_request_dashboard_sarabun)
     # seq 45: in_egp (purchase_request_dashboard_egp)
     (50, "in_approval", "อยู่ระหว่างจัดทำ พจ.1"),
     (60, "in_progress", "อยู่ระหว่างจัดซื้อจัดจ้าง"),
