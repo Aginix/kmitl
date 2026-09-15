@@ -194,12 +194,6 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='origin']" position="attributes">
-                <attribute
-                    name="attrs"
-                >{'invisible': [('origin', '=', False)]}</attribute>
-            </xpath>
-
             <xpath expr="//field[@name='date_start']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -276,11 +270,6 @@
                             attrs="{'readonly': [('is_editable','=', False)]}"
                             widget="radio"
                             options="{'horizontal': true}"
-                        />
-                        <field
-                            name="operating_unit_id"
-                            widget="selection"
-                            groups="operating_unit.group_multi_operating_unit"
                         />
                     </group>
                 </group>
