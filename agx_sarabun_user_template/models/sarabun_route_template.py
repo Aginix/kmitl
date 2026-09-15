@@ -45,6 +45,27 @@ class SarabunRouteTemplate(models.Model):
             return "public"
         return "personal"
 
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        # Strip 'public' from the visibility selection for non-manager users so
+        # the option never appears in the dropdown. The @api.constrains guard
+        # below stays as defence-in-depth for API/import paths that skip the
+        # field's selection list.
+        result = super().fields_get(allfields=allfields, attributes=attributes)
+        field = result.get("visibility")
+        if (
+            field
+            and not self.env.su
+            and not self.env.user.has_group(
+                "agx_sarabun.group_sarabun_manager"
+            )
+        ):
+            result["visibility"] = dict(field)
+            result["visibility"]["selection"] = [
+                (k, v) for (k, v) in field.get("selection", []) if k != "public"
+            ]
+        return result
+
     @api.constrains("visibility")
     def _check_visibility_public(self):
         if self.env.su:

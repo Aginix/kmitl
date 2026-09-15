@@ -123,25 +123,54 @@
         </field>
     </record>
 
-    <!-- Unified "Route Templates" menu at root — visible to every sarabun user.
-         Rows are scoped per user by the read ir.rule, and the create-default
-         (personal for users, public for managers) comes from the model's
-         _default_visibility, so no context override is needed here. -->
-    <record id="action_sarabun_my_route_template" model="ir.actions.act_window">
-        <field name="name">แม่แบบเส้นทางอนุมัติ (Route Templates)</field>
+    <!-- Split templates into two per-owner views under a shared grouper —
+         "เส้นทางส่วนบุคคล" for the user's own rows, "เส้นทางหน่วยงาน" for
+         everything else the read ir.rule surfaces (public + dept-shared unit
+         from other owners, plus null-owner seed rows). The read ir.rule
+         still scopes visibility on top of these domains — the domains
+         just split "mine" vs "others" inside what the user is allowed to
+         see. -->
+    <record id="action_sarabun_route_template_personal" model="ir.actions.act_window">
+        <field name="name">เส้นทางส่วนบุคคล (My Route Templates)</field>
         <field name="res_model">sarabun.route.template</field>
         <field name="view_mode">tree,form</field>
+        <field name="domain">[('owner_id', '=', uid)]</field>
     </record>
 
-    <menuitem id="menu_sarabun_my_templates"
-              name="แม่แบบเส้นทางอนุมัติ"
-              parent="agx_sarabun.menu_sarabun_root"
-              action="action_sarabun_my_route_template"
-              groups="agx_sarabun.group_sarabun_user"
-              sequence="15"/>
+    <record id="action_sarabun_route_template_unit" model="ir.actions.act_window">
+        <field name="name">เส้นทางหน่วยงาน (Department Route Templates)</field>
+        <field name="res_model">sarabun.route.template</field>
+        <field name="view_mode">tree,form</field>
+        <!-- SQL treats owner_id != uid as NULL for null-owner rows, so OR
+             an explicit False branch to keep seed templates visible. -->
+        <field name="domain">['|', ('owner_id', '=', False), ('owner_id', '!=', uid)]</field>
+    </record>
 
-    <!-- Hide the original manager-only entry under Configuration — the root
-         menu above replaces it for both roles. -->
+    <!-- Sub-parent grouper under the new "ตั้งค่าใช้งาน" (declared in
+         agx_sarabun.menu_sarabun_settings). No action — just the label
+         above the two per-owner views. -->
+    <menuitem id="menu_sarabun_route_template_setup"
+              name="ตั้งค่าเส้นทางเดินเอกสาร"
+              parent="agx_sarabun.menu_sarabun_settings"
+              groups="agx_sarabun.group_sarabun_user"
+              sequence="10"/>
+
+    <menuitem id="menu_sarabun_route_template_personal"
+              name="เส้นทางส่วนบุคคล"
+              parent="menu_sarabun_route_template_setup"
+              action="action_sarabun_route_template_personal"
+              groups="agx_sarabun.group_sarabun_user"
+              sequence="10"/>
+
+    <menuitem id="menu_sarabun_route_template_unit"
+              name="เส้นทางหน่วยงาน"
+              parent="menu_sarabun_route_template_setup"
+              action="action_sarabun_route_template_unit"
+              groups="agx_sarabun.group_sarabun_user"
+              sequence="20"/>
+
+    <!-- Hide the original manager-only entry under Configuration — the
+         new "ตั้งค่าใช้งาน" tree above replaces it for both roles. -->
     <record id="agx_sarabun.menu_sarabun_route_template" model="ir.ui.menu">
         <field name="active" eval="False"/>
     </record>
