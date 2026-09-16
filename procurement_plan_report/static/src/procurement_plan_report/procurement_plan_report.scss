@@ -1,0 +1,100 @@
+.o_ppr_body {
+    overflow: auto;
+
+    .o_ppr_report_head {
+        line-height: 1.4;
+    }
+
+    .o_ppr_group_head {
+        background-color: #f8f9fa;
+        line-height: 1.5;
+        font-size: 0.9rem;
+    }
+
+    .o_ppr_table {
+        font-size: 0.8rem;
+        white-space: nowrap;
+
+        thead th {
+            background-color: #e9ecef;
+            vertical-align: middle;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .o_ppr_tag {
+            width: 3rem;
+            font-weight: 600;
+        }
+
+        // แผน row: emphasised. ผล row: muted. งวด rows: lighter still.
+        tr.o_ppr_plan td {
+            border-top: 2px solid #adb5bd;
+        }
+        tr.o_ppr_actual td {
+            color: #6c757d;
+        }
+        tr.o_ppr_inst td {
+            color: #495057;
+            background-color: #fcfcfd;
+        }
+    }
+}
+
+// Filter bar multi-select (mirrors budget_revenue_comparison).
+.o_ppr_dim {
+    min-width: 16rem;
+}
+
+.o_ppr_ms {
+    position: relative;
+
+    .o_ppr_ms_box {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        min-height: calc(1.5em + 0.5rem + 2px);
+        padding: 0.15rem 0.3rem;
+    }
+
+    .o_ppr_ms_tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .o_ppr_ms_x {
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .o_ppr_ms_input {
+        border: 0;
+        outline: 0;
+        flex: 1;
+        min-width: 5rem;
+        background: transparent;
+    }
+
+    .o_ppr_ms_dropdown {
+        position: absolute;
+        z-index: 1000;
+        top: 100%;
+        left: 0;
+        right: 0;
+        max-height: 14rem;
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 0 0 0.25rem 0.25rem;
+
+        .o_ppr_ms_option {
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #e9ecef;
+            }
+        }
+    }
+}
