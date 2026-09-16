@@ -405,6 +405,22 @@ class ApprovalRequest(models.Model):
             domain += [("id", "=", self.category_id.budget_account_id.id)]
         return domain
 
+    budget_account_domain = fields.Binary(
+        compute="_compute_budget_account_domain",
+        help=(
+            "Record-aware domain for the requester-facing รหัสงบประมาณ dropdown "
+            "— same domain the reservation picker enforces "
+            "(_reservation_account_domain), so the category's budget_account_id "
+            "pin (if any) also limits this field. The field's own static domain "
+            "cannot see category_id (ADR-0007)."
+        ),
+    )
+
+    @api.depends("category_id", "category_id.budget_account_id")
+    def _compute_budget_account_domain(self):
+        for rec in self:
+            rec.budget_account_domain = rec._reservation_account_domain()
+
     def _get_commitment_title(self):
         """ชื่อรายการจอง of a commitment this request reserves = its ประเภทคำขออนุมัติ.
 
@@ -925,6 +941,15 @@ class ApprovalRequest(models.Model):
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
+
+        # Requesters may now SELECT the budget code/dimensions (ADR-0007), but
+        # RESERVE — minting the commitment that locks availability — stays a
+        # budget officer act. The button is already group-gated in the view;
+        # this is defense-in-depth against RPC / the draw-down path.
+        if not self.env.user.has_group("budget.group_budget_commitment"):
+            raise UserError(
+                _("คุณไม่มีสิทธิ์จองงบประมาณ กรุณาติดต่อเจ้าหน้าที่งบประมาณ")
+            )
 
         # Draw-down mode: the user picked an existing ใบจองงบประมาณ. Adopt it
         # instead of creating a new commitment (ADR-0010).
