@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_budget_ledger" model="ir.actions.client">
+        <field name="name">สมุดรายการเคลื่อนไหวงบประมาณ</field>
+        <field name="tag">budget_ledger</field>
+        <field name="target">main</field>
+    </record>
+
+    <menuitem id="menu_budget_ledger"
+        name="สมุดรายการเคลื่อนไหวงบประมาณ"
+        parent="budget.budget_reporting_menu"
+        action="action_budget_ledger"
+        sequence="15"/>
+</odoo>
