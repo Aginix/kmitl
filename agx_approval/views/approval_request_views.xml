@@ -258,6 +258,7 @@
                                 context="{'default_payment_type': 'direct'}"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                                 <tree editable="bottom">
+                                    <field name="payment_type" invisible="1" force_save="1" />
                                     <field name="allowed_product_ids" invisible="1" />
                                     <field name="sequence" widget="handle" />
                                     <field name="currency_id" invisible="1" />
@@ -280,6 +281,7 @@
                                 context="{'default_payment_type': 'prepaid'}"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                                 <tree editable="bottom">
+                                    <field name="payment_type" invisible="1" force_save="1" />
                                     <field name="allowed_product_ids" invisible="1" />
                                     <field name="sequence" widget="handle" />
                                     <field name="currency_id" invisible="1" />
@@ -303,6 +305,7 @@
                                 context="{'default_payment_type': 'advance'}"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                                 <tree editable="bottom">
+                                    <field name="payment_type" invisible="1" force_save="1" />
                                     <field name="allowed_product_ids" invisible="1" />
                                     <field name="sequence" widget="handle" />
                                     <field name="currency_id" invisible="1" />
