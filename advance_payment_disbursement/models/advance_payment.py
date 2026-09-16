@@ -17,9 +17,3 @@ class AdvancePayment(models.Model):
     def _compute_disbursement_request_count(self):
         for rec in self:
             rec.disbursement_request_count = len(rec.disbursement_request_ids)
-
-    def _action_do_cancel(self, reason):
-        self.ensure_one()
-        if self.reference_model == "purchase.request":
-            self.reference.button_rejected()
-        return super()._action_do_cancel(reason)
