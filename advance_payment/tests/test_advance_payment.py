@@ -296,19 +296,19 @@ class TestAdvancePayment(TransactionCase):
         ap.with_user(self.user2).action_submit()
         self.assertEqual(ap.state, "to_verify")
 
-    def test_loan_officer_can_verify_and_accept_report(self):
+    def test_loan_officer_can_verify_and_close(self):
         ap = self._make(amount=1000)
         ap.action_submit()
         ap.with_user(self.officer).action_verify()
         self.assertEqual(ap.state, "to_approve")
         ap.write(
             {
-                "state": "to_verify_report",
+                "state": "in_progress",
                 "expense_description": "all spent",
                 "actual_expense_amount": 1000,
             }
         )
-        ap.with_user(self.officer).action_accept_report()
+        ap.with_user(self.officer).action_close()
         self.assertEqual(ap.state, "done")
 
     def test_own_only_sees_only_own_records(self):
@@ -666,7 +666,10 @@ class TestAdvancePayment(TransactionCase):
         with self.assertRaises(UserError):
             ap.action_submit_report()
 
-    def test_submit_report_moves_to_verify_report(self):
+    def test_submit_report_stays_in_progress(self):
+        """Reporting the actual expense no longer gates behind a review
+        state — the agreement stays in_progress and the borrower is free to
+        return any leftover right away."""
         ap = self._make(amount=1000)
         ap.write(
             {
@@ -676,32 +679,35 @@ class TestAdvancePayment(TransactionCase):
             }
         )
         ap.action_submit_report()
-        self.assertEqual(ap.state, "to_verify_report")
+        self.assertEqual(ap.state, "in_progress")
+        self.assertEqual(ap.return_amount, 400)
 
-    def test_accept_report_no_leftover_closes(self):
+    def test_close_with_no_leftover(self):
         ap = self._make(amount=1000)
         ap.write(
             {
-                "state": "to_verify_report",
+                "state": "in_progress",
                 "expense_description": "all spent",
                 "actual_expense_amount": 1000,
             }
         )
-        ap.action_accept_report()
+        ap.with_user(self.officer).action_close()
         self.assertEqual(ap.state, "done")
 
-    def test_accept_report_with_leftover_to_reconcile(self):
+    def test_close_blocked_with_leftover(self):
+        """Closing is a deliberate loan-officer action — it never happens
+        automatically, and it refuses while a balance is still owed."""
         ap = self._make(amount=1000)
         ap.write(
             {
-                "state": "to_verify_report",
+                "state": "in_progress",
                 "expense_description": "partial",
                 "actual_expense_amount": 700,
             }
         )
-        ap.action_accept_report()
-        self.assertEqual(ap.state, "to_reconcile")
         self.assertEqual(ap.return_amount, 300)
+        with self.assertRaises(UserError):
+            ap.with_user(self.officer).action_close()
 
     # ------------------------------------------------------------------ #
     # Amounts                                                              #
@@ -721,17 +727,17 @@ class TestAdvancePayment(TransactionCase):
         self.assertEqual(ap.excess_amount, 0)
 
     # ------------------------------------------------------------------ #
-    # Reconcile / auto-close + over-return donation                        #
+    # Close (loan-officer only, never automatic) + over-return donation    #
     # ------------------------------------------------------------------ #
 
-    def test_auto_close_when_returned_covers_leftover(self):
+    def test_close_when_returned_covers_leftover(self):
         ap = self._make(amount=1000)
-        ap.write({"state": "to_reconcile", "actual_expense_amount": 600})
+        ap.write({"state": "in_progress", "actual_expense_amount": 600})
         self.env["advance.payment.return.line"].create(
             {"agreement_id": ap.id, "amount": 400, "state": "done"}
         )
         ap.invalidate_recordset()
-        ap._try_auto_close()
+        ap.with_user(self.officer).action_close()
         self.assertEqual(ap.state, "done")
 
     def test_return_line_approve_creates_inbound_voucher(self):
@@ -742,7 +748,7 @@ class TestAdvancePayment(TransactionCase):
         only ever tested for its guards.
         """
         ap = self._make(amount=1000)
-        ap.write({"state": "to_reconcile", "actual_expense_amount": 600})
+        ap.write({"state": "in_progress", "actual_expense_amount": 600})
         line = self.env["advance.payment.return.line"].create(
             {"agreement_id": ap.id, "amount": 400, "state": "pending_review"}
         )
@@ -753,14 +759,17 @@ class TestAdvancePayment(TransactionCase):
         self.assertEqual(line.payment_id.finance_state, "draft")
         self.assertEqual(line.payment_id.partner_id, ap.partner_id)
         self.assertEqual(line.payment_id.payment_type, "inbound")
-        # Fully returned → the agreement closes itself (ADR-0003).
+        # Fully returned, but closing is never automatic — the agreement
+        # stays open until the loan officer presses it themselves.
+        self.assertEqual(ap.state, "in_progress")
+        ap.with_user(self.officer).action_close()
         self.assertEqual(ap.state, "done")
 
     def test_multiple_partial_returns_close(self):
         ap = self._make(amount=1000)
         ap.write(
             {
-                "state": "to_reconcile",
+                "state": "in_progress",
                 "actual_expense_amount": 400,
                 "return_installment": True,
             }
@@ -769,34 +778,36 @@ class TestAdvancePayment(TransactionCase):
             {"agreement_id": ap.id, "amount": 200, "state": "done"}
         )
         ap.invalidate_recordset()
-        ap._try_auto_close()
-        self.assertEqual(ap.state, "to_reconcile")  # still owes 400
+        with self.assertRaises(UserError):
+            ap.with_user(self.officer).action_close()  # still owes 400
         self.env["advance.payment.return.line"].create(
             {"agreement_id": ap.id, "amount": 400, "state": "done"}
         )
         ap.invalidate_recordset()
-        ap._try_auto_close()
+        ap.with_user(self.officer).action_close()
         self.assertEqual(ap.state, "done")
 
     def test_over_return_needs_donation_consent(self):
         ap = self._make(amount=1000)
-        ap.write({"state": "to_reconcile", "actual_expense_amount": 200})
+        ap.write({"state": "in_progress", "actual_expense_amount": 200})
         # return_amount 800, returns 850 → excess 50
         self.env["advance.payment.return.line"].create(
             {"agreement_id": ap.id, "amount": 850, "state": "done"}
         )
         ap.invalidate_recordset()
         self.assertEqual(ap.excess_amount, 50)
-        ap._try_auto_close()
-        self.assertEqual(ap.state, "to_reconcile")  # blocked without consent
+        with self.assertRaises(UserError):
+            ap.with_user(self.officer).action_close()  # blocked without consent
         ap.action_confirm_donation()
         self.assertTrue(ap.donate_excess)
         self.assertTrue(ap.donate_consent_uid)
-        self.assertEqual(ap.state, "done")  # donation triggers auto-close
+        self.assertEqual(ap.state, "in_progress")  # donation alone doesn't close it
+        ap.with_user(self.officer).action_close()
+        self.assertEqual(ap.state, "done")
 
     def test_confirm_donation_requires_excess(self):
         ap = self._make(amount=1000)
-        ap.write({"state": "to_reconcile"})
+        ap.write({"state": "in_progress"})
         with self.assertRaises(UserError):
             ap.action_confirm_donation()
 
