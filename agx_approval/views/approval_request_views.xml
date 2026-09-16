@@ -259,7 +259,6 @@
                                 context="{'default_payment_type': 'direct'}"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                                 <tree editable="bottom">
-                                    <field name="partner_id_domain" invisible="1" />
                                     <field name="allowed_product_ids" invisible="1" />
                                     <field name="sequence" widget="handle" />
                                     <field name="currency_id" invisible="1" />
@@ -282,11 +281,11 @@
                                 context="{'default_payment_type': 'prepaid'}"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                                 <tree editable="bottom">
-                                    <field name="partner_id_domain" invisible="1" />
                                     <field name="allowed_product_ids" invisible="1" />
                                     <field name="sequence" widget="handle" />
                                     <field name="currency_id" invisible="1" />
                                     <field name="partner_id"
+                                        domain="[('partner_type_id.is_internal', '=', True)]"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="product_id"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
@@ -305,11 +304,11 @@
                                 context="{'default_payment_type': 'advance'}"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                                 <tree editable="bottom">
-                                    <field name="partner_id_domain" invisible="1" />
                                     <field name="allowed_product_ids" invisible="1" />
                                     <field name="sequence" widget="handle" />
                                     <field name="currency_id" invisible="1" />
                                     <field name="partner_id"
+                                        domain="[('partner_type_id.is_internal', '=', True)]"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="product_id"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
