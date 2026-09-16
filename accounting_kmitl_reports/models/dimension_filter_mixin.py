@@ -13,7 +13,7 @@ FLAT_DIMENSION_CODES = ("sources",)
 # Display order of the dimension chips shown in the shared expand-detail panel.
 DETAIL_DIM_PLANS = ("funds", "departments", "activities", "sources")
 # Lines never shown in the detail panel.
-_SKIP_DISPLAY_TYPES = ["line_section", "line_note"]
+SKIP_DISPLAY_TYPES = ["line_section", "line_note"]
 
 
 class DimensionFilterMixin(models.AbstractModel):
@@ -74,7 +74,7 @@ class DimensionFilterMixin(models.AbstractModel):
         rows = self.env["account.move.line"].search_read(
             [
                 ("move_id", "in", list(move_ids)),
-                ("display_type", "not in", _SKIP_DISPLAY_TYPES),
+                ("display_type", "not in", SKIP_DISPLAY_TYPES),
             ],
             [
                 "move_id",
@@ -161,8 +161,8 @@ class DimensionFilterMixin(models.AbstractModel):
     # ------------------------------------------------------------------
     @api.model
     def _kmitl_fy_start_date(self, date_from, company):
-        """Fiscal-year start that contains ``date_from`` (used by the OCA
-        engines to accumulate P&L opening balances)."""
+        """Fiscal-year start that contains ``date_from`` (the date from
+        which profit & loss opening balances accumulate)."""
         if not date_from:
             return False
         if isinstance(date_from, str):
