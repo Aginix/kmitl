@@ -26,7 +26,7 @@ class ApprovalRequestAllocation(models.Model):
         "res.partner",
         string="ผู้รับเงิน",
         required=True,
-        domain="partner_id_domain",
+        domain="partner_id_domain or []",
     )
 
     partner_id_domain = fields.Binary(compute="_compute_partner_id_domain")
@@ -56,7 +56,7 @@ class ApprovalRequestAllocation(models.Model):
     product_id = fields.Many2one(
         "product.product",
         string="รายการ",
-        domain="[('id', 'in', allowed_product_ids)]",
+        domain="[('id', 'in', allowed_product_ids or [])]",
         required=True,
     )
 
