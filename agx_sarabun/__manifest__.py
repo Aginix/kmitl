@@ -24,6 +24,8 @@
         "data/sarabun_verb_data.xml",
         "data/sarabun_addressee_prefix_data.xml",
         "data/sarabun_document_type.xml",
+        "data/sarabun_document_sequence_data.xml",
+        "data/sarabun_position_data.xml",
         # Reports
         "report/paperformat.xml",
         "report/sarabun_reports.xml",
