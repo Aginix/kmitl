@@ -31,21 +31,16 @@ class ApprovalRequestAllocation(models.Model):
 
     partner_id_domain = fields.Binary(compute="_compute_partner_id_domain")
 
-    @api.depends(
-        "payment_type",
-        "request_id.participant_ids.partner_id",
-        "request_id.participant_ids.participant_type",
-    )
+    @api.depends("payment_type")
     def _compute_partner_id_domain(self):
-        # Recipients must be participants entered on the request. Prepaid/advance
-        # additionally require an internal participant (see _check_partner_internal).
+        # Prepaid/advance restrict to internal personnel (see _check_partner_internal);
+        # direct is unrestricted.
         for rec in self:
-            participants = (
-                rec.request_id.internal_participant_ids
+            rec.partner_id_domain = (
+                [("partner_type_id.is_internal", "=", True)]
                 if rec.payment_type in ("prepaid", "advance")
-                else rec.request_id.participant_ids
+                else []
             )
-            rec.partner_id_domain = [("id", "in", participants.partner_id.ids)]
 
     partner_bank_id = fields.Many2one(
         "res.partner.bank",
