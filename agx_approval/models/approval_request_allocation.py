@@ -26,19 +26,7 @@ class ApprovalRequestAllocation(models.Model):
         "res.partner",
         string="ผู้รับเงิน",
         required=True,
-        domain="partner_id_domain",
     )
-
-    partner_id_domain = fields.Binary(compute="_compute_partner_id_domain")
-
-    @api.depends("payment_type")
-    def _compute_partner_id_domain(self):
-        for rec in self:
-            rec.partner_id_domain = (
-                [("partner_type_id.is_internal", "=", True)]
-                if rec.payment_type in ("prepaid", "advance")
-                else []
-            )
 
     partner_bank_id = fields.Many2one(
         "res.partner.bank",
