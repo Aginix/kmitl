@@ -1,0 +1,21 @@
+.o_mis_tree_toggle {
+    cursor: pointer;
+    width: 1em;
+    display: inline-block;
+    margin-right: 0.3em;
+    color: var(--gray-600, #6c757d);
+}
+
+.o_mis_tree_toggle:hover {
+    color: var(--primary, #0d6efd);
+}
+
+.o_mis_tree_spacer {
+    width: 1em;
+    display: inline-block;
+    margin-right: 0.3em;
+}
+
+.o_mis_hierarchy_label {
+    white-space: nowrap;
+}
