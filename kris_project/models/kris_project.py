@@ -67,12 +67,14 @@ class KrisProject(models.Model):
         string="Project Category",
         required=True,
         tracking=True,
+        index=True,
     )
     project_type_id = fields.Many2one(
         comodel_name="kris.project.type",
         string="Project Type",
         required=True,
         tracking=True,
+        index=True,
     )
     state = fields.Selection(
         selection=[
@@ -123,6 +125,7 @@ class KrisProject(models.Model):
         comodel_name="hr.employee",
         string="Project Manager",
         tracking=True,
+        index=True,
     )
     # --- Financial fields ---
     project_value = fields.Monetary(
@@ -214,6 +217,7 @@ class KrisProject(models.Model):
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
         tracking=True,
+        index=True,
     )
     user_id = fields.Many2one(
         comodel_name="res.users",
@@ -226,6 +230,7 @@ class KrisProject(models.Model):
         string="Department",
         domain=[("root_plan_id.code", "=", "departments")],
         tracking=True,
+        index=True,
     )
     # --- One2many ---
     installment_ids = fields.One2many(
