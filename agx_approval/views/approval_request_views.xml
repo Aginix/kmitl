@@ -209,11 +209,15 @@
                                 </field>
                             </group>
                             <group>
-                                <separator string="รายชื่อบุคลากรภายใน" />
+                                <field name="show_internal_participants" invisible="1" />
+                                <field name="show_external_participants" invisible="1" />
+                                <separator string="รายชื่อบุคลากรภายใน"
+                                    attrs="{'invisible': [('show_internal_participants', '=', False)]}" />
                                 <field name="internal_participant_ids" nolabel="1"
                                     colspan="2"
                                     context="{'default_participant_type': 'internal'}"
-                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)],
+                                            'invisible': [('show_internal_participants', '=', False)]}">
                                     <tree editable="bottom">
                                         <field name="allowed_partner_type_ids" invisible="1" />
                                         <field name="participant_type" invisible="1" />
@@ -225,11 +229,13 @@
                                         <field name="description" />
                                     </tree>
                                 </field>
-                                <separator string="รายชื่อบุคคลภายนอก" />
+                                <separator string="รายชื่อบุคคลภายนอก"
+                                    attrs="{'invisible': [('show_external_participants', '=', False)]}" />
                                 <field name="external_participant_ids" nolabel="1"
                                     colspan="2"
                                     context="{'default_participant_type': 'external'}"
-                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)],
+                                            'invisible': [('show_external_participants', '=', False)]}">
                                     <tree editable="bottom">
                                         <field name="allowed_partner_type_ids" invisible="1" />
                                         <field name="participant_type" invisible="1" />

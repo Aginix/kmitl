@@ -300,6 +300,31 @@ class ApprovalRequest(models.Model):
         copy=False,
     )
 
+    show_internal_participants = fields.Boolean(
+        compute="_compute_show_participant_sections",
+    )
+    show_external_participants = fields.Boolean(
+        compute="_compute_show_participant_sections",
+    )
+
+    @api.depends(
+        "category_id.allowed_partner_type_ids",
+        "category_id.allowed_partner_type_ids.is_internal",
+    )
+    def _compute_show_participant_sections(self):
+        for rec in self:
+            types = rec.category_id.allowed_partner_type_ids
+            if not types:
+                rec.show_internal_participants = True
+                rec.show_external_participants = True
+            else:
+                rec.show_internal_participants = any(
+                    t.is_internal for t in types
+                )
+                rec.show_external_participants = any(
+                    not t.is_internal for t in types
+                )
+
     allocation_ids = fields.One2many(
         "approval.request.allocation",
         "request_id",
