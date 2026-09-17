@@ -633,22 +633,14 @@ class SarabunDocument(models.Model):
     def name_get(self):
         # While unnumbered (draft → circulating → returned, until completion —
         # ADR-0010) the หนังสือ is identified purely by its เรื่อง; no interim
-        # code. The official number prefixes the เรื่อง only once ลงทะเบียน runs
-        # at completion.
-        # Context flag ``sarabun_document_number_only`` skips the เรื่อง suffix so
-        # tree columns showing "เลขที่หนังสือ" render as just the number.
-        number_only = self._context.get("sarabun_document_number_only")
+        # code. Once ลงทะเบียน runs at completion, the record is identified by its
+        # official number alone — consumers that want the เรื่อง should read
+        # ``subject`` explicitly instead of parsing it out of display_name.
         result = []
         for record in self:
             numbered = record.name and record.name != "/"
-            if numbered and number_only:
+            if numbered:
                 label = record.name
-            elif numbered:
-                label = (
-                    f"{record.name} — {record.subject}"
-                    if record.subject
-                    else record.name
-                )
             else:
                 label = record.subject or _("(ยังไม่มีเรื่อง)")
             result.append((record.id, label))
