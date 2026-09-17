@@ -50,6 +50,13 @@ class PurchaseRequestApproval(models.Model):
         tracking=True,
     )
 
+    # Plain document number for tree display — the mixin's Many2one renders
+    # `sarabun.document.name_get` which prefixes the number with the subject.
+    active_sarabun_document_name = fields.Char(
+        related="active_sarabun_document_id.name",
+        string="Document Number",
+    )
+
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
