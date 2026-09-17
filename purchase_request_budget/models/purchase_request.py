@@ -365,8 +365,11 @@ class PurchaseRequest(models.Model):
         # Requesters may now SELECT the budget code/dimensions, but RESERVE —
         # minting the commitment that locks availability — stays a budget
         # officer act. The button is already group-gated in the view; this is
-        # defense-in-depth against RPC / the draw-down path.
-        if not self.env.user.has_group("budget.group_budget_commitment"):
+        # defense-in-depth against RPC / the draw-down path. Superuser calls
+        # (demo data, migrations, cron) bypass it, same as any ACL.
+        if not self.env.su and not self.env.user.has_group(
+            "budget.group_budget_commitment"
+        ):
             raise UserError(
                 _("คุณไม่มีสิทธิ์จองงบประมาณ กรุณาติดต่อเจ้าหน้าที่งบประมาณ")
             )
