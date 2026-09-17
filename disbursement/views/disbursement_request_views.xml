@@ -156,7 +156,7 @@
                             widget="many2many_binary">
                         </field>
                     </group>
-                    
+
                     <notebook>
                         <page string="Request Lines" name="lines">
                             <field name="line_ids" widget="one2many" context="{'default_request_id': active_id}">
@@ -171,12 +171,13 @@
                                     <field name="name" optional="show" />
                                     <field name="quantity" />
                                     <field name="price_unit" />
-                                    <field name="tax_ids" widget="many2many_tags" optional="hide" />
-                                    <field name="wht_tax_id" optional="show"/>
+                                    <field name="tax_ids" widget="many2many_tags" />
+                                    <field name="wht_tax_id" />
                                     <field name="account_id" optional="hide" />
                                     <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" readonly="1" optional="hide" />
                                     <field name="price_subtotal" />
-                                    <field name="price_tax" optional="hide" />
+                                    <field name="price_tax" optional="show" />
+                                    <field name="amount_wht" optional="show" />
                                     <field name="price_total" />
                                     <field name="company_id" invisible="1" />
                                     <field name="currency_id" invisible="1" />
