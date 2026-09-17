@@ -326,6 +326,12 @@
                             <group class="oe_subtotal_footer oe_right">
                                 <field name="total_actual_amount" widget="monetary" />
                             </group>
+                            <group name="attachment_for_disbursement" string="เอกสารแนบอื่น ๆ"
+                                attrs="{'invisible': [('state', 'not in', ['approved', 'to_disburse', 'billed', 'returned'])]}">
+                                <field name="disbursement_attachment_ids"
+                                    widget="many2many_binary_disbursement"
+                                    attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}" />
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
