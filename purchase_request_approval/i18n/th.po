@@ -1638,7 +1638,6 @@ msgid "PR Number"
 msgstr "เลขที่ใบพจ.1"
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__active_sarabun_document_name
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_tree
 msgid "Document Number"
 msgstr "เลขที่หนังสือพจ.1"

@@ -15,7 +15,7 @@
                 delete="0"
             >
             <field name="name" string="PR Number" optional="show"/>
-            <field name="active_sarabun_document_name" string="Document Number" optional="show"/>
+            <field name="active_sarabun_document_id" string="Document Number" optional="show"/>
             <field name="title" optional="show"/>
             <field name="date_start" widget="date" optional="show"/>
             <field name="approval_date" widget="date" optional="show"/>
