@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-27 11:05+0000\n"
-"PO-Revision-Date: 2026-05-27 11:05+0000\n"
+"POT-Creation-Date: 2026-09-15 16:19+0000\n"
+"PO-Revision-Date: 2026-09-15 16:19+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -17,8 +17,18 @@ msgstr ""
 
 #. module: purchase_request_budget
 #: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
+msgid "<span class=\"o_stat_text\">สถานะงบ</span>"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
 msgid "<span>Budget</span>"
 msgstr "<span>งบประมาณ</span>"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__activity_analytic_id
+msgid "Activity"
+msgstr "กิจกรรม"
 
 #. module: purchase_request_budget
 #: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__analytic_distribution
@@ -42,9 +52,15 @@ msgid "Budget Account"
 msgstr "รหัสงบประมาณ"
 
 #. module: purchase_request_budget
+#: model:ir.model,name:purchase_request_budget.model_budget_commitment
 #: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__budget_commitment_id
 msgid "Budget Commitment"
-msgstr "การจองงบประมาณ"
+msgstr "จองงบประมาณ"
+
+#. module: purchase_request_budget
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
+msgid "Budget Details"
+msgstr "การใช้งบประมาณ"
 
 #. module: purchase_request_budget
 #: model:ir.model.fields,help:purchase_request_budget.field_purchase_request__budget_account_id
@@ -82,6 +98,16 @@ msgid "Cannot reserve budget: %s"
 msgstr "ไม่สามารถจองงบประมาณได้: %s"
 
 #. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__department_analytic_id
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__fund_analytic_id
+msgid "Fund"
+msgstr "กองทุน"
+
+#. module: purchase_request_budget
 #: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__hide_reserve_budget_button
 msgid "Hide Reserve Budget Button"
 msgstr ""
@@ -102,9 +128,22 @@ msgid "Purchase Request"
 msgstr "คำขอซื้อขอจ้าง"
 
 #. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_budget_commitment__purchase_request_count
+msgid "Purchase Request Count"
+msgstr ""
+
+#. module: purchase_request_budget
 #: model:ir.model,name:purchase_request_budget.model_purchase_request_line
 msgid "Purchase Request Line"
 msgstr "คำขอซื้อขอจ้างไลน์"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,help:purchase_request_budget.field_purchase_request__reservation_commitment_domain
+msgid ""
+"Record-aware domain for the ใบจองงบประมาณ dropdown. A static field domain "
+"cannot see this request's own account_fiscal_year_id, so the year filter is "
+"applied through this computed domain instead."
+msgstr ""
 
 #. module: purchase_request_budget
 #: model:ir.model.fields,help:purchase_request_budget.field_purchase_request__budget_commitment_id
@@ -112,9 +151,29 @@ msgid "Related budget commitment for this purchase request"
 msgstr "การจองงบประมาณที่เกี่ยวข้องกับคำขอซื้อขอจ้างนี้"
 
 #. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__reservation_commitment_domain
+msgid "Reservation Commitment Domain"
+msgstr ""
+
+#. module: purchase_request_budget
 #: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
 msgid "Reserve Budget"
-msgstr "จองงบประมาณ"
+msgstr "ยืนยันงบประมาณ"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__source_analytic_id
+msgid "Source"
+msgstr "แหล่งเงิน"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__state
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields.selection,name:purchase_request_budget.selection__purchase_request__state__to_verify_budget
+msgid "To Verify Budget"
+msgstr "รอยืนยันงบประมาณ"
 
 #. module: purchase_request_budget
 #. odoo-python
@@ -126,20 +185,36 @@ msgid "Warning: Could not cancel budget commitment: %s"
 msgstr "ระวัง: ไม่สามารถยกเลิกการจองงบประมาณได้: %s"
 
 #. module: purchase_request_budget
-#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__fund_analytic_id
-msgid "Fund"
-msgstr "กองทุน"
+#. odoo-python
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#, python-format
+msgid "กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"
+msgstr ""
 
 #. module: purchase_request_budget
 #: model:exception.rule,description:purchase_request_budget.pr_exception_required_budget
-#: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
-msgid "Budget Details"
-msgstr "การใช้งบประมาณ"
+msgid "การใช้งบประมาณ"
+msgstr ""
 
 #. module: purchase_request_budget
-#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__activity_analytic_id
-msgid "Activity"
-msgstr "กิจกรรม"
+#: model:ir.model.fields,help:purchase_request_budget.field_purchase_request__budget_selection_mode
+msgid ""
+"งบของใบขอซื้อนี้มาจากไหน — จองใหม่จากผังงบประมาณ หรือหยิบใบจองงบประมาณ "
+"ของโครงการ/แผนจัดซื้อจัดจ้างไปใช้ (แต่ละแหล่งเป็นของโมดูลที่เป็นเจ้าของ "
+"ต้นทางนั้น) ใบจองที่ไม่มีต้นทางใช้กับใบขอซื้อไม่ได้ — budget ADR-0015"
+msgstr ""
+
+#. module: purchase_request_budget
+#. odoo-python
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#, python-format
+msgid "งบประมาณจองไว้แล้วตามใบจอง %s — ข้ามการจองซ้ำ"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model:ir.model.fields.selection,name:purchase_request_budget.selection__purchase_request__budget_selection_mode__normal
+msgid "จองงบใหม่จากผังงบประมาณ"
+msgstr ""
 
 #. module: purchase_request_budget
 #: model:exception.rule,name:purchase_request_budget.pr_exception_required_budget
@@ -147,16 +222,85 @@ msgid "ต้องระบุรายละเอียดการใช้�
 msgstr ""
 
 #. module: purchase_request_budget
-#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__department_analytic_id
-msgid "Department"
-msgstr "ส่วนงาน"
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
+msgid "รหัสงบประมาณ"
+msgstr ""
 
 #. module: purchase_request_budget
-#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__source_analytic_id
-msgid "Source"
-msgstr "แหล่งเงิน"
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__budget_commitment_state
+msgid "สถานะใบจอง"
+msgstr ""
 
 #. module: purchase_request_budget
-#: model:ir.model.fields.selection,name:purchase_request_budget.selection__purchase_request__state__to_verify_budget
-msgid "To Verify Budget"
-msgstr "รอจองงบประมาณ"
+#. odoo-python
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#, python-format
+msgid "หยิบใบจองงบประมาณ %s มาใช้ (draw down)"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
+msgid "เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
+msgid "เลือกใบจองงบประมาณที่จะหยิบไปใช้"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,help:purchase_request_budget.field_purchase_request__reservation_commitment_id
+msgid ""
+"เลือกใบจองงบประมาณที่มีอยู่แล้วเพื่อหยิบไปใช้ (draw down) แทนการจองใหม่ — "
+"เอกสารจะสืบทอดรหัสงบ/มิติ/ปีงบจากใบจองแบบล็อก และไม่จองซ้ำ. "
+"ใช้เมื่อเลือกวิธี 'หยิบจากใบจองงบประมาณที่มีอยู่'."
+msgstr ""
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__budget_selection_mode
+msgid "แหล่งงบประมาณ"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,help:purchase_request_budget.field_purchase_request__budget_commitment_state
+msgid ""
+"ใช้ในฟอร์มเพื่อแยก 'มีใบจองที่ยังใช้งานอยู่' ออกจาก 'ใบจองถูกยกเลิกแล้ว' — "
+"การยกเลิกใบจองไม่ล้างค่า budget_commitment_id จึงต้องดูสถานะประกอบ"
+msgstr ""
+
+#. module: purchase_request_budget
+#. odoo-python
+#: code:addons/purchase_request_budget/models/budget_commitment.py:0
+#: model:ir.model.fields,field_description:purchase_request_budget.field_budget_commitment__purchase_request_ids
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.budget_commitment_form_view
+#, python-format
+msgid "ใบขอให้จัดหา"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,help:purchase_request_budget.field_budget_commitment__purchase_request_ids
+msgid ""
+"ใบขอให้จัดหาที่ผูกกับใบจองนี้ ทั้งที่จองงบใหม่จาก พจ. เอง "
+"และที่หยิบใบจองนี้ไปใช้ (draw down)"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__reservation_commitment_id
+msgid "ใบจองงบประมาณ"
+msgstr ""
+
+#. module: purchase_request_budget
+#. odoo-python
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#, python-format
+msgid ""
+"ใบจองงบประมาณ %s ไม่มีต้นทางโครงการหรือแผนจัดซื้อจัดจ้าง "
+"จึงใช้กับใบขอซื้อไม่ได้ตามระเบียบการจัดซื้อจัดจ้าง"
+msgstr ""
+
+#. module: purchase_request_budget
+#. odoo-python
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#, python-format
+msgid "ใบจองงบประมาณ %s ไม่อยู่ในสถานะที่หยิบไปใช้ได้"
+msgstr ""
