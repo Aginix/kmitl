@@ -288,7 +288,7 @@ class ApprovalRequest(models.Model):
         "approval.request.participant",
         "request_id",
         string="รายชื่อบุคลากรภายใน",
-        domain=[("participant_type", "=", "internal")],
+        domain=[("partner_type_id.code", "=", "employee")],
         copy=False,
     )
 
@@ -296,34 +296,52 @@ class ApprovalRequest(models.Model):
         "approval.request.participant",
         "request_id",
         string="รายชื่อบุคคลภายนอก",
-        domain=[("participant_type", "=", "external")],
+        domain=[("partner_type_id.code", "=", "other")],
         copy=False,
     )
 
-    show_internal_participants = fields.Boolean(
+    company_participant_ids = fields.One2many(
+        "approval.request.participant",
+        "request_id",
+        string="รายชื่อบริษัท",
+        domain=[("partner_type_id.code", "=", "company")],
+        copy=False,
+    )
+
+    student_participant_ids = fields.One2many(
+        "approval.request.participant",
+        "request_id",
+        string="รายชื่อนักศึกษา",
+        domain=[("partner_type_id.code", "=", "student")],
+        copy=False,
+    )
+
+    show_employee_participants = fields.Boolean(
         compute="_compute_show_participant_sections",
     )
-    show_external_participants = fields.Boolean(
+    show_student_participants = fields.Boolean(
+        compute="_compute_show_participant_sections",
+    )
+    show_company_participants = fields.Boolean(
+        compute="_compute_show_participant_sections",
+    )
+    show_other_participants = fields.Boolean(
         compute="_compute_show_participant_sections",
     )
 
     @api.depends(
         "category_id.allowed_partner_type_ids",
-        "category_id.allowed_partner_type_ids.is_internal",
+        "category_id.allowed_partner_type_ids.code",
     )
     def _compute_show_participant_sections(self):
         for rec in self:
             types = rec.category_id.allowed_partner_type_ids
-            if not types:
-                rec.show_internal_participants = True
-                rec.show_external_participants = True
-            else:
-                rec.show_internal_participants = any(
-                    t.is_internal for t in types
-                )
-                rec.show_external_participants = any(
-                    not t.is_internal for t in types
-                )
+            codes = set(types.mapped("code")) if types else set()
+            show_all = not codes
+            rec.show_employee_participants = show_all or "employee" in codes
+            rec.show_student_participants = show_all or "student" in codes
+            rec.show_company_participants = show_all or "company" in codes
+            rec.show_other_participants = show_all or "other" in codes
 
     allocation_ids = fields.One2many(
         "approval.request.allocation",
@@ -613,6 +631,8 @@ class ApprovalRequest(models.Model):
         self.participant_ids = False
         self.internal_participant_ids = False
         self.external_participant_ids = False
+        self.company_participant_ids = False
+        self.student_participant_ids = False
         self.description = self.category_id.default_description
 
     @api.model

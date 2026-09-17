@@ -20,32 +20,17 @@ class ApprovalRequestParticipant(models.Model):
         ondelete="cascade",
     )
 
-    participant_type = fields.Selection(
-        [("internal", "บุคลากรภายใน"), ("external", "บุคคลภายนอก")],
-        required=True,
-        default="external",
-    )
-
     partner_id = fields.Many2one(
         "res.partner",
         string="ชื่อ",
         required=True,
-        domain="[('partner_type_id', 'in', allowed_partner_type_ids),"
-        " ('partner_type_id.is_internal', '=', participant_type == 'internal')]"
-        " if allowed_partner_type_ids else"
-        " [('partner_type_id.is_internal', '=', participant_type == 'internal')]",
-    )
-
-    allowed_partner_type_ids = fields.Many2many(
-        "res.partner.type",
-        string="Allowed Partner Types",
-        related="request_id.category_id.allowed_partner_type_ids",
     )
 
     partner_type_id = fields.Many2one(
         "res.partner.type",
         string="ประเภท",
         related="partner_id.partner_type_id",
+        store=True,
     )
 
     phone = fields.Char(string="โทรศัพท์", related="partner_id.phone")
