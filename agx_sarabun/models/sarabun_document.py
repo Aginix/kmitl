@@ -631,20 +631,11 @@ class SarabunDocument(models.Model):
 
     # === Display ===
     def name_get(self):
-        # While unnumbered (draft → circulating → returned, until completion —
-        # ADR-0010) the หนังสือ is identified purely by its เรื่อง; no interim
-        # code. Once ลงทะเบียน runs at completion, the record is identified by its
-        # official number alone — consumers that want the เรื่อง should read
-        # ``subject`` explicitly instead of parsing it out of display_name.
-        result = []
-        for record in self:
-            numbered = record.name and record.name != "/"
-            if numbered:
-                label = record.name
-            else:
-                label = record.subject or _("(ยังไม่มีเรื่อง)")
-            result.append((record.id, label))
-        return result
+        # หนังสือ is identified by its official number — which is "/" until
+        # ลงทะเบียน runs at completion (ADR-0010), then becomes the assigned code.
+        # Consumers that want the เรื่อง should read ``subject`` explicitly instead
+        # of parsing it out of display_name.
+        return [(record.id, record.name) for record in self]
 
     def _status_label(self):
         """Short human status for the origin record: state + routing progress +
