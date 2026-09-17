@@ -98,6 +98,18 @@ msgid "Amount"
 msgstr "จำนวน"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_wht
+msgid "Withholding Tax"
+msgstr "หัก ณ ที่จ่าย"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__amount_wht
+msgid "WHT Amount"
+msgstr "หัก ณ ที่จ่าย"
+
+
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__analytic_distribution
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__analytic_distribution
 msgid "Analytic"
@@ -763,10 +775,14 @@ msgid "Tax Totals"
 msgstr "ภาษีทั้งหมด"
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_tax
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__tax_ids
 msgid "Taxes"
 msgstr "ประเภทภาษีมูลค่าเพิ่ม"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_tax
+msgid "Taxes"
+msgstr "ภาษีมูลค่าเพิ่ม"
 
 #. module: disbursement
 #. odoo-python
