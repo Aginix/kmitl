@@ -13,9 +13,9 @@
         <field name="name">Purchase Request All Operating Units</field>
         <field name="groups" eval="[(6, 0, [ref('group_all_ou_purchase_request')])]"/>
         <field name="perm_read" eval="1" />
-        <field name="perm_write" eval="0" />
-        <field name="perm_create" eval="0" />
-        <field name="perm_unlink" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
     </record>
 
     <record id="ir_rule_purchase_request_line_all_ou" model="ir.rule">
@@ -24,8 +24,8 @@
         <field name="name">PR Lines All Operating Units</field>
         <field name="groups" eval="[(6, 0, [ref('group_all_ou_purchase_request')])]"/>
         <field name="perm_read" eval="1" />
-        <field name="perm_write" eval="0" />
-        <field name="perm_create" eval="0" />
-        <field name="perm_unlink" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
     </record>
 </odoo>
