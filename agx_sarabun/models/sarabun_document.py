@@ -635,10 +635,15 @@ class SarabunDocument(models.Model):
         # ADR-0010) the หนังสือ is identified purely by its เรื่อง; no interim
         # code. The official number prefixes the เรื่อง only once ลงทะเบียน runs
         # at completion.
+        # Context flag ``sarabun_document_number_only`` skips the เรื่อง suffix so
+        # tree columns showing "เลขที่หนังสือ" render as just the number.
+        number_only = self._context.get("sarabun_document_number_only")
         result = []
         for record in self:
             numbered = record.name and record.name != "/"
-            if numbered:
+            if numbered and number_only:
+                label = record.name
+            elif numbered:
                 label = (
                     f"{record.name} — {record.subject}"
                     if record.subject
