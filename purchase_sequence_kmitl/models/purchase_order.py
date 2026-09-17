@@ -4,35 +4,35 @@ from odoo.exceptions import UserError, ValidationError
 
 
 class PurchaseOrder(models.Model):
-    _inherit = 'purchase.order'
+    _inherit = "purchase.order"
 
     @api.model_create_multi
     def create(self, vals_list):
+        Sequence = self.env["ir.sequence"]
+        FiscalYear = self.env["account.fiscal.year"]
         for vals in vals_list:
-
-            fy_id = self.env["account.fiscal.year"].browse(vals.get("account_fiscal_year_id"))
-            fiscal_year = fy_id.name[-2:] if fy_id else fields.Date.today().strftime("%y")
-
-            department = self.env["hr.department"].browse(vals.get("department_id"))
-
-            short_name = department.short_name
-
-            if not short_name:
-                raise ValidationError(_("Department short name is missing."))
-
-            seq_code = f"purchase.{fiscal_year}.{short_name}"
-
-            Sequence = self.env['ir.sequence'].sudo()
-
-            if not Sequence.search([('code', '=', seq_code)], limit=1):
-                Sequence.create({
-                    'name': f'Purchase {fiscal_year} {short_name}',
-                    'code': seq_code,
-                    'prefix': f'PO/{fiscal_year}/{short_name}/',
-                    'padding': 4,
-                    'number_increment': 1,
-                })
-
-            vals['name'] = Sequence.next_by_code(seq_code) or _('New')
-
+            if vals.get("name") and vals["name"] != _("New"):
+                continue
+            fy = FiscalYear.browse(vals.get("account_fiscal_year_id"))
+            if not fy:
+                raise ValidationError(
+                    _("Fiscal Year is required to generate the PO number.")
+                )
+            # Pin sequence_date/ir_sequence_date to the FY's end date so
+            # %(year_be)s in the prefix resolves to the fiscal year's BE year
+            # (Gregorian year of date_to + 543), not today's.
+            fiscal_date = fy.date_to
+            number = (
+                Sequence
+                .with_context(ir_sequence_date=fiscal_date)
+                .next_by_code("purchase.order.kmitl", sequence_date=fiscal_date)
+            )
+            if not number:
+                raise UserError(
+                    _(
+                        "Document number sequence (purchase.order.kmitl) not "
+                        "found. Please upgrade the module."
+                    )
+                )
+            vals["name"] = number
         return super().create(vals_list)
