@@ -70,7 +70,7 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
-                <field name="active_sarabun_document_id" string="Document Number" optional="show" />
+                <field name="active_sarabun_document_name" string="Document Number" optional="show" />
             </xpath>
         </field>
     </record>
