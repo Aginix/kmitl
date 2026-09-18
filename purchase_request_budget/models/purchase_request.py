@@ -121,6 +121,22 @@ class PurchaseRequest(models.Model):
         # reject or that would leave its lines product-less.
         return super()._reservation_account_domain() + self._domain_budget_account_id()
 
+    budget_account_domain = fields.Binary(
+        compute="_compute_budget_account_domain",
+        help=(
+            "Record-aware domain for the requester-facing รหัสงบประมาณ dropdown "
+            "— same domain the reservation picker enforces "
+            "(_reservation_account_domain), which folds in the budgetable/expense "
+            "baseline the field's own static domain (_domain_budget_account_id) "
+            "omits (ADR-0007-equivalent split, see agx_approval)."
+        ),
+    )
+
+    @api.depends()
+    def _compute_budget_account_domain(self):
+        for rec in self:
+            rec.budget_account_domain = rec._reservation_account_domain()
+
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Activity",
@@ -198,8 +214,14 @@ class PurchaseRequest(models.Model):
         # selection: the user must be able to un-pick.
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
-            if rec.state == "to_verify_budget" and can_edit:
-                rec.is_budget_editable = True
+            if rec.state == "to_verify_budget":
+                # Requesters may SELECT the code/dimensions earlier (via
+                # is_editable below), but to_verify_budget is the budget
+                # officer's own step — a non-officer must not still be able to
+                # edit here just because is_editable happens to be forced True
+                # at this state. Previously masked by the view's group= gate on
+                # the whole block; now load-bearing since selection is ungated.
+                rec.is_budget_editable = can_edit
             elif rec.state == "to_approve" and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
@@ -339,6 +361,18 @@ class PurchaseRequest(models.Model):
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
+
+        # Requesters may now SELECT the budget code/dimensions, but RESERVE —
+        # minting the commitment that locks availability — stays a budget
+        # officer act. The button is already group-gated in the view; this is
+        # defense-in-depth against RPC / the draw-down path. Superuser calls
+        # (demo data, migrations, cron) bypass it, same as any ACL.
+        if not self.env.su and not self.env.user.has_group(
+            "budget.group_budget_commitment"
+        ):
+            raise UserError(
+                _("คุณไม่มีสิทธิ์จองงบประมาณ กรุณาติดต่อเจ้าหน้าที่งบประมาณ")
+            )
 
         # Draw-down mode: the user picked an existing ใบจองงบประมาณ. Adopt it
         # instead of creating a new commitment (ADR-0010) — presence of the pick
