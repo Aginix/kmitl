@@ -332,16 +332,26 @@ class ApprovalRequest(models.Model):
     @api.depends(
         "category_id.allowed_partner_type_ids",
         "category_id.allowed_partner_type_ids.code",
+        "participant_ids.partner_type_id.code",
     )
     def _compute_show_participant_sections(self):
         for rec in self:
             types = rec.category_id.allowed_partner_type_ids
-            codes = set(types.mapped("code")) if types else set()
-            show_all = not codes
-            rec.show_employee_participants = show_all or "employee" in codes
-            rec.show_student_participants = show_all or "student" in codes
-            rec.show_company_participants = show_all or "company" in codes
-            rec.show_other_participants = show_all or "other" in codes
+            allowed = set(types.mapped("code")) if types else set()
+            show_all = not allowed
+            existing = set(rec.participant_ids.mapped("partner_type_id.code"))
+            rec.show_employee_participants = (
+                show_all or "employee" in allowed or "employee" in existing
+            )
+            rec.show_student_participants = (
+                show_all or "student" in allowed or "student" in existing
+            )
+            rec.show_company_participants = (
+                show_all or "company" in allowed or "company" in existing
+            )
+            rec.show_other_participants = (
+                show_all or "other" in allowed or "other" in existing
+            )
 
     allocation_ids = fields.One2many(
         "approval.request.allocation",
