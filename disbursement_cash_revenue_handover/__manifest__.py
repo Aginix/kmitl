@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement — Cash & Revenue Handover",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "KMITL/Accounting",
     "summary": "Hand central's cash and revenue over to the spending unit when "
     "a government-budget disbursement is billed",
@@ -17,6 +17,7 @@
     "data": [
         "security/ir.model.access.csv",
         "data/account_move_exception_data.xml",
+        "data/central_funding_data.xml",
         "views/central_funding_views.xml",
         "views/account_move_views.xml",
         "views/menuitem.xml",

@@ -2322,3 +2322,8 @@ msgstr "ใบเสนอราคาพัสดุ"
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_verify
 msgid "To be verified"
 msgstr "ตรวจสอบข้อมูล"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_tree
+msgid "PR Number"
+msgstr "เลขที่ใบพ.1"
