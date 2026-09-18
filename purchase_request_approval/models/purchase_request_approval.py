@@ -573,10 +573,18 @@ class PurchaseRequestApproval(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
             # Historic callers still pass _("New") — normalise to the "/"
-            # placeholder so the mint happens later at the state transition.
+            # placeholder so the mint below (or the state transition) draws
+            # the fiscal-year-pinned number instead.
             if vals.get("name", _("New")) in (_("New"), False):
                 vals["name"] = self._get_default_name()
         requests = super().create(vals_list)
+        # Preserve the original UX: the พจ.1 number is visible from the
+        # moment the record opens (as long as ปีงบประมาณ is known — it is
+        # for the PR-driven path, see ``purchase_request._prepare_approval_vals``).
+        # Records lacking a fiscal year fall back to minting at submit.
+        for record in requests:
+            if record.name == "/" and record.account_fiscal_year_id:
+                record._assign_document_number()
         return requests
 
     def write(self, vals):
