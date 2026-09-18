@@ -7,7 +7,7 @@
         <field name="model">purchase.guarantee</field>
         <field name="inherit_id" ref="l10n_th_gov_purchase_guarantee.view_purchase_guarantee_form"/>
         <field name="arch" type="xml">
-            <field name="date_return" position="before">
+            <field name="note" position="after">
                 <field
                     name="operating_unit_id"
                     widget="selection"
@@ -23,13 +23,9 @@
         <field name="model">purchase.guarantee</field>
         <field name="inherit_id" ref="l10n_th_gov_purchase_guarantee.view_purchase_guarantee_tree"/>
         <field name="arch" type="xml">
-            <field name="document_ref" position="after">
-                <field
-                    name="operating_unit_id"
-                    groups="operating_unit.group_multi_operating_unit"
-                    optional="hide"
-                />
-            </field>
+            <xpath expr="//tree" position="inside">
+                <field name="operating_unit_id" optional="hide" groups="operating_unit.group_multi_operating_unit" />
+            </xpath>
         </field>
     </record>
 

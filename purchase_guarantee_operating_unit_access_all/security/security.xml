@@ -7,14 +7,12 @@
         </record>
     </data>
 
-    <record id="ir_rule_purchase_guarantee_all_ou" model="ir.rule">
-        <field name="model_id" ref="l10n_th_gov_purchase_guarantee.model_purchase_guarantee" />
-        <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="name">Purchase Guarantee All Operating Units</field>
-        <field name="groups" eval="[(6, 0, [ref('group_all_ou_purchase_guarantee')])]"/>
-        <field name="perm_read" eval="1" />
-        <field name="perm_write" eval="0" />
-        <field name="perm_create" eval="0" />
-        <field name="perm_unlink" eval="0" />
-    </record>
+    <function model="ir.rule" name="write">
+        <value
+            eval="[ref('purchase_guarantee_operating_unit.ir_rule_purchase_guarantee_operating_units')"
+        />
+        <value
+            eval="{'domain_force': &quot;['|','|',(1, '=', 1) if user.has_group('purchase_guarantee_operating_unit_access_all.group_all_ou_purchase_guarantee') else (0, '=', 1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids)]&quot;}"
+        />
+    </function>
 </odoo>
