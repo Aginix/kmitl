@@ -1666,8 +1666,8 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.model.fields,help:agx_approval.field_approval_request_allocation__payment_type
 msgid ""
-"วิธีที่จ่ายเงินของแถวนี้ — จ่ายตรง/สำรองจ่าย จะเข้าใบเบิก (DR); เงินยืม จะไม่เข้าใบเบิก แต่ไปเคลียร์กับสัญญายืม (ดู "
-"ADR-0002)"
+"วิธีที่จ่ายเงินของแถวนี้ — ทุกประเภทเข้าใบเบิก (DR) โดย 1 ใบเบิก รับได้ 1 ประเภทเท่านั้น (ดู "
+"agx_approval_disbursement ADR-0002)"
 msgstr ""
 
 #. module: agx_approval
