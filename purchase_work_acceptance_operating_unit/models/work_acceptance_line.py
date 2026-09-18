@@ -9,5 +9,4 @@ class WorkAcceptanceLine(models.Model):
         comodel_name="operating.unit",
         related="wa_id.operating_unit_id",
         string="Operating Unit",
-        store=True,
     )
