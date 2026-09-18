@@ -144,7 +144,7 @@ class AccountAssetBatch(models.Model):
         string="แหล่งเงิน",
         compute="_compute_analytic_id",
         inverse=lambda self: self._update_analytic_distribution("sources"),
-        store=True,
+        store=False,
         readonly=False,
         domain=[("root_plan_id.code", "=", "sources")],
     )
@@ -154,7 +154,7 @@ class AccountAssetBatch(models.Model):
         string="ส่วนงาน",
         compute="_compute_analytic_id",
         inverse=lambda self: self._update_analytic_distribution("departments"),
-        store=True,
+        store=False,
         readonly=False,
         domain=[("root_plan_id.code", "=", "departments")],
     )
@@ -164,7 +164,7 @@ class AccountAssetBatch(models.Model):
         string="กองทุน",
         compute="_compute_analytic_id",
         inverse=lambda self: self._update_analytic_distribution("funds"),
-        store=True,
+        store=False,
         readonly=False,
         domain=[("root_plan_id.code", "=", "funds")],
     )
@@ -174,7 +174,7 @@ class AccountAssetBatch(models.Model):
         string="ด้าน/แผนงาน/กิจกรรม",
         compute="_compute_analytic_id",
         inverse=lambda self: self._update_analytic_distribution("activities"),
-        store=True,
+        store=False,
         readonly=False,
         domain=[("root_plan_id.code", "=", "activities")],
     )
