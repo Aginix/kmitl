@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Smart button + "แก้ไขข้อมูลสัญญา" button; full readonly-lock arch
+         arrives with task #6. -->
+    <record id="view_purchase_order_form_contract" model="ir.ui.view">
+        <field name="name">purchase.order.form.contract-revision</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="%(action_purchase_contract)d"
+                        type="action"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        context="{'search_default_purchase_id': active_id}"
+                        attrs="{'invisible': [('revision_count', '=', 0)]}">
+                    <field name="revision_count" widget="statinfo" string="สัญญา"/>
+                </button>
+            </xpath>
+            <xpath expr="//button[@name='button_confirm']" position="after">
+                <button name="action_open_contract_revision"
+                        type="object"
+                        string="แก้ไขข้อมูลสัญญา"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', 'not in', ['purchase','done'])]}"
+                        groups="purchase_contract_revision_kmitl.group_contract_revision_user"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

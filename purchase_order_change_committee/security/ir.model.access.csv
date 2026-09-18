@@ -1,3 +1,0 @@
-id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_purchase_order_change_committee_snapshot,purchase.order.change.committee.snapshot,model_purchase_order_change_committee_snapshot,,1,1,1,1
-access_purchase_order_change_committee_wizard_line,purchase.order.change.committee.wizard.line,model_purchase_order_change_committee_wizard_line,,1,1,1,1
