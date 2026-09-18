@@ -628,16 +628,40 @@ class ReceiptKmitl(models.Model):
             },
         ]
 
-    def _prepare_move_line_vals(self, line):
+    def _get_revenue_splits(self, line):
+        """Return a list of revenue-leg dicts for one receipt line.
+
+        Default: one leg on the line's own income account (current
+        behavior). Extension modules (receipt_kmitl_allocation) override
+        this to fan a line out into several revenue accounts/dimensions.
+        """
         self.ensure_one()
+        return [
+            {
+                "account_id": line.account_id.id,
+                "amount": line.amount,
+                "analytic_distribution": line.analytic_distribution,
+                "name": line.name or self.name,
+            }
+        ]
+
+    def _prepare_move_line_vals(self, line, split=None):
+        self.ensure_one()
+        if split is None:
+            split = {
+                "account_id": line.account_id.id,
+                "amount": line.amount,
+                "analytic_distribution": line.analytic_distribution,
+                "name": line.name or self.name,
+            }
         return {
-            "name": line.name or self.name,
-            "account_id": line.account_id.id,
+            "name": split["name"],
+            "account_id": split["account_id"],
             "debit": 0.0,
-            "credit": line.amount,
+            "credit": split["amount"],
             "partner_id": self.partner_id.id,
             "currency_id": self.currency_id.id,
-            "analytic_distribution": line.analytic_distribution,
+            "analytic_distribution": split["analytic_distribution"],
         }
 
     def _prepare_move_vals(self, line_vals):
@@ -665,7 +689,8 @@ class ReceiptKmitl(models.Model):
         line_vals = []
         for line in self.line_ids:
             line_vals.append((0, 0, self._prepare_debit_line_vals(line)))
-            line_vals.append((0, 0, self._prepare_move_line_vals(line)))
+            for split in self._get_revenue_splits(line):
+                line_vals.append((0, 0, self._prepare_move_line_vals(line, split)))
         for vals in self._prepare_deposit_line_vals():
             line_vals.append((0, 0, vals))
         move = self.env["account.move"].create(self._prepare_move_vals(line_vals))

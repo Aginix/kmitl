@@ -2,7 +2,7 @@
 
 {
     "name": "Receipt KMITL",
-    "version": "16.0.1.1.1",
+    "version": "16.0.1.2.0",
     "category": "KMITL/Accounting",
     "license": "AGPL-3",
     "author": "KMITL",

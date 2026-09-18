@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="product_template_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.template.form.receipt.allocation</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='inventory']" position="after">
+                <page name="receipt_allocation" string="การปันส่วนรายได้ (ใบเสร็จ)">
+                    <field name="receipt_allocation_line_ids">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="account_id"/>
+                            <field name="method"/>
+                            <field name="percentage"
+                                   attrs="{'invisible': [('method', '!=', 'percent')],
+                                           'required': [('method', '=', 'percent')]}"/>
+                            <field name="fixed_amount"
+                                   attrs="{'invisible': [('method', '!=', 'fixed')],
+                                           'required': [('method', '=', 'fixed')]}"/>
+                            <field name="department_analytic_id" optional="hide"/>
+                            <field name="source_analytic_id" optional="hide"/>
+                            <field name="fund_analytic_id" optional="hide"/>
+                            <field name="activity_analytic_id" optional="hide"/>
+                            <field name="kmitl_project_analytic_id" optional="hide"/>
+                            <field name="procurement_plan_analytic_id" optional="hide"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                        </tree>
+                    </field>
+                    <group attrs="{'invisible': [('receipt_allocation_line_ids', '=', [])]}">
+                        <field name="receipt_allocation_percent_total"
+                               string="Allocated to percentage buckets (%)"/>
+                    </group>
+                    <p class="text-muted" attrs="{'invisible': [('receipt_allocation_line_ids', '=', [])]}">
+                        A blank dimension on a bucket inherits the receipt header's value;
+                        a filled dimension pins a fixed unit. Percentage buckets must sum
+                        to 100% of the amount left after fixed buckets.
+                    </p>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
