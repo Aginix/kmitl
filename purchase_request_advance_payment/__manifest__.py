@@ -5,7 +5,9 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     "depends": [
+        "partner_type_kmitl",
         "purchase_request_kmitl",
+        "purchase_request_procurement_mode",
         "purchase_request_budget",
         "advance_payment",
         "advance_payment_budget",
