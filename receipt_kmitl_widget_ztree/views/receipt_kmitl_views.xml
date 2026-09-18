@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_receipt_kmitl_form" model="ir.ui.view">
+        <field name="name">kmitl.receipt.form.ztree</field>
+        <field name="model">kmitl.receipt</field>
+        <field name="inherit_id" ref="receipt_kmitl.view_receipt_kmitl_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'ztree_parent_key': 'parent_id','ztree_expend_level': '2', 'order': 'code', 'ztree_name_format': '[{code}] {name}' }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='fund_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'ztree_parent_key': 'parent_id','ztree_expend_level': '2', 'order': 'code', 'ztree_name_format': '[{code}] {name}' }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='source_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'ztree_parent_key': 'parent_id','ztree_expend_level': '2', 'order': 'code', 'ztree_name_format': '[{code}] {name}' }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='activity_analytic_id']" position="attributes">
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'ztree_parent_key': 'parent_id','ztree_expend_level': '2', 'order': 'code', 'ztree_name_format': '[{code}] {name}' }</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

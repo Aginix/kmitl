@@ -71,6 +71,14 @@ class ReceiptKmitlCommon(TransactionCase):
                 "company_id": cls.company.id,
             }
         )
+        cls.deposit_account = Account.create(
+            {
+                "code": "112002",
+                "name": "Treasury Deposit",
+                "account_type": "asset_cash",
+                "company_id": cls.company.id,
+            }
+        )
         cls.income_tuition = Account.create(
             {
                 "code": "410101",
@@ -116,6 +124,7 @@ class ReceiptKmitlCommon(TransactionCase):
                 "name": "Cash",
                 "journal_id": cls.cash_journal.id,
                 "account_id": cls.cash_account.id,
+                "deposit_account_id": cls.bank_account.id,
             }
         )
         cls.pm_transfer = Method.create(
@@ -124,6 +133,7 @@ class ReceiptKmitlCommon(TransactionCase):
                 "payment_type": "transfer",
                 "journal_id": cls.bank_journal.id,
                 "account_id": cls.bank_account.id,
+                "deposit_account_id": cls.deposit_account.id,
             }
         )
         cls.pm_cheque = Method.create(
@@ -132,6 +142,7 @@ class ReceiptKmitlCommon(TransactionCase):
                 "payment_type": "cheque",
                 "journal_id": cls.bank_journal.id,
                 "account_id": cls.bank_account.id,
+                "deposit_account_id": cls.deposit_account.id,
             }
         )
 

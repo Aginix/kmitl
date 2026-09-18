@@ -21,7 +21,8 @@
                 <field name="account_fiscal_year_id" optional="hide" />
             </xpath>
             <xpath expr="//field[@name='name']" position="attributes">
-                <attribute name="optional">hide</attribute>
+                <attribute name="optional">show</attribute>
+                <attribute name="string">PR Number</attribute>
             </xpath>
             <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="optional">hide</attribute>
@@ -85,7 +86,7 @@
             <xpath expr="//field[@name='line_ids']" position="attributes">
                 <attribute
                     name="attrs"
-                >{'readonly': [('is_editable', '=', False)]}</attribute>
+                >{'readonly': [('state', 'not in', ('draft', 'returned'))]}</attribute>
             </xpath>
 
             <xpath expr="//field[@name='line_ids']" position="before">
@@ -141,9 +142,21 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <button name="button_rejected" position="attributes">
-                <attribute name="states" />
-                <attribute name="invisible">1</attribute>
+            <button name="button_to_approve" position="attributes">
+                <attribute name="states">to_verify</attribute>
+                <attribute name="groups">purchase_request_kmitl.group_purchase_request_verify</attribute>
+                <attribute name="string">ตรวจสอบ</attribute>
+            </button>
+
+            <button name="button_to_approve" position="before">
+                <button
+                    name="button_to_verify"
+                    states="draft"
+                    string="Request approval"
+                    type="object"
+                    class="oe_highlight"
+                    groups="purchase_request.group_purchase_request_user"
+                />
             </button>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
@@ -154,27 +167,40 @@
                 >{'invisible': [('can_reset_to_draft', '=', False)]}</attribute>
             </xpath>
 
-            <xpath expr="//button[@name='button_draft']" position="after">
+            <!-- states ที่นี่คือของโมดูลนี้เท่านั้น (draft/in_progress ของ OCA,
+                 to_verify/to_approve/returned ของ kmitl) โมดูลที่เพิ่ม state
+                 ของตัวเอง (budget/sarabun/egp/approval) ต่อเข้า states นี้เอง
+                 ด้วย add= เหมือน statusbar_visible -->
+            <xpath expr="//header" position="inside">
                 <button
                     name="button_cancel"
-                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress,returned"
+                    states="draft,to_verify,to_approve,in_progress,returned"
                     string="Cancel"
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
                 <button
                     name="button_return"
-                    states="to_verify,to_submit"
+                    states="to_verify"
                     string="Return"
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
             </xpath>
 
+            <!-- statusbar_visible เป็น "เซ็ต" ไม่ใช่ "ลำดับ": widget เอาลิสต์นี้ไป
+                 กรอง selection ของ field ลำดับที่แสดงจึงมาจากลำดับ selection
+                 (คุมด้วย selection_add anchors) ทุกโมดูลจึงต่อ state ของตัวเอง
+                 ด้วย add= ได้โดยไม่ต้องสนลำดับ และไม่ต้องแก้ลิสต์กลาง
+                 ที่นี่: เพิ่ม to_verify ที่โมดูลนี้เป็นเจ้าของ และถอด approved ของ
+                 OCA ออก เพราะ flow ของ KMITL ข้ามขั้นนั้น (button_approved ซ่อน) -->
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,to_verify,to_submit,to_approve,in_approval,in_progress,done</attribute>
+                    add="to_verify"
+                    remove="approved"
+                    separator=","
+                />
             </xpath>
 
             <xpath expr="//h1/field[@name='name']" position="attributes">

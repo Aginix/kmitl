@@ -93,23 +93,27 @@ class TrialBalanceReportKmitl(models.AbstractModel):
         )
 
         report = self.with_context(kmitl_dim_leaves=leaves)
+        # Keyword arguments only: OCA reshapes this signature across releases
+        # (``hide_account_at_end_0`` was inserted mid-list in 16.0.1.18.0), and a
+        # positional call silently mis-binds instead of raising.
+        # ``unaffected_earnings_account=False`` drops the "Undistributed
+        # Profits/Losses" row KMITL does not want (the OCA engine would
+        # otherwise always append it, even at zero).
         total_amount, accounts_data, _partners = report._get_data(
-            account_ids,
-            journal_ids,
-            partner_ids,
-            company_id,
-            date_to,
-            date_from,
-            False,  # foreign_currency
-            only_posted,
-            False,  # show_partner_details
-            hide_account_at_0,
-            # No unaffected-earnings account: KMITL does not want the
-            # "Undistributed Profits/Losses" row (which the OCA engine would
-            # otherwise always append, even at zero).
-            False,
-            fy_start_date,
-            False,  # grouped_by
+            account_ids=account_ids,
+            journal_ids=journal_ids,
+            partner_ids=partner_ids,
+            company_id=company_id,
+            date_to=date_to,
+            date_from=date_from,
+            foreign_currency=False,
+            only_posted_moves=only_posted,
+            show_partner_details=False,
+            hide_account_at_0=hide_account_at_0,
+            hide_account_at_end_0=False,
+            unaffected_earnings_account=False,
+            fy_start_date=fy_start_date,
+            grouped_by=False,
         )
 
         rows = []

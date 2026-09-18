@@ -55,7 +55,7 @@
                             groups="receipt_kmitl.group_receipt_kmitl_remittance_approver"/>
                     <button name="action_post"
                             type="object"
-                            string="Post Journal Entries"
+                            string="Create Journal Entries"
                             class="btn-primary"
                             states="approved"
                             groups="receipt_kmitl.group_receipt_kmitl_remittance_approver"/>
@@ -186,7 +186,7 @@
                 <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
                 <filter string="Submitted" name="submitted" domain="[('state','=','submitted')]"/>
                 <filter string="Approved" name="approved" domain="[('state','=','approved')]"/>
-                <filter string="Posted" name="posted" domain="[('state','=','posted')]"/>
+                <filter string="Journal Created" name="posted" domain="[('state','=','posted')]"/>
                 <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
                 <group expand="0" name="group_by" string="Group By">
                     <filter string="Department" name="group_department" context="{'group_by':'department_analytic_id'}"/>

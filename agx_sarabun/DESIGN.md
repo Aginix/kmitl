@@ -305,7 +305,7 @@ used a hardcoded Selection `code` as both behaviour key *and* identifier.
 | `kind` | Selection (required) | The fixed axis: `memo`/`circular`/`from_record` (phase-2: `external`/`order`/`announcement`). Drives report template, numbering, routing rules. |
 | ~~`sequence_id`~~ | — | **Dropped.** The type does not bind a register: the เล่มทะเบียน is chosen on the หนังสือ / defaulted by the unit (ADR-0012). |
 | `default_route_id` | M2o → `sarabun.route.template` | Seed template. |
-| `report_template_id` | M2o → `ir.actions.report` | Compose/cover-sheet template for this type. |
+| `report_template_id` | M2o → `ir.actions.report` | **Lives in `agx_sarabun_layout`, not core.** No-source layout for this type (falls back to `บันทึกข้อความ` when unset). |
 | `active`, `sequence` | Boolean/Integer | |
 
 The `kind` axis is a module-level constant list (extensible by dependent modules),

@@ -32,7 +32,9 @@ account the money sits in, which revenue account recognised it, and which
 the rule**: a source with no row is never handed over, so bringing a new source of
 funds into scope is a configuration change, not a code change. Deliberately **not**
 scoped by fiscal year — one standing profile per source, edited in place when the
-accounts or dimensions change.
+accounts or dimensions change. The module seeds one row for แหล่งเงิน `1`
+(งบประมาณแผ่นดิน); every other source still needs a row added by hand to be brought
+into scope.
 _Avoid_: หัวจ่าย (`account.payment.method.line` — the account money goes *out* of,
 a different thing entirely; see
 [disbursement_finance_kmitl](../disbursement_finance_kmitl/CONTEXT.md)),

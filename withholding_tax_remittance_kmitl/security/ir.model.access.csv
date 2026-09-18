@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_withholding_tax_remittance_user,withholding.tax.remittance user,model_withholding_tax_remittance,accounting_kmitl.group_accounting_kmitl_user,1,1,1,0
+access_withholding_tax_remittance_manager,withholding.tax.remittance manager,model_withholding_tax_remittance,accounting_kmitl.group_accounting_kmitl_manager,1,1,1,1

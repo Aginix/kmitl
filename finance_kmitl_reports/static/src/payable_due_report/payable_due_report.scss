@@ -1,0 +1,8 @@
+// The table styling is shared with the payment report through the
+// .o_finance_kmitl_report wrapper; this file carries only what is this
+// screen's own.
+.o_finance_kmitl_report {
+    .form-check {
+        white-space: nowrap;
+    }
+}

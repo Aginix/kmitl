@@ -25,20 +25,9 @@
         </field>
     </record>
 
-    <!-- Budget Details - add project_analytic_id dimension to the budget group -->
-    <record id="view_purchase_request_form_kmitl_project_budget" model="ir.ui.view">
-        <field name="name">view.purchase.request.form (KMITL Project Budget)</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request_budget.view_purchase_request_form" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='source_analytic_id']" position="after">
-                <field
-                    name="project_analytic_id"
-                    readonly="1"
-                    options="{'no_open': True}"
-                />
-            </xpath>
-        </field>
-    </record>
+    <!-- No project_analytic_id on the form: the four financial dimensions are
+         shown only for the ผังงบประมาณ source, and a project พ.1's dimensions —
+         including its own โครงการ/กิจกรรม dimension — are read off the
+         budget_commitment_info card instead (budget ADR-0010). -->
 
 </odoo>

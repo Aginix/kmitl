@@ -22,13 +22,29 @@ Key features
   income account) drives the credit; free-text description like a normal
   invoice line
 * Configurable payment methods (``kmitl.payment.method``) — each binds a
-  debit GL account and a journal
-* 6D analytic dimensions at the line level via ``analytic.mixin``
+  Cash Account, a Deposit Bank Account, and a journal
+* 6D analytic dimensions at the line level via ``analytic.mixin``, carried on
+  every leg of the journal entry, including the treasury-remittance pair
 * Per-fiscal-year sequence (``RC/{fiscal_year_be}/{####}``, e.g. ``RC/2569/0001``)
 * Confirm assigns the number and allows printing — no journal entry yet
 * ``kmitl.receipt.remittance`` (รายงานนำส่งคลัง) bundles confirmed receipts by
   department subtree; an approver reviews the batch and treasury posts it,
-  generating one JE per receipt (Dr payment-method account / Cr income)
+  generating one JE per receipt: a Dr Cash Account / Cr income pair for each
+  line, plus a Dr Deposit Bank Account / Cr Cash Account pair remitting the
+  full total to the treasury (นำเงินส่งคลัง):
+
+  ===  ========================  =====  ====================
+  #    Account                   Dr/Cr  Amount
+  ===  ========================  =====  ====================
+  1    Cash Account              Dr     line 1 amount
+  1    Income account            Cr     line 1 amount
+  ...  ...                       ...    ...
+  N    Cash Account              Dr     line N amount
+  N    Income account            Cr     line N amount
+  —    Deposit Bank Account      Dr     receipt total
+  —    Cash Account              Cr     receipt total
+  ===  ========================  =====  ====================
+
 * Removing a single receipt from a submitted remittance (via the standard
   widget on the receipts list) returns it to the pending pool for correction,
   without tearing down the whole document; rejecting the whole remittance is
@@ -59,9 +75,10 @@ After install, a Manager must:
    Partner (a default ``Walk-in Customer`` is provided; config-parameter
    ``receipt_kmitl.walkin_partner_id`` overrides it).
 2. Open ``Receipts → Configuration → Payment Methods`` and create one method per
-   channel, each with a Journal, a Debit Account, and a Payment Type
-   (Cash / Cheque / Money Transfer / Other) — the type controls which box is
-   ticked on the printed official receipt.
+   channel, each with a Journal, a Cash Account, a Deposit Bank Account
+   (the two must differ), and a Payment Type (Cash / Cheque / Money Transfer /
+   Other) — the type controls which box is ticked on the printed official
+   receipt.
 3. Create products (standard Odoo products) with an Income Account set to the
    appropriate income-type account.
 

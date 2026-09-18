@@ -109,7 +109,7 @@
                         string="Hand Over"
                         type="object"
                         class="btn-success"
-                        confirm="ยืนยันว่าผู้รับได้รับเช็คไปแล้ว? ใบสำคัญจ่ายจะถูกบันทึกว่าจ่ายแล้ว และส่งต่อให้ห้องบัญชีบันทึกบัญชี"
+                        confirm="Confirm the payee has received the cheque? The voucher will be marked paid and handed to the accounting office to book."
                         attrs="{'invisible': [('state', '!=', 'issued')]}"
                         groups="finance_kmitl.group_finance_kmitl_user_out"
                     />

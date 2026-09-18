@@ -10,7 +10,8 @@ from odoo.addons.agx_sarabun.tests.common import SarabunCommon
 class TestP1DataModel(SarabunCommon):
     def test_kind_and_type_are_separate_fields(self):
         """kind (behaviour axis) is distinct from the config type record."""
-        doc = self._make_doc()  # from_record type
+        origin = self.Origin.create({"name": "ต้นทางทดสอบ", "test_department_id": self.dept.id})
+        doc = self._make_doc(doc_type=self.doc_type_from_record, origin=origin)
         self.assertEqual(doc.kind, "from_record")
         self.assertEqual(doc.kind, doc.type_id.kind)
 
@@ -59,7 +60,8 @@ class TestP1DataModel(SarabunCommon):
 
     def test_from_record_numbering_must_be_auto(self):
         """from_record documents register automatically — non-auto modes are rejected."""
-        doc = self._make_doc()
+        origin = self.Origin.create({"name": "ต้นทางทดสอบ", "test_department_id": self.dept.id})
+        doc = self._make_doc(doc_type=self.doc_type_from_record, origin=origin)
         self.assertEqual(doc.numbering_mode, "auto")
         with self.assertRaises(ValidationError):
             doc.numbering_mode = "reserved"
@@ -70,3 +72,57 @@ class TestP1DataModel(SarabunCommon):
         doc = self._make_doc(content="<p>เรียนเพื่อโปรดพิจารณาอนุมัติ</p>")
         self.assertIn("โปรดพิจารณา", doc.content)
         self.assertTrue(doc.is_editable)  # draft is editable
+
+    # === allow_manual constraint (P1 — ADR) ===
+
+    def test_allow_manual_default_by_kind(self):
+        """allow_manual is False for from_record types, True for memo/circular."""
+        self.assertFalse(self.doc_type_from_record.allow_manual)
+        self.assertTrue(self.env.ref("agx_sarabun.document_type_memo").allow_manual)
+        self.assertTrue(self.env.ref("agx_sarabun.document_type_circular").allow_manual)
+
+    def test_allow_manual_can_be_overridden_and_survives_save(self):
+        """allow_manual is stored + readonly=False, so a manual override persists."""
+        memo_type = self.env["sarabun.document.type"].create(
+            {"name": "บันทึกพิเศษ", "kind": "memo"}
+        )
+        self.assertTrue(memo_type.allow_manual)
+        memo_type.allow_manual = False
+        memo_type.flush_recordset()
+        memo_type.invalidate_recordset()
+        self.assertFalse(memo_type.allow_manual)
+
+    def test_allow_manual_recomputed_when_kind_changes(self):
+        """Changing kind re-derives allow_manual from the new kind value."""
+        doc_type = self.env["sarabun.document.type"].create(
+            {"name": "ทดสอบ kind switch", "kind": "memo"}
+        )
+        self.assertTrue(doc_type.allow_manual)
+        doc_type.kind = "from_record"
+        doc_type.flush_recordset()
+        doc_type.invalidate_recordset()
+        self.assertFalse(doc_type.allow_manual)
+
+    def test_from_record_without_origin_raises_validation_error(self):
+        """Creating a from_record document with no origin_model violates the constraint."""
+        with self.assertRaises(ValidationError):
+            self.Doc.create({
+                "subject": "หนังสือไม่มีต้นทาง",
+                "type_id": self.doc_type_from_record.id,
+                "sender_department_id": self.dept.id,
+            })
+
+    def test_from_record_with_origin_passes_constraint(self):
+        """A from_record document that carries an origin_model satisfies the constraint."""
+        origin = self.Origin.create({"name": "ต้นทางถูกต้อง", "test_department_id": self.dept.id})
+        doc = self._make_doc(doc_type=self.doc_type_from_record, origin=origin)
+        self.assertEqual(doc.origin_model, origin._name)
+        self.assertEqual(doc.kind, "from_record")
+
+    def test_type_allow_manual_mirrors_the_type(self):
+        """type_allow_manual backs the form's readonly attrs, locking ประเภทเอกสาร on a
+        หนังสือ spawned with an origin-only type."""
+        origin = self.Origin.create({"name": "ต้นทางล็อกประเภท", "test_department_id": self.dept.id})
+        locked = self._make_doc(doc_type=self.doc_type_from_record, origin=origin)
+        self.assertFalse(locked.type_allow_manual)
+        self.assertTrue(self._make_doc().type_allow_manual)

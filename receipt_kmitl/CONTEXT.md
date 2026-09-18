@@ -28,7 +28,9 @@ treasury (`kmitl.receipt.remittance`). Bundles many receipts (like an HR expense
 sheet bundles expenses) — all confirmed receipts under its department **subtree**;
 posting it (`posted`) creates each receipt's accounting entry. Numbered `RM/<FY>/nnnn`.
 _Avoid_: Cash deposit, bank deposit (this is remittance to the treasury, not a
-bank deposit), batch
+bank deposit), batch. Note: "นำเงินส่งคลัง" also names the **Remit to Treasury**
+accounting leg on each receipt's own entry (see Payment Method / Remit to
+Treasury below) — that is an account pair, not this document.
 
 **Removing a receipt** (นำใบเสร็จออกจากรายงาน):
 Removing a single receipt from a `submitted` remittance via the standard o2m
@@ -79,8 +81,19 @@ method's.
 
 **Payment Method**:
 A named way money was received (`kmitl.payment.method`) — cash / cheque /
-transfer — carrying the debit GL account and journal used at posting. Filtered
-on the receipt form by the header's Payment Type.
+transfer — carrying the journal used at posting and **two** GL accounts: the
+Cash Account, debited against each revenue line, and the Deposit Bank
+Account, used for the Remit to Treasury leg below. Filtered on the receipt
+form by the header's Payment Type.
+
+**Remit to Treasury (นำเงินส่งคลัง)**:
+The Dr Deposit Bank Account / Cr Cash Account pair, for the receipt's full
+`amount_total`, that every receipt's own journal entry carries alongside its
+per-line revenue legs — the accounting act of moving the cash received into
+the institution's deposit account. Lives inside the receipt's own move, not a
+separate document — see `kmitl.receipt._prepare_deposit_line_vals()`.
+_Avoid_: Bank deposit, ฝากธนาคาร (reserved for the actual bank-deposit slip
+concept, which this repo does not model — see Receipt Remittance)
 
 **Viewer / User / Manager**:
 The three permission **tiers** (a single hierarchical dropdown; each implies the
@@ -104,3 +117,14 @@ The access-control boundary for receipts and deposits (`operating_unit_id`,
 from the OCA `operating_unit` framework). Provided by the add-on module
 `receipt_kmitl_operating_unit`; the base module carries no row-level scoping.
 _Avoid_: Business unit, branch (unless referring to the partner branch code)
+
+## Known limitations (accepted, revisit later)
+
+- **Dr Cash Account / Cr revenue analytic nets to zero.** Every revenue line's
+  Dr (Cash Account) and Cr (revenue) `account.move.line` now carry the same
+  `analytic_distribution`, so stock Odoo's analytic-balance reporting shows
+  zero for that pair — it never shows the revenue. Reports in this repo
+  (`budget_revenue_comparison`, `accounting_kmitl_reports`) read
+  `account.move.line` directly, filtered by account type/code plus the
+  `analytic_distribution` domain, not the analytic balance, so they are
+  unaffected. Accepted consequence — see ADR-0004.
