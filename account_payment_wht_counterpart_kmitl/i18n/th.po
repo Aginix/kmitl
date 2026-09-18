@@ -1,0 +1,53 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_payment_wht_counterpart_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-15 00:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: account_payment_wht_counterpart_kmitl
+#: model:ir.model.fields,field_description:account_payment_wht_counterpart_kmitl.field_account_move_line__is_wht_counterpart_line
+msgid "Is Wht Counterpart Line"
+msgstr "ขาเจ้าหนี้คู่ภาษี"
+
+#. module: account_payment_wht_counterpart_kmitl
+#: model:ir.model,name:account_payment_wht_counterpart_kmitl.model_account_move_line
+msgid "Journal Item"
+msgstr "รายการสมุดรายวัน"
+
+#. module: account_payment_wht_counterpart_kmitl
+#: model:ir.model,name:account_payment_wht_counterpart_kmitl.model_account_payment
+msgid "Payments"
+msgstr "ใบจ่ายเงิน"
+
+#. module: account_payment_wht_counterpart_kmitl
+#: model:ir.model.fields,help:account_payment_wht_counterpart_kmitl.field_account_move_line__is_wht_counterpart_line
+msgid ""
+"This line is one withholding-tax line's own mirror on the payable — it "
+"exists so the credit that reduced the payable (the tax withheld) has its own"
+" debit against the payable, instead of leaving the payable's debit as a "
+"single lump sum that has to be read against the tax line to be understood. "
+"Copy=True and not False: unlike a workflow stamp, this says what the line "
+"*is*, so a duplicated voucher must keep it on its duplicated line or the new"
+" voucher's rebuild sees two lines it thinks are both counterparts and "
+"breaks."
+msgstr ""
+"บรรทัดนี้เป็นขาคู่ฝั่งเจ้าหนี้ของบรรทัดภาษีหัก ณ ที่จ่ายบรรทัดหนึ่ง — "
+"มีไว้เพื่อให้เครดิตที่ทำให้เจ้าหนี้ลดลง (ภาษีที่หักไว้) "
+"มีเดบิตคู่ของตัวเองในบัญชีเจ้าหนี้ "
+"แทนที่จะปล่อยให้เดบิตเจ้าหนี้เป็นก้อนเดียว "
+"ซึ่งต้องอ่านคู่กับบรรทัดภาษีถึงจะเข้าใจ Copy=True ไม่ใช่ False "
+"เพราะไม่เหมือนธงบอกสถานะงาน ธงนี้บอกว่าบรรทัดคืออะไร "
+"ใบจ่ายเงินที่ถูกทำสำเนาจึงต้องพาธงนี้ไปกับบรรทัดที่ถูกทำสำเนาด้วย "
+"ไม่เช่นนั้นตอน rebuild "
+"ใบใหม่จะเห็นสองบรรทัดที่คิดว่าเป็นเจ้าหนี้คู่ตรงข้ามทั้งคู่แล้วพัง"

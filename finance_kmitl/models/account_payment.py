@@ -950,6 +950,19 @@ class AccountPayment(models.Model):
             "tax_base_amount": line.tax_base_amount,
         }
 
+    def _preserved_write_off_lines(self):
+        """The write-off lines whose meaning a rebuild must not flatten.
+
+        A seam, not a rule of its own: core's rebuild keeps only the *amount* of
+        a write-off line, so anything a line means beyond its balance has to be
+        named here to survive. This module names the withholding-tax lines,
+        whose ``wht_tax_id`` / ``tax_base_amount`` the certificate and the
+        ภ.ง.ด. report are made of; a module that adds a write-off line of its
+        own widens this rather than reimplementing the rebuild.
+        """
+        self.ensure_one()
+        return self._seek_for_lines()[2].filtered("wht_tax_id")
+
     def _synchronize_to_moves(self, changed_fields):
         """Rebuild the entry without losing the withholding tax.
 
@@ -974,7 +987,7 @@ class AccountPayment(models.Model):
             return super()._synchronize_to_moves(changed_fields)
         preserved = {}
         for payment in self:
-            write_off_lines = payment._seek_for_lines()[2].filtered("wht_tax_id")
+            write_off_lines = payment._preserved_write_off_lines()
             if write_off_lines:
                 preserved[payment.id] = [
                     payment._write_off_line_vals(line) for line in write_off_lines
@@ -1001,11 +1014,26 @@ class AccountPayment(models.Model):
         preserved = self.env.context.get("kmitl_preserved_write_off") or {}
         if preserved.get(self.id):
             write_off_line_vals = preserved[self.id]
+        write_off_line_vals = self._adjust_write_off_line_vals(write_off_line_vals)
         line_vals_list = super()._prepare_move_line_default_vals(write_off_line_vals)
         if self.analytic_distribution:
             for line_vals in line_vals_list:
                 line_vals["analytic_distribution"] = self.analytic_distribution
         return line_vals_list
+
+    def _adjust_write_off_line_vals(self, write_off_line_vals):
+        """The write-off values as they will be built, after any restoring.
+
+        The seam a module adding its own write-off line writes through: it runs
+        after the preserved values are back in place (above) and before core
+        computes the counterpart from their sum, which is the only point where
+        both facts are known. Left alone here — core defaults this argument to
+        ``None`` and only turns it into a list *inside* its own method, so an
+        override must treat ``None`` and ``False`` as "nothing", and must build
+        a new list rather than mutate this one, which may be the caller's or the
+        ``kmitl_preserved_write_off`` context's.
+        """
+        return write_off_line_vals
 
     def _get_trigger_fields_to_synchronize(self):
         # Extend the base tuple (immutable) so that changing kmitl_payment_type_id
