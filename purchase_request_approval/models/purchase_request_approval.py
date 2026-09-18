@@ -28,9 +28,17 @@ class PurchaseRequestApproval(models.Model):
     def _get_default_requested_by(self):
         return self.env["res.users"].browse(self.env.uid)
 
+    # States a draft can move to that mean the request was dropped, not
+    # submitted — no number should be spent (the sequence is no_gap).
+    _NO_NUMBER_STATES = ("draft", "cancelled")
+
     @api.model
     def _get_default_name(self):
-        return self.env["ir.sequence"].next_by_code("purchase.request.approval")
+        # Keep the "/" placeholder until the state leaves draft; the pjq.1
+        # number is minted at that transition against the fiscal year's end
+        # date (see _assign_document_number), so drawing here would use
+        # today's date and could roll into the wrong ปีงบประมาณ.
+        return "/"
 
     # == Business fields ==
     request_id = fields.Many2one(
@@ -46,7 +54,7 @@ class PurchaseRequestApproval(models.Model):
     name = fields.Char(
         string="Approval Reference",
         required=True,
-        default=lambda self: _("New"),
+        default="/",
         tracking=True,
     )
 
@@ -331,13 +339,38 @@ class PurchaseRequestApproval(models.Model):
 
     def button_to_approve(self):
         for rec in self:
+            # The state write is intercepted by write() below to mint the
+            # พจ.1 number pinned to the fiscal year — must happen BEFORE
+            # report_generate() so the PDF filename picks up the real name.
             rec.state = "to_approve"
             rec.report_generate()
-            rec.name = (
-                rec.name
-                or self.env["ir.sequence"].next_by_code("purchase.request.approval")
-                or _("New")
+
+    def _assign_document_number(self):
+        # Mirror purchase_request_sequence_kmitl: %(year_be)s must come from
+        # ปีงบประมาณ, not today. Pin both ir_sequence_date (drives the token)
+        # and sequence_date (drives the per-year counter reset) to the
+        # fiscal year's end date.
+        self.ensure_one()
+        if self.name and self.name != "/":
+            return
+        if not self.account_fiscal_year_id:
+            raise ValidationError(
+                _("Fiscal Year is required to generate the พจ.1 number.")
             )
+        fiscal_date = self.account_fiscal_year_id.date_to
+        number = (
+            self.env["ir.sequence"]
+            .with_context(ir_sequence_date=fiscal_date)
+            .next_by_code("purchase.request.approval", sequence_date=fiscal_date)
+        )
+        if not number:
+            raise UserError(
+                _(
+                    "Document number sequence (purchase.request.approval) not "
+                    "found. Please upgrade the module."
+                )
+            )
+        self.name = number
 
     def report_generate(self):
         self.ensure_one()
@@ -539,10 +572,32 @@ class PurchaseRequestApproval(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if vals.get("name", _("New")) == _("New"):
+            # Historic callers still pass _("New") — normalise to the "/"
+            # placeholder so the mint below (or the state transition) draws
+            # the fiscal-year-pinned number instead.
+            if vals.get("name", _("New")) in (_("New"), False):
                 vals["name"] = self._get_default_name()
         requests = super().create(vals_list)
+        # Preserve the original UX: the พจ.1 number is visible from the
+        # moment the record opens (as long as ปีงบประมาณ is known — it is
+        # for the PR-driven path, see ``purchase_request._prepare_approval_vals``).
+        # Records lacking a fiscal year fall back to minting at submit.
+        for record in requests:
+            if record.name == "/" and record.account_fiscal_year_id:
+                record._assign_document_number()
         return requests
+
+    def write(self, vals):
+        res = super().write(vals)
+        # Mint the พจ.1 number on any transition out of draft, no matter
+        # which button (or server-side write) triggers it — button_to_approve
+        # is only one of several exits, so hooking a single button leaves
+        # the others (_on_sarabun_circulating, ...) with a dangling "/" name.
+        if vals.get("state"):
+            for record in self:
+                if record.state not in self._NO_NUMBER_STATES:
+                    record._assign_document_number()
+        return res
 
     def _can_be_deleted(self):
         self.ensure_one()
@@ -612,7 +667,9 @@ class PurchaseRequestApproval(models.Model):
 
     def _on_sarabun_circulating(self, document):
         # Explicit override: flip the PA to 'to_approve' on send. Do NOT call
-        # button_to_approve here — that also renders the PDF and assigns the name.
+        # button_to_approve here — that also renders the PDF. The state write
+        # is picked up by write() above and mints the พจ.1 number pinned to
+        # the fiscal year.
         self.write({"state": "to_approve"})
         return super()._on_sarabun_circulating(document)
 
