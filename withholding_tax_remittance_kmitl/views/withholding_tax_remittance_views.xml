@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_withholding_tax_remittance_form" model="ir.ui.view">
+        <field name="name">withholding.tax.remittance.form</field>
+        <field name="model">withholding.tax.remittance</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_load_pending_certs"
+                        type="object"
+                        string="Load Pending Certificates"
+                        states="draft"
+                        groups="accounting_kmitl.group_accounting_kmitl_user"
+                    />
+                    <button
+                        name="action_post"
+                        type="object"
+                        string="Confirm / Clear Payable"
+                        class="btn-primary"
+                        states="draft"
+                        groups="accounting_kmitl.group_accounting_kmitl_user"
+                    />
+                    <button
+                        name="action_cancel"
+                        type="object"
+                        string="Cancel"
+                        attrs="{'invisible': [('state', '=', 'cancelled')]}"
+                        groups="accounting_kmitl.group_accounting_kmitl_user"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,posted"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_view_move"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-book"
+                            attrs="{'invisible': [('move_id', '=', False)]}"
+                        >
+                            <field name="move_id" widget="statinfo" string="Journal Entry" />
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field
+                                name="income_tax_form"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <label for="period_month" string="Period" />
+                            <div class="o_row">
+                                <field
+                                    name="period_month"
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                />
+                                <field
+                                    name="period_year"
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                />
+                            </div>
+                            <field name="period" readonly="1" />
+                            <field name="date_from" invisible="1" />
+                            <field name="date_to" invisible="1" />
+                            <field
+                                name="source_analytic_id"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                options="{'no_create': True}"
+                            />
+                            <field
+                                name="date_remit"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="journal_id"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                        </group>
+                        <group>
+                            <field name="wht_account_id" readonly="1" />
+                            <field
+                                name="savings_account_id"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="current_account_id"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="partner_id"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="cheque_no"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="rd_ref"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field name="amount_total" />
+                            <field name="currency_id" invisible="1" />
+                            <field name="company_id" invisible="1" />
+                        </group>
+                    </group>
+                    <field
+                        name="cert_ids"
+                        widget="many2many"
+                        domain="[('state', '=', 'done'), ('remittance_id', '=', False), ('income_tax_form', '=', income_tax_form), ('date', '&gt;=', date_from), ('date', '&lt;=', date_to), ('company_id', '=', company_id)]"
+                        attrs="{'readonly': [('state', '!=', 'draft')]}"
+                    >
+                        <tree edit="false" create="false">
+                            <field name="name" />
+                            <field name="partner_id" />
+                            <field name="date" />
+                            <field name="income_tax_form" />
+                            <field name="amount_total" sum="Total" />
+                            <field name="currency_id" invisible="1" />
+                        </tree>
+                    </field>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_withholding_tax_remittance_tree" model="ir.ui.view">
+        <field name="name">withholding.tax.remittance.tree</field>
+        <field name="model">withholding.tax.remittance</field>
+        <field name="arch" type="xml">
+            <tree
+                decoration-muted="state == 'cancelled'"
+                decoration-success="state == 'posted'"
+            >
+                <field name="name" />
+                <field name="income_tax_form" />
+                <field name="period" optional="show" />
+                <field name="source_analytic_id" optional="show" />
+                <field name="date_remit" />
+                <field name="amount_total" sum="Total" />
+                <field name="currency_id" invisible="1" />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-success="state == 'posted'"
+                    decoration-muted="state == 'cancelled'"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_withholding_tax_remittance_search" model="ir.ui.view">
+        <field name="name">withholding.tax.remittance.search</field>
+        <field name="model">withholding.tax.remittance</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="source_analytic_id" />
+                <field name="cheque_no" />
+                <field name="rd_ref" />
+                <separator />
+                <filter
+                    string="Ready to Post"
+                    name="ready_to_post"
+                    domain="[('state', '=', 'draft'), ('cert_ids', '!=', False)]"
+                />
+                <filter
+                    string="Empty Drafts"
+                    name="empty_drafts"
+                    domain="[('state', '=', 'draft'), ('cert_ids', '=', False)]"
+                />
+                <separator />
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />
+                <filter
+                    string="Posted"
+                    name="posted"
+                    domain="[('state', '=', 'posted')]"
+                />
+                <filter
+                    string="Cancelled"
+                    name="cancelled"
+                    domain="[('state', '=', 'cancelled')]"
+                />
+                <separator />
+                <filter string="Remittance Date" name="date_remit" date="date_remit" />
+                <group name="group_by" expand="0" string="Group By">
+                    <filter
+                        string="Form"
+                        name="group_form"
+                        context="{'group_by': 'income_tax_form'}"
+                    />
+                    <filter
+                        string="Funding Source"
+                        name="group_source"
+                        context="{'group_by': 'source_analytic_id'}"
+                    />
+                    <filter
+                        string="State"
+                        name="group_state"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        string="Year (B.E.)"
+                        name="group_period_year"
+                        context="{'group_by': 'period_year'}"
+                    />
+                    <filter
+                        string="Tax Month"
+                        name="group_period_month"
+                        context="{'group_by': 'period_month'}"
+                    />
+                    <filter
+                        string="Remittance Date"
+                        name="group_date_remit"
+                        context="{'group_by': 'date_remit:month'}"
+                    />
+                    <filter
+                        string="WHT Payable Account"
+                        name="group_wht_account"
+                        context="{'group_by': 'wht_account_id'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field
+                        name="source_analytic_id"
+                        icon="fa-money"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="income_tax_form"
+                        icon="fa-file-text-o"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_withholding_tax_remittance" model="ir.actions.act_window">
+        <field name="name">WHT Remittance</field>
+        <field name="res_model">withholding.tax.remittance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_withholding_tax_remittance_search" />
+    </record>
+
+    <menuitem
+        id="menu_withholding_tax_remittance"
+        name="WHT Remittance"
+        parent="finance_kmitl.menu_finance_payment_out"
+        action="action_withholding_tax_remittance"
+        sequence="55"
+        groups="accounting_kmitl.group_accounting_kmitl_user"
+    />
+</odoo>

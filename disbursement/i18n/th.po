@@ -98,6 +98,18 @@ msgid "Amount"
 msgstr "จำนวน"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_wht
+msgid "Withholding Tax"
+msgstr "หัก ณ ที่จ่าย"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__amount_wht
+msgid "WHT Amount"
+msgstr "หัก ณ ที่จ่าย"
+
+
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__analytic_distribution
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__analytic_distribution
 msgid "Analytic"
@@ -654,7 +666,7 @@ msgstr "จำนวน"
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_bank_id
 msgid "Recipient Bank"
-msgstr "ธนาคารผู้รับ"
+msgstr "บัญชีธนาคารผู้รับ"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__ref
@@ -750,12 +762,12 @@ msgstr "ยืนยันแล้ว"
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__price_subtotal
 msgid "Subtotal"
-msgstr "มูลค่า"
+msgstr "มูลค่าก่อนภาษี"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__price_tax
 msgid "Tax"
-msgstr "ภาษี"
+msgstr "ภาษีมูลค่าเพิ่ม"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__tax_totals
@@ -763,10 +775,14 @@ msgid "Tax Totals"
 msgstr "ภาษีทั้งหมด"
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_tax
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__tax_ids
 msgid "Taxes"
-msgstr "ภาษี"
+msgstr "ประเภทภาษีมูลค่าเพิ่ม"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_tax
+msgid "Taxes"
+msgstr "ภาษีมูลค่าเพิ่ม"
 
 #. module: disbursement
 #. odoo-python
@@ -793,7 +809,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_total
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__price_total
 msgid "Total"
-msgstr "มูลค่า"
+msgstr "จำนวนเงิน"
 
 #. module: disbursement
 #: model:ir.model.fields,help:disbursement.field_disbursement_request__activity_exception_decoration
@@ -839,7 +855,7 @@ msgstr "รายการตั้งเจ้าหนี้"
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__wht_tax_id
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "WHT"
-msgstr "หัก ณ ที่จ่าย"
+msgstr "ประเภทหัก ณ ที่จ่าย"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__website_message_ids

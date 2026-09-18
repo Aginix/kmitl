@@ -18,11 +18,18 @@ class ReceiptKmitl(models.Model):
             vals["operating_unit_id"] = self.operating_unit_id.id
         return vals
 
-    def _prepare_debit_line_vals(self):
-        vals = super()._prepare_debit_line_vals()
+    def _prepare_debit_line_vals(self, line):
+        vals = super()._prepare_debit_line_vals(line)
         if self.operating_unit_id:
             vals["operating_unit_id"] = self.operating_unit_id.id
         return vals
+
+    def _prepare_deposit_line_vals(self):
+        vals_list = super()._prepare_deposit_line_vals()
+        if self.operating_unit_id:
+            for vals in vals_list:
+                vals["operating_unit_id"] = self.operating_unit_id.id
+        return vals_list
 
     def _prepare_move_line_vals(self, line):
         vals = super()._prepare_move_line_vals(line)

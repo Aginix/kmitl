@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="receivable_raised_report_pdf">
+        <t t-call="finance_kmitl_reports.finance_report_layout">
+            <t t-set="report_title">Receivables Raised Report</t>
+            <t t-set="total_key" t-value="'amount_total'" />
+        </t>
+    </template>
+
+</odoo>

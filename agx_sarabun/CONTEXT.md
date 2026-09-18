@@ -17,8 +17,8 @@ The **living, ordered chain of steps that lives on the Document** and flows thro
 _Avoid_: workflow, approval flow (those imply a fixed pre-planned graph)
 
 **Route Template**:
-A reusable preset that *seeds* a Route's steps at send time (e.g. a standard PR-approval chain). It is a convenience pre-fill only — it does **not** own or constrain the flow once seeded.
-_Avoid_: workflow definition, process (it is not the source of truth for the flow)
+A reusable preset that *seeds* a Route's steps at send time (e.g. a standard PR-approval chain). It is a convenience pre-fill only — it does **not** own or constrain the flow once seeded. Templates now carry per-record **visibility** (`personal` / `unit` / `public`) and an **owner** (`owner_id`): regular users author personal/unit templates and managers administer the institute-wide `public` catalogue, all from a single unified "แม่แบบเส้นทางอนุมัติ" menu at the e-Sarabun root (the old manager-only entry under Configuration is hidden). The template model carries chatter (`mail.thread`) and a `description` field for documentation. See `agx_sarabun_user_template` (ADR-0016).
+_Avoid_: workflow definition, process (it is not the source of truth for the flow); assuming all templates are manager-owned or globally visible (they can be personal or unit-scoped)
 
 **Routing Step (`sarabun.routing.step`)**:
 One row of a Route = *target* (who acts) + *verb* (what they must do) + *state* + *outcome* (who acted, when, the เกษียน note, the capacity they signed in). A **single entity** — it replaces the old `routing.line` (plan) / `document.recipient` (tracker) split, so there is nothing to keep in sync and steps can be inserted mid-flow.
@@ -142,6 +142,9 @@ _Avoid_: signature (reserve for the act/data, not the rendered block); splitting
 The accumulated endorsement/signing history (who, when, in what capacity, with what comment). As of **ADR-0008 it is audit-only** — kept on the Routing Steps + chatter and visible in the Route, **no longer rendered onto the official document** (the document shows **signatures only** — the `show_signature` steps). A signing step's own ความเห็น still shows **under its signature block**, but non-signing checks (ตรวจสอบ / พิจารณา / ส่งต่อ) leave no mark on the letter.
 _Avoid_: history, log; printing the trail on the official document (superseded — ADR-0008); rendering **backward-move** events (ดึงกลับ / ยกเลิกการส่ง / ตีกลับ / ปฏิเสธ) anywhere on the หนังสือ — those are internal routing history kept in the audit/chatter with their required reason
 
+**ข้อความมาตรฐาน (Standard comment)**:
+Admin-configurable canned text for the เกษียน note, offered as a picker in the Act-on-step wizard (it **replaces** the comment on select, which stays freely editable). A **verb** may name one as its **default**, pre-filled when a step of that verb is acted on. Owned by the optional `agx_sarabun_standard_comment` extension — the core wizard works unchanged without it.
+
 ### Access
 
 **Route visibility (the reach ledger, `reached_user_ids`)**:
@@ -179,8 +182,10 @@ The behaviour/format axis of a Document — `memo` (บันทึกข้อ�
 _Avoid_: the old hardcoded `code` selection that doubled as both behaviour key and identifier
 
 **Document type (`sarabun.document.type`)**:
-An **admin-configurable** record naming a concrete type ("บันทึกข้อความกองคลัง") and binding its default route / template, pointing at one Document kind. The configurable layer above the fixed kind axis. (The register/number sequence is resolved per **ส่วนงาน**, not per type — see Register.) The kind axis still exists on the model but is hidden from the หนังสือ form (only `from_record` is exercised in v1).
-_Avoid_: treating type and kind as one field; expecting the type to carry its own number series
+An **admin-configurable** record naming a concrete type ("บันทึกข้อความกองคลัง") and binding its default route / template, pointing at one Document kind. The configurable layer above the fixed kind axis. Consumer modules routinely **seed their own type** (e.g. `budget_transfer_sarabun` adds "ขออนุมัติโอนงบประมาณ", `kind=from_record`) so their หนังสือ are searchable/filterable by a meaningful type — this is the encouraged pattern. (The register/number sequence is resolved per **ส่วนงาน**, not per type — see Register.) The kind axis still exists on the model but is hidden from the หนังสือ form (only `from_record` is exercised in v1).
+
+**Manual-creatable (`allow_manual`)** — a per-type property deciding whether a user may **compose a หนังสือ of this type by hand** from the Documents form (vs. it arising **only** from an origin record). It **defaults from the kind** — `from_record` types default to *not* manual-creatable (they must be spawned by their origin), `memo` / `circular` default to manual-creatable — but is an **overridable checkbox** on the type, so an admin can retire a composed type from manual use, or (rarely) open a from_record type to hand-composition, without changing its kind. It governs which types appear in the manual-create dropdown, the integrity rule that a non-manual type's หนังสือ must carry an origin, and the form lock — once a หนังสือ holds a non-manual type, ประเภทเอกสาร is read-only, so the classification a document was spawned with cannot be swapped afterwards.
+_Avoid_: treating type and kind as one field; expecting the type to carry its own number series; equating manual-creatability with kind (it *defaults* from kind but is a distinct, overridable axis)
 
 **ชั้นความเร็ว / ชั้นความลับ (Speed / Secrecy levels)**:
 Records-regulation handling labels — ชั้นความเร็ว (ปกติ / ด่วน / ด่วนมาก / ด่วนที่สุด) and ชั้นความลับ (ปกติ / ลับ / ลับมาก / ลับที่สุด). **Phase-2** — not modeled in v1 (the interim fields were removed); v1 has no urgency flag and keeps manager-see-all (see Access).

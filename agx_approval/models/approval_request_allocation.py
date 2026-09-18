@@ -6,12 +6,12 @@ class ApprovalRequestAllocation(models.Model):
     """Actual expense allocation (การจัดสรรค่าใช้จ่ายจริง) — the after-mission
     breakdown recorded on the request: one row per (recipient, expense product,
     actual amount, bank). One row becomes one disbursement line; grouped by
-    recipient it is the งบหน้าใบสำคัญคู่จ่าย view. Recipients are drawn from the
-    request's participants."""
+    recipient it is the งบหน้าใบสำคัญคู่จ่าย view. Recipients are any
+    ``res.partner``, restricted to internal personnel for สำรองจ่าย/เงินยืม."""
 
     _name = "approval.request.allocation"
     _description = "Approval Request Actual Expense Allocation"
-    _order = "partner_id, id"
+    _order = "sequence, id"
 
     sequence = fields.Integer(string="Sequence", default=10)
 
@@ -26,13 +26,6 @@ class ApprovalRequestAllocation(models.Model):
         "res.partner",
         string="ผู้รับเงิน",
         required=True,
-        domain="[('id', 'in', allowed_recipient_ids)]",
-    )
-
-    allowed_recipient_ids = fields.Many2many(
-        "res.partner",
-        string="Allowed Recipients",
-        compute="_compute_allowed_recipient_ids",
     )
 
     partner_bank_id = fields.Many2one(
@@ -131,11 +124,6 @@ class ApprovalRequestAllocation(models.Model):
                 )
         return super().unlink()
 
-    @api.depends("request_id.participant_ids.partner_id")
-    def _compute_allowed_recipient_ids(self):
-        for rec in self:
-            rec.allowed_recipient_ids = rec.request_id.participant_ids.partner_id
-
     @api.depends("request_id.line_ids.product_id")
     def _compute_allowed_product_ids(self):
         # Actual-expense products are limited to what the plan (ค่าใช้จ่ายแผน)
@@ -150,6 +138,31 @@ class ApprovalRequestAllocation(models.Model):
                 raise ValidationError(
                     _("จำนวนเงินของค่าใช้จ่ายจริงต้องมากกว่า 0")
                 )
+
+    @api.constrains("payment_type", "partner_id")
+    def _check_partner_internal(self):
+        for rec in self:
+            if (
+                rec.payment_type in ("prepaid", "advance")
+                and rec.partner_id
+                and not rec.partner_id.partner_type_id.is_internal
+            ):
+                raise ValidationError(
+                    _("สำรองจ่าย/เงินยืม ต้องเลือกผู้รับเงินที่เป็นบุคลากรภายใน")
+                )
+
+    @api.onchange("payment_type")
+    def _onchange_payment_type(self):
+        """Clear the recipient (and its dependent bank) if the newly chosen
+        payment type no longer allows it — mirrors _check_partner_internal."""
+        for rec in self:
+            if (
+                rec.payment_type in ("prepaid", "advance")
+                and rec.partner_id
+                and not rec.partner_id.partner_type_id.is_internal
+            ):
+                rec.partner_id = False
+                rec.partner_bank_id = False
 
     @api.onchange("partner_id")
     def _onchange_partner_id(self):

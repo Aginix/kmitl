@@ -3,21 +3,25 @@ from collections import defaultdict
 from odoo import http
 from odoo.http import request
 
+# Core summary states with explicit sequence numbers (gaps allow extensions to
+# insert between them). Extensions append (seq, state_key, label) tuples here.
+_BASE_SUMMARY_STATES = [
+    (10, "draft",       "ฉบับร่าง"),
+    (20, "to_verify",   "รอธุรการตรวจสอบ"),
+    # seq 25: to_verify_budget (purchase_request_dashboard_budget)
+    (40, "to_approve",  "รอส่งขอความเห็นชอบให้จัดหา"),
+    # seq 42: sent (purchase_request_dashboard_sarabun)
+    # seq 45: in_egp (purchase_request_dashboard_egp)
+    (50, "in_approval", "อยู่ระหว่างจัดทำ พจ.1"),
+    (60, "in_progress", "อยู่ระหว่างจัดซื้อจัดจ้าง"),
+    (70, "done",        "จัดซื้อจัดจ้างเสร็จสิ้น"),
+    (80, "cancelled",   "ยกเลิก"),
+    (90, "rejected",    "ปฎิเสธ"),
+]
+_EXTRA_SUMMARY_STATES = []
+
 
 class PurchaseRequestDashboardController(http.Controller):
-
-    SUMMARY_STATES = [
-        ("draft", "ฉบับร่าง"),
-        ("to_verify", "รอจองงบประมาณ"),
-        ("to_submit", "รอส่งขอความเห็นชอบให้จัดหา"),
-        ("to_approve", "รอพิจารณาให้จัดหา"),
-        ("in_egp", "รอดำเนินการ E-GP"),
-        ("in_approval", "อยู่ระหว่างจัดทำ พจ.1"),
-        ("in_progress", "อยู่ระหว่างจัดซื้อจัดจ้าง"),
-        ("done", "จัดซื้อจัดจ้างเสร็จสิ้น"),
-        ("cancelled", "ยกเลิก"),
-        ("rejected", "ปฎิเสธ"),
-    ]
 
     # States hidden from the dashboard: 'approved' is a transient bucket that
     # immediately transitions to in_progress, so records shouldn't linger there.
@@ -53,15 +57,11 @@ class PurchaseRequestDashboardController(http.Controller):
     def get_dashboard_data(
         self, fiscal_year_id=None, source_id=None, selected_states=None, **kw
     ):
-        """Return all data needed by the dashboard frontend.
+        """Return core dashboard data (filters, summary boxes, chart 1/2/4/5).
 
-        Returns dict with keys:
-            filter_options  – available fiscal years and source options
-            filters         – currently active filter IDs
-            summary_boxes   – list of 8 state-based summary cards (always all records)
-            chart1..chart6  – chart-specific data structures (filtered by state)
+        Extension modules (dashboard_budget, dashboard_leadtime) expose their
+        own endpoints and register chart cards through the frontend registry.
         """
-        # Filter options
         fiscal_years = request.env["account.fiscal.year"].search(
             [], order="date_from desc"
         )
@@ -83,26 +83,9 @@ class PurchaseRequestDashboardController(http.Controller):
             default_source = sources.filtered(lambda s: s.code == "2")
             source_id = (default_source[:1] or sources[:1]).id
 
-        # Fetch and filter records
-        domain = []
-        if fiscal_year_id:
-            domain.append(("account_fiscal_year_id", "=", fiscal_year_id))
-
-        records = request.env["purchase.request"].search(domain)
-        records = self._filter_by_source(records, source_id)
-        # 'approved' is a transient hidden bucket — drop it dashboard-wide.
-        records = records.filtered(lambda r: r.state not in self.HIDDEN_STATES)
-
-        # Build caches for hierarchy lookups (avoids repeated DB traversal)
-        budget_cache = self._build_root_budget_account_map(records)
-        dept_cache = self._build_root_department_map(records)
-
-        if selected_states:
-            state_set = set(selected_states)
-            chart_records = records.filtered(lambda r: r.state in state_set)
-        else:
-            excluded = self.DEFAULT_CHART_EXCLUDED_STATES
-            chart_records = records.filtered(lambda r: r.state not in excluded)
+        records = self._search_prs(fiscal_year_id, source_id)
+        chart_records = self._filter_by_selected_states(records, selected_states)
+        dept_cache = self._build_root_department_map(chart_records)
 
         return {
             "filter_options": {
@@ -120,27 +103,42 @@ class PurchaseRequestDashboardController(http.Controller):
             "chart2_purchase_type_pie": self._get_chart2_purchase_type_pie(
                 chart_records
             ),
-            "expense_type_pie": self._get_expense_type_pie(
-                chart_records, budget_cache
-            ),
-            "chart3_expense_type_by_month": self._get_chart3_expense_type_by_month(
-                chart_records, budget_cache
-            ),
             "chart4_approved_trend": self._get_chart4_approved_trend(chart_records),
             "chart5_purchase_type_by_dept": self._get_chart5_purchase_type_by_dept(
                 chart_records, dept_cache
             ),
-            "chart6_expense_type_by_dept": self._get_chart6_expense_type_by_dept(
-                chart_records, budget_cache, dept_cache
-            ),
-            "chart7_leadtime_heatmap": self._get_chart7_leadtime_heatmap(
-                fiscal_year_id=fiscal_year_id
-            ),
         }
 
     # ──────────────────────────────────────────────────────────────────
-    # Record filtering helpers
+    # Shared helpers (also called by extension controllers)
     # ──────────────────────────────────────────────────────────────────
+
+    def _search_prs(self, fiscal_year_id, source_id):
+        """Fetch purchase requests matching the shared dashboard filters.
+
+        Applied to every chart across core and extensions: fiscal year via
+        domain, source via analytic-JSON filter, then the transient 'approved'
+        state is dropped so records don't leak into that hidden bucket.
+        """
+        domain = []
+        if fiscal_year_id:
+            domain.append(("account_fiscal_year_id", "=", fiscal_year_id))
+        records = request.env["purchase.request"].search(domain)
+        records = self._filter_by_source(records, source_id)
+        return records.filtered(lambda r: r.state not in self.HIDDEN_STATES)
+
+    def _filter_by_selected_states(self, records, selected_states):
+        """Apply the summary-box state filter to a set of records.
+
+        When the user has clicked one or more summary boxes, narrow charts to
+        those states. When nothing is selected, exclude the noisy default set
+        (approved/cancelled/rejected) so charts show only in-flight work.
+        """
+        if selected_states:
+            state_set = set(selected_states)
+            return records.filtered(lambda r: r.state in state_set)
+        excluded = self.DEFAULT_CHART_EXCLUDED_STATES
+        return records.filtered(lambda r: r.state not in excluded)
 
     def _filter_by_source(self, records, source_id):
         """Filter records by source analytic dimension.
@@ -155,27 +153,6 @@ class PurchaseRequestDashboardController(http.Controller):
             if rec.source_analytic_id.id == source_id:
                 filtered |= rec
         return filtered
-
-    # ──────────────────────────────────────────────────────────────────
-    # Hierarchy cache builders
-    # ──────────────────────────────────────────────────────────────────
-
-    def _build_root_budget_account_map(self, records):
-        """Cache budget_account_id → parent budget account name (expense category).
-
-        Budget accounts selectable in purchase requests are leaf-level nodes.
-        Their direct parent represents the expense category we want for charts
-        (e.g., "ครุภัณฑ์", "สิ่งก่อสร้าง", "ค่าตอบแทน").
-        We go up exactly one level. Falls back to self if no parent exists.
-        """
-        cache = {}
-        for pr in records:
-            ba = pr.budget_account_id
-            if not ba or ba.id in cache:
-                continue
-            category = ba.parent_id or ba
-            cache[ba.id] = category.name
-        return cache
 
     def _build_root_department_map(self, records):
         """Cache department_analytic_id → root department name.
@@ -195,22 +172,11 @@ class PurchaseRequestDashboardController(http.Controller):
             cache[dept.id] = root.name
         return cache
 
-    # ──────────────────────────────────────────────────────────────────
-    # Shared aggregation helpers
-    # ──────────────────────────────────────────────────────────────────
-
     def _aggregate_by_month(self, records, category_fn, date_fn):
         """Aggregate estimated_cost by category and fiscal month.
 
-        Common pattern for charts 1, 3, 4: group amounts into a 2D dict
-        {category_name: {month_num: total_amount}}, then build series list.
-
-        Args:
-            records: purchase.request recordset to aggregate
-            category_fn: callable(pr) -> str or None (series name)
-            date_fn: callable(pr) -> date or None (date whose month to use)
-        Returns:
-            dict: {"months": [label strings], "series": [{"name": ..., "data": [...]}]}
+        Common pattern for stacked-bar-by-month charts: group amounts into a 2D
+        dict {category_name: {month_num: total_amount}}, then build series list.
         """
         month_labels = [m[1] for m in self.FISCAL_MONTHS]
         month_nums = [m[0] for m in self.FISCAL_MONTHS]
@@ -233,15 +199,7 @@ class PurchaseRequestDashboardController(http.Controller):
     def _aggregate_by_department(self, records, category_fn, dept_cache):
         """Aggregate estimated_cost by department and category.
 
-        Common pattern for charts 5, 6: group amounts into a 2D dict
-        {dept_name: {category_name: total_amount}}, then build series list.
-
-        Args:
-            records: purchase.request recordset
-            category_fn: callable(pr) -> str or None (series name)
-            dept_cache: dict mapping department_analytic_id -> department name
-        Returns:
-            dict: {"departments": [names], "series": [{"name": ..., "data": [...]}]}
+        Common pattern for stacked-bar-by-department charts.
         """
         dept_cat_amounts = defaultdict(lambda: defaultdict(float))
         for pr in records:
@@ -268,10 +226,16 @@ class PurchaseRequestDashboardController(http.Controller):
     # Summary boxes
     # ──────────────────────────────────────────────────────────────────
 
+    def _get_all_summary_states(self):
+        """Merge core and extension-registered summary states, sorted by sequence."""
+        combined = list(_BASE_SUMMARY_STATES) + list(_EXTRA_SUMMARY_STATES)
+        combined.sort(key=lambda x: x[0])
+        return [(key, label) for _, key, label in combined]
+
     def _get_summary_boxes(self, records):
-        """Return list of summary box data (10 states + 1 total)."""
+        """Return list of summary box data (state buckets + total)."""
         boxes = []
-        for state_key, label in self.SUMMARY_STATES:
+        for state_key, label in self._get_all_summary_states():
             state_recs = records.filtered(lambda r, s=state_key: r.state == s)
             boxes.append({
                 "label": label,
@@ -288,7 +252,7 @@ class PurchaseRequestDashboardController(http.Controller):
         return boxes
 
     # ──────────────────────────────────────────────────────────────────
-    # Chart data builders
+    # Chart data builders (core only)
     # ──────────────────────────────────────────────────────────────────
 
     def _get_chart1_purchase_type_by_month(self, records):
@@ -324,44 +288,6 @@ class PurchaseRequestDashboardController(http.Controller):
                 })
         return pie_data
 
-    def _get_expense_type_pie(self, records, budget_cache):
-        """Pie: estimated_cost grouped by expense category (budget_account parent).
-
-        Returns list of dicts with budget_account_ids for click-through navigation.
-        Each slice aggregates all budget accounts that share the same parent category.
-        """
-        cat_data = defaultdict(lambda: {"amount": 0, "account_ids": set()})
-        for pr in records:
-            if not pr.budget_account_id:
-                continue
-            cat_name = budget_cache.get(pr.budget_account_id.id)
-            if not cat_name:
-                continue
-            cat_data[cat_name]["amount"] += pr.estimated_cost
-            cat_data[cat_name]["account_ids"].add(pr.budget_account_id.id)
-
-        return [
-            {
-                "name": name,
-                "value": info["amount"],
-                "budget_account_ids": list(info["account_ids"]),
-            }
-            for name, info in sorted(cat_data.items())
-            if info["amount"] > 0
-        ]
-
-    def _get_chart3_expense_type_by_month(self, records, budget_cache):
-        """Stacked bar: estimated_cost by expense category, grouped by fiscal month."""
-        return self._aggregate_by_month(
-            records,
-            category_fn=lambda pr: (
-                budget_cache.get(pr.budget_account_id.id)
-                if pr.budget_account_id
-                else None
-            ),
-            date_fn=lambda pr: pr.date_start,
-        )
-
     def _get_chart4_approved_trend(self, records):
         """Stacked line: estimated_cost trend by procurement type for approved records.
 
@@ -388,53 +314,3 @@ class PurchaseRequestDashboardController(http.Controller):
             ),
             dept_cache=dept_cache,
         )
-
-    def _get_chart6_expense_type_by_dept(self, records, budget_cache, dept_cache):
-        """Stacked bar: estimated_cost by expense category, grouped by department."""
-        return self._aggregate_by_department(
-            records,
-            category_fn=lambda pr: (
-                budget_cache.get(pr.budget_account_id.id)
-                if pr.budget_account_id
-                else None
-            ),
-            dept_cache=dept_cache,
-        )
-
-    def _get_chart7_leadtime_heatmap(self, fiscal_year_id=None):
-        TRACKED_TRANSITIONS = [
-            ('draft',       'to_verify',   'จัดทำคำขอ'),
-            ('to_verify',   'to_approve',  'จองเงิน'),
-            ('to_approve',  'approved',    'ขออนุมัติคำขอ'),
-            ('approved',    'in_progress', 'จัดซื้อจัดจ้าง'),
-            ('in_progress', 'done',        'จัดทำสัญญา'),
-        ]
-
-        res_ids = None
-        if fiscal_year_id:
-            prs = request.env['purchase.request'].search(
-                [('account_fiscal_year_id', '=', fiscal_year_id)]
-            )
-            res_ids = prs.ids
-
-        log = request.env['state.leadtime.log'].sudo()
-        data = []
-
-        for from_state, to_state, label in TRACKED_TRANSITIONS:
-            stats = log.get_stats(
-                res_model='purchase.request',
-                from_state=from_state,
-                to_state=to_state,
-                res_ids=res_ids,
-                latest_only=True,
-            )
-            data.append({
-                'name': label,
-                'from_state': from_state,
-                'to_state': to_state,
-                'avg': round(stats['avg_minutes'], 2),
-                'total': round(stats['total_minutes'], 2),
-                'count': stats['count'],
-            })
-
-        return data

@@ -398,3 +398,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request_sarabun.report_purchase_request_kmitl
 msgid "ใบเสนอราคาพัสดุ จำนวน"
 msgstr ""
+
+#. module: purchase_request_sarabun
+#: model:ir.model.fields.selection,name:purchase_request_sarabun.selection__purchase_request__state__sent
+msgid "Sent"
+msgstr "รอพิจารณาให้จัดหา"
+
+#. module: purchase_request_sarabun
+#: model_terms:ir.ui.view,arch_db:purchase_request_sarabun.view_purchase_request_tree
+msgid "Document Number"
+msgstr "เลขที่หนังสือ"

@@ -2,6 +2,7 @@
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.osv import expression
 
 # The facts the bank acted on. Frozen the moment the voucher is confirmed for the
 # bank: changing any of them afterwards makes the record disagree with what the
@@ -195,6 +196,81 @@ class AccountPayment(models.Model):
         "unstored: it says nothing finance_state and the cheque do not already "
         "say between them.",
     )
+
+    paid_date = fields.Date(
+        string="Actual Payment Date",
+        compute="_compute_paid_date",
+        search="_search_paid_date",
+        help="วันที่จ่ายจริง — the day the money left the institute for the "
+        "payee, read off the instrument that carried it rather than off the "
+        "voucher that authorised it: a transfer's วันที่มีผลที่ธนาคาร, a cheque's "
+        "วันที่บนเช็ค, and for cash the voucher's own date, which is the day it "
+        "was paid across the counter. Not the voucher date, which is the day "
+        "the payment was authorised and is the accounting period it is booked "
+        "in — the two differ whenever a file leaves in a later month than the "
+        "authorisation.",
+    )
+
+    @api.depends("payment_export_id.effective_date", "cheque_id.cheque_date", "date")
+    def _compute_paid_date(self):
+        """Read the day the money left off whatever carried it.
+
+        Three instruments, one question, and each of them is the only record
+        that can answer it for its own kind of payment. Nothing here reads a
+        "confirmed paid" timestamp, because none is kept: ยืนยันจ่ายสำเร็จ is a
+        press whose date says when a person got round to recording the outcome,
+        not when the bank moved the money.
+
+        Deliberately not stored — see
+        ``docs/adr/0009-the-day-the-money-left-is-read-off-the-instrument.md``.
+        """
+        for payment in self:
+            payment.paid_date = (
+                payment.payment_export_id.effective_date
+                or payment.cheque_id.cheque_date
+                or payment.date
+            )
+
+    def _search_paid_date(self, operator, value):
+        """Mirror ``_compute_paid_date`` branch for branch.
+
+        The vouchers are partitioned by which instrument answers for them, and
+        the operator is then applied to that instrument's own date — which is
+        what makes this correct for every operator, including the negative ones,
+        rather than only for the range the reports ask for. A branch that let a
+        file with no effective date match ``!=`` would claim a voucher twice.
+
+        A cheque is reached through ``cheque_id`` and not ``cheque_ids``: a
+        cancelled cheque pays nobody and its date answers for nothing
+        (ADR-0007). ``cheque_date`` is required, so a live cheque always has one
+        and there is no fourth branch for a cheque that cannot date itself.
+        """
+        exports = self.env["bank.payment.export"].search(
+            [("effective_date", "!=", False), ("effective_date", operator, value)]
+        )
+        cheques = self.env["cheque.register"].search(
+            [("cheque_date", operator, value), ("state", "!=", "cancelled")]
+        )
+        # "No file effective date": both the voucher that is in no file at all
+        # and the voucher in a file that has not been given one. A leaf reaching
+        # through payment_export_id can only ever see the second.
+        no_effective_date = [
+            "|",
+            ("payment_export_id", "=", False),
+            ("payment_export_id.effective_date", "=", False),
+        ]
+        return expression.OR(
+            [
+                [("payment_export_id", "in", exports.ids)],
+                expression.AND([no_effective_date, [("cheque_id", "in", cheques.ids)]]),
+                expression.AND(
+                    [
+                        no_effective_date,
+                        [("cheque_id", "=", False), ("date", operator, value)],
+                    ]
+                ),
+            ]
+        )
 
     @api.depends("move_id.line_ids.wht_tax_id", "move_id.line_ids.balance", "amount")
     def _compute_amount_wht(self):

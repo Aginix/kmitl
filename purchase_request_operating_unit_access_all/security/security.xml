@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <data noupdate="1">
+        <record id="group_all_ou_purchase_request" model="res.groups">
+            <field name="name">Access all OUs' purchase request</field>
+            <field name="category_id" ref="operating_unit.module_operating_units" />
+        </record>
+    </data>
 
-    <record id="group_all_ou_purchase_request" model="res.groups">
-        <field name="name">Access all OUs' purchase request</field>
-        <field name="category_id" ref="operating_unit.module_operating_units" />
+    <record id="ir_rule_purchase_request_all_ou" model="ir.rule">
+        <field name="model_id" ref="purchase_request.model_purchase_request" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="name">Purchase Request All Operating Units</field>
+        <field name="groups" eval="[(6, 0, [ref('group_all_ou_purchase_request')])]"/>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
     </record>
 
-    <function model="ir.rule" name="write">
-        <value
-            eval="[ref('purchase_request_operating_unit.ir_rule_purchase_request_operating_units'),
-                   ref('purchase_request_operating_unit.ir_rule_purchase_request_line_allowed_operating_units')]"
-        />
-        <value
-            eval="{'domain_force': &quot;['|','|',(1, '=', 1) if user.has_group('purchase_request_operating_unit_access_all.group_all_ou_purchase_request') else (0, '=', 1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids)]&quot;}"
-        />
-    </function>
-
+    <record id="ir_rule_purchase_request_line_all_ou" model="ir.rule">
+        <field name="model_id" ref="purchase_request.model_purchase_request_line" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="name">PR Lines All Operating Units</field>
+        <field name="groups" eval="[(6, 0, [ref('group_all_ou_purchase_request')])]"/>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
 </odoo>

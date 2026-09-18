@@ -1,4 +1,5 @@
 from odoo import api, fields, models, tools, _
+from odoo.exceptions import ValidationError
 
 
 class ApprovalCategory(models.Model):
@@ -57,6 +58,36 @@ class ApprovalCategory(models.Model):
         string="Allowed Expenses",
         comodel_name="product.product",
     )
+
+    multi_product = fields.Boolean(
+        string="มีรายการย่อย (เลือกได้หลายรายการ)",
+        default=False,
+        help="เปิดใช้เฉพาะประเภทค่าใช้จ่ายที่ให้ผู้ขอเลือกรายการย่อยได้เอง "
+        "(เช่น ฝึกอบรม/เดินทาง) — ประเภทค่าใช้จ่ายทั่วไปมีสินค้าเดียวตายตัว "
+        "ผู้ขอจึงกรอกเพียงจำนวนเงินและรายละเอียด",
+    )
+
+    @api.constrains("multi_product", "allowed_product_ids")
+    def _check_allowed_product_ids_count(self):
+        for rec in self:
+            count = len(rec.allowed_product_ids)
+            if rec.multi_product:
+                if count < 2:
+                    raise ValidationError(
+                        _(
+                            "ประเภทค่าใช้จ่ายแบบมีรายการย่อย (%s) ต้องมีสินค้าที่เลือกได้"
+                            " อย่างน้อย 2 รายการ"
+                        )
+                        % rec.name
+                    )
+            elif count != 1:
+                raise ValidationError(
+                    _(
+                        "ประเภทค่าใช้จ่ายแบบรายการเดียว (%s) ต้องมีสินค้าที่เลือกได้"
+                        " เท่ากับ 1 รายการเท่านั้น"
+                    )
+                    % rec.name
+                )
 
     allowed_partner_type_ids = fields.Many2many(
         "res.partner.type",
