@@ -14,15 +14,12 @@ class BudgetCommitment(models.Model):
         comodel_name="operating.unit",
         default=lambda self: self.env["res.users"].operating_unit_default_get(),
         help="This operating unit will be defaulted in the move lines.",
-        readonly=True,
-        states={"draft": [("readonly", False)]},
+
     )
     beneficiary_operating_unit_id = fields.Many2one(
         comodel_name="operating.unit",
         string="หน่วยงานผู้รับการสนับสนุน",
         tracking=True,
-        readonly=True,
-        states={"draft": [("readonly", False)]},
         help=(
             "The unit this reservation is made for (the requester). Its users can "
             "see and draw down this reservation even though it is owned by the "

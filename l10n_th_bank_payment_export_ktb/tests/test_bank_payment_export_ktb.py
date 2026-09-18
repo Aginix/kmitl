@@ -7,23 +7,21 @@ from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests.common import Form
 
-from odoo.addons.l10n_th_bank_payment_export.tests.common import CommonBankPaymentExport
+from odoo.addons.l10n_th_bank_payment_export_format.tests.common import (
+    CommonBankExportFormat,
+)
+from odoo.tests.common import tagged
 
 
-class TestBankPaymentExportKTB(CommonBankPaymentExport):
+@tagged("post_install", "-at_install")
+class TestBankPaymentExportKTB(CommonBankExportFormat):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         # setup config
         ktb_company_id = cls.field_model.search([("name", "=", "ktb_company_id")])
         ktb_sender_name = cls.field_model.search([("name", "=", "ktb_sender_name")])
-        field_bank_export_format_id = cls.field_model.search(
-            [("name", "=", "bank_export_format_id")]
-        )
-
-        bank_export_format = cls.bank_export_format_model.search(
-            [("bank", "=", "KRTHTHBK")], limit=1
-        )
+        cls.bank_export_format = cls.env.ref("l10n_th_bank_payment_export_ktb.ktb_ipay")
 
         data_dict = [
             {
@@ -33,10 +31,6 @@ class TestBankPaymentExportKTB(CommonBankPaymentExport):
             {
                 "field_id": ktb_sender_name.id,
                 "value": "SENDER_NAME01",
-            },
-            {
-                "field_id": field_bank_export_format_id.id,
-                "value": bank_export_format.id,
             },
         ]
         cls.template1 = cls.create_bank_payment_template(
@@ -79,6 +73,7 @@ class TestBankPaymentExportKTB(CommonBankPaymentExport):
                 "name": "/",
                 "bank": "KRTHTHBK",
                 "template_id": self.template1.id,
+                "bank_export_format_id": self.bank_export_format.id,
             }
         )
         bank_payment._onchange_template_id()

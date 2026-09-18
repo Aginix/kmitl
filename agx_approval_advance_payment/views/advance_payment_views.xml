@@ -32,7 +32,7 @@
                 <field name="approval_request_id"
                     options="{'no_create': True, 'no_create_edit': True}"
                     domain="[('state', '=', 'approved'),
-                             ('participant_ids.partner_id', '=', requested_by_partner_id)]"
+                             ('participant_ids.partner_id', '=', partner_id)]"
                     attrs="{
                         'invisible': [('loan_type_reference_model', '!=', 'approval.request')],
                         'readonly': [('state', '!=', 'draft')],
@@ -88,7 +88,7 @@
         <field name="model">advance.payment</field>
         <field name="inherit_id" ref="advance_payment.view_advance_payment_search" />
         <field name="arch" type="xml">
-            <field name="requested_by" position="after">
+            <field name="employee_id" position="after">
                 <field name="approval_request_id" />
             </field>
             <filter name="group_loan_type" position="after">

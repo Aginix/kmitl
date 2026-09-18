@@ -2,6 +2,7 @@
 
 from . import disbursement_request
 from . import disbursement_request_line
+from . import disbursement_request_signature
 from . import budget_commitment
 from . import exception_rule
 # Imported after disbursement_request so its return / re-verification workflow

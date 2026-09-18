@@ -4,7 +4,7 @@
         id="budget_root_menu"
         name="Budgeting"
         sequence="10"
-        groups="budget.group_budget_user"
+        groups="budget.group_budget_viewer"
         web_icon="budget,static/description/icon.png">
 
         <menuitem id="budget_commitment_management" name="จองงบประมาณ" sequence="30">

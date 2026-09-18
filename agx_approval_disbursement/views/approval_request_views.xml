@@ -20,7 +20,7 @@
             <xpath expr="//header/button[@name='action_bill']" position="attributes">
                 <attribute name="name">action_create_disbursement_request</attribute>
                 <attribute name="groups">disbursement.group_disbursement_user</attribute>
-                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'actual'), ('has_active_disbursement', '=', True)]}</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'to_disburse'), ('has_active_disbursement', '=', True)]}</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_cancel']" position="after">
                 <button
@@ -47,11 +47,11 @@
                     />
                 </button>
             </xpath>
-            <xpath expr="//group[@name='attachment']" position="after">
+            <xpath expr="//page[@name='actual_expenses']" position="inside">
                 <group name="attachment_for_disbursement" string="เอกสารแนบสำหรับการเบิก"
-                    attrs="{'invisible': [('state', 'not in', ['approved', 'actual', 'billed', 'returned'])]}">
+                    attrs="{'invisible': [('state', 'not in', ['approved', 'to_disburse', 'billed', 'returned'])]}">
                     <field name="disbursement_attachment_ids"
-                        widget="many2many_binary"
+                        widget="many2many_binary_disbursement"
                         attrs="{'readonly': ['&amp;', ('disbursement_request_count', '>', 0), ('is_correction', '=', False)]}">
                     </field>
                 </group>
@@ -59,17 +59,4 @@
         </field>
     </record>
 
-    <record id="approval_request_view_tree" model="ir.ui.view">
-        <field name="name">approval.request.view.tree.disbursement</field>
-        <field name="model">approval.request</field>
-        <field
-            name="inherit_id"
-            ref="agx_approval.approval_request_view_tree"
-        />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='category_id']" position="after">
-                <field name="disbursement_request_ids" optional="show" />
-            </xpath>
-        </field>
-    </record>
 </odoo>

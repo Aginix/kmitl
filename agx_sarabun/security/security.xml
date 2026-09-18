@@ -31,7 +31,8 @@
              P4 once sarabun.routing.step exists — see DESIGN.md §6 / ADR.
              ============================================================ -->
 
-        <!-- A user sees the หนังสือ they authored -->
+        <!-- A user sees the หนังสือ they authored; may delete only an unnumbered
+             draft / cancelled one (narrowed in unlink()) -->
         <record id="sarabun_document_sender_rule" model="ir.rule">
             <field name="name">Sarabun Document: Sender Access</field>
             <field name="model_id" ref="model_sarabun_document"/>
@@ -40,7 +41,7 @@
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
         </record>
 
         <!-- Reached actor (READ ONLY) — the visibility key (ADR-0013). A user may read
@@ -54,8 +55,9 @@
              is archived (the join injects active_test on sarabun.routing.step). Same
              permanent per-person ledger as the Incoming box, so the two never diverge;
              waiting/future steps (no recipient yet) still grant nothing. Read-only:
-             only the sender may write, only a manager may delete (route actions run
-             authority-check-then-sudo). -->
+             only the sender may write, and only the sender may delete — and then only an
+             unnumbered draft / cancelled หนังสือ (enforced in unlink(), which binds
+             managers too; route actions run authority-check-then-sudo). -->
         <record id="sarabun_document_actor_rule" model="ir.rule">
             <field name="name">Sarabun Document: Reached Actor (read)</field>
             <field name="model_id" ref="model_sarabun_document"/>

@@ -21,7 +21,7 @@ click, and revives cleanly when the PR flow re-completes.
 Lifecycle effect, one click, one wizard (mandatory reason only):
 
 - **PA** → new state `pending_pr` (parked; `name` retained).
-- **PR** → `to_submit` (budget commitment intact).
+- **PR** → `to_verify` (budget commitment intact).
 - **PR's active sarabun** → soft-voided (`state='cancelled'` via `sudo`,
   register number **kept**).
 - **Redirect** to the PR form.
@@ -66,7 +66,7 @@ Naming choice — the parked PA state is `pending_pr`, not a bare `returned`:
   would collide.
 - `pending_pr` says the same thing more precisely for the reader: "the PA
   is waiting on the PR to be revised and re-sent". Statusbar hides it
-  (`statusbar_visible` list unchanged).
+  (`statusbar_visible` doesn't list it).
 
 ## Considered options
 
@@ -120,7 +120,7 @@ Naming choice — the parked PA state is `pending_pr`, not a bare `returned`:
     `not has_signed`.
   - A PA in `draft` no longer has a direct Cancel button. Cancelling
     such a PA outright requires: ตีกลับ/แก้ไข first (PA → `pending_pr`,
-    PR → `to_submit`), then Cancel from the PR side; the PA stays
+    PR → `to_verify`), then Cancel from the PR side; the PA stays
     orphaned in `pending_pr` unless cleaned up by an admin. Future
     iteration may auto-cascade PA `pending_pr` → `cancelled` when the PR
     cancels.

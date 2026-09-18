@@ -3,6 +3,10 @@ import base64
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_compare
+
+
+_PA_OPEN_STATES_FOR_BUDGET_CAP = ("draft", "to_approve", "approved")
 
 
 class PurchaseRequestApproval(models.Model):
@@ -216,6 +220,12 @@ class PurchaseRequestApproval(models.Model):
     source_analytic_id = fields.Many2one(related="request_id.source_analytic_id")
     budget_account_id = fields.Many2one(related="request_id.budget_account_id")
     budget_commitment_id = fields.Many2one(related="request_id.budget_commitment_id")
+    budget_commitment_amount = fields.Monetary(
+        related="request_id.budget_commitment_id.amount",
+        string="จำนวนเงินที่จองงบไว้",
+        currency_field="currency_id",
+        readonly=True,
+    )
     analytic_distribution = fields.Json(related="request_id.analytic_distribution")
     attachment_ids = fields.One2many(
         comodel_name="ir.attachment",
@@ -279,6 +289,42 @@ class PurchaseRequestApproval(models.Model):
                 [x._convert_to_tax_base_line_dict() for x in line_ids],
                 record.currency_id or record.company_id.currency_id,
             )
+
+    @api.constrains(
+        "amount_total",
+        "line_ids",
+        "line_ids.product_qty",
+        "line_ids.price_unit",
+        "state",
+    )
+    def _check_amount_within_commitment(self):
+        for rec in self:
+            if rec.state != "draft":
+                continue
+            commitment = rec.budget_commitment_id
+            if not commitment:
+                continue
+            siblings = self.search(
+                [
+                    ("state", "in", list(_PA_OPEN_STATES_FOR_BUDGET_CAP)),
+                    ("request_id.budget_commitment_id", "=", commitment.id),
+                ]
+            )
+            total_pa = sum(siblings.mapped("amount_total"))
+            rounding = (commitment.currency_id or rec.currency_id).rounding
+            if float_compare(total_pa, commitment.amount, precision_rounding=rounding) > 0:
+                raise ValidationError(
+                    _(
+                        "แก้ไข พจ.1 เกินจำนวนเงินที่จองงบไว้: "
+                        "ยอดรวม พจ.1 ทั้งหมดในใบจองงบ %(cmt)s = %(total).2f บาท "
+                        "เกินจำนวนที่จองไว้ %(cap).2f บาท"
+                    )
+                    % {
+                        "cmt": commitment.display_name,
+                        "total": total_pa,
+                        "cap": commitment.amount,
+                    }
+                )
 
     def button_draft(self):
         return self.write({"state": "draft"})
@@ -450,7 +496,8 @@ class PurchaseRequestApproval(models.Model):
 
         - PA → ``pending_pr`` (name preserved; ``_transition_after_sarabun_approve``
           flips it back to ``draft`` when the fresh sarabun re-completes).
-        - PR → ``to_submit`` (budget commitment stays intact).
+        - PR → ``to_verify`` (budget commitment stays intact; ตีกลับ = back to
+          ธุรการ for a fresh look before it goes to budget and out again).
         - PR's active sarabun is CANCELLED (state=cancelled) so it no longer
           counts as live. The user then explicitly clicks
           ``action_resume_returned_sarabun`` on the PR to revive it — that
@@ -467,7 +514,7 @@ class PurchaseRequestApproval(models.Model):
         ) % {"pa": self.name, "reason": reason}
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
         self._cancel_request_sarabun(reason)
-        self.request_id.write({"state": "to_submit"})
+        self.request_id.write({"state": "to_verify"})
         self.write({"state": "pending_pr"})
         return self._redirect_to_request()
 
@@ -610,7 +657,19 @@ class PurchaseRequestApproval(models.Model):
                 )
         return super()._on_sarabun_cancelled(document)
 
-    def _get_sarabun_report_action(self):
+    # ADR-0015: render through Sarabun's own no-source layout (สารบรรณ owns the
+    # header — เลขที่/หน่วยงาน/เรียน/วันที่ — and the endorsement block). We
+    # therefore DON'T override _get_sarabun_report_action (mixin default →
+    # False), and instead contribute the live tables (items / budget /
+    # committee) via _get_sarabun_body_template — mirroring purchase.request.
+
+    def _get_sarabun_document_type(self):
         return self.env.ref(
-            "purchase_request_approval.action_report_purchase_request_approvals"
-        )
+            "purchase_request_approval.document_type_purchase_request_approval",
+            raise_if_not_found=False,
+        ) or super()._get_sarabun_document_type()
+
+    def _get_sarabun_body_template(self):
+        """The live body — items table, budget details, committee appointments —
+        rendered between the หนังสือ's เนื้อหา and its signatures (ADR-0015)."""
+        return "purchase_request_approval.report_purchase_request_approval_body"

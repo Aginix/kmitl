@@ -10,12 +10,16 @@ Approval itself is **routed through e-Saraban**: a submitted request spawns a �
 The `approval.request` document. Spans two moments of one activity: the **plan** (approved before the money is spent) and the **actual expense record** (filled after the mission, before billing). Reserves budget on approval.
 _Avoid_: expense request, claim, bill
 
+**Approval Category (ประเภทค่าใช้จ่าย)**:
+A fine-grained expense type (`approval.category`), one per government budget code (~90 of them) — **not** a broad request kind. The category **owns its product**: single-product by default (`multi_product = False`, exactly one `allowed_product_ids`), so the product is a foregone conclusion the user never picks. A handful (5) of travel/training categories set `multi_product = True` and expose a small pick-list of sub-items (ค่าหลักสูตร/ค่าเดินทาง/ค่าเบี้ยเลี้ยง/ค่าที่พัก/อื่นๆ) instead. Also **scopes** what a request of that kind may use — allowed people, and its **budget code**: when it pins a budget code that code becomes the request's constraint (not just a default); when it leaves the code blank the request selects freely from the non-procurement expense codes. See [ADR-0006](docs/adr/0006-category-owned-product-single-product-plan.md).
+_Avoid_: request type, request kind, template, budget preset
+
 **Expense Plan (แผนค่าใช้จ่าย)**:
 The planned spending captured while filling the form — the purpose of the entry stage. What is approved and what budget is reserved against.
 _Avoid_: budget, estimate, quotation
 
 **Expense (ค่าใช้จ่าย)**:
-A single **planned** line (`approval.request.line`): รายการ (product) + รายละเอียด (detail) + จำนวนเงิน (planned amount). Broken down **by expense type, not by person**, and carries **no payee** — a plan line says what is spent, not who is paid.
+A single **planned** line (`approval.request.line`): รายการ (product) + รายละเอียด (detail) + จำนวนเงิน (planned amount). Broken down **by expense type, not by person**, and carries **no payee** — a plan line says what is spent, not who is paid. For a single-product category the product is implicit (the category's own product) and the form shows only a bare `plan_amount` + `plan_description` on the header, mirrored onto this line behind the scenes; the per-line product picker is shown **only** for the 5 multi-product (travel/training) categories ([ADR-0006](docs/adr/0006-category-owned-product-single-product-plan.md)).
 _Avoid_: request line, payee line, actual expense
 
 **Participant (รายชื่อ)**:
@@ -49,6 +53,14 @@ _Avoid_: the recipient's loan, borrower's loan (it may be someone else's), auto-
 **Pull back (ดึงกลับ — pre-routing)**:
 The clerk returning a *not-yet-sent* request to `draft` (via a confirm wizard, releasing the budget reservation), available only before the หนังสือ is sent to e-Saraban. **Distinct** from e-Saraban's own ดึงกลับ/ตีกลับ, which act on a *circulating* หนังสือ and land the request in `returned`.
 _Avoid_: recall (that is e-Saraban's, on a circulating document), reset
+
+**Budget Selection Mode (วิธีเลือกงบประมาณ)**:
+The up-front choice of how a request gets its budget (`budget_selection_mode`). Base ships **`normal`** (ใช้เงินจากแผน — reserve a new commitment from the budget chart, scoped by the category's non-procurement baseline and any pinned code, [ADR-0004](docs/adr/0004-budget-code-selection-scoped-by-category-non-procurement.md)). A bridge (`kmitl_project_agx_approval`) adds **`project`** (โครงการ/กิจกรรม — draw down a commitment a `kmitl.project` already reserved for itself; the category pin does not apply). A UI affordance only — the server always keys draw-down off `reservation_commitment_id`, never off this field.
+_Avoid_: the removed generic "draw any existing reservation" mode — each mode now scopes its own draw-eligible slips
+
+**Project-Funded Request (คำขอใช้งบโครงการ)**:
+An approval request in `project` mode. Its money was already authorized when the `kmitl.project` itself was approved (kmitl_project [ADR-0005](../kmitl_project/docs/adr/0005-approval-gated-lifecycle-esaraban.md)), so spending it is bookkeeping, not a fresh authorization — the request **skips e-Saraban entirely**, jumping `to_verify → approved` on draw ([ADR-0005](docs/adr/0005-project-mode-auto-approve-skips-esaraban.md)). No expense-side manager approval, no หนังสือ, no expense-side PDF (the project's own letter is the authority). Drawable only from a project in `in_progress` — a project reserves its slip *before* its own approval, so the slip alone is not the authorization the skip relies on.
+_Avoid_: assuming every request routes through e-Saraban when the Sarabun bridge is installed — project mode is the one path that deliberately does not; and assuming any reserved project slip is drawable — the project must be approved first
 
 **Disbursement Voucher Cover Sheet (งบหน้าใบสำคัญคู่จ่าย)**:
 The **PDF report** (`report_disbursement_voucher`) over the Actual Expense Allocation — grouped per recipient × expense type, with withholding-tax columns (from the recipient's partner-type WHT) and the dean's signature. Each recipient may have made their own loan or fronted their own money, so there is no single ผู้ทดรองจ่าย designation.

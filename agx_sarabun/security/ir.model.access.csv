@@ -1,5 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_sarabun_document_user,sarabun.document.user,model_sarabun_document,group_sarabun_user,1,1,1,0
+access_sarabun_document_user,sarabun.document.user,model_sarabun_document,group_sarabun_user,1,1,1,1
 access_sarabun_document_manager,sarabun.document.manager,model_sarabun_document,group_sarabun_manager,1,1,1,1
 access_sarabun_document_type_user,sarabun.document.type.user,model_sarabun_document_type,group_sarabun_user,1,0,0,0
 access_sarabun_document_type_manager,sarabun.document.type.manager,model_sarabun_document_type,group_sarabun_manager,1,1,1,1

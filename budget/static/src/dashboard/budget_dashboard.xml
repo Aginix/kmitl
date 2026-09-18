@@ -56,6 +56,13 @@
                         </label>
                     </div>
                 </t>
+                <div class="o_bd_filter o_brp_search">
+                    <label>ค้นหารหัส/ชื่องบประมาณ</label>
+                    <input type="text" class="form-control form-control-sm"
+                           placeholder="รหัสหรือชื่องบประมาณ"
+                           t-att-value="state.accountSearch"
+                           t-on-input="onAccountSearchInput"/>
+                </div>
                 <div class="o_bd_filter o_bd_check">
                     <label>
                         <input type="checkbox" t-att-checked="state.hideZero" t-on-change="toggleHideZero"/>

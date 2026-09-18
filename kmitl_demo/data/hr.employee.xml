@@ -220,5 +220,21 @@
             <field name="work_phone">+66 2 329 8034</field>
             <field name="user_id" ref="user_demo_020" />
         </record>
+
+        <!-- Classify every demo employee's work contact as บุคลากรภายใน.
+             hr_partner_type_kmitl's base.automation fires on hr.employee
+             create, but during XML data load the newly-registered hook may
+             not yet be active for records created in the same install pass.
+             Mirror the automation inline so purchase_request_prepaid's
+             is_internal constraint sees typed partners on prepaid PRs. -->
+        <function model="res.partner" name="write">
+            <value
+                model="hr.employee"
+                eval="obj().env['hr.employee'].with_context(active_test=False).search([('work_contact_id', '!=', False)]).work_contact_id.ids"
+            />
+            <value
+                eval="{'partner_type_id': ref('partner_type_kmitl.partner_type_employee')}"
+            />
+        </function>
     </data>
 </odoo>

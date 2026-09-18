@@ -58,8 +58,9 @@ ktb_hdt_12,l10n_th_bank_payment_export_ktb.ktb_hdt,22,Running Number,,6,line,TRU
 ktb_hdt_13,l10n_th_bank_payment_export_ktb.ktb_hdt,23,Receiving Bank Code,,3,line,TRUE,,,dynamic,ljust,,"line.payment_partner_bank_id.bank_id.bank_code or """""
 ktb_hdt_14,l10n_th_bank_payment_export_ktb.ktb_hdt,24,Receiving A/C,,10,line,TRUE,,,dynamic,rjust,0,line.sanitize_account_number(line.payment_partner_bank_id.acc_number)
 ktb_hdt_15,l10n_th_bank_payment_export_ktb.ktb_hdt,25,Transaction Code,,1,line,TRUE,,,fixed,ljust,,C
-ktb_hdt_16,l10n_th_bank_payment_export_ktb.ktb_hdt,26,Amount,,13,line,TRUE,,,dynamic,rjust,0,"str(int(round(line.payment_amount * 100, 2)))"
-ktb_hdt_17,l10n_th_bank_payment_export_ktb.ktb_hdt,27,Filler,,94,line,TRUE,TRUE,,fixed,ljust,0,
+ktb_hdt_16,l10n_th_bank_payment_export_ktb.ktb_hdt,26,Amount,,10,line,TRUE,,,dynamic,rjust,0,"str(int(round(line.payment_amount * 100, 2)))"
+ktb_hdt_16b,l10n_th_bank_payment_export_ktb.ktb_hdt,27,Transaction Code 2,,3,line,TRUE,,,fixed,ljust,,029
+ktb_hdt_17,l10n_th_bank_payment_export_ktb.ktb_hdt,28,Filler,,94,line,TRUE,TRUE,,fixed,ljust,0,
 ktb_hdt_18,l10n_th_bank_payment_export_ktb.ktb_hdt,30,TRAILER,line_section,,,,,,fixed,ljust,,
 ktb_hdt_19,l10n_th_bank_payment_export_ktb.ktb_hdt,31,Record Type,,1,,,,,fixed,ljust,,T
 ktb_hdt_20,l10n_th_bank_payment_export_ktb.ktb_hdt,32,Total Record Count,,6,,,,,dynamic,rjust,0,str(len(rec.export_line_ids)+2)

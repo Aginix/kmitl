@@ -30,16 +30,21 @@
                             <field name="date_buddhist_year" />
                             <field name="date_spacing" />
                         </group>
-                        <group name="cheque_books_assign_on_the_journal" string="Cheque Books (assign on the journal)">
-                            <field name="journal_ids" nolabel="1" readonly="1">
+                        <group name="banks_assign_on_the_bank" string="Banks (assign on the bank)">
+                            <field name="bank_ids" nolabel="1" readonly="1">
                                 <tree>
                                     <field name="name" />
-                                    <field name="type" />
+                                    <field name="bic" />
                                 </tree>
                             </field>
                         </group>
                     </group>
                     <separator string="Field Positions (mm from top-left of the cheque)" />
+                    <div class="alert alert-info" role="alert">
+                        These are measured against real stationery, not read off a
+                        specification. Print one cheque, put a ruler on it, and
+                        correct the offsets here.
+                    </div>
                     <group>
                         <group name="date_ddmmyyyy_boxes" string="Date (DDMMYYYY boxes)">
                             <field name="date_top" />

@@ -1,6 +1,6 @@
-=============================
+=================================
 HR LDAP User Provisioning (KMITL)
-=============================
+=================================
 
 Auto-links a ``res.users`` account to the ``hr.employee`` record that already
 exists in the directory, matching on **work email**.

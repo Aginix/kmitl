@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budget Transfer PDF",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "summary": """ Printable PDF document for budget transfers """,
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",

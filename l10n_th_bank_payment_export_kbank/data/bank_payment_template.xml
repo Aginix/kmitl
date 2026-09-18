@@ -7,12 +7,14 @@
     already refuses any beneficiary account that is not 10 digits, so there is
     no other-bank variant to branch on.
 
-    ``kmitl`` is a placeholder, not a value. The Originator Code and the Sender
-    Name come from KBANK when the institute is onboarded and we do not have
-    them, and ``bank.payment.config.value`` is required so the line cannot ship
-    blank. Replace both in Finance > Settings > Bank Payment Templates before
-    the first real file — the Originator Code is 7 digits and the layout
-    zero-pads whatever it finds, so ``kmitl`` would go out as ``00kmitl``.
+    The Originator Code is ``0360016``, read off the detail and trailer records
+    of the file KMITL sends KBANK today. It has to be the real one: the field is
+    7 digits and the layout zero-pads whatever it finds, so the placeholder that
+    used to sit here went out as ``00kmitl``.
+
+    The Sender Name is the institute's name in English. The ``kbank_ccp`` layout
+    never writes it into the file — it is kept because the form offers it and
+    ``bank.payment.config.value`` is required, so the line cannot be blank.
 
     noupdate: those replacements, and any service type the treasury office
     adjusts, have to survive ``-u``. That is also why this is XML rather than
@@ -31,7 +33,7 @@
             name="field_id"
             ref="l10n_th_bank_payment_export_kbank.field_bank_payment_export__kbank_company_id"
         />
-        <field name="value">kmitl</field>
+        <field name="value">0360016</field>
     </record>
     <record id="payment_template_kbank_ccp_sender_name" model="bank.payment.config">
         <field name="template_id" ref="payment_template_kbank_ccp" />
@@ -39,7 +41,7 @@
             name="field_id"
             ref="l10n_th_bank_payment_export_kbank.field_bank_payment_export__kbank_sender_name"
         />
-        <field name="value">kmitl</field>
+        <field name="value">KING MONGKUT LADGRABANG</field>
     </record>
     <!-- 04 - Goods & Services: an e-payment file carries vendor payments. -->
     <record id="payment_template_kbank_ccp_service_type" model="bank.payment.config">

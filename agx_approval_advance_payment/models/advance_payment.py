@@ -89,12 +89,12 @@ class AdvancePayment(models.Model):
             )
         # Only a participant may borrow against a request (ADR-0003). The UI
         # domain already filters this; enforce it for RPC / import too.
-        if self.requested_by.partner_id not in ar.participant_ids.partner_id:
+        if self.partner_id not in ar.participant_ids.partner_id:
             raise ValidationError(
                 _(
                     "%(user)s is not listed as a participant of %(name)s, so"
                     " cannot borrow against it.",
-                    user=self.requested_by.name,
+                    user=self.employee_id.name,
                     name=ar.name,
                 )
             )

@@ -245,6 +245,11 @@ class BudgetCommitmentMixin(models.AbstractModel):
         if kwargs.get("operating_unit_id"):
             commitment_vals["operating_unit_id"] = kwargs["operating_unit_id"]
 
+        if kwargs.get("beneficiary_operating_unit_id"):
+            commitment_vals["beneficiary_operating_unit_id"] = kwargs[
+                "beneficiary_operating_unit_id"
+            ]
+
         if include_company:
             commitment_vals["company_id"] = self.env.company.id
 

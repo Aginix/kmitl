@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_receipt_remittance_form" model="ir.ui.view">
+        <field name="name">kmitl.receipt.remittance.form.attachment.viewer</field>
+        <field name="model">kmitl.receipt.remittance</field>
+        <field name="inherit_id" ref="receipt_kmitl.view_receipt_remittance_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="before">
+                <button name="action_view_attachments"
+                        type="object"
+                        string="ดูไฟล์แนบทั้งหมด"
+                        icon="fa-files-o"
+                        attrs="{'invisible': [('receipt_count', '=', 0)]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

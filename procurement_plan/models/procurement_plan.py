@@ -356,6 +356,7 @@ class ProcurementPlan(models.Model):
         inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
         store=False,
+        compute_sudo=True,
         tracking=True,
         states=READONLY_STATES,
     )

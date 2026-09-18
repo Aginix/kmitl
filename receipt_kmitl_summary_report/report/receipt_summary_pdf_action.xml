@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_report_receipt_summary_pdf" model="ir.actions.report">
+        <field name="name">Receipt Summary (PDF)</field>
+        <field name="model">receipt_kmitl.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">receipt_kmitl_summary_report.receipt_summary_pdf</field>
+        <field name="report_file">receipt_kmitl_summary_report.receipt_summary_pdf</field>
+        <field name="paperformat_id" ref="paperformat_receipt_summary_kmitl" />
+        <field name="binding_model_id" eval="False" />
+    </record>
+</odoo>

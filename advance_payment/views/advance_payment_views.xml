@@ -12,7 +12,8 @@
                 <field name="create_date" optional="show" />
                 <field name="name" />
                 <field name="contract_number" optional="show" />
-                <field name="requested_by" />
+                <field name="employee_id" />
+                <field name="user_id" optional="hide" />
                 <field name="loan_type_id" />
                 <field name="loan_amount" />
                 <field name="actual_expense_amount" optional="show" />
@@ -50,36 +51,44 @@
                     <strong>อนุมัติแล้ว</strong> — รอฝ่ายการเงินดำเนินการโอนเงิน </div>
                 <div class="alert alert-info" role="alert" style="margin-bottom:0px;"
                     attrs="{'invisible': [('state', '!=', 'to_reconcile')]}">
-                    <strong>รอคืนเงิน</strong> — ยอดคงเหลือที่ต้องคืน
-                    <field name="return_amount" class="oe_inline" /> บาท </div>
+                    <strong>รอคืนเงิน</strong> — ยอดคงเหลือที่ต้องคืน <field name="return_amount"
+                        class="oe_inline" /> บาท </div>
                 <header>
                     <field name="is_requester" invisible="1" />
-                    <field name="is_officer" invisible="1" />
+                    <field name="is_loan_officer" invisible="1" />
+                    <field name="is_manager" invisible="1" />
+                    <field name="can_submit" invisible="1" />
+                    <field name="can_verify" invisible="1" />
+                    <field name="can_approve" invisible="1" />
                     <field name="excess_amount" invisible="1" />
                     <button name="action_submit" string="ส่งคำขอ" type="object"
                         class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}" />
-                    <button name="action_recall" string="ดึงกลับ" type="object"
-                        confirm="ต้องการดึงคำขอกลับเพื่อแก้ไขหรือไม่?"
+                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('can_submit', '=', False)]}" />
+                    <button name="action_recall" string="Reset to draft" type="object"
+                        confirm="ต้องการตั้งคำขอกลับเป็นแบบร่างหรือไม่?"
                         attrs="{'invisible': ['|', ('state', 'not in', ['to_verify', 'to_approve']), ('is_requester', '=', False)]}" />
                     <button name="action_verify" string="ยืนยันการตรวจสอบ" type="object"
                         class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'to_verify')]}"
-                        groups="advance_payment.group_advance_payment_officer" />
+                        attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('can_verify', '=', False)]}"
+                        groups="advance_payment.group_advance_payment_loan_officer" />
                     <button name="action_reset_to_draft" string="ส่งกลับแก้ไข" type="object"
                         attrs="{'invisible': [('state', '!=', 'to_verify')]}"
-                        groups="advance_payment.group_advance_payment_officer" />
+                        groups="advance_payment.group_advance_payment_loan_officer" />
                     <button name="action_approve" string="อนุมัติ" type="object"
                         class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'to_approve')]}"
-                        groups="advance_payment.group_advance_payment_manager" />
+                        attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('can_approve', '=', False)]}"
+                        groups="advance_payment.group_advance_payment_loan_approver" />
+                    <button name="action_create_payment_voucher" string="สร้างใบสำคัญจ่าย"
+                        type="object" class="btn-primary"
+                        attrs="{'invisible': ['|', ('state', '!=', 'waiting_transfer'), ('payment_count', '!=', 0)]}"
+                        groups="advance_payment.group_advance_payment_loan_officer" />
                     <button name="action_submit_report" string="นำส่งรายงานค่าใช้จ่าย"
                         type="object" class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('is_requester', '=', False)]}" />
                     <button name="action_accept_report" string="ตรวจรับรายงาน" type="object"
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'to_verify_report')]}"
-                        groups="advance_payment.group_advance_payment_officer" />
+                        groups="advance_payment.group_advance_payment_loan_officer" />
                     <button name="action_open_return_wizard" string="แจ้งคืนเงิน" type="object"
                         attrs="{'invisible': ['|', ('state', '!=', 'to_reconcile'), ('is_requester', '=', False)]}" />
                     <button name="action_confirm_donation" string="ยืนยันบริจาคส่วนเกิน"
@@ -93,6 +102,11 @@
                         confirm="ต้องการเปิดสัญญาอีกครั้งหรือไม่?"
                         attrs="{'invisible': [('state', '!=', 'done')]}"
                         groups="base.group_system" />
+                    <button name="action_reset_cancel_to_draft" string="Reset to draft"
+                        type="object"
+                        confirm="ต้องการตั้งสัญญาที่ยกเลิกกลับเป็นแบบร่างหรือไม่?"
+                        attrs="{'invisible': ['|', ('state', '!=', 'cancel'), ('effective_date', '!=', False)]}"
+                        groups="advance_payment.group_advance_payment_manager" />
                     <button name="button_cancel" string="ยกเลิก" type="object"
                         confirm="ต้องการยกเลิกสัญญานี้หรือไม่?"
                         attrs="{'invisible': [('state', '!=', 'draft')]}" />
@@ -104,7 +118,7 @@
                         <button name="action_view_payments" type="object"
                             class="oe_stat_button" icon="fa-credit-card"
                             attrs="{'invisible': [('payment_count', '=', 0)]}"
-                            groups="advance_payment.group_advance_payment_officer">
+                            groups="advance_payment.group_advance_payment_loan_officer">
                             <field name="payment_count" string="Payments" widget="statinfo" />
                         </button>
                         <button name="action_view_return_lines" type="object"
@@ -123,25 +137,13 @@
                         </h1>
                     </div>
                     <group>
-                        <group name="borrower_info" string="ข้อมูลผู้ยืม">
+                        <group name="borrow_info" string="ข้อมูลการยืมเงิน">
                             <field name="is_locked_by_reference" invisible="1" />
-                            <field name="requested_by" readonly="1"
-                                groups="!base.group_system" />
-                            <field name="requested_by"
-                                attrs="{'readonly': [('state', '!=', 'draft')]}"
-                                groups="base.group_system" />
-                            <field name="requested_by_partner_id" invisible="1" />
-                            <field name="bank_id"
-                                domain="[('partner_id', '=', requested_by_partner_id)]"
-                                widget="selection"
-                                attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer']), '&amp;', ('state', '!=', 'draft'), ('is_officer', '=', False)]}" />
-                            <field name="use_attachment_bank"
-                                attrs="{'readonly': [('state', '!=', 'draft')]}" />
-                            <field name="book_bank_filename" invisible="1" />
-                            <field name="book_bank" filename="book_bank_filename"
-                                attrs="{'invisible': [('use_attachment_bank', '=', False)]}" />
-                        </group>
-                        <group name="loan_info" string="ข้อมูลการยืม">
+                            <field name="can_draft_on_behalf" invisible="1" />
+                            <field name="can_edit_drafter" invisible="1" />
+                            <field name="employee_id" options="{'no_create': True}"
+                                attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('can_draft_on_behalf', '=', False)]}" />
+                            <field name="partner_id" invisible="1" />
                             <field name="is_reference_visible" invisible="1" />
                             <field name="loan_type_id" widget="selection"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}" />
@@ -155,16 +157,35 @@
                             <field name="currency_id" invisible="1" />
                             <field name="loan_amount"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="bank_id"
+                                domain="[('partner_id', '=', partner_id)]"
+                                widget="selection"
+                                required="1"
+                                attrs="{'readonly': ['|', ('state', 'not in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer']), '&amp;', ('state', '!=', 'draft'), ('is_loan_officer', '=', False)]}" />
+                        </group>
+                        <group name="processing_dates" string="ข้อมูลการดำเนินการ">
+                            <field name="date_submitted" />
+                            <field name="date_verified" attrs="{'invisible': [('state', '=', 'draft')]}" />
+                            <field name="date_approved" attrs="{'invisible': [('state', '=', 'draft')]}" />
                             <field name="return_due_date"
                                 attrs="{
                                     'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve'])],
-                                    'readonly': ['|', ('is_officer', '=', False), ('state', 'in', ['done', 'cancel'])]
+                                    'readonly': ['|', ('is_loan_officer', '=', False), ('state', 'in', ['done', 'cancel'])]
                                 }" />
+                            <field name="loan_verifier_id"
+                                attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}" />
+                            <field name="approver_id"
+                                attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}" />
+                            <field name="user_id"
+                                attrs="{'readonly': [('can_edit_drafter', '=', False)]}" />
                         </group>
-                        <group name="attachments" string="เอกสารแนบ">
-                            <field name="attachment_ids" widget="many2many_binary"
-                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}" />
-                        </group>
+                    </group>
+                    <group name="terms" string="เงื่อนไขและข้อตกลงการยืมเงินทดรองจ่าย">
+                        <field name="terms_conditions" nolabel="1" readonly="1" colspan="2" />
+                    </group>
+                    <group name="attachments" string="เอกสารแนบ">
+                        <field name="attachment_ids" widget="many2many_binary"
+                            attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}" />
                     </group>
                     <group name="actual_expense" string="บันทึกค่าใช้จ่ายจริง"
                         attrs="{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer'])]}">
@@ -174,7 +195,7 @@
                             attrs="{'readonly': [('state', '!=', 'in_progress')]}" />
                         <field name="return_amount" />
                         <field name="return_installment"
-                            attrs="{'readonly': ['|', ('state', 'in', ['done', 'cancel']), '&amp;', ('state', '!=', 'in_progress'), ('is_officer', '=', False)]}" />
+                            attrs="{'readonly': ['|', ('state', 'in', ['done', 'cancel']), '&amp;', ('state', '!=', 'in_progress'), ('is_loan_officer', '=', False)]}" />
                     </group>
                     <group name="amount_summary" string="สรุปยอดเงิน"
                         attrs="{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve'])]}">
@@ -235,7 +256,11 @@
             <search string="สัญญายืมเงิน">
                 <field name="name" />
                 <field name="contract_number" />
-                <field name="requested_by" />
+                <field name="employee_id" />
+                <field name="user_id" />
+                <separator />
+                <filter string="สัญญาของฉัน" name="my_contracts"
+                    domain="['|', ('employee_id.user_id', '=', uid), ('user_id', '=', uid)]" />
                 <separator />
                 <filter icon="fa-exclamation-circle" name="tofix" string="Exceptions"
                     domain="[('main_exception_id','!=',False)]" />
@@ -260,16 +285,23 @@
                     <filter string="State" name="group_state" context="{'group_by':'state'}" />
                     <filter string="Loan Type" name="group_loan_type"
                         context="{'group_by':'loan_type_id'}" />
-                    <filter string="Requested By" name="group_requested_by"
-                        context="{'group_by':'requested_by'}" />
+                    <filter string="Requested By" name="group_employee"
+                        context="{'group_by':'employee_id'}" />
                 </group>
             </search>
         </field>
     </record>
 
     <record id="action_advance_payment" model="ir.actions.act_window">
-        <field name="name">สัญญายืมเงิน</field>
+        <field name="name">สัญญาเงินยืมทั้งหมด</field>
         <field name="res_model">advance.payment</field>
         <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_advance_payment_my" model="ir.actions.act_window">
+        <field name="name">สัญญาของฉัน</field>
+        <field name="res_model">advance.payment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_my_contracts': 1}</field>
     </record>
 </odoo>

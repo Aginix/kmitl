@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
         <field name="arch" type="xml">
 
-            <!-- Flag available for parent.-references in the line tree -->
+            <!-- Flag driving the dimension's own attrs below -->
             <xpath expr="//field[@name='analytic_distribution'][1]" position="before">
                 <field name="is_procurement_plan_expense" invisible="1" />
             </xpath>
@@ -23,14 +23,6 @@
                         'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]
                     }"
                 />
-            </xpath>
-
-            <!-- Req 1: the product (รหัสบัญชี) is derived from the budget account,
-                 so hide the whole column for procurement-plan expenses
-                 (column_invisible, keyed on the parent) and keep it required only
-                 for ordinary disbursements. -->
-            <xpath expr="//field[@name='line_ids']/tree/field[@name='product_id']" position="attributes">
-                <attribute name="attrs">{'column_invisible': [('parent.is_procurement_plan_expense', '=', True)], 'required': [('parent.is_procurement_plan_expense', '=', False)]}</attribute>
             </xpath>
 
         </field>

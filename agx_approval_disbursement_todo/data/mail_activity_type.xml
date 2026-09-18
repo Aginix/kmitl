@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <record id="mail_activity_record_actual" model="mail.activity.type">
+        <field name="name">บันทึกค่าใช้จ่ายจริง (คำขออนุมัติ)</field>
+        <field name="summary">บันทึกค่าใช้จ่ายจริงแล้วส่งให้การเงิน</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">approval.request</field>
+        <field name="icon">fa-pencil-square-o</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <record id="mail_activity_finance_verify" model="mail.activity.type">
+        <field name="name">ตรวจสอบและตั้งเบิก (คำขออนุมัติ)</field>
+        <field name="summary">ตรวจสอบค่าใช้จ่ายจริงและดำเนินการตั้งเบิก</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">approval.request</field>
+        <field name="icon">fa-money</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <record id="mail_activity_billed_fyi" model="mail.activity.type">
+        <field name="name">คำขออนุมัติเบิกจ่ายแล้ว</field>
+        <field name="summary">คำขออนุมัติของท่านดำเนินการเบิกจ่ายแล้ว</field>
+        <field name="todo_category">acknowledgement</field>
+        <field name="res_model">approval.request</field>
+        <field name="icon">fa-check-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

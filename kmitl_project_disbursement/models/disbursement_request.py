@@ -55,13 +55,28 @@ class DisbursementRequest(models.Model):
                 else False
             )
 
-    # True when this DR draws a project budget code. Lives on the request so the
-    # line list can hide the whole product column with ``column_invisible`` (a
-    # per-row ``invisible`` only blanks the cells, the column header stays).
+    # True when this DR draws a project budget code.
     is_project_expense = fields.Boolean(
         related="budget_account_id.is_project",
         string="Is Project Expense",
     )
+
+    # For project expenses the line product is not chosen by hand — it is the
+    # product bound to the project budget account (budget_product). Hand both to
+    # the disbursement hooks, which hide the product column and stamp the product
+    # and its expense account on every line at ORM level. A code with no bound
+    # product leaves the line blank and is refused on submit by the
+    # excep_disbursement_project_no_product rule.
+    @api.depends("budget_account_id.is_project")
+    def _compute_is_budget_account_product_expense(self):
+        super()._compute_is_budget_account_product_expense()
+        for rec in self.filtered("is_project_expense"):
+            rec.is_budget_account_product_expense = True
+
+    def _budget_account_line_product(self):
+        if self.is_project_expense:
+            return self.budget_account_id.product_id
+        return super()._budget_account_line_product()
 
     def _project_disbursement_claimed_total(self):
         """Total amount claimed by this project's non-cancelled disbursements

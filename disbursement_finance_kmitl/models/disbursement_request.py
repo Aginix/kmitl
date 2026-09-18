@@ -114,6 +114,34 @@ class DisbursementRequest(models.Model):
         copy=False,
     )
 
+    # Who performed each round-2 step, and when. Round 1 stamps its two approvals
+    # the same way (``finance_approver_id`` / ``rector_approver_id``); round 2 used
+    # to leave the answer in the chatter alone, which is not something a list can
+    # be built on. The authorizer's history list stands on the stamp rather than on
+    # the state, so a request stays in it once it is paid and cleared.
+    payment_auditor_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Payment Auditor",
+        copy=False,
+        readonly=True,
+    )
+    payment_audit_date = fields.Datetime(
+        string="Payment Audited On",
+        copy=False,
+        readonly=True,
+    )
+    payment_authorizer_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Payment Authorizer",
+        copy=False,
+        readonly=True,
+    )
+    payment_authorize_date = fields.Datetime(
+        string="Payment Authorized On",
+        copy=False,
+        readonly=True,
+    )
+
     # One2many via the stored back-reference on account.payment, so payment
     # progress recomputes reactively (no search() inside computes).
     payment_ids = fields.One2many(
@@ -130,21 +158,11 @@ class DisbursementRequest(models.Model):
         string="Payment Status",
         compute="_compute_payment_info",
     )
-    payment_move_ids = fields.Many2many(
-        comodel_name="account.move",
-        compute="_compute_payment_info",
-        string="Payment Journal Entries",
-    )
-    payment_move_count = fields.Integer(
-        compute="_compute_payment_info",
-        string="Payment Move Count",
-    )
 
     @api.depends(
         "payment_ids",
         "payment_ids.state",
         "payment_ids.finance_state",
-        "payment_ids.move_id",
     )
     def _compute_payment_info(self):
         """Payment progress as the finance office means it.
@@ -165,9 +183,6 @@ class DisbursementRequest(models.Model):
             rec.payment_count = total
             paid = len(active.filtered(lambda p: p.finance_state == "paid"))
             rec.payment_status_display = _("จ่ายแล้ว %s/%s", paid, total) if total else ""
-            moves = active.mapped("move_id")
-            rec.payment_move_ids = moves
-            rec.payment_move_count = len(moves)
 
     @api.depends(
         "state",
@@ -375,6 +390,25 @@ class DisbursementRequest(models.Model):
                 )
                 % ", ".join(set(blind.mapped("paying_account_id.display_name")))
             )
+        # A cheque needs the same bank account for a different reason: it is the
+        # cheque book the paper is torn from, and it is what keeps cheque numbers
+        # from repeating. Checked here because this is the only checkpoint on the
+        # banking coordinates — after it the vouchers are raised and the finance
+        # office has nothing to fix it with but the voucher itself.
+        bookless = lines.filtered(
+            lambda line: (
+                line.payment_method_id.code == "kmitl_cheque"
+                and not line.paying_account_id.bank_account_id
+            )
+        )
+        if bookless:
+            raise UserError(
+                _(
+                    "%s names no bank account, so there is no cheque book to "
+                    "draw on. Set it in Finance ▸ Settings ▸ Paying Accounts."
+                )
+                % ", ".join(set(bookless.mapped("paying_account_id.display_name")))
+            )
         return True
 
     # ------------------------------------------------------------------
@@ -387,7 +421,14 @@ class DisbursementRequest(models.Model):
                 raise UserError(_("Only bills-posted requests can be audited."))
             record._ensure_payment_lines()
             record._check_payment_classification()
-            record.state = "payment_audited"
+            record.write(
+                {
+                    "state": "payment_audited",
+                    "payment_auditor_id": self.env.user.id,
+                    "payment_audit_date": fields.Datetime.now(),
+                }
+            )
+            record._stamp_signature("payment_audit")
             record.activity_feedback([TO_AUDIT_ACTIVITY])
             record._schedule_payment_todo(TO_AUTHORIZE_ACTIVITY, AUTHORIZER_GROUP)
         return True
@@ -406,7 +447,14 @@ class DisbursementRequest(models.Model):
                 raise UserError(
                     _("Only audited requests can be authorized for payment.")
                 )
-            record.state = "payment_authorized"
+            record.write(
+                {
+                    "state": "payment_authorized",
+                    "payment_authorizer_id": self.env.user.id,
+                    "payment_authorize_date": fields.Datetime.now(),
+                }
+            )
+            record._stamp_signature("payment_authorize")
             record.activity_feedback([TO_AUTHORIZE_ACTIVITY])
             record._schedule_payment_todo(TO_PAY_ACTIVITY, FINANCE_GROUP)
             record._try_create_payments()
@@ -809,28 +857,6 @@ class DisbursementRequest(models.Model):
             "name": _("Payments"),
             "res_model": "account.payment",
             "domain": [("id", "in", self.payment_ids.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }
-
-    def action_view_payment_moves(self):
-        """Open journal entries linked to payments."""
-        self.ensure_one()
-        moves = self.payment_move_ids
-        if len(moves) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "name": _("Journal Entry"),
-                "res_model": "account.move",
-                "res_id": moves.id,
-                "view_mode": "form",
-                "target": "current",
-            }
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("รายการล้างหนี้"),
-            "res_model": "account.move",
-            "domain": [("id", "in", moves.ids)],
             "view_mode": "tree,form",
             "target": "current",
         }

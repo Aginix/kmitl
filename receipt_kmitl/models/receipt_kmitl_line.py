@@ -6,7 +6,7 @@ from odoo import api, fields, models
 class ReceiptKmitlLine(models.Model):
     _name = "kmitl.receipt.line"
     _description = "KMITL Receipt Line"
-    _inherit = ["analytic.distribution.mixin"]
+    _inherit = ["analytic.mixin"]
     _order = "receipt_id, sequence, id"
 
     receipt_id = fields.Many2one(

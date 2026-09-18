@@ -95,8 +95,6 @@ msgid "Apply Rules to Pending Payments"
 msgstr "นำกฎไปใช้กับใบสำคัญจ่ายที่ยังไม่มอบหมาย"
 
 #. module: finance_kmitl_assignment
-#: model:ir.actions.act_window,name:finance_kmitl_assignment.action_account_payment_my_work
-#: model:ir.ui.menu,name:finance_kmitl_assignment.menu_account_payment_my_work
 #: model_terms:ir.ui.view,arch_db:finance_kmitl_assignment.view_account_payment_search_assignment
 msgid "My Work"
 msgstr "งานของฉัน"

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="receipt_excep_no_partner" model="exception.rule">
+        <field name="name">No partner</field>
+        <field name="description">Receipt has no partner set</field>
+        <field name="sequence">10</field>
+        <field name="model">kmitl.receipt</field>
+        <field name="code">
+if not self.partner_id:
+    failed = True
+        </field>
+        <field name="active" eval="False"/>
+    </record>
+
+    <record id="receipt_excep_backdated" model="exception.rule">
+        <field name="name">Backdated receipt</field>
+        <field name="description">Receipt date is in the past — backdated receipts are not allowed</field>
+        <field name="sequence">5</field>
+        <field name="model">kmitl.receipt</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="code">
+if self.date and self.date &lt; today:
+    failed = True
+        </field>
+        <field name="active" eval="False"/>
+    </record>
+</odoo>

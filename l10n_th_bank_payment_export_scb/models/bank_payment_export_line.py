@@ -70,6 +70,27 @@ class BankPaymentExportLine(models.Model):
             )
         return sender_bank_code, sender_branch_code, sender_acc_number
 
+    def _get_receiver_branch_code_scb(self):
+        """Return the receiving branch code for a payee who banks at SCB.
+
+        An SCB account number carries its branch in the first three digits --
+        ``0882428018`` is branch 088 -- and that is what the bank's own file
+        puts in this field: the real KMITL sample credits three accounts all
+        starting ``088`` and writes ``0088`` for each. The debit side of the
+        same layout already reads it that way (``scb_debit_format_07``).
+
+        Reading it off ``res.bank.bank_branch_code`` instead, as this field used
+        to, gives one branch for the whole of SCB, so the first payee banking at
+        any other branch goes out misrouted -- and silently, because a
+        well-formed four-digit code for the wrong branch looks exactly like a
+        right one.
+        """
+        self.ensure_one()
+        acc_number = (
+            sanitize_account_number(self.payment_partner_bank_id.acc_number) or ""
+        )
+        return acc_number[:3].rjust(4, "0")
+
     def _get_acc_number_digit(self, partner_bank_id):
         """SCB credit-account formatting per product code.
 

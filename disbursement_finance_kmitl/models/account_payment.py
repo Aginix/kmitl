@@ -104,11 +104,17 @@ class AccountPayment(models.Model):
         press, given for every payee the file carried, and giving it twice for one
         fact is how a request ends up half handed over.
 
-        A voucher settled by cheque or cash is the other case. It enters no file, so
-        there is nothing else to close and it is confirmed on itself — and the
-        request crosses when it and its siblings are all paid (ADR-0007). Before
-        this distinction existed, such a payee had no reachable press at all and its
-        request sat at ``payment_authorized`` forever.
+        A voucher settled by **cash** is the other case. It enters no file, and
+        nothing else in the system records money crossing a counter, so it is
+        confirmed on itself — and the request crosses when it and its siblings are
+        all paid (ADR-0007). Before this distinction existed, such a payee had no
+        reachable press at all and its request sat at ``payment_authorized``
+        forever.
+
+        A cheque used to be in that sentence too, and is not any more: it now has a
+        record of its own, and handing that cheque over is its press. The refusal
+        for cheques lives one level up, in ``finance_kmitl``, because it is true of
+        every cheque and not only of the ones on a request.
         """
         on_request = self.filtered(
             lambda payment: (

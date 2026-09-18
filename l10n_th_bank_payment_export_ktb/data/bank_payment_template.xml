@@ -8,11 +8,16 @@
     ``standard`` file that carries a KTB payee. A single template would dead-end
     on every file of the other kind.
 
-    ``kmitl`` is a placeholder, not a value. The Company ID and the Sender Name
-    come from KTB when the institute is onboarded and we do not have them, and
-    ``bank.payment.config.value`` is required so the line cannot ship blank.
-    Replace both in Finance > Settings > Bank Payment Templates before the first
-    real file.
+    The Sender Name is ``KING MONGKUT LADGRABANG``, read off the H record of
+    the file KMITL sends KTB today. It is English and 23 characters because the
+    field is 25 and KTB reads it as ASCII; the institute's Thai name is 46 bytes
+    and would not fit.
+
+    The Company ID is still the placeholder ``kmitl``. It appears only in the
+    iPay layout, and the sample KMITL gave us is the Direct Credit (H/D/T) one,
+    so nothing we have shows the real value. Replace it in
+    Finance > Settings > Bank Payment Templates before the first iPay file —
+    ``bank.payment.config.value`` is required, so the line cannot ship blank.
 
     The file layout (``bank_export_format_id``) is not a config line: a config
     line's value is a Char, and Odoo maps a string to no record at all for a
@@ -49,7 +54,7 @@
             name="field_id"
             ref="l10n_th_bank_payment_export_ktb.field_bank_payment_export__ktb_sender_name"
         />
-        <field name="value">kmitl</field>
+        <field name="value">KING MONGKUT LADGRABANG</field>
     </record>
     <record id="payment_template_ktb_direct_bank_type" model="bank.payment.config">
         <field name="template_id" ref="payment_template_ktb_direct" />
@@ -88,7 +93,7 @@
             name="field_id"
             ref="l10n_th_bank_payment_export_ktb.field_bank_payment_export__ktb_sender_name"
         />
-        <field name="value">kmitl</field>
+        <field name="value">KING MONGKUT LADGRABANG</field>
     </record>
     <record id="payment_template_ktb_standard_bank_type" model="bank.payment.config">
         <field name="template_id" ref="payment_template_ktb_standard" />

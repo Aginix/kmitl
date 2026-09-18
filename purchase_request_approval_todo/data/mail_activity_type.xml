@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- ข้อ 1: แจ้งเจ้าหน้าที่พัสดุหน่วยงาน (บน พจ.1) -->
+    <record id="mail_activity_pa_notify_procurement" model="mail.activity.type">
+        <field name="name">จัดทำรายงานขอซื้อ/จ้าง (พจ.1)</field>
+        <field name="summary">แจ้งเจ้าหน้าที่พัสดุหน่วยงาน</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">purchase.request.approval</field>
+        <field name="icon">fa-bell</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- ข้อ 2: แจ้งเจ้าหน้าที่พัสดุหน่วยงาน (บน พจ.1) -->
+    <record
+        id="mail_activity_pa_acknowledgement_notify_procurement"
+        model="mail.activity.type"
+    >
+        <field name="name">รอจัดทำสัญญา/ใบสั่งซื้อ/จ้าง</field>
+        <field name="summary">แจ้งเจ้าหน้าที่พัสดุหน่วยงาน</field>
+        <field name="todo_category">acknowledgement</field>
+        <field name="res_model">purchase.request.approval</field>
+        <field name="icon">fa-bell</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- ข้อ 5: FYI ผู้ขอ อนุมัติแล้ว (บน พ.1) -->
+    <record id="mail_activity_pr_pa_approved_fyi" model="mail.activity.type">
+        <field name="name">รายงานขอซื้อ/จ้าง (พจ.1) ได้รับอนุมัติแล้ว</field>
+        <field name="summary">แจ้งผู้ขอว่า พจ.1 ได้รับอนุมัติแล้ว</field>
+        <field name="todo_category">acknowledgement</field>
+        <field name="res_model">purchase.request</field>
+        <field name="icon">fa-check-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- ข้อ 4: FYI ผู้ขอ ถูกปฏิเสธ (บน พ.1) -->
+    <record id="mail_activity_pr_pa_rejected_fyi" model="mail.activity.type">
+        <field name="name">รายงานขอซื้อ/จ้าง (พจ.1) ไม่ได้รับอนุมัติ (ถูกปฏิเสธ)</field>
+        <field name="summary">แจ้งผู้ขอว่า พจ.1 ไม่ได้รับอนุมัติ</field>
+        <field name="todo_category">acknowledgement</field>
+        <field name="res_model">purchase.request</field>
+        <field name="icon">fa-times-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

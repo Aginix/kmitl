@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_partner_form_inherit_receipt_kmitl" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.receipt.kmitl</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <field name="receipt_kmitl_count" invisible="1"/>
+                <button name="action_view_receipt_kmitl"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        groups="receipt_kmitl.group_receipt_kmitl_viewer"
+                        attrs="{'invisible': [('receipt_kmitl_count', '=', 0)]}">
+                    <field name="currency_id" invisible="1"/>
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="receipt_kmitl_total" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                        </span>
+                        <span class="o_stat_text">Receipts</span>
+                    </div>
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>

@@ -30,7 +30,9 @@ export class BudgetCommitmentInfoField extends Many2OneField {
     }
 
     async loadInfo(commitmentId) {
-        if (!commitmentId) {
+        // The card is a form-only affordance: in a list/tree view it would
+        // render a full card in every cell of every row.
+        if (!commitmentId || this.env.config.viewType === "list") {
             this.info.data = null;
             return;
         }

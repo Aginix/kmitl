@@ -1,0 +1,6 @@
+# Bank export test fixtures are byte-exact copies of files a bank produced.
+# Git's end-of-line normalisation would rewrite their CRLF terminators on
+# checkout wherever `core.autocrlf` disagrees, and the fixtures exist precisely
+# to prove the exporter emits CRLF. `-text` keeps the bytes as committed;
+# `-diff` stops git from rendering a TIS-620 fixed-width record as text.
+*/tests/fixtures/** -text -diff

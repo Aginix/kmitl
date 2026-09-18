@@ -1,5 +1,7 @@
 # Official PDF: the source report embeds sarabun's endorsement block (no cover sheet)
 
+> **Amended by [ADR-0015](0015-from-record-document-may-use-no-source-layout-with-live-body-fragment.md):** a from-record Document may instead render through the no-source layout (สารบรรณ owns the header + endorsement) and contribute a live body fragment in a new slot. The delegation model below still applies to consumers that don't opt in.
+
 **Supersedes the composition model in [DESIGN §5.5](../../DESIGN.md).** DESIGN §5.5 built the official PDF as a system-rendered **ใบปะหน้าสารบรรณ (cover sheet)** — official header + เนื้อหา + เกษียน trail + signature block — **PDF-merged in front of** the origin's delegated report, frozen as the ฉบับลงนาม at `completed`. In real use the cover sheet is unwanted: it duplicates a header the source document already carries and forces the signatures onto a separate front page.
 
 We **invert the composition**: instead of *sarabun wraps the origin*, the *origin embeds sarabun's block*.

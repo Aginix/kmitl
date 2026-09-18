@@ -140,21 +140,28 @@ class PurchaseRequestApproval(models.Model):
             )
             approval.disbursement_request_count = len(approval.disbursement_request_ids)
 
+    # Vocabulary read off disbursement.request.state — never pipeline_status,
+    # which lives on a different field and was never reachable from here.
+    # bills_posted/payment_*/cleared are added by disbursement_accounting_kmitl
+    # and disbursement_finance_kmitl via selection_add; if neither bridge is
+    # installed a request simply never reaches those keys and stays
+    # "in_progress" once approved, which is correct.
+    _DR_STATE_TO_BILLING_STATUS = {
+        "draft": "draft",
+        "submitted": "submitted",
+        "signed": "submitted",
+        "verified": "submitted",
+        "approved": "in_progress",
+        "bills_posted": "in_progress",
+        "payment_audited": "in_progress",
+        "payment_authorized": "in_progress",
+        "paid": "in_progress",
+        "cleared": "done",
+    }
+    _BILLING_STATUS_RANK = {"draft": 0, "submitted": 1, "in_progress": 2, "done": 3}
+
     @api.depends("disbursement_request_ids", "disbursement_request_ids.state")
     def _compute_billing_status(self):
-        state_map = {
-            "draft": "draft",
-            "submitted": "submitted",
-            "signed": "submitted",
-            "verified": "submitted",
-            "approved": "in_progress",
-            "bill_draft": "in_progress",
-            "bill_posted": "in_progress",
-            "payment_draft": "in_progress",
-            "payment_posted": "in_progress",
-            "done": "done",
-            "cancel": "cancel",
-        }
         for approval in self:
             active = approval.disbursement_request_ids.filtered(
                 lambda r: r.state != "cancel"
@@ -164,7 +171,16 @@ class PurchaseRequestApproval(models.Model):
             elif not active:
                 approval.billing_status = "cancel"
             else:
-                approval.billing_status = state_map.get(active[0].state, "draft")
+                # Reflect the least-advanced request: the source document is
+                # only as far along as its slowest disbursement request, not
+                # whichever one happens to be first in the recordset.
+                statuses = [
+                    self._DR_STATE_TO_BILLING_STATUS.get(r.state, "draft")
+                    for r in active
+                ]
+                approval.billing_status = min(
+                    statuses, key=self._BILLING_STATUS_RANK.get
+                )
 
     # -- return-to-source contract (disbursement.return.source.mixin) -----
     def _disbursement_get_request(self):

@@ -15,8 +15,10 @@ _Avoid_: Payment (that is the downstream document), Voucher.
 **Verify** (ตรวจสอบ):
 The disbursement officer's check that moves a signed request to `verified`
 (**Validate** button). Distinct from *approve* — the officer checks, the
-approvers authorise.
-_Avoid_: Review, Approve.
+approvers authorise. The acting officer is recorded in `verifier_id`, which is
+whoever pressed the button — not `assigned_to`, who was merely *assigned* the
+verification and may be someone else once takeover is allowed.
+_Avoid_: Review, Approve, Assigned officer.
 
 **Finance Director approval** (การอนุมัติของ ผอ.กองคลัง):
 The **first** of the two required approvals, performed by the Finance Division
@@ -64,3 +66,21 @@ approver stamps, so it stays visible through the bill/payment stages), with
 filters. Separate from the requester's "Disbursement Requests" list and the
 officer's "Verification" (หมวดตรวจ) list.
 _Avoid_: Inbox (that is the Todo notification center), a single merged queue.
+
+**Head-of-department approval** (การลงนามของหัวหน้าส่วนงาน):
+The signature that moves a submitted request to `signed`, performed by the head
+of the requesting unit. Obtained through e-Saraban when `disbursement_sarabun` is
+installed, so it is the one signature the DR does not stamp itself and the one
+rendered by Saraban's own endorsement block.
+_Avoid_: ผู้อนุมัติเบิกจ่าย (reserved for the post-bill payment authoriser — a
+different authority whose signature prints on the same page), Approve (the head
+signs; the two-approver step authorises).
+
+**Signature block** (บล็อกลายเซ็น):
+The grid of signatures at the tail of the printed ใบขอเบิก — one cell per step
+taken, three per line, each showing the signer's ลายเซ็น, ชื่อ, ตำแหน่ง and วันที่.
+Self-limiting: a step that has not happened prints nothing. Each cell is a frozen
+snapshot taken at the moment of signing, so later HR edits never rewrite a signed
+request (see ADR 0002). Saraban's own block prints above it.
+_Avoid_: Approval history (that is the chatter and the approver stamps), เกษียน
+trail (Saraban's audit trail, which is not printed).

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_budget_commitment" model="ir.actions.report">
+        <field name="name">ใบจองงบประมาณ</field>
+        <field name="binding_model_id" ref="budget.model_budget_commitment"/>
+        <field name="model">budget.commitment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_commitment_pdf.report_budget_commitment</field>
+        <field name="report_file">budget_commitment_pdf.report_budget_commitment</field>
+        <field name="print_report_name">'Budget Commitment - %s' % (object.name or object.id)</field>
+        <field name="paperformat_id" ref="paperformat_budget_commitment"/>
+    </record>
+
+</odoo>

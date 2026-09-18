@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="automation_notify_create_endorsement" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้งผู้สร้างให้สร้างหนังสือเมื่อจองงบประมาณแล้ว (to_send)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '!=', 'to_send')]</field>
+            <field name="filter_domain">[('state', '=', 'to_send')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">
+for record in records:
+    record.activity_schedule(
+        "agx_approval_sarabun_todo.mail_activity_create_endorsement",
+        summary="คำขออนุมัติเลขที่ %s จองงบประมาณแล้ว กรุณาสร้างหนังสือเพื่อส่งขออนุมัติ" % (record.name or ""),
+        user_id=(record.user_id or env.user).id,
+    )
+</field>
+        </record>
+
+        <record id="automation_clear_create_endorsement" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: ล้าง Todo สร้างหนังสือเมื่อออกจากสถานะรอส่งขออนุมัติ</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'to_send')]</field>
+            <field name="filter_domain">[('state', '!=', 'to_send')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records.activity_unlink(["agx_approval_sarabun_todo.mail_activity_create_endorsement"])</field>
+        </record>
+
+        <record id="automation_notify_approved_fyi" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้ง FYI ผู้สร้างเมื่อได้รับอนุมัติจริง (approved)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field
+                name="filter_pre_domain"
+            >[('state', 'in', ('to_send', 'sent'))]</field>
+            <field name="filter_domain">[('state', '=', 'approved')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">
+for record in records:
+    record.activity_schedule(
+        "agx_approval_sarabun_todo.mail_activity_approved_fyi",
+        summary="คำขออนุมัติเลขที่ %s ได้รับอนุมัติแล้ว" % (record.name or ""),
+        user_id=(record.user_id or env.user).id,
+    )
+</field>
+        </record>
+
+        <record id="automation_notify_returned" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้งผู้สร้างแก้ไขเมื่อถูกตีกลับจากการพิจารณา (returned)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'sent')]</field>
+            <field name="filter_domain">[('state', '=', 'returned')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">
+for record in records:
+    record.activity_schedule(
+        "agx_approval_sarabun_todo.mail_activity_returned_edit",
+        summary="คำขออนุมัติเลขที่ %s กลับมาแก้ไข กรุณาแก้ไขและส่งหนังสือใหม่" % (record.name or ""),
+        user_id=(record.user_id or env.user).id,
+    )
+</field>
+        </record>
+
+        <record id="automation_clear_returned" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: ล้าง Todo แก้ไขเมื่อออกจากสถานะตีกลับ (returned)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'returned')]</field>
+            <field name="filter_domain">[('state', '!=', 'returned')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records.activity_unlink(["agx_approval_sarabun_todo.mail_activity_returned_edit"])</field>
+        </record>
+
+        <record id="automation_notify_rejected_fyi" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้ง FYI ผู้สร้างเมื่อคำขอถูกปฏิเสธ (rejected)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '!=', 'rejected')]</field>
+            <field name="filter_domain">[('state', '=', 'rejected')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">
+for record in records:
+    record.activity_schedule(
+        "agx_approval_sarabun_todo.mail_activity_rejected_fyi",
+        summary="คำขออนุมัติเลขที่ %s ถูกปฏิเสธ" % (record.name or ""),
+        user_id=(record.user_id or env.user).id,
+    )
+</field>
+        </record>
+
+    </data>
+</odoo>

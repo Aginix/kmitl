@@ -2,6 +2,7 @@
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.osv import expression
 
 # The facts the bank acted on. Frozen the moment the voucher is confirmed for the
 # bank: changing any of them afterwards makes the record disagree with what the
@@ -39,7 +40,11 @@ PAYEE_ACCOUNT_FIELD = "partner_bank_id"
 
 
 class AccountPayment(models.Model):
-    _inherit = "account.payment"
+    # ``thai.date.mixin`` for the printed ใบสำคัญจ่าย, which dates itself in the
+    # Buddhist era. Listing the mixin turns ``_inherit`` into a list, and a list
+    # without ``_name`` is read as a new model, so the name has to be said again.
+    _name = "account.payment"
+    _inherit = ["account.payment", "thai.date.mixin"]
 
     kmitl_payment_type_id = fields.Many2one(
         comodel_name="kmitl.payment.type",
@@ -128,6 +133,14 @@ class AccountPayment(models.Model):
         "imported into Odoo, so what the system acts on is the finance office's "
         "assertion in Finance Status, and this is one more note beside it.",
     )
+    # What the smart button shows. A Char and not the Many2one itself, for the
+    # same reason as disbursement_request_name in disbursement_finance_kmitl:
+    # Odoo 16 has no read mode, so an editable Many2one in a stat button draws
+    # an input box to type in instead of the value.
+    payment_export_name = fields.Char(
+        related="payment_export_id.name",
+        string="e-Payment File Number",
+    )
     is_cheque_payment = fields.Boolean(
         compute="_compute_settlement",
         help="Read from the paying account's own method, so it cannot disagree "
@@ -143,14 +156,121 @@ class AccountPayment(models.Model):
         "confirms those results by hand instead.",
     )
 
-    cheque_register_ids = fields.One2many(
+    cheque_ids = fields.One2many(
         comodel_name="cheque.register",
         inverse_name="payment_id",
         string="Cheques",
+        help="Every cheque ever written for this voucher, including the ones "
+        "that died and were replaced — each of those still holds the number it "
+        "spent out of the book.",
     )
-    cheque_register_count = fields.Integer(
-        compute="_compute_cheque_register_count",
+    cheque_id = fields.Many2one(
+        comodel_name="cheque.register",
+        string="Cheque",
+        compute="_compute_cheque_id",
+        search="_search_cheque_id",
+        help="The one cheque that can still pay this voucher, if it has been "
+        "written yet. A voucher never has two at once.",
     )
+    # What the smart button shows, for the reason the disbursement link next to
+    # it is a Char too: Odoo 16 has no read mode, so a Many2one in a button is
+    # drawn as a text box to type in.
+    cheque_number = fields.Char(
+        related="cheque_id.cheque_number",
+        string="Cheque Number",
+    )
+    finance_state_cheque = fields.Selection(
+        selection=[
+            ("draft", "Draft"),
+            ("confirmed", "Ready to Write the Cheque"),
+            ("issued", "Cheque Issued"),
+            ("paid", "Cheque Handed Over"),
+        ],
+        string="Finance Status",
+        compute="_compute_finance_state_cheque",
+        help="The same lifecycle as Finance Status, in the words that fit a "
+        "cheque. A voucher settled on paper goes to no bank, so 'Confirmed for "
+        "the Bank' names an errand nobody runs for it — and its Confirmed covers "
+        "two different situations, one where the cheque has still to be written "
+        "and one where it is written and waiting to be collected. Read-only and "
+        "unstored: it says nothing finance_state and the cheque do not already "
+        "say between them.",
+    )
+
+    paid_date = fields.Date(
+        string="Actual Payment Date",
+        compute="_compute_paid_date",
+        search="_search_paid_date",
+        help="วันที่จ่ายจริง — the day the money left the institute for the "
+        "payee, read off the instrument that carried it rather than off the "
+        "voucher that authorised it: a transfer's วันที่มีผลที่ธนาคาร, a cheque's "
+        "วันที่บนเช็ค, and for cash the voucher's own date, which is the day it "
+        "was paid across the counter. Not the voucher date, which is the day "
+        "the payment was authorised and is the accounting period it is booked "
+        "in — the two differ whenever a file leaves in a later month than the "
+        "authorisation.",
+    )
+
+    @api.depends("payment_export_id.effective_date", "cheque_id.cheque_date", "date")
+    def _compute_paid_date(self):
+        """Read the day the money left off whatever carried it.
+
+        Three instruments, one question, and each of them is the only record
+        that can answer it for its own kind of payment. Nothing here reads a
+        "confirmed paid" timestamp, because none is kept: ยืนยันจ่ายสำเร็จ is a
+        press whose date says when a person got round to recording the outcome,
+        not when the bank moved the money.
+
+        Deliberately not stored — see
+        ``docs/adr/0009-the-day-the-money-left-is-read-off-the-instrument.md``.
+        """
+        for payment in self:
+            payment.paid_date = (
+                payment.payment_export_id.effective_date
+                or payment.cheque_id.cheque_date
+                or payment.date
+            )
+
+    def _search_paid_date(self, operator, value):
+        """Mirror ``_compute_paid_date`` branch for branch.
+
+        The vouchers are partitioned by which instrument answers for them, and
+        the operator is then applied to that instrument's own date — which is
+        what makes this correct for every operator, including the negative ones,
+        rather than only for the range the reports ask for. A branch that let a
+        file with no effective date match ``!=`` would claim a voucher twice.
+
+        A cheque is reached through ``cheque_id`` and not ``cheque_ids``: a
+        cancelled cheque pays nobody and its date answers for nothing
+        (ADR-0007). ``cheque_date`` is required, so a live cheque always has one
+        and there is no fourth branch for a cheque that cannot date itself.
+        """
+        exports = self.env["bank.payment.export"].search(
+            [("effective_date", "!=", False), ("effective_date", operator, value)]
+        )
+        cheques = self.env["cheque.register"].search(
+            [("cheque_date", operator, value), ("state", "!=", "cancelled")]
+        )
+        # "No file effective date": both the voucher that is in no file at all
+        # and the voucher in a file that has not been given one. A leaf reaching
+        # through payment_export_id can only ever see the second.
+        no_effective_date = [
+            "|",
+            ("payment_export_id", "=", False),
+            ("payment_export_id.effective_date", "=", False),
+        ]
+        return expression.OR(
+            [
+                [("payment_export_id", "in", exports.ids)],
+                expression.AND([no_effective_date, [("cheque_id", "in", cheques.ids)]]),
+                expression.AND(
+                    [
+                        no_effective_date,
+                        [("cheque_id", "=", False), ("date", operator, value)],
+                    ]
+                ),
+            ]
+        )
 
     @api.depends("move_id.line_ids.wht_tax_id", "move_id.line_ids.balance", "amount")
     def _compute_amount_wht(self):
@@ -434,6 +554,47 @@ class AccountPayment(models.Model):
         self.write({"finance_state": "paid"})
         return True
 
+    def _unmark_paid(self):
+        """Withdraw the assertion that the money reached the payee.
+
+        There is normally no way back past the Hand-over: the phase is
+        forward-only because the money has left, and a confirmation given by
+        mistake is corrected in the books. A cheque is the case that rule was
+        never written for — the paper can die *after* the payee took it, and then
+        the money never left at all. So the claim is withdrawn rather than
+        corrected, and the voucher goes back to being the finance office's to
+        settle with another piece of paper. See ADR-0007.
+
+        Only while the entry is unposted, which is where a dead cheque is almost
+        always caught: the voucher sits in the accounting office's queue for as
+        long as their maker-checker takes. Once they have posted it the bank
+        credit is in the books, and taking it out is a reversal — their work, on
+        their form, and not something the finance office reaches across and does.
+        """
+        for payment in self:
+            if payment.finance_state != "paid":
+                raise UserError(
+                    _("%s was not marked paid, so there is nothing to withdraw.")
+                    % payment.display_name
+                )
+            if payment.move_id.state == "posted":
+                raise UserError(
+                    _(
+                        "%s has already been posted, so the money has left the "
+                        "books as well as the office. Ask the accounting office "
+                        "to reverse the entry first."
+                    )
+                    % payment.display_name
+                )
+        self.write({"finance_state": "confirmed"})
+        # Take back the Todo the Hand-over put in the accounting office's inbox.
+        # A no-op for a voucher on a disbursement request: that one was never
+        # raised here, because the request raises one for all of its payees.
+        self.mapped("move_id").activity_unlink(
+            ["finance_kmitl.mail_activity_payment_to_book"]
+        )
+        return True
+
     def action_confirm_paid(self):
         """ยืนยันจ่ายสำเร็จ — the finance office's assertion that the money reached
         the payee, for a voucher that stands on its own.
@@ -441,7 +602,22 @@ class AccountPayment(models.Model):
         The bank's result file never enters Odoo, so this press is the only thing
         that knows. A voucher belonging to a disbursement request is confirmed on
         the request instead, one press for all of its payees.
+
+        A voucher paid by cheque is confirmed by **handing the cheque over**, not
+        here — the same shape as a transfer, which is confirmed by closing the
+        file that carried it. Cash is what is left: it is paid across the counter,
+        nothing else records it, so this is where it is said.
         """
+        by_cheque = self.filtered("is_cheque_payment")
+        if by_cheque:
+            raise UserError(
+                _(
+                    "These vouchers are settled by cheque, so the money reaches "
+                    "the payee when the cheque does. Write the cheque and hand it "
+                    "over instead: %s."
+                )
+                % ", ".join(by_cheque.mapped("display_name"))
+            )
         self._mark_paid()
         # Through the hook, not straight to the hand-over: a voucher belonging to a
         # document that hands over for all of its own must not raise a second Todo
@@ -497,10 +673,58 @@ class AccountPayment(models.Model):
     def action_mark_bank_result_failed(self):
         self.write({"bank_result_status": "failed"})
 
-    @api.depends("cheque_register_ids")
-    def _compute_cheque_register_count(self):
+    @api.depends("cheque_ids.state")
+    def _compute_cheque_id(self):
         for payment in self:
-            payment.cheque_register_count = len(payment.cheque_register_ids)
+            payment.cheque_id = payment.cheque_ids.filtered(
+                lambda cheque: cheque.state != "cancelled"
+            )[:1]
+
+    @api.depends("finance_state", "cheque_id.state")
+    def _compute_finance_state_cheque(self):
+        """Fold the cheque's own step into the voucher's, for the statusbar.
+
+        The voucher has one value, ``confirmed``, for two situations a cheque
+        officer keeps apart: no cheque written yet, and a cheque written and
+        signed that the payee has not come for. Both are the voucher's money side
+        frozen and nothing paid, so they are rightly one state — but a bar that
+        cannot tell them apart is a bar that cannot show the work.
+        """
+        for payment in self:
+            state = payment.finance_state
+            if state == "confirmed" and payment.cheque_id.state == "issued":
+                state = "issued"
+            payment.finance_state_cheque = state
+
+    def _search_cheque_id(self, operator, value):
+        """Let the live cheque be searched, so what reads through it can be
+        recomputed.
+
+        Two computes reach a voucher's cheque this way — the number the smart
+        button shows, and the date on the withholding-tax certificate — and Odoo
+        works out *which* vouchers to recompute when a cheque changes by
+        searching back through the field. A computed field with no search is a
+        dead end there: the dependency is dropped with a warning, and the
+        certificate would keep a date the cheque no longer has.
+
+        ``False`` asks a different question from an id — "has a cheque at all"
+        rather than "is this cheque" — so it flips the sense of the test rather
+        than being matched against.
+        """
+        if operator not in ("=", "!=", "in", "not in"):
+            raise NotImplementedError(
+                "cheque_id can only be searched with =, !=, in or not in"
+            )
+        matches = operator in ("=", "in")
+        domain = [("state", "!=", "cancelled")]
+        asks_for_any = value is False or value is None
+        if not asks_for_any:
+            ids = value if isinstance(value, (list, tuple)) else [value]
+            domain.append(("id", "in", ids))
+        vouchers = self.env["cheque.register"].search(domain).payment_id
+        if asks_for_any:
+            matches = not matches
+        return [("id", "in" if matches else "not in", vouchers.ids)]
 
     def action_post(self):
         """Validate bank export for outbound, then reconcile after posting."""
@@ -509,46 +733,142 @@ class AccountPayment(models.Model):
                 raise UserError(_("Payment must be exported to bank before posting."))
         res = super().action_post()
         self._reconcile_source_invoice_lines()
-        self._create_cheque_register_entries()
         return res
 
-    def _create_cheque_register_entries(self):
-        """Add a cheque to the control register when a cheque-type payment posts.
+    # -------------------------------------------------------------------------
+    # Over to the accounting office
+    # -------------------------------------------------------------------------
+    def action_submit_batch(self):
+        """Submit the entries behind the selected vouchers for accounting approval.
 
-        The row is created in ``draft`` because the physical cheque number is
-        entered by the finance officer, who then issues it from the register.
+        Sits on this model so the accounting maker can work from the register they
+        already have in front of them — ใบล้างเจ้าหนี้ lists payments, because the
+        payment is what carries both offices' statuses, while the thing being
+        submitted is its entry. The delegation to account.move is fields only, so
+        the method has to be named here for a list button to reach it.
+
+        The work itself stays where it belongs: ``account.move.action_submit_batch``
+        picks out the drafts, isolates each failure in a savepoint and reports them
+        by name. A voucher the finance office has not handed over yet fails on the
+        maker rule in ``account.move._check_submit_allowed`` and is named in that
+        report — deliberately not filtered out here, because somebody who ticked
+        twenty vouchers and got eighteen entries would have no way to tell which
+        two were dropped or why.
         """
-        for payment in self.filtered(
-            lambda p: p.is_cheque_payment and not p.cheque_register_ids
-        ):
-            self.env["cheque.register"].create(payment._prepare_cheque_register_vals())
+        return self.move_id.action_submit_batch()
 
-    def _prepare_cheque_register_vals(self):
-        self.ensure_one()
+    # -------------------------------------------------------------------------
+    # Out by cheque
+    # -------------------------------------------------------------------------
+    def action_create_cheques(self):
+        """Start a cheque for each of the selected vouchers.
+
+        Sits on this model and takes a whole selection for the reason
+        ``action_create_bank_payment_export`` does: the office works a run of
+        payments at once — a utilities run is twenty vouchers off one book — and
+        the list is where all twenty are already in front of them. Opening twenty
+        forms to press the same button twenty times is precisely what ADR-0006
+        took out of this phase, and it should not come back on the cheque side.
+
+        Numbers are **proposed, not assigned**: the first is the guess for the
+        book and the rest run on from it in the order the vouchers came in, and
+        every one is overtypable in the list this opens. A book nothing has been
+        drawn on yet proposes nothing, because there is no paper to guess from.
+        """
+        Cheque = self.env["cheque.register"]
+        self._check_cheques_can_be_written()
+        vals_list = []
+        running = {}
+        for payment in self:
+            book = payment.payment_method_line_id.bank_account_id
+            if book not in running:
+                running[book] = Cheque._next_number_for_book(book)
+            number = running[book]
+            vals_list.append(
+                {
+                    "payment_id": payment.id,
+                    "cheque_number": number,
+                    "cheque_date": fields.Date.context_today(payment),
+                }
+            )
+            running[book] = Cheque._bump_number(number) if number else False
+        cheques = Cheque.create(vals_list)
         return {
-            "direction": self.payment_type,
-            "partner_id": self.partner_id.id,
-            "amount": self.amount,
-            "currency_id": self.currency_id.id,
-            "journal_id": self.journal_id.id,
-            "cheque_date": self.date,
-            "ref": self.ref or self.name,
-            "payment_id": self.id,
-            "company_id": self.company_id.id,
+            "type": "ir.actions.act_window",
+            "name": _("Cheques"),
+            "res_model": "cheque.register",
+            "domain": [("id", "in", cheques.ids)],
+            "view_mode": "tree,form" if len(cheques) > 1 else "form",
+            "res_id": cheques.id if len(cheques) == 1 else False,
+            "target": "current",
         }
 
-    def action_view_cheque_register(self):
+    def _check_cheques_can_be_written(self):
+        """Refuse the selection by name rather than quietly skipping rows.
+
+        Somebody who ticked twenty vouchers and got eighteen cheques would have to
+        work out for themselves which two are missing and why, so each reason says
+        which vouchers it is about.
+        """
+        not_cheque = self.filtered(lambda payment: not payment.is_cheque_payment)
+        if not_cheque:
+            raise UserError(
+                _(
+                    "These vouchers are not paid by cheque — their paying account "
+                    "(หัวจ่าย) settles them another way: %s."
+                )
+                % ", ".join(not_cheque.mapped("display_name"))
+            )
+        unconfirmed = self.filtered(
+            lambda payment: payment.finance_state != "confirmed"
+        )
+        if unconfirmed:
+            raise UserError(
+                _(
+                    "A cheque may only be written for a voucher that is confirmed "
+                    "for the bank, or what it is written for could still change "
+                    "underneath it: %s."
+                )
+                % ", ".join(unconfirmed.mapped("display_name"))
+            )
+        written = self.filtered("cheque_id")
+        if written:
+            raise UserError(
+                _(
+                    "These vouchers already have a cheque that has not been "
+                    "cancelled: %s."
+                )
+                % ", ".join(written.mapped("display_name"))
+            )
+        return True
+
+    def action_view_cheques(self):
+        """Open the cheque written for this voucher, or the whole run of paper it
+        took if an earlier one died."""
         self.ensure_one()
-        return {
-            "name": _("Cheque Register"),
+        action = {
+            "name": _("Cheques"),
             "type": "ir.actions.act_window",
             "res_model": "cheque.register",
-            "view_mode": "tree,form",
             "domain": [("payment_id", "=", self.id)],
-            "context": {
-                "default_payment_id": self.id,
-                "default_direction": self.payment_type,
-            },
+            "context": {"default_payment_id": self.id},
+        }
+        if len(self.cheque_ids) == 1:
+            action.update({"view_mode": "form", "res_id": self.cheque_ids.id})
+        else:
+            action["view_mode"] = "tree,form"
+        return action
+
+    def action_view_payment_export(self):
+        """Open the e-Payment file this voucher travelled out to the bank in."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("e-Payment File"),
+            "res_model": "bank.payment.export",
+            "res_id": self.payment_export_id.id,
+            "view_mode": "form",
+            "target": "current",
         }
 
     def _reconcile_source_invoice_lines(self):
@@ -700,4 +1020,72 @@ class AccountPayment(models.Model):
         return (
             *super()._get_trigger_fields_to_synchronize(),
             "kmitl_payment_type_id",
+        )
+
+    # -------------------------------------------------------------------------
+    # The printed ใบสำคัญจ่าย
+    # -------------------------------------------------------------------------
+    def _get_report_base_filename(self):
+        """Name the downloaded file after the voucher it is.
+
+        A voucher confirmed for the bank has its number by then, which is what
+        the office files the paper under.
+        """
+        self.ensure_one()
+        return "Payment Voucher-%s" % (self.name or self.id)
+
+    def _voucher_dimensions(self):
+        """The analytic account of each financial dimension, keyed by plan code.
+
+        Read off ``analytic_distribution`` rather than the convenience
+        ``*_analytic_id`` fields, for two reasons: that JSON is the source of
+        truth every dimension is written through, and only four of the six
+        dimensions exist as fields here — the project and procurement-plan ones
+        are added by modules this one does not depend on, so naming them would
+        break a lean install. Grouping by the *root* plan is what makes a
+        sub-account answer for its dimension.
+
+        The order and the Thai labels stay in the template, where the rest of the
+        printed document's words are.
+        """
+        self.ensure_one()
+        accounts = (
+            self.env["account.analytic.account"]
+            .browse(
+                int(account_id) for account_id in (self.analytic_distribution or {})
+            )
+            .exists()
+        )
+        return {account.root_plan_id.code: account for account in accounts}
+
+    def _voucher_wht_lines(self):
+        """The withholding-tax lines this voucher deducted.
+
+        The same lines ``_compute_amount_wht`` sums, listed rather than totalled
+        so the printed voucher can show what each deduction was for — one payee
+        can be withheld on at more than one rate. They survive a rebuild of the
+        entry, which is what ``_write_off_line_vals`` above exists for.
+        """
+        self.ensure_one()
+        return self.move_id.line_ids.filtered("wht_tax_id")
+
+    @api.model
+    def _mask_acc_number(self, acc_number):
+        """Hide the middle of a bank account number, keeping the first 3 and last 4.
+
+        The voucher is handled outside the finance office — it is filed with the
+        accounting office and travels with the paperwork — so the payee's full
+        account number has no business on it. Deliberately a copy of
+        ``disbursement.request._get_masked_acc_number`` rather than a shared
+        helper: the two module trees are independent, and neither may depend on
+        the other for the sake of ten lines.
+        """
+        acc = acc_number or ""
+        digit_positions = [index for index, char in enumerate(acc) if char.isdigit()]
+        if len(digit_positions) <= 7:
+            return acc
+        keep = set(digit_positions[:3]) | set(digit_positions[-4:])
+        return "".join(
+            char if (not char.isdigit() or index in keep) else "X"
+            for index, char in enumerate(acc)
         )

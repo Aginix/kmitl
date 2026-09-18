@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_cheque_register_cancel_form" model="ir.ui.view">
+        <field name="name">cheque.register.cancel.form</field>
+        <field name="model">cheque.register.cancel</field>
+        <field name="arch" type="xml">
+            <form string="Cancel Cheque">
+                <field name="cheque_id" invisible="1" />
+                <field name="was_handed_over" invisible="1" />
+                <div class="alert alert-info" role="alert">
+                    This number stays spent. A cancelled cheque keeps the number it
+                    was torn off with, so no second payee is ever handed it.
+                </div>
+                <!-- Only when it matters, and stated as what it does rather than
+                     as a warning about a field: the officer is about to withdraw a
+                     claim somebody else is relying on. -->
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    attrs="{'invisible': [('was_handed_over', '=', False)]}"
+                >
+                    The payee already took this cheque, so the voucher was marked
+                    paid and handed to the accounting office. Cancelling withdraws
+                    that: the voucher goes back to confirmed and cannot be posted
+                    until a replacement cheque has been handed over. If the
+                    accounting office has already posted it, they must reverse the
+                    entry first.
+                </div>
+                <group>
+                    <field name="reason" />
+                    <field name="replace" />
+                </group>
+                <footer>
+                    <button
+                        name="action_cancel_cheque"
+                        string="Cancel Cheque"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Discard" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

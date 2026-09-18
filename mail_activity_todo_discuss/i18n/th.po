@@ -26,8 +26,29 @@ msgstr "(แสดงทั้งหมด)"
 #. odoo-javascript
 #: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
 #, python-format
+msgid "Clear"
+msgstr "ล้าง"
+
+#. module: mail_activity_todo_discuss
+#. odoo-javascript
+#: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
+#, python-format
 msgid "Done"
 msgstr "เสร็จสิ้น"
+
+#. module: mail_activity_todo_discuss
+#. odoo-javascript
+#: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
+#, python-format
+msgid "Group"
+msgstr "จัดกลุ่ม"
+
+#. module: mail_activity_todo_discuss
+#. odoo-javascript
+#: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
+#, python-format
+msgid "Group by activity type"
+msgstr "จัดกลุ่มตามประเภทกิจกรรม"
 
 #. module: mail_activity_todo_discuss
 #. odoo-javascript
@@ -69,6 +90,20 @@ msgstr "ยังไม่มีประวัติ"
 #. odoo-javascript
 #: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
 #, python-format
+msgid "No todos match your search"
+msgstr "ไม่พบงานที่ตรงกับการค้นหา"
+
+#. module: mail_activity_todo_discuss
+#. odoo-javascript
+#: code:addons/mail_activity_todo_discuss/static/src/js/discuss_todo_view.esm.js:0
+#, python-format
+msgid "Other"
+msgstr "อื่นๆ"
+
+#. module: mail_activity_todo_discuss
+#. odoo-javascript
+#: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
+#, python-format
 msgid "Open Todo app"
 msgstr "เปิดแอป Todo"
 
@@ -78,6 +113,13 @@ msgstr "เปิดแอป Todo"
 #, python-format
 msgid "Read & completed todos"
 msgstr "งานที่อ่านแล้ว / เสร็จสิ้นแล้ว"
+
+#. module: mail_activity_todo_discuss
+#. odoo-javascript
+#: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
+#, python-format
+msgid "Search todos..."
+msgstr "ค้นหางาน..."
 
 #. module: mail_activity_todo_discuss
 #. odoo-javascript

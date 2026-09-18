@@ -62,10 +62,20 @@ registerPatch({
                 ...extra,
             });
             if (!this.discussView) {
-                this.env.services.action.doAction("mail.action_discuss", {
-                    name: this.env._t("Todos"),
-                    clearBreadcrumbs: false,
-                });
+                // Pass an inline client-action object (not the "mail.action_discuss"
+                // string): that string is a registered action *tag*, so loadAction
+                // short-circuits to a nameless {tag, type} and the breadcrumb renders
+                // "ไม่มีชื่อ". An inline object lets us set `name` on the action itself
+                // (the `name` doAction *option* is ignored), so the breadcrumb reads
+                // "Todos" on every re-open from the systray.
+                this.env.services.action.doAction(
+                    {
+                        type: "ir.actions.client",
+                        tag: "mail.action_discuss",
+                        name: this.env._t("Todos"),
+                    },
+                    { clearBreadcrumbs: false }
+                );
             }
         },
         /**

@@ -6,9 +6,15 @@ from odoo import fields, models
 class ChequeLayout(models.Model):
     """Print calibration for a physical cheque form.
 
-    Cheque layouts differ per bank, so field positions are stored as top/left
-    offsets (in millimetres from the top-left of the cheque) and reused across
-    the cheque books (journals) that share the same printed form.
+    A cheque form is printed by the bank that issued the book, so the layout
+    belongs to the bank: every cheque book held at one bank uses the same form,
+    and the offsets below are measured once for it. They are millimetres from the
+    top-left of the paper, because that is what a person with a ruler and a test
+    print can act on.
+
+    The values shipped as data are a **starting guess**. Nobody can calibrate a
+    printed form from a specification; the first run is measured against real
+    stationery and corrected on this screen.
     """
 
     _name = "cheque.layout"
@@ -21,11 +27,11 @@ class ChequeLayout(models.Model):
         comodel_name="res.company",
         default=lambda self: self.env.company,
     )
-    journal_ids = fields.One2many(
-        comodel_name="account.journal",
+    bank_ids = fields.One2many(
+        comodel_name="res.bank",
         inverse_name="cheque_layout_id",
-        string="Cheque Books",
-        help="Bank/cash journals whose cheques use this printed form.",
+        string="Banks",
+        help="The banks whose printed cheque form this calibration is for.",
     )
 
     # Rendering

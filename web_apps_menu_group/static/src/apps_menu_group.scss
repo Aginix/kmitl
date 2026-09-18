@@ -1,0 +1,26 @@
+.dropdown-menu-custom .o_apps_menu_group_header {
+    flex-basis: 100%;
+    width: 100%;
+    color: $white;
+    opacity: 0.95;
+    text-transform: uppercase;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 1rem 1.5rem 0.25rem;
+}
+
+// Forces the ungrouped apps onto their own row instead of trailing after
+// the last named group's apps, without showing a header of its own.
+.dropdown-menu-custom .o_apps_menu_group_break {
+    flex-basis: 100%;
+    width: 100%;
+    height: 0;
+}
+
+// web_responsive only hides `.o_app` while searching; the group chrome
+// is a sibling at the same level and would otherwise stay visible.
+.dropdown-menu-custom .has-results ~ .o_apps_menu_group_header,
+.dropdown-menu-custom .has-results ~ .o_apps_menu_group_break {
+    display: none;
+}

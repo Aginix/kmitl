@@ -1,6 +1,8 @@
+from markupsafe import Markup
+
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.osv import expression
+from odoo.tools import formatLang
 
 
 class ApprovalRequest(models.Model):
@@ -42,6 +44,11 @@ class ApprovalRequest(models.Model):
 
     is_budget_editable = fields.Boolean(compute="_compute_is_budget_editable")
 
+    # True once the official AR/<be>/#### number has been minted. Used by the
+    # view to freeze account_fiscal_year_id and to swap the title for a "New"
+    # label while the number is still the placeholder.
+    is_number_assigned = fields.Boolean(compute="_compute_is_number_assigned")
+
     hide_reserve_budget_button = fields.Boolean(
         compute="_compute_hide_reserve_budget_button"
     )
@@ -67,6 +74,14 @@ class ApprovalRequest(models.Model):
         store=True,
     )
 
+    plan_actual_comparison_html = fields.Html(
+        string="เปรียบเทียบแผน / จ่ายจริง",
+        compute="_compute_plan_actual_comparison_html",
+        sanitize=False,
+        help="สรุปเปรียบเทียบค่าใช้จ่ายตามแผนกับค่าใช้จ่ายจริงแยกตามรายการ "
+        "แสดงบนแท็บค่าใช้จ่ายจริงเพื่อไม่ต้องสลับแท็บไปดูแผน",
+    )
+
     category_id = fields.Many2one(
         string="Category",
         comodel_name="approval.category",
@@ -76,6 +91,11 @@ class ApprovalRequest(models.Model):
 
     name = fields.Char(
         string="Name",
+        # Untranslated placeholder, like account.move's "/": the number is minted
+        # later (at submit), so this value sits in the DB and is read back by
+        # users in other locales. Anything translated here would compare unequal
+        # to _() evaluated in the reader's language. The friendly "New" label is
+        # rendered by the form view instead.
         default="/",
         required=True,
         copy=False,
@@ -84,9 +104,13 @@ class ApprovalRequest(models.Model):
 
     date = fields.Date(
         string="Request Date",
-        required=True,
-        default=fields.Date.context_today,
+        copy=False,
         tracking=True,
+        help="วันที่ส่งคำขอ — stamped when the request is submitted for verification "
+        "(draft → รอตรวจสอบ), and re-stamped on every re-submit after a reset to "
+        "draft or a ดึงกลับ. Empty until the request is first submitted: a draft "
+        "has not been sent anywhere yet, so it has no submit date. NOT the "
+        "creation date (that is create_date) and NOT the หนังสือ's ลงวันที่.",
     )
 
     owner_id = fields.Many2one(
@@ -105,8 +129,33 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
+    @api.constrains("owner_id")
+    def _check_owner_is_self_for_own_group(self):
+        """"Own only" users may file requests in their own name only: the
+        requester (ผู้ขออนุมัติ) must be themselves. Full Users, Managers and
+        superuser are unaffected."""
+        if self.env.su:
+            return
+        user = self.env.user
+        if not user.has_group(
+            "agx_approval.group_approval_own"
+        ) or user.has_group("agx_approval.group_approval_user"):
+            return
+        for rec in self:
+            if rec.owner_id != user.employee_id:
+                raise ValidationError(
+                    _("You can only submit approval requests in your own name.")
+                )
+
     description = fields.Text(
         string="Description",
+        tracking=True,
+    )
+
+    period_type = fields.Selection(
+        [("range", "หลายวัน"), ("single", "วันเดียว")],
+        string="ลักษณะระยะเวลา",
+        default="range",
         tracking=True,
     )
 
@@ -119,6 +168,23 @@ class ApprovalRequest(models.Model):
         string="Date End",
         tracking=True,
     )
+
+    day_portion = fields.Selection(
+        [("full", "เต็มวัน"), ("half", "ครึ่งวัน")],
+        string="ช่วงเวลา (วันเดียว)",
+        default="full",
+        tracking=True,
+    )
+
+    @api.onchange("period_type")
+    def _onchange_period_type(self):
+        """Clear the companion input that the chosen mode doesn't use (Odoo
+        convention): a single-day request has no end date, a multi-day one has no
+        day portion. Keeps the narrative unambiguous about which one applies."""
+        if self.period_type == "single":
+            self.date_end = False
+        else:
+            self.day_portion = False
 
     city = fields.Char(
         string="City",
@@ -145,6 +211,72 @@ class ApprovalRequest(models.Model):
         copy=True,
     )
 
+    # Single-product categories (the overwhelming majority) hide the line
+    # table entirely: the requester types one amount + description, which is
+    # mirrored onto the sole `approval.request.line` behind the scenes.
+    # `line_ids` stays the single source of truth (budget reserve,
+    # _compute_total_amount, plan/actual comparison) — these two fields are
+    # just the bare-amount UI for the single-product case.
+    multi_product = fields.Boolean(
+        related="category_id.multi_product",
+        string="มีรายการย่อย",
+    )
+
+    plan_amount = fields.Monetary(
+        string="จำนวนเงิน",
+        currency_field="currency_id",
+        compute="_compute_plan_single",
+        inverse="_inverse_plan_single",
+    )
+
+    plan_description = fields.Text(
+        string="รายละเอียด",
+        compute="_compute_plan_single",
+        inverse="_inverse_plan_single",
+    )
+
+    @api.depends("line_ids.total_amount", "line_ids.description", "category_id.multi_product")
+    def _compute_plan_single(self):
+        for rec in self:
+            if not rec.multi_product and rec.line_ids:
+                first = rec.line_ids[0]
+                rec.plan_amount = first.total_amount
+                rec.plan_description = first.description
+            else:
+                rec.plan_amount = 0.0
+                rec.plan_description = False
+
+    def _inverse_plan_single(self):
+        """Mirror the bare amount/description onto the single line behind a
+        single-product category. Guarded on ``category_id`` and
+        ``is_plan_editable`` so this never fires destructively before a
+        category is chosen or once the plan is locked (see memory
+        odoo16-first-onchange-runs-every-method-wipes-defaults)."""
+        for rec in self:
+            if rec.multi_product or not rec.category_id or not rec.is_plan_editable:
+                continue
+            # No amount yet means nothing is planned yet: drop the mirrored
+            # line rather than write a 0, which approval.request.line's
+            # _check_total_amount_positive rejects — otherwise a draft could
+            # not be saved before the requester fills the amount in.
+            if not rec.plan_amount:
+                if rec.line_ids:
+                    rec.line_ids = [(5, 0, 0)]
+                continue
+            vals = {
+                "product_id": rec.category_id.allowed_product_ids[:1].id,
+                "total_amount": rec.plan_amount,
+                "description": rec.plan_description,
+            }
+            line = rec.line_ids[:1]
+            if line:
+                extra = rec.line_ids - line
+                if extra:
+                    extra.unlink()
+                line.write(vals)
+            else:
+                rec.line_ids = [(0, 0, vals)]
+
     participant_ids = fields.One2many(
         "approval.request.participant",
         "request_id",
@@ -152,10 +284,50 @@ class ApprovalRequest(models.Model):
         copy=True,
     )
 
+    internal_participant_ids = fields.One2many(
+        "approval.request.participant",
+        "request_id",
+        string="รายชื่อบุคลากรภายใน",
+        domain=[("participant_type", "=", "internal")],
+        copy=False,
+    )
+
+    external_participant_ids = fields.One2many(
+        "approval.request.participant",
+        "request_id",
+        string="รายชื่อบุคคลภายนอก",
+        domain=[("participant_type", "=", "external")],
+        copy=False,
+    )
+
     allocation_ids = fields.One2many(
         "approval.request.allocation",
         "request_id",
         string="ค่าใช้จ่ายจริง",
+        copy=False,
+    )
+
+    allocation_direct_ids = fields.One2many(
+        "approval.request.allocation",
+        "request_id",
+        domain=[("payment_type", "=", "direct")],
+        string="จ่ายตรง",
+        copy=False,
+    )
+
+    allocation_prepaid_ids = fields.One2many(
+        "approval.request.allocation",
+        "request_id",
+        domain=[("payment_type", "=", "prepaid")],
+        string="สำรองจ่าย",
+        copy=False,
+    )
+
+    allocation_advance_ids = fields.One2many(
+        "approval.request.allocation",
+        "request_id",
+        domain=[("payment_type", "=", "advance")],
+        string="เงินยืม",
         copy=False,
     )
 
@@ -177,7 +349,7 @@ class ApprovalRequest(models.Model):
         ("to_send", "รอส่งขออนุมัติ"),
         ("sent", "ส่งขออนุมัติแล้ว"),
         ("approved", "คำขอได้รับอนุมัติแล้ว"),
-        ("actual", "บันทึกค่าใช้จ่ายจริง"),
+        ("to_disburse", "รอการเงินตรวจสอบ/ส่งเบิก"),
         ("billed", "เบิกแล้ว"),
         ("returned", "ตีกลับ"),
         ("rejected", "ปฏิเสธ"),
@@ -211,17 +383,27 @@ class ApprovalRequest(models.Model):
     )
 
     def _domain_budget_account_id(self):
-        return [("purchase_ok", "=", True), ("product_id", "!=", False)]
+        # An approval is not a procurement (ADR-0004): reserve against
+        # non-procurement expense codes, not product-backed purchase codes.
+        return [
+            ("budgetable", "=", True),
+            ("budget_type", "=", "expense"),
+            ("purchase_ok", "=", False),
+        ]
 
     def _reservation_account_domain(self):
         """Budget codes selectable in the reservation picker for this request.
 
-        Mirror the budget_account_id field domain (purchasable, product-backed
-        codes) on top of the mixin's budgetable/expense baseline, so the picker
-        cannot offer — and apply_reservation_selection cannot write — a code the
-        request rejects.
+        Non-procurement expense codes (ADR-0004) on top of the mixin's
+        budgetable/expense baseline, so the picker cannot offer — and
+        apply_reservation_selection cannot write — a code the request rejects.
+        When the category pins a budget code, that code is the request's hard
+        constraint (single choke point for picker, write-back, and draw-down).
         """
-        return super()._reservation_account_domain() + self._domain_budget_account_id()
+        domain = super()._reservation_account_domain() + self._domain_budget_account_id()
+        if self.category_id.budget_account_id:
+            domain += [("id", "=", self.category_id.budget_account_id.id)]
+        return domain
 
     def _get_commitment_title(self):
         """ชื่อรายการจอง of a commitment this request reserves = its ประเภทคำขออนุมัติ.
@@ -234,7 +416,7 @@ class ApprovalRequest(models.Model):
         """
         self.ensure_one()
         if self.category_id:
-            return self.category_id.name
+            return f"[{self.name}] {self.category_id.name}"
         return super()._get_commitment_title()
 
     budget_commitment_state = fields.Selection(
@@ -248,21 +430,19 @@ class ApprovalRequest(models.Model):
     )
     budget_selection_mode = fields.Selection(
         selection=[
-            ("chart", "เลือกจากผังงบประมาณ (จองงบใหม่)"),
-            ("reservation", "หยิบจากใบจองงบประมาณที่มีอยู่"),
+            ("normal", "ใช้เงินจากแผน (จองงบใหม่)"),
         ],
         string="วิธีเลือกงบประมาณ",
-        default="chart",
+        default="normal",
         copy=False,
         help=(
-            "เลือกว่าจะจองงบใหม่โดยเลือกมิติจากผังงบประมาณ "
-            "หรือหยิบใบจองงบประมาณที่หน่วยงานอื่นจองไว้ให้แล้วไปใช้"
+            "เลือกวิธีจัดหางบประมาณของคำขอนี้ — ฐานระบบมีเฉพาะการจองงบใหม่จากผังงบประมาณ "
+            "โมดูลเสริมอาจเพิ่มวิธีอื่น เช่น หยิบใบจองงบประมาณของโครงการที่อนุมัติแล้วไปใช้"
         ),
     )
     reservation_commitment_id = fields.Many2one(
         "budget.commitment",
         string="ใบจองงบประมาณ",
-        domain=lambda self: self._domain_reservation_commitment_id(),
         copy=False,
         tracking=True,
         help=(
@@ -272,22 +452,55 @@ class ApprovalRequest(models.Model):
         ),
     )
 
+    def _reservation_commitment_mode_domain(self):
+        """Which commitments the current ``budget_selection_mode`` may draw.
+        Base only ships ``normal`` (reserve-new), which never draws — bridges
+        add their own mode (e.g. a project's shared slip) and gate it here."""
+        return [("id", "=", False)]
+
     def _domain_reservation_commitment_id(self):
-        """Reservations this request may draw down (phase-1 dropdown). OU
-        visibility (owner or beneficiary unit) is enforced by the record rules
-        (ADR-0011). Plan/project shared commitments are drawn only through their
-        dedicated create-from-source flows (ADR-0006/0007), so they are excluded
-        here — guarded by field existence since agx_approval does not depend on
-        procurement_plan / kmitl_project."""
+        """Reservations this request may draw down (phase-1 dropdown), gated by
+        the active ``budget_selection_mode`` via
+        ``_reservation_commitment_mode_domain``. Restricted to this request's own
+        ปีงบประมาณ — a slip reserved in another year would silently pull the
+        request's money out of the year it declares (excep_account_fiscal_year_
+        not_match_budget_commitment blocks it server-side). OU visibility (owner
+        or beneficiary unit) is enforced by the record rules (ADR-0011)."""
         domain = [
             ("state", "in", ("reserved", "partial")),
             ("available_to_obligate", ">", 0),
+            ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
         ]
-        Commitment = self.env["budget.commitment"]
-        for fname in ("procurement_plan_id", "kmitl_project_id"):
-            if fname in Commitment._fields:
-                domain.append((fname, "=", False))
+        domain += self._reservation_commitment_mode_domain()
         return domain
+
+    reservation_commitment_domain = fields.Binary(
+        compute="_compute_reservation_commitment_domain",
+        help=(
+            "Record-aware domain for the ใบจองงบประมาณ dropdown. A static field "
+            "domain can neither see this request's own account_fiscal_year_id "
+            "nor be extended per budget_selection_mode by a bridge, so the "
+            "dropdown is driven by this computed domain instead — same pattern "
+            "as purchase_request_budget."
+        ),
+    )
+
+    @api.depends("account_fiscal_year_id", "budget_selection_mode")
+    def _compute_reservation_commitment_domain(self):
+        for rec in self:
+            rec.reservation_commitment_domain = (
+                rec._domain_reservation_commitment_id()
+            )
+
+    def action_open_reservation_picker(self):
+        """Browse the picker in only-selectable mode: the requester may pick only
+        codes this request accepts (a category-pinned code, else the
+        non-procurement baseline), so the picker collapses the ประเภทงบ chart to
+        those codes and the dimension path to them instead of showing every code
+        of the root category with only one clickable."""
+        action = super().action_open_reservation_picker()
+        action["context"] = dict(action.get("context") or {}, only_selectable=True)
+        return action
 
     def apply_reservation_selection(self, selections, dims=None):
         """Picker write-back: set the budget code + dimensions, then push the
@@ -346,11 +559,21 @@ class ApprovalRequest(models.Model):
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
+        required=True,
         tracking=True,
-        store=True,
-        compute="_compute_date_range_fy",
-        search="_search_date_range_fy",
+        default=lambda self: self._default_account_fiscal_year_id(),
+        help="ปีงบประมาณที่คำขอนี้จะใช้งบ — chosen by the user, never derived from "
+        "the document date. A request drafted late in ปีงบ N to spend ปีงบ N+1 "
+        "money simply picks N+1 up front and waits. The budget reservation checks "
+        "and books against this year (see action_reserve_budget), so it is the "
+        "request's single statement of which year's money it is spending.",
     )
+
+    @api.model
+    def _default_account_fiscal_year_id(self):
+        """Today's ปีงบประมาณ — a convenience starting point, not a constraint;
+        the user overrides it to file ahead for the coming year."""
+        return self.env.company.find_daterange_fy(fields.Date.context_today(self))
 
     _analytic_keys = {
         "activities": "activity_analytic_id",
@@ -363,20 +586,9 @@ class ApprovalRequest(models.Model):
     def _onchange_category_id(self):
         self.line_ids = False
         self.participant_ids = False
+        self.internal_participant_ids = False
+        self.external_participant_ids = False
         self.description = self.category_id.default_description
-        if self.category_id:
-            self.budget_account_id = self.category_id.budget_account_id
-            distribution = {}
-            for field_name in (
-                "activity_analytic_id",
-                "department_analytic_id",
-                "fund_analytic_id",
-                "source_analytic_id",
-            ):
-                analytic = self.category_id[field_name]
-                if analytic:
-                    distribution[str(analytic.id)] = 100
-            self.analytic_distribution = distribution or False
 
     @api.model
     def _search_source_analytic_id(self, operator, value):
@@ -409,41 +621,6 @@ class ApprovalRequest(models.Model):
                 (query, [[str(account_id) for account_id in account_ids]]),
             )
         ]
-
-    @api.depends("date", "company_id")
-    def _compute_date_range_fy(self):
-        for rec in self:
-            date = fields.Date.to_date(rec.date)
-            company = rec.company_id
-            rec.account_fiscal_year_id = (
-                company and company.find_daterange_fy(date) or False
-            )
-
-    @api.model
-    def _search_date_range_fy(self, operator, value):
-        if operator in ("=", "!=", "in", "not in"):
-            date_range_domain = [("id", operator, value)]
-        else:
-            date_range_domain = [("name", operator, value)]
-
-        date_ranges = self.env["account.fiscal.year"].search(date_range_domain)
-
-        domain = [("id", "=", -1)]
-        for date_range in date_ranges:
-            domain = expression.OR(
-                [
-                    domain,
-                    [
-                        "&",
-                        ("date", ">=", date_range.date_from),
-                        ("date", "<=", date_range.date_to),
-                        "|",
-                        ("company_id", "=", False),
-                        ("company_id", "=", date_range.company_id.id),
-                    ],
-                ]
-            )
-        return domain
 
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):
@@ -480,8 +657,45 @@ class ApprovalRequest(models.Model):
             return self.with_context(
                 agx_exception_action="action_to_verify"
             )._popup_exceptions()
-        self.state = "to_verify"
+        # วันที่ส่งคำขอ is stamped here, not at creation: a draft has not been sent
+        # anywhere. Re-stamped on every pass through this transition, so a request
+        # reset to draft (or ดึงกลับ) and re-submitted carries the date it was
+        # actually submitted, not the first attempt's.
+        vals = {"state": "to_verify", "date": fields.Date.context_today(self)}
+        # Mint the official number on first submission only. Once assigned it is
+        # permanent — a returned/ดึงกลับ request that comes back through here
+        # keeps its number, unlike ``date`` which re-stamps.
+        #
+        # Mirrors procurement_plan.action_send_to_verify: the number's ปีงบ
+        # comes from account_fiscal_year_id, not today — pin both %(year_be)s
+        # interpolation (ir_sequence_date) and the date_range sub-sequence
+        # (sequence_date) to the FY's date_to.
+        if not self.is_number_assigned:
+            fiscal_date = self.account_fiscal_year_id.date_to
+            vals["name"] = self.env["ir.sequence"].with_context(
+                ir_sequence_date=fiscal_date
+            ).next_by_code(
+                "approval.request",
+                sequence_date=fiscal_date,
+            ) or "/"
+        self.write(vals)
         return True
+
+    @api.constrains("account_fiscal_year_id")
+    def _check_fiscal_year_locked_after_submission(self):
+        """Once a request has an official number, its fiscal year is frozen:
+        the number is minted from ``%(year_be)s`` of that FY's ``date_to``, so
+        swapping the FY afterwards would silently desync AR/<year>/#### from
+        the year the money is actually spent under."""
+        for rec in self:
+            if rec.is_number_assigned:
+                raise ValidationError(
+                    _(
+                        "Fiscal year cannot be changed after the request has "
+                        "been submitted (number %s already assigned)."
+                    )
+                    % rec.name
+                )
 
     def action_submit(self):
         for record in self:
@@ -493,7 +707,11 @@ class ApprovalRequest(models.Model):
     def action_approve(self):
         """Internal approval fallback for installations without the Sarabun
         bridge. When agx_approval_sarabun is installed the request is approved
-        by the Sarabun document outcome instead (see _on_sarabun_completed)."""
+        by the Sarabun document outcome instead (see _on_sarabun_completed).
+
+        Once approved the request rests in ``approved``, which is itself the
+        actual-expense recording phase (is_actual_editable) — the creator fills
+        ผลค่าใช้จ่ายจริง immediately, no separate 'บันทึกค่าใช้จ่ายจริง' step."""
         for record in self:
             if record.state not in ("to_send", "sent"):
                 raise UserError(
@@ -502,22 +720,99 @@ class ApprovalRequest(models.Model):
             record.state = "approved"
         return True
 
-    def action_record_actual(self):
-        """Approved → actual: the requester comes back from the mission and
-        records the actual expense allocation before billing."""
+    def action_open_submit_finance_wizard(self):
+        """เปิด confirmation wizard สรุปข้อมูลค่าใช้จ่ายจริงให้ตรวจทานก่อนส่งให้การเงิน
+        (approved → to_disburse ผ่าน wizard.action_confirm)."""
+        self.ensure_one()
+        if self.state != "approved":
+            raise UserError(_("ส่งให้การเงินได้เฉพาะสถานะ 'คำขอได้รับอนุมัติแล้ว'"))
+        if not self.allocation_ids:
+            raise UserError(
+                _("กรุณาบันทึกค่าใช้จ่ายจริงอย่างน้อย 1 รายการก่อนส่งให้การเงิน")
+            )
+        wizard = self.env["approval.request.finance.submit.confirm"].create(
+            {"request_id": self.id}
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ส่งให้การเงินตรวจสอบ"),
+            "res_model": "approval.request.finance.submit.confirm",
+            "view_mode": "form",
+            "res_id": wizard.id,
+            "target": "new",
+        }
+
+    def action_submit_to_finance(self):
+        """approved → to_disburse: ผู้สร้างบันทึกผลค่าใช้จ่ายจริงเสร็จแล้ว ส่งต่อให้
+        การเงินเข้ามาตรวจสอบและตั้งเบิก. เมื่อพ้นสถานะ approved การแก้ไขผลค่าใช้จ่าย
+        ของผู้สร้างจะถูกปิด (ดู _compute_is_actual_editable) และเปิดปุ่มฝั่งการเงิน
+        (ตั้งเบิก/สร้างใบเบิก). เรียกผ่าน confirmation wizard."""
         for record in self:
             if record.state != "approved":
                 raise UserError(
-                    _("Only approved requests can record actual expenses.")
+                    _("Only approved requests can be sent to finance.")
                 )
-            record.state = "actual"
+            if not record.allocation_ids:
+                raise UserError(
+                    _("กรุณาบันทึกค่าใช้จ่ายจริงอย่างน้อย 1 รายการก่อนส่งให้การเงิน")
+                )
+            record.state = "to_disburse"
+        return True
+
+    def action_pull_back_from_finance(self):
+        """to_disburse → approved: ผู้สร้าง 'ดึงกลับ' คำขอจากการเงินเพื่อแก้ไข
+        ผลค่าใช้จ่ายจริงก่อนตั้งเบิก (ยังไม่มีการสร้างใบเบิก)."""
+        for record in self:
+            if record.state != "to_disburse":
+                raise UserError(
+                    _("ดึงกลับได้เฉพาะสถานะ 'รอการเงินตรวจสอบ/ส่งเบิก'")
+                )
+            record._track_set_log_message(
+                tools.plaintext2html(_("ดึงกลับจากการเงินเพื่อแก้ไขค่าใช้จ่าย"))
+            )
+            record.state = "approved"
+        return True
+
+    def action_open_finance_return_wizard(self):
+        """เปิด confirmation wizard บังคับกรอกเหตุผลก่อนตีกลับ (to_disburse →
+        approved) สำหรับฝั่งการเงิน/ผู้จัดการ."""
+        self.ensure_one()
+        if self.state != "to_disburse":
+            raise UserError(
+                _("ตีกลับได้เฉพาะสถานะ 'รอการเงินตรวจสอบ/ส่งเบิก'")
+            )
+        wizard = self.env["approval.request.finance.return.confirm"].create(
+            {"request_id": self.id}
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ตีกลับเพื่อให้แก้ไข"),
+            "res_model": "approval.request.finance.return.confirm",
+            "view_mode": "form",
+            "res_id": wizard.id,
+            "target": "new",
+        }
+
+    def _finance_return_for_edit(self, reason):
+        """to_disburse → approved: การเงิน/ผู้จัดการตีกลับให้ผู้สร้างแก้ไขผลค่าใช้จ่าย
+        ก่อนตั้งเบิก. เหตุผลถูกแนบไปกับ tracking message ของการเปลี่ยนสถานะ (ข้อความ
+        เดียวกัน) ผ่าน _track_set_log_message."""
+        self.ensure_one()
+        if self.state != "to_disburse":
+            raise UserError(
+                _("Only requests awaiting disbursement can be returned for editing.")
+            )
+        self._track_set_log_message(
+            tools.plaintext2html(_("ตีกลับเพื่อให้แก้ไข: %s") % reason)
+        )
+        self.state = "approved"
         return True
 
     def action_bill(self):
         for record in self:
-            if record.state != "actual":
+            if record.state != "to_disburse":
                 raise UserError(
-                    _("Only requests with recorded actuals can be billed.")
+                    _("Only requests awaiting disbursement can be billed.")
                 )
             record.state = "billed"
         return True
@@ -577,12 +872,6 @@ class ApprovalRequest(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get("name", "/") == "/":
-                vals["name"] = self.env["ir.sequence"].next_by_code(
-                    "approval.request"
-                ) or "/"
-
         records = super().create(vals_list)
         for rec in records:
             if rec.budget_commitment_id:
@@ -621,6 +910,18 @@ class ApprovalRequest(models.Model):
             "target": "current",
         }
 
+    def _get_budget_commitment_extra_kwargs(self):
+        """Extra kwargs forwarded to _create_budget_commitment().
+        Override in bridge modules to inject e.g. operating_unit_id."""
+        return {}
+
+    def _advance_after_reserved(self):
+        """Fired once a commitment is attached to the request — reserved new or
+        drawn. Base always proceeds through the normal approval routing
+        (→ to_send). A bridge may override this to skip routing instead — e.g.
+        a project-funded expense whose spending was already cleared upstream."""
+        return self.action_submit()
+
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
@@ -630,10 +931,10 @@ class ApprovalRequest(models.Model):
         if self.reservation_commitment_id:
             return self._action_draw_from_reservation()
 
-        # Chose "หยิบจากใบจอง" but picked nothing: say so, instead of falling
-        # through to reserve-new and complaining about the dimensions the mode
-        # switch deliberately cleared.
-        if self.budget_selection_mode == "reservation":
+        # Chose a draw-down mode (anything but "normal") but picked nothing: say
+        # so, instead of falling through to reserve-new and complaining about
+        # the dimensions the mode switch deliberately cleared.
+        if self.budget_selection_mode != "normal":
             raise UserError(_("กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"))
 
         # รหัสงบประมาณ / มิติทางบัญชี ไม่บังคับกรอกในฟอร์ม — ตรวจครบที่เดียว
@@ -686,11 +987,12 @@ class ApprovalRequest(models.Model):
                 description=f"Approval Request: {self.name}",
                 auto_reserve=True,
                 account_fiscal_year_id=self.account_fiscal_year_id.id,
+                **self._get_budget_commitment_extra_kwargs(),
             )
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
             )
-            self.action_submit()
+            self._advance_after_reserved()
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "approval.request",
@@ -709,10 +1011,13 @@ class ApprovalRequest(models.Model):
         Adopts the reservation's budget code and full dimension distribution —
         locked onto the request and its lines — links it as the request's
         commitment, and submits the request exactly like the reserve-new path. No
-        new reservation and no availability re-check: the money is already locked;
-        obligate/consume happen downstream at the disbursement (ADR-0010). The
-        request keeps its own computed fiscal year; the shared commitment carries
-        the fiscal year it was reserved in."""
+        new reservation is created: the money is already locked; obligate/consume
+        happen downstream at the disbursement (ADR-0010). The request keeps the
+        ปีงบประมาณ the user chose; the shared commitment carries the fiscal year
+        it was reserved in. The plan total is checked against what the slip
+        currently has left (``excep_draw_exceeds_available``) — a blocking
+        exception, since drawing more than is available would silently overdraw
+        a commitment that may be shared with other documents."""
         self.ensure_one()
         commitment = self.reservation_commitment_id
         if commitment.state not in ("reserved", "partial"):
@@ -720,6 +1025,10 @@ class ApprovalRequest(models.Model):
                 _("ใบจองงบประมาณ %s ไม่อยู่ในสถานะที่หยิบไปใช้ได้") % commitment.name
             )
         self._check_drawable_commitment(commitment)
+        if self.detect_exceptions() and not self.ignore_exception:
+            return self.with_context(
+                agx_exception_action="action_reserve_budget"
+            )._popup_exceptions()
         self.write(
             {
                 "budget_commitment_id": commitment.id,
@@ -738,7 +1047,7 @@ class ApprovalRequest(models.Model):
         self.message_post(
             body=_("หยิบใบจองงบประมาณ %s มาใช้ (draw down)") % commitment.name
         )
-        self.action_submit()
+        self._advance_after_reserved()
         return {
             "type": "ir.actions.act_window",
             "res_model": "approval.request",
@@ -752,7 +1061,7 @@ class ApprovalRequest(models.Model):
         """Block drawing a reservation this request must not use: a plan/project
         shared commitment (drawn only through their create-from-source flows,
         ADR-0006/0007) or a budget code this request could not itself select
-        (must be purchasable + product-backed)."""
+        (non-procurement expense code, ADR-0004)."""
         for fname, label in (
             ("procurement_plan_id", _("แผนจัดซื้อจัดจ้าง")),
             ("kmitl_project_id", _("โครงการ")),
@@ -781,20 +1090,18 @@ class ApprovalRequest(models.Model):
 
     @api.onchange("budget_selection_mode")
     def _onchange_budget_selection_mode(self):
-        """Clear whichever side of the choice is now inactive.
+        """Clear every budget-selection input on any mode switch.
 
         ``budget_selection_mode`` is a **UI affordance only** — the server still
         keys draw-down off the presence of ``reservation_commitment_id``
-        (ADR-0010), never off this field. Leaving the unused side filled would
-        make the form say one thing and the reserve action do another: a stale
-        chart selection under "หยิบจากใบจอง", or a stale slip under "เลือกจากผัง"
-        that would silently draw instead of reserving.
+        (ADR-0010), never off this field. Leaving a prior mode's input filled
+        would make the form say one thing and the reserve action do another: a
+        stale chart selection under a draw-down mode, or a stale slip under
+        "ใช้เงินจากแผน" that would silently draw instead of reserving.
         """
-        if self.budget_selection_mode == "chart":
-            self.reservation_commitment_id = False
-        else:
-            self.budget_account_id = False
-            self.analytic_distribution = False
+        self.reservation_commitment_id = False
+        self.budget_account_id = False
+        self.analytic_distribution = False
 
     def _cancel_budget_commitment(self):
         """A drawn reservation belongs to its owner, never to this request — detach
@@ -843,21 +1150,32 @@ class ApprovalRequest(models.Model):
 
     @api.depends("state")
     def _compute_is_plan_editable(self):
-        """The plan (expense lines, participants, header) is editable only in
-        draft by default. agx_approval_sarabun widens this to a Sarabun-returned
+        """The plan (expense lines, participants, header) stays editable until
+        the request is sent for approval — i.e. through draft, รอตรวจสอบ and
+        รอส่งขออนุมัติ. agx_approval_sarabun widens this to a Sarabun-returned
         request (edit everything except budget)."""
         for rec in self:
-            rec.is_plan_editable = rec.state == "draft"
+            rec.is_plan_editable = rec.state in ("draft", "to_verify", "to_send")
 
     @api.depends("state")
     def _compute_is_actual_editable(self):
+        # ``approved`` is the actual-expense recording phase: the creator fills
+        # ผลค่าใช้จ่ายจริง as soon as the request is approved, until it is handed
+        # to finance (to_disburse).
         for rec in self:
-            rec.is_actual_editable = rec.state == "actual"
+            rec.is_actual_editable = rec.state == "approved"
 
     def _compute_is_correction(self):
         # Base has no return-correction mode; bridges override this.
         for rec in self:
             rec.is_correction = False
+
+    @api.depends("name")
+    def _compute_is_number_assigned(self):
+        # "/" is the placeholder a request carries until action_to_verify mints
+        # its number. Kept untranslated on purpose — see the ``name`` field.
+        for rec in self:
+            rec.is_number_assigned = bool(rec.name and rec.name != "/")
 
     @api.depends("line_ids.total_amount")
     def _compute_total_amount(self):
@@ -868,6 +1186,122 @@ class ApprovalRequest(models.Model):
     def _compute_total_actual_amount(self):
         for rec in self:
             rec.total_actual_amount = sum(rec.allocation_ids.mapped("amount"))
+
+    def _plan_actual_rows(self):
+        """Per-product (planned, actual) totals for the plan-vs-actual
+        comparison, ordered by the plan's sequence with any actual-only products
+        appended. Actual amounts are summed across recipients so a per-product
+        total lines up with the single planned amount. ``descriptions`` gathers
+        the distinct plan-line details (รายละเอียด) for the product."""
+        self.ensure_one()
+        rows = {}
+        order = []
+
+        def bucket(product):
+            if product.id not in rows:
+                rows[product.id] = {
+                    "product": product,
+                    "plan": 0.0,
+                    "actual": 0.0,
+                    "descriptions": [],
+                }
+                order.append(product.id)
+            return rows[product.id]
+
+        for line in self.line_ids:
+            row = bucket(line.product_id)
+            row["plan"] += line.total_amount
+            detail = (line.description or "").strip()
+            if detail and detail not in row["descriptions"]:
+                row["descriptions"].append(detail)
+        for alloc in self.allocation_ids:
+            bucket(alloc.product_id)["actual"] += alloc.amount
+        return [rows[pid] for pid in order]
+
+    @api.depends(
+        "line_ids.product_id",
+        "line_ids.total_amount",
+        "allocation_ids.product_id",
+        "allocation_ids.amount",
+        "currency_id",
+    )
+    def _compute_plan_actual_comparison_html(self):
+        for rec in self:
+            rec.plan_actual_comparison_html = rec._render_plan_actual_comparison()
+
+    def _render_plan_actual_comparison(self):
+        """Render the per-product plan-vs-actual table as HTML. ผลต่าง = จ่ายจริง −
+        แผน; over-plan rows show red, under-plan green."""
+        self.ensure_one()
+        rows = self._plan_actual_rows()
+        if not rows:
+            return Markup(
+                "<p class='text-muted'>ยังไม่มีรายการค่าใช้จ่ายในแผน</p>"
+            )
+
+        def money(value):
+            return formatLang(self.env, value, currency_obj=self.currency_id)
+
+        def diff_cls(value):
+            if value > 0:
+                return "text-danger"
+            if value < 0:
+                return "text-success"
+            return "text-muted"
+
+        row_tpl = Markup(
+            "<tr>"
+            "<td>{product}</td>"
+            "<td class='text-muted'>{detail}</td>"
+            "<td class='text-end'>{plan}</td>"
+            "<td class='text-end'>{actual}</td>"
+            "<td class='text-end {cls}'>{diff}</td>"
+            "</tr>"
+        )
+        body = Markup("")
+        total_plan = total_actual = 0.0
+        for row in rows:
+            diff = row["actual"] - row["plan"]
+            total_plan += row["plan"]
+            total_actual += row["actual"]
+            body += row_tpl.format(
+                product=row["product"].display_name or "",
+                detail="\n".join(row["descriptions"]) or "-",
+                plan=money(row["plan"]),
+                actual=money(row["actual"]),
+                cls=diff_cls(diff),
+                diff=money(diff),
+            )
+
+        total_diff = total_actual - total_plan
+        table = Markup(
+            "<table class='table table-sm o_list_table mb-0'>"
+            "<thead><tr>"
+            "<th>รายการ</th>"
+            "<th>รายละเอียด</th>"
+            "<th class='text-end'>แผน</th>"
+            "<th class='text-end'>จ่ายจริง</th>"
+            "<th class='text-end'>ผลต่าง</th>"
+            "</tr></thead>"
+            "<tbody>{body}</tbody>"
+            "<tfoot><tr class='fw-bold'>"
+            "<td colspan='2'>รวม</td>"
+            "<td class='text-end'>{plan}</td>"
+            "<td class='text-end'>{actual}</td>"
+            "<td class='text-end {cls}'>{diff}</td>"
+            "</tr></tfoot>"
+            "</table>"
+        ).format(
+            body=body,
+            plan=money(total_plan),
+            actual=money(total_actual),
+            cls=diff_cls(total_diff),
+            diff=money(total_diff),
+        )
+        return Markup(
+            "<div style=\"background-color:#f8f9fa;border-radius:8px;padding:16px;"
+            "box-shadow:0 1px 4px rgba(0,0,0,.15);white-space:pre-line;\">{table}</div>"
+        ).format(table=table)
 
     def _voucher_groups(self):
         """งบหน้าใบสำคัญคู่จ่าย data: the disbursed actual allocation — จ่ายตรง /
@@ -910,4 +1344,36 @@ class ApprovalRequest(models.Model):
                         "ยอดค่าใช้จ่ายจริง (%(actual)s) เกินงบที่อนุมัติ/จองไว้ (%(cap)s)"
                     )
                     % {"actual": rec.total_actual_amount, "cap": cap}
+                )
+
+    @api.constrains("allocation_ids", "line_ids")
+    def _check_actual_not_exceed_plan(self):
+        """ยอดเบิกจ่ายจริงของแต่ละรายการ (product) ต้องไม่เกินยอดที่วางแผนไว้ใน
+        ค่าใช้จ่าย (แผน) สำหรับรายการนั้น."""
+        for rec in self:
+            if not rec.allocation_ids:
+                continue
+            over = []
+            for row in rec._plan_actual_rows():
+                if rec.currency_id.compare_amounts(row["actual"], row["plan"]) > 0:
+                    over.append(
+                        _(
+                            "- %(product)s: เบิกจริง %(actual)s / แผน %(plan)s"
+                        )
+                        % {
+                            "product": row["product"].display_name,
+                            "actual": formatLang(
+                                self.env, row["actual"],
+                                currency_obj=rec.currency_id,
+                            ),
+                            "plan": formatLang(
+                                self.env, row["plan"],
+                                currency_obj=rec.currency_id,
+                            ),
+                        }
+                    )
+            if over:
+                raise ValidationError(
+                    _("ยอดเบิกจ่ายจริงเกินยอดที่วางแผนไว้ในรายการต่อไปนี้:\n%s")
+                    % "\n".join(over)
                 )

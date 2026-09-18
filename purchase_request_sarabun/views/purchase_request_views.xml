@@ -3,16 +3,24 @@
     <record id="view_purchase_request_form_sarabun" model="ir.ui.view">
         <field name="name">purchase.request.form.sarabun</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form" />
         <field name="arch" type="xml">
+            <!-- state ที่โมดูลนี้เป็นเจ้าของ ต่อเข้า statusbar เอง -->
+            <xpath expr="//form/header/field[@name='state']" position="attributes">
+                <attribute name="statusbar_visible" add="sent" separator="," />
+            </xpath>
+            <xpath expr="//button[@name='button_cancel']" position="attributes">
+                <attribute name="states" add="sent" separator="," />
+            </xpath>
+
             <!-- Add Submit to Sarabun button after Request approval button -->
-            <xpath expr="//button[@name='button_draft']" position="after">
+            <xpath expr="//button[@name='button_draft']" position="before">
                 <button
                     name="action_submit_to_sarabun"
                     string="Create Sarabun"
                     type="object"
                     class="oe_highlight"
-                    attrs="{'invisible': ['|', ('state', '!=', 'to_submit'), ('sarabun_has_live_document', '=', True)]}"
+                    attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('sarabun_has_live_document', '=', True)]}"
                 />
                 <button
                     name="action_resend_to_sarabun"
@@ -61,8 +69,8 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="before">
-                <field name="active_sarabun_document_id" optional="show" />
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="active_sarabun_document_id" string="Document Number" optional="show" />
             </xpath>
         </field>
     </record>

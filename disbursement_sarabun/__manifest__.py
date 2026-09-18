@@ -3,7 +3,7 @@
 {
     "name": "Disbursement Sarabun Integration",
     "summary": "Route disbursement requests through Sarabun for head approval",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
@@ -11,11 +11,13 @@
     "depends": [
         "disbursement",
         "agx_sarabun",
+        "agx_sarabun_layout",
     ],
     "data": [
-        "data/sarabun_route_template_data.xml",
         "views/disbursement_request_views.xml",
         "reports/report_disbursement_request.xml",
+        "reports/report_disbursement_request_unbind.xml",
+        "data/sarabun_route_template_data.xml",
     ],
     "installable": True,
     "auto_install": False,

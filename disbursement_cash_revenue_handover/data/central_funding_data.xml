@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Government-budget money (แหล่งเงิน 1) arrives in SCB 088-2-60881-2 and is
+         recognised at สนอ. Any department outside 89xxx spending it is funded by a
+         handover. The row's existence is the rule — the other six sources have no
+         row, so they are never handed over.
+
+         The two GL accounts are matched on KMITL chart code rather than ref'd:
+         they are instantiated from the chart template at install, so they carry no
+         stable external id (account_kmitl publishes one only for the codes listed
+         in its hooks' REFERENCED_ACCOUNTS, which names no cash or revenue account).
+         Same shape as finance_kmitl/data/kmitl_payment_type_data.xml. -->
+    <record id="central_funding_source_1" model="kmitl.central.funding">
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1" />
+        <field
+            name="bank_account_id"
+            model="account.account"
+            search="[('code', '=', '1112110012')]"
+        />
+        <field
+            name="revenue_account_id"
+            model="account.account"
+            search="[('code', '=', '4111000004')]"
+        />
+        <field
+            name="central_department_analytic_id"
+            ref="account_analytic_kmitl.dept_89"
+        />
+        <field name="central_fund_analytic_id" ref="account_analytic_kmitl.fund_0100" />
+        <field
+            name="central_activity_analytic_id"
+            ref="account_analytic_kmitl.activity_090070101"
+        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
+    </record>
+</odoo>

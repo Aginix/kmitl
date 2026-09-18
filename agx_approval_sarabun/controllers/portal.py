@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import http
-from odoo.http import request
+from odoo.http import content_disposition, request
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.exceptions import AccessError, MissingError
 from odoo.tools.translate import _
@@ -99,11 +99,8 @@ class ApprovalRequestPortal(CustomerPortal):
             return request.redirect("/my")
 
         if report_type in ("html", "pdf", "text"):
-            return self._show_report(
-                model=approval_request_sudo,
-                report_type=report_type,
-                report_ref="agx_approval.action_report_approval_request",
-                download=download,
+            return self._render_approval_official_document(
+                approval_request_sudo, report_type, download=download
             )
 
         values = self._approval_request_get_page_view_values(
@@ -137,9 +134,9 @@ class ApprovalRequestPortal(CustomerPortal):
         website=True,
     )
     def portal_approval_request_report(
-        self, request_id, report_type, access_token=None, **kw
+        self, request_id, report_type, access_token=None, download=False, **kw
     ):
-        """Render approval request report in HTML or PDF format."""
+        """Render the approval request's official document in HTML or PDF."""
         try:
             approval_request_sudo = self._document_check_access(
                 "approval.request", request_id, access_token
@@ -147,33 +144,46 @@ class ApprovalRequestPortal(CustomerPortal):
         except (AccessError, MissingError):
             return request.redirect("/my")
 
-        if report_type == "html":
-            report = request.env.ref(
-                "agx_approval.action_report_approval_request"
+        return self._render_approval_official_document(
+            approval_request_sudo, report_type, download=download
+        )
+
+    def _render_approval_official_document(
+        self, approval_request_sudo, report_type, download=False
+    ):
+        """Serve the approval request's active หนังสือ — the official document
+        (ADR-0015): the Sarabun document rendered through สารบรรณ's own layout, not
+        a standalone approval report. No active หนังสือ yet (draft / to_send) →
+        back to the record page, matching "no document before submit".
+
+        Rendered sudo: a portal magic-link visitor has read on the request via the
+        access token but not on the sarabun.document; the official PDF is a system
+        render gated by the request's own access, already checked above."""
+        document = approval_request_sudo.active_sarabun_document_id.sudo()
+        if not document:
+            return request.redirect(approval_request_sudo.access_url or "/my")
+
+        if report_type == "pdf":
+            pdf = document._get_official_pdf()
+            filename = (document._get_report_base_filename() or "sarabun") + ".pdf"
+            disposition = content_disposition(
+                filename, "attachment" if download else "inline"
             )
-            html = request.env["ir.actions.report"]._render_qweb_html(
-                report.id, [approval_request_sudo.id]
-            )[0]
             return request.make_response(
-                html,
+                pdf,
                 headers=[
-                    ("Content-Type", "text/html"),
-                    ("Content-Length", len(html)),
+                    ("Content-Type", "application/pdf"),
+                    ("Content-Length", len(pdf)),
+                    ("Content-Disposition", disposition),
                 ],
             )
-        elif report_type == "pdf":
-            report = request.env.ref(
-                "agx_approval.action_report_approval_request"
-            )
-            pdf_content, _ = request.env["ir.actions.report"]._render_qweb_pdf(
-                report.id, [approval_request_sudo.id]
-            )
-            pdfhttpheaders = [
-                ("Content-Type", "application/pdf"),
-                ("Content-Length", len(pdf_content)),
-                (
-                    "Content-Disposition",
-                    f'inline; filename="Approval Request - {approval_request_sudo.name}.pdf"',
-                ),
-            ]
-            return request.make_response(pdf_content, headers=pdfhttpheaders)
+
+        # html / text: the A4-framed on-screen preview
+        html = document._render_preview_html()
+        return request.make_response(
+            html,
+            headers=[
+                ("Content-Type", "text/html; charset=utf-8"),
+                ("Content-Length", len(html)),
+            ],
+        )

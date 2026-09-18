@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="automation_notify_record_actual" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้งผู้สร้างบันทึกค่าใช้จ่ายจริงเมื่อได้รับอนุมัติ (approved)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field
+                name="filter_pre_domain"
+            >[('state', 'in', ('to_send', 'sent'))]</field>
+            <field name="filter_domain">[('state', '=', 'approved')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">
+for record in records:
+    record.activity_schedule(
+        "agx_approval_disbursement_todo.mail_activity_record_actual",
+        summary="คำขออนุมัติเลขที่ %s ได้รับอนุมัติแล้ว กรุณาบันทึกค่าใช้จ่ายจริงแล้วส่งให้การเงิน" % (record.name or ""),
+        user_id=(record.user_id or env.user).id,
+    )
+</field>
+        </record>
+
+        <record id="automation_notify_finance_return" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้งผู้สร้างแก้ไขค่าใช้จ่ายเมื่อกลับมาจากการเงิน (to_disburse → approved)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'to_disburse')]</field>
+            <field name="filter_domain">[('state', '=', 'approved')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">
+for record in records:
+    record.activity_schedule(
+        "agx_approval_disbursement_todo.mail_activity_record_actual",
+        summary="คำขออนุมัติเลขที่ %s กลับมาที่ขั้นบันทึกค่าใช้จ่ายจริง กรุณาตรวจสอบ/แก้ไขค่าใช้จ่ายจริงแล้วส่งให้การเงินใหม่" % (record.name or ""),
+        user_id=(record.user_id or env.user).id,
+    )
+</field>
+        </record>
+
+        <record id="automation_clear_record_actual" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: ล้าง Todo บันทึกค่าใช้จ่ายจริงเมื่อออกจากสถานะอนุมัติ (approved)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'approved')]</field>
+            <field name="filter_domain">[('state', '!=', 'approved')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records.activity_unlink(["agx_approval_disbursement_todo.mail_activity_record_actual"])</field>
+        </record>
+
+        <record id="automation_notify_finance_verify" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้งการเงินตรวจสอบและตั้งเบิก (to_disburse)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '!=', 'to_disburse')]</field>
+            <field name="filter_domain">[('state', '=', 'to_disburse')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">
+group = env.ref("disbursement.group_disbursement_officer", raise_if_not_found=False)
+if group:
+    users = group.users.filtered(lambda u: u.active and not u.share)
+    for record in records:
+        for user in users:
+            record.activity_schedule(
+                "agx_approval_disbursement_todo.mail_activity_finance_verify",
+                summary="คำขออนุมัติเลขที่ %s ส่งให้การเงินแล้ว กรุณาตรวจสอบและตั้งเบิก" % (record.name or ""),
+                user_id=user.id,
+            )
+</field>
+        </record>
+
+        <record id="automation_clear_finance_verify" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: ล้าง Todo การเงินเมื่อออกจากสถานะรอตั้งเบิก (to_disburse)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'to_disburse')]</field>
+            <field name="filter_domain">[('state', '!=', 'to_disburse')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records.activity_unlink(["agx_approval_disbursement_todo.mail_activity_finance_verify"])</field>
+        </record>
+
+        <record id="automation_notify_billed_fyi" model="base.automation">
+            <field
+                name="name"
+            >คำขออนุมัติ: แจ้ง FYI ผู้สร้างเมื่อเบิกจ่ายแล้ว (billed)</field>
+            <field name="model_id" ref="agx_approval.model_approval_request" />
+            <field name="trigger">on_write</field>
+            <field
+                name="filter_pre_domain"
+            >[('state', 'not in', ('billed', 'returned'))]</field>
+            <field name="filter_domain">[('state', '=', 'billed')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">
+for record in records:
+    record.activity_schedule(
+        "agx_approval_disbursement_todo.mail_activity_billed_fyi",
+        summary="คำขออนุมัติเลขที่ %s ดำเนินการเบิกจ่ายแล้ว" % (record.name or ""),
+        user_id=(record.user_id or env.user).id,
+    )
+</field>
+        </record>
+
+    </data>
+</odoo>

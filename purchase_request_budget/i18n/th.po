@@ -155,3 +155,8 @@ msgstr "ส่วนงาน"
 #: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__source_analytic_id
 msgid "Source"
 msgstr "แหล่งเงิน"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields.selection,name:purchase_request_budget.selection__purchase_request__state__to_verify_budget
+msgid "To Verify Budget"
+msgstr "รอจองงบประมาณ"

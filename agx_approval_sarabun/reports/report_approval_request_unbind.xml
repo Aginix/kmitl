@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ADR-0015: once the request is routed through e-Saraban, the หนังสือ is the
+         only official document. agx_approval's standalone report kept its Print
+         binding but no longer carries the เกษียน/signature block (the endorsement
+         inject was removed), so leaving it in the Print menu would let users print
+         an unsigned document that competes with the หนังสือ. Unbind it here — in the
+         bridge, not in agx_approval — so a deployment without สารบรรณ keeps its own
+         printable report. The report action itself stays registered; only the
+         Print-menu binding goes. -->
+    <record id="agx_approval.action_report_approval_request" model="ir.actions.report">
+        <field name="binding_model_id" eval="False"/>
+    </record>
+</odoo>

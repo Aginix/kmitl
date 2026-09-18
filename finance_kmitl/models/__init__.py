@@ -9,5 +9,5 @@ from . import kmitl_payment_type
 from . import kmitl_payment_subject
 from . import cheque_layout
 from . import cheque_register
-from . import account_journal
+from . import res_bank
 from . import withholding_tax_cert

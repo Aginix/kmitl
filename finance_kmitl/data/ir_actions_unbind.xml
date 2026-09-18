@@ -35,6 +35,16 @@
     </record>
 
     <!--
+        The printed twin of the mail above, and out for the same reason: core's
+        "Payment Receipt" is the form a *customer* is given for money coming in,
+        in English, on core's own layout. The office prints ใบสำคัญจ่าย instead,
+        and a Print menu offering both invites the wrong one.
+    -->
+    <record id="account.action_report_payment_receipt" model="ir.actions.report">
+        <field name="binding_model_id" eval="False" />
+    </record>
+
+    <!--
         The one that stays is renamed to the office's own word for the thing it
         makes. It shares its implementation with the button on the payment list, so
         either door behaves the same.

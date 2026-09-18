@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <record id="mail_activity_reserve_budget" model="mail.activity.type">
+        <field name="name">จองงบประมาณ (คำขออนุมัติ)</field>
+        <field name="summary">ตรวจสอบและจองงบประมาณสำหรับคำขออนุมัติ</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">approval.request</field>
+        <field name="icon">fa-money</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        The ใบขอเบิก a voucher was raised for, added to the printed ใบสำคัญจ่าย.
+        It lives here and not in finance_kmitl because the link itself does: a
+        voucher filled in by hand belongs to no request, and finance_kmitl must
+        stay installable without the disbursement side.
+    -->
+    <template
+        id="report_payment_voucher_disbursement"
+        inherit_id="finance_kmitl.report_payment_voucher"
+        priority="99"
+    >
+        <xpath expr="//div[hasclass('o_pv_meta')]" position="inside">
+            <div class="row" t-if="o.disbursement_request_id">
+                <div class="col">
+                    อ้างอิงใบขอเบิก <span
+                        class="ms-2"
+                        t-out="o.disbursement_request_id.name"
+                    />
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

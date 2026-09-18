@@ -90,9 +90,13 @@ PAYMENT_SUBJECTS = [
         "sequence": 14,
         "method": "transfer",
         "auto_match": True,
-        "default": "1112210004",
+        # Government-budget money falls back to the GOV savings account, not
+        # the REV one payment_subject_person_revenue uses — a fallback on the
+        # wrong side leaves a payee with no cash route (disbursement_cash_
+        # movement_kmitl's routes are grouped strictly by source).
+        "default": "1112110012",
         "allowed": [
-            "1112210004",
+            "1112110012",
             "1112120003",
             "1112120002",
             "1112120016",

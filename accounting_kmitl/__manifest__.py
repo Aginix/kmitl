@@ -12,6 +12,7 @@
         "base_tier_validation",
         "budget",
         "l10n_th_account_tax",
+        "partner_type_kmitl",
     ],
     "data": [
         "security/security.xml",

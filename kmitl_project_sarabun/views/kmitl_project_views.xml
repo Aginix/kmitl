@@ -16,17 +16,18 @@
                     string="หนังสือ" />
             </xpath>
 
-            <!-- "สร้างหนังสือ" replaces the base manual "อนุมัติ" fallback once the
-                 bridge is installed: available at to_send when no live หนังสือ. -->
+            <!-- "สร้างหนังสือ" sits alongside the manager-only "อนุมัติ" fallback at
+                 to_send when no live หนังสือ. -->
             <xpath expr="//button[@name='action_reserve_budget']" position="after">
                 <button name="action_submit_to_sarabun" string="สร้างหนังสือ"
                     type="object" class="oe_highlight"
                     attrs="{'invisible': ['|', ('state', '!=', 'to_send'), ('sarabun_has_live_document', '=', True)]}" />
             </xpath>
 
-            <!-- Sarabun routing replaces direct approval — hide the fallback. -->
+            <!-- Manager may approve directly at to_send, bypassing the หนังสือ; hidden at
+                 sent while a document is circulating. -->
             <xpath expr="//button[@name='action_approve']" position="attributes">
-                <attribute name="invisible">1</attribute>
+                <attribute name="attrs">{'invisible': [('state', '!=', 'to_send')]}</attribute>
             </xpath>
 
             <!-- Ungrouped field declarations + Sarabun status notice, between the

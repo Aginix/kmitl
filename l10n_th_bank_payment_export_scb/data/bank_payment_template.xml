@@ -9,12 +9,18 @@
     file from the หัวจ่าย — ``line.sending_acc_number`` — never from the
     template. All three SCB paying accounts therefore share these two.
 
-    ``kmitl`` is a placeholder, not a value. The Company ID comes from SCB when
-    the institute is onboarded and we do not have it, and
-    ``bank.payment.config.value`` is required so the line cannot ship blank.
-    Replace it in Finance > Settings > Bank Payment Templates before the first
-    real file. Confirm with SCB whether one Company ID covers all three accounts
-    or each account has its own — if the latter, this becomes six templates.
+    The Company ID is ``kmit088``, read off the 001 header of the file KMITL
+    sends SCB today. It looks account-specific: the suffix is the branch of the
+    SCB account that file debits. Confirm with SCB whether one Company ID covers
+    all three of the institute's SCB accounts — if each has its own, this becomes
+    one template per account rather than one per product.
+
+    Three templates because the file KMITL sends is a Payroll (``PAY``) file,
+    which the two that were here did not cover. PAY carries no service type: the
+    bank's own file leaves that field blank, and a config line cannot express
+    "blank" because ``bank.payment.config.value`` is required, so the line is
+    simply absent. DCP and MCL keep the ``04`` they had — no sample says
+    otherwise for those two.
 
     Not preset because the model default already says it: ``scb_bank_type``
     (Next Day), ``scb_invoice_language`` (Thai), ``scb_wht_signatory`` (Bank).
@@ -45,7 +51,7 @@
             name="field_id"
             ref="l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_company_id"
         />
-        <field name="value">kmitl</field>
+        <field name="value">kmit088</field>
     </record>
     <record id="payment_template_scb_dcp_product_code" model="bank.payment.config">
         <field name="template_id" ref="payment_template_scb_dcp" />
@@ -76,7 +82,7 @@
             name="field_id"
             ref="l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_company_id"
         />
-        <field name="value">kmitl</field>
+        <field name="value">kmit088</field>
     </record>
     <record id="payment_template_scb_mcl_product_code" model="bank.payment.config">
         <field name="template_id" ref="payment_template_scb_mcl" />
@@ -93,6 +99,28 @@
             ref="l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_service_type"
         />
         <field name="value">04</field>
+    </record>
+
+    <!-- Payroll: the product the file KMITL sends SCB today is written in. -->
+    <record id="payment_template_scb_pay" model="bank.payment.template">
+        <field name="name">SCB Payroll / PAY (จ่ายเงินเดือน-ค่าตอบแทน)</field>
+        <field name="bank">SICOTHBK</field>
+    </record>
+    <record id="payment_template_scb_pay_company_id" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_scb_pay" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_company_id"
+        />
+        <field name="value">kmit088</field>
+    </record>
+    <record id="payment_template_scb_pay_product_code" model="bank.payment.config">
+        <field name="template_id" ref="payment_template_scb_pay" />
+        <field
+            name="field_id"
+            ref="l10n_th_bank_payment_export_scb.field_bank_payment_export__scb_product_code"
+        />
+        <field name="value">PAY</field>
     </record>
 
 </odoo>

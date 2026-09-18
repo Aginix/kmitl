@@ -150,8 +150,10 @@ class DisbursementRequest(models.Model):
         self.returned_to_verification = True
         self.return_verification_reason = reason
         self.state = "signed"
-        # Reset the two-approver sub-workflow so re-validation starts a clean
-        # cycle (budget stays intact; re-approval is idempotent).
+        # Reset the verification stamp and the two-approver sub-workflow so
+        # re-validation starts a clean cycle (budget stays intact; re-approval is
+        # idempotent). Both archive their signature rows.
+        self._reset_verification()
         self._reset_approval()
         # Always raise a "please re-verify" To-Do so the responsible user is
         # aware of the re-check.

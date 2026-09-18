@@ -98,6 +98,18 @@ msgid "Amount"
 msgstr "จำนวน"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_wht
+msgid "Withholding Tax"
+msgstr "หัก ณ ที่จ่าย"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__amount_wht
+msgid "WHT Amount"
+msgstr "หัก ณ ที่จ่าย"
+
+
+
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__analytic_distribution
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__analytic_distribution
 msgid "Analytic"
@@ -325,6 +337,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_exception_confirm__related_model_id
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__request_id
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__request_id
 msgid "Disbursement Request"
 msgstr "ใบขอเบิก"
 
@@ -435,7 +448,7 @@ msgstr ""
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Group By"
-msgstr ""
+msgstr "จัดกลุ่มตาม"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__has_message
@@ -653,7 +666,7 @@ msgstr "จำนวน"
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_bank_id
 msgid "Recipient Bank"
-msgstr "ธนาคารผู้รับ"
+msgstr "บัญชีธนาคารผู้รับ"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__ref
@@ -692,7 +705,7 @@ msgstr "กลับไปสถานะร่าง"
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__user_id
 msgid "Responsible"
-msgstr "ผู้รับผิดชอบ"
+msgstr "ผู้สร้างเอกสาร"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_user_id
@@ -749,12 +762,12 @@ msgstr "ยืนยันแล้ว"
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__price_subtotal
 msgid "Subtotal"
-msgstr "มูลค่า"
+msgstr "มูลค่าก่อนภาษี"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__price_tax
 msgid "Tax"
-msgstr "ภาษี"
+msgstr "ภาษีมูลค่าเพิ่ม"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__tax_totals
@@ -762,10 +775,14 @@ msgid "Tax Totals"
 msgstr "ภาษีทั้งหมด"
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_tax
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__tax_ids
 msgid "Taxes"
-msgstr "ภาษี"
+msgstr "ประเภทภาษีมูลค่าเพิ่ม"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_tax
+msgid "Taxes"
+msgstr "ภาษีมูลค่าเพิ่ม"
 
 #. module: disbursement
 #. odoo-python
@@ -792,7 +809,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_total
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__price_total
 msgid "Total"
-msgstr "มูลค่า"
+msgstr "จำนวนเงิน"
 
 #. module: disbursement
 #: model:ir.model.fields,help:disbursement.field_disbursement_request__activity_exception_decoration
@@ -838,7 +855,7 @@ msgstr "รายการตั้งเจ้าหนี้"
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__wht_tax_id
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "WHT"
-msgstr "หัก ณ ที่จ่าย"
+msgstr "ประเภทหัก ณ ที่จ่าย"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__website_message_ids
@@ -880,20 +897,9 @@ msgstr ""
 msgid "ประเภทการจ่าย"
 msgstr ""
 
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request_signature
-msgid "ผู้ขอเบิก"
-msgstr ""
-
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
 msgid "ผู้รับเงิน"
-msgstr ""
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request_signature
-msgid "ผู้อนุมัติ"
 msgstr ""
 
 #. module: disbursement
@@ -928,11 +934,6 @@ msgid "รายละเอียด"
 msgstr ""
 
 #. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request_signature
-msgid "ลงชื่อ"
-msgstr ""
-
-#. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
 msgid "ลำดับ"
 msgstr ""
@@ -940,11 +941,6 @@ msgstr ""
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
 msgid "วันที่"
-msgstr ""
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request_signature
-msgid "วันที่ ......../......../.........."
 msgstr ""
 
 
@@ -1025,6 +1021,7 @@ msgstr "ตั้งหนี้แล้ว"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__department_analytic_id
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Department"
 msgstr "ส่วนงาน"
 
@@ -1145,6 +1142,7 @@ msgstr "ลงนามแล้ว"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__source_analytic_id
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Source"
 msgstr "แหล่งเงิน"
 
@@ -1561,6 +1559,7 @@ msgstr "ถูกตีกลับ"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__finance_approver_id
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_signature__step__finance_approve
 msgid "Finance Director"
 msgstr "ผอ.กองคลัง"
 
@@ -1571,6 +1570,7 @@ msgstr "ผอ.กองคลังอนุมัติเมื่อ"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__rector_approver_id
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_signature__step__rector_approve
 msgid "Rector-delegated Approver"
 msgstr "ผู้ได้รับมอบอำนาจอธิการบดี"
 
@@ -1810,3 +1810,69 @@ msgstr "ผู้ได้รับมอบอำนาจอนุมัติ
 msgid "Fully Approved"
 msgstr "อนุมัติครบสองขั้น"
 
+#. module: disbursement
+#: model:ir.model,name:disbursement.model_disbursement_request_signature
+msgid "Disbursement Request Signature"
+msgstr "ลายเซ็นในใบขอเบิก"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__verifier_id
+msgid "Verified By"
+msgstr "ผู้ตรวจสอบ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__verify_date
+msgid "Verified On"
+msgstr "ตรวจสอบเมื่อ"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request_signature__step__verify
+msgid "Verification Officer"
+msgstr "ผู้ตรวจสอบ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__signature_ids
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__request_id
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Signatures"
+msgstr "ลายเซ็น"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__step
+msgid "Step"
+msgstr "ขั้นตอน"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_by_id
+msgid "Signed By"
+msgstr "ผู้ลงนาม"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_date
+msgid "Signed On"
+msgstr "ลงนามเมื่อ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_name
+msgid "Signer Name (snapshot)"
+msgstr "ชื่อผู้ลงนาม (บันทึกไว้)"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_position_name
+msgid "Signer Position (snapshot)"
+msgstr "ตำแหน่งผู้ลงนาม (บันทึกไว้)"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signed_signature
+msgid "Signature (snapshot)"
+msgstr "ลายเซ็น (บันทึกไว้)"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signature_image
+msgid "Signature"
+msgstr "ลายเซ็น"

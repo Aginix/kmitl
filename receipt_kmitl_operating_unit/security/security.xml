@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ir_rule_receipt_kmitl_operating_units" model="ir.rule">
+        <field name="model_id" ref="receipt_kmitl.model_kmitl_receipt"/>
+        <field name="domain_force">['|',('operating_unit_id','=',False),('operating_unit_id','in',user.operating_unit_ids.ids)]</field>
+        <field name="name">Receipt Operating Unit</field>
+        <field name="global" eval="True"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record id="ir_rule_receipt_remittance_operating_units" model="ir.rule">
+        <field name="model_id" ref="receipt_kmitl.model_kmitl_receipt_remittance"/>
+        <field name="domain_force">['|',('operating_unit_id','=',False),('operating_unit_id','in',user.operating_unit_ids.ids)]</field>
+        <field name="name">Receipt Remittance Operating Unit</field>
+        <field name="global" eval="True"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+</odoo>

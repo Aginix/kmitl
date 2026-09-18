@@ -4,3 +4,4 @@ from . import bank_payment_export
 from . import bank_payment_export_line
 from . import disbursement_payment_line
 from . import disbursement_request
+from . import disbursement_request_signature

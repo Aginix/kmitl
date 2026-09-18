@@ -1,4 +1,5 @@
 from odoo import api, fields, models, tools, _
+from odoo.exceptions import ValidationError
 
 
 class ApprovalCategory(models.Model):
@@ -58,28 +59,52 @@ class ApprovalCategory(models.Model):
         comodel_name="product.product",
     )
 
-    allow_internal_partner = fields.Boolean(
-        string="Allow Internal Personnel",
-        help="Allow selecting internal personnel (บุคลากรภายใน) as the payee "
-        "on request lines of this category.",
+    multi_product = fields.Boolean(
+        string="มีรายการย่อย (เลือกได้หลายรายการ)",
+        default=False,
+        help="เปิดใช้เฉพาะประเภทค่าใช้จ่ายที่ให้ผู้ขอเลือกรายการย่อยได้เอง "
+        "(เช่น ฝึกอบรม/เดินทาง) — ประเภทค่าใช้จ่ายทั่วไปมีสินค้าเดียวตายตัว "
+        "ผู้ขอจึงกรอกเพียงจำนวนเงินและรายละเอียด",
     )
 
-    allow_external_partner = fields.Boolean(
-        string="Allow External Person",
-        help="Allow selecting external persons (บุคคลภายนอก) — companies and "
-        "others — as the payee on request lines of this category.",
-    )
+    @api.constrains("multi_product", "allowed_product_ids")
+    def _check_allowed_product_ids_count(self):
+        for rec in self:
+            count = len(rec.allowed_product_ids)
+            if rec.multi_product:
+                if count < 2:
+                    raise ValidationError(
+                        _(
+                            "ประเภทค่าใช้จ่ายแบบมีรายการย่อย (%s) ต้องมีสินค้าที่เลือกได้"
+                            " อย่างน้อย 2 รายการ"
+                        )
+                        % rec.name
+                    )
+            elif count != 1:
+                raise ValidationError(
+                    _(
+                        "ประเภทค่าใช้จ่ายแบบรายการเดียว (%s) ต้องมีสินค้าที่เลือกได้"
+                        " เท่ากับ 1 รายการเท่านั้น"
+                    )
+                    % rec.name
+                )
 
-    allow_student_partner = fields.Boolean(
-        string="Allow Student",
-        help="Allow selecting students (นักศึกษา) as the payee on request "
-        "lines of this category.",
+    allowed_partner_type_ids = fields.Many2many(
+        "res.partner.type",
+        string="Allowed Partner Types",
+        help="Partner types (ประเภทคู่ค้า) selectable as a participant "
+        "(รายชื่อ) on requests of this category. Leave empty to allow any "
+        "type.",
     )
 
     budget_account_id = fields.Many2one(
         "budget.account",
         string="Budget Account",
-        domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
+        domain=[
+            ("budgetable", "=", True),
+            ("budget_type", "=", "expense"),
+            ("purchase_ok", "=", False),
+        ],
     )
 
     activity_analytic_id = fields.Many2one(

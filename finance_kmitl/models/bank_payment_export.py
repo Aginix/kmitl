@@ -8,6 +8,7 @@ from odoo.osv import expression
 class BankPaymentExport(models.Model):
     _name = "bank.payment.export"
     _inherit = ["bank.payment.export", "thai.date.mixin"]
+    _order = "name desc, id desc"
 
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
@@ -72,12 +73,14 @@ class BankPaymentExport(models.Model):
         "Anything attached here is also listed with the record's other attachments.",
     )
     epayment_note = fields.Text(
-        string="Transfer Note",
+        string="Note",
         copy=False,
-        readonly=True,
-        help="Written when the transfer is confirmed. The file is confirmed as a "
-        "whole, so this is where a payee the bank could not credit — and how they "
-        "were settled outside the system instead — is recorded.",
+        tracking=True,
+        help="A free note about this file — the reason it was cut apart from the "
+        "month's run, an instruction from above, or what was done with a payee "
+        "the bank could not credit. Editable at any state; the confirm-transfer "
+        "wizard also writes here when the file is closed, and the office can "
+        "amend it afterwards.",
     )
 
     # -------------------------------------------------------------------------

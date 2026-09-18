@@ -35,12 +35,28 @@ class PurchaseRequest(models.Model):
         for rec in self:
             rec.advance_payment_count = 1 if rec.advance_payment_id else 0
 
+    def _check_requested_by_has_employee(self):
+        """`requested_by` is a res.users here (OCA's purchase.request), but the
+        advance payment it seeds requires an hr.employee (ADR-0014) — guard
+        with a readable error instead of letting the required field on
+        advance.payment raise an ambiguous one."""
+        self.ensure_one()
+        if not self.requested_by.employee_id:
+            raise UserError(
+                _(
+                    "ผู้ขอของใบขอให้จัดหายังไม่ถูกผูกกับข้อมูลบุคลากร"
+                    " (%(user)s) จึงสร้างสัญญายืมเงินไม่ได้",
+                    user=self.requested_by.name,
+                )
+            )
+
     def _prepare_advance_payment_vals(self):
         """Prepare values for creating an advance payment from this PR."""
         self.ensure_one()
         loan_type = self.env.ref("advance_payment.loan_type_procurement")
         return {
-            "requested_by": self.requested_by.id,
+            "employee_id": self.requested_by.employee_id.id,
+            "user_id": self.env.uid,
             "reference": "purchase.request,%s" % self.id,
             "loan_amount": self.get_estimated_cost_currency(),
             "loan_type_id": loan_type.id,
@@ -58,6 +74,7 @@ class PurchaseRequest(models.Model):
             raise UserError(_("Payment type must be 'Advance' to create an advance payment."))
         if self.advance_payment_id:
             raise UserError(_("An advance payment already exists for this purchase request."))
+        self._check_requested_by_has_employee()
 
         vals = self._prepare_advance_payment_vals()
         advance_payment = self.env["advance.payment"].create(vals)

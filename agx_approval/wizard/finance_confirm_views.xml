@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="approval_request_finance_submit_confirm_view_form" model="ir.ui.view">
+        <field name="name">approval.request.finance.submit.confirm.form</field>
+        <field name="model">approval.request.finance.submit.confirm</field>
+        <field name="arch" type="xml">
+            <form string="ส่งให้การเงินตรวจสอบ">
+                <field name="request_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <div class="alert alert-info" role="alert">
+                    ตรวจทานข้อมูลค่าใช้จ่ายจริงด้านล่างก่อนส่งให้การเงินตรวจสอบและตั้งเบิก
+                    — เมื่อส่งแล้วจะแก้ไขค่าใช้จ่ายไม่ได้จนกว่าจะ "ดึงกลับ" หรือการเงิน "ตีกลับ"
+                </div>
+                <group>
+                    <group>
+                        <field name="name"/>
+                        <field name="category_id"/>
+                        <field name="account_fiscal_year_id"/>
+                        <field name="budget_account_id"/>
+                    </group>
+                    <group>
+                        <field name="total_amount"/>
+                        <field name="budget_commitment_amount"/>
+                        <field name="total_actual_amount"/>
+                    </group>
+                </group>
+                <field name="allocation_ids" nolabel="1">
+                    <tree string="ค่าใช้จ่ายจริง" create="false" edit="false" delete="false">
+                        <field name="partner_id"/>
+                        <field name="product_id"/>
+                        <field name="description"/>
+                        <field name="payment_type"/>
+                        <field name="amount" sum="Total"/>
+                    </tree>
+                </field>
+                <footer>
+                    <button name="action_confirm" string="ยืนยันส่งให้การเงิน" type="object" class="btn-primary"/>
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="approval_request_finance_return_confirm_view_form" model="ir.ui.view">
+        <field name="name">approval.request.finance.return.confirm.form</field>
+        <field name="model">approval.request.finance.return.confirm</field>
+        <field name="arch" type="xml">
+            <form string="ตีกลับเพื่อให้แก้ไข">
+                <field name="request_id" invisible="1"/>
+                <div class="alert alert-warning" role="alert">
+                    ตีกลับคำขอกลับไปสถานะ "อนุมัติแล้ว" เพื่อให้ผู้สร้างแก้ไขค่าใช้จ่ายจริง
+                    — กรุณากรอกเหตุผล เหตุผลจะแสดงพร้อมกับการเปลี่ยนสถานะใน chatter
+                </div>
+                <group>
+                    <field name="reason" placeholder="ระบุเหตุผลที่ตีกลับ (บังคับ)"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="ยืนยันตีกลับ" type="object" class="btn-primary"/>
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

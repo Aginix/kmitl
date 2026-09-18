@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_advance_payment_followup" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.advance_payment.followup</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="advance_payment.res_config_settings_view_form_advance_payment"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@data-key='advance_payment']" position="inside">
+                <h2>การติดตามลูกหนี้เงินยืม</h2>
+                <div class="row mt16 o_settings_container" name="advance_payment_followup_notification">
+                    <div class="col-12 col-lg-6 o_setting_box" id="advance_payment_followup_notification">
+                        <div class="o_setting_right_pane">
+                            <label for="advance_payment_followup_notify_days"/>
+                            <div class="text-muted">
+                                ส่ง digest แจ้งเตือนลูกหนี้ที่ใกล้ครบกำหนด/เกินกำหนดคืน
+                                เมื่อเหลือเวลาไม่เกินจำนวนวันนี้ (รันทุกสัปดาห์)
+                            </div>
+                            <div class="mt8">
+                                <field name="advance_payment_followup_notify_days"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

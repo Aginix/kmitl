@@ -86,7 +86,7 @@ class ApprovalRequest(models.Model):
         prepaid recipients must not be gated on anyone's loan state (ADR-0003)."""
         for rec in self:
             rec.show_create_disbursement_button = (
-                rec.state == "actual" and not rec.has_active_disbursement
+                rec.state == "to_disburse" and not rec.has_active_disbursement
             )
 
     @api.constrains("allocation_ids", "state")

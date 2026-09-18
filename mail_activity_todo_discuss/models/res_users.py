@@ -10,7 +10,7 @@ class ResUsers(models.Model):
         """List payload for the Discuss Todo page.
 
         Default (``read=False``): the current user's open Todos as records
-        (capped at ``limit``), earliest deadline first, each carrying its
+        (capped at ``limit``), newest first, each carrying its
         source-app icon and the detail fields the list renders. Reuses
         ``_my_todo_count_domain`` (from mail_activity_todo) so the page, the
         systray badge and the Todo app all select the same Todos. Pass
@@ -30,7 +30,7 @@ class ResUsers(models.Model):
             domain = domain + [("res_model", "=", res_model)]
         total = Activity.search_count(domain)
         activities = Activity.search(
-            domain, limit=limit, order="date_deadline asc, id desc"
+            domain, limit=limit, order="id desc"
         )
         icons = {}
         todos = [self._todo_activity_card(act, icons) for act in activities]
