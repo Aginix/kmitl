@@ -427,6 +427,11 @@ msgid "Source"
 msgstr "แหล่งเงิน"
 
 #. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
+msgid "Various accounts"
+msgstr "บัญชีต่าง ๆ"
+
+#. module: accounting_kmitl_reports
 #: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
 msgid "Balance brought forward"
 msgstr "ยอดยกมา (หน้าก่อน)"

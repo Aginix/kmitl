@@ -134,16 +134,15 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                 for aid in ml.get("analytic_distribution") or {}:
                     analytic_ids.add(int(aid))
         move_map = self._kmitl_move_detail_map(move_ids)
-        # Every line of each referenced entry, to explode the selected account's
-        # lines into their opposite-side counterparts (the Account column).
+        # Every line of each referenced entry, to resolve the counterpart
+        # account of each selected line for the Account column -- never to
+        # add rows or drive amounts of its own.
         move_lines_map = self._kmitl_move_lines_map(move_ids, company_id)
         cp_account_ids = set()
         for cp_lines in move_lines_map.values():
             for cp in cp_lines:
                 if cp["account_id"]:
                     cp_account_ids.add(cp["account_id"][0])
-                for aid in cp.get("analytic_distribution") or {}:
-                    analytic_ids.add(int(aid))
         acc_name = {
             a.id: ("%s %s" % (a.code or "", a.name or "")).strip()
             for a in self.env["account.account"].browse(list(cp_account_ids)).exists()
@@ -189,76 +188,64 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
             lines = []
             running = acc["init_bal"]["balance"]
             for entry_id, sel_lines in groups.items():
-                head = sel_lines[0]
-                sel_net = sum(
-                    (m.get("debit") or 0.0) - (m.get("credit") or 0.0) for m in sel_lines
-                )
-                # Side of the selected account in this entry; counterparts are
-                # the opposite side and their amount mirrors onto this side.
-                side = "debit" if sel_net >= 0 else "credit"
                 detail = move_map.get(entry_id, {})
-                base = {
-                    "date": fields.Date.to_string(head["date"]) if head.get("date") else "",
-                    "issue": head.get("entry") or "",
-                    "entry_id": entry_id or False,
-                    # Remark column shows the journal entry's narration.
-                    "narration": detail.get("narration") or "",
-                    "maker": detail.get("maker") or "",
-                    "maker_date": detail.get("maker_date") or "",
-                }
-                # Opposite-side lines (exclude the selected account itself);
-                # opposite-side tax lines are kept so amounts still tie out.
-                cps = [
-                    cp
-                    for cp in move_lines_map.get(entry_id, [])
-                    if cp["account_id"]
-                    and cp["account_id"][0] != sel_id
-                    and (
-                        (cp["credit"] or 0.0) > 0
-                        if side == "debit"
-                        else (cp["debit"] or 0.0) > 0
-                    )
-                ]
-                group_rows = []
-                if cps:
-                    for cp in cps:
-                        amt = (cp["credit"] if side == "debit" else cp["debit"]) or 0.0
-                        debit = amt if side == "debit" else 0.0
-                        credit = amt if side == "credit" else 0.0
-                        # Running balance accumulates each displayed row, so the
-                        # column always foots (prev ± this row's debit/credit).
-                        running += debit - credit
-                        group_rows.append(
-                            dict(
-                                base,
-                                id="%s-%s-%s" % (sel_id, entry_id, cp["id"]),
-                                account=acc_name.get(cp["account_id"][0], ""),
-                                debit=debit,
-                                credit=credit,
-                                balance=running,
-                                dimensions=build_dimensions(cp.get("analytic_distribution")),
-                                partner=cp["partner_id"][1] if cp.get("partner_id") else "",
-                            )
+                cp_lines = move_lines_map.get(entry_id, [])
+                # One row per line of the selected account -- the Account
+                # column is a label only, never a driver: the row's own
+                # debit/credit is always what's posted on that line.
+                for sel_line in sel_lines:
+                    debit = sel_line.get("debit") or 0.0
+                    credit = sel_line.get("credit") or 0.0
+                    # Side of THIS line, not the entry's net -- an account
+                    # posted on both sides of the same entry keeps its own
+                    # gross per line instead of collapsing to one side.
+                    side = "debit" if debit >= credit else "credit"
+                    # Opposite-side accounts of the entry (exclude the
+                    # selected account itself); a single one is named, several
+                    # collapse to "Various accounts", none falls back to the
+                    # selected account's own name.
+                    opp_ids = {
+                        cp["account_id"][0]
+                        for cp in cp_lines
+                        if cp["account_id"]
+                        and cp["account_id"][0] != sel_id
+                        and (
+                            (cp["credit"] or 0.0) > 0
+                            if side == "debit"
+                            else (cp["debit"] or 0.0) > 0
                         )
-                else:
-                    # No opposite-side line (e.g. a same-side-only adjustment):
-                    # keep one row for the selected account so nothing is lost.
-                    debit = sum(m.get("debit") or 0.0 for m in sel_lines)
-                    credit = sum(m.get("credit") or 0.0 for m in sel_lines)
+                    }
+                    if len(opp_ids) == 1:
+                        account = acc_name.get(next(iter(opp_ids)), "")
+                    elif opp_ids:
+                        account = _("Various accounts")
+                    else:
+                        account = sel_label
+                    # Running balance accumulates each displayed row, so the
+                    # column always foots (prev ± this row's debit/credit).
                     running += debit - credit
-                    group_rows.append(
-                        dict(
-                            base,
-                            id="%s-%s-%s" % (sel_id, entry_id, head["id"]),
-                            account=sel_label,
-                            debit=debit,
-                            credit=credit,
-                            balance=running,
-                            dimensions=build_dimensions(head.get("analytic_distribution")),
-                            partner=head.get("partner_name") or "",
-                        )
+                    lines.append(
+                        {
+                            "date": fields.Date.to_string(sel_line["date"])
+                            if sel_line.get("date")
+                            else "",
+                            "issue": sel_line.get("entry") or "",
+                            "entry_id": entry_id or False,
+                            # Remark column shows the journal entry's narration.
+                            "narration": detail.get("narration") or "",
+                            "maker": detail.get("maker") or "",
+                            "maker_date": detail.get("maker_date") or "",
+                            "id": "%s-%s-%s" % (sel_id, entry_id, sel_line["id"]),
+                            "account": account,
+                            "debit": debit,
+                            "credit": credit,
+                            "balance": running,
+                            "dimensions": build_dimensions(
+                                sel_line.get("analytic_distribution")
+                            ),
+                            "partner": sel_line.get("partner_name") or "",
+                        }
                     )
-                lines.extend(group_rows)
 
             accounts.append(
                 {
@@ -268,11 +255,12 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                     "initial_balance": acc["init_bal"]["balance"],
                     "period_debit": period_debit,
                     "period_credit": period_credit,
-                    # Carried-forward foots the displayed columns: the balance
-                    # is the running total of every row's Debit/Credit, so it
-                    # equals initial_balance + final_debit - final_credit.
-                    "final_debit": sum(line["debit"] for line in lines),
-                    "final_credit": sum(line["credit"] for line in lines),
+                    # Carried-forward ties to the account's own move lines
+                    # (period_debit/period_credit), matching the Trial
+                    # Balance -- each row now uses its own line's amount, so
+                    # this also equals the sum of the displayed rows.
+                    "final_debit": period_debit,
+                    "final_credit": period_credit,
                     "final_balance": running,
                     "lines": lines,
                 }
@@ -320,9 +308,9 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
     @api.model
     def _kmitl_move_lines_map(self, move_ids, company_id):
         """``{move_id: [line_dict, ...]}`` with every posting line of each
-        referenced entry (section/note lines excluded). Used to explode each
-        selected-account line into the entry's opposite-side counterpart lines
-        (the Account column)."""
+        referenced entry (section/note lines excluded). Used only to name the
+        counterpart account of each selected-account line (the Account
+        column) -- never to add rows or drive amounts."""
         if not move_ids:
             return {}
         rows = self.env["account.move.line"].search_read(
@@ -331,7 +319,7 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                 ("company_id", "=", company_id),
                 ("display_type", "not in", ["line_section", "line_note"]),
             ],
-            ["move_id", "account_id", "debit", "credit", "analytic_distribution", "partner_id"],
+            ["move_id", "account_id", "debit", "credit"],
         )
         result = {}
         for r in rows:
