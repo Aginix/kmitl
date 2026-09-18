@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "Purchase Guarantee with Operating Units",
+    "name": "Access all OUs' Purchase Guarantee",
     "version": "16.0.1.0.0",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": [
-        "operating_unit",
-        "l10n_th_gov_purchase_guarantee",
-    ],
+    "depends": ["purchase_guarantee_operating_unit"],
     "data": [
-        "security/purchase_guarantee_security.xml",
-        "views/purchase_guarantee_views.xml",
+        "security/security.xml",
     ],
     "application": False,
     "installable": True,
