@@ -6,7 +6,7 @@ from odoo import fields, models
 
 class ProcurementType(models.Model):
     _name = "procurement.type"
-    _description = "Procurement Method"
+    _description = "Procurement Type"
     _order = "sequence"
 
     name = fields.Char(

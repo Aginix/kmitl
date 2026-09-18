@@ -11,7 +11,6 @@
         "purchase_exception",
         "purchase_request_exception",
         "purchase_request_operating_unit",
-        "purchase_request_price_tax_included",
         "account_fiscal_year",
         "purchase_order_kmitl",
         "purchase_operating_unit",
