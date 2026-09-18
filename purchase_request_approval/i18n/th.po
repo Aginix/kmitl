@@ -1631,3 +1631,13 @@ msgstr "Wizard ตีกลับ/ยกเลิก พจ.1"
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__pending_pr
 msgid "Pending PR Revision"
 msgstr "รอ พ.1 แก้ไข"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_tree
+msgid "PR Number"
+msgstr "เลขที่ใบพจ.1"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_tree
+msgid "Document Number"
+msgstr "เลขที่หนังสือพจ.1"

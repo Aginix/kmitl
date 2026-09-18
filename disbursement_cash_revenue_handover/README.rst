@@ -44,6 +44,10 @@ A source of funds with no profile is never handed over, so widening or narrowing
 scope is configuration, not code. Profiles are not scoped by fiscal year — edit the
 one row in place when accounts or dimensions change.
 
+The module comes with one profile already seeded, for แหล่งเงิน ``1`` (งบประมาณ
+แผ่นดิน). It can be edited from the configuration screen like any other row; every
+other source of funds still needs a profile added by hand before it is in scope.
+
 Behaviour
 =========
 
