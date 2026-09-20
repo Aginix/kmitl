@@ -12,6 +12,7 @@
     ],
     'data': [
         'data/sequence.xml',
+        'views/purchase_order_views.xml',
     ],
     'installable': True,
     'auto_install': False,

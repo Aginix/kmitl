@@ -27,3 +27,14 @@ msgstr "ไม่พบลำดับเลขที่เอกสาร (purc
 #, python-format
 msgid "Fiscal Year is required to generate the PO number."
 msgstr "ต้องระบุปีงบประมาณเพื่อสร้างเลขที่เอกสาร"
+
+#. module: purchase_sequence_kmitl
+#. odoo-python
+#: code:addons/purchase_sequence_kmitl/models/purchase_order.py:0
+#, python-format
+msgid ""
+"The fiscal year is frozen once the PO number has been assigned — changing "
+"it would make the number inconsistent."
+msgstr ""
+"ปีงบประมาณถูกล็อกหลังจากออกเลขที่ใบสั่งซื้อแล้ว "
+"การแก้ไขจะทำให้เลขที่เอกสารไม่สอดคล้องกัน"
