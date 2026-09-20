@@ -6,7 +6,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": [
-        "operating_unit",
+        "purchase_operating_unit",
         "purchase_work_acceptance",
     ],
     "data": [
