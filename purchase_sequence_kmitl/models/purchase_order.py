@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api, fields, models
+from odoo import _, api, models
 from odoo.exceptions import UserError, ValidationError
 
 
@@ -11,7 +11,7 @@ class PurchaseOrder(models.Model):
         Sequence = self.env["ir.sequence"]
         FiscalYear = self.env["account.fiscal.year"]
         for vals in vals_list:
-            if vals.get("name") and vals["name"] != _("New"):
+            if vals.get("name", "New") != "New":
                 continue
             fy = FiscalYear.browse(vals.get("account_fiscal_year_id"))
             if not fy:
