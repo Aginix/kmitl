@@ -28,16 +28,19 @@ class PurchaseRequestApproval(models.Model):
     def _get_default_requested_by(self):
         return self.env["res.users"].browse(self.env.uid)
 
-    # States a draft can move to that mean the request was dropped, not
-    # submitted — no number should be spent (the sequence is no_gap).
+    # States that never mint a number on a state write. A พจ.1 normally gets
+    # its number eagerly in create() (see below); these states are the ones a
+    # still-unnumbered record may sit in — a dropped draft must not spend a
+    # number on its way to cancelled.
     _NO_NUMBER_STATES = ("draft", "cancelled")
 
     @api.model
     def _get_default_name(self):
-        # Keep the "/" placeholder until the state leaves draft; the pjq.1
-        # number is minted at that transition against the fiscal year's end
-        # date (see _assign_document_number), so drawing here would use
-        # today's date and could roll into the wrong ปีงบประมาณ.
+        # The "/" placeholder; the พจ.1 number is minted by
+        # _assign_document_number() against the fiscal year's end date — eagerly
+        # in create() when ปีงบประมาณ is known, otherwise on the first state
+        # write out of draft. Drawing it here would use today's date and could
+        # roll into the wrong ปีงบประมาณ.
         return "/"
 
     # == Business fields ==
@@ -372,6 +375,13 @@ class PurchaseRequestApproval(models.Model):
             )
         self.name = number
 
+    def _get_number_slug(self):
+        # The พจ.1 number contains "/" (PA/2569/0001); browsers treat it as a
+        # path separator and truncate a download to "0001.pdf". Same
+        # substitution as agx_sarabun._get_report_base_filename.
+        self.ensure_one()
+        return (self.name or "").replace("/", "-")
+
     def report_generate(self):
         self.ensure_one()
 
@@ -379,7 +389,7 @@ class PurchaseRequestApproval(models.Model):
             "purchase_request_approval.report_purchase_request_approval",
             [self.id],
         )
-        filename = self.name + ".pdf"
+        filename = self._get_number_slug() + ".pdf"
         self.env["ir.attachment"].create(
             {
                 "name": filename,
@@ -571,12 +581,6 @@ class PurchaseRequestApproval(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        for vals in vals_list:
-            # Historic callers still pass _("New") — normalise to the "/"
-            # placeholder so the mint below (or the state transition) draws
-            # the fiscal-year-pinned number instead.
-            if vals.get("name", _("New")) in (_("New"), False):
-                vals["name"] = self._get_default_name()
         requests = super().create(vals_list)
         # Preserve the original UX: the พจ.1 number is visible from the
         # moment the record opens (as long as ปีงบประมาณ is known — it is
@@ -588,6 +592,25 @@ class PurchaseRequestApproval(models.Model):
         return requests
 
     def write(self, vals):
+        # Freeze the fiscal year once the พจ.1 number has been assigned: the
+        # number's year comes from that FY (%(year_be)s), so a later change
+        # would leave PA/2569/0001 sitting on FY 2570. Mirrors
+        # purchase_request_sequence_kmitl.write(). Only an actual change is
+        # refused — the PR re-sync path (_prepare_approval_sync_vals) re-writes
+        # the field with the same value on every ตีกลับ/แก้ไข round trip.
+        if "account_fiscal_year_id" in vals:
+            numbered = self.filtered(
+                lambda r: r.name
+                and r.name != "/"
+                and r.account_fiscal_year_id.id != vals["account_fiscal_year_id"]
+            )
+            if numbered:
+                raise UserError(
+                    _(
+                        "The fiscal year is frozen once the พจ.1 number has been "
+                        "assigned — changing it would make the number inconsistent."
+                    )
+                )
         res = super().write(vals)
         # Mint the พจ.1 number on any transition out of draft, no matter
         # which button (or server-side write) triggers it — button_to_approve
@@ -624,7 +647,7 @@ class PurchaseRequestApproval(models.Model):
 
     def _get_report_base_filename(self):
         self.ensure_one()
-        return "PA - %s" % (self.name)
+        return "PA - %s" % self._get_number_slug()
 
     def open_preview(self):
         if self.id:

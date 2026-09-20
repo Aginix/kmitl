@@ -1,6 +1,6 @@
 {
     "name": "Purchase Request Approval",
-    "version": "16.0.2.0.0",
+    "version": "16.0.2.1.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
@@ -13,6 +13,10 @@
         "portal",
         "purchase_request_egp",
         "agx_sarabun_layout",
+        # %(year_be)s in the PA sequence prefix is interpolated by
+        # l10n_th_base_sequence — depend on it explicitly rather than
+        # relying on the transitive path through budget.
+        "l10n_th_base_sequence",
     ],
     "data": [
         "data/purchase_request_approval_sequence.xml",

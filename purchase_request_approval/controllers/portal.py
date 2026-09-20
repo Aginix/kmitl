@@ -141,7 +141,8 @@ class PurchaseRequestApprovalPortal(CustomerPortal):
                 ("Content-Length", len(pdf_content)),
                 (
                     "Content-Disposition",
-                    f'inline; filename="Purchase Request - {purchase_request_approval_sudo.name}.pdf"',
+                    'inline; filename="Purchase Request - '
+                    f'{purchase_request_approval_sudo._get_number_slug()}.pdf"',
                 ),
             ]
             return request.make_response(pdf_content, headers=pdfhttpheaders)
