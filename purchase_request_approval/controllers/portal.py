@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import http
-from odoo.http import request
+from odoo.http import content_disposition, request
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.exceptions import AccessError, MissingError
 from odoo.tools.translate import _
@@ -141,8 +141,14 @@ class PurchaseRequestApprovalPortal(CustomerPortal):
                 ("Content-Length", len(pdf_content)),
                 (
                     "Content-Disposition",
-                    'inline; filename="Purchase Request - '
-                    f'{purchase_request_approval_sudo._get_number_slug()}.pdf"',
+                    # content_disposition() RFC-6266-encodes the name
+                    # (filename*=UTF-8''...); hand-building a
+                    # 'filename="<thai>"' header crashes on latin-1 encoding.
+                    content_disposition(
+                        purchase_request_approval_sudo._get_report_base_filename()
+                        + ".pdf",
+                        disposition_type="inline",
+                    ),
                 ),
             ]
             return request.make_response(pdf_content, headers=pdfhttpheaders)
