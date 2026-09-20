@@ -36,3 +36,24 @@ class PurchaseOrder(models.Model):
                 )
             vals["name"] = number
         return super().create(vals_list)
+
+    def write(self, vals):
+        # The number embeds the ปีงบประมาณ (%(year_be)s of the FY's date_to) and
+        # is minted in create(), so every saved PO is already numbered: changing
+        # the fiscal year afterwards would desync PO/<year>/#### from the year
+        # the money is actually spent under. The form keeps the field editable
+        # while the record is new (see views/purchase_order_views.xml); this
+        # guard closes the ORM/RPC path. Only an actual change is refused, so
+        # bridges that re-write the field with its current value keep working.
+        if "account_fiscal_year_id" in vals:
+            changed = self.filtered(
+                lambda o: o.account_fiscal_year_id.id != vals["account_fiscal_year_id"]
+            )
+            if changed:
+                raise UserError(
+                    _(
+                        "The fiscal year is frozen once the PO number has been "
+                        "assigned — changing it would make the number inconsistent."
+                    )
+                )
+        return super().write(vals)
