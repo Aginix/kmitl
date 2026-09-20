@@ -4,7 +4,7 @@
     <record id="ir_rule_purchase_request_approval_allowed_operating_units" model="ir.rule">
         <field name="name">PA from allowed operating units</field>
         <field name="model_id" ref="purchase_request_approval.model_purchase_request_approval"/>
-        <field name="domain_force">[('operating_unit_id','in',user.operating_unit_ids.ids)]</field>
+        <field name="domain_force">['|', ('operating_unit_id','=',False), ('operating_unit_id','in',user.operating_unit_ids.ids)]</field>
         <field name="name">Purchase Request approval Operating Unit</field>
         <field name="global" eval="True" />
         <field name="perm_unlink" eval="0" />
@@ -16,7 +16,7 @@
     <record id="ir_rule_purchase_request_approval_line_allowed_operating_units" model="ir.rule">
         <field name="name">PA Lines from allowed operating units</field>
         <field name="model_id" ref="purchase_request_approval.model_purchase_request_approval_line"/>
-        <field name="domain_force">[('operating_unit_id','in',user.operating_unit_ids.ids)]</field>
+        <field name="domain_force">['|', ('operating_unit_id','=',False), ('operating_unit_id','in',user.operating_unit_ids.ids)]</field>
         <field name="name">Purchase Request approval line Operating Unit</field>
         <field name="global" eval="True" />
         <field name="perm_unlink" eval="0" />
