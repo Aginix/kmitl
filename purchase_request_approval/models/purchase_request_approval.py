@@ -647,7 +647,7 @@ class PurchaseRequestApproval(models.Model):
 
     def _get_report_base_filename(self):
         self.ensure_one()
-        return "PA - %s" % self._get_number_slug()
+        return "รายงานขอซื้อขอจ้าง พจ.1 - %s" % self._get_number_slug()
 
     def open_preview(self):
         if self.id:

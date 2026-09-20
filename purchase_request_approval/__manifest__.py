@@ -13,9 +13,6 @@
         "portal",
         "purchase_request_egp",
         "agx_sarabun_layout",
-        # %(year_be)s in the PA sequence prefix is interpolated by
-        # l10n_th_base_sequence — depend on it explicitly rather than
-        # relying on the transitive path through budget.
         "l10n_th_base_sequence",
     ],
     "data": [
