@@ -126,6 +126,13 @@ upfront.
   a Receipt Remittance (รายงานนำส่งคลัง) that treasury posts, generating one journal
   entry per receipt with a Remit to Treasury (นำเงินส่งคลัง) leg into the payment
   method's deposit account, alongside the 6D dimensions on every line.
+- [Receipt KMITL Allocation](./receipt_kmitl_allocation/CONTEXT.md) — posting-time-only
+  fan-out of one receipt line's revenue into several GL accounts and dimensions
+  (การปันส่วนรายได้), driven by per-product **Allocation Buckets**
+  (`receipt.allocation.line`, global config on `product.template`); the receipt UI and
+  printed receipt are unchanged. Keeps the line's Dr Cash lumped while only the Cr
+  revenue side splits (diverges from `receipt_kmitl` ADR-0004; see this module's own
+  ADR-0001).
 
 ## Relationships
 
