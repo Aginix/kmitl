@@ -16,6 +16,7 @@
                 expr="//group[@name='information_section']//field[@name='account_fiscal_year_id']"
                 position="attributes"
             >
+                <attribute name="widget" />
                 <attribute name="readonly" />
                 <attribute name="required">1</attribute>
                 <attribute name="attrs">{'readonly': [('id', '!=', False)]}</attribute>
