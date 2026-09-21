@@ -26,9 +26,9 @@ upfront.
   - **`purchase_request_budget`** + its source bridges `kmitl_project_purchase_request`
     and `purchase_request_procurement_plan` (no own glossary — part of the Budget
     context): give a ใบขอซื้อ (พ.1) its **แหล่งงบประมาณ** — reserve anew from the
-    ผังงบประมาณ, or draw the reservation of a โครงการ or a แผนจัดซื้อจัดจ้าง. Each bridge
-    owns its own answer; a source-less ใบจองงบประมาณ is not an option here (budget
-    ADR-0015).
+    ผังงบประมาณ, or draw the reservation of a โครงการ or a แผนจัดซื้อจัดจ้าง. Each
+    bridge owns its own answer; a source-less ใบจองงบประมาณ is not an option here
+    (budget ADR-0015).
 - [Budget Appropriation Summary](./budget_appropriation_summary/CONTEXT.md) —
   institution-wide roll-up of unit appropriations for one fiscal year × source
   (สรุปภาพรวมสถาบัน gathering รวมเล่มหน่วยงาน), rendering the F-series summary reports
@@ -89,9 +89,15 @@ upfront.
   **booking side** split, the finance office's own `finance_state`, and the instrument
   that carries the money — the **ไฟล์ e-Payment** one bank is sent, or the **เช็ค** one
   payee collects. Ends at the **Hand-over**.
-- [KMITL Finance Reports](./finance_kmitl_reports/CONTEXT.md) — the กองคลัง's reports
-  on money in both directions. Out: **รายงานการจ่ายเงิน**, one row per voucher paid, on
-  the day the money left rather than the day it was authorised, and
+- [Account Payment — WHT Counterpart Leg](./account_payment_wht_counterpart_kmitl/CONTEXT.md)
+  — optional add-on giving each withholding-tax line on a payment voucher its own debit
+  on the payable (**ขาเจ้าหนี้คู่ภาษี**), so the entry says on its own that the payable
+  was cleared by the amount paid _and_ the amount withheld, instead of one lump debit
+  that has to be read against the tax line. Owns no document and no state;
+  `finance_kmitl` is unchanged with it uninstalled.
+- [KMITL Finance Reports](./finance_kmitl_reports/CONTEXT.md) — the กองคลัง's reports on
+  money in both directions. Out: **รายงานการจ่ายเงิน**, one row per voucher paid, on the
+  day the money left rather than the day it was authorised, and
   **รายงานเจ้าหนี้ถึงกำหนดชำระ**. In: **รายงานการรับเงิน** over the receipts that have
   reached the treasury (`kmitl.receipt` at `done`), plus **รายงานการตั้งลูกหนี้** and
   **รายงานลูกหนี้ถึงกำหนดชำระ** over the **ใบตั้งหนี้** — which a receipt never settles,
@@ -122,10 +128,10 @@ upfront.
   through clearing to closure. A borrower may hold only one active agreement at a time,
   so multi-activity needs are met by serial borrowing.
 - [Receipt KMITL](./receipt_kmitl/CONTEXT.md) — cash receipting and central-posting
-  workflow (ใบเสร็จรับเงิน สจล.); a department issues receipts and bundles them into
-  a Receipt Remittance (รายงานนำส่งคลัง) that treasury posts, generating one journal
-  entry per receipt with a Remit to Treasury (นำเงินส่งคลัง) leg into the payment
-  method's deposit account, alongside the 6D dimensions on every line.
+  workflow (ใบเสร็จรับเงิน สจล.); a department issues receipts and bundles them into a
+  Receipt Remittance (รายงานนำส่งคลัง) that treasury posts, generating one journal entry
+  per receipt with a Remit to Treasury (นำเงินส่งคลัง) leg into the payment method's
+  deposit account, alongside the 6D dimensions on every line.
 
 ## Relationships
 
@@ -242,10 +248,9 @@ upfront.
   พ.1/`budget.move` carries the **beneficiary's OU** (budget ADR-0010, ADR-0011).
   Consuming documents (`purchase.request`, `approval.request`) may **pick** any drawable
   commitment — standalone, plan or project — instead of reserving their own.
-- **Receipt KMITL → GL**: posting a `kmitl.receipt.remittance` (treasury action)
-  creates one `account.move` per receipt directly — no budget or disbursement layer
-  in between. Every line carries the receipt's 6D `analytic_distribution`, including
-  the Remit to Treasury (นำเงินส่งคลัง) pair that moves the cash received into the
-  payment method's Deposit Bank Account; that pair shares its dimensions with the
-  revenue line it mirrors, so its analytic balance nets to zero by design
-  (`receipt_kmitl` ADR-0004).
+- **Receipt KMITL → GL**: posting a `kmitl.receipt.remittance` (treasury action) creates
+  one `account.move` per receipt directly — no budget or disbursement layer in between.
+  Every line carries the receipt's 6D `analytic_distribution`, including the Remit to
+  Treasury (นำเงินส่งคลัง) pair that moves the cash received into the payment method's
+  Deposit Bank Account; that pair shares its dimensions with the revenue line it
+  mirrors, so its analytic balance nets to zero by design (`receipt_kmitl` ADR-0004).
