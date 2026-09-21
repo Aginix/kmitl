@@ -34,15 +34,6 @@ class PurchaseRequestApproval(models.Model):
     # number on its way to cancelled.
     _NO_NUMBER_STATES = ("draft", "cancelled")
 
-    @api.model
-    def _get_default_name(self):
-        # The "/" placeholder; the พจ.1 number is minted by
-        # _assign_document_number() against the fiscal year's end date — eagerly
-        # in create() when ปีงบประมาณ is known, otherwise on the first state
-        # write out of draft. Drawing it here would use today's date and could
-        # roll into the wrong ปีงบประมาณ.
-        return "/"
-
     # == Business fields ==
     request_id = fields.Many2one(
         comodel_name="purchase.request",
@@ -57,6 +48,11 @@ class PurchaseRequestApproval(models.Model):
     name = fields.Char(
         string="Approval Reference",
         required=True,
+        # "/" is a placeholder: the พจ.1 number is minted by
+        # _assign_document_number() against the fiscal year's end date —
+        # eagerly in create() when ปีงบประมาณ is known, otherwise on the first
+        # state write out of draft. Drawing it as a field default would use
+        # today's date and could roll into the wrong ปีงบประมาณ.
         default="/",
         tracking=True,
     )
@@ -576,7 +572,7 @@ class PurchaseRequestApproval(models.Model):
     def copy(self, default=None):
         default = dict(default or {})
         self.ensure_one()
-        default.update({"state": "draft", "name": self._get_default_name()})
+        default.update({"state": "draft", "name": "/"})
         return super().copy(default)
 
     @api.model_create_multi
