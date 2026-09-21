@@ -2,7 +2,8 @@
 
 Makes an employee findable by their [[hr-employee-academic-standing-thailand]] Academic
 Standing Title prefix or by full name (title + name), in both the employee picker (M2O
-dropdowns) and the Employees list search box.
+dropdowns) and the Employees list search box, and displays each result as the
+abbreviated title followed by the name (e.g. `รศ. ดร. ปานวิทย์ ธุวะนุติ`).
 
 ## Language
 

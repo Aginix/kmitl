@@ -3,7 +3,6 @@ from odoo import api, fields, models
 
 class HrEmployee(models.Model):
     _inherit = "hr.employee"
-    _rec_names_search = ["name", "academic_standing_name_search"]
 
     academic_standing_name_search = fields.Char(
         compute="_compute_academic_standing_name_search",
