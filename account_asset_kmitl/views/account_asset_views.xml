@@ -78,7 +78,7 @@
             </xpath>
             <xpath expr="//field[@name='prorata']" position="attributes">
                 <attribute name="attrs">
-                    {'readonly': [('state', '!=', 'draft')]}
+                    {'readonly': ['|', ('method_time', '!=', 'year'), ('state', '!=', 'draft')]}
                 </attribute>
             </xpath>
             <xpath expr="//field[@name='carry_forward_missed_depreciations']" position="attributes">
