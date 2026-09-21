@@ -17,7 +17,7 @@
     <menuitem id="menu_sarabun_document"
               name="Outgoing Documents"
               parent="menu_sarabun_root"
-              action="action_sarabun_document"
+              action="action_sarabun_document_outgoing"
               sequence="10"/>
 
     <!-- Settings (ตั้งค่าใช้งาน) — end-user reachable configuration (e.g.
