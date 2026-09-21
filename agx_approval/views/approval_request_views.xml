@@ -222,7 +222,7 @@
                                     <tree editable="bottom">
                                         <field name="sequence" widget="handle" />
                                         <field name="partner_id"
-                                            domain="[('partner_type_id.code', '=', 'employee')]" />
+                                            domain="[('partner_type_id', '=', %(partner_type_kmitl.partner_type_employee)d)]" />
                                         <field name="employee_department_name" />
                                         <field name="employee_job_name" />
                                         <field name="phone" optional="show" />
@@ -238,7 +238,7 @@
                                     <tree editable="bottom">
                                         <field name="sequence" widget="handle" />
                                         <field name="partner_id"
-                                            domain="[('partner_type_id.code', '=', 'company')]" />
+                                            domain="[('partner_type_id', '=', %(partner_type_kmitl.partner_type_company)d)]" />
                                         <field name="vat" optional="show" />
                                         <field name="phone" optional="show" />
                                         <field name="description" />
@@ -253,7 +253,7 @@
                                     <tree editable="bottom">
                                         <field name="sequence" widget="handle" />
                                         <field name="partner_id"
-                                            domain="[('partner_type_id.code', '=', 'student')]" />
+                                            domain="[('partner_type_id', '=', %(partner_type_kmitl.partner_type_student)d)]" />
                                         <field name="vat" optional="show" />
                                         <field name="phone" optional="show" />
                                         <field name="description" />
@@ -268,7 +268,7 @@
                                     <tree editable="bottom">
                                         <field name="sequence" widget="handle" />
                                         <field name="partner_id"
-                                            domain="[('partner_type_id.code', '=', 'other')]" />
+                                            domain="[('partner_type_id', '=', %(partner_type_kmitl.partner_type_other)d)]" />
                                         <field name="vat" optional="show" />
                                         <field name="phone" optional="show" />
                                         <field name="description" />

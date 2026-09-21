@@ -288,7 +288,7 @@ class ApprovalRequest(models.Model):
         "approval.request.participant",
         "request_id",
         string="รายชื่อบุคลากรภายใน",
-        domain=[("partner_type_id.code", "=", "employee")],
+        domain=[("participant_type", "=", "employee")],
         copy=False,
     )
 
@@ -296,7 +296,7 @@ class ApprovalRequest(models.Model):
         "approval.request.participant",
         "request_id",
         string="รายชื่อบุคคลภายนอก",
-        domain=[("partner_type_id.code", "=", "other")],
+        domain=[("participant_type", "=", "other")],
         copy=False,
     )
 
@@ -304,7 +304,7 @@ class ApprovalRequest(models.Model):
         "approval.request.participant",
         "request_id",
         string="รายชื่อบริษัท",
-        domain=[("partner_type_id.code", "=", "company")],
+        domain=[("participant_type", "=", "company")],
         copy=False,
     )
 
@@ -312,7 +312,7 @@ class ApprovalRequest(models.Model):
         "approval.request.participant",
         "request_id",
         string="รายชื่อนักศึกษา",
-        domain=[("partner_type_id.code", "=", "student")],
+        domain=[("participant_type", "=", "student")],
         copy=False,
     )
 
@@ -331,15 +331,20 @@ class ApprovalRequest(models.Model):
 
     @api.depends(
         "category_id.allowed_partner_type_ids",
-        "category_id.allowed_partner_type_ids.code",
-        "participant_ids.partner_type_id.code",
+        "participant_ids.participant_type",
     )
     def _compute_show_participant_sections(self):
+        type_map = self.env[
+            "approval.request.participant"
+        ]._get_partner_type_code_map()
         for rec in self:
-            types = rec.category_id.allowed_partner_type_ids
-            allowed = set(types.mapped("code")) if types else set()
+            allowed = {
+                type_map.get(t.id)
+                for t in rec.category_id.allowed_partner_type_ids
+            }
+            allowed.discard(None)
+            existing = set(rec.participant_ids.mapped("participant_type"))
             show_all = not allowed
-            existing = set(rec.participant_ids.mapped("partner_type_id.code"))
             rec.show_employee_participants = (
                 show_all or "employee" in allowed or "employee" in existing
             )

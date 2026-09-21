@@ -9,7 +9,6 @@ class ResPartnerType(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Name', required=True, tracking=True)
-    code = fields.Char(string='Code', required=True, copy=False)
     company_type = fields.Selection(
         selection=[('person', 'Individual'), ('company', 'Company')],
         string='Company Type', required=True, tracking=True,
