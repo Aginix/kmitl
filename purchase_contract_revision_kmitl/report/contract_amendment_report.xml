@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_contract_amendment" model="ir.actions.report">
+        <field name="name">บันทึกแก้ไขสัญญา</field>
+        <field name="model">purchase.contract</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">purchase_contract_revision_kmitl.report_contract_amendment</field>
+        <field name="report_file">purchase_contract_revision_kmitl.report_contract_amendment</field>
+        <field name="binding_model_id" ref="model_purchase_contract"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_contract_amendment">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="data" t-value="o._prepare_report_data()"/>
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 class="text-center">บันทึกแก้ไขสัญญา</h2>
+                        <div class="text-center">
+                            <strong>PO เลขที่:</strong> <t t-esc="o.purchase_id.name"/>
+                            &amp;nbsp;|&amp;nbsp;
+                            <strong>เลขที่สัญญา:</strong> <t t-esc="o.purchase_id.contract_number or '-'"/>
+                            &amp;nbsp;|&amp;nbsp;
+                            <strong>ครั้งที่:</strong> <t t-esc="o.revision_number"/>
+                        </div>
+                        <hr/>
+
+                        <t t-if="not data['prev']">
+                            <div class="alert alert-info">
+                                Revision นี้เป็นต้นฉบับ — ไม่มี revision ก่อนหน้าให้เทียบ
+                            </div>
+                        </t>
+
+                        <t t-if="data['prev']">
+                            <h4>1. ข้อมูลหลักที่เปลี่ยน</h4>
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>รายการ</th>
+                                        <th class="text-end">ค่าเดิม (ครั้งที่ <t t-esc="data['prev'].revision_number"/>)</th>
+                                        <th class="text-end">ค่าใหม่ (ครั้งที่ <t t-esc="o.revision_number"/>)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="data['header_diff']" t-as="row">
+                                        <td><t t-esc="row['label']"/></td>
+                                        <td class="text-end text-muted"><t t-esc="row['old'] or '-'"/></td>
+                                        <td class="text-end"><strong><t t-esc="row['new'] or '-'"/></strong></td>
+                                    </tr>
+                                    <tr t-if="not data['header_diff']">
+                                        <td colspan="3" class="text-center text-muted">— ไม่มีการเปลี่ยนแปลง —</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>2. รายการสินค้า</h4>
+                            <t t-set="ld" t-value="data['line_diff']"/>
+                            <t t-if="ld['changed']">
+                                <h5 class="text-warning">แก้ไข</h5>
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>สินค้า</th>
+                                            <th class="text-end">จำนวนเดิม</th>
+                                            <th class="text-end">จำนวนใหม่</th>
+                                            <th class="text-end">ราคาเดิม</th>
+                                            <th class="text-end">ราคาใหม่</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="ld['changed']" t-as="pair">
+                                            <td><t t-esc="pair['new'].product_id.display_name"/></td>
+                                            <td class="text-end text-muted"><t t-esc="pair['old'].product_qty"/></td>
+                                            <td class="text-end"><t t-esc="pair['new'].product_qty"/></td>
+                                            <td class="text-end text-muted"><t t-esc="pair['old'].price_unit"/></td>
+                                            <td class="text-end"><t t-esc="pair['new'].price_unit"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </t>
+                            <t t-if="ld['added']">
+                                <h5 class="text-success">เพิ่ม</h5>
+                                <ul>
+                                    <li t-foreach="ld['added']" t-as="line">
+                                        <t t-esc="line.product_id.display_name"/> —
+                                        <t t-esc="line.product_qty"/> × <t t-esc="line.price_unit"/>
+                                    </li>
+                                </ul>
+                            </t>
+                            <t t-if="ld['removed']">
+                                <h5 class="text-danger">ลบ</h5>
+                                <ul>
+                                    <li t-foreach="ld['removed']" t-as="line">
+                                        <t t-esc="line.product_id.display_name"/> —
+                                        <t t-esc="line.product_qty"/> × <t t-esc="line.price_unit"/>
+                                    </li>
+                                </ul>
+                            </t>
+
+                            <h4>3. งวดงาน</h4>
+                            <t t-set="pd" t-value="data['plan_diff']"/>
+                            <t t-if="pd['changed'] or pd['added'] or pd['removed']">
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>งวด</th>
+                                            <th>วันที่เดิม</th>
+                                            <th>วันที่ใหม่</th>
+                                            <th class="text-end">จำนวนเงินเดิม</th>
+                                            <th class="text-end">จำนวนเงินใหม่</th>
+                                            <th>สถานะ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="pd['changed']" t-as="pair">
+                                            <td><t t-esc="pair['new'].installment"/></td>
+                                            <td class="text-muted"><t t-esc="pair['old'].plan_date"/></td>
+                                            <td><t t-esc="pair['new'].plan_date"/></td>
+                                            <td class="text-end text-muted"><t t-esc="pair['old'].amount"/></td>
+                                            <td class="text-end"><t t-esc="pair['new'].amount"/></td>
+                                            <td class="text-warning">แก้ไข</td>
+                                        </tr>
+                                        <tr t-foreach="pd['added']" t-as="row">
+                                            <td><t t-esc="row.installment"/></td>
+                                            <td>-</td>
+                                            <td><t t-esc="row.plan_date"/></td>
+                                            <td>-</td>
+                                            <td class="text-end"><t t-esc="row.amount"/></td>
+                                            <td class="text-success">เพิ่ม</td>
+                                        </tr>
+                                        <tr t-foreach="pd['removed']" t-as="row">
+                                            <td><t t-esc="row.installment"/></td>
+                                            <td class="text-muted"><t t-esc="row.plan_date"/></td>
+                                            <td>-</td>
+                                            <td class="text-end text-muted"><t t-esc="row.amount"/></td>
+                                            <td>-</td>
+                                            <td class="text-danger">ลบ</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </t>
+                            <t t-if="not pd['changed'] and not pd['added'] and not pd['removed']">
+                                <p class="text-muted">— งวดงานไม่มีการเปลี่ยนแปลง —</p>
+                            </t>
+
+                            <h4>4. กรรมการ / ผู้ควบคุมงาน</h4>
+                            <t t-foreach="data['committee_diff'].values()" t-as="c">
+                                <h5><t t-esc="c['label']"/></h5>
+                                <t t-if="c['added']">
+                                    <p class="text-success">เพิ่ม:
+                                        <t t-foreach="c['added']" t-as="emp">
+                                            <t t-esc="emp.name"/><t t-if="not emp_last">, </t>
+                                        </t>
+                                    </p>
+                                </t>
+                                <t t-if="c['removed']">
+                                    <p class="text-danger">ลบ:
+                                        <t t-foreach="c['removed']" t-as="emp">
+                                            <t t-esc="emp.name"/><t t-if="not emp_last">, </t>
+                                        </t>
+                                    </p>
+                                </t>
+                                <t t-if="not c['added'] and not c['removed']">
+                                    <p class="text-muted">— ไม่มีการเปลี่ยนแปลง —</p>
+                                </t>
+                            </t>
+
+                            <h4>5. เอกสารอนุมัติแนบ</h4>
+                            <ul>
+                                <li t-foreach="o.approval_attachment_ids" t-as="att">
+                                    <t t-esc="att.name"/>
+                                </li>
+                            </ul>
+                        </t>
+
+                        <div class="mt-4">
+                            <strong>บันทึกโดย:</strong> <t t-esc="o.applied_by.display_name or '-'"/>
+                            &amp;nbsp;|&amp;nbsp;
+                            <strong>วันที่บันทึก:</strong> <t t-esc="o.applied_date or '-'"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
