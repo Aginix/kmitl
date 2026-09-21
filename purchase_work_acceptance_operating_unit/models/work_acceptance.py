@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
-import logging
-
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import fields, models
 
 
-class PurchaseRequestApproval(models.Model):
-    _inherit = 'purchase.request.approval'
+class WorkAcceptance(models.Model):
+    _inherit = "work.acceptance"
 
     operating_unit_id = fields.Many2one(
         comodel_name="operating.unit",

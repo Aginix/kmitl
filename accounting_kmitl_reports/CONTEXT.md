@@ -5,7 +5,7 @@ Financial-statement reports for KMITL — Trial Balance, Profit and Loss, Balanc
 ## Language
 
 **Trial Balance (งบทดลอง)**:
-A per-account listing, over a date range, of the opening balance, the period movement and the ending balance — each shown as Debit, Credit and Balance. Opens straight from the menu as an OWL client action and prints as a QWeb PDF that shares the same compute.
+A per-account listing, over a date range, of the opening balance, the period movement and the ending balance — each shown as Debit, Credit and Balance. Opens straight from the menu as an OWL client action and prints as a QWeb PDF that shares the same compute. Computed here rather than by an OCA engine (three `account.move.line` aggregations: the balance-sheet opening, the profit & loss opening since the start of the fiscal year, and the period).
 _Avoid_: trial sheet, TB
 
 **General Ledger (บัญชีแยกประเภท)**:
