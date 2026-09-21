@@ -95,6 +95,9 @@ class TestGodmodeEdit(TransactionCase):
             {
                 "request_id": pr.id,
                 "title": "PA under test",
+                # Required to mint the พจ.1 number — every state write on a PA
+                # without a fiscal year raises (see _assign_document_number).
+                "account_fiscal_year_id": self.fiscal_year.id,
             }
         )
         self.env["purchase.request.approval.line"].create(
