@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_employee_form" model="ir.ui.view">
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form" />
+        <field name="priority" eval="200" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="replace">
+                <field name="name" readonly="1" style="font-size: min(4vw, 2.4rem);" />
+            </xpath>
+            <xpath expr="//field[@name='mobile_phone']" position="before">
+                <field
+                    name="prefix_id"
+                    options="{'no_create': True, 'no_edit': True, 'no_open': True}"
+                />
+                <field
+                    name="firstname"
+                    attrs="{'required': [('lastname', '=', False )]}"
+                />
+                <field name="middlename" />
+                <field
+                    name="lastname"
+                    attrs="{'required': [('firstname', '=', False )]}"
+                />
+            </xpath>
+
+            <xpath expr="//field[@name='department_id']" position="before">
+                <field name="firstname_secondary" />
+                <field name="middlename_secondary" />
+                <field name="lastname_secondary" />
+            </xpath>
+
+            <!-- เว้นช่องแทนที่ prefix เพื่อให้ name, name_secondary เท่ากัน -->
+            <xpath expr="//field[@name='firstname_secondary']" position="before">
+                <div
+                    class="o_cell o_wrap_label flex-grow-1 flex-sm-grow-0 w-100 kmitl_hr_employee_full_name-space_prefix"
+                >
+                    &#x200B;</div>
+                <div
+                    class="o_form_view o_field_widget kmitl_hr_employee_full_name-space_prefix"
+                    style="padding: 3px 0px;"
+                >&#x200B;</div>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_employee_search" model="ir.ui.view">
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter" />
+        <field name="priority" eval="200" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="replace">
+                <field
+                    name="name"
+                    string="Employee"
+                    filter_domain="['|', '|',('work_email', 'ilike', self), ('name', 'ilike', self),('name_secondary', 'ilike', self)]"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
