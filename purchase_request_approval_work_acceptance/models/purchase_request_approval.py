@@ -34,8 +34,7 @@ class PurchaseRequestApproval(models.Model):
         act = self.env.ref("purchase_work_acceptance.action_work_acceptance")
         result = act.sudo().read()[0]
         create_wa = self.env.context.get("create_wa", False)
-        purchase_requests = self.request_id
-        lines = self._get_committee_line(purchase_requests)
+        lines = self._get_committee_line(self)
         result["context"] = {
             "default_approval_id": self.id,
             "default_partner_id": self.partner_id.id,
@@ -47,17 +46,17 @@ class PurchaseRequestApproval(models.Model):
             "default_wa_line_ids": [
                 Command.create(
                     {
-                        "approval_line_id": line.id,
-                        "name": line.name,
-                        "product_uom": line.product_uom_id.id,
-                        "uom_text": line.uom_text,
-                        "product_id": line.product_id.id,
-                        "price_unit": line.price_unit,
-                        "product_qty": line._get_product_qty(),
+                        "approval_line_id": pr_line.id,
+                        "name": pa_line.name,
+                        "product_uom": pa_line.product_uom_id.id,
+                        "uom_text": pa_line.uom_text,
+                        "product_id": pa_line.product_id.id,
+                        "price_unit": pa_line.price_unit,
+                        "product_qty": pa_line.product_qty,
                     }
                 )
-                for line in self.request_id.line_ids
-                if line._get_product_qty() != 0
+                for pa_line, pr_line in zip(self.line_ids, self.request_id.line_ids)
+                if pa_line.product_qty
             ],
         }
         if len(self.wa_ids) > 1 and not create_wa:
