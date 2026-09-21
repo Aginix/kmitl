@@ -43,18 +43,4 @@
             </xpath>
         </field>
     </record>
-    <record id="view_employee_search" model="ir.ui.view">
-        <field name="model">hr.employee</field>
-        <field name="inherit_id" ref="hr.view_employee_filter" />
-        <field name="priority" eval="200" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="replace">
-                <field
-                    name="name"
-                    string="Employee"
-                    filter_domain="['|', '|',('work_email', 'ilike', self), ('name', 'ilike', self),('name_secondary', 'ilike', self)]"
-                />
-            </xpath>
-        </field>
-    </record>
 </odoo>
