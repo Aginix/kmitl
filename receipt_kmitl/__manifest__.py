@@ -2,7 +2,7 @@
 
 {
     "name": "Receipt KMITL",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.1.1",
     "category": "KMITL/Accounting",
     "license": "AGPL-3",
     "author": "KMITL",
@@ -11,6 +11,7 @@
         "account",
         "mail",
         "account_analytic_kmitl",
+        "accounting_kmitl",
         "l10n_th_amount_to_text",
     ],
     "data": [

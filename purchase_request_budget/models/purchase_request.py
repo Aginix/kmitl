@@ -11,6 +11,11 @@ class PurchaseRequest(models.Model):
     _name = "purchase.request"
     _inherit = ["purchase.request", "budget.commitment.mixin", "analytic.mixin"]
 
+    state = fields.Selection(
+        selection_add=[("to_verify",), ("to_verify_budget", "To Verify Budget"), ("to_approve",)],
+        ondelete={"to_verify_budget": "set default"},
+    )
+
     budget_commitment_id = fields.Many2one(
         "budget.commitment",
         string="Budget Commitment",
@@ -187,14 +192,15 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         # Means "budget selection is still open on this request", which is also
         # exactly when a reservation may be picked — so the reservation field
-        # rides on this rather than re-listing states (purchase.request draws its
-        # states from four modules, and three of them override this compute).
-        # Drawing an existing reservation does not close selection: the user must
-        # be able to un-pick. The chart picker is hidden view-side while a
-        # reservation is picked, since dimensions then come from it.
+        # rides on this rather than re-listing states. The chart picker is
+        # hidden view-side while a reservation is picked, since dimensions then
+        # come from it. Drawing an existing reservation does not close
+        # selection: the user must be able to un-pick.
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
-            if rec.state in ("to_verify", "to_approve") and (
+            if rec.state == "to_verify_budget" and can_edit:
+                rec.is_budget_editable = True
+            elif rec.state == "to_approve" and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
             ):
@@ -210,14 +216,43 @@ class PurchaseRequest(models.Model):
         # ดึงกลับ (Reset) deliberately does *not* reopen this: a recalled
         # project/plan พ.1 keeps its shared commitment and stays on its source,
         # so there is nothing to re-draw in draft (ADR-0015).
+        # FIXME(rebase 2026-09): origin/16.0 (a7866a932) simplified this to a
+        # single `state == "to_approve"` condition, dropping the always-show
+        # branch at to_verify below — needs reconciling with whichever state
+        # naming this branch settles on (see purchase_request_kmitl's own
+        # to_verify ownership, still unabsorbed upstream).
         for rec in self:
-            rec.hide_reserve_budget_button = not (
-                rec.state == "to_approve"
-                and (
-                    not rec.budget_commitment_id
-                    or rec.budget_commitment_id.state == "cancel"
+            if rec.state == "to_verify_budget":
+                rec.hide_reserve_budget_button = False
+            elif rec.state == "to_approve" and (
+                rec.budget_commitment_id.state == "cancel"
+                or not rec.budget_commitment_id
+            ):
+                rec.hide_reserve_budget_button = False
+            else:
+                rec.hide_reserve_budget_button = True
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        # to_verify_budget is this module's own state (the officer working the
+        # reservation) — kmitl's editable_states can't know about it, so extend
+        # it here rather than teaching kmitl about a state it doesn't own.
+        super()._compute_is_editable()
+        for rec in self:
+            if rec.state == "to_verify_budget":
+                rec.is_editable = True
+
+    @api.depends("state", "requested_by")
+    def _compute_can_reset_to_draft(self):
+        super()._compute_can_reset_to_draft()
+        is_manager = self.env.user.has_group(
+            "purchase_request.group_purchase_request_manager"
+        )
+        for rec in self:
+            if rec.state == "to_verify_budget":
+                rec.can_reset_to_draft = (
+                    is_manager or rec.requested_by == self.env.user
                 )
-            )
 
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
@@ -290,6 +325,17 @@ class PurchaseRequest(models.Model):
             return "[%s] %s" % (self.name, base)
         return self.name or base
 
+    def button_to_approve(self):
+        """แทรกขั้น รอจองงบประมาณ คั่นก่อน to_approve
+
+        ปุ่มส่งต่อของธุรการที่ ``to_verify`` ส่งเรื่องให้เจ้าหน้าที่งบ ไม่ใช่กระโดด
+        ไป ``to_approve`` ตรง ๆ — การเขียน ``to_approve`` จริงเกิดที่
+        ``action_reserve_budget`` หลังมี commitment แล้ว
+        """
+        to_budget = self.filtered(lambda r: r.state == "to_verify")
+        to_budget.write({"state": "to_verify_budget"})
+        return super(PurchaseRequest, self - to_budget).button_to_approve()
+
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
@@ -304,6 +350,29 @@ class PurchaseRequest(models.Model):
         # through to reserve-new against the dimensions the mode switch cleared.
         if self.budget_selection_mode != "normal":
             raise UserError(_("กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"))
+
+        # ตีกลับ/แก้ไข (ADR-0007) sends the request back through this step with
+        # its commitment deliberately left live, and reserving is the only way
+        # forward out of to_verify_budget. Reserving anew would mint a second
+        # slip and orphan the first one still eating budget — the money is
+        # already locked, so just advance.
+        if self.budget_commitment_id and self.budget_commitment_id.state not in (
+            "cancel",
+            "draft",
+        ):
+            self.message_post(
+                body=_("งบประมาณจองไว้แล้วตามใบจอง %s — ข้ามการจองซ้ำ")
+                % self.budget_commitment_id.display_name
+            )
+            self.button_to_approve()
+            return {
+                "type": "ir.actions.act_window",
+                "res_model": "purchase.request",
+                "view_mode": "form",
+                "res_id": self.id,
+                "target": "current",
+                "context": self.env.context,
+            }
 
         amount = sum(self.line_ids.mapped("estimated_cost"))
 
@@ -341,7 +410,7 @@ class PurchaseRequest(models.Model):
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
             )
-            self.button_to_submit()
+            self.button_to_approve()
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",
@@ -386,7 +455,7 @@ class PurchaseRequest(models.Model):
         self.message_post(
             body=_("หยิบใบจองงบประมาณ %s มาใช้ (draw down)") % commitment.name
         )
-        self.button_to_submit()
+        self.button_to_approve()
         return {
             "type": "ir.actions.act_window",
             "res_model": "purchase.request",
@@ -478,7 +547,7 @@ class PurchaseRequest(models.Model):
     def _compute_to_approve_allowed(self):
         super()._compute_to_approve_allowed()
         for rec in self:
-            rec.to_approve_allowed = rec.state == "to_submit" and any(
+            rec.to_approve_allowed = rec.state == "to_verify_budget" and any(
                 not line.cancelled and line.product_qty for line in rec.line_ids
             )
 

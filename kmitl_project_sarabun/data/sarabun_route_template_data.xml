@@ -48,6 +48,13 @@
             <field name="target_mode">position</field>
             <field name="position_id" ref="position_kmitl_project_rector"/>
         </record>
+
+        <!-- ประเภทหนังสือ (Document Type) for kmitl.project. Route is chosen per วงเงิน by
+             _get_sarabun_route_template(), so no default_route_id is bound here. -->
+        <record id="document_type_kmitl_project" model="sarabun.document.type">
+            <field name="name">ขออนุมัติจัดโครงการและใช้เงิน</field>
+            <field name="kind">from_record</field>
+        </record>
     </data>
 
 </odoo>

@@ -4,7 +4,7 @@
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">view.purchase.request.form</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form" />
         <field name="arch" type="xml">
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="request_approval_count" invisible="1" />
@@ -17,6 +17,10 @@
                     icon="fa-file-contract"
                     string="PA"
                 />
+            </xpath>
+            <!-- state ที่โมดูลนี้เป็นเจ้าของ ต่อเข้า states ของ button_cancel เอง -->
+            <xpath expr="//button[@name='button_cancel']" position="attributes">
+                <attribute name="states" add="in_approval" separator="," />
             </xpath>
         </field>
     </record>

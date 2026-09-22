@@ -647,6 +647,7 @@ class ReceiptKmitl(models.Model):
             "date": self.date,
             "journal_id": self.payment_method_id.journal_id.id,
             "company_id": self.company_id.id,
+            "analytic_distribution": self.analytic_distribution,
             "line_ids": line_vals,
         }
 

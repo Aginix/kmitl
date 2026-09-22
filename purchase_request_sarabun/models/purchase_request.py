@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, models
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 
@@ -7,10 +7,14 @@ class PurchaseRequest(models.Model):
     _name = 'purchase.request'
     _inherit = ["purchase.request", "sarabun.document.mixin", "portal.mixin", 'thai.date.mixin']
 
-    # To disable tier validation
-    # todo: refactor move out to individual module
-    _state_from = [""]
-    _state_to = [""]
+    state = fields.Selection(
+        # หมุดท้ายต้องเป็น approved ไม่ใช่ in_progress: approved ของ OCA คั่นอยู่
+        # ระหว่าง to_approve กับ in_progress อยู่แล้ว ข้อจำกัด sent < in_progress
+        # จึงไม่ได้ห้าม approved/in_egp/in_approval แทรกมาก่อน sent
+        # (merge_sequences เป็น topological sort — คู่ที่ติดกันคือข้อจำกัดเดียวที่มี)
+        selection_add=[("to_approve",), ("sent", "Sent"), ("approved",)],
+        ondelete={"sent": "set default"},
+    )
 
     def _compute_access_url(self):
         """Compute the access URL for portal access."""
@@ -37,7 +41,7 @@ class PurchaseRequest(models.Model):
         return self.department_id or super()._get_sarabun_sender_department()
 
     def _on_sarabun_circulating(self, document):
-        self.write({"state": "to_approve"})
+        self.write({"state": "sent"})
         return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):
@@ -63,7 +67,7 @@ class PurchaseRequest(models.Model):
         return document.action_send()
 
     def _on_sarabun_cancelled(self, document):
-        self.button_draft()
+        self._action_do_cancel(_("ยกเลิกจากสารบรรณ: %s") % document.name)
         return super()._on_sarabun_cancelled(document)
 
     # ADR-0015: render through Sarabun's own no-source layout (สารบรรณ owns the
