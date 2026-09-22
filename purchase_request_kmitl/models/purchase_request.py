@@ -89,6 +89,10 @@ class PurchaseRequest(models.Model):
         copy=False,
         tracking=True,
     )
+    date_start = fields.Date(
+        copy=False,
+        default=False,
+    )
     date_verified = fields.Date(
         string="Verified Date",
         copy=False,
@@ -195,7 +199,10 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
         if self.detect_exceptions() and not self.ignore_exception:
             return self._popup_exceptions()
-        self.write({"state": "to_verify"})
+        vals = {"state": "to_verify"}
+        if not self.date_start:
+            vals["date_start"] = fields.Date.context_today(self)
+        self.write(vals)
 
     @api.depends("state", "requested_by")
     def _compute_can_reset_to_draft(self):

@@ -73,7 +73,7 @@ msgid ""
 "<strong>Creation Date:</strong>\n"
 "                                <br/>"
 msgstr ""
-"<strong>วันที่ขอ:</strong>\n"
+"<strong>วันที่ส่งคำขอ:</strong>\n"
 "                                <br/>"
 
 #. module: purchase_request
@@ -468,7 +468,7 @@ msgstr "สร้างเมื่อ"
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__date_start
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__date_start
 msgid "Creation date"
-msgstr "วันที่ขอ"
+msgstr "วันที่ส่งคำขอ"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__currency_id
@@ -1675,7 +1675,7 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Start Date"
-msgstr "วันที่ขอ"
+msgstr "วันที่ส่งคำขอ"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__state
