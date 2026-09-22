@@ -154,6 +154,15 @@ class WithholdingTaxRemittance(models.Model):
         store=True,
         currency_field="currency_id",
     )
+    is_reconciled = fields.Boolean(
+        string="Reconciled",
+        compute="_compute_is_reconciled",
+        help=(
+            "Whether the WHT payable lines on this remittance's journal "
+            "entry are reconciled against their source lines. Stays False "
+            "when the WHT Payable Account has Allow Reconciliation off."
+        ),
+    )
     company_id = fields.Many2one(
         comodel_name="res.company",
         required=True,
@@ -217,6 +226,16 @@ class WithholdingTaxRemittance(models.Model):
     def _compute_amount_total(self):
         for rec in self:
             rec.amount_total = sum(rec.cert_ids.mapped("amount_total"))
+
+    @api.depends("move_id.line_ids.reconciled")
+    def _compute_is_reconciled(self):
+        for rec in self:
+            wht_lines = rec.move_id.line_ids.filtered(
+                lambda l: l.account_id == rec.wht_account_id
+            )
+            rec.is_reconciled = bool(wht_lines) and all(
+                wht_lines.mapped("reconciled")
+            )
 
     @api.constrains(
         "income_tax_form",
@@ -452,6 +471,21 @@ class WithholdingTaxRemittance(models.Model):
         return source_ids
 
     @api.model
+    def _source_wht_lines(self, cert):
+        """บรรทัดเครดิตภาษี ณ ที่จ่ายต้นทางของใบรับรองหนึ่งใบ
+
+        ``l10n_th_account_tax._preapare_wht_certs`` สร้างใบรับรองหนึ่งใบต่อคู่ค้าหนึ่ง
+        รายจาก JE เดียวกัน แต่ทุกใบชี้ move_id เดียวกัน — กรองเหลือเฉพาะบรรทัดของ
+        คู่ค้าตนเอง ไม่งั้นจะอ่านมิติ (หรือกระทบยอด) ปนกับคู่ค้ารายอื่น; ถ้าบรรทัด
+        ไม่มี partner_id เลย (คีย์ JE มือ) ใช้ชุดเดิมทั้งหมดตามพฤติกรรมเดิม
+        """
+        lines = cert.move_id.line_ids.filtered(
+            lambda l: l.wht_tax_id and l.account_id.wht_account
+        )
+        own = lines.filtered(lambda l: l.partner_id == cert.partner_id)
+        return own or lines
+
+    @api.model
     def _cert_distribution_amounts(self, cert):
         """คืน [(analytic_distribution, amount)] ของใบรับรอง
 
@@ -462,15 +496,7 @@ class WithholdingTaxRemittance(models.Model):
         ``cert.amount_total`` เสมอ — เกลี่ยตามสัดส่วนของบรรทัดต้นทาง แล้วโยนเศษ
         ปัดเข้ากลุ่มที่มีสัดส่วนมากที่สุด
         """
-        lines = cert.move_id.line_ids.filtered(
-            lambda l: l.wht_tax_id and l.account_id.wht_account
-        )
-        # l10n_th_account_tax._preapare_wht_certs สร้างใบรับรองหนึ่งใบต่อคู่ค้าหนึ่ง
-        # รายจาก JE เดียวกัน แต่ทุกใบชี้ move_id เดียวกัน — กรองเหลือเฉพาะบรรทัดของ
-        # คู่ค้าตนเอง ไม่งั้นจะอ่านมิติของคู่ค้ารายอื่นปนมาด้วย; ถ้าบรรทัดไม่มี
-        # partner_id เลย (คีย์ JE มือ) ใช้ชุดเดิมทั้งหมดตามพฤติกรรมเดิม
-        own = lines.filtered(lambda l: l.partner_id == cert.partner_id)
-        lines = own or lines
+        lines = self._source_wht_lines(cert)
         groups = {}
         for line in lines:
             key = json.dumps(line.analytic_distribution or {}, sort_keys=True)
@@ -515,7 +541,7 @@ class WithholdingTaxRemittance(models.Model):
 
         เช็คสั่งจ่ายผูกกับบัญชีออมทรัพย์ แต่ธนาคารจะโอนเงินตามยอดเช็คเข้าบัญชี
         กระแสรายวันก่อน แล้วเช็คจึงขึ้นเงินจากบัญชีกระแสรายวัน ทั้งสองการเดินทาง
-        ของเงินถูกบันทึกไว้เพื่อให้กระทบยอดกับ statement ได้ทั้งสองบัญชี — บัญชี
+        ของเงินถูกบันทึกไว้เพื่อให้ตรวจกับ statement ได้ทั้งสองบัญชี — บัญชี
         กระแสรายวันเข้าและออกเท่ากันจึงสุทธิเป็น 0 ส่วนเงินที่ออกจริงคือออมทรัพย์
 
         คู่โอนระหว่างบัญชีธนาคารไม่ใส่คู่ค้า เพราะเป็นการย้ายเงินภายในของธนาคาร
@@ -581,6 +607,29 @@ class WithholdingTaxRemittance(models.Model):
         move.action_post()
         return move
 
+    def _reconcile_move(self):
+        """จับคู่บรรทัดเดบิตภาษีรอนำส่งของใบนำส่ง กับบรรทัดเครดิตต้นทางของใบรับรอง
+
+        เงียบเมื่อบัญชียังไม่เปิด Allow Reconciliation — ใบนำส่งยังโพสต์ได้ตามปกติ
+        และ remittance_id ยังเป็นหลักฐานการนำส่งอยู่ดี
+        """
+        self.ensure_one()
+        if not self.move_id or not self.wht_account_id.reconcile:
+            return False
+        remit_lines = self.move_id.line_ids.filtered(
+            lambda l: l.account_id == self.wht_account_id and not l.reconciled
+        )
+        source_lines = self.env["account.move.line"]
+        for cert in self.cert_ids:
+            source_lines |= self._source_wht_lines(cert)
+        source_lines = source_lines.filtered(
+            lambda l: l.account_id == self.wht_account_id and not l.reconciled
+        )
+        if not remit_lines or not source_lines:
+            return False
+        (remit_lines + source_lines).reconcile()
+        return True
+
     def action_post(self):
         for rec in self:
             if rec.state != "draft":
@@ -603,6 +652,23 @@ class WithholdingTaxRemittance(models.Model):
                 rec.name = rec._get_sequence().next_by_id()
             move = rec._create_move(cert_amounts)
             rec.write({"move_id": move.id, "state": "posted"})
+            rec._reconcile_move()
+
+    def action_reconcile(self):
+        """ปุ่มจับคู่ย้อนหลัง — ข้ามใบที่จับไปแล้วหรือบัญชียังไม่เปิด reconcile"""
+        reconciled_count = 0
+        for rec in self.filtered(lambda r: r.state == "posted"):
+            if rec._reconcile_move():
+                reconciled_count += 1
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Reconciliation"),
+                "message": _("%s remittance(s) reconciled.") % reconciled_count,
+                "sticky": False,
+            },
+        }
 
     def _cancel_snapshot_body(self, reversal):
         self.ensure_one()
