@@ -2,7 +2,7 @@
 {
     "name": "Aginix Approval Sarabun Integration",
     "summary": "Integrate Approval Request with Sarabun document routing",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.2.0",
     "category": "Accounting",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",

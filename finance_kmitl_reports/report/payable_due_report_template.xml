@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="payable_due_report_pdf">
+        <t t-call="finance_kmitl_reports.finance_report_layout">
+            <t t-set="report_title">Payables Due Report</t>
+            <t t-set="total_key" t-value="'amount_residual'" />
+        </t>
+    </template>
+
+</odoo>

@@ -60,7 +60,7 @@
         <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
         <field name="payment_type">prepaid</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_014"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_005"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_014'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_014"/>
         <field name="department_id" ref="kmitl_demo.06"/>
         <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
@@ -204,7 +204,7 @@
         <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
         <field name="payment_type">prepaid</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_014"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_004"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_014'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_014"/>
         <field name="department_id" ref="kmitl_demo.06"/>
         <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
@@ -454,7 +454,7 @@
         <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
         <field name="payment_type">prepaid</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_006"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_017"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_006'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_006"/>
         <field name="department_id" ref="kmitl_demo.05"/>
         <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
@@ -622,7 +622,7 @@
         <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
         <field name="payment_type">prepaid</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_012"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_008'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_008"/>
         <field name="department_id" ref="kmitl_demo.01"/>
         <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
@@ -747,7 +747,7 @@
         <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
         <field name="payment_type">prepaid</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_014"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_004"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_014'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_014"/>
         <field name="department_id" ref="kmitl_demo.06"/>
         <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
@@ -900,7 +900,7 @@
         <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
         <field name="payment_type">prepaid</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_017"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_008'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_008"/>
         <field name="department_id" ref="kmitl_demo.01"/>
         <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
@@ -1054,7 +1054,7 @@
         <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
         <field name="payment_type">prepaid</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_009"/>
-        <field name="partner_id" ref="kmitl_demo.vendor_demo_011"/>
+        <field name="partner_id" search="[('user_ids', '=', ref('kmitl_demo.user_demo_009'))]"/>
         <field name="user_id" ref="kmitl_demo.user_demo_009"/>
         <field name="department_id" ref="kmitl_demo.02"/>
         <field name="budget_account_id" ref="budget.budget_account_5230000000"/>

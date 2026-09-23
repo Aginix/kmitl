@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="agx_approval_dashboard_tree.CategoryTree" owl="1">
+        <div class="o_approval_category_tree o_list_renderer p-3">
+            <t t-foreach="categoryGroups" t-as="group" t-key="group.id">
+                <section class="o_act_group mb-2">
+                    <div class="o_act_group_header d-flex align-items-center"
+                         t-on-click="() => this.toggle(group.id)">
+                        <i class="fa fa-fw" t-att-class="isOpen(group.id) ? 'fa-caret-down' : 'fa-caret-right'"/>
+                        <span class="fw-bold" t-esc="group.name"/>
+                        <span class="text-muted ms-2 small" t-esc="'(' + group.categories.length + ')'"/>
+                    </div>
+                    <ul t-if="isOpen(group.id)" class="list-unstyled ms-4 mb-0">
+                        <li t-foreach="group.categories" t-as="cat" t-key="cat.id" class="py-1">
+                            <a href="#" class="o_act_category_link"
+                               t-on-click.prevent="() => this.openCategory(cat.id)">
+                                <span t-esc="cat.name"/>
+                                <i t-if="cat.budgetAccountName" class="fa fa-money fa-fw text-muted small ms-1"
+                                   t-att-title="cat.budgetAccountName"/>
+                            </a>
+                        </li>
+                    </ul>
+                </section>
+            </t>
+        </div>
+    </t>
+
+</templates>

@@ -14,6 +14,13 @@ class AccountMove(models.Model):
         ondelete={"submitted": "set default"},
     )
 
+    partner_type_id = fields.Many2one(
+        related="partner_id.partner_type_id",
+        store=True,
+        index=True,
+        string="ประเภทคู่ค้า",
+    )
+
     # --- Defaults ---
     @api.model
     def default_get(self, fields_list):

@@ -31,3 +31,12 @@ the department (`department_analytic_id`) is kept purely as a business dimension
   will raise if a journal's `operating_unit_id` differs from the move's. No
   journal in this deployment sets `operating_unit_id`, so this is not triggered.
   If journals are later OU-scoped, payment method configuration must match.
+
+## Revision — `_prepare_debit_line_vals` is now per revenue line
+
+`receipt_kmitl` ADR-0004 changed `_prepare_debit_line_vals(self)` to
+`_prepare_debit_line_vals(self, line)`, called once per revenue line instead
+of once for the receipt total, and added a sibling hook
+`_prepare_deposit_line_vals()` for the treasury-remittance pair. This
+module's overrides of all three hooks were updated to match the new
+signature; the OU-stamping behaviour described above is unchanged.

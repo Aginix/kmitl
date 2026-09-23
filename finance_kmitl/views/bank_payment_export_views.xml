@@ -21,6 +21,12 @@
                      it never moves, so a file that changes hands would otherwise
                      have a label saying the wrong name. -->
                 <field name="create_uid" string="Prepared By" readonly="1" />
+                <!-- Editable at any state so the office can attach an instruction
+                     or a reason before the file is uploaded, and amend it after
+                     the confirm-transfer wizard writes to it. Tracked, because
+                     the note is what tells the next reader why this file was
+                     cut apart. -->
+                <field name="epayment_note" />
             </xpath>
 
             <!-- หัวจ่าย is picked before the payments: one file debits one
@@ -102,10 +108,6 @@
                             name="transfer_proof_ids"
                             widget="many2many_binary"
                             attrs="{'readonly': [('state', '=', 'paid')]}"
-                        />
-                        <field
-                            name="epayment_note"
-                            attrs="{'invisible': [('epayment_note', '=', False)]}"
                         />
                     </group>
                 </page>

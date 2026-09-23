@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_cash_route_tree" model="ir.ui.view">
+        <field name="name">kmitl.cash.route.tree</field>
+        <field name="model">kmitl.cash.route</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="paying_gl_account_id"/>
+                <field name="source_analytic_ids" widget="many2many_tags"/>
+                <field name="hop_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_cash_route_form" model="ir.ui.view">
+        <field name="name">kmitl.cash.route.form</field>
+        <field name="model">kmitl.cash.route</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Route">
+                            <field name="paying_gl_account_id" options="{'no_create': True}"/>
+                            <field name="source_analytic_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Bookkeeping">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Intermediate Accounts" name="hops">
+                            <field name="hop_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="account_id" options="{'no_create': True}"/>
+                                </tree>
+                            </field>
+                            <div class="text-muted mt-3">
+                                <span>Listed from the true source account down to (but not including) the paying account, in the order the money travels. Leave empty for a paying account the money is spent directly out of.</span>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_cash_route_search" model="ir.ui.view">
+        <field name="name">kmitl.cash.route.search</field>
+        <field name="model">kmitl.cash.route</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="paying_gl_account_id"/>
+                <field name="source_analytic_ids"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_paying_account"
+                        string="Paying Account"
+                        context="{'group_by': 'paying_gl_account_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cash_route" model="ir.actions.act_window">
+        <field name="name">Cash Routes</field>
+        <field name="res_model">kmitl.cash.route</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Set up an inter-account cash route</p>
+            <p>One row per paying account and the sources of funds it serves, listing the accounts money travels through before it gets there. A paying account spent directly out of is a row with no intermediate accounts — a (paying account, source) pair with no row at all is a setup gap.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -9,10 +9,14 @@ RECEIPT_EXCLUDED_STATES = ("draft", "cancelled")
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    receipt_kmitl_count = fields.Integer(compute="_compute_receipt_kmitl_stats")
+    receipt_kmitl_count = fields.Integer(
+        compute="_compute_receipt_kmitl_stats",
+        compute_sudo=True,
+    )
     receipt_kmitl_total = fields.Monetary(
         compute="_compute_receipt_kmitl_stats",
         currency_field="currency_id",
+        compute_sudo=True,
     )
 
     def _compute_receipt_kmitl_stats(self):

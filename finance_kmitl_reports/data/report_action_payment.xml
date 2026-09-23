@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- binding_model_id is cleared on all four report actions: they print a
+         throwaway carrier, not a payment or a bill, so they have no business in
+         the Print menu of account.payment or account.move. -->
+    <record id="action_report_payment_pdf" model="ir.actions.report">
+        <field name="name">Payment Report (PDF)</field>
+        <field name="model">finance_kmitl_reports.payment.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">finance_kmitl_reports.payment_report_pdf</field>
+        <field name="report_file">finance_kmitl_reports.payment_report_pdf</field>
+        <field name="paperformat_id" ref="paperformat_finance_report_kmitl" />
+        <field name="binding_model_id" eval="False" />
+    </record>
+
+    <record id="action_report_payment_xlsx" model="ir.actions.report">
+        <field name="name">Payment Report (XLSX)</field>
+        <field name="model">finance_kmitl_reports.payment.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">finance_kmitl_reports.payment_report_xlsx</field>
+        <field name="report_file">finance_kmitl_reports.payment_report_xlsx</field>
+        <field name="binding_model_id" eval="False" />
+    </record>
+</odoo>

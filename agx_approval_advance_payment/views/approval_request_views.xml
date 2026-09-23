@@ -69,9 +69,10 @@
             </xpath>
 
             <!-- Funding Loan per เงินยืม row: which สัญญายืม the money came out
-                 of — chosen, not matched to the recipient (ADR-0003). -->
+                 of — chosen, not matched to the recipient (ADR-0003). Only the
+                 เงินยืม table carries this column. -->
             <xpath
-                expr="//field[@name='allocation_ids']/tree/field[@name='partner_bank_id']"
+                expr="//field[@name='allocation_advance_ids']/tree/field[@name='partner_bank_id']"
                 position="before"
             >
                 <field
@@ -80,8 +81,7 @@
                     options="{'no_create': True, 'no_create_edit': True}"
                     attrs="{
                         'readonly': [('parent.is_actual_editable', '=', False)],
-                        'required': ['&amp;', ('payment_type', '=', 'advance'),
-                                     ('parent.advance_payment_count', '!=', 0)],
+                        'required': [('parent.advance_payment_count', '!=', 0)],
                         'column_invisible': [('parent.advance_payment_count', '=', 0)]
                     }"
                 />
@@ -89,7 +89,7 @@
 
             <!-- Divergence between what a borrower reported and what this
                  request itemises against their loan -->
-            <xpath expr="//field[@name='allocation_ids']" position="before">
+            <xpath expr="//field[@name='allocation_direct_ids']" position="before">
                 <div
                     class="alert alert-warning"
                     role="alert"

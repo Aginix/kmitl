@@ -3,6 +3,10 @@ import base64
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_compare
+
+
+_PA_OPEN_STATES_FOR_BUDGET_CAP = ("draft", "to_approve", "approved")
 
 
 class PurchaseRequestApproval(models.Model):
@@ -24,9 +28,11 @@ class PurchaseRequestApproval(models.Model):
     def _get_default_requested_by(self):
         return self.env["res.users"].browse(self.env.uid)
 
-    @api.model
-    def _get_default_name(self):
-        return self.env["ir.sequence"].next_by_code("purchase.request.approval")
+    # States that never mint a number on a state write. A พจ.1 normally gets
+    # its number eagerly in create() (see below); these states are the ones a
+    # still-unnumbered record may sit in — a dropped draft must not spend a
+    # number on its way to cancelled.
+    _NO_NUMBER_STATES = ("draft", "cancelled")
 
     # == Business fields ==
     request_id = fields.Many2one(
@@ -42,7 +48,12 @@ class PurchaseRequestApproval(models.Model):
     name = fields.Char(
         string="Approval Reference",
         required=True,
-        default=lambda self: _("New"),
+        # "/" is a placeholder: the พจ.1 number is minted by
+        # _assign_document_number() against the fiscal year's end date —
+        # eagerly in create() when ปีงบประมาณ is known, otherwise on the first
+        # state write out of draft. Drawing it as a field default would use
+        # today's date and could roll into the wrong ปีงบประมาณ.
+        default="/",
         tracking=True,
     )
 
@@ -216,6 +227,12 @@ class PurchaseRequestApproval(models.Model):
     source_analytic_id = fields.Many2one(related="request_id.source_analytic_id")
     budget_account_id = fields.Many2one(related="request_id.budget_account_id")
     budget_commitment_id = fields.Many2one(related="request_id.budget_commitment_id")
+    budget_commitment_amount = fields.Monetary(
+        related="request_id.budget_commitment_id.amount",
+        string="จำนวนเงินที่จองงบไว้",
+        currency_field="currency_id",
+        readonly=True,
+    )
     analytic_distribution = fields.Json(related="request_id.analytic_distribution")
     attachment_ids = fields.One2many(
         comodel_name="ir.attachment",
@@ -280,18 +297,86 @@ class PurchaseRequestApproval(models.Model):
                 record.currency_id or record.company_id.currency_id,
             )
 
+    @api.constrains(
+        "amount_total",
+        "line_ids",
+        "line_ids.product_qty",
+        "line_ids.price_unit",
+        "state",
+    )
+    def _check_amount_within_commitment(self):
+        for rec in self:
+            if rec.state != "draft":
+                continue
+            commitment = rec.budget_commitment_id
+            if not commitment:
+                continue
+            siblings = self.search(
+                [
+                    ("state", "in", list(_PA_OPEN_STATES_FOR_BUDGET_CAP)),
+                    ("request_id.budget_commitment_id", "=", commitment.id),
+                ]
+            )
+            total_pa = sum(siblings.mapped("amount_total"))
+            rounding = (commitment.currency_id or rec.currency_id).rounding
+            if float_compare(total_pa, commitment.amount, precision_rounding=rounding) > 0:
+                raise ValidationError(
+                    _(
+                        "แก้ไข พจ.1 เกินจำนวนเงินที่จองงบไว้: "
+                        "ยอดรวม พจ.1 ทั้งหมดในใบจองงบ %(cmt)s = %(total).2f บาท "
+                        "เกินจำนวนที่จองไว้ %(cap).2f บาท"
+                    )
+                    % {
+                        "cmt": commitment.display_name,
+                        "total": total_pa,
+                        "cap": commitment.amount,
+                    }
+                )
+
     def button_draft(self):
         return self.write({"state": "draft"})
 
     def button_to_approve(self):
         for rec in self:
+            # The state write is intercepted by write() below to mint the
+            # พจ.1 number pinned to the fiscal year — must happen BEFORE
+            # report_generate() so the PDF filename picks up the real name.
             rec.state = "to_approve"
             rec.report_generate()
-            rec.name = (
-                rec.name
-                or self.env["ir.sequence"].next_by_code("purchase.request.approval")
-                or _("New")
+
+    def _assign_document_number(self):
+        # Mirror purchase_request_sequence_kmitl: %(year_be)s must come from
+        # ปีงบประมาณ, not today. Pin both ir_sequence_date (drives the token)
+        # and sequence_date (drives the per-year counter reset) to the
+        # fiscal year's end date.
+        self.ensure_one()
+        if self.name and self.name != "/":
+            return
+        if not self.account_fiscal_year_id:
+            raise ValidationError(
+                _("Fiscal Year is required to generate the พจ.1 number.")
             )
+        fiscal_date = self.account_fiscal_year_id.date_to
+        number = (
+            self.env["ir.sequence"]
+            .with_context(ir_sequence_date=fiscal_date)
+            .next_by_code("purchase.request.approval", sequence_date=fiscal_date)
+        )
+        if not number:
+            raise UserError(
+                _(
+                    "Document number sequence (purchase.request.approval) not "
+                    "found. Please upgrade the module."
+                )
+            )
+        self.name = number
+
+    def _get_number_slug(self):
+        # The พจ.1 number contains "/" (PA/2569/0001); browsers treat it as a
+        # path separator and truncate a download to "0001.pdf". Same
+        # substitution as agx_sarabun._get_report_base_filename.
+        self.ensure_one()
+        return (self.name or "").replace("/", "-")
 
     def report_generate(self):
         self.ensure_one()
@@ -300,7 +385,7 @@ class PurchaseRequestApproval(models.Model):
             "purchase_request_approval.report_purchase_request_approval",
             [self.id],
         )
-        filename = self.name + ".pdf"
+        filename = self._get_number_slug() + ".pdf"
         self.env["ir.attachment"].create(
             {
                 "name": filename,
@@ -450,7 +535,8 @@ class PurchaseRequestApproval(models.Model):
 
         - PA → ``pending_pr`` (name preserved; ``_transition_after_sarabun_approve``
           flips it back to ``draft`` when the fresh sarabun re-completes).
-        - PR → ``to_submit`` (budget commitment stays intact).
+        - PR → ``to_verify`` (budget commitment stays intact; ตีกลับ = back to
+          ธุรการ for a fresh look before it goes to budget and out again).
         - PR's active sarabun is CANCELLED (state=cancelled) so it no longer
           counts as live. The user then explicitly clicks
           ``action_resume_returned_sarabun`` on the PR to revive it — that
@@ -467,7 +553,7 @@ class PurchaseRequestApproval(models.Model):
         ) % {"pa": self.name, "reason": reason}
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
         self._cancel_request_sarabun(reason)
-        self.request_id.write({"state": "to_submit"})
+        self.request_id.write({"state": "to_verify"})
         self.write({"state": "pending_pr"})
         return self._redirect_to_request()
 
@@ -486,16 +572,51 @@ class PurchaseRequestApproval(models.Model):
     def copy(self, default=None):
         default = dict(default or {})
         self.ensure_one()
-        default.update({"state": "draft", "name": self._get_default_name()})
+        default.update({"state": "draft", "name": "/"})
         return super().copy(default)
 
     @api.model_create_multi
     def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get("name", _("New")) == _("New"):
-                vals["name"] = self._get_default_name()
         requests = super().create(vals_list)
+        # Preserve the original UX: the พจ.1 number is visible from the
+        # moment the record opens (as long as ปีงบประมาณ is known — it is
+        # for the PR-driven path, see ``purchase_request._prepare_approval_vals``).
+        # Records lacking a fiscal year fall back to minting at submit.
+        for record in requests:
+            if record.name == "/" and record.account_fiscal_year_id:
+                record._assign_document_number()
         return requests
+
+    def write(self, vals):
+        # Freeze the fiscal year once the พจ.1 number has been assigned: the
+        # number's year comes from that FY (%(year_be)s), so a later change
+        # would leave PA/2569/0001 sitting on FY 2570. Mirrors
+        # purchase_request_sequence_kmitl.write(). Only an actual change is
+        # refused — the PR re-sync path (_prepare_approval_sync_vals) re-writes
+        # the field with the same value on every ตีกลับ/แก้ไข round trip.
+        if "account_fiscal_year_id" in vals:
+            numbered = self.filtered(
+                lambda r: r.name
+                and r.name != "/"
+                and r.account_fiscal_year_id.id != vals["account_fiscal_year_id"]
+            )
+            if numbered:
+                raise UserError(
+                    _(
+                        "The fiscal year is frozen once the พจ.1 number has been "
+                        "assigned — changing it would make the number inconsistent."
+                    )
+                )
+        res = super().write(vals)
+        # Mint the พจ.1 number on any transition out of draft, no matter
+        # which button (or server-side write) triggers it — button_to_approve
+        # is only one of several exits, so hooking a single button leaves
+        # the others (_on_sarabun_circulating, ...) with a dangling "/" name.
+        if vals.get("state"):
+            for record in self:
+                if record.state not in self._NO_NUMBER_STATES:
+                    record._assign_document_number()
+        return res
 
     def _can_be_deleted(self):
         self.ensure_one()
@@ -522,7 +643,7 @@ class PurchaseRequestApproval(models.Model):
 
     def _get_report_base_filename(self):
         self.ensure_one()
-        return "PA - %s" % (self.name)
+        return "รายงานขอซื้อขอจ้าง พจ.1 - %s" % self._get_number_slug()
 
     def open_preview(self):
         if self.id:
@@ -565,7 +686,9 @@ class PurchaseRequestApproval(models.Model):
 
     def _on_sarabun_circulating(self, document):
         # Explicit override: flip the PA to 'to_approve' on send. Do NOT call
-        # button_to_approve here — that also renders the PDF and assigns the name.
+        # button_to_approve here — that also renders the PDF. The state write
+        # is picked up by write() above and mints the พจ.1 number pinned to
+        # the fiscal year.
         self.write({"state": "to_approve"})
         return super()._on_sarabun_circulating(document)
 
@@ -610,7 +733,19 @@ class PurchaseRequestApproval(models.Model):
                 )
         return super()._on_sarabun_cancelled(document)
 
-    def _get_sarabun_report_action(self):
+    # ADR-0015: render through Sarabun's own no-source layout (สารบรรณ owns the
+    # header — เลขที่/หน่วยงาน/เรียน/วันที่ — and the endorsement block). We
+    # therefore DON'T override _get_sarabun_report_action (mixin default →
+    # False), and instead contribute the live tables (items / budget /
+    # committee) via _get_sarabun_body_template — mirroring purchase.request.
+
+    def _get_sarabun_document_type(self):
         return self.env.ref(
-            "purchase_request_approval.action_report_purchase_request_approvals"
-        )
+            "purchase_request_approval.document_type_purchase_request_approval",
+            raise_if_not_found=False,
+        ) or super()._get_sarabun_document_type()
+
+    def _get_sarabun_body_template(self):
+        """The live body — items table, budget details, committee appointments —
+        rendered between the หนังสือ's เนื้อหา and its signatures (ADR-0015)."""
+        return "purchase_request_approval.report_purchase_request_approval_body"

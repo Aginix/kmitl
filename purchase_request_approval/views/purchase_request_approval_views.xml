@@ -14,14 +14,14 @@
                 edit="0"
                 delete="0"
             >
-            <field name="name" optional="show"/>
+            <field name="name" string="PR Number" optional="show"/>
+            <field name="active_sarabun_document_id" string="Document Number" optional="show"/>
             <field name="title" optional="show"/>
             <field name="date_start" widget="date" optional="show"/>
             <field name="approval_date" widget="date" optional="show"/>
             <field name="estimated_cost" optional="show"/>
             <field name="procurement_type_id" optional="show"/>
             <field name="procurement_method_id" optional="show"/>
-            <field name="active_sarabun_document_id" optional="show"/>
 
             <field name="activity_ids" widget="list_activity" optional="hide" />
             <field
@@ -92,7 +92,7 @@
                         states="draft"
                         string="ตีกลับ/แก้ไข"
                         type="object"
-                        groups="purchase_request.group_purchase_request_manager"
+                        groups="purchase.group_purchase_user"
                     />
                     <button
                         name="button_cancel"
@@ -186,6 +186,10 @@
                             <field name="procurement_type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="procurement_method_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="budget_commitment_id" invisible="1"/>
+                            <field name="budget_commitment_amount"
+                                   readonly="1"
+                                   attrs="{'invisible': [('budget_commitment_id', '=', False)]}"/>
                             <field name="estimated_cost" readonly="1"/>
                             <field name="payment_type" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <field

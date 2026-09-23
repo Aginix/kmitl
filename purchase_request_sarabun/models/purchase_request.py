@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, models
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 
@@ -7,10 +7,14 @@ class PurchaseRequest(models.Model):
     _name = 'purchase.request'
     _inherit = ["purchase.request", "sarabun.document.mixin", "portal.mixin", 'thai.date.mixin']
 
-    # To disable tier validation
-    # todo: refactor move out to individual module
-    _state_from = [""]
-    _state_to = [""]
+    state = fields.Selection(
+        # หมุดท้ายต้องเป็น approved ไม่ใช่ in_progress: approved ของ OCA คั่นอยู่
+        # ระหว่าง to_approve กับ in_progress อยู่แล้ว ข้อจำกัด sent < in_progress
+        # จึงไม่ได้ห้าม approved/in_egp/in_approval แทรกมาก่อน sent
+        # (merge_sequences เป็น topological sort — คู่ที่ติดกันคือข้อจำกัดเดียวที่มี)
+        selection_add=[("to_approve",), ("sent", "Sent"), ("approved",)],
+        ondelete={"sent": "set default"},
+    )
 
     def _compute_access_url(self):
         """Compute the access URL for portal access."""
@@ -37,7 +41,7 @@ class PurchaseRequest(models.Model):
         return self.department_id or super()._get_sarabun_sender_department()
 
     def _on_sarabun_circulating(self, document):
-        self.write({"state": "to_approve"})
+        self.write({"state": "sent"})
         return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):
@@ -63,9 +67,61 @@ class PurchaseRequest(models.Model):
         return document.action_send()
 
     def _on_sarabun_cancelled(self, document):
-        self.button_draft()
+        self._action_do_cancel(_("ยกเลิกจากสารบรรณ: %s") % document.name)
         return super()._on_sarabun_cancelled(document)
 
-    def _get_sarabun_report_action(self):
-        """Delegate Sarabun report to Purchase Request report."""
-        return self.env.ref("purchase_request.action_report_purchase_requests")
+    # ADR-0015: render through Sarabun's own no-source layout (สารบรรณ owns the
+    # header — เลขที่/หน่วยงาน/เรียน/วันที่/อ้างถึง — and the endorsement block).
+    # We therefore DON'T override _get_sarabun_report_action (mixin default →
+    # False), and instead contribute:
+    #   - the editable บรรยาย via _get_sarabun_content (seeded once at submit), and
+    #   - the live tables (items / budget / attachments / committees) via
+    #     _get_sarabun_body_template.
+
+    def _get_sarabun_document_type(self):
+        return self.env.ref(
+            "purchase_request_sarabun.document_type_purchase_request",
+            raise_if_not_found=False,
+        ) or super()._get_sarabun_document_type()
+
+    def _get_sarabun_body_template(self):
+        """The live body — items table, budget details, enclosure list, committee
+        appointments — rendered between the หนังสือ's เนื้อหา and its signatures
+        (ADR-0015). Kept live so the official หนังสือ can never show numbers that
+        diverge from the reserved commitment."""
+        return "purchase_request_sarabun.report_purchase_request_body"
+
+    def _get_sarabun_content(self):
+        """The editable บรรยาย seeding เนื้อหา (policy 5A: seeded once at submit,
+        then owned by the user). The authoritative tables render live via
+        _get_sarabun_body_template — never seeded here."""
+        self.ensure_one()
+        return self.env["ir.qweb"]._render(
+            "purchase_request_sarabun.report_purchase_request_narrative",
+            {"o": self.with_context(lang="th_TH")},
+        )
+
+    def action_submit_to_sarabun(self):
+        """Also carry the request's เอกสารแนบ onto the หนังสือ as สิ่งที่ส่งมาด้วย."""
+        action = super().action_submit_to_sarabun()
+        if action and action.get("res_id"):
+            document = self.env["sarabun.document"].browse(action["res_id"])
+            self._copy_attachments_to_sarabun(document)
+        return action
+
+    def _copy_attachments_to_sarabun(self, document):
+        """Copy the request's attachments onto the หนังสือ as enclosures. Copied
+        (not merely referenced) with ``res_model=sarabun.document`` so a Route
+        recipient without rights on the request can still open them — the หนังสือ's
+        ACL governs. Seeded once at submit; the drafter then manages enclosures on
+        the หนังสือ itself."""
+        self.ensure_one()
+        enclosures = self.env["ir.attachment"]
+        for attachment in self.attachment_ids:
+            enclosures |= attachment.sudo().copy(
+                {"res_model": "sarabun.document", "res_id": document.id}
+            )
+        if enclosures:
+            document.sudo().write(
+                {"enclosure_attachment_ids": [(4, a.id) for a in enclosures]}
+            )

@@ -4,19 +4,38 @@ from odoo import _, api, fields, models
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
+    partner_id_domain = fields.Binary(
+        compute="_compute_partner_id_domain",
+        readonly=True,
+        store=False,
+    )
+
+    @api.depends("payment_type")
+    def _compute_partner_id_domain(self):
+        for rec in self:
+            rec.partner_id_domain = []
+
     state = fields.Selection(
         selection_add=[
-            ("to_submit", "To Submit"),
+            ("to_verify", "To be verified"),
             ("to_approve",),
             ("cancelled", "Cancelled"),
             ("returned", "Returned"),
         ],
+        string="Status",
+        index=True,
+        tracking=True,
+        required=True,
+        copy=False,
         ondelete={
-            "to_submit": "set default",
+            "to_verify": "set default",
             "cancelled": "set default",
             "returned": "set default",
         },
     )
+
+    is_purchase_request = fields.Boolean(compute="_compute_is_purchase_request")
+    can_request = fields.Boolean(compute="_compute_can_request")
 
     line_ids = fields.One2many(
         states={
@@ -69,6 +88,10 @@ class PurchaseRequest(models.Model):
         index=True,
         copy=False,
         tracking=True,
+    )
+    date_start = fields.Date(
+        copy=False,
+        default=False,
     )
     date_verified = fields.Date(
         string="Verified Date",
@@ -150,6 +173,37 @@ class PurchaseRequest(models.Model):
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
     can_reset_to_draft = fields.Boolean(compute="_compute_can_reset_to_draft")
 
+    def _compute_is_purchase_request(self):
+        for rec in self:
+            rec.is_purchase_request = rec._name == "purchase.request"
+
+    @api.depends("requested_by")
+    def _compute_can_request(self):
+        current_user = self.env.user
+        is_manager = current_user.has_group(
+            "purchase_request.group_purchase_request_manager"
+        )
+        is_admin = current_user.has_group("base.group_erp_manager")
+        for rec in self:
+            own_by_me = rec.requested_by.id == current_user.id
+            rec.can_request = own_by_me or is_manager or is_admin
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        super()._compute_is_editable()
+        editable_states = ("draft", "to_verify", "returned")
+        for record in self:
+            record.is_editable = record.state in editable_states
+
+    def button_to_verify(self):
+        self.ensure_one()
+        if self.detect_exceptions() and not self.ignore_exception:
+            return self._popup_exceptions()
+        vals = {"state": "to_verify"}
+        if not self.date_start:
+            vals["date_start"] = fields.Date.context_today(self)
+        self.write(vals)
+
     @api.depends("state", "requested_by")
     def _compute_can_reset_to_draft(self):
         is_manager = self.env.user.has_group(
@@ -158,7 +212,7 @@ class PurchaseRequest(models.Model):
         for rec in self:
             if rec.state == "to_approve":
                 rec.can_reset_to_draft = is_manager
-            elif rec.state in ("to_verify", "to_submit"):
+            elif rec.state == "to_verify":
                 rec.can_reset_to_draft = is_manager or rec.requested_by == self.env.user
             else:
                 rec.can_reset_to_draft = False
@@ -196,9 +250,6 @@ class PurchaseRequest(models.Model):
     def button_approved(self):
         self._apply_sarabun_approve_metadata()
         return super().button_approved()
-
-    def button_to_submit(self):
-        return self.write({"state": "to_submit"})
 
     def button_cancel(self):
         self.ensure_one()

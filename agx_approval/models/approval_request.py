@@ -211,6 +211,72 @@ class ApprovalRequest(models.Model):
         copy=True,
     )
 
+    # Single-product categories (the overwhelming majority) hide the line
+    # table entirely: the requester types one amount + description, which is
+    # mirrored onto the sole `approval.request.line` behind the scenes.
+    # `line_ids` stays the single source of truth (budget reserve,
+    # _compute_total_amount, plan/actual comparison) — these two fields are
+    # just the bare-amount UI for the single-product case.
+    multi_product = fields.Boolean(
+        related="category_id.multi_product",
+        string="มีรายการย่อย",
+    )
+
+    plan_amount = fields.Monetary(
+        string="จำนวนเงิน",
+        currency_field="currency_id",
+        compute="_compute_plan_single",
+        inverse="_inverse_plan_single",
+    )
+
+    plan_description = fields.Text(
+        string="รายละเอียด",
+        compute="_compute_plan_single",
+        inverse="_inverse_plan_single",
+    )
+
+    @api.depends("line_ids.total_amount", "line_ids.description", "category_id.multi_product")
+    def _compute_plan_single(self):
+        for rec in self:
+            if not rec.multi_product and rec.line_ids:
+                first = rec.line_ids[0]
+                rec.plan_amount = first.total_amount
+                rec.plan_description = first.description
+            else:
+                rec.plan_amount = 0.0
+                rec.plan_description = False
+
+    def _inverse_plan_single(self):
+        """Mirror the bare amount/description onto the single line behind a
+        single-product category. Guarded on ``category_id`` and
+        ``is_plan_editable`` so this never fires destructively before a
+        category is chosen or once the plan is locked (see memory
+        odoo16-first-onchange-runs-every-method-wipes-defaults)."""
+        for rec in self:
+            if rec.multi_product or not rec.category_id or not rec.is_plan_editable:
+                continue
+            # No amount yet means nothing is planned yet: drop the mirrored
+            # line rather than write a 0, which approval.request.line's
+            # _check_total_amount_positive rejects — otherwise a draft could
+            # not be saved before the requester fills the amount in.
+            if not rec.plan_amount:
+                if rec.line_ids:
+                    rec.line_ids = [(5, 0, 0)]
+                continue
+            vals = {
+                "product_id": rec.category_id.allowed_product_ids[:1].id,
+                "total_amount": rec.plan_amount,
+                "description": rec.plan_description,
+            }
+            line = rec.line_ids[:1]
+            if line:
+                extra = rec.line_ids - line
+                if extra:
+                    extra.unlink()
+                line.write(vals)
+            else:
+                rec.line_ids = [(0, 0, vals)]
+
     participant_ids = fields.One2many(
         "approval.request.participant",
         "request_id",
@@ -238,6 +304,30 @@ class ApprovalRequest(models.Model):
         "approval.request.allocation",
         "request_id",
         string="ค่าใช้จ่ายจริง",
+        copy=False,
+    )
+
+    allocation_direct_ids = fields.One2many(
+        "approval.request.allocation",
+        "request_id",
+        domain=[("payment_type", "=", "direct")],
+        string="จ่ายตรง",
+        copy=False,
+    )
+
+    allocation_prepaid_ids = fields.One2many(
+        "approval.request.allocation",
+        "request_id",
+        domain=[("payment_type", "=", "prepaid")],
+        string="สำรองจ่าย",
+        copy=False,
+    )
+
+    allocation_advance_ids = fields.One2many(
+        "approval.request.allocation",
+        "request_id",
+        domain=[("payment_type", "=", "advance")],
+        string="เงินยืม",
         copy=False,
     )
 
@@ -340,15 +430,14 @@ class ApprovalRequest(models.Model):
     )
     budget_selection_mode = fields.Selection(
         selection=[
-            ("chart", "เลือกจากผังงบประมาณ (จองงบใหม่)"),
-            ("reservation", "หยิบจากใบจองงบประมาณที่มีอยู่"),
+            ("normal", "ใช้เงินจากแผน (จองงบใหม่)"),
         ],
         string="วิธีเลือกงบประมาณ",
-        default="chart",
+        default="normal",
         copy=False,
         help=(
-            "เลือกว่าจะจองงบใหม่โดยเลือกมิติจากผังงบประมาณ "
-            "หรือหยิบใบจองงบประมาณที่หน่วยงานอื่นจองไว้ให้แล้วไปใช้"
+            "เลือกวิธีจัดหางบประมาณของคำขอนี้ — ฐานระบบมีเฉพาะการจองงบใหม่จากผังงบประมาณ "
+            "โมดูลเสริมอาจเพิ่มวิธีอื่น เช่น หยิบใบจองงบประมาณของโครงการที่อนุมัติแล้วไปใช้"
         ),
     )
     reservation_commitment_id = fields.Many2one(
@@ -363,38 +452,45 @@ class ApprovalRequest(models.Model):
         ),
     )
 
-    allowed_reservation_commitment_ids = fields.Many2many(
-        "budget.commitment",
-        compute="_compute_allowed_reservation_commitment_ids",
-    )
-
-    @api.depends("category_id", "state")
-    def _compute_allowed_reservation_commitment_ids(self):
-        for rec in self:
-            rec.allowed_reservation_commitment_ids = self.env["budget.commitment"].search(
-                rec._domain_reservation_commitment_id()
-            )
+    def _reservation_commitment_mode_domain(self):
+        """Which commitments the current ``budget_selection_mode`` may draw.
+        Base only ships ``normal`` (reserve-new), which never draws — bridges
+        add their own mode (e.g. a project's shared slip) and gate it here."""
+        return [("id", "=", False)]
 
     def _domain_reservation_commitment_id(self):
-        """Reservations this request may draw down (phase-1 dropdown). OU
-        visibility (owner or beneficiary unit) is enforced by the record rules
-        (ADR-0011). Plan/project shared commitments are drawn only through their
-        dedicated create-from-source flows (ADR-0006/0007), so they are excluded
-        here — guarded by field existence since agx_approval does not depend on
-        procurement_plan / kmitl_project."""
+        """Reservations this request may draw down (phase-1 dropdown), gated by
+        the active ``budget_selection_mode`` via
+        ``_reservation_commitment_mode_domain``. Restricted to this request's own
+        ปีงบประมาณ — a slip reserved in another year would silently pull the
+        request's money out of the year it declares (excep_account_fiscal_year_
+        not_match_budget_commitment blocks it server-side). OU visibility (owner
+        or beneficiary unit) is enforced by the record rules (ADR-0011)."""
         domain = [
             ("state", "in", ("reserved", "partial")),
             ("available_to_obligate", ">", 0),
+            ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
         ]
-        Commitment = self.env["budget.commitment"]
-        for fname in ("procurement_plan_id", "kmitl_project_id"):
-            if fname in Commitment._fields:
-                domain.append((fname, "=", False))
-        account_ids = (
-            self.env["budget.account"].search(self._reservation_account_domain()).ids
-        )
-        domain.append(("account_id", "in", account_ids))
+        domain += self._reservation_commitment_mode_domain()
         return domain
+
+    reservation_commitment_domain = fields.Binary(
+        compute="_compute_reservation_commitment_domain",
+        help=(
+            "Record-aware domain for the ใบจองงบประมาณ dropdown. A static field "
+            "domain can neither see this request's own account_fiscal_year_id "
+            "nor be extended per budget_selection_mode by a bridge, so the "
+            "dropdown is driven by this computed domain instead — same pattern "
+            "as purchase_request_budget."
+        ),
+    )
+
+    @api.depends("account_fiscal_year_id", "budget_selection_mode")
+    def _compute_reservation_commitment_domain(self):
+        for rec in self:
+            rec.reservation_commitment_domain = (
+                rec._domain_reservation_commitment_id()
+            )
 
     def action_open_reservation_picker(self):
         """Browse the picker in only-selectable mode: the requester may pick only
@@ -819,6 +915,13 @@ class ApprovalRequest(models.Model):
         Override in bridge modules to inject e.g. operating_unit_id."""
         return {}
 
+    def _advance_after_reserved(self):
+        """Fired once a commitment is attached to the request — reserved new or
+        drawn. Base always proceeds through the normal approval routing
+        (→ to_send). A bridge may override this to skip routing instead — e.g.
+        a project-funded expense whose spending was already cleared upstream."""
+        return self.action_submit()
+
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
@@ -828,10 +931,10 @@ class ApprovalRequest(models.Model):
         if self.reservation_commitment_id:
             return self._action_draw_from_reservation()
 
-        # Chose "หยิบจากใบจอง" but picked nothing: say so, instead of falling
-        # through to reserve-new and complaining about the dimensions the mode
-        # switch deliberately cleared.
-        if self.budget_selection_mode == "reservation":
+        # Chose a draw-down mode (anything but "normal") but picked nothing: say
+        # so, instead of falling through to reserve-new and complaining about
+        # the dimensions the mode switch deliberately cleared.
+        if self.budget_selection_mode != "normal":
             raise UserError(_("กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"))
 
         # รหัสงบประมาณ / มิติทางบัญชี ไม่บังคับกรอกในฟอร์ม — ตรวจครบที่เดียว
@@ -889,7 +992,7 @@ class ApprovalRequest(models.Model):
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
             )
-            self.action_submit()
+            self._advance_after_reserved()
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "approval.request",
@@ -908,10 +1011,13 @@ class ApprovalRequest(models.Model):
         Adopts the reservation's budget code and full dimension distribution —
         locked onto the request and its lines — links it as the request's
         commitment, and submits the request exactly like the reserve-new path. No
-        new reservation and no availability re-check: the money is already locked;
-        obligate/consume happen downstream at the disbursement (ADR-0010). The
-        request keeps the ปีงบประมาณ the user chose; the shared commitment carries
-        the fiscal year it was reserved in."""
+        new reservation is created: the money is already locked; obligate/consume
+        happen downstream at the disbursement (ADR-0010). The request keeps the
+        ปีงบประมาณ the user chose; the shared commitment carries the fiscal year
+        it was reserved in. The plan total is checked against what the slip
+        currently has left (``excep_draw_exceeds_available``) — a blocking
+        exception, since drawing more than is available would silently overdraw
+        a commitment that may be shared with other documents."""
         self.ensure_one()
         commitment = self.reservation_commitment_id
         if commitment.state not in ("reserved", "partial"):
@@ -919,6 +1025,10 @@ class ApprovalRequest(models.Model):
                 _("ใบจองงบประมาณ %s ไม่อยู่ในสถานะที่หยิบไปใช้ได้") % commitment.name
             )
         self._check_drawable_commitment(commitment)
+        if self.detect_exceptions() and not self.ignore_exception:
+            return self.with_context(
+                agx_exception_action="action_reserve_budget"
+            )._popup_exceptions()
         self.write(
             {
                 "budget_commitment_id": commitment.id,
@@ -937,7 +1047,7 @@ class ApprovalRequest(models.Model):
         self.message_post(
             body=_("หยิบใบจองงบประมาณ %s มาใช้ (draw down)") % commitment.name
         )
-        self.action_submit()
+        self._advance_after_reserved()
         return {
             "type": "ir.actions.act_window",
             "res_model": "approval.request",
@@ -980,20 +1090,18 @@ class ApprovalRequest(models.Model):
 
     @api.onchange("budget_selection_mode")
     def _onchange_budget_selection_mode(self):
-        """Clear whichever side of the choice is now inactive.
+        """Clear every budget-selection input on any mode switch.
 
         ``budget_selection_mode`` is a **UI affordance only** — the server still
         keys draw-down off the presence of ``reservation_commitment_id``
-        (ADR-0010), never off this field. Leaving the unused side filled would
-        make the form say one thing and the reserve action do another: a stale
-        chart selection under "หยิบจากใบจอง", or a stale slip under "เลือกจากผัง"
-        that would silently draw instead of reserving.
+        (ADR-0010), never off this field. Leaving a prior mode's input filled
+        would make the form say one thing and the reserve action do another: a
+        stale chart selection under a draw-down mode, or a stale slip under
+        "ใช้เงินจากแผน" that would silently draw instead of reserving.
         """
-        if self.budget_selection_mode == "chart":
-            self.reservation_commitment_id = False
-        else:
-            self.budget_account_id = False
-            self.analytic_distribution = False
+        self.reservation_commitment_id = False
+        self.budget_account_id = False
+        self.analytic_distribution = False
 
     def _cancel_budget_commitment(self):
         """A drawn reservation belongs to its owner, never to this request — detach

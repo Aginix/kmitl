@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sarabun_document_form_preview" model="ir.ui.view">
+        <field name="name">sarabun.document.form.preview</field>
+        <field name="model">sarabun.document</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form"/>
+        <field name="arch" type="xml">
+            <!-- Insert the routing timeline widget above the routing_step_ids tree
+                 (collapsible; default collapsed on the form — widget owns its state
+                 via localStorage). The invisible field makes the payload available to
+                 the OWL widget without rendering anything itself. -->
+            <field name="routing_step_ids" position="before">
+                <field name="routing_preview_json" invisible="1"/>
+                <widget name="sarabun_routing_timeline"/>
+            </field>
+        </field>
+    </record>
+</odoo>

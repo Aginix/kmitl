@@ -35,14 +35,14 @@ class BankPaymentExport(models.Model):
     )
     bay_service_type = fields.Selection(
         selection=[
-            ("01", "01 - เงินเดือน ค่าจ้าง บำเหน็จ บำนาญ"),
-            ("02", "02 - เงินปันผล"),
-            ("03", "03 - ดอกเบี้ย"),
-            ("04", "04 - ค่าสินค้า บริการ"),
-            ("05", "05 - ขายหลักทรัพย์"),
-            ("06", "06 - คืนภาษี"),
-            ("07", "07 - เงินกู้"),
-            ("59", "59 - อื่น ๆ"),
+            ("01", "01 - Salary, Wages, Gratuity, Pension"),
+            ("02", "02 - Dividend"),
+            ("03", "03 - Interest"),
+            ("04", "04 - Goods and Services"),
+            ("05", "05 - Sale of Securities"),
+            ("06", "06 - Tax Refund"),
+            ("07", "07 - Loan"),
+            ("59", "59 - Other"),
         ],
         readonly=True,
         states={"draft": [("readonly", False)]},

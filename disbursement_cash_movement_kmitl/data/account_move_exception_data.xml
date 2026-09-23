@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Fires on the voucher's own move, at Submit — the accounting maker's
+         last chance before Approve = post freezes it. Silent on a route whose
+         hop_ids is empty (pays directly, no leg is expected) and on a paying
+         account with no bank_account_id at all (เงินสด never travels a
+         route) — only a missing row, no route on file at all for this
+         (paying account, source) pair, trips it. -->
+    <record id="excep_cash_route_not_found" model="exception.rule">
+        <field
+            name="name"
+        >Cash route not found</field>
+        <field
+            name="description"
+        >This voucher has no inter-account cash route set up yet for this paying account and source of funds. If posted as is, the voucher's entry will be missing the leg that shows which account the money traveled from before reaching the paying account. Please set up a cash route first (Accounting ▸ Configuration ▸ Cash Routes).</field>
+        <field name="sequence">65</field>
+        <field name="model">account.move</field>
+        <field name="exception_type">by_py_code</field>
+        <!-- Everything that decides the answer lives in Python, where it is
+             linted and covered by tests: a rule's code field is evaluated by
+             safe_eval against a bare context (self/object/obj only, no env),
+             so anything more than a call here fails at runtime or not at all. -->
+        <field name="code">
+if obj._is_missing_cash_route():
+    failed = True
+        </field>
+        <field name="active" eval="True" />
+        <field name="is_blocking" eval="False" />
+    </record>
+</odoo>

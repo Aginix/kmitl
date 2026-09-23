@@ -154,44 +154,48 @@
                             widget="radio" options="{'horizontal': True}"
                             attrs="{'invisible': [('is_budget_editable', '=', False)]}" />
 
-                        <field name="allowed_reservation_commitment_ids" invisible="1" />
+                        <field name="reservation_commitment_domain" invisible="1" />
                         <field name="reservation_commitment_id" colspan="2"
                             widget="budget_commitment_info"
-                            domain="[('id', 'in', allowed_reservation_commitment_ids)]"
+                            domain="reservation_commitment_domain"
                             options="{'no_create': True, 'no_open': True}"
-                            attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '!=', 'reservation'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                            attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '=', 'normal'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
                             placeholder="เลือกใบจองงบประมาณที่จะหยิบไปใช้" />
 
                         <button name="action_open_reservation_picker" type="object"
                             string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
                             class="btn btn-primary mb-2" icon="fa-sitemap" colspan="2"
-                            attrs="{'invisible': ['|', '|', ('is_budget_editable', '=', False), ('reservation_commitment_id', '!=', False), ('budget_selection_mode', '!=', 'chart')]}" />
+                            attrs="{'invisible': ['|', '|', ('is_budget_editable', '=', False), ('reservation_commitment_id', '!=', False), ('budget_selection_mode', '!=', 'normal')]}" />
                         <!-- Only while budget is still being chosen from the chart:
                              once reserved the same values are in the card above, and
                              under the reservation mode they come from the slip. -->
                         <field name="budget_account_id" readonly="1"
                             options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
                         <field name="activity_analytic_id" readonly="1"
                             options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
                         <field name="department_analytic_id" readonly="1"
                             options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
                         <field name="fund_analytic_id" widget="selection" readonly="1"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
                         <field name="source_analytic_id" widget="selection" readonly="1"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
-                        <field name="account_fiscal_year_id" readonly="1"
-                            options="{'no_open': True}"
-                            attrs="{'invisible': ['&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
                         <field name="analytic_distribution" invisible="1" />
                     </group>
                     <notebook>
                         <page string="Expense Details (Plan)" name="expense_details">
-                            <group string="Planned Expenses">
+                            <field name="multi_product" invisible="1" />
+                            <group string="ค่าใช้จ่าย" attrs="{'invisible': [('multi_product', '=', True)]}">
+                                <field name="plan_amount"
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
+                                <field name="plan_description"
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
+                            </group>
+                            <group string="Planned Expenses" attrs="{'invisible': [('multi_product', '=', False)]}">
                                 <!-- <separator /> -->
-                                <field name="line_ids" widget="no_open_readonly_x2many" nolabel="1"
+                                <field name="line_ids" nolabel="1"
                                     colspan="2"
                                     attrs="{'readonly': [('is_plan_editable', '=', False)]}">
                                     <tree editable="bottom">
@@ -203,8 +207,10 @@
                                         <field name="total_amount" sum="Total" />
                                     </tree>
                                 </field>
+                            </group>
+                            <group>
                                 <separator string="รายชื่อบุคลากรภายใน" />
-                                <field name="internal_participant_ids" widget="no_open_readonly_x2many" nolabel="1"
+                                <field name="internal_participant_ids" nolabel="1"
                                     colspan="2"
                                     context="{'default_participant_type': 'internal'}"
                                     attrs="{'readonly': [('is_plan_editable', '=', False)]}">
@@ -220,7 +226,7 @@
                                     </tree>
                                 </field>
                                 <separator string="รายชื่อบุคคลภายนอก" />
-                                <field name="external_participant_ids" widget="no_open_readonly_x2many" nolabel="1"
+                                <field name="external_participant_ids" nolabel="1"
                                     colspan="2"
                                     context="{'default_participant_type': 'external'}"
                                     attrs="{'readonly': [('is_plan_editable', '=', False)]}">
@@ -246,11 +252,13 @@
                             <group string="เปรียบเทียบแผน / จ่ายจริง" name="plan_actual_comparison">
                                 <field name="plan_actual_comparison_html" nolabel="1" colspan="2" />
                             </group>
-                            <separator string="บันทึกค่าใช้จ่ายจริง" />
-                            <field name="allocation_ids" widget="allocation_grouped"
+                            <separator string="จ่ายตรง" />
+                            <field name="allocation_direct_ids"
+                                nolabel="1" colspan="2"
+                                context="{'default_payment_type': 'direct'}"
                                 attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
-                                <tree editable="bottom" default_order="partner_id">
-                                    <field name="allowed_recipient_ids" invisible="1" />
+                                <tree editable="bottom">
+                                    <field name="payment_type" invisible="1" force_save="1" />
                                     <field name="allowed_product_ids" invisible="1" />
                                     <field name="sequence" widget="handle" />
                                     <field name="currency_id" invisible="1" />
@@ -258,15 +266,61 @@
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="product_id"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="description"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="payment_type"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="amount"
+                                    <field name="amount" sum="รวม"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="partner_bank_id"
                                         options="{'no_create': True, 'no_create_edit': True}"
                                         attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}" />
+                                    <field name="description"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                </tree>
+                            </field>
+                            <separator string="สำรองจ่าย" />
+                            <field name="allocation_prepaid_ids"
+                                nolabel="1" colspan="2"
+                                context="{'default_payment_type': 'prepaid'}"
+                                attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
+                                <tree editable="bottom">
+                                    <field name="payment_type" invisible="1" force_save="1" />
+                                    <field name="allowed_product_ids" invisible="1" />
+                                    <field name="sequence" widget="handle" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="partner_id"
+                                        domain="[('partner_type_id.is_internal', '=', True)]"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="product_id"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="amount" sum="รวม"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="partner_bank_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                        attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}" />
+                                    <field name="description"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                </tree>
+                            </field>
+                            <separator string="เงินยืม" />
+                            <field name="allocation_advance_ids"
+                                nolabel="1" colspan="2"
+                                context="{'default_payment_type': 'advance'}"
+                                attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
+                                <tree editable="bottom">
+                                    <field name="payment_type" invisible="1" force_save="1" />
+                                    <field name="allowed_product_ids" invisible="1" />
+                                    <field name="sequence" widget="handle" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="partner_id"
+                                        domain="[('partner_type_id.is_internal', '=', True)]"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="product_id"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="amount" sum="รวม"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="partner_bank_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                        attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}" />
+                                    <field name="description"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer oe_right">

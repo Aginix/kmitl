@@ -102,6 +102,12 @@ class ApprovalRequest(models.Model):
     #   - seed the editable เนื้อหา (บรรยาย) once, and
     #   - contribute the live budget/expense tables as the origin body fragment.
 
+    def _get_sarabun_document_type(self):
+        return self.env.ref(
+            "agx_approval_sarabun.document_type_approval_request",
+            raise_if_not_found=False,
+        ) or super()._get_sarabun_document_type()
+
     def _get_sarabun_body_template(self):
         """The live budget/expense body, rendered between the หนังสือ's เนื้อหา and
         its signatures (ADR-0015). Kept live — never editable — so the official

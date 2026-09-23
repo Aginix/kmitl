@@ -50,6 +50,7 @@ msgid "Bank"
 msgstr "ธนาคาร"
 
 #. module: account_kmitl
+#: model:ir.model.fields,field_description:account_kmitl.field_account_account__kmitl_bank_account_id
 #: model:ir.model.fields,field_description:account_kmitl.field_account_payment_method_line__bank_account_id
 msgid "Bank Account"
 msgstr "บัญชีธนาคารของสถาบัน"
@@ -81,3 +82,8 @@ msgstr "รหัสวิธีจ่าย"
 #, python-format
 msgid "Paying account without a bank account"
 msgstr "หัวจ่ายนี้ยังไม่มีบัญชีธนาคาร"
+
+#. module: account_kmitl
+#: model:ir.model.fields,field_description:account_kmitl.field_res_bank__short_name
+msgid "Short Name"
+msgstr "ชื่อย่อ"

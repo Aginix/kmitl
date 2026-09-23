@@ -5,42 +5,51 @@
         <field name="sequence">50</field>
     </record>
 
-    <record id="group_advance_payment_user" model="res.groups">
-        <field name="name">User</field>
+    <record id="group_advance_payment_own_only" model="res.groups">
+        <field name="name">Own Only</field>
         <field name="category_id" ref="module_category_advance_payment"/>
         <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
     </record>
 
-    <record id="group_advance_payment_officer" model="res.groups">
-        <field name="name">Officer</field>
+    <record id="group_advance_payment_user" model="res.groups">
+        <field name="name">User</field>
         <field name="category_id" ref="module_category_advance_payment"/>
-        <field name="implied_ids" eval="[(4, ref('group_advance_payment_user'))]"/>
+        <field name="implied_ids" eval="[(4, ref('group_advance_payment_own_only'))]"/>
     </record>
 
     <record id="group_advance_payment_manager" model="res.groups">
         <field name="name">Manager</field>
         <field name="category_id" ref="module_category_advance_payment"/>
-        <field name="implied_ids" eval="[(4, ref('group_advance_payment_officer'))]"/>
+        <field name="implied_ids" eval="[(4, ref('group_advance_payment_user'))]"/>
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
-    <record id="group_advance_payment_responsible" model="res.groups">
-        <field name="name">ผู้รับผิดชอบเงินยืม</field>
-        <field name="category_id" ref="module_category_advance_payment"/>
+    <record id="group_advance_payment_loan_officer" model="res.groups">
+        <field name="name">เจ้าหน้าที่งานเงินยืม</field>
+        <field name="category_id" eval="False"/>
+        <field name="implied_ids" eval="[(4, ref('group_advance_payment_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="group_advance_payment_loan_approver" model="res.groups">
+        <field name="name">ผู้มีสิทธิ์อนุมัติเงินยืม</field>
+        <field name="category_id" eval="False"/>
+        <field name="implied_ids" eval="[(4, ref('group_advance_payment_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
     <!-- Record Rules -->
-    <record id="advance_payment_user_rule" model="ir.rule">
-        <field name="name">Advance Payment: User sees own records</field>
+    <record id="advance_payment_own_only_rule" model="ir.rule">
+        <field name="name">Advance Payment: Own-only sees own records</field>
         <field name="model_id" ref="model_advance_payment"/>
-        <field name="groups" eval="[(4, ref('group_advance_payment_user'))]"/>
-        <field name="domain_force">[('requested_by', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_advance_payment_own_only'))]"/>
+        <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('user_id', '=', user.id)]</field>
     </record>
 
-    <record id="advance_payment_officer_rule" model="ir.rule">
-        <field name="name">Advance Payment: Officer sees all</field>
+    <record id="advance_payment_user_rule" model="ir.rule">
+        <field name="name">Advance Payment: User sees all</field>
         <field name="model_id" ref="model_advance_payment"/>
-        <field name="groups" eval="[(4, ref('group_advance_payment_officer'))]"/>
+        <field name="groups" eval="[(4, ref('group_advance_payment_user'))]"/>
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 

@@ -1,65 +1,183 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
+from collections import defaultdict
+
 from odoo import _, api, models
 from odoo.tools import format_date
+from odoo.tools.float_utils import float_is_zero
+
+from .dimension_filter_mixin import SKIP_DISPLAY_TYPES
 
 
 class TrialBalanceReportKmitl(models.AbstractModel):
-    """Trial balance computed by the OCA engine, extended with KMITL
-    accounting-dimension filtering and a Debit/Credit/Balance layout.
+    """Trial balance over ``account.move.line``, filtered by the KMITL
+    accounting dimensions and laid out as Debit / Credit / Balance.
 
-    The same compute (:meth:`get_trial_balance_data`) feeds both the on-screen
-    OWL client action (called over RPC) and the QWeb PDF, so the printout
-    always mirrors the screen.
+    The compute is ours rather than the OCA ``account_financial_report``
+    engine's. Everything that engine adds on top of the three aggregations
+    below -- partner details, foreign currency, account hierarchy, analytic
+    grouping, unaffected earnings -- is switched off for KMITL, so inheriting
+    it bought us no maintenance while coupling the report to a private method
+    OCA reshapes between releases.
+
+    The same compute (:meth:`get_trial_balance_data`) feeds the on-screen OWL
+    client action (called over RPC), the QWeb PDF, the XLSX and the CSV, so
+    every output mirrors the screen.
     """
 
     _name = "report.accounting_kmitl_reports.trial_balance_kmitl"
     _description = "KMITL Trial Balance Report"
-    _inherit = [
-        "report.account_financial_report.trial_balance",
-        "accounting_kmitl_reports.dimension.filter.mixin",
-    ]
+    _inherit = "accounting_kmitl_reports.dimension.filter.mixin"
 
     # ------------------------------------------------------------------
-    # Dimension filtering
+    # Move-line domains
     #
     # KMITL dimensions live in ``account.move.line.analytic_distribution``
-    # (a JSON of {analytic_account_id: percentage}). We inject extra
-    # ``analytic_distribution`` leaves into every move-line domain the OCA
-    # engine builds, passing them through the context so we don't have to
-    # touch the (re-used) OCA ``_get_data`` signature.
+    # (a JSON of {analytic_account_id: percentage}); the mixin turns the
+    # selection into domain leaves that are appended to every aggregation.
     # ------------------------------------------------------------------
-    def _kmitl_dim_leaves(self):
-        return self.env.context.get("kmitl_dim_leaves") or []
-
-    def _get_initial_balances_bs_ml_domain(self, *args, **kwargs):
-        domain = super()._get_initial_balances_bs_ml_domain(*args, **kwargs)
-        return domain + self._kmitl_dim_leaves()
-
-    def _get_initial_balances_pl_ml_domain(self, *args, **kwargs):
-        domain = super()._get_initial_balances_pl_ml_domain(*args, **kwargs)
-        return domain + self._kmitl_dim_leaves()
+    @api.model
+    def _kmitl_common_ml_domain(
+        self, company_id, journal_ids, partner_ids, only_posted
+    ):
+        """The leaves shared by the opening-balance and period aggregations."""
+        domain = [("company_id", "=", company_id)]
+        if journal_ids:
+            domain.append(("journal_id", "in", journal_ids))
+        if partner_ids:
+            domain.append(("partner_id", "in", partner_ids))
+        if only_posted:
+            domain.append(("move_id.state", "=", "posted"))
+        else:
+            domain.append(("move_id.state", "in", ["posted", "draft"]))
+        return domain
 
     @api.model
-    def _get_period_ml_domain(self, *args, **kwargs):
-        domain = super()._get_period_ml_domain(*args, **kwargs)
-        return domain + self._kmitl_dim_leaves()
-
-    def _get_initial_balance_fy_pl_ml_domain(self, *args, **kwargs):
-        domain = super()._get_initial_balance_fy_pl_ml_domain(*args, **kwargs)
-        return domain + self._kmitl_dim_leaves()
+    def _kmitl_accounts(self, company_id, account_ids, include_initial_balance=None):
+        """The accounts to report on, optionally restricted to the
+        balance-sheet ones (``include_initial_balance``) or the P&L ones."""
+        domain = [("company_id", "=", company_id)]
+        if account_ids:
+            domain.append(("id", "in", account_ids))
+        if include_initial_balance is not None:
+            domain.append(("include_initial_balance", "=", include_initial_balance))
+        return self.env["account.account"].search(domain)
 
     # ------------------------------------------------------------------
-    # Shared compute
-    #
-    # ``_kmitl_fy_start_date`` and ``_kmitl_apply_account_range`` live on the
-    # dimension filter mixin (shared with the General Ledger report).
+    # Compute
     # ------------------------------------------------------------------
+    @api.model
+    def _kmitl_opening_balances(
+        self, company_id, account_ids, common_domain, date_from, fy_start_date
+    ):
+        """``{account_id: opening balance}`` as of ``date_from``.
+
+        Read in two passes because profit & loss accounts restart every
+        fiscal year: balance-sheet accounts (``include_initial_balance``)
+        accumulate every entry before ``date_from``, P&L accounts only the
+        entries since ``fy_start_date``.
+        """
+        opening = defaultdict(float)
+        for include_initial_balance in (True, False):
+            accounts = self._kmitl_accounts(
+                company_id, account_ids, include_initial_balance
+            )
+            if not accounts:
+                continue
+            domain = common_domain + [
+                ("account_id", "in", accounts.ids),
+                ("date", "<", date_from),
+            ]
+            if not include_initial_balance:
+                domain.append(("date", ">=", fy_start_date))
+            for group in self.env["account.move.line"].read_group(
+                domain, ["balance"], ["account_id"]
+            ):
+                opening[group["account_id"][0]] += group["balance"] or 0.0
+        return opening
+
+    @api.model
+    def _kmitl_account_totals(self, options, company):
+        """``{account_id: {initial_balance, debit, credit, ending_balance}}``
+        for every account in scope, seeded at zero so an account with no entry
+        at all still shows up when "hide accounts at 0" is off."""
+        company_id = company.id
+        date_from = options["date_from"]
+        journal_ids = options.get("journal_ids") or []
+        partner_ids = options.get("partner_ids") or []
+        account_ids = self._kmitl_apply_account_range(
+            options, company_id, list(options.get("account_ids") or [])
+        )
+        common_domain = self._kmitl_common_ml_domain(
+            company_id,
+            journal_ids,
+            partner_ids,
+            bool(options.get("only_posted", True)),
+        ) + self._kmitl_build_dim_leaves(
+            options.get("dims") or {}, options.get("dim_only_self")
+        )
+
+        totals = {
+            account.id: {
+                "initial_balance": 0.0,
+                "debit": 0.0,
+                "credit": 0.0,
+                "ending_balance": 0.0,
+            }
+            for account in self._kmitl_accounts(company_id, account_ids)
+        }
+
+        period_domain = common_domain + [
+            ("display_type", "not in", SKIP_DISPLAY_TYPES),
+            ("date", ">=", date_from),
+            ("date", "<=", options["date_to"]),
+        ]
+        if account_ids:
+            period_domain.append(("account_id", "in", account_ids))
+        for group in self.env["account.move.line"].read_group(
+            period_domain, ["debit", "credit", "balance"], ["account_id"]
+        ):
+            total = totals.get(group["account_id"][0])
+            if total is None:
+                continue
+            total["debit"] = group["debit"] or 0.0
+            total["credit"] = group["credit"] or 0.0
+            total["ending_balance"] = group["balance"] or 0.0
+
+        opening = self._kmitl_opening_balances(
+            company_id,
+            account_ids,
+            common_domain,
+            date_from,
+            self._kmitl_fy_start_date(date_from, company),
+        )
+        for account_id, balance in opening.items():
+            total = totals.get(account_id)
+            if total is None:
+                continue
+            total["initial_balance"] = balance
+            total["ending_balance"] += balance
+        return totals
+
+    @api.model
+    def _kmitl_drop_accounts_at_0(self, totals, company):
+        """Drop the accounts whose opening, movements and closing are all
+        zero (the "hide accounts at 0" option)."""
+        rounding = company.currency_id.rounding
+        return {
+            account_id: total
+            for account_id, total in totals.items()
+            if not all(
+                float_is_zero(amount, precision_rounding=rounding)
+                for amount in total.values()
+            )
+        }
+
     @api.model
     def get_trial_balance_data(self, options):
         """Compute the trial balance for ``options`` and return JSON-friendly
         rows. Called over RPC by the OWL client action and internally by the
-        QWeb report.
+        QWeb / XLSX / CSV reports.
 
         ``options`` keys: ``company_id``, ``date_from``, ``date_to``,
         ``only_posted`` (bool), ``hide_account_at_0`` (bool), ``journal_ids``,
@@ -67,65 +185,35 @@ class TrialBalanceReportKmitl(models.AbstractModel):
         ``account_code_to_id`` and ``dims`` (``{code: [analytic_account_ids]}``).
         """
         options = options or {}
-        company_id = options.get("company_id") or self.env.company.id
-        company = self.env["res.company"].browse(company_id)
-        date_from = options.get("date_from")
-        date_to = options.get("date_to")
+        company = self.env["res.company"].browse(
+            options.get("company_id") or self.env.company.id
+        )
 
         empty = {
             "rows": [],
             "totals": self._kmitl_empty_totals(),
             "currency_id": company.currency_id.id,
         }
-        if not date_from or not date_to:
+        if not options.get("date_from") or not options.get("date_to"):
             return empty
 
-        only_posted = bool(options.get("only_posted", True))
-        hide_account_at_0 = bool(options.get("hide_account_at_0", True))
-        journal_ids = options.get("journal_ids") or []
-        partner_ids = options.get("partner_ids") or []
-        account_ids = list(options.get("account_ids") or [])
-        account_ids = self._kmitl_apply_account_range(options, company_id, account_ids)
-
-        fy_start_date = self._kmitl_fy_start_date(date_from, company)
-        leaves = self._kmitl_build_dim_leaves(
-            options.get("dims") or {}, options.get("dim_only_self")
-        )
-
-        report = self.with_context(kmitl_dim_leaves=leaves)
-        total_amount, accounts_data, _partners = report._get_data(
-            account_ids,
-            journal_ids,
-            partner_ids,
-            company_id,
-            date_to,
-            date_from,
-            False,  # foreign_currency
-            only_posted,
-            False,  # show_partner_details
-            hide_account_at_0,
-            # No unaffected-earnings account: KMITL does not want the
-            # "Undistributed Profits/Losses" row (which the OCA engine would
-            # otherwise always append, even at zero).
-            False,
-            fy_start_date,
-            False,  # grouped_by
-        )
+        account_totals = self._kmitl_account_totals(options, company)
+        if bool(options.get("hide_account_at_0", True)):
+            account_totals = self._kmitl_drop_accounts_at_0(account_totals, company)
 
         rows = []
         totals = self._kmitl_empty_totals()
-        for account_id in sorted(
-            accounts_data, key=lambda a: accounts_data[a]["code"] or ""
-        ):
-            ta = total_amount.get(account_id, {})
-            opening = ta.get("initial_balance") or 0.0
-            debit = ta.get("debit") or 0.0
-            credit = ta.get("credit") or 0.0
-            ending = ta.get("ending_balance") or 0.0
+        accounts = self.env["account.account"].browse(list(account_totals))
+        for account in accounts.sorted(lambda a: a.code or ""):
+            amounts = account_totals[account.id]
+            opening = amounts["initial_balance"]
+            debit = amounts["debit"]
+            credit = amounts["credit"]
+            ending = amounts["ending_balance"]
             row = {
-                "id": account_id,
-                "code": accounts_data[account_id]["code"] or "",
-                "name": accounts_data[account_id]["name"] or "",
+                "id": account.id,
+                "code": account.code or "",
+                "name": account.name or "",
                 "opening_debit": opening if opening > 0 else 0.0,
                 "opening_credit": -opening if opening < 0 else 0.0,
                 "opening_balance": opening,

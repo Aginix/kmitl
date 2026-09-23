@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="action_report_bank_payment_export" model="ir.actions.report">
-        <field name="name">รายงานการเบิกจ่าย</field>
+        <field name="name">Disbursement Report</field>
         <field name="model">bank.payment.export</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">finance_kmitl.report_bank_payment_export</field>

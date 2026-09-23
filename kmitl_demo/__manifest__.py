@@ -21,7 +21,6 @@
         "purchase_request_department",
         "purchase_request_budget",
         "purchase_request_price_tax_included",
-        "purchase_request_approval_kmitl",
         "purchase_request_approval",
         "purchase_request_sarabun",
         "operating_unit_kmitl",
@@ -31,6 +30,7 @@
         "purchase_request_approval_work_acceptance",
         "agx_approval",
         "agx_approval_disbursement",
+        "hr_partner_type_kmitl",
     ],
     "data": [
         "data/company.xml",

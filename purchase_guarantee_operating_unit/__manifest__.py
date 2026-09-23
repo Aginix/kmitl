@@ -7,9 +7,7 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": [
         "operating_unit",
-        "purchase_guarantee_account_payment",
-        "purchase_operating_unit",
-        "purchase_request_operating_unit",
+        "l10n_th_gov_purchase_guarantee",
     ],
     "data": [
         "security/purchase_guarantee_security.xml",

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-inherit="agx_approval_dashboard_tree.CategoryTree" t-inherit-mode="extension" owl="1">
+        <xpath expr="//a[hasclass('o_act_category_link')]" position="before">
+            <i class="fa fa-fw o_act_fav_toggle"
+               t-att-class="isFavorite(cat.id) ? 'fa-star text-warning' : 'fa-star-o text-muted'"
+               t-on-click.stop.prevent="() => this.toggleFavorite(cat.id)"/>
+        </xpath>
+        <xpath expr="//t[@t-foreach='categoryGroups']" position="before">
+            <section t-if="favoriteCategories.length" class="o_act_group o_act_group_favorite mb-2">
+                <div class="o_act_group_header d-flex align-items-center">
+                    <i class="fa fa-star text-warning"/>
+                    <span class="fw-bold ms-1">รายการโปรด</span>
+                    <span class="text-muted ms-2 small" t-esc="'(' + favoriteCategories.length + ')'"/>
+                </div>
+                <ul class="list-unstyled ms-4 mb-0">
+                    <li t-foreach="favoriteCategories" t-as="cat" t-key="cat.id" class="py-1">
+                        <i class="fa fa-fw fa-star text-warning o_act_fav_toggle"
+                           t-on-click.stop.prevent="() => this.toggleFavorite(cat.id)"/>
+                        <a href="#" class="o_act_category_link"
+                           t-on-click.prevent="() => this.openCategory(cat.id)">
+                            <span t-esc="cat.name"/>
+                            <i t-if="cat.budgetAccountName" class="fa fa-money fa-fw text-muted small ms-1"
+                               t-att-title="cat.budgetAccountName"/>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+        </xpath>
+    </t>
+
+</templates>

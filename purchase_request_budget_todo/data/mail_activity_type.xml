@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- Execution Todo: reserve the budget commitment while the พ.1 sits at to_verify (รอจองงบประมาณ) -->
+    <record id="mail_activity_pr_reserve_budget" model="mail.activity.type">
+        <field name="name">จองงบประมาณ แบบขอให้จัดหา (พ.1)</field>
+        <field
+            name="summary"
+        >Reserve the budget commitment for the purchase request</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">purchase.request</field>
+        <field name="icon">fa-money</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <record
+        id="mail_activity_pr_awaiting_sarabun"
+        model="mail.activity.type"
+    >
+        <field name="name">รอสร้างหนังสือขอความเห็นชอบให้จัดหา (พ.1)</field>
+        <field
+            name="summary"
+        >รอดำเนินการสร้างหนังสือขอความเห็นชอบ (พ.1)</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">purchase.request</field>
+        <field name="icon">fa-file-text-o</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

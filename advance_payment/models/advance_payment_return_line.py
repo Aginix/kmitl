@@ -103,7 +103,7 @@ class AdvancePaymentReturnLine(models.Model):
             "advance_payment.payment_type_advance_payment_inbound"
         )
         vals = {
-            "partner_id": self.agreement_id.requested_by.partner_id.id,
+            "partner_id": self.agreement_id.partner_id.id,
             "amount": self.amount,
             "currency_id": self.currency_id.id,
             "kmitl_payment_type_id": payment_type.id,
@@ -130,8 +130,14 @@ class AdvancePaymentReturnLine(models.Model):
                     _("Only pending review return lines can be approved.")
                 )
             vals = rec._prepare_return_payment_vals()
-            payment = self.env["account.payment"].create(vals)
-            payment.action_submit()
+            # account.payment create is ACL-gated to Accounting/Budget groups
+            # a loan officer has no reason to hold — the button's own
+            # groups="...loan_officer" already establishes authority; sudo()
+            # the create the same way advance_payment.action_approve does.
+            payment = self.env["account.payment"].sudo().create(vals)
+            # Left a finance-office draft, like the outbound disbursement in
+            # advance_payment.action_approve: receipting the money in is the
+            # finance office's own press, not this line's (ADR-0003).
             rec.write({"state": "done", "payment_id": payment.id})
             rec.agreement_id.message_post(
                 body=_(
