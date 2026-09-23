@@ -12,10 +12,11 @@ REPORT = "report.accounting_kmitl_reports.general_ledger_kmitl"
 class TestGeneralLedgerKmitl(TransactionCase):
     """The Thai General Ledger is a balance-form report: one row per line of
     the account being viewed, using that line's own debit/credit. The
-    counterpart account is a label only ("Various accounts" when the entry
-    has several), never a driver of the amount -- so every account's totals
-    tie out to its own ``account.move.line`` rows, matching the Trial
-    Balance. See ``accounting_kmitl_reports/CONTEXT.md`` (Compound entry).
+    counterpart account names the Account column and may split a line into
+    one row per counterpart, but never drives the amount -- the parts always
+    add back to the line's own debit/credit, so every account's totals tie
+    out to its own ``account.move.line`` rows, matching the Trial Balance.
+    See ``accounting_kmitl_reports/CONTEXT.md`` (Compound entry).
     """
 
     @classmethod
@@ -106,10 +107,11 @@ class TestGeneralLedgerKmitl(TransactionCase):
         self.assertEqual(accounts[self.expense_b.code]["final_debit"], 40.0)
         self.assertEqual(accounts[self.payable.code]["final_credit"], 100.0)
 
-    def test_split_credit_lines_collapse_the_debit_row_to_various_accounts(self):
-        """Dr Receivable 100 / Cr Income 93 / Cr Tax 7 -- the receivable
-        keeps a single row for its own 100, labelled "Various accounts"
-        since the entry's other side has two accounts."""
+    def test_split_credit_lines_give_one_row_per_counterpart(self):
+        """Dr Receivable 100 / Cr Income 93 / Cr Tax 7 -- the receivable's
+        single line is shown as one row per counterpart account, each
+        carrying that counterpart's own figure, and the two rows add back to
+        the line's 100."""
         self._entry(
             [
                 {"account_id": self.receivable.id, "debit": 100.0, "name": "ar"},
@@ -119,11 +121,39 @@ class TestGeneralLedgerKmitl(TransactionCase):
         )
         ar = self._by_code(self._data([self.receivable.id]))[self.receivable.code]
 
-        self.assertEqual(len(ar["lines"]), 1)
-        self.assertEqual(ar["lines"][0]["debit"], 100.0)
-        self.assertEqual(ar["lines"][0]["account"], "Various accounts")
+        by_account = {line["account"]: line["debit"] for line in ar["lines"]}
+        self.assertEqual(len(ar["lines"]), 2)
+        self.assertEqual(
+            by_account,
+            {
+                "%s %s" % (self.income.code, self.income.name): 93.0,
+                "%s %s" % (self.tax_account.code, self.tax_account.name): 7.0,
+            },
+        )
+        # The split is presentation only: the rows still foot to the line.
+        self.assertEqual(sum(line["debit"] for line in ar["lines"]), 100.0)
+        self.assertEqual(ar["lines"][-1]["balance"], 100.0)
         self.assertEqual(ar["final_debit"], 100.0)
         self.assertEqual(ar["final_credit"], 0.0)
+
+    def test_split_rows_add_back_when_both_sides_carry_several_accounts(self):
+        """No true pairing exists when both sides are split, so the rows are
+        apportioned -- but they must still add back to the account's own
+        line, keeping the carried-forward tied to the Trial Balance."""
+        self._entry(
+            [
+                {"account_id": self.payable.id, "debit": 60.0, "name": "p1"},
+                {"account_id": self.payable.id, "debit": 40.0, "name": "p2"},
+                {"account_id": self.income.id, "credit": 99.0, "name": "bank"},
+                {"account_id": self.tax_account.id, "credit": 1.0, "name": "wht"},
+            ]
+        )
+        payable = self._by_code(self._data([self.payable.id]))[self.payable.code]
+
+        self.assertEqual(sum(line["debit"] for line in payable["lines"]), 100.0)
+        self.assertEqual(payable["final_debit"], 100.0)
+        self.assertEqual(payable["final_credit"], 0.0)
+        self.assertEqual(payable["lines"][-1]["balance"], 100.0)
 
     def test_compound_entry_both_sides_split_each_account_keeps_its_own_lines(self):
         """Express-style compound entry (one invoice + its cost of sale in a

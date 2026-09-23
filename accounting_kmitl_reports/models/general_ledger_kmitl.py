@@ -63,6 +63,7 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         if not date_from or not date_to:
             return {"accounts": [], "currency_id": company.currency_id.id}
 
+        currency = company.currency_id
         only_posted = bool(options.get("only_posted", True))
         hide_at_0 = bool(options.get("hide_account_at_0", True))
         journal_ids = options.get("journal_ids") or []
@@ -135,8 +136,9 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                     analytic_ids.add(int(aid))
         move_map = self._kmitl_move_detail_map(move_ids)
         # Every line of each referenced entry, to resolve the counterpart
-        # account of each selected line for the Account column -- never to
-        # add rows or drive amounts of its own.
+        # accounts each selected line faces. They name the Account column and
+        # split a line across its counterparts, but never change how much the
+        # selected account moved.
         move_lines_map = self._kmitl_move_lines_map(move_ids, company_id)
         cp_account_ids = set()
         for cp_lines in move_lines_map.values():
@@ -190,9 +192,11 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
             for entry_id, sel_lines in groups.items():
                 detail = move_map.get(entry_id, {})
                 cp_lines = move_lines_map.get(entry_id, [])
-                # One row per line of the selected account -- the Account
-                # column is a label only, never a driver: the row's own
-                # debit/credit is always what's posted on that line.
+                # One row per counterpart the selected line faces --
+                # the Account column names a real account instead of a
+                # catch-all. Splitting is a presentation of the SAME amount:
+                # the parts always add back to the line's own debit/credit,
+                # so the column totals still tie to the Trial Balance.
                 for sel_line in sel_lines:
                     debit = sel_line.get("debit") or 0.0
                     credit = sel_line.get("credit") or 0.0
@@ -200,52 +204,38 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                     # posted on both sides of the same entry keeps its own
                     # gross per line instead of collapsing to one side.
                     side = "debit" if debit >= credit else "credit"
-                    # Opposite-side accounts of the entry (exclude the
-                    # selected account itself); a single one is named, several
-                    # collapse to "Various accounts", none falls back to the
-                    # selected account's own name.
-                    opp_ids = {
-                        cp["account_id"][0]
-                        for cp in cp_lines
-                        if cp["account_id"]
-                        and cp["account_id"][0] != sel_id
-                        and (
-                            (cp["credit"] or 0.0) > 0
-                            if side == "debit"
-                            else (cp["debit"] or 0.0) > 0
+                    amount = debit if side == "debit" else credit
+                    for cp_label, part in self._kmitl_split_by_counterpart(
+                        amount, side, sel_id, sel_label, cp_lines, acc_name, currency
+                    ):
+                        row_debit = part if side == "debit" else 0.0
+                        row_credit = part if side == "credit" else 0.0
+                        # Running balance accumulates each displayed row, so
+                        # the column always foots (prev +/- this row).
+                        running += row_debit - row_credit
+                        lines.append(
+                            {
+                                "date": fields.Date.to_string(sel_line["date"])
+                                if sel_line.get("date")
+                                else "",
+                                "issue": sel_line.get("entry") or "",
+                                "entry_id": entry_id or False,
+                                # Remark column shows the entry's narration.
+                                "narration": detail.get("narration") or "",
+                                "maker": detail.get("maker") or "",
+                                "maker_date": detail.get("maker_date") or "",
+                                "id": "%s-%s-%s-%s"
+                                % (sel_id, entry_id, sel_line["id"], len(lines)),
+                                "account": cp_label,
+                                "debit": row_debit,
+                                "credit": row_credit,
+                                "balance": running,
+                                "dimensions": build_dimensions(
+                                    sel_line.get("analytic_distribution")
+                                ),
+                                "partner": sel_line.get("partner_name") or "",
+                            }
                         )
-                    }
-                    if len(opp_ids) == 1:
-                        account = acc_name.get(next(iter(opp_ids)), "")
-                    elif opp_ids:
-                        account = _("Various accounts")
-                    else:
-                        account = sel_label
-                    # Running balance accumulates each displayed row, so the
-                    # column always foots (prev ± this row's debit/credit).
-                    running += debit - credit
-                    lines.append(
-                        {
-                            "date": fields.Date.to_string(sel_line["date"])
-                            if sel_line.get("date")
-                            else "",
-                            "issue": sel_line.get("entry") or "",
-                            "entry_id": entry_id or False,
-                            # Remark column shows the journal entry's narration.
-                            "narration": detail.get("narration") or "",
-                            "maker": detail.get("maker") or "",
-                            "maker_date": detail.get("maker_date") or "",
-                            "id": "%s-%s-%s" % (sel_id, entry_id, sel_line["id"]),
-                            "account": account,
-                            "debit": debit,
-                            "credit": credit,
-                            "balance": running,
-                            "dimensions": build_dimensions(
-                                sel_line.get("analytic_distribution")
-                            ),
-                            "partner": sel_line.get("partner_name") or "",
-                        }
-                    )
 
             accounts.append(
                 {
@@ -266,6 +256,65 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                 }
             )
         return {"accounts": accounts, "currency_id": company.currency_id.id}
+
+    @api.model
+    def _kmitl_split_by_counterpart(
+        self, amount, side, sel_id, sel_label, cp_lines, acc_name, currency
+    ):
+        """Split one selected-account line across the counterpart accounts it
+        faces, as ``[(account_label, part), ...]``.
+
+        A Thai ledger names the contra account in the Account column, so an
+        entry settled against several accounts is shown one row per account
+        rather than under a catch-all label. The split is presentation only:
+        ``sum(part) == amount`` always, so the Debit/Credit totals stay equal
+        to the account's own move lines and keep tying to the Trial Balance.
+
+        Counterpart amounts are used as the weights, so in the ordinary case --
+        where they already add up to ``amount`` (one line of this account
+        against N others) -- every part is exactly the counterpart's own
+        figure. When both sides of the entry carry several accounts no true
+        pairing exists, so the weights merely apportion; the rows still add
+        back and the expand panel shows the entry as posted.
+
+        No counterpart (a same-side-only adjustment) keeps a single row under
+        the selected account's own name.
+        """
+        totals = {}
+        for cp in cp_lines:
+            if not cp["account_id"] or cp["account_id"][0] == sel_id:
+                continue
+            cp_amount = (cp["credit"] if side == "debit" else cp["debit"]) or 0.0
+            if cp_amount <= 0:
+                continue
+            totals[cp["account_id"][0]] = (
+                totals.get(cp["account_id"][0], 0.0) + cp_amount
+            )
+        if not totals:
+            return [(sel_label, amount)]
+        # Stable, readable order: by account code (acc_name is "code name").
+        shares = sorted(
+            totals.items(), key=lambda item: acc_name.get(item[0], "") or ""
+        )
+        if len(shares) == 1:
+            return [(acc_name.get(shares[0][0], ""), amount)]
+        weight_total = sum(weight for _aid, weight in shares)
+        if currency.is_zero(weight_total) or currency.is_zero(amount):
+            # Nothing to apportion by -- keep one row per counterpart so the
+            # accounts are still named, with no amount to split between them.
+            return [(acc_name.get(aid, ""), 0.0) for aid, _weight in shares]
+        rows = []
+        allocated = 0.0
+        for index, (aid, weight) in enumerate(shares):
+            if index == len(shares) - 1:
+                # The last row absorbs the rounding residual so the parts add
+                # back to ``amount`` to the satang.
+                part = amount - allocated
+            else:
+                part = currency.round(amount * weight / weight_total)
+                allocated += part
+            rows.append((acc_name.get(aid, ""), part))
+        return rows
 
     @api.model
     def _kmitl_analytic_map(self, analytic_ids):
