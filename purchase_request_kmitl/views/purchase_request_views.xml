@@ -520,11 +520,45 @@
     <!-- hide menu -->
     <menuitem id="purchase_request.menu_purchase_request_line_act" active="False" />
     <menuitem id="purchase_request.menu_purchase_request_act" active="False" />
+
+    <record id="action_purchase_request_my" model="ir.actions.act_window">
+        <field name="name">พ.1 ของฉัน</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.request</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[('create_uid', '=', uid)]</field>
+        <field name="context">{}</field>
+        <field name="search_view_id" ref="purchase_request.view_purchase_request_search" />
+    </record>
+
+    <record id="action_purchase_request_all" model="ir.actions.act_window">
+        <field name="name">รายการ พ.1</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.request</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="search_view_id" ref="purchase_request.view_purchase_request_search" />
+    </record>
+
     <!-- menu -->
     <menuitem
         id="purchase_request.menu_purchase_request"
-        action="purchase_request.purchase_request_form_action"
         parent="purchase_request.parent_menu_purchase_request"
+    />
+    <menuitem
+        id="menu_purchase_request_my"
+        name="พ.1 ของฉัน"
+        parent="purchase_request.menu_purchase_request"
+        action="action_purchase_request_my"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_purchase_request_all"
+        name="รายการ พ.1"
+        parent="purchase_request.menu_purchase_request"
+        action="action_purchase_request_all"
+        sequence="20"
     />
     <menuitem
         id="purchase_request_kmitl_root_menu"
