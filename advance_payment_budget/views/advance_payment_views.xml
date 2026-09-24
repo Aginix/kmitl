@@ -5,19 +5,13 @@
         <field name="model">advance.payment</field>
         <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
         <field name="arch" type="xml">
-            <!-- The earmark the cash is drawn against: pickable by the
-                 officer in draft, or copied from the source document. -->
-            <xpath expr="//field[@name='loan_reason']" position="before">
-                <field name="budget_commitment_id"
-                    widget="budget_commitment_info"
-                    options="{'no_create': True, 'no_open': True}"
-                    attrs="{'readonly': [('state', '!=', 'draft')]}" />
-            </xpath>
 
-            <!-- Dimensions are locked once a source document supplies them
-                 (`is_locked_by_reference` is already in the core form). -->
             <xpath expr="//group[@name='actual_expense']" position="before">
                 <group name="analytic_dimensions" string="มิติทางบัญชี">
+                    <field name="budget_commitment_id"
+                        widget="budget_commitment_info"
+                        options="{'no_create': True, 'no_open': True}"
+                        attrs="{'readonly': [('state', '!=', 'draft')]}" />
                     <field name="department_analytic_id"
                         attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('is_locked_by_reference', '=', True)]}" />
                     <field name="source_analytic_id"

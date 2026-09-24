@@ -15,9 +15,13 @@ class AdvancePayment(models.Model):
     A single-disbursement employee loan. Lifecycle (see docs/adr/0001-0005 and
     docs/advance-payment-lifecycle.drawio):
 
-        draft → to_verify → to_approve → waiting_transfer → in_progress
-              → to_verify_report → to_reconcile → done
+        draft → to_verify → to_approve → waiting_transfer → in_progress → done
         (+ negative: cancel)
+
+    Reporting the actual expense and returning any leftover money both happen
+    freely while in_progress — there is no separate report/reconcile review
+    gate. Closing (in_progress → done) is never automatic: the loan officer
+    must press "ปิดสัญญา" once the debt is settled (ADR update).
 
     A borrower may hold only one active agreement at a time (serial borrowing).
     """
@@ -57,8 +61,6 @@ class AdvancePayment(models.Model):
             "to_approve",
             "waiting_transfer",
             "in_progress",
-            "to_verify_report",
-            "to_reconcile",
             "done",
             "cancel",
         )
@@ -71,8 +73,6 @@ class AdvancePayment(models.Model):
             "to_approve",
             "waiting_transfer",
             "in_progress",
-            "to_verify_report",
-            "to_reconcile",
             "done",
             "cancel",
         )
@@ -101,8 +101,6 @@ class AdvancePayment(models.Model):
             ("to_approve", "รออนุมัติ"),
             ("waiting_transfer", "รอการโอนเงิน"),
             ("in_progress", "อยู่ในระยะเวลาสัญญา"),
-            ("to_verify_report", "รอตรวจรับรายงาน"),
-            ("to_reconcile", "รอตรวจสอบเงินคืน"),
             ("done", "ปิดสัญญา"),
             ("cancel", "ยกเลิก"),
         ],
@@ -1161,19 +1159,15 @@ class AdvancePayment(models.Model):
             "base.group_system"
         ):
             raise UserError(_("Only the borrower can recall this request."))
-        if self.state not in ("to_verify", "to_approve"):
+        if self.state not in ("to_verify", "to_approve", "cancel"):
             raise UserError(_("Only a not-yet-approved request can be recalled."))
         self.state = "draft"
         self._drop_workflow_activities()
-        self.message_post(
-            body=_("ดึงคำขอกลับเพื่อแก้ไข โดย <b>%(user)s</b>.", user=self.env.user.name),
-            subtype_xmlid="mail.mt_note",
-        )
 
     def action_reset_to_draft(self):
         """Finance officer resets a request under verification to draft (ADR-0001)."""
         for rec in self:
-            if rec.state != "to_verify":
+            if rec.state not in ("to_verify", "cancel"):
                 raise UserError(
                     _("Only agreements under verification can be reset to draft.")
                 )
@@ -1223,7 +1217,13 @@ class AdvancePayment(models.Model):
     # ------------------------------------------------------------------ #
 
     def action_submit_report(self):
-        """Borrower submits the actual-expense report (in_progress → to_verify_report)."""
+        """Borrower records the actual-expense report.
+
+        Stays in_progress — there is no separate report-review gate; the
+        borrower is free to return any leftover money right away (see
+        action_open_return_wizard), and the loan officer closes the agreement
+        explicitly with action_close once the debt is settled.
+        """
         for rec in self:
             if rec.state != "in_progress":
                 raise UserError(
@@ -1234,7 +1234,6 @@ class AdvancePayment(models.Model):
                     _("Record the actual expense (description + amount) before"
                       " submitting the report.")
                 )
-            rec.state = "to_verify_report"
             rec.message_post(
                 body=_(
                     "นำส่งรายงานค่าใช้จ่าย: ใช้จริง <b>%(used)s</b>,"
@@ -1245,30 +1244,6 @@ class AdvancePayment(models.Model):
                 ),
                 subtype_xmlid="mail.mt_note",
             )
-
-    def action_accept_report(self):
-        """Finance officer accepts the expense report (to_verify_report → ...).
-        No amount to return → close; return_amount > 0 → to_reconcile."""
-        for rec in self:
-            if rec.state != "to_verify_report":
-                raise UserError(_("Only submitted reports can be accepted."))
-            if rec.return_amount <= 0:
-                rec.message_post(
-                    body=_("ตรวจรับรายงานค่าใช้จ่าย ไม่มีเงินต้องคืน ปิดสัญญา"),
-                    subtype_xmlid="mail.mt_note",
-                )
-                rec._do_close()
-            else:
-                rec.state = "to_reconcile"
-                rec.message_post(
-                    body=_(
-                        "ตรวจรับรายงานค่าใช้จ่าย ต้องคืน <b>%(left)s %(currency)s</b>"
-                        " รอผู้ยืมโอนคืน",
-                        left=rec.return_amount,
-                        currency=rec.currency_id.name,
-                    ),
-                    subtype_xmlid="mail.mt_note",
-                )
 
     def action_confirm_donation(self):
         """Borrower consents to donate the over-returned excess (ADR-0003)."""
@@ -1292,32 +1267,29 @@ class AdvancePayment(models.Model):
             ),
             subtype_xmlid="mail.mt_note",
         )
-        self._try_auto_close()
-
-    def _try_auto_close(self):
-        """Auto-close when the debt is settled (ADR-0003)."""
-        for rec in self:
-            if rec.state != "to_reconcile":
-                continue
-            if rec.amount_remaining > 0:
-                continue  # still owes money
-            if rec.excess_amount > 0 and not rec.donate_excess:
-                continue  # over-return needs donation consent first
-            rec._do_close()
 
     def action_close(self):
-        """Officer closes from to_verify_report when there is no leftover."""
-        self.ensure_one()
-        if self.state == "to_verify_report" and self.return_amount <= 0:
-            return self._do_close()
-        raise UserError(
-            _("An agreement closes automatically once the debt is fully settled.")
-        )
+        """Loan officer closes the agreement once the debt is settled (ปิดสัญญา).
+
+        Always a deliberate action — nothing auto-closes an agreement, even
+        once the outstanding balance reaches zero.
+        """
+        for rec in self:
+            if rec.state != "in_progress":
+                raise UserError(_("Only in-progress agreements can be closed."))
+            if rec.amount_remaining > 0:
+                raise UserError(_("There is still an outstanding balance to return."))
+            if rec.excess_amount > 0 and not rec.donate_excess:
+                raise UserError(
+                    _("Get the borrower's donation consent for the excess"
+                      " before closing.")
+                )
+            rec._do_close()
 
     def _do_close(self):
         """Close the agreement (ปิดสัญญา)."""
         for rec in self:
-            if rec.state not in ("to_verify_report", "to_reconcile"):
+            if rec.state != "in_progress":
                 raise UserError(_("This agreement cannot be closed from its state."))
             rec.date_closed = fields.Datetime.now()
             rec.state = "done"
@@ -1338,7 +1310,7 @@ class AdvancePayment(models.Model):
             if rec.state != "done":
                 raise UserError(_("Only closed agreements can be reopened."))
             rec.date_closed = False
-            rec.state = "to_reconcile" if rec.return_amount > 0 else "in_progress"
+            rec.state = "in_progress"
             rec.message_post(
                 body=_("Agreement reopened by <b>%(user)s</b>.", user=self.env.user.name),
                 subtype_xmlid="mail.mt_note",
@@ -1404,8 +1376,6 @@ class AdvancePayment(models.Model):
             "to_approve",
             "waiting_transfer",
             "in_progress",
-            "to_verify_report",
-            "to_reconcile",
         ):
             raise UserError(_("This agreement cannot be cancelled from its state."))
         self._cancel_payments()

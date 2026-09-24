@@ -81,9 +81,9 @@ class AdvancePaymentReturnWizard(models.TransientModel):
     def action_confirm_return(self):
         """Create a return line (draft) for the reconcile step."""
         self.ensure_one()
-        if self.agreement_id.state != "to_reconcile":
+        if self.agreement_id.state != "in_progress":
             raise UserError(
-                _("A return can only be recorded while awaiting reconciliation.")
+                _("A return can only be recorded while the agreement is in progress.")
             )
         agreement = self.agreement_id
         if not agreement.return_installment and agreement.return_line_ids.filtered(

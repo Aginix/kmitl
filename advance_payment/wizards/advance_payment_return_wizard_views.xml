@@ -18,10 +18,10 @@
                     <field name="amount"/>
                 </group>
                 <group name="return_evidence" string="หลักฐานการคืนเงิน">
-                    <field name="attachment_ids" widget="many2many_binary" nolabel="1"/>
+                    <field name="attachment_ids" widget="many2many_binary" nolabel="1" colspan="2"/>
                 </group>
                 <group name="note" string="หมายเหตุ">
-                    <field name="note" nolabel="1" placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)"/>
+                    <field name="note" nolabel="1" placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)" colspan="2"/>
                 </group>
                 <footer>
                     <button name="action_confirm_return" string="ส่งคำขอคืนเงิน" type="object" class="btn-primary"/>

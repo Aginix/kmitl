@@ -81,7 +81,7 @@
         <field name="name">ติดตามลูกหนี้เงินยืม</field>
         <field name="res_model">advance.payment</field>
         <field name="view_mode">tree,pivot,form</field>
-        <field name="domain">[('state','in',['in_progress','to_verify_report','to_reconcile'])]</field>
+        <field name="domain">[('state','=','in_progress')]</field>
         <field name="search_view_id" ref="view_advance_payment_search_followup"/>
         <field name="context">{'search_default_group_return_range': 1}</field>
     </record>
