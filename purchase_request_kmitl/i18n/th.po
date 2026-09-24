@@ -328,6 +328,7 @@ msgstr "ยกเลิก"
 
 #. module: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__cancelled
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Cancelled"
 msgstr "ยกเลิก"
 
@@ -1541,6 +1542,7 @@ msgstr "ตีกลับแก้ไข"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__returned
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Returned"
 msgstr "รอการแก้ไข"
 
@@ -1811,7 +1813,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "To Approve"
-msgstr "รอพิจารณาให้จัดหา"
+msgstr "รอส่งขอความเห็นชอบให้จัดหา"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__to_approve_allowed
@@ -2166,6 +2168,16 @@ msgid "At least one item must be listed."
 msgstr "ต้องมีรายการสินค้าอย่างน้อย 1 อย่าง"
 
 #. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_duplicate_cross_type
+msgid "Committee member cannot appear in multiple committee types, except TOR / Evaluation / Work Supervisor."
+msgstr "กรรมการไม่สามารถอยู่ในหลายชุดคณะกรรมการได้ ยกเว้นคณะกรรมการ TOR, คณะกรรมการพิจารณาผล และผู้ควบคุมงาน"
+
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_duplicate_same_type
+msgid "Committee member must be unique within the same committee type."
+msgstr "กรรมการในชุดคณะกรรมการเดียวกันต้องไม่ซ้ำกัน"
+
+#. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__account_fiscal_year_id
 msgid "Fiscal Year"
 msgstr "ปีงบประมาณ"
@@ -2175,6 +2187,8 @@ msgstr "ปีงบประมาณ"
 #: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_2
 #: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_3
 #: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_4
+#: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_duplicate_cross_type
+#: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_duplicate_same_type
 #: model:exception.rule,description:purchase_request_kmitl.pr_exception_1
 #: model:exception.rule,description:purchase_request_kmitl.pr_exception_1_1
 #: model:exception.rule,description:purchase_request_kmitl.pr_exception_2
@@ -2320,8 +2334,9 @@ msgstr "ใบเสนอราคาพัสดุ"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_verify
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "To be verified"
-msgstr "ตรวจสอบข้อมูล"
+msgstr "รอตรวจสอบ"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_tree
