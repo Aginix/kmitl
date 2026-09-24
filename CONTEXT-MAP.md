@@ -66,6 +66,11 @@ upfront.
   of everything a user must act on; each Todo is a native `mail.activity` on its source
   record, surfaced in one consolidated page with a jump-to-source button. Owns no
   business state.
+- [Workflow Notifications](./mail_workflow_notification/CONTEXT.md) — "recent events"
+  feed of state transitions on source records, delivered to the source record's `user_id`
+  via a dedicated systray bell icon; bypasses Discuss Inbox and the Todo system. Owns no
+  business state. Source bridges (e.g. `purchase_request_notification`) hook their own
+  state transitions by calling `_notify_workflow_event()` on `mail.thread`.
 - [Attachment Document Type](./web_attachment_document_type/CONTEXT.md) — patches the
   stock `many2many_binary` widget to add always-on drag-and-drop plus optional
   Document-Type classification driven by a shared `ir.attachment.document_type_id`

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Workflow Notification toggle in user Preferences -->
+    <record id="view_users_form_simple_modif_workflow_notification" model="ir.ui.view">
+        <field name="name">res.users.preferences.workflow.notification</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='preference_contact']" position="after">
+                <group name="workflow_notifications" string="Workflow Notifications">
+                    <field name="workflow_notification_enabled" readonly="0"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
