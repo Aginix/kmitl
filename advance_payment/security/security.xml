@@ -43,7 +43,10 @@
         <field name="name">Advance Payment: Own-only sees own records</field>
         <field name="model_id" ref="model_advance_payment"/>
         <field name="groups" eval="[(4, ref('group_advance_payment_own_only'))]"/>
-        <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('user_id', '=', user.id)]</field>
+        <!-- The endorser branch excludes draft on purpose: endorser_id is now
+             prefilled while the request is still a draft, and a borrower's
+             unsubmitted draft must not become visible to their manager. -->
+        <field name="domain_force">['|', '|', ('employee_id.user_id', '=', user.id), ('user_id', '=', user.id), '&amp;', ('endorser_id', '=', user.id), ('state', '!=', 'draft')]</field>
     </record>
 
     <record id="advance_payment_user_rule" model="ir.rule">
