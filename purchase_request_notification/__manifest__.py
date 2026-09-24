@@ -8,7 +8,7 @@
     "depends": [
         "mail_workflow_notification",
         "purchase_request_budget",
-        "purchase_request_approval_kmitl",
+        "purchase_request_approval",
     ],
     "data": [],
     "installable": True,
