@@ -74,4 +74,19 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_purchase_request_search" model="ir.ui.view">
+        <field name="name">view.purchase.request.search (Sarabun)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='state_to_approve']" position="after">
+                <filter
+                    name="state_sent"
+                    string="Sent"
+                    domain="[('state','=','sent')]"
+                />
+            </xpath>
+        </field>
+    </record>
 </odoo>

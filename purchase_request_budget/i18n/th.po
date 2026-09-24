@@ -158,5 +158,6 @@ msgstr "แหล่งเงิน"
 
 #. module: purchase_request_budget
 #: model:ir.model.fields.selection,name:purchase_request_budget.selection__purchase_request__state__to_verify_budget
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_search
 msgid "To Verify Budget"
-msgstr "รอจองงบประมาณ"
+msgstr "รอยืนยันงบประมาณ"
