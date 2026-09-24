@@ -522,7 +522,7 @@
     <menuitem id="purchase_request.menu_purchase_request_act" active="False" />
 
     <record id="action_purchase_request_my" model="ir.actions.act_window">
-        <field name="name">พ.1 ของฉัน</field>
+        <field name="name">My PR1</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">purchase.request</field>
         <field name="view_mode">tree,kanban,form</field>
@@ -532,7 +532,7 @@
     </record>
 
     <record id="action_purchase_request_all" model="ir.actions.act_window">
-        <field name="name">รายการ พ.1</field>
+        <field name="name">All PR1</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">purchase.request</field>
         <field name="view_mode">tree,kanban,form</field>
@@ -548,24 +548,37 @@
     />
     <menuitem
         id="menu_purchase_request_my"
-        name="พ.1 ของฉัน"
+        name="My PR1"
         parent="purchase_request.menu_purchase_request"
         action="action_purchase_request_my"
         sequence="10"
     />
     <menuitem
         id="menu_purchase_request_all"
-        name="รายการ พ.1"
+        name="All PR1"
         parent="purchase_request.menu_purchase_request"
         action="action_purchase_request_all"
         sequence="20"
     />
     <menuitem
         id="purchase_request_kmitl_root_menu"
-        name="PR1"
+        name="Purchase Request (PR1)"
         parent="purchase.menu_purchase_root"
-        action="purchase_request.purchase_request_form_action"
         sequence="3"
+    />
+    <menuitem
+        id="menu_purchase_order_request_my"
+        name="My PR1"
+        parent="purchase_request_kmitl_root_menu"
+        action="action_purchase_request_my"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_purchase_order_request_all"
+        name="All PR1"
+        parent="purchase_request_kmitl_root_menu"
+        action="action_purchase_request_all"
+        sequence="20"
     />
 
     <function name="write" model="ir.actions.act_window">
