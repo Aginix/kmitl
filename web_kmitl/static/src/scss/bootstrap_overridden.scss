@@ -134,18 +134,37 @@ $thumbnail-box-shadow: 0 !default;
 $breadcrumb-active-color: $o-main-text-color !default;
 $breadcrumb-divider-color: $o-main-color-muted !default;
 
+:root {
+    --odoo-color-darkest: #{"color-mix(in oklab, var(--odoo), black 30%)"};
+}
+
 .o_notebook .nav-item {
-    background-color: rgba($o-brand-primary, 0.2);
+    background-color: #{"rgb(from var(--odoo) r g b / 0.2)"};
+    margin-right: 4px;
+    margin-top: 4px;
+    border-radius: 4px 4px 0 0;
+    transition: background-color 0.15s ease, margin-top 0.15s ease;
+    cursor: pointer;
+}
+
+.o_notebook .nav-link {
+    color: var(--odoo-color-darkest);
 }
 
 li.nav-item.cursor-pointer:hover {
-    background-color: rgba($o-brand-primary, 0.7);
+    background-color: #{"rgb(from var(--odoo) r g b / 0.7)"};
+}
+
+li.nav-item.cursor-pointer:hover > .nav-link {
+    color: var(--white);
 }
 
 li.nav-item.cursor-pointer > .active {
-    background-color: $o-brand-primary;
+    background-color: var(--odoo);
+    font-weight: 700;
+    margin-top: 0;
 }
 
 li.nav-item.cursor-pointer .nav-link.active {
-    color: $o-white;
+    color: var(--white);
 }
