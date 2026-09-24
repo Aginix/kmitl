@@ -1,7 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 from odoo import _, api, fields, models
-from odoo.tools import format_date, html2plaintext
+from odoo.tools import html2plaintext
 
 
 class GeneralLedgerReportKmitl(models.AbstractModel):
@@ -225,6 +225,13 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                                 "date": fields.Date.to_string(sel_line["date"])
                                 if sel_line.get("date")
                                 else "",
+                                # Screen, PDF and spreadsheet print the Thai
+                                # Buddhist-era date the KMITL ledger has always
+                                # shown ("2 ต.ค. 2568"); ``date`` stays ISO for
+                                # the CSV, which is meant to be pivoted.
+                                "date_display": self._kmitl_format_date(
+                                    sel_line.get("date")
+                                ),
                                 "issue": sel_line.get("entry") or "",
                                 # Which book the entry was posted from. The
                                 # 2544 notification requires the ledger to cite
@@ -416,6 +423,93 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         return result
 
     @api.model
+    def _kmitl_filter_summary(self, options):
+        """The active filters as ``["label: values", ...]``, printed under the
+        period on the PDF.
+
+        A ledger page is only evidence if a second reader can reproduce the
+        figures on it. The screen shows the filter bar; the print has to carry
+        it, or a dimension-filtered extract is indistinguishable from the full
+        ledger.
+        """
+        options = options or {}
+        parts = []
+
+        def add(label, records, formatter):
+            if records:
+                parts.append(
+                    "%s: %s" % (label, ", ".join(formatter(r) for r in records))
+                )
+
+        def code_name(record):
+            return ("%s %s" % (record.code or "", record.name or "")).strip()
+
+        add(
+            _("Accounts"),
+            self.env["account.account"]
+            .browse(options.get("account_ids") or [])
+            .exists(),
+            code_name,
+        )
+        code_from = self.env["account.account"].browse(
+            options.get("account_code_from_id") or []
+        )
+        code_to = self.env["account.account"].browse(
+            options.get("account_code_to_id") or []
+        )
+        if code_from and code_to:
+            parts.append(
+                "%s: %s - %s" % (_("Account code range"), code_from.code, code_to.code)
+            )
+        add(
+            _("Journals"),
+            self.env["account.journal"]
+            .browse(options.get("journal_ids") or [])
+            .exists(),
+            lambda r: r.code or r.name or "",
+        )
+        add(
+            _("Partners"),
+            self.env["res.partner"].browse(options.get("partner_ids") or []).exists(),
+            lambda r: r.display_name or "",
+        )
+        dim_labels = {
+            "funds": _("Fund"),
+            "departments": _("Department"),
+            "activities": _("Activity"),
+            "sources": _("Source"),
+        }
+        dims = options.get("dims") or {}
+        for plan in self._GL_DIM_PLANS:
+            add(
+                dim_labels[plan],
+                self.env["account.analytic.account"]
+                .browse(dims.get(plan) or [])
+                .exists(),
+                lambda r: ("[%s] %s" % (r.code or "", r.name or "")).strip(),
+            )
+        parts.append(
+            _("Posted entries only")
+            if options.get("only_posted", True)
+            else _("Including draft entries")
+        )
+        return parts
+
+    @api.model
+    def _kmitl_format_date(self, value):
+        """Thai Buddhist-era date, abbreviated month -- e.g. ``2 ต.ค. 2568``.
+
+        The format the KMITL web ledger has always printed, and what a Thai
+        reader expects of a บัญชีแยกประเภท. Falls back to the ISO string if the
+        Thai helper cannot read the value.
+        """
+        if not value:
+            return ""
+        return self.env["thai.date.mixin"].format_date_thai_short(
+            value
+        ) or fields.Date.to_string(value)
+
+    @api.model
     def _kmitl_format_amount(self, value):
         """Shared number formatting (kept identical to the OWL side so the PDF
         mirrors the screen). Blank for ~zero to reduce clutter."""
@@ -483,8 +577,9 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
             "accounts": result["accounts"],
             "format_amount": self._kmitl_format_amount,
             "format_total": self._kmitl_format_total,
-            "date_from_label": format_date(self.env, options.get("date_from")),
-            "date_to_label": format_date(self.env, options.get("date_to")),
+            "date_from_label": self._kmitl_format_date(options.get("date_from")),
+            "date_to_label": self._kmitl_format_date(options.get("date_to")),
+            "filter_summary": self._kmitl_filter_summary(options),
         }
 
 
@@ -544,9 +639,9 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
             "%s %s %s %s"
             % (
                 _("From"),
-                options.get("date_from") or "",
+                report._kmitl_format_date(options.get("date_from")),
                 _("to"),
-                options.get("date_to") or "",
+                report._kmitl_format_date(options.get("date_to")),
             ),
         )
 
@@ -591,7 +686,7 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
                 # Alternate row shading for readability.
                 row_cell = cell_alt if idx % 2 else cell
                 row_num = num_alt if idx % 2 else num
-                sheet.write(r, 0, line["date"], row_cell)
+                sheet.write(r, 0, line["date_display"], row_cell)
                 sheet.write(r, 1, line["journal"], row_cell)
                 sheet.write(r, 2, line["issue"], row_cell)
                 sheet.write(r, 3, line["account"], row_cell)

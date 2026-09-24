@@ -25,6 +25,12 @@
                                     <span>to</span>
                                     <t t-out="date_to_label" />
                                 </div>
+                                <div
+                                    t-if="filter_summary"
+                                    style="font-size: 8pt; color: #444; margin-top: 2px;"
+                                >
+                                    <t t-out="' | '.join(filter_summary)" />
+                                </div>
                             </td>
                             <td style="width: 70px; border: none;" />
                         </tr>
@@ -97,7 +103,7 @@
                                     <td class="text-right" t-out="format_amount(acc['initial_balance'])" />
                                 </tr>
                                 <tr t-foreach="acc['lines']" t-as="line" t-att-class="'gl-stripe' if line_index % 2 else ''">
-                                    <td t-out="line['date']" />
+                                    <td t-out="line['date_display']" />
                                     <td t-out="line['journal']" />
                                     <td t-out="line['issue']" />
                                     <td t-out="line['account']" />

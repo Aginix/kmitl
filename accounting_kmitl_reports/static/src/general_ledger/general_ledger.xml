@@ -288,7 +288,7 @@
                                             t-att-class="state.expanded[line.id] ? 'fa-caret-down' : 'fa-caret-right'"
                                         />
                                     </td>
-                                    <td class="text-nowrap" t-esc="line.date" />
+                                    <td class="text-nowrap" t-esc="line.date_display" />
                                     <td t-esc="line.journal" />
                                     <td t-esc="line.issue" />
                                     <td t-esc="line.account" />
