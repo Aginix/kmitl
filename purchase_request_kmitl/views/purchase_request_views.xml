@@ -22,7 +22,7 @@
             </xpath>
             <xpath expr="//field[@name='name']" position="attributes">
                 <attribute name="optional">show</attribute>
-                <attribute name="string">PR Number</attribute>
+                <attribute name="string">Request Number</attribute>
             </xpath>
             <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="optional">hide</attribute>
@@ -541,7 +541,7 @@
     <menuitem id="purchase_request.menu_purchase_request_act" active="False" />
 
     <record id="action_purchase_request_my" model="ir.actions.act_window">
-        <field name="name">My PR1</field>
+        <field name="name">My Request</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">purchase.request</field>
         <field name="view_mode">tree,kanban,form</field>
@@ -551,7 +551,7 @@
     </record>
 
     <record id="action_purchase_request_all" model="ir.actions.act_window">
-        <field name="name">All PR1</field>
+        <field name="name">All Requests</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">purchase.request</field>
         <field name="view_mode">tree,kanban,form</field>
@@ -567,34 +567,34 @@
     />
     <menuitem
         id="menu_purchase_request_my"
-        name="My PR1"
+        name="My Request"
         parent="purchase_request.menu_purchase_request"
         action="action_purchase_request_my"
         sequence="10"
     />
     <menuitem
         id="menu_purchase_request_all"
-        name="All PR1"
+        name="All Requests"
         parent="purchase_request.menu_purchase_request"
         action="action_purchase_request_all"
         sequence="20"
     />
     <menuitem
         id="purchase_request_kmitl_root_menu"
-        name="Purchase Request (PR1)"
+        name="Purchase Request"
         parent="purchase.menu_purchase_root"
         sequence="3"
     />
     <menuitem
         id="menu_purchase_order_request_my"
-        name="My PR1"
+        name="My Request"
         parent="purchase_request_kmitl_root_menu"
         action="action_purchase_request_my"
         sequence="10"
     />
     <menuitem
         id="menu_purchase_order_request_all"
-        name="All PR1"
+        name="All Requests"
         parent="purchase_request_kmitl_root_menu"
         action="action_purchase_request_all"
         sequence="20"
