@@ -72,32 +72,39 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         account_ids = self._kmitl_apply_account_range(options, company_id, account_ids)
 
         # KMITL dimensions (and the optional journal filter) ride along on the
-        # engine's extra_domain, which is AND-ed into every move-line query.
-        extra_domain = list(
+        # engine's extra_domain, which is AND-ed into the period query. The
+        # leaves are kept separately because the opening-balance query builds
+        # its own domain and must apply exactly the same filters.
+        dim_leaves = list(
             self._kmitl_build_dim_leaves(
                 options.get("dims") or {}, options.get("dim_only_self")
             )
         )
+        extra_domain = list(dim_leaves)
         if journal_ids:
             extra_domain += [("journal_id", "in", journal_ids)]
 
-        fy_start_date = self._kmitl_fy_start_date(date_from, company)
-
-        # Same orchestration as the OCA ``_get_report_values`` (single company,
-        # no foreign currency, no centralization, ungrouped lines).
-        gen_ld_data = self._get_initial_balance_data(
-            account_ids,
-            partner_ids,
+        # Opening balances are ours, not the OCA engine's: the Trial Balance
+        # computes them from the same helper, so the two reports cannot report
+        # a different ยอดยกมา for the same account. It also keeps the General
+        # Ledger off a private OCA method that upstream reshapes between
+        # releases -- which has already silently changed the opening balance of
+        # every P&L account on the ``grouped_by="none"`` path we use.
+        opening = self._kmitl_opening_balances(
             company_id,
+            account_ids,
+            self._kmitl_common_ml_domain(
+                company_id, journal_ids, partner_ids, only_posted
+            )
+            + dim_leaves,
             date_from,
-            False,  # foreign_currency
-            only_posted,
-            False,  # unaffected_earnings_account
-            fy_start_date,
-            [],  # cost_center_ids (KMITL dims travel through extra_domain)
-            extra_domain,
-            "none",  # grouped_by
+            self._kmitl_fy_start_date(date_from, company),
         )
+        gen_ld_data = self._kmitl_seed_gen_ld_data(opening)
+
+        # The period lines still come from the OCA engine (a filtered
+        # search_read plus its per-account accumulator), seeded with the
+        # opening balances above.
         (
             gen_ld_data,
             accounts_data,
@@ -310,6 +317,28 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         return list(zip(labels, [weight for _aid, weight in shares]))
 
     @api.model
+    def _kmitl_seed_gen_ld_data(self, opening):
+        """Seed the OCA engine's per-account accumulator with KMITL opening
+        balances, in the shape ``_get_initial_balance_data`` would have
+        returned for ``grouped_by="none"``, no foreign currency and no
+        unaffected-earnings account.
+
+        Only ``init_bal["balance"]`` is ever read back (the carried-forward
+        totals are recomputed from the account's own move lines), so the
+        debit/credit halves stay at zero. Accounts with no opening are added
+        by the engine itself as it walks the period lines.
+        """
+        data = {}
+        for account_id, balance in opening.items():
+            item = self._initialize_data(False)
+            for key_bal in ("init_bal", "fin_bal"):
+                item[key_bal]["balance"] = balance
+            item["id"] = account_id
+            item["none"] = False
+            data[account_id] = item
+        return data
+
+    @api.model
     def _kmitl_analytic_map(self, analytic_ids):
         """``{analytic_account_id: (root_plan_code, code, name)}`` for the
         accounts referenced by the report's lines."""
@@ -350,9 +379,10 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
     @api.model
     def _kmitl_move_lines_map(self, move_ids, company_id):
         """``{move_id: [line_dict, ...]}`` with every posting line of each
-        referenced entry (section/note lines excluded). Used only to name the
-        counterpart account of each selected-account line (the Account
-        column) -- never to add rows or drive amounts."""
+        referenced entry (section/note lines excluded). Used only to resolve
+        which accounts a selected-account line faces (the Account column) and
+        how to divide it between them -- never to drive the amount itself,
+        which is always the selected line's own debit/credit."""
         if not move_ids:
             return {}
         rows = self.env["account.move.line"].search_read(
