@@ -1,14 +1,9 @@
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import api, fields, models
 
 
 class ProcurementCommittee(models.Model):
     _name = "procurement.committee"
     _description = "Procurement Committee"
-
-    _ALLOWED_CROSS_COMMITTEE_TYPES = frozenset(
-        {"tor_committee", "evaluation", "work_supervisor"}
-    )
 
     request_id = fields.Many2one(
         comodel_name="purchase.request",
@@ -72,38 +67,7 @@ class ProcurementCommittee(models.Model):
     )
     note = fields.Text()
 
-    _sql_constraints = [
-        (
-            "employee_request_uniq",
-            "unique (employee_id,request_id,committee_type)",
-            "Committee member has to be unique within the same committee type.",
-        ),
-    ]
-
     @api.depends("employee_id")
     def _compute_default_name(self):
         for rec in self:
             rec.name = rec.employee_id.display_name if rec.employee_id else ""
-
-    @api.constrains("employee_id", "request_id", "committee_type")
-    def _check_committee_cross_type_unique(self):
-        for rec in self:
-            if not rec.employee_id or not rec.request_id:
-                continue
-            same_committees = self.env["procurement.committee"].search(
-                [
-                    ("employee_id", "=", rec.employee_id.id),
-                    ("request_id", "=", rec.request_id.id),
-                ]
-            )
-            types = set(same_committees.mapped("committee_type"))
-            if len(types) > 1 and not types.issubset(
-                self._ALLOWED_CROSS_COMMITTEE_TYPES
-            ):
-                raise ValidationError(
-                    _(
-                        "Employee %s cannot appear in multiple committees "
-                        "except TOR and Evaluation committees.",
-                        rec.employee_id.name,
-                    )
-                )
