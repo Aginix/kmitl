@@ -261,24 +261,28 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
     def _kmitl_split_by_counterpart(
         self, amount, side, sel_id, sel_label, cp_lines, acc_name, currency
     ):
-        """Split one selected-account line across the counterpart accounts it
-        faces, as ``[(account_label, part), ...]``.
+        """Name the counterpart(s) one selected-account line faces, as
+        ``[(account_label, part), ...]`` with ``sum(part) == amount``.
 
-        A Thai ledger names the contra account in the Account column, so an
-        entry settled against several accounts is shown one row per account
-        rather than under a catch-all label. The split is presentation only:
-        ``sum(part) == amount`` always, so the Debit/Credit totals stay equal
+        A Thai ledger names the contra account in the Account column, so a
+        line settled against several accounts is shown one row per account --
+        but only when the entry actually says so. The parts always add back to
+        the line's own debit/credit, so Debit/Credit/carried-forward stay equal
         to the account's own move lines and keep tying to the Trial Balance.
 
-        Counterpart amounts are used as the weights, so in the ordinary case --
-        where they already add up to ``amount`` (one line of this account
-        against N others) -- every part is exactly the counterpart's own
-        figure. When both sides of the entry carry several accounts no true
-        pairing exists, so the weights merely apportion; the rows still add
-        back and the expand panel shows the entry as posted.
-
-        No counterpart (a same-side-only adjustment) keeps a single row under
-        the selected account's own name.
+        * no counterpart (a same-side-only adjustment) -- one row under the
+          selected account's own name;
+        * one counterpart -- one row naming it;
+        * several whose amounts add up to ``amount`` -- one row each, carrying
+          that counterpart's own figure. This is the ordinary case: a single
+          line of this account settled against N others, e.g.
+          ``Dr เจ้าหนี้ 60,000 / Cr ธนาคาร 59,439.25 / Cr ภาษีหัก ณ ที่จ่าย 560.75``;
+        * several that do NOT add up -- one row for the whole amount, labelled
+          with every account it faces. The entry pairs no single counterpart to
+          this line (two unrelated settlements booked in one move, an account
+          posted on both sides, several lines of this account against several
+          others), so any split would be invented. Expand the row to see the
+          entry as posted.
         """
         totals = {}
         for cp in cp_lines:
@@ -298,23 +302,12 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         )
         if len(shares) == 1:
             return [(acc_name.get(shares[0][0], ""), amount)]
-        weight_total = sum(weight for _aid, weight in shares)
-        if currency.is_zero(weight_total) or currency.is_zero(amount):
-            # Nothing to apportion by -- keep one row per counterpart so the
-            # accounts are still named, with no amount to split between them.
-            return [(acc_name.get(aid, ""), 0.0) for aid, _weight in shares]
-        rows = []
-        allocated = 0.0
-        for index, (aid, weight) in enumerate(shares):
-            if index == len(shares) - 1:
-                # The last row absorbs the rounding residual so the parts add
-                # back to ``amount`` to the satang.
-                part = amount - allocated
-            else:
-                part = currency.round(amount * weight / weight_total)
-                allocated += part
-            rows.append((acc_name.get(aid, ""), part))
-        return rows
+        labels = [acc_name.get(aid, "") for aid, _weight in shares]
+        if currency.compare_amounts(sum(w for _aid, w in shares), amount) != 0:
+            # Not a clean split of this line -- name them all on one row rather
+            # than apportion an amount the entry never recorded.
+            return [(", ".join(label for label in labels if label), amount)]
+        return list(zip(labels, [weight for _aid, weight in shares]))
 
     @api.model
     def _kmitl_analytic_map(self, analytic_ids):

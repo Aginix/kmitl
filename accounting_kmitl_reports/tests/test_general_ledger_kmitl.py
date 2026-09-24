@@ -136,10 +136,47 @@ class TestGeneralLedgerKmitl(TransactionCase):
         self.assertEqual(ar["final_debit"], 100.0)
         self.assertEqual(ar["final_credit"], 0.0)
 
-    def test_split_rows_add_back_when_both_sides_carry_several_accounts(self):
-        """No true pairing exists when both sides are split, so the rows are
-        apportioned -- but they must still add back to the account's own
-        line, keeping the carried-forward tied to the Trial Balance."""
+    def test_no_split_when_the_counterparts_do_not_add_up_to_the_line(self):
+        """Two unrelated settlements in one move (JV/2026/09/0002): the
+        withholding-tax debit of 500 faces two credits of 500 each, so the
+        entry pairs it with neither. The row must keep its own 500 under both
+        names -- never an invented 250/250 apportionment."""
+        self._entry(
+            [
+                {"account_id": self.tax_account.id, "debit": 500.0, "name": "wht"},
+                {"account_id": self.receivable.id, "credit": 500.0, "name": "ca-out"},
+                {"account_id": self.receivable.id, "debit": 500.0, "name": "ca-in"},
+                {"account_id": self.income.id, "credit": 500.0, "name": "sa-out"},
+            ]
+        )
+        accounts = self._by_code(self._data([self.tax_account.id, self.receivable.id]))
+
+        wht = accounts[self.tax_account.code]
+        self.assertEqual(len(wht["lines"]), 1)
+        self.assertEqual(wht["lines"][0]["debit"], 500.0)
+        self.assertEqual(wht["final_debit"], 500.0)
+        # Both counterparts named on the one row, no fabricated part amounts.
+        self.assertIn(self.receivable.code, wht["lines"][0]["account"])
+        self.assertIn(self.income.code, wht["lines"][0]["account"])
+
+        # The account posted on both sides still resolves cleanly: each of its
+        # lines faces exactly one counterpart.
+        ca = accounts[self.receivable.code]
+        self.assertEqual(len(ca["lines"]), 2)
+        self.assertEqual(
+            {line["account"] for line in ca["lines"]},
+            {
+                "%s %s" % (self.tax_account.code, self.tax_account.name),
+                "%s %s" % (self.income.code, self.income.name),
+            },
+        )
+        self.assertEqual(ca["final_debit"], 500.0)
+        self.assertEqual(ca["final_credit"], 500.0)
+
+    def test_rows_add_back_when_both_sides_carry_several_accounts(self):
+        """An account with several lines against several counterparts keeps
+        one row per line with that line's own amount, so the carried-forward
+        stays tied to the Trial Balance."""
         self._entry(
             [
                 {"account_id": self.payable.id, "debit": 60.0, "name": "p1"},
@@ -150,7 +187,9 @@ class TestGeneralLedgerKmitl(TransactionCase):
         )
         payable = self._by_code(self._data([self.payable.id]))[self.payable.code]
 
-        self.assertEqual(sum(line["debit"] for line in payable["lines"]), 100.0)
+        self.assertEqual(
+            sorted(line["debit"] for line in payable["lines"]), [40.0, 60.0]
+        )
         self.assertEqual(payable["final_debit"], 100.0)
         self.assertEqual(payable["final_credit"], 0.0)
         self.assertEqual(payable["lines"][-1]["balance"], 100.0)
