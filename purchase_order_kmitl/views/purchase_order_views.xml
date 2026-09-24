@@ -140,7 +140,7 @@
                         />
                         <field
                             name="partner_id"
-                            readonly="1"
+                            attrs="{'readonly': [('id', '!=', False)]}"
                             widget="res_partner_many2one"
                             context="{'res_partner_search_mode': 'supplier', 'show_vat': True}"
                         />
