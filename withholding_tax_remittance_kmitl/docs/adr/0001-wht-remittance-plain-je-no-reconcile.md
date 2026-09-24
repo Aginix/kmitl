@@ -1,5 +1,7 @@
 # WHT payable is cleared by a plain JE + a persistent remittance document, not by GL reconciliation
 
+Status: superseded by [ADR-0004](./0004-reconcile-wht-payable-on-post.md)
+
 ## Context
 
 `l10n_th_account_tax` books every withheld amount as a credit to a WHT payable

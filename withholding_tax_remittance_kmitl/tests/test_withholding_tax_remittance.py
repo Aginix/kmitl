@@ -147,10 +147,14 @@ class TestWithholdingTaxRemittance(WithholdingTaxRemittanceCommon):
         self.assertEqual(sum(savings_lines.mapped("credit")), 300.0)
 
     def test_action_cancel_reverses_move_and_restores_certs(self):
+        self._enable_wht_reconcile()
         cert = self._make_cert(amount=300.0, analytic_distribution=self.distribution_a)
         remittance = self._set_bank_accounts(self._make_remittance(cert))
         remittance.action_post()
         posted_move = remittance.move_id
+        source_wht_line = self.env["withholding.tax.remittance"]._source_wht_lines(
+            cert
+        )
 
         remittance.action_cancel()
 
@@ -168,8 +172,62 @@ class TestWithholdingTaxRemittance(WithholdingTaxRemittanceCommon):
             lambda l: l.account_id == self.wht_account_53
         )
         self.assertEqual(sum(wht_lines.mapped("balance")), 0.0)
+        # _reverse_moves(cancel=True) calls remove_move_reconcile() on the
+        # original move's lines before reversing, so the reconciliation this
+        # module made on post is undone along with everything else.
+        self.assertFalse(source_wht_line.reconciled)
         self.assertFalse(cert.remittance_id)
         self.assertEqual(cert.remit_state, "pending")
+
+    def test_action_post_reconciles_wht_lines_when_account_allows(self):
+        self._enable_wht_reconcile()
+        cert = self._make_cert(amount=300.0, analytic_distribution=self.distribution_a)
+        remittance = self._set_bank_accounts(self._make_remittance(cert))
+        source_line = self.env["withholding.tax.remittance"]._source_wht_lines(cert)
+
+        remittance.action_post()
+
+        remit_line = remittance.move_id.line_ids.filtered(
+            lambda l: l.account_id == self.wht_account_53
+        )
+        self.assertTrue(remittance.is_reconciled)
+        self.assertTrue(remit_line.reconciled)
+        self.assertTrue(source_line.reconciled)
+        self.assertEqual(remit_line.amount_residual, 0.0)
+        self.assertEqual(source_line.amount_residual, 0.0)
+
+    def test_action_post_skips_reconcile_when_account_disallows(self):
+        """ค่าเริ่มต้น wht_account_53.reconcile เป็น False — ต้องยังโพสต์ผ่านได้ตามเดิม"""
+        cert = self._make_cert(amount=300.0, analytic_distribution=self.distribution_a)
+        remittance = self._set_bank_accounts(self._make_remittance(cert))
+        source_line = self.env["withholding.tax.remittance"]._source_wht_lines(cert)
+
+        remittance.action_post()
+
+        remit_line = remittance.move_id.line_ids.filtered(
+            lambda l: l.account_id == self.wht_account_53
+        )
+        self.assertEqual(remittance.state, "posted")
+        self.assertFalse(remittance.is_reconciled)
+        self.assertFalse(remit_line.reconciled)
+        self.assertFalse(source_line.reconciled)
+
+    def test_action_reconcile_backfills_certs_posted_before_flag_enabled(self):
+        cert = self._make_cert(amount=300.0, analytic_distribution=self.distribution_a)
+        remittance = self._set_bank_accounts(self._make_remittance(cert))
+        remittance.action_post()
+        source_line = self.env["withholding.tax.remittance"]._source_wht_lines(cert)
+        self.assertFalse(remittance.is_reconciled)
+
+        self._enable_wht_reconcile()
+        remittance.action_reconcile()
+
+        self.assertTrue(remittance.is_reconciled)
+        self.assertTrue(source_line.reconciled)
+
+        # กดซ้ำแล้วไม่พังและไม่เปลี่ยนอะไร — ตัวกรอง not l.reconciled ทำให้ idempotent
+        remittance.action_reconcile()
+        self.assertTrue(remittance.is_reconciled)
 
     def test_remit_state_persists_across_cert_reopen(self):
         cert = self._make_cert(amount=300.0, analytic_distribution=self.distribution_a)
