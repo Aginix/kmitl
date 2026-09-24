@@ -391,8 +391,9 @@
                         <group>
                             <field
                                 name="date_start"
-                                attrs="{'readonly': [('is_editable','=', False)]}"
+                                readonly="1"
                             />
+                            <field name="create_date" string="วันที่สร้าง" readonly="1"/>
                         </group>
                     </group>
                 </page>
