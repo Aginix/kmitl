@@ -108,7 +108,7 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         (
             gen_ld_data,
             accounts_data,
-            _journals_data,
+            journals_data,
             _full_reconcile_data,
             _taxes_data,
             _analytic_data,
@@ -226,8 +226,25 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                                 if sel_line.get("date")
                                 else "",
                                 "issue": sel_line.get("entry") or "",
+                                # Which book the entry was posted from. The
+                                # 2544 notification requires the ledger to cite
+                                # the type of account alongside the document.
+                                "journal": journals_data.get(
+                                    sel_line.get("journal_id"), {}
+                                ).get("code")
+                                or "",
                                 "entry_id": entry_id or False,
-                                # Remark column shows the entry's narration.
+                                # Remark column: the line's own description
+                                # (คำอธิบายรายการ), which is what the law asks
+                                # the ledger to carry -- "รายละเอียดการเพิ่มขึ้น
+                                # หรือลดลง" / "ที่มาแห่งรายได้หรือค่าใช้จ่าย".
+                                # ``narration`` is the entry-level internal
+                                # note, typed by hand and usually empty; it
+                                # stays as the last resort and in the panel.
+                                "label": sel_line.get("name")
+                                or sel_line.get("ref")
+                                or detail.get("narration")
+                                or "",
                                 "narration": detail.get("narration") or "",
                                 "maker": detail.get("maker") or "",
                                 "maker_date": detail.get("maker_date") or "",
@@ -479,8 +496,10 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
     _description = "KMITL General Ledger XLSX"
     _inherit = "report.report_xlsx.abstract"
 
-    # Date | Issue | Account | Remark | Debit | Credit | Balance
-    _AMOUNT_COLS = (4, 5, 6)
+    # Date | Journal | Issue | Account | Remark | Partner | Debit | Credit | Balance
+    _AMOUNT_COLS = (6, 7, 8)
+    # Last column index, and the one the row labels are merged up to.
+    _LAST_COL = 8
 
     def generate_xlsx_report(self, workbook, data, objs):
         data = data or {}
@@ -515,13 +534,13 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
             {"border": 1, "num_format": "#,##0.00", "bg_color": "#F6F8FA"}
         )
 
-        sheet.merge_range(0, 0, 0, 6, company.display_name, bold)
-        sheet.merge_range(1, 0, 1, 6, _("General Ledger"), bold)
+        sheet.merge_range(0, 0, 0, self._LAST_COL, company.display_name, bold)
+        sheet.merge_range(1, 0, 1, self._LAST_COL, _("General Ledger"), bold)
         sheet.merge_range(
             2,
             0,
             2,
-            6,
+            self._LAST_COL,
             "%s %s %s %s"
             % (
                 _("From"),
@@ -533,9 +552,11 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
 
         headers = [
             _("Date"),
+            _("Journal"),
             _("Issue"),
             _("Account"),
             _("Remark"),
+            _("Partner"),
             _("Debit"),
             _("Credit"),
             _("Balance"),
@@ -554,11 +575,16 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
         r = row_top + 1
         for acc in accounts:
             sheet.merge_range(
-                r, 0, r, 6, "%s - %s" % (acc["code"], acc["name"]), acc_fmt
+                r,
+                0,
+                r,
+                self._LAST_COL,
+                "%s - %s" % (acc["code"], acc["name"]),
+                acc_fmt,
             )
             r += 1
             # Opening balance (ยอดยกมา)
-            sheet.merge_range(r, 0, r, 3, _("Opening Balance"), cell)
+            sheet.merge_range(r, 0, r, 5, _("Opening Balance"), cell)
             write_amounts(r, [None, None, acc["initial_balance"]], num)
             r += 1
             for idx, line in enumerate(acc["lines"]):
@@ -566,15 +592,17 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
                 row_cell = cell_alt if idx % 2 else cell
                 row_num = num_alt if idx % 2 else num
                 sheet.write(r, 0, line["date"], row_cell)
-                sheet.write(r, 1, line["issue"], row_cell)
-                sheet.write(r, 2, line["account"], row_cell)
-                sheet.write(r, 3, line["narration"], row_cell)
+                sheet.write(r, 1, line["journal"], row_cell)
+                sheet.write(r, 2, line["issue"], row_cell)
+                sheet.write(r, 3, line["account"], row_cell)
+                sheet.write(r, 4, line["label"], row_cell)
+                sheet.write(r, 5, line["partner"], row_cell)
                 write_amounts(
                     r, [line["debit"], line["credit"], line["balance"]], row_num
                 )
                 r += 1
             # Closing balance (ยอดยกไป) — totals always shown, even when zero.
-            sheet.merge_range(r, 0, r, 3, _("Carried Forward"), num_bold)
+            sheet.merge_range(r, 0, r, 5, _("Carried Forward"), num_bold)
             write_amounts(
                 r,
                 [acc["final_debit"], acc["final_credit"], acc["final_balance"]],
@@ -584,10 +612,12 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
             r += 1
 
         sheet.set_column(0, 0, 12)
-        sheet.set_column(1, 1, 18)
-        sheet.set_column(2, 2, 24)
-        sheet.set_column(3, 3, 50)
-        sheet.set_column(4, 6, 15)
+        sheet.set_column(1, 1, 8)
+        sheet.set_column(2, 2, 18)
+        sheet.set_column(3, 3, 24)
+        sheet.set_column(4, 4, 44)
+        sheet.set_column(5, 5, 24)
+        sheet.set_column(6, self._LAST_COL, 15)
 
 
 class GeneralLedgerCsvKmitl(models.AbstractModel):
@@ -608,6 +638,7 @@ class GeneralLedgerCsvKmitl(models.AbstractModel):
                 _("Account Code"),
                 _("Account Name"),
                 _("Date"),
+                _("Journal"),
                 _("Issue"),
                 _("Counterpart Account"),
                 _("Partner"),
@@ -624,10 +655,11 @@ class GeneralLedgerCsvKmitl(models.AbstractModel):
                         acc["code"],
                         acc["name"],
                         line["date"],
+                        line["journal"],
                         line["issue"],
                         line["account"],
                         line["partner"],
-                        line["narration"],
+                        line["label"],
                         self._csv_num(line["debit"]),
                         self._csv_num(line["credit"]),
                         self._csv_num(line["balance"]),
