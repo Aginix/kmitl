@@ -138,17 +138,22 @@ $breadcrumb-divider-color: $o-main-color-muted !default;
     --odoo-color-darkest: #{"color-mix(in oklab, var(--odoo), black 30%)"};
 }
 
+.o_notebook .o_notebook_headers .nav.nav-tabs {
+    align-items: flex-end;
+}
+
 .o_notebook .nav-item {
     background-color: #{"rgb(from var(--odoo) r g b / 0.2)"};
     margin-right: 4px;
-    margin-top: 4px;
     border-radius: 4px 4px 0 0;
-    transition: background-color 0.15s ease, margin-top 0.15s ease;
+    transition: background-color 0.15s ease;
     cursor: pointer;
 }
 
 .o_notebook .nav-link {
     color: var(--odoo-color-darkest);
+    padding-top: 4px;
+    transition: padding-top 0.15s ease;
 }
 
 li.nav-item.cursor-pointer:hover {
@@ -162,9 +167,9 @@ li.nav-item.cursor-pointer:hover > .nav-link {
 li.nav-item.cursor-pointer > .active {
     background-color: var(--odoo);
     font-weight: 700;
-    margin-top: 0;
 }
 
 li.nav-item.cursor-pointer .nav-link.active {
     color: var(--white);
+    padding-top: 10px;
 }
