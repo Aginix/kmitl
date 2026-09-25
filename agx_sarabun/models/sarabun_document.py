@@ -776,10 +776,10 @@ class SarabunDocument(models.Model):
             return
         Step = self.env["sarabun.routing.step"]
         verb = self.env.ref("agx_sarabun.verb_originate", raise_if_not_found=False)
-        orders = self.routing_step_ids.mapped("order")
-        first_order = (min(orders) - 1) if orders else 1
+        # ผู้จัดทำ/ผู้ส่ง is the immutable anchor Stage — pinned at 0 so drag-handle
+        # writes never let another step slip above it.
         self.routing_step_ids = [(0, 0, {
-            "order": first_order,
+            "order": 0,
             "verb": (verb or Step._default_verb()).id,
             "is_originator": True,
             "target_mode": "person",
@@ -959,6 +959,28 @@ class SarabunDocument(models.Model):
         self.ensure_one()
         for step in self.routing_step_ids.filtered(lambda s: s.order >= order):
             step.order = step.order + 1
+
+    def _reanchor_route_order(self):
+        """Force the ผู้จัดทำ/ผู้ส่ง to Stage 0 and lift any non-originator step
+        that landed at ``order <= 0`` back above it, preserving relative order.
+        Called from the step's ``write()`` after a drag-handle write, so a drag
+        that displaces the anchor self-corrects instead of erroring at the user."""
+        self.ensure_one()
+        steps = self.routing_step_ids.sudo()
+        originator = steps.filtered("is_originator")[:1]
+        if not originator:
+            return
+        if originator.order != 0:
+            originator.write({"order": 0})
+        others = (steps - originator).sorted(lambda s: (s.order, s.id))
+        if not others.filtered(lambda s: s.order <= 0):
+            return
+        # A drag put at least one non-originator below the anchor. Reassign
+        # 1..N in the current relative order — parallel-Stage grouping is lost
+        # (the handle widget already broke it during the drag).
+        for idx, step in enumerate(others, start=1):
+            if step.order != idx:
+                step.write({"order": idx})
 
     def _stage_complete(self, order):
         """A stage is passed when every gating step in it is positively done.

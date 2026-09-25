@@ -12,7 +12,7 @@ notification (mail.activity) are wired here but the notification body itself is 
 P4 concern (stubbed). Numbering (P3) and freeze/sign (P5) live on the document.
 """
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 # Keep in sync with sarabun_route_template.py
 TARGET_MODE = [
@@ -224,31 +224,44 @@ class SarabunRoutingStep(models.Model):
             if step.is_originator:
                 continue
             orders = (step.document_id.routing_step_ids - step).mapped("order")
-            step.order = (max(orders) + 1) if orders else 1
+            # Floor at 1 so a fresh step never lands on the ผู้จัดทำ anchor (0).
+            step.order = max(1, (max(orders) + 1) if orders else 1)
 
     # ------------------------------------------------------------ ORM guards
     def write(self, vals):
         """The originator (ผู้จัดทำ/ผู้ส่ง) row is locked — a user may change only its
-        verb. ``order`` is also allowed so the tree's handle widget can resequence
-        siblings around it; a follow-up check ensures the originator still sits
-        first. Engine writes (sudo) pass through."""
+        verb. ``order`` writes from the handle widget are silently ignored on the
+        originator (its Stage is pinned at 0), and any drag that displaces the
+        anchor is auto-healed by ``_reanchor_route_order``. Engine writes (sudo)
+        pass through unchanged."""
         if not self.env.su and vals and set(vals) - {"verb", "order"}:
             if self.filtered("is_originator"):
                 raise UserError(_(
                     "The ผู้จัดทำ/ผู้ส่ง step is fixed — only its การดำเนินการ (verb) "
                     "may be changed."
                 ))
-        res = super().write(vals)
-        if not self.env.su and vals and "order" in vals:
+        writes_order = vals and "order" in vals
+        if not self.env.su and writes_order and vals["order"] != 0:
+            # Never let a drag write a non-zero order onto the originator itself.
+            targets = self - self.filtered("is_originator")
+        else:
+            targets = self
+        res = super(SarabunRoutingStep, targets).write(vals) if targets else True
+        if not self.env.su and writes_order:
             for doc in self.mapped("document_id"):
-                originator = doc.routing_step_ids.filtered("is_originator")
-                if originator and doc.routing_step_ids.filtered(
-                    lambda s: s.order < originator.order
-                ):
-                    raise UserError(_(
-                        "The ผู้จัดทำ/ผู้ส่ง step must always be the first Stage."
-                    ))
+                doc._reanchor_route_order()
         return res
+
+    @api.constrains("order", "is_originator")
+    def _check_originator_anchor(self):
+        """Defensive net for batch imports / sudo paths — the ORM ``write`` guard
+        auto-heals interactive drags, but a raw create/write that leaves an
+        originator off Stage 0 would silently break the invariant."""
+        for step in self:
+            if step.is_originator and step.order != 0:
+                raise ValidationError(_(
+                    "ผู้จัดทำ/ผู้ส่ง step must be anchored at Stage 0."
+                ))
 
     def unlink(self):
         """A user cannot remove the originator row (it must always be the first step).
@@ -265,7 +278,7 @@ class SarabunRoutingStep(models.Model):
     def _compute_name(self):
         for step in self:
             parts = [p for p in (
-                str(step.order) if step.order else None,
+                str(step.order) if step.order is not None else None,
                 step.verb.name,
                 step.target_name,
             ) if p]
