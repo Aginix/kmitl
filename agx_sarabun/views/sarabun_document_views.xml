@@ -190,7 +190,7 @@
                                       decoration-success="state == 'done' and disposition in ('complete','direct')"
                                       decoration-info="state == 'active'">
                                     <field name="is_originator" string="ผู้จัดทำ" optional="show"/>
-                                    <field name="order" string="ลำดับ"/>
+                                    <field name="order" string="ลำดับ" widget="handle"/>
                                     <field name="verb"/>
                                     <field name="for_info" string="CC"/>
                                     <field name="target_mode"/>
@@ -214,8 +214,7 @@
                                     <field name="is_originator" invisible="1"/>
                                     <group>
                                         <group name="step_what">
-                                            <field name="order" string="ลำดับ"
-                                                   attrs="{'readonly': [('is_originator', '=', True)]}"/>
+                                            <field name="order" string="ลำดับ" readonly="1" force_save="1"/>
                                             <field name="verb" widget="selection" />
                                         </group>
                                         <group>
