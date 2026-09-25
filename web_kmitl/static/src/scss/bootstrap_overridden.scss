@@ -109,8 +109,6 @@ $custom-checkbox-indicator-border-radius: 1px !default; // Just a slight smoothi
 // $zindex-modal-backdrop: $zindex-modal;
 
 // Navs
-$nav-link-color: $o-main-text-color !default;
-$nav-tabs-link-active-color: $o-main-headings-color !default;
 $nav-tabs-link-active-bg: transparent !default;
 
 // Badges
@@ -135,3 +133,43 @@ $thumbnail-box-shadow: 0 !default;
 
 $breadcrumb-active-color: $o-main-text-color !default;
 $breadcrumb-divider-color: $o-main-color-muted !default;
+
+:root {
+    --odoo-color-darkest: #{"color-mix(in oklab, var(--odoo), black 30%)"};
+}
+
+.o_notebook .o_notebook_headers .nav.nav-tabs {
+    align-items: flex-end;
+}
+
+.o_notebook .nav-item {
+    background-color: #{"rgb(from var(--odoo) r g b / 0.2)"};
+    margin-right: 4px;
+    border-radius: 4px 4px 0 0;
+    transition: background-color 0.15s ease;
+    cursor: pointer;
+}
+
+.o_notebook .nav-link {
+    color: var(--odoo-color-darkest);
+    padding-top: 4px;
+    transition: padding-top 0.15s ease;
+}
+
+li.nav-item.cursor-pointer:hover {
+    background-color: #{"rgb(from var(--odoo) r g b / 0.7)"};
+}
+
+li.nav-item.cursor-pointer:hover > .nav-link {
+    color: var(--white);
+}
+
+li.nav-item.cursor-pointer > .active {
+    background-color: var(--odoo);
+    font-weight: 700;
+}
+
+li.nav-item.cursor-pointer .nav-link.active {
+    color: var(--white);
+    padding-top: 10px;
+}
