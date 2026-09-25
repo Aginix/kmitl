@@ -214,7 +214,7 @@
                                     <field name="is_originator" invisible="1"/>
                                     <group>
                                         <group name="step_what">
-                                            <field name="order" string="ลำดับ" readonly="1"/>
+                                            <field name="order" string="ลำดับ" readonly="1" force_save="1"/>
                                             <field name="verb" widget="selection" />
                                         </group>
                                         <group>
