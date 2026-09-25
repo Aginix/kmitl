@@ -230,27 +230,14 @@ class SarabunRoutingStep(models.Model):
     # ------------------------------------------------------------ ORM guards
     def write(self, vals):
         """The originator (ผู้จัดทำ/ผู้ส่ง) row is locked — a user may change only its
-        verb. ``order`` writes from the handle widget are silently ignored on the
-        originator (its Stage is pinned at 0), and any drag that displaces the
-        anchor is auto-healed by ``_reanchor_route_order``. Engine writes (sudo)
-        pass through unchanged."""
-        if not self.env.su and vals and set(vals) - {"verb", "order"}:
+        verb. Engine writes (sudo: activation, archive, stamping) pass through."""
+        if not self.env.su and vals and set(vals) - {"verb"}:
             if self.filtered("is_originator"):
                 raise UserError(_(
                     "The ผู้จัดทำ/ผู้ส่ง step is fixed — only its การดำเนินการ (verb) "
                     "may be changed."
                 ))
-        writes_order = vals and "order" in vals
-        if not self.env.su and writes_order and vals["order"] != 0:
-            # Never let a drag write a non-zero order onto the originator itself.
-            targets = self - self.filtered("is_originator")
-        else:
-            targets = self
-        res = super(SarabunRoutingStep, targets).write(vals) if targets else True
-        if not self.env.su and writes_order:
-            for doc in self.mapped("document_id"):
-                doc._reanchor_route_order()
-        return res
+        return super().write(vals)
 
     @api.constrains("order", "is_originator")
     def _check_originator_anchor(self):
