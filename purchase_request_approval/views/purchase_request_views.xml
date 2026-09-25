@@ -25,4 +25,19 @@
         </field>
     </record>
 
+    <record id="view_purchase_request_search" model="ir.ui.view">
+        <field name="name">view.purchase.request.search (Approval)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='state_to_approve']" position="after">
+                <filter
+                    name="state_in_approval"
+                    string="In Approval"
+                    domain="[('state','=','in_approval')]"
+                />
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

@@ -58,6 +58,25 @@
                     />
                 </searchpanel>
             </field>
+            <xpath expr="//filter[@name='state_draft']" position="after">
+                <filter
+                    name="state_to_verify"
+                    string="To be verified"
+                    domain="[('state','=','to_verify')]"
+                />
+            </xpath>
+            <xpath expr="//filter[@name='state_done']" position="after">
+                <filter
+                    name="state_cancelled"
+                    string="Cancelled"
+                    domain="[('state','=','cancelled')]"
+                />
+                <filter
+                    name="state_returned"
+                    string="Returned"
+                    domain="[('state','=','returned')]"
+                />
+            </xpath>
             <xpath expr="//filter[@name='my_requests']" position="after">
                 <filter
                     name="created_by_me"
@@ -391,8 +410,9 @@
                         <group>
                             <field
                                 name="date_start"
-                                attrs="{'readonly': [('is_editable','=', False)]}"
+                                readonly="1"
                             />
+                            <field name="create_date" string="วันที่สร้าง" readonly="1"/>
                         </group>
                     </group>
                 </page>

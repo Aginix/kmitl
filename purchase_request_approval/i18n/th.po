@@ -492,6 +492,7 @@ msgstr "ข้ามข้อยกเว้น"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request__state__in_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_search
 msgid "In Approval"
 msgstr "อยู่ระหว่างจัดทำ พจ.1"
 
