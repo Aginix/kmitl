@@ -209,33 +209,66 @@
                                 </field>
                             </group>
                             <group>
-                                <separator string="รายชื่อบุคลากรภายใน" />
+                                <field name="show_employee_participants" invisible="1" />
+                                <field name="show_company_participants" invisible="1" />
+                                <field name="show_student_participants" invisible="1" />
+                                <field name="show_other_participants" invisible="1" />
+                                <separator string="รายชื่อบุคลากรภายใน"
+                                    attrs="{'invisible': [('show_employee_participants', '=', False)]}" />
                                 <field name="internal_participant_ids" nolabel="1"
                                     colspan="2"
-                                    context="{'default_participant_type': 'internal'}"
-                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)],
+                                            'invisible': [('show_employee_participants', '=', False)]}">
                                     <tree editable="bottom">
-                                        <field name="allowed_partner_type_ids" invisible="1" />
-                                        <field name="participant_type" invisible="1" />
                                         <field name="sequence" widget="handle" />
-                                        <field name="partner_id" />
+                                        <field name="partner_id"
+                                            domain="[('partner_type_id', '=', %(partner_type_kmitl.partner_type_employee)d)]" />
                                         <field name="employee_department_name" />
                                         <field name="employee_job_name" />
                                         <field name="phone" optional="show" />
                                         <field name="description" />
                                     </tree>
                                 </field>
-                                <separator string="รายชื่อบุคคลภายนอก" />
+                                <separator string="รายชื่อบริษัท"
+                                    attrs="{'invisible': [('show_company_participants', '=', False)]}" />
+                                <field name="company_participant_ids" nolabel="1"
+                                    colspan="2"
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)],
+                                            'invisible': [('show_company_participants', '=', False)]}">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="partner_id"
+                                            domain="[('partner_type_id', '=', %(partner_type_kmitl.partner_type_company)d)]" />
+                                        <field name="vat" optional="show" />
+                                        <field name="phone" optional="show" />
+                                        <field name="description" />
+                                    </tree>
+                                </field>
+                                <separator string="รายชื่อนักศึกษา"
+                                    attrs="{'invisible': [('show_student_participants', '=', False)]}" />
+                                <field name="student_participant_ids" nolabel="1"
+                                    colspan="2"
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)],
+                                            'invisible': [('show_student_participants', '=', False)]}">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="partner_id"
+                                            domain="[('partner_type_id', '=', %(partner_type_kmitl.partner_type_student)d)]" />
+                                        <field name="vat" optional="show" />
+                                        <field name="phone" optional="show" />
+                                        <field name="description" />
+                                    </tree>
+                                </field>
+                                <separator string="รายชื่อบุคคลภายนอก"
+                                    attrs="{'invisible': [('show_other_participants', '=', False)]}" />
                                 <field name="external_participant_ids" nolabel="1"
                                     colspan="2"
-                                    context="{'default_participant_type': 'external'}"
-                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)],
+                                            'invisible': [('show_other_participants', '=', False)]}">
                                     <tree editable="bottom">
-                                        <field name="allowed_partner_type_ids" invisible="1" />
-                                        <field name="participant_type" invisible="1" />
                                         <field name="sequence" widget="handle" />
-                                        <field name="partner_id" />
-                                        <field name="partner_type_id" optional="show" />
+                                        <field name="partner_id"
+                                            domain="[('partner_type_id', '=', %(partner_type_kmitl.partner_type_other)d)]" />
                                         <field name="vat" optional="show" />
                                         <field name="phone" optional="show" />
                                         <field name="description" />

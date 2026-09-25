@@ -288,7 +288,7 @@ class ApprovalRequest(models.Model):
         "approval.request.participant",
         "request_id",
         string="รายชื่อบุคลากรภายใน",
-        domain=[("participant_type", "=", "internal")],
+        domain=[("participant_type", "=", "employee")],
         copy=False,
     )
 
@@ -296,9 +296,67 @@ class ApprovalRequest(models.Model):
         "approval.request.participant",
         "request_id",
         string="รายชื่อบุคคลภายนอก",
-        domain=[("participant_type", "=", "external")],
+        domain=[("participant_type", "=", "other")],
         copy=False,
     )
+
+    company_participant_ids = fields.One2many(
+        "approval.request.participant",
+        "request_id",
+        string="รายชื่อบริษัท",
+        domain=[("participant_type", "=", "company")],
+        copy=False,
+    )
+
+    student_participant_ids = fields.One2many(
+        "approval.request.participant",
+        "request_id",
+        string="รายชื่อนักศึกษา",
+        domain=[("participant_type", "=", "student")],
+        copy=False,
+    )
+
+    show_employee_participants = fields.Boolean(
+        compute="_compute_show_participant_sections",
+    )
+    show_student_participants = fields.Boolean(
+        compute="_compute_show_participant_sections",
+    )
+    show_company_participants = fields.Boolean(
+        compute="_compute_show_participant_sections",
+    )
+    show_other_participants = fields.Boolean(
+        compute="_compute_show_participant_sections",
+    )
+
+    @api.depends(
+        "category_id.allowed_partner_type_ids",
+        "participant_ids.participant_type",
+    )
+    def _compute_show_participant_sections(self):
+        type_map = self.env[
+            "approval.request.participant"
+        ]._get_partner_type_code_map()
+        for rec in self:
+            allowed = {
+                type_map.get(t.id)
+                for t in rec.category_id.allowed_partner_type_ids
+            }
+            allowed.discard(None)
+            existing = set(rec.participant_ids.mapped("participant_type"))
+            show_all = not allowed
+            rec.show_employee_participants = (
+                show_all or "employee" in allowed or "employee" in existing
+            )
+            rec.show_student_participants = (
+                show_all or "student" in allowed or "student" in existing
+            )
+            rec.show_company_participants = (
+                show_all or "company" in allowed or "company" in existing
+            )
+            rec.show_other_participants = (
+                show_all or "other" in allowed or "other" in existing
+            )
 
     allocation_ids = fields.One2many(
         "approval.request.allocation",
@@ -588,6 +646,8 @@ class ApprovalRequest(models.Model):
         self.participant_ids = False
         self.internal_participant_ids = False
         self.external_participant_ids = False
+        self.company_participant_ids = False
+        self.student_participant_ids = False
         self.description = self.category_id.default_description
 
     @api.model
