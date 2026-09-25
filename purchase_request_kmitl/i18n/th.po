@@ -2340,9 +2340,8 @@ msgstr "รอตรวจสอบ"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_tree
-msgid "Request Number"
+msgid "PR Number"
 msgstr "เลขที่ใบพ.1"
-
 
 #. module: purchase_request_kmitl
 #: model:ir.actions.act_window,name:purchase_request_kmitl.action_purchase_request_my

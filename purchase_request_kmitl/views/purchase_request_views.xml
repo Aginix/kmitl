@@ -22,7 +22,7 @@
             </xpath>
             <xpath expr="//field[@name='name']" position="attributes">
                 <attribute name="optional">show</attribute>
-                <attribute name="string">Request Number</attribute>
+                <attribute name="string">PR Number</attribute>
             </xpath>
             <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="optional">hide</attribute>
