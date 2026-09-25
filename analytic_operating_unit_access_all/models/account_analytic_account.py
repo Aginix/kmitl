@@ -14,9 +14,7 @@ class AccountAnalyticAccount(models.Model):
                       context="{'all_analytic_ou': True}" />
         - Python: record.with_context(all_analytic_ou=True).search(...)
         """
-        if self.env.context.get(
-            "all_analytic_ou"
-        ) or self.env.user.has_group(
+        if self.env.context.get("all_analytic_ou") or self.env.user.has_group(
             "analytic_operating_unit_access_all.group_all_ou_analytic"
         ):
             return []
@@ -39,12 +37,15 @@ class AccountAnalyticAccount(models.Model):
         )
 
     @api.model
-    def web_search_read(
-        self, domain=None, fields=None, offset=0, limit=None, order=None,
-        count_limit=None,
+    def search_read(
+        self, domain=None, fields=None, offset=0, limit=None, order=None, **read_kwargs
     ):
         domain = (domain or []) + self._get_ou_domain()
-        return super().web_search_read(
-            domain, fields, offset=offset, limit=limit, order=order,
-            count_limit=count_limit,
+        return super().search_read(
+            domain,
+            fields,
+            offset=offset,
+            limit=limit,
+            order=order,
+            **read_kwargs,
         )
