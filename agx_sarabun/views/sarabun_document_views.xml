@@ -382,7 +382,7 @@
          only enters once it actually reaches the user; it survives delegate / recall /
          reject because the recipient row persists (unlike the actor_user_ids snapshot). -->
     <record id="action_sarabun_document_inbox" model="ir.actions.act_window">
-        <field name="name">กล่องหนังสือเข้า (Incoming)</field>
+        <field name="name">Inbox</field>
         <field name="res_model">sarabun.document</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_sarabun_document_search"/>
@@ -394,6 +394,22 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">No หนังสือ has reached you yet</p>
             <p>Every หนังสือ routed to you appears here once its step reaches you, and stays after you act.</p>
+        </field>
+    </record>
+
+    <record id="action_sarabun_document_outgoing" model="ir.actions.act_window">
+        <field name="name">Outgoing Documents</field>
+        <field name="res_model">sarabun.document</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_sarabun_document_search"/>
+        <field name="view_ids"
+               eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_document_inbox_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_document_form')})]"/>
+        <field name="context">{'search_default_my_documents': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No outgoing documents found</p>
+            <p>This list shows every documents you have sent, including those that have been recalled or rejected.</p>
         </field>
     </record>
 </odoo>
