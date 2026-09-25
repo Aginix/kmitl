@@ -378,16 +378,63 @@
         </field>
     </record>
 
+    <record id="action_purchase_request_approval_my" model="ir.actions.act_window">
+        <field name="name">My Purchase Request Approvals</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.request.approval</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('create_uid', '=', uid)]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                คุณยังไม่มีรายงานขอซื้อ/จ้าง (พจ.1) ที่สร้างเอง
+            </p>
+        </field>
+    </record>
+
     <menuitem
         id="purchase_request_approval_menu"
+        name="Purchase Request Approvals"
         parent="purchase.menu_purchase_root"
-        action="action_purchase_request_approval"
         groups="purchase.group_purchase_user"
         sequence="4"
     />
     <menuitem
+        id="purchase_request_approval_menu_my"
+        name="My Requests"
+        parent="purchase_request_approval_menu"
+        action="action_purchase_request_approval_my"
+        groups="purchase.group_purchase_user"
+        sequence="10"
+    />
+    <menuitem
+        id="purchase_request_approval_menu_all"
+        name="All Requests"
+        parent="purchase_request_approval_menu"
+        action="action_purchase_request_approval"
+        groups="purchase.group_purchase_user"
+        sequence="20"
+    />
+
+    <menuitem
         id="purchase_request_approval_menu_purchase_request"
+        name="Purchase Request Approvals"
         parent="purchase_request.parent_menu_purchase_request"
+        groups="purchase.group_purchase_user"
+        sequence="20"
+    />
+    <menuitem
+        id="purchase_request_approval_menu_purchase_request_my"
+        name="My Requests"
+        parent="purchase_request_approval_menu_purchase_request"
+        action="action_purchase_request_approval_my"
+        groups="purchase.group_purchase_user"
+        sequence="10"
+    />
+    <menuitem
+        id="purchase_request_approval_menu_purchase_request_all"
+        name="All Requests"
+        parent="purchase_request_approval_menu_purchase_request"
         action="action_purchase_request_approval"
         groups="purchase.group_purchase_user"
         sequence="20"
