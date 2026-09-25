@@ -20,8 +20,8 @@
         <field name="perm_create" eval="False" />
         <field name="perm_unlink" eval="False" />
         <field name="domain_force">
-            ['|',('requested_by','=',user.id), ('message_partner_ids', 'in',
-            [user.partner_id.id])]
+            ['|',('request_id.requested_by','=',user.id),
+            ('message_partner_ids', 'in', [user.partner_id.id])]
         </field>
     </record>
     <record id="purchase_request_approval_rule" model="ir.rule">
@@ -35,7 +35,7 @@
         <field name="perm_write" eval="True" />
         <field name="perm_create" eval="True" />
         <field name="perm_unlink" eval="False" />
-        <field name="domain_force">[('requested_by','=',user.id)]</field>
+        <field name="domain_force">[('request_id.requested_by','=',user.id)]</field>
     </record>
     <record id="purchase_request_approval_user_all_rule" model="ir.rule">
         <field name="name">Purchase Request Approval User All</field>
