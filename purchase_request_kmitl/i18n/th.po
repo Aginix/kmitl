@@ -2342,3 +2342,22 @@ msgstr "รอตรวจสอบ"
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_tree
 msgid "PR Number"
 msgstr "เลขที่ใบพ.1"
+
+#. module: purchase_request_kmitl
+#: model:ir.actions.act_window,name:purchase_request_kmitl.action_purchase_request_my
+#: model:ir.ui.menu,name:purchase_request_kmitl.menu_purchase_request_my
+#: model:ir.ui.menu,name:purchase_request_kmitl.menu_purchase_order_request_my
+msgid "My Request"
+msgstr "คำขอของฉัน"
+
+#. module: purchase_request_kmitl
+#: model:ir.actions.act_window,name:purchase_request_kmitl.action_purchase_request_all
+#: model:ir.ui.menu,name:purchase_request_kmitl.menu_purchase_request_all
+#: model:ir.ui.menu,name:purchase_request_kmitl.menu_purchase_order_request_all
+msgid "All Requests"
+msgstr "คำขอทั้งหมด"
+
+#. module: purchase_request_kmitl
+#: model:ir.ui.menu,name:purchase_request_kmitl.purchase_request_kmitl_root_menu
+msgid "Purchase Request"
+msgstr "แบบขอให้จัดหา (พ.1)"
