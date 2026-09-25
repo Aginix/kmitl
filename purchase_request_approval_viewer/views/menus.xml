@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="purchase_request_approval.purchase_request_approval_menu" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('purchase_viewer.group_purchase_viewer'))]"/>
+    </record>
+    <record id="purchase_request_approval.purchase_request_approval_menu_purchase_request" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('purchase_viewer.group_purchase_viewer'))]"/>
+    </record>
+</odoo>
