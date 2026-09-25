@@ -1642,3 +1642,31 @@ msgstr "เลขที่ใบพจ.1"
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_tree
 msgid "Document Number"
 msgstr "เลขที่หนังสือพจ.1"
+
+#. module: purchase_request_approval
+#: model:ir.actions.act_window,name:purchase_request_approval.action_purchase_request_approval_my
+msgid "My Purchase Request Approvals"
+msgstr "รายงานขอซื้อ/จ้าง (พจ.1) ของฉัน"
+
+#. module: purchase_request_approval
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu_my
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu_purchase_request_my
+msgid "My Requests"
+msgstr "คำขอของฉัน"
+
+#. module: purchase_request_approval
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu_all
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu_purchase_request_all
+msgid "All Requests"
+msgstr "คำขอทั้งหมด"
+
+#. module: purchase_request_approval
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu_purchase_request
+msgid "Purchase Request Approvals"
+msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
+
+#. module: purchase_request_approval
+#: model:ir.actions.act_window,help:purchase_request_approval.action_purchase_request_approval_my
+msgid "คุณยังไม่มีรายงานขอซื้อ/จ้าง (พจ.1) ที่สร้างเอง"
+msgstr "คุณยังไม่มีรายงานขอซื้อ/จ้าง (พจ.1) ที่สร้างเอง"
