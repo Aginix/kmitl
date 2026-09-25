@@ -284,6 +284,9 @@
         <field name="model">purchase.request.approval</field>
         <field name="arch" type="xml">
             <search>
+                <field name="active_sarabun_document_id" string="เลขที่หนังสือ"
+                       filter_domain="[('active_sarabun_document_id.name', 'ilike', self)]"/>
+                <separator/>
                 <filter
                     name="draft"
                     string="Draft"

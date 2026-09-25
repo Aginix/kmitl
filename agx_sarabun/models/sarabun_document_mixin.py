@@ -38,6 +38,7 @@ class SarabunDocumentMixin(models.AbstractModel):
     active_sarabun_document_id = fields.Many2one(
         comodel_name="sarabun.document",
         compute="_compute_sarabun_documents",
+        search="_search_active_sarabun_document_id",
         string="หนังสือฉบับปัจจุบัน (Active Document)",
         help="The current live Document (most recent non-terminal one); others are "
         "superseded (rejected → duplicated). Replaces per-consumer main_sarabun_document_id.",
@@ -109,6 +110,22 @@ class SarabunDocumentMixin(models.AbstractModel):
         docs = self.env["sarabun.document"].search(
             [("origin_model", "=", self._name), ("id", operator, value)]
         )
+        return [("id", "in", docs.mapped("origin_res_id"))]
+
+    def _search_active_sarabun_document_id(self, operator, value):
+        """Search origin records by their live หนังสือ (name or id).
+
+        Users typing a document number from the origin's tree search bar expect
+        to find the record regardless of whether that หนังสือ is currently the
+        active one or superseded (rejected → duplicated), so the match spans
+        every Document linked back to this origin.
+        """
+        domain = [("origin_model", "=", self._name)]
+        if isinstance(value, str):
+            domain += [("name", operator, value)]
+        else:
+            domain += [("id", operator, value)]
+        docs = self.env["sarabun.document"].search(domain)
         return [("id", "in", docs.mapped("origin_res_id"))]
 
     def _prepare_sarabun_document_vals(self):
