@@ -2,8 +2,8 @@ from odoo.tests.common import TransactionCase, tagged
 
 
 @tagged("post_install", "-at_install")
-class TestNameSearchOUFilter(TransactionCase):
-    """Test _name_search OU filtering on account.analytic.account."""
+class TestAnalyticOUFilter(TransactionCase):
+    """Test OU filtering on account.analytic.account via _name_search and search_read."""
 
     @classmethod
     def setUpClass(cls):
@@ -98,10 +98,19 @@ class TestNameSearchOUFilter(TransactionCase):
 
     def _name_search_ids(self, user=None, context=None):
         """Return ids from name_search as the given user."""
-        results = self._get_env(user, context)[
-            "account.analytic.account"
-        ].name_search("", args=[("plan_id", "=", self.plan.id)])
+        results = self._get_env(user, context)["account.analytic.account"].name_search(
+            "", args=[("plan_id", "=", self.plan.id)]
+        )
         return [r[0] for r in results]
+
+    def _search_read_ids(self, user=None, context=None):
+        """Return ids from search_read as the given user (path used by ztree)."""
+        return [
+            r["id"]
+            for r in self._get_env(user, context)[
+                "account.analytic.account"
+            ].search_read([("plan_id", "=", self.plan.id)], ["id"])
+        ]
 
     def _web_search_read_ids(self, user=None, context=None):
         """Return ids from web_search_read as the given user."""
@@ -133,9 +142,7 @@ class TestNameSearchOUFilter(TransactionCase):
 
     def test_name_search_context_bypass(self):
         """Regular user with context all_analytic_ou=True sees all accounts."""
-        ids = self._name_search_ids(
-            user=self.user_a, context={"all_analytic_ou": True}
-        )
+        ids = self._name_search_ids(user=self.user_a, context={"all_analytic_ou": True})
         self.assertIn(self.acc_ou_a.id, ids)
         self.assertIn(self.acc_ou_b.id, ids)
         self.assertIn(self.acc_shared.id, ids)
@@ -167,3 +174,33 @@ class TestNameSearchOUFilter(TransactionCase):
         self.assertIn(self.acc_ou_b.id, ids)
         self.assertIn(self.acc_shared.id, ids)
 
+    # ------------------------------------------------------------------
+    # search_read: direct ORM path used by ztree and Python callers
+    # ------------------------------------------------------------------
+
+    def test_search_read_filters_by_ou(self):
+        """Regular user sees only their OU's accounts + shared via search_read."""
+        ids = self._search_read_ids(user=self.user_a)
+        self.assertIn(self.acc_ou_a.id, ids)
+        self.assertIn(self.acc_shared.id, ids)
+        self.assertNotIn(self.acc_ou_b.id, ids)
+
+    def test_search_read_context_bypass(self):
+        """Context all_analytic_ou=True bypasses filter in search_read."""
+        ids = self._search_read_ids(user=self.user_a, context={"all_analytic_ou": True})
+        self.assertIn(self.acc_ou_b.id, ids)
+
+    def test_search_read_group_bypass(self):
+        """User with group_all_ou_analytic sees all accounts via search_read."""
+        ids = self._search_read_ids(user=self.user_all)
+        self.assertIn(self.acc_ou_b.id, ids)
+
+    def test_search_ztree_filters_by_ou(self):
+        """ztree widget search respects OU filter (skipped if module not installed)."""
+        Account = self.env["account.analytic.account"].with_user(self.user_a)
+        if not hasattr(Account, "search_ztree"):
+            self.skipTest("app_web_widget_ztree not installed")
+        nodes = Account.search_ztree(domain=[("plan_id", "=", self.plan.id)])
+        ids = {n["id"] for n in nodes}
+        self.assertIn(self.acc_ou_a.id, ids)
+        self.assertNotIn(self.acc_ou_b.id, ids)
