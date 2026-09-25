@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="mail_workflow_notification.WorkflowNotificationSystray" owl="1">
+        <Dropdown position="'bottom-end'" beforeOpen.bind="fetchData">
+            <t t-set-slot="toggler">
+                <span class="o_workflow_notification_toggle">
+                    <i class="fa fa-fw fa-bell-o" role="img" aria-label="Notifications" title="การแจ้งเตือน"/>
+                    <t t-if="state.unreadCount > 0">
+                        <span class="badge" t-esc="state.unreadCount"/>
+                    </t>
+                </span>
+            </t>
+            <div class="o_workflow_notification_dropdown" style="min-width: 380px;">
+                <div class="o_workflow_notification_header d-flex align-items-center px-3 py-2 border-bottom">
+                    <span class="fw-bold">การแจ้งเตือน</span>
+                    <t t-if="state.unreadCount > 0">
+                        <span class="ms-2 badge bg-primary text-white" t-esc="state.unreadCount"/>
+                        <button
+                            class="btn btn-sm btn-link ms-auto text-muted"
+                            t-on-click.stop="onMarkAllRead"
+                        >
+                            <i class="fa fa-check me-1"/>อ่านทั้งหมด
+                        </button>
+                    </t>
+                </div>
+                <t t-if="state.items.length === 0">
+                    <div class="text-muted text-center py-4">
+                        <i class="fa fa-bell-slash-o fa-2x mb-2 d-block"/>
+                        <span>ไม่มีการแจ้งเตือนใหม่</span>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="o_workflow_notification_items" style="max-height: 440px; overflow-y: auto;">
+                        <t t-foreach="state.items" t-as="item" t-key="item.id">
+                            <DropdownItem
+                                onSelected="() => this.onItemClick(item)"
+                                class="'o_workflow_notification_item px-3 py-2 border-bottom'"
+                            >
+                                <div class="d-flex align-items-start">
+                                    <i class="fa fa-circle text-primary mt-1 me-2" style="font-size: 0.5rem; flex-shrink: 0;"/>
+                                    <div class="flex-grow-1 min-w-0">
+                                        <div class="fw-semibold text-truncate" t-esc="item.subject"/>
+                                        <div class="small text-muted text-truncate" t-if="item.record_name" t-esc="item.record_name"/>
+                                        <div class="small text-muted mt-1" t-esc="formatDate(item.date)"/>
+                                    </div>
+                                    <i class="fa fa-chevron-right text-muted ms-2 mt-1" style="font-size: 0.75rem; flex-shrink: 0;"/>
+                                </div>
+                            </DropdownItem>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </Dropdown>
+    </t>
+
+</templates>

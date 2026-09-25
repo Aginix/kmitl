@@ -1,0 +1,26 @@
+.o_workflow_notification_toggle {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+
+    .badge {
+        background-color: $o-brand-primary;
+        color: #fff;
+        margin-left: 2px;
+        font-size: 0.7rem;
+    }
+}
+
+.o_workflow_notification_dropdown {
+    .o_workflow_notification_item {
+        cursor: pointer;
+
+        &:hover {
+            background-color: $dropdown-link-hover-bg;
+        }
+
+        &:last-child {
+            border-bottom: none !important;
+        }
+    }
+}
