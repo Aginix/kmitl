@@ -544,6 +544,33 @@ class BudgetTransfer(models.Model):
         if from_amount <= 0:
             raise ValidationError(_("Transfer amount must be greater than zero"))
 
+        self._check_pool_nesting()
+
+    def _check_pool_nesting(self):
+        """Reject a transfer whose FROM/TO lines would nest budget pools.
+
+        A dry-run of the engine guard (ADR-0016) using each line's signed delta
+        (FROM credits → negative, TO debits → positive), so a conflict surfaces at
+        submit/approve — before the e-Saraban letter is sent — not only at post.
+        The post-time guard on the delegated move remains the backstop.
+        """
+        self.ensure_one()
+        controller = self.env["budget.controller"]
+        columns = list(controller._DIM_COLUMNS.values())
+        candidates = []
+        for line in self.line_ids.filtered("transfer_direction"):
+            amount = line.amount or 0.0
+            delta = amount if line.transfer_direction == "to" else -amount
+            candidate = {"account_id": line.account_id.id, "balance": delta}
+            for column in columns:
+                candidate[column] = line[column].id or False
+            candidates.append(candidate)
+        controller._check_pool_nesting(
+            candidates,
+            self.account_fiscal_year_id.id,
+            self.company_id.id,
+        )
+
     def _validate_budget_availability(self):
         self.ensure_one()
         if not self.has_sufficient_budget:

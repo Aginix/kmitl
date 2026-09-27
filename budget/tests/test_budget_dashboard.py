@@ -103,6 +103,53 @@ class TestBudgetDashboard(TransactionCase):
 
     # --- tests ---
 
+    def test_reservation_grid_coarse_pool_is_narrow_required(self):
+        """A pool funded at the coarse (out-of-domain) parent is narrow_required
+        and kept in the grid so the picker can drill into a pickable child
+        (ADR-0016)."""
+        AA = self.env["account.analytic.account"]
+        Plan = self.env["account.analytic.plan"]
+        act_plan = Plan.search(
+            [("code", "=", "activities")], limit=1
+        ) or Plan.create({"name": "Activities", "code": "activities"})
+        act = AA.create(
+            {"name": "Dash Act", "code": "DASH_ACT", "plan_id": act_plan.id}
+        )
+        move = self.env["budget.move"].create(
+            {
+                "move_type": "appropriation",
+                "budget_type": "expense",
+                "appropriation_type": "initial",
+                "account_fiscal_year_id": self.fy.id,
+                "line_ids": [
+                    Command.create(
+                        {
+                            "account_id": self.parent.id,
+                            "balance": 100_000,
+                            "activity_analytic_id": act.id,
+                        }
+                    )
+                ],
+            }
+        )
+        move.action_review()
+        move.action_post()
+        grid = self.env["budget.dashboard"].get_reservation_grid(
+            self.fy.id,
+            {},
+            root_account_id=self.parent.id,
+            account_domain=[("id", "=", self.child.id)],
+            breakdown=["activity_analytic_id"],
+        )
+        prow = next(
+            r
+            for r in grid["rows"]
+            if r.get("row_type") == "account" and r["account_id"] == self.parent.id
+        )
+        self.assertTrue(prow["narrow_required"])
+        self.assertTrue(prow["selectable"])  # kept, not pruned
+        self.assertTrue(prow["account_narrowable"])
+
     def test_initial_current_and_adjustment_rollup(self):
         """initial / current / adjustment compute and roll up to the parent."""
         self._post_appropriation(self.child, 100_000, "initial")

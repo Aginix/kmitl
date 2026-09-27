@@ -2,7 +2,7 @@ import logging
 from collections import defaultdict
 
 from odoo import api, models
-from odoo.tools import format_date
+from odoo.tools import float_is_zero, format_date
 
 _logger = logging.getLogger(__name__)
 
@@ -81,7 +81,12 @@ class BudgetDashboard(models.AbstractModel):
 
     @api.model
     def get_dashboard_data(
-        self, fiscal_year_id, root_account_id=None, filters=None, breakdown=None
+        self,
+        fiscal_year_id,
+        root_account_id=None,
+        filters=None,
+        breakdown=None,
+        covering=False,
     ):
         """Return ``{"rows": [...], "currency_id": id}`` for the dashboard grid.
 
@@ -91,6 +96,14 @@ class BudgetDashboard(models.AbstractModel):
         nested under those dimensions' hierarchies (outer to inner) — same
         columns, same roll-up — instead of being the sole row axis. See
         :meth:`_breakdown_rows`.
+
+        ``covering`` (picker only, default False so the dashboard is unchanged):
+        a hierarchical dimension filter then matches pools that **cover** the
+        typed code — its subtree (``child_of``) *or* its ancestors (``in`` its
+        ancestor chain) — so a reservation typed at a sub-activity still surfaces
+        the pool funded at a parent activity (ADR-0016). The ancestor chain of
+        each covering filter value is returned as ``filter_ancestors`` so the
+        client can pin the finer of the filter and the picked row.
         """
         filters = filters or {}
         currency_id = self.env.company.currency_id.id
@@ -107,6 +120,7 @@ class BudgetDashboard(models.AbstractModel):
         # classification (exact match). Guarded in case the hierarchy is absent.
         hier_op = "child_of" if "parent_id" in analytic._fields else "="
         dim_leaves = []
+        filter_ancestors = {}
         for fname in self._DIM_FIELDS:
             val = filters.get(fname)
             if not val:
@@ -116,11 +130,25 @@ class BudgetDashboard(models.AbstractModel):
             # when the analytic tree exists, else exact / "in" for a value list.
             if fname == "source_analytic_id":
                 op = "in" if is_list else "="
+                dim_leaves.append((fname, op, val))
+            elif covering and hier_op == "child_of":
+                # covering: pools at/above (ancestors) OR below (child_of) the
+                # typed code. The ancestor chain is recorded for the client.
+                values = list(val) if is_list else [val]
+                ancestors = set()
+                for rec in analytic.browse(values):
+                    ancestors.update(self._ancestor_ids(rec))
+                filter_ancestors[fname] = sorted(ancestors)
+                dim_leaves += [
+                    "|",
+                    (fname, "child_of", val),
+                    (fname, "in", list(ancestors)),
+                ]
             elif is_list:
                 op = "child_of" if hier_op == "child_of" else "in"
+                dim_leaves.append((fname, op, val))
             else:
-                op = hier_op
-            dim_leaves.append((fname, op, val))
+                dim_leaves.append((fname, hier_op, val))
 
         # Shared base domains for every column; dim filters apply set-based.
         move_base = [
@@ -158,7 +186,12 @@ class BudgetDashboard(models.AbstractModel):
             rows = self._breakdown_rows(
                 dims, accounts, account_ids, move_base, cl_base, commit_domain
             )
-            return {"rows": rows, "currency_id": currency_id, "hier_op": hier_op}
+            return {
+                "rows": rows,
+                "currency_id": currency_id,
+                "hier_op": hier_op,
+                "filter_ancestors": filter_ancestors,
+            }
 
         # --- (a) current pool and (1) initial, from posted move lines ---
         current = self._sum_by_account(
@@ -252,7 +285,12 @@ class BudgetDashboard(models.AbstractModel):
             rows.append(self._make_row(acc, rolled[acc.id], level, bool(kids)))
             for child in reversed(kids):
                 stack.append((child, level + 1))
-        return {"rows": rows, "currency_id": currency_id, "hier_op": hier_op}
+        return {
+            "rows": rows,
+            "currency_id": currency_id,
+            "hier_op": hier_op,
+            "filter_ancestors": filter_ancestors,
+        }
 
     # ------------------------------------------------------------------
     # multi-dimension breakdown (e.g. activities)
@@ -422,9 +460,15 @@ class BudgetDashboard(models.AbstractModel):
             dpath = dim_key(prefix)
             dims_map = {dims[i]: (prefix[i] or False) for i in range(n)}
 
+            own_here = own_by_tuple.get(prefix, {})
+
             def emit_acc(account, lvl):
                 kids = children.get(account.id, [])
                 pid = account.parent_id.id
+                # own_current = this account's own posted current at the EXACT
+                # tuple (not rolled down from children), so the picker can tell a
+                # real pool row from a pure roll-up node (ADR-0016).
+                own_current = own_here.get(account.id, {}).get("current", 0.0)
                 rows.append(
                     {
                         "id": account.id,
@@ -439,6 +483,7 @@ class BudgetDashboard(models.AbstractModel):
                         "name": account.name,
                         "level": lvl,
                         "has_children": bool(kids),
+                        "own_current": own_current,
                         **self._value_columns(rolled[account.id]),
                     }
                 )
@@ -650,12 +695,20 @@ class BudgetDashboard(models.AbstractModel):
         reserve time.
         """
         data = self.get_dashboard_data(
-            fiscal_year_id, root_account_id, filters or {}, breakdown
+            fiscal_year_id, root_account_id, filters or {}, breakdown, covering=True
         )
         rows = data.get("rows", [])
+        rounding = self.env.company.currency_id.rounding or 0.01
         selectable_ids = None
+        # Account ids that have at least one selectable *strict descendant* — a
+        # coarse pool whose own account is out of the host domain can still be
+        # narrowed down to a pickable child code (ADR-0016).
+        has_sel_desc = set()
         if account_domain:
             selectable_ids = set(self.env["budget.account"].search(account_domain).ids)
+            for acc in self.env["budget.account"].browse(list(selectable_ids)):
+                for anc in self._ancestor_ids(acc)[:-1]:  # strict ancestors
+                    has_sel_desc.add(anc)
         # Only account rows map to a budget.account; activity (breakdown) group
         # rows are display-only and can never be picked.
         accounts = {
@@ -671,11 +724,25 @@ class BudgetDashboard(models.AbstractModel):
             budgetable = bool(account and account.budgetable)
             row["budgetable"] = budgetable
             row["cross_chargeable"] = bool(account and account.cross_chargeable)
-            row["selectable"] = (
-                budgetable
-                if selectable_ids is None
-                else account is not None and row["id"] in selectable_ids
+            # A pool row = an account carrying its own posted appropriation at
+            # this exact dimension tuple.
+            is_pool = account is not None and not float_is_zero(
+                row.get("own_current", 0.0), precision_rounding=rounding
             )
+            in_domain = selectable_ids is not None and row["id"] in selectable_ids
+            narrowable = is_pool and account.id in has_sel_desc
+            # A pool whose own account is outside the host domain can only be used
+            # by narrowing to a pickable descendant code.
+            narrow_required = narrowable and not in_domain
+            row["account_narrowable"] = narrowable
+            row["narrow_required"] = narrow_required
+            if selectable_ids is None:
+                row["selectable"] = budgetable
+            else:
+                # narrow_required rows are kept selectable so the coarse pool is
+                # not pruned away; the client blocks confirm until a descendant
+                # code is chosen.
+                row["selectable"] = in_domain or narrow_required
         # When the host constrains selectable codes (account_domain), show only
         # those codes and the dimension/roll-up rows leading to them — not every
         # code under the category. Domain-less hosts (budget.commitment) keep the
@@ -686,6 +753,7 @@ class BudgetDashboard(models.AbstractModel):
             "rows": rows,
             "currency_id": data.get("currency_id"),
             "hier_op": data.get("hier_op", "="),
+            "filter_ancestors": data.get("filter_ancestors", {}),
         }
 
     @api.model
