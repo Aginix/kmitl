@@ -32,8 +32,8 @@ _Avoid_: account (ambiguous with `account.account`), category
 One of the six financial dimensions (the `activities` analytic plan) — a hierarchical program classification whose levels read ด้าน → แผนงาน → กิจกรรม → กิจกรรมย่อย, so a node's kind depends on its depth. Carried on move/commitment lines; used as a report filter and as the optional outer row axis of the monitoring dashboard.
 _Avoid_: ด้าน/แผนงาน/กิจกรรม (the descriptive long form — prefer the short label "กิจกรรม"), program, task
 
-**Budget Pool**:
-The appropriated money available on a budget account for a fiscal year, before any commitment activity. Built up from appropriation and transfer moves.
+**Budget Pool (กองงบประมาณ)**:
+The appropriated money available at one **coordinate** — a budget account together with every controlled dimension value (departments/sources/funds/activities, plus a Pool Tag when present) — for a company × fiscal year, before any commitment activity. Built up from appropriation and transfer moves; a coordinate whose net posted appropriation+entry rounds to zero is **not** a pool. **Pools never nest (กองงบไม่ซ้อน, [ADR-0016](docs/adr/0016-pools-never-nest-descendant-draw.md))**: two pools may not be comparable on *every* axis at once (equal, or one an ancestor of the other; empty only equals empty), so at most one funded coordinate ever covers a given reservation. The invariant is enforced when appropriations and transfers post.
 _Avoid_: allocation (reserve "allocation" for the initial act of appropriating)
 
 **Floating Budget (เงินลอย)**:
@@ -53,11 +53,15 @@ Pooling more than one budget code inside a *single* reservation. A reservation n
 _Avoid_: transfer (that is `budget.transfer`, a balanced move *between* accounts; cross-charge moves nothing — it spends several pools in one reservation), virement
 
 **Control Node (โหนดคุมงบ)**:
-The budgetable account at which a reservation's pool is actually controlled — the nearest budgetable ancestor-or-self of the reserved account that carries appropriation. A reservation draws from its control node, and all usage in that node's subtree rolls up to it. Mostly the control node *is* the reserved account itself; for coarsely-budgeted lines (personnel, project) it is an ancestor. Appropriation may sit at or above the reservation node, **never below** it (one-way, up only). The same nearest-funded-ancestor rule applies independently on each hierarchical analytic dimension (resolved from `account.analytic.account` parent paths; flat dimensions like Source match exactly).
-_Avoid_: parent, category (those name tree position, not the control role)
+The single funded **coordinate** at or above a reservation on **every** axis at once — the one Budget Pool that covers the reservation's account *and* each of its controlled dimension values (each equal-or-ancestor of the reservation's), read in one grouped query. A reservation draws from its control node, and all usage in that node's subtree rolls up to it. Mostly the control node *is* the reservation's own coordinate; for coarsely-budgeted lines (personnel, project) or a **Descendant Code** draw it is an ancestor on one or more axes. Appropriation may sit at or above the reservation, **never below** it (one-way, up only): a reservation at a code with no funded coordinate at/above it is *uncovered* and has zero Available. Because pools never nest ([ADR-0016](docs/adr/0016-pools-never-nest-descendant-draw.md)) exactly one coordinate ever qualifies.
+_Avoid_: parent, category (those name tree position, not the control role); "independently on each dimension" (the node must cover the reservation on all axes simultaneously — the old per-axis phrasing described the H1 leak)
+
+**Descendant Code (รหัสภายใต้)**:
+A code strictly below a funded coordinate on some axis — a child budget account, or a sub-กิจกรรม / sub-กองทุน / sub-ส่วนงาน under the value a pool was appropriated at. Once money is appropriated at a node, a reservation may name any Descendant Code of it on every axis (e.g. appropriated at `090070101` → reserve at `09007010110`); the draw still resolves to, and is limited by, the ancestor Budget Pool ([ADR-0016](docs/adr/0016-pools-never-nest-descendant-draw.md)).
+_Avoid_: child (ambiguous — this is about the reservation naming a finer code, not tree position alone)
 
 **Available (งบที่จองได้)**:
-Remaining (f) evaluated at the control node — the amount a new reservation may draw. The figure the reservation check enforces and the picker shows on a row.
+Remaining (f) evaluated at the control node — the amount a new reservation may draw. The figure the reservation check enforces; the picker shows it for the chosen codes ("งบที่จองได้ … คุมงบที่ …") once a row (and, for a coarse pool, a Descendant Code) is selected.
 _Avoid_: remaining (keep "remaining" for the report column; "available" is the reservation-time check at the control node)
 
 ### Appropriation side (`budget.move`)

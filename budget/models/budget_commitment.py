@@ -584,20 +584,52 @@ class BudgetCommitment(models.Model):
         for line in reserve_lines:
             per_account.setdefault(line.account_id, 0.0)
             per_account[line.account_id] += line.amount
+        # Group the reserve amounts by the *pool* they resolve to, not by account:
+        # several child codes can draw one coarse pool, so summing per account
+        # would let each child pass on its own while together they overspend the
+        # shared pool (ADR-0016, H2). available is the same for every account that
+        # resolves to a pool, so it is read once per pool.
+        per_pool = {}
         for account, amount in per_account.items():
-            available = controller.get_available(
+            detail = controller.get_available_detail(
                 account, avail_distribution, fy_id, company_id
             )
-            if float_compare(available, amount, precision_rounding=rounding) < 0:
+            pool = detail.get("pool")
+            if pool:
+                key = (
+                    pool["account"]["id"],
+                    tuple(
+                        sorted(
+                            (column, info["id"])
+                            for column, info in pool["dims"].items()
+                        )
+                    ),
+                )
+                label = pool["account"]["display_name"]
+            else:
+                key = ("uncovered", account.id)
+                label = account.display_name
+            entry = per_pool.setdefault(
+                key,
+                {"amount": 0.0, "available": detail["available"], "label": label},
+            )
+            entry["amount"] += amount
+        for entry in per_pool.values():
+            if (
+                float_compare(
+                    entry["available"], entry["amount"], precision_rounding=rounding
+                )
+                < 0
+            ):
                 raise UserError(
                     _(
                         "Insufficient budget to reserve %(amount).2f on %(code)s: "
                         "only %(available).2f available at the control node."
                     )
                     % {
-                        "amount": amount,
-                        "code": account.display_name,
-                        "available": available,
+                        "amount": entry["amount"],
+                        "code": entry["label"],
+                        "available": entry["available"],
                     }
                 )
 

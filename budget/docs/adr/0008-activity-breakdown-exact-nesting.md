@@ -38,3 +38,7 @@ generalized to N (added departments).
   one budget account can appear under several tuples; each row carries a
   `dims` (field→id) map + `dim_level`. The reservation picker still selects by
   budget-account id.
+
+## Amendment (ADR-0016)
+
+The picker feed (`get_reservation_grid`) may be requested with `covering=True`, so a hierarchical dimension filter matches pools that **cover** the typed code (its ancestors as well as its `child_of` subtree). A breakdown row's dimension tuple may then be an *ancestor* of what the user typed; the reservation pins the **finer** of the row value and the filter value (the client uses the returned `filter_ancestors`). Account rows also carry `own_current` (own posted appropriation at the exact tuple) so the picker can tell a real pool row from a pure roll-up, plus `account_narrowable` / `narrow_required` flags for the descendant-code autocomplete.
