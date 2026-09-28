@@ -196,9 +196,7 @@ class BudgetTransfer(models.Model):
         """
         if "account_fiscal_year_id" in vals:
             placeholders = {"New", _("New")}
-            numbered = self.filtered(
-                lambda t: t.name and t.name not in placeholders
-            )
+            numbered = self.filtered(lambda t: t.name and t.name not in placeholders)
             if numbered:
                 raise UserError(
                     _(
@@ -292,12 +290,8 @@ class BudgetTransfer(models.Model):
             # back (owner/admin) or revive a cancelled one (manager/admin) —
             # neither unwinds a live budget entry, so no confirmation needed.
             transfer.show_reset_button = (
-                transfer.state == "submitted"
-                and (transfer.user_id == user or is_admin)
-            ) or (
-                transfer.state == "cancelled"
-                and (is_manager or is_admin)
-            )
+                transfer.state == "submitted" and (transfer.user_id == user or is_admin)
+            ) or (transfer.state == "cancelled" and (is_manager or is_admin))
             # Resetting a *posted* transfer reverses a recorded budget entry —
             # manager/admin only, and gated behind a confirmation in the view.
             transfer.show_reset_posted_button = transfer.state == "posted" and (
@@ -366,8 +360,7 @@ class BudgetTransfer(models.Model):
     # ------------------------------------------------------------------
     def action_submit(self):
         if not (
-            self.env.user.has_group("budget.group_budget_user")
-            or self.env.is_admin()
+            self.env.user.has_group("budget.group_budget_user") or self.env.is_admin()
         ):
             raise UserError(_("Only Budget Users can submit transfers"))
         self._validate_transfer_data()
@@ -380,16 +373,12 @@ class BudgetTransfer(models.Model):
         separate Post click). Records the approver, re-checks availability, then
         posts the delegated move."""
         is_admin = self.env.is_admin()
-        if not (
-            self.env.user.has_group("budget.group_budget_manager") or is_admin
-        ):
+        if not (self.env.user.has_group("budget.group_budget_manager") or is_admin):
             raise UserError(_("Only Budget Managers can approve transfers"))
         if not is_admin:
             for transfer in self:
                 if transfer.user_id == self.env.user:
-                    raise UserError(
-                        _("You cannot approve your own budget transfer.")
-                    )
+                    raise UserError(_("You cannot approve your own budget transfer."))
         self.invalidate_recordset(
             ["has_sufficient_budget", "budget_validation_message"]
         )
@@ -484,9 +473,7 @@ class BudgetTransfer(models.Model):
         from_lines = self.line_ids.filtered(
             lambda line: line.transfer_direction == "from"
         )
-        to_lines = self.line_ids.filtered(
-            lambda line: line.transfer_direction == "to"
-        )
+        to_lines = self.line_ids.filtered(lambda line: line.transfer_direction == "to")
         if not from_lines:
             raise ValidationError(
                 _("Please add at least one source line (Transfer FROM)")
@@ -552,9 +539,12 @@ class BudgetTransfer(models.Model):
         A dry-run of the engine guard (ADR-0016) using each line's signed delta
         (FROM credits → negative, TO debits → positive), so a conflict surfaces at
         submit/approve — before the e-Saraban letter is sent — not only at post.
-        The post-time guard on the delegated move remains the backstop.
+        The post-time guard on the delegated move remains the backstop. Only
+        expense transfers build pools (same scope as the post-time guard).
         """
         self.ensure_one()
+        if self.budget_type != "expense":
+            return
         controller = self.env["budget.controller"]
         columns = list(controller._DIM_COLUMNS.values())
         candidates = []
@@ -591,4 +581,3 @@ class BudgetTransfer(models.Model):
             "view_mode": "form",
             "target": "current",
         }
-
