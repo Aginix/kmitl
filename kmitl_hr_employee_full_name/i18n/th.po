@@ -1,0 +1,2621 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* kmitl_hr_employee_full_name
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0-20230109\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-04-23 19:18+0000\n"
+"PO-Revision-Date: 2023-04-24 02:18+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 3.2.2\n"
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_prefix__active
+msgid "Active"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model,name:kmitl_hr_employee_full_name.model_hr_employee_base
+msgid "Basic Employee"
+msgstr "พนักงานทั่วไป"
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.constraint,message:kmitl_hr_employee_full_name.constraint_hr_employee_prefix_name
+msgid "Can't be duplicate value for this field! -> 'Name'"
+msgstr "คำนำหน้านี้ถูกใช้แล้ว"
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_prefix__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_prefix__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_prefix__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model_terms:ir.ui.view,arch_db:kmitl_hr_employee_full_name.view_employee_search
+msgid "Employee"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee__firstname
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_base__firstname
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_public__firstname
+msgid "Firstname"
+msgstr "ชื่อ"
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee__firstname_secondary
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_base__firstname_secondary
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_public__firstname_secondary
+msgid "Firstname (2nd)"
+msgstr "ชื่อ (ภาษาอังกฤษ)"
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model,name:kmitl_hr_employee_full_name.model_hr_employee_prefix
+msgid "HR Employee Prefix"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_prefix__id
+msgid "ID"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_prefix____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_prefix__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_prefix__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee__lastname
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_base__lastname
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_public__lastname
+msgid "Lastname"
+msgstr "นามสกุล"
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee__lastname_secondary
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_base__lastname_secondary
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_public__lastname_secondary
+msgid "Lastname (2nd)"
+msgstr "นามสกุล (ภาษาอังกฤษ)"
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee__middlename
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_base__middlename
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_public__middlename
+msgid "Middlename"
+msgstr "ชื่อกลาง"
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee__middlename_secondary
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_base__middlename_secondary
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_public__middlename_secondary
+msgid "Middlename (2nd)"
+msgstr "ชื่อกลาง (ภาษาอังกฤษ)"
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee__name_secondary
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_base__name_secondary
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_public__name_secondary
+msgid "Name Secondary"
+msgstr "ชื่อพนักงาน (ภาษาอังกฤษ)"
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee__prefix_id
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_base__prefix_id
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_prefix__name
+#: model:ir.model.fields,field_description:kmitl_hr_employee_full_name.field_hr_employee_public__prefix_id
+msgid "Prefix"
+msgstr "คำนำหน้า"
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.actions.act_window,name:kmitl_hr_employee_full_name.hr_employee_prefix_act_window
+#: model:ir.ui.menu,name:kmitl_hr_employee_full_name.hr_employee_prefix_menu
+msgid "Prefixes"
+msgstr "คำนำหน้า"
+
+#. module: kmitl_hr_employee_full_name
+#: model:ir.model,name:kmitl_hr_employee_full_name.model_hr_employee
+msgid "hr.employee"
+msgstr "พนักงาน"
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.125
+msgid "ขุน"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.151
+msgid "คุณพระ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.130
+msgid "คุณหญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.272
+msgid "จอมพล"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.376
+msgid "จ่าตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.167
+msgid "จ่าสำรอง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.222
+msgid "จ่าสิบตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.283
+msgid "จ่าสิบตรีหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.258
+msgid "จ่าสิบตรีหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.674
+msgid "จ่าสิบตำรวจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.220
+msgid "จ่าสิบเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.294
+msgid "จ่าสิบเอกพิเศษ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.241
+msgid "จ่าสิบเอกหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.261
+msgid "จ่าสิบเอกหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.221
+msgid "จ่าสิบโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.525
+msgid "จ่าอากาศตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.523
+msgid "จ่าอากาศเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.524
+msgid "จ่าอากาศโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.374
+msgid "จ่าเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.375
+msgid "จ่าโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.153
+msgid "ซิสเตอร์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.136
+msgid "ทันตแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.137
+msgid "ทันตแพทย์หญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.164
+msgid "ทูลกระหม่อม"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.150
+msgid "ท่านผู้หญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.287
+msgid "ท่านผู้หญิงหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.131
+msgid "ท่านผู้หญิงหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.148
+msgid "ท้าว"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.864
+msgid "นักบวช"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.379
+msgid "นักเรียนจ่าทหารเรือ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.528
+msgid "นักเรียนจ่าอากาศ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.227
+msgid "นักเรียนนายร้อย"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.678
+msgid "นักเรียนนายร้อยตำรวจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.714
+msgid "นักเรียนนายร้อยตำรวจหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.705
+msgid "นักเรียนนายร้อยตำรวจหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.259
+msgid "นักเรียนนายร้อยหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.228
+msgid "นักเรียนนายสิบ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.679
+msgid "นักเรียนนายสิบตำรวจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.378
+msgid "นักเรียนนายเรือ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.527
+msgid "นักเรียนนายเรืออากาศ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.529
+msgid "นักเรียนพยาบาลทหารอากาศ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.680
+msgid "นักเรียนพลตำรวจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.007
+msgid "นักโทษชาย"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.009
+msgid "นักโทษชายจ่าสิบเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.010
+msgid "นักโทษชายจ่าเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.011
+msgid "นักโทษชายพลทหาร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.012
+msgid "นักโทษชายร้อยตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.006
+msgid "นักโทษชายหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.008
+msgid "นักโทษหญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.005
+msgid "นาง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.004
+msgid "นางสาว"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.003
+msgid "นาย"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.691
+msgid "นายกองตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.689
+msgid "นายกองเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.690
+msgid "นายกองโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.688
+msgid "นายกองใหญ่"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.673
+msgid "นายดาบตำรวจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.716
+msgid "นายดาบตำรวจหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.694
+msgid "นายหมวดตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.692
+msgid "นายหมวดเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.693
+msgid "นายหมวดโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.698
+msgid "นายหมู่ตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.696
+msgid "นายหมู่เอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.697
+msgid "นายหมู่โท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.695
+msgid "นายหมู่ใหญ่"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.134
+msgid "นายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.363
+msgid "นาวาตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.395
+msgid "นาวาตรีนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.387
+msgid "นาวาตรีหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.389
+msgid "นาวาตรีหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.383
+msgid "นาวาตรีหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.391
+msgid "นาวาตรีแพทย์หญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.512
+msgid "นาวาอากาศตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.508
+msgid "นาวาอากาศเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.506
+msgid "นาวาอากาศเอกพิเศษ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.540
+msgid "นาวาอากาศเอกหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.392
+msgid "นาวาอากาศเอกหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.510
+msgid "นาวาอากาศโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.359
+msgid "นาวาเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.357
+msgid "นาวาเอกพิเศษ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.385
+msgid "นาวาเอกหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.382
+msgid "นาวาเอกหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.361
+msgid "นาวาโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.386
+msgid "นาวาโทหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.388
+msgid "นาวาโทหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.381
+msgid "นาวาโทหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.838
+msgid "บาทหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.141
+msgid "ผู้ช่วยศาสตราจารย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.831
+msgid "พระ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.818
+msgid "พระครู"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.917
+msgid "พระครูกาญจนยติกิจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.900
+msgid "พระครูกิตติกาญจนวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.922
+msgid "พระครูจันทเขมคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.895
+msgid "พระครูจารุธรรมกิตติ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.884
+msgid "พระครูถาวรสันติคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.820
+msgid "พระครูธรรมธร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.950
+msgid "พระครูนิเทศปิยธรรม"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.926
+msgid "พระครูบรรณวัตร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.918
+msgid "พระครูบวรรัตนวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.886
+msgid "พระครูปภัสสราธิคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.903
+msgid "พระครูประกาศพุทธพากย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.894
+msgid "พระครูประโชติธรรมรัตน์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.953
+msgid "พระครูประโชติธรรมานุกูล"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.812
+msgid "พระครูปลัด"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.901
+msgid "พระครูปลัดสัมพิพัฒนวิริยาจารย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.813
+msgid "พระครูปลัดสุวัฒนญาณคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.814
+msgid "พระครูปลัดอาจารย์วัฒน์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.854
+msgid "พระครูปัญญาภรณโสภณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.948
+msgid "พระครูปิยสีลสาร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.915
+msgid "พระครูผาสุกวิหารการ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.874
+msgid "พระครูพรหมวีรสุนทร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.872
+msgid "พระครูพัฒนสารคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.896
+msgid "พระครูพิทักษ์พรหมรังษี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.606
+msgid "พระครูพิบูลสมณธรรม"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.911
+msgid "พระครูพิบูลโชติธรรม"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.955
+msgid "พระครูพิพัฒน์ชินวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.870
+msgid "พระครูพิพัฒน์บรรณกิจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.880
+msgid "พระครูพิพิธวรคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.920
+msgid "พระครูพิพิธอุดมคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.946
+msgid "พระครูพิศิษฎ์ศาสนการ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.898
+msgid "พระครูพุทธิธรรมานุศาสน์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.957
+msgid "พระครูภาวนาวรกิจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.916
+msgid "พระครูวชิรวุฒิกร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.887
+msgid "พระครูวรสังฆกิจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.869
+msgid "พระครูวัชรสีลาภรณ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.876
+msgid "พระครูวิจารณ์สังฆกิจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.910
+msgid "พระครูวิชิตพัฒนคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.860
+msgid "พระครูวินัยธร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.941
+msgid "พระครูวิบูลกาญจนกิจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.871
+msgid "พระครูวิบูลธรรมกิจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.959
+msgid "พระครูวิบูลย์ธรรมศาสก์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.853
+msgid "พระครูวิมลญาณโสภณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.821
+msgid "พระครูวิมลภาณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.877
+msgid "พระครูวิมลสารวิสุทธิ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.815
+msgid "พระครูวิมลสิริวัฒน์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.867
+msgid "พระครูวิศาลปัญญาคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.927
+msgid "พระครูวิสุทธาจาร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.885
+msgid "พระครูวิสุทธาจารวิมล"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.951
+msgid "พระครูวิสุทธิ์กิจจานุกูล"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.932
+msgid "พระครูศรัทธาธรรมโสภณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.936
+msgid "พระครูศรีธวัชคุณาภรณ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.958
+msgid "พระครูศรีศาสนคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.822
+msgid "พระครูศัพทมงคล"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.902
+msgid "พระครูศีลกันตาภรณ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.923
+msgid "พระครูศีลสารวิสุทธิ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.949
+msgid "พระครูสถิตบุญวัฒน์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.952
+msgid "พระครูสถิตย์บุญวัฒน์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.956
+msgid "พระครูสมุทรขันตยาภรณ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.817
+msgid "พระครูสมุห์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.933
+msgid "พระครูสังฆบริรักษ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.823
+msgid "พระครูสังฆภารวิชัย"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.824
+msgid "พระครูสังฆรักษ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.825
+msgid "พระครูสังฆวิชัย"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.826
+msgid "พระครูสังฆวิชิต"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.909
+msgid "พระครูสิริคุณารักษ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.882
+msgid "พระครูสิริชัยสถิต"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.905
+msgid "พระครูสุทัศน์ธรรมาภิรม"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.924
+msgid "พระครูสุธรรมโสภิต"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.892
+msgid "พระครูสุนทรคณาภิรักษ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.881
+msgid "พระครูสุนทรปภากร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.939
+msgid "พระครูสุนทรวรธัช"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.928
+msgid "พระครูสุนทรวรวัฒน์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.907
+msgid "พระครูสุนทรสมณคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.943
+msgid "พระครูสุพจน์วรคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.890
+msgid "พระครูสุพจน์วราภรณ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.873
+msgid "พระครูสุวรรณพัฒนคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.945
+msgid "พระครูอมรธรรมนายก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.904
+msgid "พระครูอมรวิสุทธิคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.940
+msgid "พระครูอาทรโพธิกิจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.875
+msgid "พระครูอุปถัมภ์นันทกิจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.906
+msgid "พระครูอุปถัมภ์วชิโรภาส"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.925
+msgid "พระครูอุเทศธรรมนิวิฐ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.883
+msgid "พระครูเกษมธรรมานันท์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.947
+msgid "พระครูเมธีธรรมานุยุต"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.889
+msgid "พระครูโกวิทธรรมโสภณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.914
+msgid "พระครูโสภณคุณานุกูล"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.855
+msgid "พระครูโสภณปริยัติคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.930
+msgid "พระครูโสภณสมุทรคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.937
+msgid "พระครูโสภิตวัชรกิจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.879
+msgid "พระครูโอภาสธรรมพิมล"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.935
+msgid "พระครูโอภาสสมาจาร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.819
+msgid "พระครูใบฎีกา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.888
+msgid "พระครูไพบูลชัยสิทธิ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.878
+msgid "พระครูไพศาลศุภกิจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.891
+msgid "พระครูไพโรจน์อริญชัย"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.835
+msgid "พระคาร์ดินัล"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.837
+msgid "พระคุณเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.847
+msgid "พระญาณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.843
+msgid "พระญาณโศภณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.849
+msgid "พระธรรม"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.899
+msgid "พระธรรมเมธาจารย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.851
+msgid "พระธรรมโสภณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.100
+msgid "พระบาทสมเด็จพระเจ้าอยู่หัว"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.828
+msgid "พระปริยัติ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.833
+msgid "พระปลัด"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.810
+msgid "พระปลัดขวา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.811
+msgid "พระปลัดซ้าย"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.827
+msgid "พระปิฎก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.908
+msgid "พระพรหมมุนี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.942
+msgid "พระพรหมวชิรญาณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.912
+msgid "พระพิศาลสารคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.839
+msgid "พระมหา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.934
+msgid "พระมหานายก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.123
+msgid "พระยา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.865
+msgid "พระรัตน"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.913
+msgid "พระรัตนมงคลวิสุทธ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.808
+msgid "พระราช"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.857
+msgid "พระราชญาณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.862
+msgid "พระราชบัณฑิต"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.840
+msgid "พระราชปัญญา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.919
+msgid "พระราชพัชราภรณ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.938
+msgid "พระราชวชิราภรณ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.804
+msgid "พระราชาคณะ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.944
+msgid "พระราชาวิมลโมลี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.931
+msgid "พระราชเมธาภรณ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.117
+msgid "พระวรวงศ์เธอ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.128
+msgid "พระวรวงศ์เธอพระองค์เจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.846
+msgid "พระวิริวัฒน์วิสุทธิ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.842
+msgid "พระศรีปริยัติธาดา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.897
+msgid "พระศรีปริยัติบัณฑิต"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.868
+msgid "พระศรีปริยัติโมลี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.861
+msgid "พระศรีวชิราภรณ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.816
+msgid "พระสมุห์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.893
+msgid "พระสรภาณโกศล"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.836
+msgid "พระสังฆราช"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.807
+msgid "พระสัญญาบัตร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.850
+msgid "พระสาสนโสภณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.858
+msgid "พระสุธีวัชโรดม"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.806
+msgid "พระหิรัญยบัฏ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.119
+msgid "พระองค์เจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.830
+msgid "พระอธิการ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.856
+msgid "พระอธิธรรม"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.848
+msgid "พระอัครสังฆราช"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.852
+msgid "พระอุดมสารโสภณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.113
+msgid "พระเจ้าบรมวงศ์เธอ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.114
+msgid "พระเจ้าวรวงศ์เธอ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.106
+msgid "พระเจ้าวรวงศ์เธอ พระองค์เจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.105
+msgid "พระเจ้าวรวงศ์เธอพระองค์หญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.116
+msgid "พระเจ้าหลานยาเธอ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.115
+msgid "พระเจ้าหลานเธอ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.099
+msgid "พระเจ้าหลานเธอ พระองค์เจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.809
+msgid "พระเทพ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.929
+msgid "พระเทพชลธารมุนี ศรีชลบุราจารย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.954
+msgid "พระเทพญาณกวี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.805
+msgid "พระเปรียญธรรม"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.845
+msgid "พระโสภณธรรมาภรณ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.866
+msgid "พระโสภณปริยัติธรรม"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.229
+msgid "พลจัตวา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.284
+msgid "พลจัตวาหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.204
+msgid "พลตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.270
+msgid "พลตรีนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.104
+msgid "พลตรีสมเด็จพระเทพรัตนราชสุดา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.731
+msgid "พลตรีหญิง คุณหญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.285
+msgid "พลตรีหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.254
+msgid "พลตรีหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.681
+msgid "พลตำรวจ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.657
+msgid "พลตำรวจจัตวา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.655
+msgid "พลตำรวจตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.706
+msgid "พลตำรวจตรีหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.730
+msgid "พลตำรวจตรีหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.682
+msgid "พลตำรวจพิเศษ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.686
+msgid "พลตำรวจสมัคร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.684
+msgid "พลตำรวจสำรอง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.685
+msgid "พลตำรวจสำรองพิเศษ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.683
+msgid "พลตำรวจอาสาสมัคร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.651
+msgid "พลตำรวจเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.653
+msgid "พลตำรวจโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.226
+msgid "พลทหาร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.159
+msgid "พลสารวัตร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.538
+msgid "พลอากาศจัตวา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.504
+msgid "พลอากาศตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.531
+msgid "พลอากาศตรีหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.537
+msgid "พลอากาศตรีหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.500
+msgid "พลอากาศเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.536
+msgid "พลอากาศเอกหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.502
+msgid "พลอากาศโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.539
+msgid "พลอากาศโทหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.532
+msgid "พลอากาศโทหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.230
+msgid "พลฯ อาสาสมัคร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.526
+msgid "พลฯทหารอากาศ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.377
+msgid "พลฯทหารเรือ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.247
+msgid "พลฯหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.380
+msgid "พลเรือจัตวา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.355
+msgid "พลเรือตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.384
+msgid "พลเรือตรีหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.396
+msgid "พลเรือตรีหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.393
+msgid "พลเรือตรีหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.351
+msgid "พลเรือเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.353
+msgid "พลเรือโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.200
+msgid "พลเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.291
+msgid "พลเอกหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.202
+msgid "พลโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.103
+msgid "พลโทสมเด็จพระบรมโอรสาธิราช"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.250
+msgid "พลโทหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.232
+msgid "พลโทหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.277
+msgid "พลโทหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.373
+msgid "พันจ่าตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.522
+msgid "พันจ่าอากาศตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.520
+msgid "พันจ่าอากาศเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.534
+msgid "พันจ่าอากาศเอกหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.521
+msgid "พันจ่าอากาศโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.371
+msgid "พันจ่าเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.390
+msgid "พันจ่าเอกหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.372
+msgid "พันจ่าโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.212
+msgid "พันตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.282
+msgid "พันตรีคุณหญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.265
+msgid "พันตรีนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.286
+msgid "พันตรีพระเจ้าวรวงศ์เธอพระองค์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.274
+msgid "พันตรีพระเจ้าวรวงศ์เธอพระองค์เจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.237
+msgid "พันตรีหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.255
+msgid "พันตรีหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.276
+msgid "พันตรีหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.665
+msgid "พันตำรวจตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.722
+msgid "พันตำรวจตรีนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.707
+msgid "พันตำรวจตรีหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.717
+msgid "พันตำรวจตรีหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.724
+msgid "พันตำรวจตรีหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.661
+msgid "พันตำรวจเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.659
+msgid "พันตำรวจเอก (พิเศษ)"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.723
+msgid "พันตำรวจเอกนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.729
+msgid "พันตำรวจเอกหญิง ท่านผู้หญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.709
+msgid "พันตำรวจเอกหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.712
+msgid "พันตำรวจเอกหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.704
+msgid "พันตำรวจเอกหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.663
+msgid "พันตำรวจโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.719
+msgid "พันตำรวจโทนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.708
+msgid "พันตำรวจโทหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.713
+msgid "พันตำรวจโทหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.703
+msgid "พันตำรวจโทหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.530
+msgid "พันอากาศเอกหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.208
+msgid "พันเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.246
+msgid "พันเอก(พิเศษ)หม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.267
+msgid "พันเอกนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.206
+msgid "พันเอกพิเศษ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.293
+msgid "พันเอกหญิงคุณหญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.240
+msgid "พันเอกหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.256
+msgid "พันเอกหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.236
+msgid "พันเอกหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.210
+msgid "พันโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.289
+msgid "พันโทคุณหญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.271
+msgid "พันโทนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.238
+msgid "พันโทหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.257
+msgid "พันโทหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.235
+msgid "พันโทหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.273
+msgid "พันโทหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.841
+msgid "ภาราดา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.142
+msgid "รองศาสตราจารย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.803
+msgid "รองสมเด็จพระราชาคณะ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.162
+msgid "รองอำมาตย์ตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.147
+msgid "รองอำมาตย์เอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.859
+msgid "รองเจ้าอธิการ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.156
+msgid "รองเสวกตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.218
+msgid "ร้อยตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.268
+msgid "ร้อยตรีนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.243
+msgid "ร้อยตรีหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.252
+msgid "ร้อยตรีหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.233
+msgid "ร้อยตรีหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.290
+msgid "ร้อยตรีแพทย์หญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.671
+msgid "ร้อยตำรวจตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.667
+msgid "ร้อยตำรวจเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.721
+msgid "ร้อยตำรวจเอกนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.710
+msgid "ร้อยตำรวจเอกหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.727
+msgid "ร้อยตำรวจเอกหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.669
+msgid "ร้อยตำรวจโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.720
+msgid "ร้อยตำรวจโทนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.715
+msgid "ร้อยตำรวจโทหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.214
+msgid "ร้อยเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.262
+msgid "ร้อยเอกนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.242
+msgid "ร้อยเอกหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.248
+msgid "ร้อยเอกหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.231
+msgid "ร้อยเอกหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.263
+msgid "ร้อยเอกแพทย์หญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.216
+msgid "ร้อยโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.264
+msgid "ร้อยโทนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.245
+msgid "ร้อยโทหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.251
+msgid "ร้อยโทหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.234
+msgid "ร้อยโทหม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.269
+msgid "ร้อยโทแพทย์หญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.364
+msgid "ว่าที่นาวาตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.513
+msgid "ว่าที่นาวาอากาศตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.509
+msgid "ว่าที่นาวาอากาศเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.507
+msgid "ว่าที่นาวาอากาศเอกพิเศษ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.511
+msgid "ว่าที่นาวาอากาศโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.360
+msgid "ว่าที่นาวาเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.358
+msgid "ว่าที่นาวาเอกพิเศษ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.362
+msgid "ว่าที่นาวาโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.205
+msgid "ว่าที่พลตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.658
+msgid "ว่าที่พลตำรวจจัตวา"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.656
+msgid "ว่าที่พลตำรวจตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.652
+msgid "ว่าที่พลตำรวจเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.654
+msgid "ว่าที่พลตำรวจโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.505
+msgid "ว่าที่พลอากาศตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.501
+msgid "ว่าที่พลอากาศเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.503
+msgid "ว่าที่พลอากาศโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.356
+msgid "ว่าที่พลเรือตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.352
+msgid "ว่าที่พลเรือเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.354
+msgid "ว่าที่พลเรือโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.201
+msgid "ว่าที่พลเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.213
+msgid "ว่าที่พันตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.666
+msgid "ว่าที่พันตำรวจตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.662
+msgid "ว่าที่พันตำรวจเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.660
+msgid "ว่าที่พันตำรวจเอก(พิเศษ)"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.664
+msgid "ว่าที่พันตำรวจโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.209
+msgid "ว่าที่พันเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.207
+msgid "ว่าที่พันเอกพิเศษ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.211
+msgid "ว่าที่พันโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.219
+msgid "ว่าที่ร้อยตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.292
+msgid "ว่าที่ร้อยตรีหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.260
+msgid "ว่าที่ร้อยตรีหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.672
+msgid "ว่าที่ร้อยตำรวจตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.668
+msgid "ว่าที่ร้อยตำรวจเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.670
+msgid "ว่าที่ร้อยตำรวจโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.215
+msgid "ว่าที่ร้อยเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.217
+msgid "ว่าที่ร้อยโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.266
+msgid "ว่าที่ร้อยโทนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.732
+msgid "ว่าที่สิบเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.370
+msgid "ว่าที่เรือตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.519
+msgid "ว่าที่เรืออากาศตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.515
+msgid "ว่าที่เรืออากาศเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.517
+msgid "ว่าที่เรืออากาศโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.366
+msgid "ว่าที่เรือเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.368
+msgid "ว่าที่เรือโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.143
+msgid "ศาสตราจารย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.152
+msgid "ศาสตราจารย์คุณหญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.132
+msgid "ศาสตราจารย์นายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.718
+msgid "ศาสตราจารย์นายแพทย์พันตำรวจเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.275
+msgid "ศาสตราจารย์พันเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.288
+msgid "ศาสตราจารย์ร้อยเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.701
+msgid "สมาชิกตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.687
+msgid "สมาชิกอาสารักษาดินแดน"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.699
+msgid "สมาชิกเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.700
+msgid "สมาชิกโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.109
+msgid "สมเด็จพระ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.101
+msgid "สมเด็จพระนางเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.844
+msgid "สมเด็จพระมหาวีรวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.107
+msgid "สมเด็จพระราชชนนี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.802
+msgid "สมเด็จพระราชาคณะ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.102
+msgid "สมเด็จพระศรีนครินทราบรมราชชนนี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.801
+msgid "สมเด็จพระสังฆราช"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.800
+msgid "สมเด็จพระสังฆราชเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.834
+msgid "สมเด็จพระอริยวงศาคตญาณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.108
+msgid "สมเด็จพระเจ้าพี่นางเธอเจ้าฟ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.118
+msgid "สมเด็จพระเจ้าภคินีเธอ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.111
+msgid "สมเด็จพระเจ้าลูกยาเธอ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.110
+msgid "สมเด็จพระเจ้าลูกเธอ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.160
+msgid "สมเด็จเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.112
+msgid "สมเด็จเจ้าฟ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.138
+msgid "สัตวแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.139
+msgid "สัตวแพทย์หญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.832
+msgid "สามเณร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.280
+msgid "สารวัตรทหาร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.225
+msgid "สิบตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.239
+msgid "สิบตรีหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.677
+msgid "สิบตำรวจตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.675
+msgid "สิบตำรวจเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.711
+msgid "สิบตำรวจเอกหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.676
+msgid "สิบตำรวจโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.223
+msgid "สิบเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.244
+msgid "สิบเอกหม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.253
+msgid "สิบเอกหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.224
+msgid "สิบโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.249
+msgid "สิบโทหม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.126
+msgid "หมื่น"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.146
+msgid "หม่อม"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.121
+msgid "หม่อมราชวงศ์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.122
+msgid "หม่อมหลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.120
+msgid "หม่อมเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.163
+msgid "หม่อมเจ้าหญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.124
+msgid "หลวง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.921
+msgid "องสุตบทบวร"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.702
+msgid "อาสาสมัครทหารพราน"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.149
+msgid "เจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.127
+msgid "เจ้าคุณ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.154
+msgid "เจ้าชาย"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.166
+msgid "เจ้านาง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.161
+msgid "เจ้าฟ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.155
+msgid "เจ้าหญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.829
+msgid "เจ้าอธิการ"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.001
+msgid "เด็กชาย"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.002
+msgid "เด็กหญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.144
+msgid "เภสัชกรชาย"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.145
+msgid "เภสัชกรหญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.369
+msgid "เรือตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.518
+msgid "เรืออากาศตรี"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.514
+msgid "เรืออากาศเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.535
+msgid "เรืออากาศเอกนายแพทย์"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.516
+msgid "เรืออากาศโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.533
+msgid "เรืออากาศโทขุน"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.365
+msgid "เรือเอก"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.367
+msgid "เรือโท"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.157
+msgid "เสด็จเจ้า"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.158
+msgid "เอกอัครราชฑูต"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.135
+msgid "แพทย์หญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.133
+msgid "แพทย์หญิงคุณหญิง"
+msgstr ""
+
+#. module: kmitl_hr_employee_full_name
+#: model:hr.employee.prefix,name:kmitl_hr_employee_full_name.863
+msgid "แม่ชี"
+msgstr ""
