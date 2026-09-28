@@ -518,9 +518,12 @@ class BudgetTransfer(models.Model):
         A dry-run of the engine guard (ADR-0016) using each line's signed delta
         (FROM credits → negative, TO debits → positive), so a conflict surfaces at
         submit/approve — before the e-Saraban letter is sent — not only at post.
-        The post-time guard on the delegated move remains the backstop.
+        The post-time guard on the delegated move remains the backstop. Only
+        expense transfers build pools (same scope as the post-time guard).
         """
         self.ensure_one()
+        if self.budget_type != "expense":
+            return
         controller = self.env["budget.controller"]
         columns = list(controller._DIM_COLUMNS.values())
         candidates = []
