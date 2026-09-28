@@ -444,13 +444,14 @@ class BudgetDashboard(models.AbstractModel):
 
         def dim_row_keys(_acc_id, tup):
             proj = project(tup)
-            return {
-                (proj[:depth], node)
-                for depth in range(n)
-                for node in (
-                    ana_path.get(proj[depth], [proj[depth]]) if proj[depth] else [0]
-                )
-            }
+            found = set()
+            for depth, value in enumerate(proj):
+                if not value:
+                    found.add((proj[:depth], 0))
+                    continue
+                for node in ana_path.get(value, [value]):
+                    found.add((proj[:depth], node))
+            return found
 
         acc_drill = self._usage_drill_index(fold, acc_row_keys) if moved else {}
         dim_drill = self._usage_drill_index(fold, dim_row_keys) if moved else {}
@@ -605,8 +606,9 @@ class BudgetDashboard(models.AbstractModel):
         unless it lies outside the filter ``scope``, where it was only fetched
         as a candidate for a covering pool, and is dropped.
 
-        Returns ``{"own", "moved", "ana_path", "in_scope"}``; ``moved`` lists
-        ``(account_id, source_tuple, target_tuple)`` for the drill-down pairs.
+        Returns ``{"own", "moved", "ana_path"}``; ``moved`` lists
+        ``(account_id, source_tuple, target_tuple, source_in_scope)`` for the
+        drill-down pairs.
         """
         keys = self._FACT_KEYS
         full = self._DIM_FIELDS
@@ -648,12 +650,11 @@ class BudgetDashboard(models.AbstractModel):
             for metric in self._USAGE_KEYS:
                 node[metric] += vals[metric]
             if target != tup:
-                moved.append((acc_id, tup, target))
+                moved.append((acc_id, tup, target, in_scope(tup)))
         return {
             "own": {k: v for k, v in folded.items() if any(v.values())},
             "moved": moved,
             "ana_path": ana_path,
-            "in_scope": in_scope,
         }
 
     def _covering_pool_tuple(self, acc_id, tup, pools, acc_by_id, ana_path):
@@ -688,8 +689,8 @@ class BudgetDashboard(models.AbstractModel):
         """
         full = self._DIM_FIELDS
         index = defaultdict(dict)
-        for acc_id, src, tgt in fold["moved"]:
-            src_keys = row_keys(acc_id, src) if fold["in_scope"](src) else set()
+        for acc_id, src, tgt, src_in_scope in fold["moved"]:
+            src_keys = row_keys(acc_id, src) if src_in_scope else set()
             tgt_keys = row_keys(acc_id, tgt)
             if src_keys == tgt_keys:
                 continue

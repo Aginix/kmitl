@@ -546,15 +546,11 @@ class BudgetTransfer(models.Model):
         if self.budget_type != "expense":
             return
         controller = self.env["budget.controller"]
-        columns = list(controller._DIM_COLUMNS.values())
         candidates = []
         for line in self.line_ids.filtered("transfer_direction"):
             amount = line.amount or 0.0
             delta = amount if line.transfer_direction == "to" else -amount
-            candidate = {"account_id": line.account_id.id, "balance": delta}
-            for column in columns:
-                candidate[column] = line[column].id or False
-            candidates.append(candidate)
+            candidates.append((controller._line_coord(line), delta))
         controller._check_pool_nesting(
             candidates,
             self.account_fiscal_year_id.id,

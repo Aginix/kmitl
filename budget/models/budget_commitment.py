@@ -594,17 +594,11 @@ class BudgetCommitment(models.Model):
             detail = controller.get_available_detail(
                 account, avail_distribution, fy_id, company_id
             )
-            pool = detail.get("pool")
+            pool = detail["pool"]
             if pool:
-                key = (
-                    pool["account"]["id"],
-                    tuple(
-                        sorted(
-                            (column, info["id"])
-                            for column, info in pool["dims"].items()
-                        )
-                    ),
-                )
+                # account + the pool's analytic ids (unique across dimensions)
+                dim_ids = sorted(info["id"] for info in pool["dims"].values())
+                key = (pool["account"]["id"], *dim_ids)
                 label = pool["account"]["display_name"]
             else:
                 key = ("uncovered", account.id)
