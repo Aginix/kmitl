@@ -393,34 +393,15 @@ class BudgetController(models.AbstractModel):
     # ------------------------------------------------------------------
     # Pool-nesting guard (กองงบไม่ซ้อน) — ADR-0016
     # ------------------------------------------------------------------
-    def _pool_coord_columns(self):
-        """The ordered stored columns that make a pool coordinate (account + 6)."""
-        return ["account_id"] + list(self._DIM_COLUMNS.values())
+    def _line_coord(self, line):
+        """Pool coordinate of a line: ``(account, *_DIM_COLUMNS values)``."""
+        return (line.account_id.id,) + tuple(
+            line[column].id or False for column in self._DIM_COLUMNS.values()
+        )
 
     def _lines_to_candidates(self, lines):
-        """budget.move.line recordset -> candidate deltas for the guard.
-
-        Each candidate is ``{"account_id": id, <dim column>: id|False,
-        "balance": float}`` — the coordinate the line posts to and its signed
-        balance delta.
-        """
-        columns = list(self._DIM_COLUMNS.values())
-        candidates = []
-        for line in lines:
-            cand = {
-                "account_id": line.account_id.id,
-                "balance": line.balance or 0.0,
-            }
-            for column in columns:
-                cand[column] = line[column].id or False
-            candidates.append(cand)
-        return candidates
-
-    def _candidate_coord(self, candidate):
-        """Ordered coordinate tuple (account + 6 dims) for a candidate/group."""
-        return (candidate.get("account_id") or False,) + tuple(
-            candidate.get(column) or False for column in self._DIM_COLUMNS.values()
-        )
+        """budget.move.line recordset -> ``[(coordinate, signed balance delta)]``."""
+        return [(self._line_coord(line), line.balance or 0.0) for line in lines]
 
     def _posted_pool_state(self, fiscal_year_id, company_id):
         """{coord tuple: net balance} of posted expense appropriation/entry.
@@ -428,84 +409,76 @@ class BudgetController(models.AbstractModel):
         One sudo ``read_group`` over the 7 pool columns for the whole fiscal year
         (every operating unit), so the nesting picture is complete.
         """
-        columns = self._pool_coord_columns()
+        dim_columns = list(self._DIM_COLUMNS.values())
         domain = self._appropriation_domain(fiscal_year_id, company_id) + [
             ("budget_type", "=", "expense")
         ]
         state = defaultdict(float)
         for grp in self.env["budget.move.line"].sudo().read_group(
-            domain, ["balance"], columns, lazy=False
+            domain, ["balance"], ["account_id"] + dim_columns, lazy=False
         ):
             account = (grp.get("account_id") or [None])[0]
             if not account:
                 continue
             coord = (account,) + tuple(
-                (grp.get(column) or [False])[0]
-                for column in self._DIM_COLUMNS.values()
+                (grp.get(column) or [False])[0] for column in dim_columns
             )
             state[coord] += grp.get("balance") or 0.0
         return state
 
-    def _pool_index(self, coords):
-        """Index pool coordinates for comparable lookups (ADR-0016).
-
-        Parent paths are read once for every account / analytic value in
-        ``coords``; pools are indexed by their exact account and by every
-        account on that account's path, so only pools on the same account chain
-        are ever compared.
-        """
-        accounts = self.env["budget.account"].browse(
-            list({c[0] for c in coords if c[0]})
-        )
-        analytics = self.env["account.analytic.account"].browse(
-            list({value for c in coords for value in c[1:] if value})
-        )
-        acc_path = {r.id: set(self._self_and_ancestor_ids(r)) for r in accounts}
-        ana_path = {r.id: set(self._self_and_ancestor_ids(r)) for r in analytics}
-        by_account = defaultdict(list)  # exact account -> pools
-        by_path = defaultdict(list)  # account on the path -> pools at/below it
-        for coord in coords:
-            by_account[coord[0]].append(coord)
-            for anc in acc_path.get(coord[0], ()):
-                by_path[anc].append(coord)
-        return acc_path, ana_path, by_account, by_path
-
-    def _comparable_pools(self, coord, index):
-        """Yield indexed pools comparable to ``coord`` on **every** axis.
+    def _nested_pairs(self, pools, coords):
+        """Yield ``(coord, other)`` for each of ``coords`` and every other pool
+        comparable to it on **every** axis (ADR-0016).
 
         Comparable = equal, or one an ancestor of the other; ``False`` only
         equals ``False`` (a tagged and an untagged pool never conflict —
-        ADR-0012). ``coord`` itself is excluded (identical is not nesting).
+        ADR-0012). Parent paths are read once, and only pools on the same
+        account chain are compared: ``by_account`` finds those above an
+        account, ``below`` those at or under it.
         """
-        acc_path, ana_path, by_account, by_path = index
-        candidates = set(by_path[coord[0]])  # same account or below
-        for anc in acc_path.get(coord[0], ()):  # above
-            candidates.update(by_account[anc])
-        candidates.discard(coord)
-        for other in candidates:
-            if all(
-                x == y or (x and y and (x in ana_path[y] or y in ana_path[x]))
-                for x, y in zip(coord[1:], other[1:])
-            ):
-                yield other
+        acc_path = {
+            r.id: set(self._self_and_ancestor_ids(r))
+            for r in self.env["budget.account"].browse({p[0] for p in pools})
+        }
+        ana_path = {
+            r.id: set(self._self_and_ancestor_ids(r))
+            for r in self.env["account.analytic.account"].browse(
+                {value for p in pools for value in p[1:] if value}
+            )
+        }
+        by_account = defaultdict(list)
+        below = defaultdict(list)
+        for pool in pools:
+            by_account[pool[0]].append(pool)
+            for anc in acc_path.get(pool[0], ()):
+                below[anc].append(pool)
+        for coord in coords:
+            chain = set(below[coord[0]])
+            for anc in acc_path.get(coord[0], ()):
+                chain.update(by_account[anc])
+            chain.discard(coord)
+            for other in chain:
+                if all(
+                    x == y or (x and y and (x in ana_path[y] or y in ana_path[x]))
+                    for x, y in zip(coord[1:], other[1:])
+                ):
+                    yield coord, other
 
     def _check_pool_nesting(self, candidates, fiscal_year_id, company_id):
         """Raise if posting ``candidates`` would leave two comparable pools.
 
-        ``candidates`` is a list of delta dicts (see :meth:`_lines_to_candidates`).
-        The posted state after applying the deltas is computed, then any
-        coordinate that is new or topped up and still non-zero must not be
-        comparable to another non-zero pool (ADR-0016, กองงบไม่ซ้อน). Draining a
-        pool never trips the guard.
+        ``candidates`` is a list of ``(coordinate, signed balance delta)``
+        (see :meth:`_lines_to_candidates`). The posted state after applying the
+        deltas is computed, then any coordinate that is new or topped up and
+        still non-zero must not be comparable to another non-zero pool
+        (ADR-0016, กองงบไม่ซ้อน). Draining a pool never trips the guard.
         """
         if not candidates or not fiscal_year_id:
             return
         rounding = self._pool_rounding(company_id)
         state = self._posted_pool_state(fiscal_year_id, company_id)
         touched = set()
-        for candidate in candidates:
-            coord = self._candidate_coord(candidate)
-            delta = candidate.get("balance") or 0.0
+        for coord, delta in candidates:
             was_zero = float_is_zero(state[coord], precision_rounding=rounding)
             state[coord] += delta
             # new pool (was zero) or topped up (positive delta): worth checking.
@@ -516,12 +489,8 @@ class BudgetController(models.AbstractModel):
             for coord, net in state.items()
             if not float_is_zero(net, precision_rounding=rounding)
         }
-        index = self._pool_index(nonzero)
-        for coord in touched:
-            if coord not in nonzero:
-                continue
-            for other in self._comparable_pools(coord, index):
-                raise ValidationError(self._pool_nesting_message(coord, other))
+        for coord, other in self._nested_pairs(nonzero, touched & nonzero):
+            raise ValidationError(self._pool_nesting_message(coord, other))
 
     def scan_pool_overlaps(self, fiscal_year_id, company_id=None):
         """Read-only list of nested (comparable) pool pairs for a fiscal year.
@@ -538,11 +507,9 @@ class BudgetController(models.AbstractModel):
             for coord, net in state.items()
             if not float_is_zero(net, precision_rounding=rounding)
         ]
-        index = self._pool_index(nonzero)
-        pairs = set()
-        for coord in nonzero:
-            for other in self._comparable_pools(coord, index):
-                pairs.add(tuple(sorted((coord, other))))
+        pairs = {
+            tuple(sorted(pair)) for pair in self._nested_pairs(nonzero, nonzero)
+        }
         return sorted(pairs)
 
     def _coord_label(self, coord):
