@@ -112,7 +112,7 @@
                                 <th style="min-width: 140px;"><t t-esc="labels.customerName" /></th>
                                 <th><t t-esc="labels.description" /></th>
                                 <th class="text-end" style="width: 148px;"><t t-esc="labels.amount" /></th>
-                                <th style="width: 110px;"><t t-esc="labels.paymentType" /></th>
+                                <th style="min-width: 140px; white-space: nowrap;"><t t-esc="labels.paymentType" /></th>
                                 <th style="min-width: 140px;"><t t-esc="labels.paymentMethod" /></th>
                                 <th><t t-esc="labels.dimensions" /></th>
                                 <th style="min-width: 164px;"><t t-esc="labels.note" /></th>
@@ -132,10 +132,8 @@
                                         <td><t t-esc="row.customer_name" /></td>
                                         <td>
                                             <div t-if="row.description" style="white-space: pre-line;"><t t-esc="row.description" /></div>
-                                            <div t-foreach="row.lines" t-as="l" t-key="l_index">
-                                                - <t t-esc="l.name" />
-                                                <t t-esc="format(l.amount)" /> บาท
-                                            </div>
+                                            <div t-foreach="row.lines" t-as="l" t-key="l_index"
+                                                 t-esc="'- ' + l.name + '  ' + format(l.amount) + ' บาท'" />
                                         </td>
                                         <td class="text-end"><t t-esc="format(row.amount_total)" /></td>
                                         <td><t t-esc="row.payment_type_label" /></td>

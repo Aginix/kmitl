@@ -83,6 +83,15 @@ msgid "Created by"
 msgstr "สร้างโดย"
 
 #. module: receipt_kmitl_summary_report
+#. odoo-javascript
+#. odoo-python
+#: code:addons/receipt_kmitl_summary_report/models/receipt_summary_report.py:0
+#: code:addons/receipt_kmitl_summary_report/static/src/receipt_summary/receipt_summary.js:0
+#, python-format
+msgid "Customer Name"
+msgstr "ชื่อลูกค้า"
+
+#. module: receipt_kmitl_summary_report
 #: model:ir.model.fields,field_description:receipt_kmitl_summary_report.field_receipt_kmitl_report_wizard__create_date
 msgid "Created on"
 msgstr "สร้างเมื่อ"
@@ -220,6 +229,15 @@ msgstr "ไม่มีใบเสร็จตามเงื่อนไขท
 #, python-format
 msgid "Note"
 msgstr "หมายเหตุ"
+
+#. module: receipt_kmitl_summary_report
+#. odoo-javascript
+#. odoo-python
+#: code:addons/receipt_kmitl_summary_report/models/receipt_summary_report.py:0
+#: code:addons/receipt_kmitl_summary_report/static/src/receipt_summary/receipt_summary.js:0
+#, python-format
+msgid "Payment Method"
+msgstr "วิธีชำระเงิน"
 
 #. module: receipt_kmitl_summary_report
 #. odoo-javascript
