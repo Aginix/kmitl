@@ -190,6 +190,15 @@ msgid "ID"
 msgstr ""
 
 #. module: receipt_kmitl_summary_report
+#. odoo-javascript
+#. odoo-python
+#: code:addons/receipt_kmitl_summary_report/models/receipt_summary_report.py:0
+#: code:addons/receipt_kmitl_summary_report/static/src/receipt_summary/receipt_summary.js:0
+#, python-format
+msgid "Issued By"
+msgstr "ผู้ออกใบเสร็จ"
+
+#. module: receipt_kmitl_summary_report
 #: model:ir.model,name:receipt_kmitl_summary_report.model_kmitl_receipt_remittance
 msgid "KMITL Receipt Remittance"
 msgstr "รายงานนำส่ง"
@@ -372,7 +381,7 @@ msgstr "รวม"
 #: code:addons/receipt_kmitl_summary_report/static/src/receipt_summary/receipt_summary.xml:0
 #, python-format
 msgid "Transfer"
-msgstr "การโอนเงิน"
+msgstr "เงินโอน"
 
 #. module: receipt_kmitl_summary_report
 #. odoo-python

@@ -65,6 +65,16 @@ class ReceiptReport(models.AbstractModel):
                 if account:
                     dim_parts.append(account.display_name)
 
+            payment_extras = []
+            if r.payment_type == "cheque":
+                if r.cheque_number:
+                    payment_extras.append("เลขที่เช็ค: %s" % r.cheque_number)
+                if r.cheque_date:
+                    payment_extras.append("วันที่เช็ค: %s" % r.cheque_date)
+            elif r.payment_type == "transfer":
+                if r.transfer_date:
+                    payment_extras.append("วันที่โอนเงิน: %s" % r.transfer_date)
+
             rows.append({
                 "id": r.id,
                 "date": str(r.date),
@@ -87,6 +97,8 @@ class ReceiptReport(models.AbstractModel):
                 "payment_method": (
                     r.payment_method_id.name if r.payment_method_id else ""
                 ),
+                "payment_extras": payment_extras,
+                "user_name": r.user_id.name if r.user_id else "",
             })
 
         groups = {}
@@ -234,8 +246,9 @@ class ReceiptReportXlsx(models.AbstractModel):
         headers = [
             _("Date"), _("Receipt No."), _("Customer Name"),
             _("Description"), _("Amount"),
-            _("Payment Type"), _("Payment Method"),
+            _("Payment Type"),
             _("Analytic Dimensions"), _("Note"),
+            _("Issued By"),
         ]
         row = 4
         for col, label in enumerate(headers):
@@ -259,20 +272,29 @@ class ReceiptReportXlsx(models.AbstractModel):
                 details_parts = []
                 if r["description"]:
                     details_parts.append(r["description"])
-                for l in r["lines"]:
-                    details_parts.append(
-                        "- %s  %s บาท" % (l["name"], format_amount(l["amount"]))
-                    )
+                if r["lines"]:
+                    details_parts.append("รายการ")
+                    for l in r["lines"]:
+                        details_parts.append(
+                            "• %s  %s บาท" % (l["name"], format_amount(l["amount"]))
+                        )
                 sheet.write(row, 3, "\n".join(details_parts), wrap)
                 amt = r["amount_total"] or 0
                 if abs(amt) >= 0.005:
                     sheet.write_number(row, 4, amt, num)
                 else:
                     sheet.write_blank(row, 4, None, num)
-                sheet.write(row, 5, r["payment_type_label"], cell)
-                sheet.write(row, 6, r["payment_method"], cell)
-                sheet.write(row, 7, r["dimensions"], wrap)
-                sheet.write(row, 8, r["note"], cell)
+                payment_parts = []
+                if r["payment_type_label"]:
+                    payment_parts.append(r["payment_type_label"])
+                if r["payment_method"]:
+                    payment_parts.append("วิธีชำระเงิน: %s" % r["payment_method"])
+                for extra in r["payment_extras"]:
+                    payment_parts.append("• %s" % extra)
+                sheet.write(row, 5, "\n".join(payment_parts), wrap)
+                sheet.write(row, 6, r["dimensions"], wrap)
+                sheet.write(row, 7, r["note"], cell)
+                sheet.write(row, 8, r["user_name"], cell)
                 row += 1
 
         row += 1
@@ -284,10 +306,10 @@ class ReceiptReportXlsx(models.AbstractModel):
         sheet.set_column(2, 2, 22)
         sheet.set_column(3, 3, 40)
         sheet.set_column(4, 4, 16)
-        sheet.set_column(5, 5, 16)
-        sheet.set_column(6, 6, 22)
-        sheet.set_column(7, 7, 35)
-        sheet.set_column(8, 8, 25)
+        sheet.set_column(5, 5, 26)
+        sheet.set_column(6, 6, 35)
+        sheet.set_column(7, 7, 25)
+        sheet.set_column(8, 8, 22)
 
 
 class ReceiptReportPdf(models.AbstractModel):
