@@ -444,7 +444,7 @@
 
             <xpath
                 expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
-                position="after"
+                position="before"
             >
                 <field
                     name="uom_text"

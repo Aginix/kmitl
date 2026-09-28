@@ -176,6 +176,7 @@
                     <group>
                         <group name="main_info" string="Main Information">
                             <field name="name" placeholder="Approval Reference..." readonly="1"/>
+                            <field name="active_sarabun_document_id" readonly="1"/>
                             <field name="title" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <field name="description" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <field name="date_start" invisible="1" />
@@ -187,28 +188,43 @@
                             <field name="procurement_type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="procurement_method_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="account_fiscal_year_id" readonly="1"/>
-                            <field name="budget_commitment_id" invisible="1"/>
-                            <field name="budget_commitment_amount"
-                                   readonly="1"
-                                   attrs="{'invisible': [('budget_commitment_id', '=', False)]}"/>
-                            <field name="estimated_cost" readonly="1"/>
                             <field name="payment_type" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="vendor_info" string="Vendor Information">
+                            <field name="procurement_mode" readonly="1"/>
                             <field
                                 name="partner_id"
-                                required="1"
-                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                readonly="1"
                                 options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                             />
                             <field
                                 name="vat_included"
                                 required="1"
-                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                attrs="{'readonly': ['|'('is_editable', '=', False), ('payment_type', '!=', 'direct')]}"
                             />
                             <field
                                 name="tax_id"
                                 widget="selection"
-                                attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': [('is_editable', '=', False)]}"
+                                attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': ['|', ('is_editable', '=', False), ('payment_type', '!=', 'direct')]}"
                             />
+                        </group>
+                    </group>
+                    <group>
+                        <group name="budget_info" string="Budget Information">
+                            <field name="budget_commitment_id" invisible="1"/>
+                            <field name="budget_commitment_amount"
+                                readonly="1"
+                                attrs="{'invisible': [('budget_commitment_id', '=', False)]}"/>
+                            <field name="estimated_cost" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="attachment_info" string="Attachment">
+                            <field name="attachment_ids"
+                                   widget="many2many_binary"
+                                   context="{'default_res_model': 'purchase.request.approval'}"/>
                         </group>
                     </group>
                     <notebook>
@@ -256,11 +272,6 @@
                                     <field name="requesting_department_id" attrs="{'readonly': [('is_editable', '=', False)]}" />
                                 </group>
                             </group>
-                        </page>
-                        <page name="document" string="Attachment">
-                            <field name="attachment_ids"
-                                   widget="many2many_binary"
-                                   context="{'default_res_model': 'purchase.request.approval'}"/>
                         </page>
                     </notebook>
                 </sheet>

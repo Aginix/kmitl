@@ -155,6 +155,7 @@ class PurchaseRequest(models.Model):
             "procurement_method_id": self.procurement_method_id.id,
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "payment_type": self.payment_type,
+            "procurement_mode": self.procurement_mode,
             "partner_id": self.partner_id.id,
             "vat_included": self.vat_included,
             "tax_id": self.tax_id.id,

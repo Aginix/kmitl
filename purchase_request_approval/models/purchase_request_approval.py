@@ -5,7 +5,6 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare
 
-
 _PA_OPEN_STATES_FOR_BUDGET_CAP = ("draft", "to_approve", "approved")
 
 
@@ -167,6 +166,15 @@ class PurchaseRequestApproval(models.Model):
     requested_by = fields.Many2one(related="request_id.requested_by")
     department_id = fields.Many2one(related="request_id.department_id", store=True)
     company_id = fields.Many2one(related="request_id.company_id", store=True)
+    procurement_mode = fields.Selection(
+        [
+            ("by_officer", "ให้พัสดุจัดหา"),
+            ("by_requester", "ผู้ขอระบุเอง"),
+        ],
+        string="Procurement Mode",
+        default="by_requester",
+        tracking=True,
+    )
     partner_id = fields.Many2one(
         "res.partner",
         string="Vendor",
