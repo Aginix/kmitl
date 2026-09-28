@@ -230,8 +230,11 @@ class SarabunRoutingStep(models.Model):
     def write(self, vals):
         """The originator (ผู้จัดทำ/ผู้ส่ง) row is locked — a user may change only its
         verb. ``order`` is also allowed so the tree's handle widget can resequence
-        siblings around it; a follow-up check ensures the originator still sits
-        first. Engine writes (sudo) pass through."""
+        siblings around it; the document's normalizer runs afterward to renumber
+        the steps 1..N with the originator forced back to position 1, so a client
+        that dropped duplicates, gaps, or moved the originator gets repaired in
+        one pass. Engine writes (sudo) pass through both the guard and the
+        normalizer."""
         if not self.env.su and vals and set(vals) - {"verb", "order"}:
             if self.filtered("is_originator"):
                 raise UserError(_(
@@ -240,14 +243,7 @@ class SarabunRoutingStep(models.Model):
                 ))
         res = super().write(vals)
         if not self.env.su and vals and "order" in vals:
-            for doc in self.mapped("document_id"):
-                originator = doc.routing_step_ids.filtered("is_originator")
-                if originator and doc.routing_step_ids.filtered(
-                    lambda s: s.order < originator.order
-                ):
-                    raise UserError(_(
-                        "The ผู้จัดทำ/ผู้ส่ง step must always be the first Stage."
-                    ))
+            self.mapped("document_id")._normalize_routing_step_order()
         return res
 
     def unlink(self):
