@@ -26,8 +26,9 @@ patch(AnalyticDistribution.prototype, "account_analytic_distribution_ztree", {
                     this.orm.call("account.analytic.account", "search_ztree", [], {
                         domain: this.analyticAccountDomain(groupId),
                         parent_key: "parent_id",
-                        expend_level: 1,
+                        expend_level: 2,
                         order: "code",
+                        name_format: "[{code}] {name}",
                         display_field: "display_name",
                         limit: ZTREE_SEARCH_LIMIT,
                         search: request && request.trim() ? request.trim() : false,
@@ -40,7 +41,7 @@ patch(AnalyticDistribution.prototype, "account_analytic_distribution_ztree", {
         return {
             ztree_model: "account.analytic.account",
             ztree_parent_key: "parent_id",
-            ztree_expend_level: 1,
+            ztree_expend_level: 2,
             ztree_selected_id: tag.analytic_account_id || 0,
         };
     },
