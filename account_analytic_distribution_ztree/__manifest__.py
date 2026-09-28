@@ -8,6 +8,7 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": [
         "account_analytic_kmitl",
+        "app_web_widget_ztree",
     ],
     "data": [
         "views/account_analytic_plan_views.xml",
