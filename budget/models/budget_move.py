@@ -379,7 +379,7 @@ class BudgetMove(models.Model):
             return
         controller = self.env["budget.controller"]
         for move in self:
-            if move.move_type not in ("appropriation", "entry"):
+            if move.move_type not in controller._APPROPRIATION_MOVE_TYPES:
                 continue
             if move.budget_type != "expense":
                 continue
