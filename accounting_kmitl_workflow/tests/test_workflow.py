@@ -257,3 +257,41 @@ class TestAccountMoveWorkflow(TransactionCase):
         self.assertEqual(move.state, "posted")
         self.assertEqual(move.workflow_state, "none")
         self.assertEqual(move.display_state, "posted")
+
+    def test_kmitl_voucher_lines_debit_first(self):
+        """_kmitl_voucher_lines() puts every debit row before every credit
+        row, even when the entry was keyed credit-first, and keeps each
+        side in the order the lines were keyed in."""
+        move = self.env["account.move"].with_user(self.maker).create(
+            {
+                "move_type": "entry",
+                "journal_id": self.journal.id,
+                "date": fields.Date.today(),
+                "line_ids": [
+                    Command.create(
+                        {
+                            "account_id": self.account_b.id,
+                            "debit": 0.0,
+                            "credit": 1000.0,
+                        }
+                    ),
+                    Command.create(
+                        {
+                            "account_id": self.account_a.id,
+                            "debit": 600.0,
+                            "credit": 0.0,
+                        }
+                    ),
+                    Command.create(
+                        {
+                            "account_id": self.account_a.id,
+                            "debit": 400.0,
+                            "credit": 0.0,
+                        }
+                    ),
+                ],
+            }
+        )
+        lines = move._kmitl_voucher_lines()
+        self.assertEqual(lines.mapped("debit"), [600.0, 400.0, 0.0])
+        self.assertEqual(lines.mapped("credit"), [0.0, 0.0, 1000.0])

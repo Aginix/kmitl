@@ -2,6 +2,8 @@
 
 The two-step maker-checker approval that every `account.move` passes through before it is posted: a maker submits, a separate approver approves, and approval posts the entry.
 
+The account move voucher PDF (`_kmitl_voucher_lines()`) prints debit rows before credit rows, stable within each side.
+
 ## Language
 
 **Maker** (ผู้จัดทำ/ผู้ตรวจสอบ):

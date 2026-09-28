@@ -198,7 +198,7 @@ export class ApprovalQueue extends Component {
             return;
         }
         if (!this.state.linesByMove[move.id]) {
-            this.state.linesByMove[move.id] = await this.orm.searchRead(
+            const lines = await this.orm.searchRead(
                 "account.move.line",
                 [
                     ["move_id", "=", move.id],
@@ -206,6 +206,9 @@ export class ApprovalQueue extends Component {
                 ],
                 LINE_FIELDS
             );
+            // Debit rows first, to match the voucher PDF.
+            lines.sort((a, b) => (a.debit ? 0 : 1) - (b.debit ? 0 : 1));
+            this.state.linesByMove[move.id] = lines;
         }
         this.state.expandedId = move.id;
     }
