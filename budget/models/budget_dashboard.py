@@ -1,3 +1,4 @@
+import itertools
 import logging
 from collections import defaultdict
 
@@ -47,6 +48,18 @@ class BudgetDashboard(models.AbstractModel):
         "source_analytic_id": "s",
     }
     _ACTIVE_COMMITMENT_STATES = ("reserved", "partial", "done")
+    # The seven own figures every row is built from (see _value_columns), and
+    # the usage-side subset that is folded onto its covering pool (ADR-0016).
+    _FACT_KEYS = (
+        "initial",
+        "current",
+        "cap",
+        "reserved",
+        "obligated",
+        "consumed",
+        "returned",
+    )
+    _USAGE_KEYS = ("cap", "reserved", "obligated", "consumed", "returned")
     # Fixed display order for the top-level expense budget categories.
     _ROOT_ORDER = ("51000", "52000", "53000", "54000", "55000", "07020")
     # Rows shown per recent-movement table on the overview landing page.
@@ -86,7 +99,6 @@ class BudgetDashboard(models.AbstractModel):
         root_account_id=None,
         filters=None,
         breakdown=None,
-        covering=False,
     ):
         """Return ``{"rows": [...], "currency_id": id}`` for the dashboard grid.
 
@@ -97,13 +109,16 @@ class BudgetDashboard(models.AbstractModel):
         columns, same roll-up — instead of being the sole row axis. See
         :meth:`_breakdown_rows`.
 
-        ``covering`` (picker only, default False so the dashboard is unchanged):
-        a hierarchical dimension filter then matches pools that **cover** the
-        typed code — its subtree (``child_of``) *or* its ancestors (``in`` its
-        ancestor chain) — so a reservation typed at a sub-activity still surfaces
-        the pool funded at a parent activity (ADR-0016). The ancestor chain of
-        each covering filter value is returned as ``filter_ancestors`` so the
-        client can pin the finer of the filter and the picked row.
+        Figures are read at the **pool** (ADR-0016, amending ADR-0008): usage
+        (cap / reserve / obligate / consume / return) booked at a Descendant
+        Code is folded onto the tuple of the Budget Pool that covers it, so a
+        pool row's คงเหลือ is what can still be reserved there. A hierarchical
+        dimension filter therefore also surfaces the pools *covering* the typed
+        code (its ancestors as well as its ``child_of`` subtree), each with its
+        whole usage; the ancestor chain of each filter value is returned as
+        ``filter_ancestors`` (drill-down + the picker's finer-code pin). Rows
+        whose usage was folded carry ``usage_in`` / ``usage_out`` coordinate
+        pairs so a usage drill-down lists exactly the lines behind the figure.
         """
         filters = filters or {}
         currency_id = self.env.company.currency_id.id
@@ -119,21 +134,45 @@ class BudgetDashboard(models.AbstractModel):
             cl_base,
             commit_domain,
             hier_op,
+            scope,
             filter_ancestors,
-        ) = self._dashboard_domains(fiscal_year_id, account_ids, filters, covering)
+        ) = self._dashboard_domains(fiscal_year_id, account_ids, filters)
 
         # Optional breakdown: nest the budget-account tree under one or more
         # analytic dimensions (ordered, e.g. activities then departments)
         # instead of using the account tree as the sole row axis. Extensions
-        # may group by extra fields too (see _dashboard_extra_fields); the core
-        # rows see those facts collapsed back onto the breakdown tuple.
-        dims = self._normalize_breakdown(breakdown) or []
+        # may group by extra fields too (see _dashboard_extra_fields).
+        full = list(self._DIM_FIELDS)
+        n = len(full)
+        dims = [d for d in (self._normalize_breakdown(breakdown) or []) if d in full]
         extra = self._dashboard_extra_fields()
-        facts = self._dashboard_sources(dims + extra, move_base, cl_base, commit_domain)
-        sources = self._collapse_facts(facts, len(dims)) if extra else facts
+        # Facts are read on the full dimension tuple (+ extra fields) so usage
+        # can be folded onto its covering pool before any projection.
+        facts = self._dashboard_sources(full + extra, move_base, cl_base, commit_domain)
+        keys = self._FACT_KEYS
+        own = {}
+        for metric, values in facts.items():
+            for key, val in values.items():
+                own.setdefault(key, dict.fromkeys(keys, 0.0))[metric] = val
+        acc_by_id = {acc.id: acc for acc in accounts}
+        rounding = self.env.company.currency_id.rounding or 0.01
+        fold = self._fold_usage_to_pools(own, scope, acc_by_id, rounding)
+        # Extensions read the folded facts on the breakdown tuple + their extra
+        # fields; the core rows see them collapsed onto the full tuple.
+        idx = [full.index(d) for d in dims]
+        ext_facts = {metric: defaultdict(float) for metric in keys}
+        core_own = defaultdict(lambda: dict.fromkeys(keys, 0.0))
+        for (acc_id, tup), vals in fold["own"].items():
+            ext_key = (acc_id, tuple(tup[i] for i in idx) + tup[n:])
+            node = core_own[(acc_id, tup[:n])]
+            for metric in keys:
+                ext_facts[metric][ext_key] += vals[metric]
+                node[metric] += vals[metric]
+        fold["own"] = dict(core_own)
+
         if dims:
-            rows = self._breakdown_rows(dims, accounts, account_ids, sources)
-            rows = self._dashboard_extra_rows(rows, facts, dims)
+            rows = self._breakdown_rows(dims, accounts, account_ids, fold)
+            rows = self._dashboard_extra_rows(rows, ext_facts, dims)
             return {
                 "rows": rows,
                 "currency_id": currency_id,
@@ -141,20 +180,17 @@ class BudgetDashboard(models.AbstractModel):
                 "filter_ancestors": filter_ancestors,
             }
 
+        # flat report: collapse the folded tuples onto their account
+        by_account = defaultdict(lambda: dict.fromkeys(keys, 0.0))
+        for (acc_id, _tup), vals in fold["own"].items():
+            node = by_account[acc_id]
+            for k in keys:
+                node[k] += vals[k]
         # --- roll own values up the subtree via parent_path ---
-        keys = (
-            "initial",
-            "current",
-            "cap",
-            "reserved",
-            "obligated",
-            "consumed",
-            "returned",
-        )
         rolled = {aid: dict.fromkeys(keys, 0.0) for aid in account_ids}
         for acc in accounts:
-            own = {k: sources[k].get((acc.id, ()), 0.0) for k in keys}
-            if not any(own.values()):
+            own = by_account.get(acc.id)
+            if not own or not any(own.values()):
                 continue
             for aid in self._ancestor_ids(acc):
                 node = rolled.get(aid)
@@ -165,7 +201,6 @@ class BudgetDashboard(models.AbstractModel):
         # Emit rows in depth-first pre-order built from parent_id. Ordering by
         # code alone is NOT a valid tree order (a deep child can sort before its
         # parent), which is what made the collapse/indentation render wrong.
-        acc_by_id = {acc.id: acc for acc in accounts}
         children = defaultdict(list)
         roots = []
         for acc in accounts:
@@ -188,10 +223,19 @@ class BudgetDashboard(models.AbstractModel):
         while stack:
             acc, level = stack.pop()
             kids = children.get(acc.id, [])
-            rows.append(self._make_row(acc, rolled[acc.id], level, bool(kids)))
+            row = self._make_row(acc, rolled[acc.id], level, bool(kids))
+            if fold["moved"]:
+                row.update(
+                    self._usage_drill_pairs(
+                        fold,
+                        lambda acc_id, _tup, acc=acc: acc.id
+                        in self._ancestor_ids(acc_by_id[acc_id]),
+                    )
+                )
+            rows.append(row)
             for child in reversed(kids):
                 stack.append((child, level + 1))
-        rows = self._dashboard_extra_rows(rows, facts, dims)
+        rows = self._dashboard_extra_rows(rows, ext_facts, dims)
         return {
             "rows": rows,
             "currency_id": currency_id,
@@ -199,63 +243,88 @@ class BudgetDashboard(models.AbstractModel):
             "filter_ancestors": filter_ancestors,
         }
 
-    def _dashboard_domains(self, fiscal_year_id, account_ids, filters, covering=False):
+    def _dashboard_domains(self, fiscal_year_id, account_ids, filters):
         """Shared base domains for every dashboard column.
 
-        Returns ``(move_base, cl_base, commit_domain, hier_op,
+        Returns ``(move_base, cl_base, commit_domain, hier_op, scope,
         filter_ancestors)``: posted budget move lines, posted commitment lines of
         active commitments, and active commitment headers, all scoped to the
-        fiscal year, ``account_ids`` and the optional dimension ``filters``
-        (``covering``: see :meth:`get_dashboard_data`).
+        fiscal year, ``account_ids`` and the optional dimension ``filters``.
+
+        A hierarchical filter covers (ADR-0016): the appropriation side matches
+        the typed code's subtree *or* its ancestors, and the usage side adds the
+        whole subtree of every pool funded above it (its usage from sibling codes
+        counts against it too). ``scope`` maps each hierarchical filter field to
+        its values (the usage that belongs to the filter); ``filter_ancestors``
+        is each value's ancestor chain.
         """
         analytic = self.env["account.analytic.account"]
         # Dimension accounts are hierarchical (account_analytic_parent): a chosen
         # value matches itself + all descendants via child_of. Source is a flat
         # classification (exact match). Guarded in case the hierarchy is absent.
         hier_op = "child_of" if "parent_id" in analytic._fields else "="
-        dim_leaves = []
+        full = self._DIM_FIELDS
+        exact_leaves = []  # flat filters: same on the appropriation + usage side
+        cover_leaves = []  # appropriation side: filter subtree OR its ancestors
+        scope = {}  # hierarchical filter field -> values (the usage scope)
         filter_ancestors = {}
-        for fname in self._DIM_FIELDS:
+        for fname in full:
             val = filters.get(fname)
             if not val:
                 continue
             is_list = isinstance(val, (list, tuple))
-            # source is flat (exact / "in"); the hierarchical dims use child_of
-            # when the analytic tree exists, else exact / "in" for a value list.
-            if fname == "source_analytic_id":
-                op = "in" if is_list else "="
-                dim_leaves.append((fname, op, val))
-            elif covering and hier_op == "child_of":
-                # covering: pools at/above (ancestors) OR below (child_of) the
-                # typed code. The ancestor chain is recorded for the client.
-                values = list(val) if is_list else [val]
-                ancestors = set()
-                for rec in analytic.browse(values):
-                    ancestors.update(self._ancestor_ids(rec))
-                filter_ancestors[fname] = sorted(ancestors)
-                dim_leaves += [
-                    "|",
-                    (fname, "child_of", val),
-                    (fname, "in", list(ancestors)),
-                ]
-            elif is_list:
-                op = "child_of" if hier_op == "child_of" else "in"
-                dim_leaves.append((fname, op, val))
-            else:
-                dim_leaves.append((fname, hier_op, val))
+            if fname == "source_analytic_id" or hier_op != "child_of":
+                exact_leaves.append((fname, "in" if is_list else "=", val))
+                continue
+            values = list(val) if is_list else [val]
+            ancestors = set()
+            for rec in analytic.browse(values):
+                ancestors.update(self._ancestor_ids(rec))
+            filter_ancestors[fname] = sorted(ancestors)
+            scope[fname] = values
+            cover_leaves += [
+                "|",
+                (fname, "child_of", values),
+                (fname, "in", sorted(ancestors)),
+            ]
 
-        # Shared base domains for every column; dim filters apply set-based.
         move_base = [
             ("parent_state", "=", "posted"),
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("account_id", "in", account_ids),
-        ] + dim_leaves
+        ] + exact_leaves + cover_leaves
+
+        rounding = self.env.company.currency_id.rounding or 0.01
+        usage_leaves = []
+        for fname, values in scope.items():
+            strict = sorted(set(filter_ancestors[fname]) - set(values))
+            above = []
+            if strict:
+                i = full.index(fname)
+                funded = self._facts_by_account_dims(
+                    "budget.move.line",
+                    move_base
+                    + [
+                        ("move_type", "in", ("appropriation", "entry")),
+                        (fname, "in", strict),
+                    ],
+                    "balance",
+                    full,
+                )
+                above = sorted(
+                    {
+                        tup[i]
+                        for (_acc, tup), bal in funded.items()
+                        if not float_is_zero(bal, precision_rounding=rounding)
+                    }
+                )
+            usage_leaves.append((fname, "child_of", values + above))
         cl_base = [
             ("state", "=", "posted"),
             ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("account_id", "in", account_ids),
-        ] + dim_leaves
+        ] + exact_leaves + usage_leaves
         # (3) approved cap = Σ active commitment caps. Header analytic dims are
         # non-stored, so when a dimension filter is set the matching commitments
         # are resolved through their stored lines.
@@ -264,14 +333,14 @@ class BudgetDashboard(models.AbstractModel):
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("account_id", "in", account_ids),
         ]
-        if dim_leaves:
+        if exact_leaves or usage_leaves:
             match = (
                 self.env["budget.commitment.line"]
                 .search(cl_base)
                 .mapped("commitment_id")
             )
             commit_domain.append(("id", "in", match.ids))
-        return move_base, cl_base, commit_domain, hier_op, filter_ancestors
+        return move_base, cl_base, commit_domain, hier_op, scope, filter_ancestors
 
     # ------------------------------------------------------------------
     # multi-dimension breakdown (e.g. activities)
@@ -290,7 +359,7 @@ class BudgetDashboard(models.AbstractModel):
         dims = [d for d in breakdown if d]
         return dims or None
 
-    def _breakdown_rows(self, dims, accounts, account_ids, sources):
+    def _breakdown_rows(self, dims, accounts, account_ids, fold):
         """Rows for an N-dimension breakdown nested over the budget-account tree.
 
         ``dims`` is an ordered list of analytic dimension fields, e.g.
@@ -304,24 +373,29 @@ class BudgetDashboard(models.AbstractModel):
         level reconciles with the flat report. Untagged values at any level fall
         into a per-level "ไม่ระบุ" sentinel (id 0). Keys are path-encoded and
         unique (e.g. ``a5|p12|b9``) so one account can appear under many tuples.
+
+        ``fold`` is :meth:`_fold_usage_to_pools`'s result: facts on the full
+        dimension tuple with usage already folded onto its pool's tuple (the
+        ADR-0016 amendment), projected here onto ``dims``.
         """
-        keys = (
-            "initial",
-            "current",
-            "cap",
-            "reserved",
-            "obligated",
-            "consumed",
-            "returned",
-        )
+        keys = self._FACT_KEYS
+        full = self._DIM_FIELDS
+        dims = [d for d in dims if d in full]
+        idx = [full.index(d) for d in dims]
+
+        def project(tup):
+            return tuple(tup[i] for i in idx)
 
         # own[(account_id, dim_tuple)] = {metric: value}; 0 in a tuple = untagged
-        # at that position. Each read_group group maps to exactly one tuple, so
-        # money is never double-counted and Σ over tuples == the flat report.
+        # at that position. Each full-tuple fact projects onto exactly one tuple,
+        # so money is never double-counted and Σ over tuples == the flat report.
         own = {}
-        for metric in keys:
-            for (acc_id, tup), val in sources[metric].items():
-                own.setdefault((acc_id, tup), dict.fromkeys(keys, 0.0))[metric] = val
+        for (acc_id, tup), vals in fold["own"].items():
+            node = own.setdefault((acc_id, project(tup)), dict.fromkeys(keys, 0.0))
+            for metric in keys:
+                node[metric] += vals[metric]
+        ana_path = fold["ana_path"]
+        moved = fold["moved"]
         # Index by full tuple so emit_account_tree need not rescan all facts.
         own_by_tuple = defaultdict(dict)
         for (acc_id, tup), vals in own.items():
@@ -431,6 +505,16 @@ class BudgetDashboard(models.AbstractModel):
                         "has_children": bool(kids),
                         "own_current": own_current,
                         **self._value_columns(rolled[account.id]),
+                        **(
+                            self._usage_drill_pairs(
+                                fold,
+                                lambda acc_id, tup: project(tup) == prefix
+                                and account.id
+                                in self._ancestor_ids(acc_by_id[acc_id]),
+                            )
+                            if moved
+                            else {}
+                        ),
                     }
                 )
                 for child in kids:
@@ -472,6 +556,17 @@ class BudgetDashboard(models.AbstractModel):
             # their own analytic parent (own_key), threaded through the recursion.
             base_parent = dim_key(prefix) if prefix else False
 
+            def in_dim_row(tup, node_id):
+                # the row's figure: exact prefix, value in node's subtree (or
+                # untagged for the sentinel) at this level
+                proj = project(tup)
+                if proj[:depth] != prefix:
+                    return False
+                value = proj[depth]
+                if not node_id:
+                    return not value
+                return bool(value) and node_id in ana_path.get(value, [value])
+
             def emit_node(node_id, lvl, parent_key):
                 rec = info["rec"].get(node_id)
                 child_nodes = sorted(
@@ -498,6 +593,14 @@ class BudgetDashboard(models.AbstractModel):
                         "level": lvl,
                         "has_children": bool(child_nodes) or exact_has,
                         **self._value_columns(vals),
+                        **(
+                            self._usage_drill_pairs(
+                                fold,
+                                lambda _acc, tup: in_dim_row(tup, node_id),
+                            )
+                            if moved
+                            else {}
+                        ),
                     }
                 )
                 for child in child_nodes:
@@ -515,6 +618,127 @@ class BudgetDashboard(models.AbstractModel):
 
         emit_level((), 0, 0)
         return rows
+
+    def _fold_usage_to_pools(self, own, scope, acc_by_id, rounding):
+        """Fold usage facts onto the tuple of the Budget Pool covering them.
+
+        ``own`` maps ``(account_id, full_tuple)`` (``_DIM_FIELDS`` order, 0 =
+        untagged, then any :meth:`_dashboard_extra_fields` values, which ride
+        along unchanged) to the seven figures. A pool is a coordinate with
+        non-zero own current on the dimension tuple. Usage at ``(account, tuple)`` moves to the tuple of the pool
+        whose account is the usage account or an ancestor and whose every
+        dimension is the usage value or an ancestor (untagged only matches
+        untagged) — the engine's control node read on the dashboard's facts,
+        deepest first for legacy nested pools. The usage keeps its own account,
+        so the account tree under the pool tuple rolls it up to the pool's
+        account. Usage no pool covers stays put (negative คงเหลือ: 0 available)
+        unless it lies outside the filter ``scope``, where it was only fetched
+        as a candidate for a covering pool, and is dropped.
+
+        Returns ``{"own", "moved", "ana_path", "in_scope"}``; ``moved`` lists
+        ``(account_id, source_tuple, target_tuple)`` for the drill-down pairs.
+        """
+        keys = self._FACT_KEYS
+        full = self._DIM_FIELDS
+        n = len(full)
+        ids = {value for (_acc, tup) in own for value in tup[:n] if value}
+        ana_path = {
+            rec.id: self._ancestor_ids(rec) or [rec.id]
+            for rec in self.env["account.analytic.account"].browse(list(ids))
+        }
+        current = defaultdict(float)
+        for (acc_id, tup), vals in own.items():
+            current[(acc_id, tup[:n])] += vals["current"]
+        pools = {
+            key
+            for key, cur in current.items()
+            if not float_is_zero(cur, precision_rounding=rounding)
+        }
+        positions = [(full.index(f), values) for f, values in scope.items()]
+
+        def in_scope(tup):
+            return all(
+                tup[i] and set(values) & set(ana_path.get(tup[i], [tup[i]]))
+                for i, values in positions
+            )
+
+        folded = {}
+        moved = set()
+        for (acc_id, tup), vals in own.items():
+            node = folded.setdefault((acc_id, tup), dict.fromkeys(keys, 0.0))
+            for metric in keys:
+                if metric not in self._USAGE_KEYS:
+                    node[metric] += vals[metric]
+            if not any(vals[metric] for metric in self._USAGE_KEYS):
+                continue
+            dim_tup, extra = tup[:n], tup[n:]
+            target = self._covering_pool_tuple(
+                acc_id, dim_tup, pools, acc_by_id, ana_path
+            )
+            if target is None:
+                if not in_scope(dim_tup):
+                    continue
+                target = dim_tup
+            node = folded.setdefault(
+                (acc_id, target + extra), dict.fromkeys(keys, 0.0)
+            )
+            for metric in self._USAGE_KEYS:
+                node[metric] += vals[metric]
+            if target != dim_tup:
+                moved.add((acc_id, dim_tup, target))
+        return {
+            "own": {k: v for k, v in folded.items() if any(v.values())},
+            "moved": sorted(moved),
+            "ana_path": ana_path,
+            "in_scope": in_scope,
+        }
+
+    def _covering_pool_tuple(self, acc_id, tup, pools, acc_by_id, ana_path):
+        """Dimension tuple of the deepest pool covering ``(acc_id, tup)``."""
+        account = acc_by_id.get(acc_id)
+        acc_chain = self._ancestor_ids(account) if account else [acc_id]
+        dim_chains = [
+            list(enumerate(ana_path.get(value, [value]))) if value else [(0, 0)]
+            for value in tup
+        ]
+        best, best_depth = None, -1
+        for acc_depth, acc_node in enumerate(acc_chain):
+            for combo in itertools.product(*dim_chains):
+                candidate = tuple(value for _depth, value in combo)
+                if (acc_node, candidate) not in pools:
+                    continue
+                depth = acc_depth + sum(d for d, _value in combo)
+                if depth > best_depth:
+                    best, best_depth = candidate, depth
+        return best
+
+    def _usage_drill_pairs(self, fold, in_row):
+        """Coordinates a row's usage drill-down must add / remove (ADR-0016).
+
+        The client drills a row by its dimensions + the filter; usage folded
+        *into* the row from outside that scope is added (``usage_in``), usage
+        inside the scope folded *out* to another row's pool is excluded
+        (``usage_out``). ``in_row(account_id, full_tuple)`` is the row's figure
+        predicate. Empty lists are omitted to keep the payload small.
+        """
+        full = self._DIM_FIELDS
+        usage_in, usage_out = [], []
+        for acc_id, src, tgt in fold["moved"]:
+            src_in = in_row(acc_id, src) and fold["in_scope"](src)
+            tgt_in = in_row(acc_id, tgt)
+            if src_in == tgt_in:
+                continue
+            pair = {
+                "account_id": acc_id,
+                "dims": {f: (src[i] or False) for i, f in enumerate(full)},
+            }
+            (usage_in if tgt_in else usage_out).append(pair)
+        out = {}
+        if usage_in:
+            out["usage_in"] = usage_in
+        if usage_out:
+            out["usage_out"] = usage_out
+        return out
 
     def _dashboard_sources(self, dims, move_base, cl_base, commit_domain):
         """{metric: {(account_id, dim_tuple): value}} for every column source.
@@ -705,7 +929,7 @@ class BudgetDashboard(models.AbstractModel):
         reserve time.
         """
         data = self.get_dashboard_data(
-            fiscal_year_id, root_account_id, filters or {}, breakdown, covering=True
+            fiscal_year_id, root_account_id, filters or {}, breakdown
         )
         rows = data.get("rows", [])
         rounding = self.env.company.currency_id.rounding or 0.01
