@@ -88,8 +88,10 @@
                                         <td t-out="row['customer_name']"/>
                                         <td class="pre-line">
                                             <div t-if="row['description']" t-out="row['description']"/>
-                                            <div t-foreach="row['lines']" t-as="l"
-                                                 t-out="'- ' + l['name'] + '  ' + format_amount(l['amount']) + ' บาท'"/>
+                                            <ul t-if="row['lines']" style="margin: 0; padding-left: 16px;">
+                                                <li t-foreach="row['lines']" t-as="l"
+                                                    t-out="l['name'] + '  ' + format_amount(l['amount']) + ' บาท'"/>
+                                            </ul>
                                         </td>
                                         <td class="text-right" t-out="format_amount(row['amount_total'])"/>
                                         <td t-out="row['payment_type_label']"/>

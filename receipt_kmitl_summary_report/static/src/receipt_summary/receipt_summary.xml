@@ -132,8 +132,10 @@
                                         <td><t t-esc="row.customer_name" /></td>
                                         <td>
                                             <div t-if="row.description" style="white-space: pre-line;"><t t-esc="row.description" /></div>
-                                            <div t-foreach="row.lines" t-as="l" t-key="l_index"
-                                                 t-esc="'- ' + l.name + '  ' + format(l.amount) + ' บาท'" />
+                                            <ul t-if="row.lines.length" class="mb-0 ps-3">
+                                                <li t-foreach="row.lines" t-as="l" t-key="l_index"
+                                                    t-esc="l.name + '  ' + format(l.amount) + ' บาท'" />
+                                            </ul>
                                         </td>
                                         <td class="text-end"><t t-esc="format(row.amount_total)" /></td>
                                         <td><t t-esc="row.payment_type_label" /></td>
