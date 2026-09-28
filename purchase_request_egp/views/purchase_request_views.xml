@@ -121,6 +121,13 @@
                 <field name="egp_project_id" />
                 <field name="is_egp" />
             </xpath>
+            <xpath expr="//filter[@name='state_to_approve']" position="after">
+                <filter
+                    name="state_in_egp"
+                    string="Waiting for e-GP"
+                    domain="[('state','=','in_egp')]"
+                />
+            </xpath>
         </field>
     </record>
 
