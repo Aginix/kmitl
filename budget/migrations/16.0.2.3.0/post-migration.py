@@ -11,11 +11,14 @@ _logger = logging.getLogger(__name__)
 
 
 def migrate(cr, version):
-    from odoo import api, SUPERUSER_ID
+    from odoo import SUPERUSER_ID, api, fields
 
     env = api.Environment(cr, SUPERUSER_ID, {})
     controller = env["budget.controller"]
-    fiscal_years = env["account.fiscal.year"].search([])
+    # open = not yet ended; closed years cannot be fixed, so skip them.
+    fiscal_years = env["account.fiscal.year"].search(
+        [("date_to", ">=", fields.Date.today())]
+    )
     total = 0
     for fy in fiscal_years:
         pairs = controller.scan_pool_overlaps(fy.id, fy.company_id.id)
