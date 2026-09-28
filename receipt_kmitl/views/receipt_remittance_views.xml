@@ -128,11 +128,14 @@
                            attrs="{'readonly': [('state', 'not in', ['draft', 'submitted'])]}">
                         <tree edit="false">
                             <field name="name"/>
-                            <field name="date"/>
+                            <field name="date" optional="show"/>
                             <field name="description" optional="show" />
                             <field name="partner_id" optional="show" />
                             <field name="payment_type" optional="show" />
                             <field name="payment_method_id" optional="show" />
+                            <field name="analytic_distribution"
+                                   widget="analytic_distribution"
+                                   optional="show"/>
                             <field name="amount_total" sum="Total"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="state" optional="hide" />
