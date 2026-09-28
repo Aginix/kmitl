@@ -188,12 +188,12 @@
                             <field name="procurement_type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="procurement_method_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="account_fiscal_year_id" readonly="1"/>
-                            <field name="payment_type" readonly="1"/>
+                            <field name="payment_type" readonly="1" />
                         </group>
                     </group>
                     <group>
                         <group name="vendor_info" string="Vendor Information">
-                            <field name="procurement_mode" readonly="1"/>
+                            <field name="procurement_mode" widget="radio" readonly="1"/>
                             <field
                                 name="partner_id"
                                 readonly="1"
@@ -212,7 +212,7 @@
                         </group>
                     </group>
                     <group>
-                        <group name="budget_info" string="Budget Information">
+                        <group name="budget_info" string="Budget Informations">
                             <field name="budget_commitment_id" invisible="1"/>
                             <field name="budget_commitment_amount"
                                 readonly="1"
@@ -235,8 +235,8 @@
                                     <field name="product_id" readonly="1" optional="hide"/>
                                     <field name="name" readonly="1"/>
                                     <field name="product_qty"/>
-                                    <field name="price_unit"/>
                                     <field name="uom_text" required="1"/>
+                                    <field name="price_unit"/>
                                     <field name="product_uom_id" invisible="1"/>
                                     <field name="tax_id" optional="hide"/>
                                     <field name="price_subtotal" widget="monetary" invisible="1"/>
