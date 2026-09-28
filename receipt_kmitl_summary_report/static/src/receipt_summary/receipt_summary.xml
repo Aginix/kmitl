@@ -109,8 +109,11 @@
                             <tr>
                                 <th style="width: 64px;"><t t-esc="labels.date" /></th>
                                 <th style="width: 120px;"><t t-esc="labels.number" /></th>
+                                <th style="min-width: 140px;"><t t-esc="labels.customerName" /></th>
                                 <th><t t-esc="labels.description" /></th>
                                 <th class="text-end" style="width: 148px;"><t t-esc="labels.amount" /></th>
+                                <th style="width: 110px;"><t t-esc="labels.paymentType" /></th>
+                                <th style="min-width: 140px;"><t t-esc="labels.paymentMethod" /></th>
                                 <th><t t-esc="labels.dimensions" /></th>
                                 <th style="min-width: 164px;"><t t-esc="labels.note" /></th>
                             </tr>
@@ -118,16 +121,25 @@
                         <tbody>
                             <t t-foreach="state.groups" t-as="group" t-key="group.date">
                                 <tr class="table-secondary fw-bold">
-                                    <td colspan="3"><t t-esc="group.date" /></td>
+                                    <td colspan="4"><t t-esc="group.date" /></td>
                                     <td class="text-end"><t t-esc="format(group.total)" /></td>
-                                    <td colspan="2" />
+                                    <td colspan="4" />
                                 </tr>
                                 <t t-foreach="group.rows" t-as="row" t-key="row.id">
                                     <tr class="cursor-pointer" t-on-click="() => this.openReceipt(row)">
                                         <td />
                                         <td><t t-esc="row.name" /></td>
-                                        <td style="white-space: pre-line;"><t t-esc="row.description" /></td>
+                                        <td><t t-esc="row.customer_name" /></td>
+                                        <td>
+                                            <div t-if="row.description" style="white-space: pre-line;"><t t-esc="row.description" /></div>
+                                            <div t-foreach="row.lines" t-as="l" t-key="l_index">
+                                                - <t t-esc="l.name" />
+                                                <t t-esc="format(l.amount)" /> บาท
+                                            </div>
+                                        </td>
                                         <td class="text-end"><t t-esc="format(row.amount_total)" /></td>
+                                        <td><t t-esc="row.payment_type_label" /></td>
+                                        <td><t t-esc="row.payment_method" /></td>
                                         <td style="white-space: pre-line;"><t t-esc="row.dimensions" /></td>
                                         <td><t t-esc="row.note" /></td>
                                     </tr>
@@ -136,9 +148,9 @@
                         </tbody>
                         <tfoot>
                             <tr class="fw-bold table-primary">
-                                <td colspan="3"><t t-esc="labels.grandTotal" /></td>
+                                <td colspan="4"><t t-esc="labels.grandTotal" /></td>
                                 <td class="text-end"><t t-esc="format(state.grandTotal)" /></td>
-                                <td colspan="2" />
+                                <td colspan="4" />
                             </tr>
                         </tfoot>
                     </table>
