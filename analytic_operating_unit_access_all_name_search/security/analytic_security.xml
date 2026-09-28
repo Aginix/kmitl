@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!--
+        Neutralise the record rule installed by analytic_operating_unit_access_all.
+
+        The base module enforces OU filtering through the record rule, which
+        applies globally and cannot be relaxed per field. This module moves the
+        filtering into _name_search / search_read so it honours a per-field
+        context bypass (context="{'all_analytic_ou': True}"). For that bypass to
+        actually surface other OUs' records, the record rule must be permissive.
+    -->
+    <function model="ir.rule" name="write">
+        <value
+            eval="[ref('analytic_operating_unit.ir_rule_analytic_account_allowed_operating_units')]"
+        />
+        <value eval="{'domain_force': &quot;[(1, '=', 1)]&quot;}" />
+    </function>
+
+</odoo>
