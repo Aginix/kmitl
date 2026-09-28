@@ -178,21 +178,21 @@
                             <field name="name" placeholder="Approval Reference..." readonly="1"/>
                             <field name="title" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <field name="description" attrs="{'readonly': [('is_editable', '=', False)]}" />
-                            <field name="date_start" attrs="{'readonly': [('is_editable', '=', False)]}" />
-                            <field name="requested_by" widget="many2one_avatar_user" attrs="{'readonly': [('is_editable', '=', False)]}" />
-                            <field name="department_id" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="date_start" invisible="1" />
+                            <field name="requested_by" widget="many2one_avatar_user" readonly="1"/>
+                            <field name="department_id" readonly="1" />
                         </group>
                         <group name="procurement_info" string="Procurement Information">
                             <field name="company_id" invisible="1" />
                             <field name="procurement_type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="procurement_method_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
-                            <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="account_fiscal_year_id" readonly="1"/>
                             <field name="budget_commitment_id" invisible="1"/>
                             <field name="budget_commitment_amount"
                                    readonly="1"
                                    attrs="{'invisible': [('budget_commitment_id', '=', False)]}"/>
                             <field name="estimated_cost" readonly="1"/>
-                            <field name="payment_type" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="payment_type" readonly="1"/>
                             <field
                                 name="partner_id"
                                 required="1"
