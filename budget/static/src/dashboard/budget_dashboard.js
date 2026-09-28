@@ -3,6 +3,7 @@
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { browser } from "@web/core/browser/browser";
+import { Domain } from "@web/core/domain";
 import { AutoComplete } from "@web/core/autocomplete/autocomplete";
 import { Component, onWillStart, useState } from "@odoo/owl";
 
@@ -68,6 +69,9 @@ export class BudgetDashboard extends Component {
             filters: ctxFilters,
             filterLabels: {},
             hierOp: "=",
+            // ancestor chain of each hierarchical filter value (server): the
+            // filter also covers the pools funded above the typed code.
+            filterAncestors: {},
             rows: [],
             collapsed: {},
             hideZero: true,
@@ -176,6 +180,7 @@ export class BudgetDashboard extends Component {
             );
             this.state.rows = data.rows || [];
             this.state.hierOp = data.hier_op || "=";
+            this.state.filterAncestors = data.filter_ancestors || {};
         } finally {
             this.state.loading = false;
         }
@@ -353,16 +358,49 @@ export class BudgetDashboard extends Component {
         });
     }
 
-    _dimDomain(exclude) {
+    // Filter-bar leaves. ``covering`` (appropriation drills): a hierarchical
+    // filter also matches the pools funded above the typed code, mirroring the
+    // server's appropriation side (ADR-0016).
+    _dimDomain(exclude, covering = false) {
         const skip = new Set(exclude || []);
         const leaves = [];
         for (const [key, value] of Object.entries(this.effectiveFilters)) {
             if (skip.has(key)) {
                 continue;
             }
+            const ancestors = this.state.filterAncestors[key];
+            if (covering && ancestors && ancestors.length) {
+                leaves.push("|", [key, "child_of", value], [key, "in", ancestors]);
+                continue;
+            }
             leaves.push([key, key === SOURCE_KEY ? "=" : this.state.hierOp, value]);
         }
         return leaves;
+    }
+
+    // Usage drill scope: the row + filter, corrected for usage the server
+    // folded onto this row's pool from outside that scope (usage_in) or out of
+    // it onto another row's pool (usage_out), so the list matches the figure.
+    _usageDrillLeaves(row) {
+        const pair = (p) =>
+            new Domain([
+                ["account_id", "=", p.account_id],
+                ...Object.entries(p.dims).map(([field, id]) => [field, "=", id]),
+            ]);
+        let domain = new Domain([
+            ...this._drillLeaves(row),
+            ...this._dimDomain(this._drillExclude),
+        ]);
+        if (row.usage_out && row.usage_out.length) {
+            domain = Domain.and([
+                domain,
+                Domain.not(Domain.or(row.usage_out.map(pair))),
+            ]);
+        }
+        if (row.usage_in && row.usage_in.length) {
+            domain = Domain.or([domain, ...row.usage_in.map(pair)]);
+        }
+        return domain.toList();
     }
 
     // Per-row account + dimension constraints for a drill-down.
@@ -450,7 +488,10 @@ export class BudgetDashboard extends Component {
             domain.push(["move_type", "in", ["appropriation", "entry"]]);
             label = "งบปัจจุบัน";
         }
-        domain.push(...this._drillLeaves(row), ...this._dimDomain(this._drillExclude));
+        domain.push(
+            ...this._drillLeaves(row),
+            ...this._dimDomain(this._drillExclude, true)
+        );
         this._openDrill(
             `${this._drillName(row)} — ${label}`,
             "budget.move.line",
@@ -469,8 +510,7 @@ export class BudgetDashboard extends Component {
             ["commitment_id.state", "in", ["reserved", "partial", "done"]],
             ["account_fiscal_year_id", "=", this.state.fiscalYearId],
             ["move_type", "=", moveType],
-            ...this._drillLeaves(row),
-            ...this._dimDomain(this._drillExclude),
+            ...this._usageDrillLeaves(row),
         ];
         this._openDrill(
             `${this._drillName(row)} — ${USAGE_LABELS[moveType]}`,
@@ -489,8 +529,7 @@ export class BudgetDashboard extends Component {
             ["account_fiscal_year_id", "=", this.state.fiscalYearId],
             ["move_type", "=", "reserve"],
             ["is_return", "=", true],
-            ...this._drillLeaves(row),
-            ...this._dimDomain(this._drillExclude),
+            ...this._usageDrillLeaves(row),
         ];
         this._openDrill(
             `${this._drillName(row)} — ส่งคืนเงินเหลือจ่าย`,

@@ -471,3 +471,187 @@ class TestBudgetDashboard(TransactionCase):
         self.assertEqual(child["remaining"], 50_000)  # f = 100 - 50
         parent = rows[self.parent.id]
         self.assertEqual(parent["returned"], 10_000)  # rolls up the tree
+
+    # --- ADR-0016: usage at a Descendant Code is read at its pool ---
+
+    def _pool_fixture(self):
+        """คณะ (main) › ภาควิชา (sub, sib) and กิจกรรมรอง (main) › ย่อย (sub),
+        with a 100k pool at (main dept, main activity) on the child account."""
+        AA = self.env["account.analytic.account"]
+        Plan = self.env["account.analytic.plan"]
+        act_plan = Plan.search([("code", "=", "activities")], limit=1) or Plan.create(
+            {"name": "Activities", "code": "activities"}
+        )
+        dept_plan = Plan.search(
+            [("code", "=", "departments")], limit=1
+        ) or Plan.create({"name": "Departments", "code": "departments"})
+        fx = {
+            "dept_main": AA.create(
+                {"name": "Faculty", "code": "FOLD_D", "plan_id": dept_plan.id}
+            ),
+            "act_main": AA.create(
+                {"name": "Act Main", "code": "FOLD_A", "plan_id": act_plan.id}
+            ),
+        }
+        for key, parent, code, plan in (
+            ("dept_sub", "dept_main", "FOLD_D1", dept_plan),
+            ("dept_sib", "dept_main", "FOLD_D2", dept_plan),
+            ("act_sub", "act_main", "FOLD_A1", act_plan),
+        ):
+            fx[key] = AA.create(
+                {
+                    "name": code,
+                    "code": code,
+                    "plan_id": plan.id,
+                    "parent_id": fx[parent].id,
+                }
+            )
+        move = self.env["budget.move"].create(
+            {
+                "move_type": "appropriation",
+                "budget_type": "expense",
+                "appropriation_type": "initial",
+                "account_fiscal_year_id": self.fy.id,
+                "department_analytic_id": fx["dept_main"].id,
+                "line_ids": [
+                    Command.create(
+                        {
+                            "account_id": self.child.id,
+                            "balance": 100_000,
+                            "analytic_distribution": {
+                                str(fx["act_main"].id): 100.0
+                            },
+                        }
+                    )
+                ],
+            }
+        )
+        move.action_review()
+        move.action_post()
+        return fx
+
+    def test_descendant_usage_folds_onto_pool_row(self):
+        """A reservation at sub-department × sub-activity counts against the
+        pool row funded at their parents; no negative stray row is left."""
+        fx = self._pool_fixture()
+        self._reserve_with_dist(
+            self.child,
+            30_000,
+            {str(fx["dept_sub"].id): 100.0, str(fx["act_sub"].id): 100.0},
+        )
+        data = self.env["budget.dashboard"].get_dashboard_data(
+            self.fy.id,
+            self.parent.id,
+            {},
+            ["department_analytic_id", "activity_analytic_id"],
+        )
+        rows = {r["key"]: r for r in data["rows"]}
+        pool_key = "p%s|a%s|b%s" % (
+            fx["dept_main"].id,
+            fx["act_main"].id,
+            self.child.id,
+        )
+        pool = rows[pool_key]
+        self.assertEqual(pool["current"], 100_000)
+        self.assertEqual(pool["used"], 30_000)
+        self.assertEqual(pool["remaining"], 70_000)
+        # the drill-down adds the folded-in coordinate
+        self.assertEqual(len(pool["usage_in"]), 1)
+        dims_in = pool["usage_in"][0]["dims"]
+        self.assertEqual(dims_in["department_analytic_id"], fx["dept_sub"].id)
+        self.assertEqual(dims_in["activity_analytic_id"], fx["act_sub"].id)
+        stray = "p%s|a%s|b%s" % (fx["dept_sub"].id, fx["act_sub"].id, self.child.id)
+        self.assertNotIn(stray, rows)
+        # the flat report reconciles with the breakdown
+        flat = self._rows()
+        self.assertEqual(flat[self.child.id]["remaining"], 70_000)
+
+    def test_filter_below_pool_reads_the_whole_pool(self):
+        """Filtering to a sub-department surfaces the covering pool with the
+        usage of every code under it (siblings included) — what can still be
+        reserved there."""
+        fx = self._pool_fixture()
+        self._reserve_with_dist(
+            self.child,
+            30_000,
+            {str(fx["dept_sub"].id): 100.0, str(fx["act_sub"].id): 100.0},
+        )
+        self._reserve_with_dist(
+            self.child,
+            20_000,
+            {str(fx["dept_sib"].id): 100.0, str(fx["act_main"].id): 100.0},
+        )
+        data = self.env["budget.dashboard"].get_dashboard_data(
+            self.fy.id,
+            self.parent.id,
+            {"department_analytic_id": fx["dept_sub"].id},
+        )
+        child = {r["id"]: r for r in data["rows"]}[self.child.id]
+        self.assertEqual(child["current"], 100_000)
+        self.assertEqual(child["used"], 50_000)
+        self.assertEqual(child["remaining"], 50_000)
+        # only the sibling's reservation lies outside the filter scope
+        self.assertEqual(
+            [p["dims"]["department_analytic_id"] for p in child["usage_in"]],
+            [fx["dept_sib"].id],
+        )
+        self.assertIn(fx["dept_main"].id, data["filter_ancestors"][
+            "department_analytic_id"
+        ])
+
+    def test_usage_above_pool_is_not_folded_down(self):
+        """Usage at an ancestor of the pool is uncovered (ADR-0016 H1): it stays
+        on its own tuple, negative, and never lowers the pool below it."""
+        fx = self._pool_fixture()
+        # re-fund only at the sub-activity: drain main, fund sub
+        move = self.env["budget.move"].create(
+            {
+                "move_type": "entry",
+                "budget_type": "expense",
+                "account_fiscal_year_id": self.fy.id,
+                "department_analytic_id": fx["dept_main"].id,
+                "line_ids": [
+                    Command.create(
+                        {
+                            "account_id": self.child.id,
+                            "balance": -100_000,
+                            "analytic_distribution": {
+                                str(fx["act_main"].id): 100.0
+                            },
+                        }
+                    ),
+                    Command.create(
+                        {
+                            "account_id": self.child.id,
+                            "balance": 100_000,
+                            "analytic_distribution": {
+                                str(fx["act_sub"].id): 100.0
+                            },
+                        }
+                    ),
+                ],
+            }
+        )
+        move.action_review()
+        move.action_post()
+        self.env["ir.config_parameter"].sudo().set_param(
+            "budget.allow_negative", True
+        )
+        self._reserve_with_dist(
+            self.child,
+            30_000,
+            {str(fx["dept_main"].id): 100.0, str(fx["act_main"].id): 100.0},
+        )
+        data = self.env["budget.dashboard"].get_dashboard_data(
+            self.fy.id,
+            self.parent.id,
+            {},
+            ["department_analytic_id", "activity_analytic_id"],
+        )
+        rows = {r["key"]: r for r in data["rows"]}
+        dept = fx["dept_main"].id
+        pool = rows["p%s|a%s|b%s" % (dept, fx["act_sub"].id, self.child.id)]
+        self.assertEqual(pool["remaining"], 100_000)
+        above = rows["p%s|a%s|b%s" % (dept, fx["act_main"].id, self.child.id)]
+        self.assertEqual(above["used"], 30_000)
+        self.assertEqual(above["remaining"], -30_000)

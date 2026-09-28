@@ -45,9 +45,6 @@ export class BudgetReservationPicker extends BudgetDashboard {
         // host domain — narrow_required). Reset whenever the selection changes.
         this.state.narrowAccount = false;
         this.state.narrowLabel = "";
-        // ancestor chain of each covering filter value, so selectedDistribution
-        // can pin the finer of the filter and the picked row.
-        this.state.filterAncestors = {};
         // "งบที่จองได้ … (คุมงบที่ …)" — the engine's Available for the final pick.
         this.state.availabilityLine = false;
         // The picker must open with a blank filter bar — never pre-seeded from the
