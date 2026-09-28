@@ -298,20 +298,17 @@ class BudgetDashboard(models.AbstractModel):
             )
         )
 
+        # a flat row's figure is its account subtree: keyed by account id
+        drill = self._usage_drill_index(
+            fold, lambda acc_id, _tup: set(self._ancestor_ids(acc_by_id[acc_id]))
+        )
         rows = []
         stack = [(acc, 0) for acc in reversed(roots)]
         while stack:
             acc, level = stack.pop()
             kids = children.get(acc.id, [])
             row = self._make_row(acc, rolled[acc.id], level, bool(kids))
-            if fold["moved"]:
-                row.update(
-                    self._usage_drill_pairs(
-                        fold,
-                        lambda acc_id, _tup, acc=acc: acc.id
-                        in self._ancestor_ids(acc_by_id[acc_id]),
-                    )
-                )
+            row.update(drill.get(acc.id, {}))
             rows.append(row)
             for child in reversed(kids):
                 stack.append((child, level + 1))
@@ -437,6 +434,27 @@ class BudgetDashboard(models.AbstractModel):
             rec = pos[depth]["rec"].get(node_id)
             return (rec.code or "") if rec else ""
 
+        # Usage drill pairs, indexed once (ADR-0016). An account row's figure is
+        # its account subtree at the exact projected tuple; a dimension row's is
+        # the tuple prefix above it with the value at its level in the node's
+        # subtree (untagged → the sentinel node 0).
+        def acc_row_keys(acc_id, tup):
+            proj = project(tup)
+            return {(proj, a) for a in self._ancestor_ids(acc_by_id[acc_id])}
+
+        def dim_row_keys(_acc_id, tup):
+            proj = project(tup)
+            return {
+                (proj[:depth], node)
+                for depth in range(n)
+                for node in (
+                    ana_path.get(proj[depth], [proj[depth]]) if proj[depth] else [0]
+                )
+            }
+
+        acc_drill = self._usage_drill_index(fold, acc_row_keys) if moved else {}
+        dim_drill = self._usage_drill_index(fold, dim_row_keys) if moved else {}
+
         rows = []
 
         def emit_account_tree(prefix, level):
@@ -485,16 +503,7 @@ class BudgetDashboard(models.AbstractModel):
                         "has_children": bool(kids),
                         "own_current": own_current,
                         **self._value_columns(rolled[account.id]),
-                        **(
-                            self._usage_drill_pairs(
-                                fold,
-                                lambda acc_id, tup: project(tup) == prefix
-                                and account.id
-                                in self._ancestor_ids(acc_by_id[acc_id]),
-                            )
-                            if moved
-                            else {}
-                        ),
+                        **acc_drill.get((prefix, account.id), {}),
                     }
                 )
                 for child in kids:
@@ -536,17 +545,6 @@ class BudgetDashboard(models.AbstractModel):
             # their own analytic parent (own_key), threaded through the recursion.
             base_parent = dim_key(prefix) if prefix else False
 
-            def in_dim_row(tup, node_id):
-                # the row's figure: exact prefix, value in node's subtree (or
-                # untagged for the sentinel) at this level
-                proj = project(tup)
-                if proj[:depth] != prefix:
-                    return False
-                value = proj[depth]
-                if not node_id:
-                    return not value
-                return bool(value) and node_id in ana_path.get(value, [value])
-
             def emit_node(node_id, lvl, parent_key):
                 rec = info["rec"].get(node_id)
                 child_nodes = sorted(
@@ -573,14 +571,7 @@ class BudgetDashboard(models.AbstractModel):
                         "level": lvl,
                         "has_children": bool(child_nodes) or exact_has,
                         **self._value_columns(vals),
-                        **(
-                            self._usage_drill_pairs(
-                                fold,
-                                lambda _acc, tup: in_dim_row(tup, node_id),
-                            )
-                            if moved
-                            else {}
-                        ),
+                        **dim_drill.get((prefix, node_id), {}),
                     }
                 )
                 for child in child_nodes:
@@ -684,33 +675,33 @@ class BudgetDashboard(models.AbstractModel):
                     best, best_depth = candidate, depth
         return best
 
-    def _usage_drill_pairs(self, fold, in_row):
-        """Coordinates a row's usage drill-down must add / remove (ADR-0016).
+    def _usage_drill_index(self, fold, row_keys):
+        """Coordinates each row's usage drill-down must add / remove (ADR-0016).
 
         The client drills a row by its dimensions + the filter; usage folded
         *into* the row from outside that scope is added (``usage_in``), usage
         inside the scope folded *out* to another row's pool is excluded
-        (``usage_out``). ``in_row(account_id, full_tuple)`` is the row's figure
-        predicate. Empty lists are omitted to keep the payload small.
+        (``usage_out``). ``row_keys(account_id, full_tuple)`` returns the keys of
+        the rows whose figure includes that coordinate. Built once per report
+        (O(moved), not O(rows × moved)); returns ``{row key: {"usage_in": [...],
+        "usage_out": [...]}}`` with empty lists omitted to keep the payload small.
         """
         full = self._DIM_FIELDS
-        usage_in, usage_out = [], []
+        index = defaultdict(dict)
         for acc_id, src, tgt in fold["moved"]:
-            src_in = in_row(acc_id, src) and fold["in_scope"](src)
-            tgt_in = in_row(acc_id, tgt)
-            if src_in == tgt_in:
+            src_keys = row_keys(acc_id, src) if fold["in_scope"](src) else set()
+            tgt_keys = row_keys(acc_id, tgt)
+            if src_keys == tgt_keys:
                 continue
             pair = {
                 "account_id": acc_id,
                 "dims": {f: (src[i] or False) for i, f in enumerate(full)},
             }
-            (usage_in if tgt_in else usage_out).append(pair)
-        out = {}
-        if usage_in:
-            out["usage_in"] = usage_in
-        if usage_out:
-            out["usage_out"] = usage_out
-        return out
+            for key in tgt_keys - src_keys:
+                index[key].setdefault("usage_in", []).append(pair)
+            for key in src_keys - tgt_keys:
+                index[key].setdefault("usage_out", []).append(pair)
+        return index
 
     def _facts_by_account_dims(self, model, domain, field, dims):
         """{(account_id, dim_tuple): Σ field} grouped by account + each dim.
@@ -1420,4 +1411,3 @@ class BudgetDashboard(models.AbstractModel):
     def _ancestor_ids(account):
         """ids along parent_path, root-first, including the account itself."""
         return [int(x) for x in (account.parent_path or "").strip("/").split("/") if x]
-
