@@ -401,6 +401,7 @@ msgstr ""
 
 #. module: purchase_request_sarabun
 #: model:ir.model.fields.selection,name:purchase_request_sarabun.selection__purchase_request__state__sent
+#: model_terms:ir.ui.view,arch_db:purchase_request_sarabun.view_purchase_request_search
 msgid "Sent"
 msgstr "รอพิจารณาให้จัดหา"
 
