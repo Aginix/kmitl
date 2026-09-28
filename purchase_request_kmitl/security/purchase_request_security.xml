@@ -30,6 +30,13 @@
         <field name="category_id" ref="base.module_category_hidden" />
     </record>
 
+    <record id="base.group_erp_manager" model="res.groups">
+        <field
+            name="implied_ids"
+            eval="[(4, ref('purchase_request_kmitl.group_purchase_request_verify'))]"
+        />
+    </record>
+
     <!-- rules -->
     <record id="purchase_request_user_all_rule" model="ir.rule">
         <field name="name">Purchase Request User : All Documents</field>
