@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Accounting Reports",
-    "version": "16.0.8.1.0",
+    "version": "16.0.8.1.1",
     "category": "KMITL/Accounting",
     "summary": "KMITL accounting reports: Trial Balance, General Ledger, "
     "Profit and Loss, Balance Sheet, Cash Flow Statement, "
