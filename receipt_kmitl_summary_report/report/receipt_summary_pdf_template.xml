@@ -99,7 +99,6 @@
                                         <td class="text-right" t-out="format_amount(row['amount_total'])"/>
                                         <td>
                                             <div t-if="row['payment_type_label']" t-out="row['payment_type_label']"/>
-                                            <div t-if="row['payment_method']">วิธีชำระเงิน: <t t-out="row['payment_method']"/></div>
                                             <ul t-if="row['payment_extras']" style="margin: 0; padding-left: 16px;">
                                                 <li t-foreach="row['payment_extras']" t-as="e" t-out="e"/>
                                             </ul>

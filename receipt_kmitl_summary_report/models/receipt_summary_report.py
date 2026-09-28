@@ -66,6 +66,8 @@ class ReceiptReport(models.AbstractModel):
                     dim_parts.append(account.display_name)
 
             payment_extras = []
+            if r.payment_method_id:
+                payment_extras.append("วิธีชำระเงิน: %s" % r.payment_method_id.name)
             if r.payment_type == "cheque":
                 if r.cheque_number:
                     payment_extras.append("เลขที่เช็ค: %s" % r.cheque_number)
@@ -287,8 +289,6 @@ class ReceiptReportXlsx(models.AbstractModel):
                 payment_parts = []
                 if r["payment_type_label"]:
                     payment_parts.append(r["payment_type_label"])
-                if r["payment_method"]:
-                    payment_parts.append("วิธีชำระเงิน: %s" % r["payment_method"])
                 for extra in r["payment_extras"]:
                     payment_parts.append("• %s" % extra)
                 sheet.write(row, 5, "\n".join(payment_parts), wrap)

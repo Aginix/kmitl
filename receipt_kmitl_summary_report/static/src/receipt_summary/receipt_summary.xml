@@ -126,7 +126,7 @@
                                     <td colspan="4" />
                                 </tr>
                                 <t t-foreach="group.rows" t-as="row" t-key="row.id">
-                                    <tr class="cursor-pointer" t-on-click="() => this.openReceipt(row)">
+                                    <tr>
                                         <td />
                                         <td><t t-esc="row.name" /></td>
                                         <td><t t-esc="row.customer_name" /></td>
@@ -143,7 +143,6 @@
                                         <td class="text-end"><t t-esc="format(row.amount_total)" /></td>
                                         <td>
                                             <div t-if="row.payment_type_label"><t t-esc="row.payment_type_label" /></div>
-                                            <div t-if="row.payment_method">วิธีชำระเงิน: <t t-esc="row.payment_method" /></div>
                                             <ul t-if="row.payment_extras.length" class="mb-0">
                                                 <li t-foreach="row.payment_extras" t-as="e" t-key="e_index"
                                                     t-esc="e" />

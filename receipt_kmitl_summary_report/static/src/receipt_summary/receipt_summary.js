@@ -135,16 +135,6 @@ export class ReceiptSummaryReport extends Component {
         }
     }
 
-    openReceipt(row) {
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            res_model: "kmitl.receipt",
-            res_id: row.id,
-            views: [[false, "form"]],
-            target: "current",
-        });
-    }
-
     format(value) {
         if (!value || Math.abs(value) < 0.005) return "";
         return value.toLocaleString(undefined, {
