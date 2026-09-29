@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_form_attachment_carousel" model="ir.ui.view">
+        <field name="name">disbursement.request.form.attachment.carousel</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='display_status'][@widget='statusbar']" position="before">
+                <button name="action_open_attachment_carousel"
+                        type="object"
+                        string="ดูไฟล์แนบทั้งหมด"
+                        icon="fa-files-o"
+                        attrs="{'invisible': [('attachment_ids', '=', [])]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

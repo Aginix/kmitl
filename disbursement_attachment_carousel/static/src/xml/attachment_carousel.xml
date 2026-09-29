@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="disbursement_attachment_carousel.AttachmentCarousel" owl="1">
+        <div class="o_dac d-flex flex-column">
+            <t t-if="state.loading">
+                <div class="o_dac_empty text-center p-5">
+                    <i class="fa fa-spinner fa-spin fa-2x text-muted"/>
+                </div>
+            </t>
+            <t t-elif="count === 0">
+                <div class="o_dac_empty text-center p-5">
+                    <i class="fa fa-folder-open-o fa-3x text-muted mb-3 d-block"/>
+                    <p class="mb-0">ไม่มีไฟล์แนบ</p>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="o_dac_header d-flex align-items-center px-3 py-2 border-bottom">
+                    <div class="o_dac_title flex-grow-1 text-truncate">
+                        <strong><t t-esc="state.index + 1"/> / <t t-esc="count"/></strong>
+                        <span class="mx-2 text-muted">—</span>
+                        <span t-esc="current.name"/>
+                    </div>
+                    <button class="btn btn-sm btn-secondary" t-on-click="download">
+                        <i class="fa fa-download me-1"/> ดาวน์โหลด
+                    </button>
+                </div>
+
+                <div class="o_dac_viewer position-relative flex-grow-1">
+                    <t t-if="isPdf(current)">
+                        <iframe class="o_dac_iframe" t-att-src="contentUrl(current)" frameborder="0"/>
+                    </t>
+                    <t t-elif="isImage(current)">
+                        <div class="o_dac_image_wrap">
+                            <img class="o_dac_image" t-att-src="contentUrl(current)" t-att-alt="current.name"/>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="o_dac_unsupported text-center">
+                            <i class="fa fa-file-o fa-4x text-muted mb-3 d-block"/>
+                            <p class="mb-1">ไม่สามารถแสดงตัวอย่างไฟล์ประเภทนี้ได้</p>
+                            <p class="text-muted small"><t t-esc="current.mimetype"/></p>
+                            <a class="btn btn-primary mt-2" t-att-href="contentUrl(current)" target="_blank">
+                                <i class="fa fa-download me-1"/> ดาวน์โหลดไฟล์
+                            </a>
+                        </div>
+                    </t>
+
+                    <button t-if="count > 1"
+                            class="o_dac_nav o_dac_prev btn btn-light"
+                            t-on-click="prev"
+                            title="Previous">
+                        <i class="fa fa-chevron-left"/>
+                    </button>
+                    <button t-if="count > 1"
+                            class="o_dac_nav o_dac_next btn btn-light"
+                            t-on-click="next"
+                            title="Next">
+                        <i class="fa fa-chevron-right"/>
+                    </button>
+                </div>
+
+                <div t-if="count > 1" class="o_dac_thumbs border-top">
+                    <t t-foreach="state.attachments" t-as="att" t-key="att.id">
+                        <div class="o_dac_thumb"
+                             t-att-class="{ 'o_dac_thumb_active': att_index === state.index }"
+                             t-on-click="() => this.goTo(att_index)"
+                             t-att-title="att.name">
+                            <t t-if="isImage(att)">
+                                <img t-att-src="thumbnailUrl(att)" t-att-alt="att.name"/>
+                            </t>
+                            <t t-elif="isPdf(att)">
+                                <div class="o_dac_thumb_icon"><i class="fa fa-file-pdf-o"/></div>
+                            </t>
+                            <t t-else="">
+                                <div class="o_dac_thumb_icon"><i class="fa fa-file-o"/></div>
+                            </t>
+                            <div class="o_dac_thumb_name text-truncate"><t t-esc="att.name"/></div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>
