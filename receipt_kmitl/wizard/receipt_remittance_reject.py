@@ -22,6 +22,7 @@ class ReceiptRemittanceReject(models.TransientModel):
             raise UserError(
                 _("Only submitted remittances can be rejected.")
             )
+        remittance._check_approver()
         remittance.message_post(
             body=_("Remittance rejected by %s.<br/>Reason: %s")
             % (self.env.user.name, self.reason),

@@ -79,7 +79,6 @@ class ReceiptRemittance(models.Model):
             ("groups_id", "in",
              [self.env.ref("receipt_kmitl.group_receipt_kmitl_remittance_approver").id])
         ],
-        default=lambda self: self._default_approver_id(),
         tracking=True,
     )
     approved_by = fields.Many2one("res.users", readonly=True, copy=False)
@@ -94,15 +93,14 @@ class ReceiptRemittance(models.Model):
         string="# Journal Entries",
     )
 
-    @api.model
-    def _default_approver_id(self):
-        group = self.env.ref(
-            "receipt_kmitl.group_receipt_kmitl_remittance_approver",
-            raise_if_not_found=False,
-        )
-        if group and group.users:
-            return group.users[0].id
-        return False
+    def _check_approver(self):
+        self.ensure_one()
+        if self.env.user != self.approver_id and not self.env.user.has_group(
+            "receipt_kmitl.group_receipt_kmitl_manager"
+        ):
+            raise UserError(
+                _("Only the assigned approver can act on this remittance.")
+            )
 
     @api.depends("receipt_ids")
     def _compute_receipt_count(self):
@@ -144,13 +142,45 @@ class ReceiptRemittance(models.Model):
 
     def _validate_receipts(self, expected_state):
         self.ensure_one()
-        if not self.receipt_ids:
+        receipts = self.sudo().receipt_ids
+        if not receipts:
             raise ValidationError(_("Add at least one receipt."))
-        for receipt in self.receipt_ids:
+        for receipt in receipts:
             if receipt.state != expected_state:
                 raise ValidationError(
                     _("Receipt %s is not in '%s' state.")
                     % (receipt.name, expected_state)
+                )
+
+    def _get_pending_receipt_domain(self):
+        self.ensure_one()
+        return [
+            ("company_id", "=", self.company_id.id),
+            ("department_analytic_id", "child_of", self.department_analytic_id.id),
+            ("state", "=", "draft"),
+            ("remittance_id", "=", False),
+            ("date", "<=", self.date),
+        ]
+
+    def _check_receipt_consistency(self, receipts):
+        self.ensure_one()
+        if not receipts:
+            return
+        valid_ids = set(
+            self.env["account.analytic.account"]
+            .search([("id", "child_of", self.department_analytic_id.id)])
+            .ids
+        )
+        for receipt in receipts:
+            if receipt.department_analytic_id.id not in valid_ids:
+                raise ValidationError(
+                    _("Receipt %s does not belong to this department's subtree.")
+                    % receipt.name
+                )
+            if receipt.company_id != self.company_id:
+                raise ValidationError(
+                    _("Receipt %s belongs to a different company.")
+                    % receipt.name
                 )
 
     def action_pull_pending_receipts(self):
@@ -158,17 +188,7 @@ class ReceiptRemittance(models.Model):
             if rec.state != "draft":
                 raise UserError(_("Can only pull receipts on draft remittances."))
             receipts = self.env["kmitl.receipt"].search(
-                [
-                    ("company_id", "=", rec.company_id.id),
-                    (
-                        "department_analytic_id",
-                        "child_of",
-                        rec.department_analytic_id.id,
-                    ),
-                    ("state", "=", "draft"),
-                    ("remittance_id", "=", False),
-                    ("date", "<=", rec.date),
-                ]
+                rec._get_pending_receipt_domain()
             )
             if not receipts:
                 raise UserError(
@@ -220,26 +240,12 @@ class ReceiptRemittance(models.Model):
             if not rec.approver_id:
                 raise UserError(_("Please set an approver before submitting."))
             rec._validate_receipts("draft")
-            for receipt in rec.receipt_ids:
-                if not self.env["account.analytic.account"].search_count(
-                    [
-                        ("id", "=", receipt.department_analytic_id.id),
-                        ("id", "child_of", rec.department_analytic_id.id),
-                    ]
-                ):
-                    raise ValidationError(
-                        _("Receipt %s does not belong to this department's subtree.")
-                        % receipt.name
-                    )
-                if receipt.company_id != rec.company_id:
-                    raise ValidationError(
-                        _("Receipt %s belongs to a different company.")
-                        % receipt.name
-                    )
+            receipts = rec.sudo().receipt_ids
+            rec._check_receipt_consistency(receipts)
             rec.date = fields.Date.context_today(rec)
             if rec.name == "/" or not rec.name:
                 rec.name = rec._get_sequence().next_by_id()
-            rec.receipt_ids.write({"state": "submitted"})
+            receipts.write({"state": "submitted"})
             rec.state = "submitted"
             rec._schedule_approver_activity()
 
@@ -247,9 +253,10 @@ class ReceiptRemittance(models.Model):
         for rec in self:
             if rec.state != "submitted":
                 raise UserError(_("Only submitted remittances can be approved."))
+            rec._check_approver()
             rec._validate_receipts("submitted")
             rec._complete_approver_activity()
-            rec.receipt_ids.write({"state": "approved"})
+            rec.sudo().receipt_ids.write({"state": "approved"})
             rec.write(
                 {
                     "state": "approved",
@@ -290,7 +297,7 @@ class ReceiptRemittance(models.Model):
                     raise UserError(
                         _("Only managers can reset posted remittances to draft.")
                     )
-                for receipt in rec.receipt_ids:
+                for receipt in rec.sudo().receipt_ids:
                     move = receipt.move_id
                     if not move:
                         continue
@@ -312,7 +319,7 @@ class ReceiptRemittance(models.Model):
                     _("Cannot reset to draft from this state.")
                 )
             rec._cancel_approver_activity()
-            rec.receipt_ids.write({"state": "draft"})
+            rec.sudo().receipt_ids.write({"state": "draft"})
             rec.write(
                 {
                     "state": "draft",
@@ -325,7 +332,7 @@ class ReceiptRemittance(models.Model):
         for rec in self:
             if rec.state == "posted":
                 raise UserError(_("Posted remittances cannot be cancelled."))
-            rec.receipt_ids.write({"remittance_id": False, "state": "draft"})
+            rec.sudo().receipt_ids.write({"remittance_id": False, "state": "draft"})
             rec.state = "cancelled"
 
     def action_view_journal_entries(self):

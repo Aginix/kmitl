@@ -9,6 +9,13 @@
                 <field name="operating_unit_id" widget="selection"
                        groups="operating_unit.group_multi_operating_unit"/>
             </xpath>
+            <xpath expr="//field[@name='receipt_ids']" position="attributes">
+                <attribute name="domain">[('state', '=', 'draft'),
+                                          ('remittance_id', '=', False),
+                                          ('department_analytic_id', 'child_of', department_analytic_id),
+                                          ('company_id', '=', company_id),
+                                          ('operating_unit_id', '=', operating_unit_id)]</attribute>
+            </xpath>
         </field>
     </record>
 

@@ -331,6 +331,12 @@ class ReceiptKmitl(models.Model):
                 dashboard[bucket]["amount"] += g.get("amount_total") or 0.0
         return dashboard
 
+    def _prepare_remittance_vals(self, receipts):
+        return {
+            "department_analytic_id": receipts.mapped("department_analytic_id").id,
+            "receipt_ids": [(6, 0, receipts.ids)],
+        }
+
     def action_create_report(self):
         receipts = self.filtered(
             lambda r: r.state == "draft"
@@ -348,10 +354,7 @@ class ReceiptKmitl(models.Model):
                   "Please select receipts from the same department.")
             )
         remittance = self.env["kmitl.receipt.remittance"].create(
-            {
-                "department_analytic_id": departments.id,
-                "receipt_ids": [(6, 0, receipts.ids)],
-            }
+            self._prepare_remittance_vals(receipts)
         )
         return {
             "type": "ir.actions.act_window",

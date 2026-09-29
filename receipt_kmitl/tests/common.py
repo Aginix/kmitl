@@ -1,6 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import fields
+from odoo import Command, fields
 from odoo.tests.common import TransactionCase
 
 
@@ -171,6 +171,23 @@ class ReceiptKmitlCommon(TransactionCase):
         )
         if not cls.walkin:
             cls.walkin = cls.env["res.partner"].create({"name": "Walk-in (test)"})
+
+        # --- Remittance approver ---
+        cls.approver = cls.env["res.users"].create(
+            {
+                "name": "Approver",
+                "login": "kmitl_receipt_remittance_approver",
+                "groups_id": [
+                    Command.set(
+                        [
+                            cls.env.ref(
+                                "receipt_kmitl.group_receipt_kmitl_remittance_approver"
+                            ).id
+                        ]
+                    )
+                ],
+            }
+        )
 
     def _make_receipt(self, department=None, method=None, lines=None, extra_vals=None):
         department = department or self.dept_a
