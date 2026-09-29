@@ -341,6 +341,10 @@
                 <attribute name="widget">date</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='date_accept']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
             <xpath
                 expr="//field[@name='wa_line_ids']/tree/field[@name='product_id']"
                 position="attributes"
