@@ -6,10 +6,12 @@
         <field name="inherit_id" ref="receipt_kmitl.view_receipt_remittance_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='department_analytic_id']" position="after">
+                <!-- Ungrouped copy: the receipt_ids domain needs it for every user.
+                     Keep it BEFORE the visible node: the form parser keeps the
+                     last node's widget, and widget="selection" must win. -->
+                <field name="operating_unit_id" invisible="1"/>
                 <field name="operating_unit_id" widget="selection"
                        groups="operating_unit.group_multi_operating_unit"/>
-                <!-- Ungrouped copy: the receipt_ids domain needs it for every user -->
-                <field name="operating_unit_id" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='receipt_ids']" position="attributes">
                 <attribute name="domain">[('state', '=', 'draft'),
