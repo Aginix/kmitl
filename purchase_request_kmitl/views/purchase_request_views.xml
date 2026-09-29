@@ -108,7 +108,7 @@
                 >{'readonly': [('state', 'not in', ('draft', 'returned'))]}</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='vat_included']" position="before">
+            <xpath expr="//group[@name='tax_group']" position="before">
                 <group>
                     <group>
                         <field name="partner_id_domain" invisible="1" />
