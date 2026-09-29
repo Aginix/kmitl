@@ -281,11 +281,21 @@ class ReceiptRemittance(models.Model):
         for rec in self:
             if rec.state != "approved":
                 raise UserError(_("Only approved remittances can be posted."))
-            if not rec.receipt_ids:
+            receipts = rec.sudo().receipt_ids
+            if not receipts:
                 raise UserError(
                     _("Cannot post a remittance with no receipts.")
                 )
-            rec.receipt_ids._action_post()
+            # Posting keeps the user's accounting rights (no sudo), so refuse
+            # rather than silently skip receipts hidden by record rules.
+            if self.env["kmitl.receipt"].search_count(
+                [("id", "in", receipts.ids)]
+            ) != len(receipts):
+                raise UserError(
+                    _("Some receipts on this remittance are not accessible "
+                      "to you and cannot be posted.")
+                )
+            receipts.with_env(self.env)._action_post()
             rec.state = "posted"
 
     def action_draft(self):

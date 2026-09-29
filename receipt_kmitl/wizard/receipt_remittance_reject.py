@@ -28,5 +28,5 @@ class ReceiptRemittanceReject(models.TransientModel):
             % (self.env.user.name, self.reason),
         )
         remittance._cancel_approver_activity()
-        remittance.receipt_ids.write({"state": "draft"})
+        remittance.sudo().receipt_ids.write({"state": "draft"})
         remittance.write({"state": "draft"})
