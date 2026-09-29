@@ -198,3 +198,25 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
             remittance.with_user(other_user).action_approve()
         remittance.with_user(approver).action_approve()
         self.assertEqual(remittance.state, "approved")
+
+    def test_remittance_department_must_be_root(self):
+        with self.assertRaises(ValidationError):
+            self.env["kmitl.receipt.remittance"].create(
+                {"department_analytic_id": self.dept_a_child.id}
+            )
+
+    def test_create_report_files_subdepartments_under_root(self):
+        r_parent = self._make_receipt(department=self.dept_a)
+        r_child = self._make_receipt(department=self.dept_a_child)
+
+        action = (r_parent | r_child).action_create_report()
+        remittance = self.env["kmitl.receipt.remittance"].browse(action["res_id"])
+        self.assertEqual(remittance.department_analytic_id, self.dept_a)
+        self.assertEqual(set(remittance.receipt_ids.ids), {r_parent.id, r_child.id})
+
+    def test_create_report_rejects_different_root_departments(self):
+        r_child = self._make_receipt(department=self.dept_a_child)
+        r_other = self._make_receipt(department=self.dept_b)
+
+        with self.assertRaises(UserError):
+            (r_child | r_other).action_create_report()

@@ -40,7 +40,7 @@ class ReceiptRemittance(models.Model):
         "account.analytic.account",
         string="Department",
         required=True,
-        domain=[("root_plan_id.code", "=", "departments")],
+        domain=[("root_plan_id.code", "=", "departments"), ("parent_id", "=", False)],
         tracking=True,
     )
     receipt_ids = fields.One2many(
@@ -101,6 +101,14 @@ class ReceiptRemittance(models.Model):
             raise UserError(
                 _("Only the assigned approver can act on this remittance.")
             )
+
+    @api.constrains("department_analytic_id")
+    def _check_department_is_root(self):
+        for rec in self:
+            if rec.department_analytic_id.parent_id:
+                raise ValidationError(
+                    _("A remittance must be filed under a top-level department.")
+                )
 
     @api.depends("receipt_ids")
     def _compute_receipt_count(self):
