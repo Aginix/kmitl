@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- No view changes needed for purchase.request from this module.
+         The can_resume_returned_sarabun field is used by purchase_request_sarabun's
+         "Create Sarabun" button visibility (the button already exists on the PR form
+         from purchase_request_sarabun; this module's override of action_submit_to_sarabun
+         handles the resume flow transparently). -->
+</odoo>
