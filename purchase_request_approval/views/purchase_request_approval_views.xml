@@ -212,7 +212,7 @@
                         </group>
                     </group>
                     <group>
-                        <group name="budget_info" string="Budget Informations">
+                        <group name="budget_info" string="Budget Information Section">
                             <field name="budget_commitment_id" invisible="1"/>
                             <field name="budget_commitment_amount"
                                 readonly="1"

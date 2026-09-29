@@ -221,7 +221,7 @@ msgstr "การใช้งบประมาณ"
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
-msgid "Budget Informations"
+msgid "Budget Information Section"
 msgstr "ข้อมูลงบประมาณ"
 
 #. module: purchase_request_approval
@@ -1617,6 +1617,11 @@ msgstr "รายการ"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__product_qty
 msgid "Quantity"
 msgstr "จำนวน"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__procurement_mode
+msgid "Procurement Mode"
+msgstr "โหมดจัดหา"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__product_uom_id
