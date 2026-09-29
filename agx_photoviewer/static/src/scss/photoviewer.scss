@@ -1,0 +1,39 @@
+.o_field_many2many_binary .o_attachment_wrap.o_agx_photoviewer_previewable {
+    &,
+    a {
+        cursor: zoom-in;
+    }
+}
+
+.o_AttachmentImage {
+    cursor: zoom-in;
+}
+
+// Non-image files are rendered by a registered renderer below the header.
+.photoviewer-modal.o_agx_photoviewer_embed {
+    .photoviewer-stage,
+    .photoviewer-footer {
+        display: none;
+    }
+
+    .photoviewer-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.32);
+    }
+
+    &.o_agx_photoviewer_busy .o_agx_photoviewer_content {
+        pointer-events: none;
+    }
+}
+
+.o_agx_photoviewer_content {
+    position: absolute;
+    inset: 31px 0 0 0;
+    display: flex;
+    overflow: auto;
+
+    > iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+}
