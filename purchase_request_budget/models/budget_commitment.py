@@ -8,7 +8,7 @@ class BudgetCommitment(models.Model):
     purchase_request_ids = fields.One2many(
         "purchase.request",
         "budget_commitment_id",
-        string="ใบขอให้จัดหา",
+        string="Purchase Requests",
         help=(
             "ใบขอให้จัดหาที่ผูกกับใบจองนี้ ทั้งที่จองงบใหม่จาก พจ. เอง "
             "และที่หยิบใบจองนี้ไปใช้ (draw down)"

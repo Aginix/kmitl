@@ -13,7 +13,7 @@
                     class="oe_stat_button"
                     icon="fa-money"
                     attrs="{'invisible': [('advance_payment_count', '=', 0)]}">
-                    <field name="advance_payment_count" string="สัญญาเงินยืม" widget="statinfo"/>
+                    <field name="advance_payment_count" string="Advance Payments" widget="statinfo"/>
                 </button>
             </xpath>
 
@@ -21,7 +21,7 @@
             <xpath expr="//button[@name='button_done']" position="after">
                 <field name="is_requested_by_current_user" invisible="1"/>
                 <button name="action_create_advance_payment"
-                    string="สร้างสัญญาเงินยืม"
+                    string="Create Advance Payment"
                     type="object"
                     class="btn-primary"
                     attrs="{'invisible': ['|', '|', '|',

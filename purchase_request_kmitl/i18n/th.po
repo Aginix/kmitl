@@ -2361,3 +2361,46 @@ msgstr "คำขอทั้งหมด"
 #: model:ir.ui.menu,name:purchase_request_kmitl.purchase_request_kmitl_root_menu
 msgid "Purchase Request"
 msgstr "แบบขอให้จัดหา (พ.1)"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_line__uom_text
+msgid "Unit of Measure"
+msgstr "หน่วยนับ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_cancel_wizard__reason
+msgid "Cancellation Reason"
+msgstr "เหตุผลการยกเลิก"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_return_wizard__reason
+msgid "Return Reason"
+msgstr "เหตุผลการตีกลับ"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Created On"
+msgstr "วันที่สร้าง"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_cancel_wizard_form
+#: model:ir.actions.act_window,name:purchase_request_kmitl.action_purchase_request_cancel_wizard
+msgid "Cancel Request (พ.1)"
+msgstr "ยกเลิกคำขอ (พ.1)"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_return_wizard_form
+msgid "Return Request (พ.1)"
+msgstr "ตีกลับคำขอ (พ.1)"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_cancel_wizard_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_return_wizard_form
+msgid "Confirm"
+msgstr "ยืนยัน"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_cancel_wizard_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_return_wizard_form
+msgid "Close"
+msgstr "ปิด"

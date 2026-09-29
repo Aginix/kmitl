@@ -21,9 +21,9 @@ class PurchaseRequest(models.Model):
         compute="_compute_is_egp",
         store=True,
     )
-    egp_project_id = fields.Char(string="เลขที่โครงการ e-GP", tracking=True)
+    egp_project_id = fields.Char(string="e-GP Project ID", tracking=True)
     egp_project_url = fields.Char(
-        string="ลิงค์ e-GP", compute="_compute_egp_project_url", readonly=True
+        string="e-GP Link", compute="_compute_egp_project_url", readonly=True
     )
     egp_status = fields.Selection(
         selection=_STATES,

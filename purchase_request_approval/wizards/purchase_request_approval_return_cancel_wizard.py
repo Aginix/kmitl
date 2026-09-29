@@ -12,7 +12,7 @@ class PurchaseRequestApprovalReturnCancelWizard(models.TransientModel):
         required=True,
         readonly=True,
     )
-    reason = fields.Text(string="เหตุผล", required=True)
+    reason = fields.Text(string="Reason", required=True)
 
     def action_confirm(self):
         self.ensure_one()

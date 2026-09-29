@@ -161,3 +161,38 @@ msgstr "แหล่งเงิน"
 #: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_search
 msgid "To Verify Budget"
 msgstr "รอยืนยันงบประมาณ"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__budget_commitment_state
+msgid "Commitment Status"
+msgstr "สถานะใบจอง"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__budget_selection_mode
+msgid "Budget Source"
+msgstr "แหล่งงบประมาณ"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__reservation_commitment_id
+msgid "Budget Commitment (Reserved)"
+msgstr "ใบจองงบประมาณ"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_budget_commitment__purchase_request_ids
+msgid "Purchase Requests"
+msgstr "ใบขอให้จัดหา"
+
+#. module: purchase_request_budget
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
+msgid "Budget Code"
+msgstr "รหัสงบประมาณ"
+
+#. module: purchase_request_budget
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
+msgid "Select Budget from Chart (Balance Available)"
+msgstr "เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
+
+#. module: purchase_request_budget
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.budget_commitment_form_view
+msgid "Purchase Requests"
+msgstr "ใบขอให้จัดหา"

@@ -11,7 +11,7 @@ class PurchaseRequestCancelWizard(models.TransientModel):
         required=True,
         readonly=True,
     )
-    reason = fields.Text(string="เหตุผลการยกเลิก", required=True)
+    reason = fields.Text(string="Cancellation Reason", required=True)
 
     def action_confirm(self):
         self.ensure_one()

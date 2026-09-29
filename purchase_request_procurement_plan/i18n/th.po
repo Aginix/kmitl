@@ -82,3 +82,18 @@ msgstr "เลือกใช้รายการจากแผนจัดซ
 #: model_terms:ir.ui.view,arch_db:purchase_request_procurement_plan.view_purchase_request_form_inherit_account_fiscal_year_procurement_plan
 msgid "Purchase Request Form"
 msgstr "แบบขอให้จัดหา (พ.1)"
+
+#. module: purchase_request_procurement_plan
+#: model_terms:ir.ui.view,arch_db:purchase_request_procurement_plan.view_procurement_plan_form_purchase_request
+msgid "Create Purchase Request"
+msgstr "สร้างใบขอซื้อ"
+
+#. module: purchase_request_procurement_plan
+#: model_terms:ir.ui.view,arch_db:purchase_request_procurement_plan.view_procurement_plan_form_purchase_request
+msgid "Purchase Requests (พ.1)"
+msgstr "ใบ พ.1"
+
+#. module: purchase_request_procurement_plan
+#: model_terms:ir.ui.view,arch_db:purchase_request_procurement_plan.view_procurement_plan_search_procurement_method
+msgid "Procurement Method"
+msgstr "วิธีการจัดซื้อจัดจ้าง"

@@ -26,7 +26,7 @@ class PurchaseRequest(models.Model):
 
     budget_commitment_state = fields.Selection(
         related="budget_commitment_id.state",
-        string="สถานะใบจอง",
+        string="Commitment Status",
         readonly=True,
         help=(
             "ใช้ในฟอร์มเพื่อแยก 'มีใบจองที่ยังใช้งานอยู่' ออกจาก 'ใบจองถูกยกเลิกแล้ว' "
@@ -37,7 +37,7 @@ class PurchaseRequest(models.Model):
         selection=[
             ("normal", "จองงบใหม่จากผังงบประมาณ"),
         ],
-        string="แหล่งงบประมาณ",
+        string="Budget Source",
         default="normal",
         copy=False,
         help=(
@@ -48,7 +48,7 @@ class PurchaseRequest(models.Model):
     )
     reservation_commitment_id = fields.Many2one(
         "budget.commitment",
-        string="ใบจองงบประมาณ",
+        string="Budget Commitment (Reserved)",
         domain=lambda self: self._domain_reservation_commitment_id(),
         copy=False,
         tracking=True,

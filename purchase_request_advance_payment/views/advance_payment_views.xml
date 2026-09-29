@@ -12,7 +12,7 @@
                     class="oe_stat_button"
                     icon="fa-shopping-cart"
                     attrs="{'invisible': [('purchase_request_count', '=', 0)]}">
-                    <field name="purchase_request_count" string="คำขอซื้อขอจ้าง" widget="statinfo"/>
+                    <field name="purchase_request_count" string="Purchase Requests" widget="statinfo"/>
                 </button>
             </xpath>
         </field>
@@ -38,7 +38,7 @@
                 <field name="purchase_request_id"/>
             </field>
             <filter name="group_loan_type" position="after">
-                <filter string="คำขอซื้อขอจ้าง" name="group_purchase_request"
+                <filter string="Purchase Request" name="group_purchase_request"
                     context="{'group_by': 'purchase_request_id'}"/>
             </filter>
         </field>

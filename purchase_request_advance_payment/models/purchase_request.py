@@ -7,7 +7,7 @@ class PurchaseRequest(models.Model):
 
     advance_payment_id = fields.Many2one(
         comodel_name="advance.payment",
-        string="สัญญายืมเงิน",
+        string="Advance Payment Agreement",
         readonly=True,
         copy=False,
     )

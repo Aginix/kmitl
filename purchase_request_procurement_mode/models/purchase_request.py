@@ -9,7 +9,7 @@ class PurchaseRequest(models.Model):
             ("by_officer", "ให้พัสดุจัดหา"),
             ("by_requester", "ผู้ขอระบุเอง"),
         ],
-        string="โหมดจัดหา",
+        string="Procurement Mode",
         default="by_requester",
         required=True,
         tracking=True,

@@ -5,7 +5,7 @@
         <field name="name">purchase.request.approval.material.withdrawal.wizard.form</field>
         <field name="model">purchase.request.approval.material.withdrawal.wizard</field>
         <field name="arch" type="xml">
-            <form string="พิมพ์ใบเบิกวัสดุ (พ.43)">
+            <form string="Print Material Withdrawal (พ.43)">
                 <sheet>
                     <group>
                         <field name="approval_id" invisible="1"/>
@@ -16,15 +16,15 @@
                 </sheet>
                 <footer>
                     <button name="action_print" type="object"
-                            string="พิมพ์ใบเบิกวัสดุ" class="btn-primary"/>
-                    <button string="ยกเลิก" class="btn-secondary" special="cancel"/>
+                            string="Print Material Withdrawal" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
         </field>
     </record>
 
     <record id="action_material_withdrawal_wizard" model="ir.actions.act_window">
-        <field name="name">พิมพ์ใบเบิกวัสดุ (พ.43)</field>
+        <field name="name">Print Material Withdrawal (พ.43)</field>
         <field name="res_model">purchase.request.approval.material.withdrawal.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

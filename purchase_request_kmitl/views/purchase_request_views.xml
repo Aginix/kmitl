@@ -412,7 +412,7 @@
                                 name="date_start"
                                 readonly="1"
                             />
-                            <field name="create_date" string="วันที่สร้าง" readonly="1"/>
+                            <field name="create_date" string="Created On" readonly="1"/>
                         </group>
                     </group>
                 </page>

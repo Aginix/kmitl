@@ -64,7 +64,7 @@
                      never see the selection UI below, but they must still see the
                      ใบจองงบประมาณ their request ended up with. -->
                 <group
-                    name="budget_commitment_info_group" string="รหัสงบประมาณ"
+                    name="budget_commitment_info_group" string="Budget Code"
                     attrs="{'invisible': [('budget_commitment_id', '=', False)]}"
                 >
                     <field name="budget_commitment_state" invisible="1" />
@@ -93,7 +93,7 @@
                         attrs="{'invisible': [('is_budget_editable', '=', False)]}"
                     />
                     <button name="action_open_reservation_picker" type="object"
-                        string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
+                        string="Select Budget from Chart (Balance Available)"
                         colspan="2" class="btn btn-primary mb-2" icon="fa-sitemap"
                         attrs="{'invisible': ['|', '|', ('is_budget_editable', '=', False), ('reservation_commitment_id', '!=', False), ('budget_selection_mode', '!=', 'normal')]}"/>
                     <field name="analytic_distribution" invisible="1" />

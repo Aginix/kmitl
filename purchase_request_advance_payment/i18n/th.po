@@ -63,13 +63,13 @@ msgstr ""
 
 #. module: purchase_request_advance_payment
 #: model_terms:ir.ui.view,arch_db:purchase_request_advance_payment.view_purchase_request_form_advance_payment
-msgid "สร้างสัญญาเงินยืม"
-msgstr ""
+msgid "Create Advance Payment"
+msgstr "สร้างสัญญาเงินยืม"
 
 #. module: purchase_request_advance_payment
 #: model:ir.model.fields,field_description:purchase_request_advance_payment.field_purchase_request__advance_payment_id
-msgid "สัญญายืมเงิน"
-msgstr ""
+msgid "Advance Payment Agreement"
+msgstr "สัญญายืมเงิน"
 
 #. module: purchase_request_advance_payment
 #. odoo-python
@@ -83,5 +83,15 @@ msgstr ""
 
 #. module: purchase_request_advance_payment
 #: model_terms:ir.ui.view,arch_db:purchase_request_advance_payment.view_purchase_request_form_advance_payment
-msgid "สัญญาเงินยืม"
-msgstr ""
+msgid "Advance Payments"
+msgstr "สัญญาเงินยืม"
+
+#. module: purchase_request_advance_payment
+#: model_terms:ir.ui.view,arch_db:purchase_request_advance_payment.view_advance_payment_form_purchase_request
+msgid "Purchase Requests"
+msgstr "คำขอซื้อขอจ้าง"
+
+#. module: purchase_request_advance_payment
+#: model_terms:ir.ui.view,arch_db:purchase_request_advance_payment.view_advance_payment_search_purchase_request
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
