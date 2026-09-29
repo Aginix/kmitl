@@ -202,7 +202,7 @@
                             <field
                                 name="vat_included"
                                 required="1"
-                                attrs="{'readonly': ['|'('is_editable', '=', False), ('payment_type', '!=', 'direct')]}"
+                                attrs="{'readonly': ['|', ('is_editable', '=', False), ('payment_type', '!=', 'direct')]}"
                             />
                             <field
                                 name="tax_id"
