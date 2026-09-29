@@ -81,6 +81,9 @@
                         <group>
                             <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}"
                                 options="{'no_open': True}" />
+                            <field name="requesting_department_id"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'required': [('is_plan_editable', '=', True)], 'readonly': [('is_plan_editable', '=', False)]}" />
                             <field name="owner_id" widget="employee_detail_many2one"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}" />
 
@@ -117,14 +120,45 @@
                             <field name="account_fiscal_year_id" options="{'no_open': True}"
                                 attrs="{'readonly': [('is_number_assigned', '=', True)]}" />
                             <field name="id" invisible="1" />
-                            <field name="user_id" readonly="1" />
-                            <field name="create_date" readonly="1" />
+                            <field name="user_id" readonly="1"
+                                attrs="{'invisible': [('id', '=', False)]}" />
+                            <field name="create_date" readonly="1"
+                                attrs="{'invisible': [('id', '=', False)]}" />
                         </group>
                         <label for="description" string="Description"
                             attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
                         <field name="description"
                             attrs="{'readonly': [('is_plan_editable', '=', False)]}" colspan="2"
                             nolabel="1" />
+                    </group>
+                    <group name="plan_expense" string="ค่าใช้จ่ายตามแผน">
+                        <field name="multi_product" invisible="1" />
+                        <group string="ค่าใช้จ่าย" attrs="{'invisible': [('multi_product', '=', True)]}">
+                            <field name="plan_amount"
+                                attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
+                            <field name="plan_description"
+                                attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
+                        </group>
+                        <group string="Planned Expenses" attrs="{'invisible': [('multi_product', '=', False)]}">
+                            <field name="line_ids" nolabel="1"
+                                colspan="2"
+                                attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                                <tree editable="bottom">
+                                    <field name="allowed_product_ids" invisible="1" />
+                                    <field name="sequence" widget="handle" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="product_id" />
+                                    <field name="description" />
+                                    <field name="total_amount" sum="Total" />
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                    <group name="plan_attachments" string="เอกสารแนบประกอบคำขอ">
+                        <field name="attachment_ids" nolabel="1" colspan="2"
+                            attrs="{'readonly': [('is_plan_editable','=', False)]}"
+                            context="{'default_res_model': 'approval.request'}"
+                            widget="many2many_binary" />
                     </group>
                     <!-- The reserved commitment, however it came to be: reserved by
                          this request or drawn from an existing slip. Shown to everyone
@@ -185,29 +219,7 @@
                         <field name="analytic_distribution" invisible="1" />
                     </group>
                     <notebook>
-                        <page string="Expense Details (Plan)" name="expense_details">
-                            <field name="multi_product" invisible="1" />
-                            <group string="ค่าใช้จ่าย" attrs="{'invisible': [('multi_product', '=', True)]}">
-                                <field name="plan_amount"
-                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
-                                <field name="plan_description"
-                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
-                            </group>
-                            <group string="Planned Expenses" attrs="{'invisible': [('multi_product', '=', False)]}">
-                                <!-- <separator /> -->
-                                <field name="line_ids" nolabel="1"
-                                    colspan="2"
-                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}">
-                                    <tree editable="bottom">
-                                        <field name="allowed_product_ids" invisible="1" />
-                                        <field name="sequence" widget="handle" />
-                                        <field name="currency_id" invisible="1" />
-                                        <field name="product_id" />
-                                        <field name="description" />
-                                        <field name="total_amount" sum="Total" />
-                                    </tree>
-                                </field>
-                            </group>
+                        <page string="รายชื่อผู้เกี่ยวข้อง" name="expense_details">
                             <group>
                                 <separator string="รายชื่อบุคลากรภายใน" />
                                 <field name="internal_participant_ids" nolabel="1"
@@ -241,11 +253,6 @@
                                         <field name="description" />
                                     </tree>
                                 </field>
-                                <separator string="Attachments" />
-                                <field name="attachment_ids" nolabel="1" colspan="2"
-                                    attrs="{'readonly': [('is_plan_editable','=', False)]}"
-                                    context="{'default_res_model': 'approval.request'}"
-                                    widget="many2many_binary" />
                             </group>
                         </page>
                         <page string="Actual Expenses (Disbursement)" name="actual_expenses">
@@ -347,6 +354,7 @@
                 <field name="create_date" />
                 <field name="category_id" />
                 <field name="owner_id" />
+                <field name="requesting_department_id" optional="show" />
                 <field name="user_id" string="Created by" optional="hide" />
                 <field name="date" optional="hide" />
                 <field name="account_fiscal_year_id" options="{'no_open': True}" optional="hide" />
@@ -384,6 +392,7 @@
                 <field name="category_id" />
                 <field name="account_fiscal_year_id" />
                 <field name="owner_id" />
+                <field name="requesting_department_id" />
                 <separator />
                 <filter name="my_request" string="My Requests"
                     domain="[('owner_id.user_id','=', uid)]" />
@@ -419,6 +428,8 @@
                     <filter name="group_state" string="Status" context="{'group_by': 'state'}" />
                     <filter name="group_fy" string="Fiscal Year"
                         context="{'group_by': 'account_fiscal_year_id'}" />
+                    <filter name="group_requesting_department" string="หน่วยงานผู้ขอ"
+                        context="{'group_by': 'requesting_department_id'}" />
                 </group>
             </search>
         </field>

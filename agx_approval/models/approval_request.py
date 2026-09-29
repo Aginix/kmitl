@@ -147,6 +147,28 @@ class ApprovalRequest(models.Model):
                     _("You can only submit approval requests in your own name.")
                 )
 
+    requesting_department_id = fields.Many2one(
+        "account.analytic.account",
+        string="หน่วยงานผู้ขอ",
+        domain=[("root_plan_id.code", "=", "departments")],
+        default=lambda self: self._default_requesting_department_id(),
+        tracking=True,
+        index=True,
+        help="หน่วยงานที่ขออนุมัติค่าใช้จ่าย — ระบุโดยผู้ขอตั้งแต่แรก แยกจากมิติ "
+        "ส่วนงานของงบประมาณ (ส่วนงานที่ตัดงบ) ซึ่งเจ้าหน้าที่งบเลือกภายหลัง",
+    )
+
+    @api.model
+    def _default_requesting_department_id(self):
+        return self.search(
+            [
+                ("user_id", "=", self.env.uid),
+                ("requesting_department_id", "!=", False),
+            ],
+            order="id desc",
+            limit=1,
+        ).requesting_department_id
+
     description = fields.Text(
         string="Description",
         tracking=True,
