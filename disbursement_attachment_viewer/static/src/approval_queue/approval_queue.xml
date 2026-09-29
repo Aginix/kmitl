@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-inherit="disbursement.ApprovalQueue" t-inherit-mode="extension" owl="1">
+        <xpath expr="//tr[hasclass('o_aq_detail')]//table[hasclass('table-sm')]"
+               position="before">
+            <a t-if="dr.attachment_count"
+               class="btn btn-sm btn-outline-primary mb-2"
+               t-att-href="`/disbursement/request/${dr.id}/attachments`"
+               target="_blank">
+                <i class="fa fa-files-o me-1"/>
+                ดูไฟล์แนบทั้งหมด (<t t-esc="dr.attachment_count"/>)
+            </a>
+        </xpath>
+    </t>
+
+</templates>

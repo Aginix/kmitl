@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        Cover page printed before the disbursement request's attachments
+        when the DR's whole batch of attachments is combined into one PDF
+        (disbursement.request._build_attachments_pdf).
+    -->
+    <template id="report_disbursement_attachments_separator_document">
+        <t t-call="web.basic_layout">
+            <style>
+                .cover, .cover * { font-family: 'THSarabunNew', Arial, sans-serif; }
+                .cover { position: relative; font-size: 16pt; line-height: 1.3; min-height: 260mm; }
+                .cover-brand {
+                    display: flex; align-items: center;
+                    border: 1px solid #cfd4dc; background: #f5f7fa;
+                    padding: 10px 16px; border-radius: 4px;
+                }
+                .cover-brand img { max-height: 60px; margin-right: 16px; }
+                .cover-brand .name-th { font-size: 20pt; font-weight: bold; line-height: 1.1; }
+                .cover-brand .name-en { font-size: 14pt; color: #495057; line-height: 1.1; }
+                .cover-title { text-align: center; margin-top: 22px; }
+                .cover-title .th { font-size: 24pt; font-weight: bold; }
+                .cover-title .en { font-size: 16pt; color: #495057; letter-spacing: 1px; }
+                .cover-number {
+                    margin: 22px auto 0;
+                    padding: 10px 24px;
+                    border: 2px solid #1f2d3d;
+                    border-radius: 8px;
+                    text-align: center;
+                    display: inline-block;
+                }
+                .cover-number-wrap { text-align: center; }
+                .cover-number .label { font-size: 13pt; color: #495057; letter-spacing: 1px; }
+                .cover-number .value { font-size: 34pt; font-weight: bold; line-height: 1.1; }
+                .cover-date { text-align: center; margin-top: 6px; font-size: 15pt; color: #495057; }
+                .cover-info {
+                    margin-top: 26px;
+                    width: 100%;
+                    border-collapse: collapse;
+                    border-top: 1px solid #dee2e6;
+                    border-bottom: 1px solid #dee2e6;
+                }
+                .cover-info td {
+                    padding: 8px 10px;
+                    border-bottom: 1px dashed #e9ecef;
+                    vertical-align: top;
+                }
+                .cover-info tr:last-child td { border-bottom: none; }
+                .cover-info .label {
+                    width: 34%;
+                    color: #495057;
+                    font-weight: bold;
+                    white-space: nowrap;
+                }
+                .cover-info .value {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+                .cover-info .amount { font-size: 22pt; font-weight: bold; text-align: right; }
+                .cover-summary {
+                    margin-top: 18px;
+                    padding: 10px 14px;
+                    background: #f5f7fa;
+                    border-left: 4px solid #1f2d3d;
+                    font-size: 15pt;
+                }
+                .cover-files {
+                    margin-top: 10px;
+                    padding: 10px 14px;
+                    background: #ffffff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    font-size: 14pt;
+                }
+                .cover-files .heading { font-weight: bold; margin-bottom: 4px; }
+                .cover-files ol { margin: 0 0 0 22px; padding: 0; }
+                .cover-skipped {
+                    margin-top: 14px;
+                    padding: 10px 14px;
+                    border: 1px solid #f0d58a;
+                    background: #fff8e1;
+                    border-radius: 4px;
+                    font-size: 14pt;
+                }
+                .cover-skipped .heading { font-weight: bold; margin-bottom: 4px; }
+                .cover-skipped ul { margin: 0 0 0 20px; padding: 0; }
+                .cover-footer {
+                    position: absolute;
+                    left: 0; right: 0; bottom: 0;
+                    padding-top: 8px;
+                    border-top: 1px solid #dee2e6;
+                    font-size: 12pt;
+                    color: #6c757d;
+                    text-align: center;
+                }
+            </style>
+            <div class="page cover">
+                <div class="cover-brand">
+                    <img t-if="o.company_id.logo"
+                         t-att-src="image_data_uri(o.company_id.logo)"
+                         alt="Logo"/>
+                    <div>
+                        <div class="name-th">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
+                        <div class="name-en">King Mongkut's Institute of Technology Ladkrabang</div>
+                    </div>
+                </div>
+
+                <div class="cover-title">
+                    <div class="th">ใบปะหน้าเอกสารแนบใบขอเบิก</div>
+                    <div class="en">DISBURSEMENT REQUEST ATTACHMENT COVER SHEET</div>
+                </div>
+
+                <div class="cover-number-wrap">
+                    <div class="cover-number">
+                        <div class="label">เลขที่ / No.</div>
+                        <div class="value" t-field="o.name"/>
+                    </div>
+                </div>
+                <div class="cover-date">
+                    <span>วันที่ / Date: </span>
+                    <span t-field="o.date"/>
+                </div>
+
+                <table class="cover-info">
+                    <tr>
+                        <td class="label">ผู้ขอเบิก / Responsible</td>
+                        <td class="value">
+                            <span t-esc="o.user_id.name or '-'"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">ส่วนงาน / Department</td>
+                        <td class="value">
+                            <span t-esc="o.department_analytic_id.display_name or '-'"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">จำนวนเงินรวม / Total Amount</td>
+                        <td class="amount">
+                            <span t-esc="'{:,.2f}'.format(o.amount_total)"/>
+                            <span style="font-size:15pt; font-weight:normal; color:#495057;"> บาท / THB</span>
+                        </td>
+                    </tr>
+                </table>
+
+                <t t-set="skipped" t-value="(skipped_map or {}).get(str(o.id), [])"/>
+                <t t-set="attachment_count" t-value="len(o.attachment_ids)"/>
+                <div class="cover-summary">
+                    <strong>เอกสารแนบ / Attachments: </strong>
+                    <span t-esc="attachment_count"/>
+                    <span> ฉบับ / file(s)</span>
+                </div>
+
+                <div t-if="o.attachment_ids" class="cover-files">
+                    <div class="heading">รายการไฟล์แนบ / Attachment list</div>
+                    <ol>
+                        <li t-foreach="o.attachment_ids" t-as="att" t-esc="att.name"/>
+                    </ol>
+                </div>
+
+                <div t-if="skipped" class="cover-skipped">
+                    <div class="heading">
+                        ⚠ ไฟล์แนบที่ไม่รองรับ (ข้าม) / Unsupported attachments (skipped)
+                    </div>
+                    <ul>
+                        <li t-foreach="skipped" t-as="fname" t-esc="fname"/>
+                    </ul>
+                </div>
+
+                <div class="cover-footer">
+                    เอกสารต่อไปนี้เป็นหลักฐานประกอบใบขอเบิกเลขที่
+                    <span t-field="o.name"/>
+                    / The following pages are supporting documents for disbursement request
+                    <span t-field="o.name"/>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_disbursement_attachments_separator">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="disbursement_attachment_viewer.report_disbursement_attachments_separator_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_disbursement_no_attachments">
+        <t t-call="web.html_container">
+            <style>
+                .cover-empty, .cover-empty * { font-family: 'THSarabunNew', Arial, sans-serif; }
+                .cover-empty { text-align: center; margin-top: 220px; }
+                .cover-empty .th { font-size: 28pt; font-weight: bold; }
+                .cover-empty .en { font-size: 18pt; color: #495057; margin-top: 4px; letter-spacing: 1px; }
+                .cover-empty .hint { font-size: 15pt; color: #6c757d; margin-top: 18px; }
+            </style>
+            <div class="page cover-empty">
+                <div class="th">ไม่มีไฟล์แนบ</div>
+                <div class="en">NO ATTACHMENTS</div>
+                <div class="hint">ใบขอเบิกฉบับนี้ไม่มีเอกสารแนบสำหรับพิมพ์รวม</div>
+            </div>
+        </t>
+    </template>
+
+    <record id="action_report_disbursement_attachments_separator" model="ir.actions.report">
+        <field name="name">Disbursement Attachments Cover</field>
+        <field name="model">disbursement.request</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">disbursement_attachment_viewer.report_disbursement_attachments_separator</field>
+        <field name="report_file">disbursement_attachment_viewer.report_disbursement_attachments_separator</field>
+        <field name="paperformat_id" ref="disbursement.paperformat_disbursement_request_report"/>
+        <field name="binding_model_id" eval="False"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_disbursement_no_attachments" model="ir.actions.report">
+        <field name="name">Disbursement No Attachments</field>
+        <field name="model">disbursement.request</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">disbursement_attachment_viewer.report_disbursement_no_attachments</field>
+        <field name="report_file">disbursement_attachment_viewer.report_disbursement_no_attachments</field>
+        <field name="paperformat_id" ref="disbursement.paperformat_disbursement_request_report"/>
+        <field name="binding_model_id" eval="False"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
