@@ -563,6 +563,7 @@
     <!-- menu -->
     <menuitem
         id="purchase_request.menu_purchase_request"
+        name="Purchase Requests"
         parent="purchase_request.parent_menu_purchase_request"
     />
     <menuitem
