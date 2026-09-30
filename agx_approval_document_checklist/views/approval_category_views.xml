@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="approval_category_view_form_disbursement_document" model="ir.ui.view">
+        <field name="name">approval.category.view.form.disbursement.document</field>
+        <field name="model">approval.category</field>
+        <field name="inherit_id" ref="agx_approval.approval_category_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group[1]" position="after">
+                <group string="เอกสารแนบที่ใช้ในการเบิกจ่าย"
+                    name="disbursement_document_requirements">
+                    <field name="disbursement_document_ids" nolabel="1" colspan="2">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="required"/>
+                        </tree>
+                    </field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

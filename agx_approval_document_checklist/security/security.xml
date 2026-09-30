@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The checklist rows carry the requester's personal documents (สำเนาบัตร
+         ประชาชน, ใบเสร็จ). Once _adopt_orphan_attachments stamps a file with
+         res_model = approval.request.disbursement.document, ir.attachment.check()
+         gates it on *this* model instead of approval.request — so the request's
+         own-rule no longer applies and the files must be re-fenced here, mirroring
+         agx_approval's Own/User pair. -->
+    <record id="approval_request_disbursement_document_own_rule" model="ir.rule">
+        <field name="name">Approval Disbursement Document: own requests only</field>
+        <field name="model_id" ref="model_approval_request_disbursement_document"/>
+        <field name="groups" eval="[(4, ref('agx_approval.group_approval_own'))]"/>
+        <field name="domain_force">['|', ('request_id.owner_id.user_id', '=', user.id), ('request_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Users (and managers, who imply User) verify and disburse other people's
+         requests: this permissive rule ORs out the "own only" restriction they
+         inherit via the imply. -->
+    <record id="approval_request_disbursement_document_user_all_rule" model="ir.rule">
+        <field name="name">Approval Disbursement Document: users see all</field>
+        <field name="model_id" ref="model_approval_request_disbursement_document"/>
+        <field name="groups" eval="[(4, ref('agx_approval.group_approval_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+</odoo>

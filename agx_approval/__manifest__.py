@@ -37,5 +37,10 @@
         "data/approval_request_exception_data.xml",
         "reports/report_approval_request.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "agx_approval/static/src/js/many2many_binary_disbursement.js",
+        ],
+    },
     "license": "LGPL-3",
 }

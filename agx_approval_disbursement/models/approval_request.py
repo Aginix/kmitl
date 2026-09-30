@@ -86,18 +86,6 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
-    attachment_ids = fields.One2many(
-        domain=[("is_disbursement_evidence", "=", False)],
-    )
-
-    disbursement_attachment_ids = fields.Many2many(
-        comodel_name='ir.attachment',
-        relation='approval_request_disbursement_attachment_rel',
-        column1='request_id',
-        column2='attachment_id',
-        string='Disbursement Attachments',
-    )
-
     has_active_disbursement = fields.Boolean(
         compute="_compute_has_active_disbursement",
     )
@@ -129,14 +117,6 @@ class ApprovalRequest(models.Model):
                 record.billing_status = "full"
             else:
                 record.billing_status = "partial"
-
-    def write(self, vals):
-        result = super().write(vals)
-        if "disbursement_attachment_ids" in vals:
-            self.disbursement_attachment_ids.filtered(
-                lambda a: not a.is_disbursement_evidence
-            ).write({"is_disbursement_evidence": True})
-        return result
 
     def _billable_allocations(self):
         """Allocation rows that become disbursement lines — everything except
@@ -245,9 +225,9 @@ class ApprovalRequest(models.Model):
     def _copy_attachments_to_disbursement(self, disbursement):
         """Clone AR attachments to the given DR.
 
-        Includes both the request-side attachment_ids (filtered to
-        non-evidence on this model) and the disbursement_attachment_ids
-        many2many that gathers DR-evidence files staged on the AR.
+        Includes both the plan-stage attachment_ids and the disbursement-stage
+        disbursement_attachment_ids (เอกสารแนบอื่น ๆ) — both owned by
+        agx_approval, which already keeps the two buckets apart.
 
         Each clone gets its own ir.attachment row pointing at the same
         SHA1-hashed file in the Odoo filestore, so no binary is duplicated

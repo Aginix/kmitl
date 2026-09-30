@@ -17,11 +17,27 @@ class ApprovalRequest(models.Model):
     ]
     _order = "name desc"
 
+    # Plan-stage files. Both buckets upload through res_model/res_id of the
+    # request, so is_disbursement_evidence is the only thing separating them —
+    # without the domain a disbursement-stage file surfaces here too.
     attachment_ids = fields.One2many(
         'ir.attachment',
         'res_id',
         string='Document Attachments',
+        domain=[("is_disbursement_evidence", "=", False)],
         tracking=True,
+    )
+
+    # Disbursement-stage catch-all: whatever the actual-expense stage needs that
+    # no typed requirement covers (agx_approval_document_checklist adds the typed
+    # half above it). agx_approval_disbursement clones these onto the DR it
+    # creates; the bucket itself is not a disbursement concept and lives here.
+    disbursement_attachment_ids = fields.Many2many(
+        comodel_name='ir.attachment',
+        relation='approval_request_disbursement_attachment_rel',
+        column1='request_id',
+        column2='attachment_id',
+        string='เอกสารแนบอื่น ๆ',
     )
 
     active = fields.Boolean(
@@ -877,6 +893,19 @@ class ApprovalRequest(models.Model):
             if rec.budget_commitment_id:
                 rec._log_budget_commitment_linked()
         return records
+
+    def write(self, vals):
+        result = super().write(vals)
+        if "disbursement_attachment_ids" in vals:
+            # The upload route stamps every file with res_model/res_id of the
+            # request, so a freshly uploaded disbursement file is indistinguishable
+            # from a plan one until this flag is set — see the
+            # many2many_binary_disbursement widget, which sets it client-side so the
+            # plan One2many never picks the file up before the record is saved.
+            self.disbursement_attachment_ids.filtered(
+                lambda a: not a.is_disbursement_evidence
+            ).write({"is_disbursement_evidence": True})
+        return result
 
     def _log_budget_commitment_linked(self):
         link = f"/web#id={self.id}&model={self._name}&view_type=form"

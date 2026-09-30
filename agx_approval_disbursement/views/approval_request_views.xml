@@ -47,14 +47,11 @@
                     />
                 </button>
             </xpath>
-            <xpath expr="//page[@name='actual_expenses']" position="inside">
-                <group name="attachment_for_disbursement" string="เอกสารแนบสำหรับการเบิก"
-                    attrs="{'invisible': [('state', 'not in', ['approved', 'to_disburse', 'billed', 'returned'])]}">
-                    <field name="disbursement_attachment_ids"
-                        widget="many2many_binary_disbursement"
-                        attrs="{'readonly': ['&amp;', ('disbursement_request_count', '>', 0), ('is_correction', '=', False)]}">
-                    </field>
-                </group>
+            <!-- Base freezes the bucket once the request leaves ``approved``; a DR
+                 is what actually locks it here, so evidence can still be added
+                 while finance is preparing the disbursement. -->
+            <xpath expr="//field[@name='disbursement_attachment_ids']" position="attributes">
+                <attribute name="attrs">{'readonly': ['&amp;', ('disbursement_request_count', '>', 0), ('is_correction', '=', False)]}</attribute>
             </xpath>
         </field>
     </record>
