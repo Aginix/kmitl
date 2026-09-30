@@ -9,12 +9,14 @@ bundled in ``static/lib/photoviewer``).
 * ``many2many_binary`` fields: hovering an attachment shows a zoom cursor and
   clicking it opens the viewer instead of downloading the file.
 * Chatter: clicking an image attachment opens the viewer.
+* The previous / next buttons walk through all the previewable attachments of
+  the list, images and files alike. The modal can be resized freely.
 
 Other file types can be added by registering a renderer::
 
     registry.category("agx_photoviewer.renderers").add("my_type", {
         match: (attachment) => attachment.mimetype === "...",
-        render: (attachment, container) => { /* replace container content */ },
+        render: (attachment, page) => { /* replace the page content */ },
     });
 
 See ``agx_photoviewer_filetypes`` for PDF, video, Word, Excel and PowerPoint.

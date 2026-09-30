@@ -10,7 +10,9 @@ viewer, both in ``many2many_binary`` fields and the chatter:
   5000 rows per sheet), PowerPoint ``.pptx`` (pptx-preview)
 
 Office files are rendered in the browser; nothing leaves the server. Legacy
-``.doc`` / ``.ppt`` are not supported. The libraries in ``static/lib`` are
+``.doc`` / ``.ppt`` are not supported. PowerPoint files whose
+``[Content_Types].xml`` lists missing parts (e.g. PptxGenJS) are repaired in
+memory before rendering. The libraries in ``static/lib`` are
 lazy-loaded on first use:
 
 * jszip 3.10.2 (MIT/GPL-3), docx-preview 0.4.1 (Apache-2.0),

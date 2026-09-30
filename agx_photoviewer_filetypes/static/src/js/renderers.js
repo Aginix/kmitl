@@ -11,6 +11,7 @@ const LIB = "/agx_photoviewer_filetypes/static/lib";
 const PDFJS_VIEWER = "/web/static/lib/pdfjs/web/viewer.html?file=";
 // Rows read per sheet; keeps huge workbooks from freezing the browser.
 const MAX_SHEET_ROWS = 5000;
+const SLIDE_WIDTH = 960;
 
 const matchFile = (mimetypes, extensions) => (attachment) =>
     mimetypes.includes(attachment.mimetype) ||
@@ -24,30 +25,30 @@ async function fetchArrayBuffer(attachment) {
     return response.arrayBuffer();
 }
 
-function renderPdf(attachment, container) {
+function renderPdf(attachment, page) {
     const iframe = document.createElement("iframe");
     iframe.src = `${PDFJS_VIEWER}${encodeURIComponent(
         getUrl(attachment)
     )}#pagemode=none`;
-    container.replaceChildren(iframe);
+    page.replaceChildren(iframe);
 }
 
-function renderVideo(attachment, container) {
+function renderVideo(attachment, page) {
     const video = document.createElement("video");
     video.className = "o_agx_photoviewer_video";
     video.controls = true;
     video.src = getUrl(attachment);
-    container.replaceChildren(video);
+    page.replaceChildren(video);
 }
 
-async function renderDocx(attachment, container) {
+async function renderDocx(attachment, page) {
     await loadJS(`${LIB}/jszip/jszip.min.js`);
     await loadJS(`${LIB}/docx-preview/docx-preview.min.js`);
     const data = await fetchArrayBuffer(attachment);
-    await window.docx.renderAsync(data, container);
+    await window.docx.renderAsync(data, page);
 }
 
-async function renderXlsx(attachment, container) {
+async function renderXlsx(attachment, page) {
     await loadJS(`${LIB}/xlsx/xlsx.full.min.js`);
     const data = await fetchArrayBuffer(attachment);
     const workbook = window.XLSX.read(data, {type: "array", sheetRows: MAX_SHEET_ROWS});
@@ -89,22 +90,66 @@ async function renderXlsx(attachment, container) {
     const wrapper = document.createElement("div");
     wrapper.className = "o_agx_photoviewer_sheets";
     wrapper.append(tabs, sheet);
-    container.replaceChildren(wrapper);
+    page.replaceChildren(wrapper);
     showSheet(workbook.SheetNames[0]);
 }
 
-async function renderPptx(attachment, container) {
+/**
+ * Some generators list parts that are not in the zip in [Content_Types].xml;
+ * pptx-preview then silently loads zero slides. Drop those entries and read
+ * the slide size while the archive is open.
+ */
+async function readPptx(attachment) {
+    await loadJS(`${LIB}/jszip/jszip.min.js`);
+    let data = await fetchArrayBuffer(attachment);
+    const zip = await window.JSZip.loadAsync(data);
+    const types = new DOMParser().parseFromString(
+        await zip.file("[Content_Types].xml").async("text"),
+        "application/xml"
+    );
+    let dirty = false;
+    for (const override of types.getElementsByTagName("Override")) {
+        if (!zip.file(override.getAttribute("PartName").slice(1))) {
+            override.remove();
+            dirty = true;
+        }
+    }
+    if (dirty) {
+        zip.file("[Content_Types].xml", new XMLSerializer().serializeToString(types));
+        data = await zip.generateAsync({type: "arraybuffer", compression: "STORE"});
+    }
+    const presentation = new DOMParser().parseFromString(
+        await zip.file("ppt/presentation.xml").async("text"),
+        "application/xml"
+    );
+    const size = presentation.getElementsByTagNameNS("*", "sldSz")[0];
+    const ratio = size ? size.getAttribute("cy") / size.getAttribute("cx") : 9 / 16;
+    return {data, ratio};
+}
+
+async function renderPptx(attachment, page) {
     await loadJS(`${LIB}/pptx-preview/pptx-preview.umd.js`);
-    const data = await fetchArrayBuffer(attachment);
+    const {data, ratio} = await readPptx(attachment);
     const wrapper = document.createElement("div");
-    wrapper.className = "o_agx_photoviewer_slides";
-    container.replaceChildren(wrapper);
-    const width = Math.max(container.clientWidth - 72, 320);
+    page.replaceChildren(wrapper);
     const previewer = window.pptxPreview.init(wrapper, {
-        width,
-        height: Math.round((width * 9) / 16),
+        width: SLIDE_WIDTH,
+        height: Math.round(SLIDE_WIDTH * ratio),
     });
-    await previewer.preview(data);
+    const pptx = await previewer.preview(data);
+    if (!pptx.slides.length) {
+        throw new Error(`No slide found in attachment ${attachment.id}`);
+    }
+    // The slides are laid out at a fixed width: scale them to the page, which
+    // follows the (freely resizable) modal.
+    const reader = wrapper.firstElementChild;
+    const fit = () => {
+        const zoom = page.clientWidth / SLIDE_WIDTH;
+        reader.style.zoom = zoom;
+        reader.style.height = `${page.clientHeight / zoom}px`;
+    };
+    fit();
+    new ResizeObserver(fit).observe(page);
 }
 
 const renderers = {

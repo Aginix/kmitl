@@ -6,8 +6,8 @@ import {registry} from "@web/core/registry";
 
 /**
  * Renderers open non-image files inside the viewer modal. Other modules add
- * entries here: {match(attachment) => bool, render(attachment, container)}.
- * `render` replaces the content of `container` (which shows a spinner until
+ * entries here: {match(attachment) => bool, render(attachment, page)}.
+ * `render` replaces the content of `page` (which shows a spinner until
  * then); it may return a promise. An attachment is a plain
  * {id, name, mimetype, accessToken} object.
  */
@@ -21,6 +21,10 @@ const IMAGE_MIMETYPES = [
     "image/svg+xml",
     "image/webp",
 ];
+
+// The modal can be resized freely down to this size.
+const MIN_WIDTH = 280;
+const MIN_HEIGHT = 180;
 
 const DOWNLOAD_ICON =
     '<svg viewBox="0 0 24 24" class="svg-inline-icon">' +
@@ -50,79 +54,102 @@ export function isPreviewable(attachment) {
     return isImage(attachment) || Boolean(getRenderer(attachment));
 }
 
-function downloadButton(getAttachment) {
-    return {
-        title: _t("Download"),
-        text: DOWNLOAD_ICON,
-        click(viewer) {
-            const link = document.createElement("a");
-            link.href = getUrl(getAttachment(viewer), true);
-            link.click();
-        },
-    };
-}
+const downloadButton = {
+    title: _t("Download"),
+    text: DOWNLOAD_ICON,
+    click(viewer) {
+        const link = document.createElement("a");
+        link.href = getUrl(viewer.images[viewer.index].attachment, true);
+        link.click();
+    },
+};
 
-function openRenderer(renderer, attachment) {
-    return new window.PhotoViewer([{src: "", title: escape(attachment.name || "")}], {
-        movable: false,
-        keyboard: false,
-        fixedModalSize: true,
-        modalWidth: Math.round(window.innerWidth * 0.7),
-        modalHeight: Math.round(window.innerHeight * 0.85),
-        // An iframe would swallow the mouse events of a drag started elsewhere.
-        dragHandle: ".photoviewer-header",
-        headerToolbar: ["download", "maximize", "close"],
-        footerToolbar: [],
-        customButtons: {download: downloadButton(() => attachment)},
-        callbacks: {
-            opened(viewer) {
-                const modal = viewer.$photoviewer;
-                const container = document.createElement("div");
-                container.className = "o_agx_photoviewer_content";
-                container.innerHTML =
-                    '<i class="fa fa-spin fa-spinner fa-2x m-auto"></i>';
-                modal.addClass("o_agx_photoviewer_embed");
-                viewer.$stage[0].after(container);
-                // Keep the pointer events of the content frozen while dragging
-                // or resizing so the mouseup always reaches the document.
-                modal.on("mousedown", () => {
-                    modal.addClass("o_agx_photoviewer_busy");
-                    document.addEventListener(
-                        "mouseup",
-                        () => modal.removeClass("o_agx_photoviewer_busy"),
-                        {once: true}
-                    );
-                });
-                modal.on("keydown", (ev) => ev.key === "Escape" && viewer.close());
-                Promise.resolve(renderer.render(attachment, container)).catch(
-                    (error) => {
-                        console.error(error);
-                        container.innerHTML = `<div class="m-auto text-center p-3">${escape(
-                            _t("This file cannot be previewed.")
-                        )}</div>`;
-                    }
-                );
-            },
-        },
+/**
+ * Show the item being loaded: images use the native stage, files are rendered
+ * into a container placed below the header by their renderer.
+ */
+function showItem(viewer, state) {
+    const item = viewer.images[viewer.index];
+    const modal = viewer.$photoviewer;
+    if (!state.container) {
+        if (viewer.images.length === 1) {
+            modal.addClass("o_agx_photoviewer_single");
+        }
+        if (state.hasFiles) {
+            // Keep the size chosen at opening whatever image is shown and
+            // let the resize handles go down to the minimum.
+            viewer.options.modalWidth = MIN_WIDTH;
+            viewer.options.modalHeight = MIN_HEIGHT;
+            viewer.isOpened = true;
+            viewer.resize = () => {};
+        }
+        state.container = document.createElement("div");
+        state.container.className = "o_agx_photoviewer_content";
+        viewer.$stage[0].after(state.container);
+        // Keep the pointer events of the content frozen while dragging or
+        // resizing so the mouseup always reaches the document.
+        modal.on("mousedown", () => {
+            modal.addClass("o_agx_photoviewer_busy");
+            document.addEventListener(
+                "mouseup",
+                () => modal.removeClass("o_agx_photoviewer_busy"),
+                {once: true}
+            );
+        });
+        modal.on("keydown", (ev) => ev.key === "Escape" && viewer.close());
+    }
+    if (!item.renderer) {
+        modal.removeClass("o_agx_photoviewer_embed");
+        state.container.replaceChildren();
+        return;
+    }
+    modal.addClass("o_agx_photoviewer_embed");
+    // Each file renders in its own page: a late render of a file the user
+    // already left only touches a detached page.
+    const page = document.createElement("div");
+    page.className = "o_agx_photoviewer_page";
+    page.innerHTML = '<i class="fa fa-spin fa-spinner fa-2x m-auto"></i>';
+    state.container.replaceChildren(page);
+    Promise.resolve(item.renderer.render(item.attachment, page)).catch((error) => {
+        console.error(error);
+        page.innerHTML = `<div class="m-auto text-center p-3">${escape(
+            _t("This file cannot be previewed.")
+        )}</div>`;
     });
 }
 
 /**
- * Open `current` in the viewer: files with a registered renderer are shown on
- * their own, images are shown as a gallery with the other images of the list.
+ * Open `current` in the viewer, navigating through the previewable
+ * `attachments` (images and files with a registered renderer) in order.
  */
 export function openPhotoViewer(attachments, current) {
-    const renderer = getRenderer(current);
-    if (renderer) {
-        return openRenderer(renderer, current);
-    }
-    const images = attachments.filter(isImage);
-    return new window.PhotoViewer(
-        images.map((image) => ({src: getUrl(image), title: escape(image.name || "")})),
-        {
-            index: images.findIndex((image) => image.id === current.id),
-            headerToolbar: ["download", "maximize", "close"],
-            customButtons: {download: downloadButton((viewer) => images[viewer.index])},
-        }
-    );
+    const items = attachments.filter(isPreviewable).map((attachment) => ({
+        src: isImage(attachment) ? getUrl(attachment) : "",
+        title: escape(attachment.name || ""),
+        attachment,
+        renderer: isImage(attachment) ? null : getRenderer(attachment),
+    }));
+    const hasFiles = items.some((item) => item.renderer);
+    const state = {hasFiles};
+    return new window.PhotoViewer(items, {
+        index: Math.max(
+            items.findIndex((item) => item.attachment.id === current.id),
+            0
+        ),
+        headerToolbar: ["download", "maximize", "close"],
+        customButtons: {download: downloadButton},
+        // Files need a stable, roomy modal; images alone fit the modal to
+        // the picture. The initial size doubles as the minimum size, so it
+        // is lowered again in the first `beforeChange`.
+        modalWidth: hasFiles ? Math.round(window.innerWidth * 0.7) : MIN_WIDTH,
+        modalHeight: hasFiles ? Math.round(window.innerHeight * 0.85) : MIN_HEIGHT,
+        fixedModalPos: hasFiles,
+        // An iframe would swallow the mouse events of a drag started elsewhere.
+        dragHandle: hasFiles ? ".photoviewer-header" : null,
+        callbacks: {
+            beforeChange(viewer) {
+                showItem(viewer, state);
+            },
+        },
+    });
 }
