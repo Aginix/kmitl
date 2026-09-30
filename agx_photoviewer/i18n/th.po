@@ -16,5 +16,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/agx_photoviewer/static/src/js/photoviewer.js:0
 #, python-format
+msgid "Preview is not supported for file type %s"
+msgstr "ไม่รองรับการแสดงผล ประเภทไฟล์ %s"
+
+#. module: agx_photoviewer
+#. odoo-javascript
+#: code:addons/agx_photoviewer/static/src/js/photoviewer.js:0
+#, python-format
 msgid "This file cannot be previewed."
 msgstr "ไม่สามารถแสดงตัวอย่างไฟล์นี้ได้"

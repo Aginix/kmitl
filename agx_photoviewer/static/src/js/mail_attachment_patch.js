@@ -1,19 +1,26 @@
 /** @odoo-module **/
 
-import {isPreviewable, openPhotoViewer} from "@agx_photoviewer/js/photoviewer";
+import {openPhotoViewer} from "@agx_photoviewer/js/photoviewer";
 import {isEventHandled} from "@mail/utils/utils";
 import {registerPatch} from "@mail/model/model_core";
 
 /**
- * Open `attachment` in the photo viewer instead of the native mail viewer.
- * Returns false when the attachment must be left to the native behaviour.
+ * Whether the photo viewer takes over `attachment` from the native mail
+ * viewer: every stored file, except links and files of a channel (which
+ * needs a route we do not use).
  */
+function isOpenable(attachment) {
+    return Boolean(
+        attachment &&
+            !attachment.isUploading &&
+            attachment.type !== "url" &&
+            (attachment.accessToken ||
+                attachment.originThread?.model !== "mail.channel")
+    );
+}
+
 function openInPhotoViewer(attachmentList, attachment) {
-    if (
-        !attachment ||
-        attachment.isUploading ||
-        (!attachment.accessToken && attachment.originThread?.model === "mail.channel")
-    ) {
+    if (!isOpenable(attachment)) {
         return false;
     }
     const toPlain = (record) => ({
@@ -22,16 +29,24 @@ function openInPhotoViewer(attachmentList, attachment) {
         mimetype: record.mimetype,
         accessToken: record.accessToken,
     });
-    const current = toPlain(attachment);
-    if (!isPreviewable(current)) {
-        return false;
-    }
     openPhotoViewer(
-        attachmentList.attachments.filter((record) => !record.isUploading).map(toPlain),
-        current
+        attachmentList.attachments.filter(isOpenable).map(toPlain),
+        toPlain(attachment)
     );
     return true;
 }
+
+// Show the zoom cursor on every attachment the viewer opens.
+registerPatch({
+    name: "Attachment",
+    fields: {
+        isViewable: {
+            compute() {
+                return this._super() || isOpenable(this);
+            },
+        },
+    },
+});
 
 registerPatch({
     name: "AttachmentImage",

@@ -8,9 +8,6 @@
     >
         <xpath expr="//div[hasclass('o_attachment_wrap')]" position="attributes">
             <attribute
-                name="t-att-class"
-            >{'o_agx_photoviewer_previewable': isPreviewable(file)}</attribute>
-            <attribute
                 name="t-on-click"
             >(ev) => this.onPreviewClick(ev, file)</attribute>
         </xpath>

@@ -1,11 +1,12 @@
 /** @odoo-module **/
 
 import {_t} from "@web/core/l10n/translation";
-import {escape} from "@web/core/utils/strings";
+import {escape, sprintf} from "@web/core/utils/strings";
 import {registry} from "@web/core/registry";
 
 /**
- * Renderers open non-image files inside the viewer modal. Other modules add
+ * Renderers open non-image files inside the viewer modal; files without a
+ * matching renderer show an "unsupported" message. Other modules add
  * entries here: {match(attachment) => bool, render(attachment, page)}.
  * `render` replaces the content of `page` (which shows a spinner until
  * then); it may return a promise. An attachment is a plain
@@ -50,9 +51,14 @@ function getRenderer(attachment) {
     return photoviewerRenderers.getAll().find((renderer) => renderer.match(attachment));
 }
 
-export function isPreviewable(attachment) {
-    return isImage(attachment) || Boolean(getRenderer(attachment));
-}
+const unsupportedRenderer = {
+    render(attachment, page) {
+        const type = attachment.mimetype || getExtension(attachment);
+        page.innerHTML = `<div class="m-auto text-center p-3 text-muted">${escape(
+            sprintf(_t("Preview is not supported for file type %s"), type)
+        )}</div>`;
+    },
+};
 
 const downloadButton = {
     title: _t("Download"),
@@ -119,15 +125,16 @@ function showItem(viewer, state) {
 }
 
 /**
- * Open `current` in the viewer, navigating through the previewable
- * `attachments` (images and files with a registered renderer) in order.
+ * Open `current` in the viewer, navigating through the `attachments` in order.
  */
 export function openPhotoViewer(attachments, current) {
-    const items = attachments.filter(isPreviewable).map((attachment) => ({
+    const items = attachments.map((attachment) => ({
         src: isImage(attachment) ? getUrl(attachment) : "",
         title: escape(attachment.name || ""),
         attachment,
-        renderer: isImage(attachment) ? null : getRenderer(attachment),
+        renderer: isImage(attachment)
+            ? null
+            : getRenderer(attachment) || unsupportedRenderer,
     }));
     const hasFiles = items.some((item) => item.renderer);
     const state = {hasFiles};
