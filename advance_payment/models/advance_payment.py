@@ -454,16 +454,32 @@ class AdvancePayment(models.Model):
                 )
 
     @api.model
+    def _loan_officer_group_members(self):
+        """Everyone `loan_verifier_id`'s own domain accepts: direct members of
+        the officer group, matched the same way the domain matches — so a user
+        named in Settings can never resolve to a default the domain would then
+        reject (the lesson ADR-0017 already applied to the approver).
+
+        A m2m read does not apply active_test, so archived members have to be
+        filtered out by hand.
+        """
+        return self.env.ref(
+            "advance_payment.group_advance_payment_loan_officer"
+        ).users.filtered("active")
+
+    @api.model
     def _loan_officer_candidates(self):
         """Real officers — the admin/root escape hatch (standing members of the
         group, ADR-0013) excluded, so their blanket membership never makes a
-        genuinely single-officer setup look ambiguous."""
-        officers = self.env.ref(
-            "advance_payment.group_advance_payment_loan_officer"
-        ).users - (self.env.ref("base.user_root") + self.env.ref("base.user_admin"))
-        # A m2m read does not apply active_test, so archived officers would
-        # otherwise still count towards "exactly one".
-        return officers.filtered("active")
+        genuinely single-officer setup look ambiguous.
+
+        This narrower set answers "is there exactly one officer?" only. It must
+        not be used to validate an explicitly configured user: naming admin in
+        Settings is a deliberate choice, not an inference.
+        """
+        return self._loan_officer_group_members() - (
+            self.env.ref("base.user_root") + self.env.ref("base.user_admin")
+        )
 
     @api.model
     def _default_loan_verifier_id(self):
@@ -474,6 +490,12 @@ class AdvancePayment(models.Model):
         ones in the bridges — had to name an officer explicitly. Settings now
         carries the standing assignee; the sole-officer fallback keeps small
         setups working with no configuration (ADR-0015).
+
+        The configured user is validated against the *group*, not against
+        `_loan_officer_candidates()`: that narrower set excludes root/admin to
+        keep the sole-officer inference honest, and reusing it here silently
+        threw away a deliberate choice of admin — whom the Settings picker
+        offers, admin being a standing member of the group.
         """
         candidates = self._loan_officer_candidates()
         configured = (
@@ -489,7 +511,7 @@ class AdvancePayment(models.Model):
                 officer = self.env["res.users"].browse(int(configured))
             except (TypeError, ValueError):
                 officer = self.env["res.users"]
-            if officer & candidates:
+            if officer & self._loan_officer_group_members():
                 return officer.id
         return candidates.id if len(candidates) == 1 else False
 

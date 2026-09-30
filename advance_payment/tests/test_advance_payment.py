@@ -784,6 +784,28 @@ class TestAdvancePayment(TransactionCase):
             self.env["advance.payment"]._default_loan_verifier_id(), self.officer2.id
         )
 
+    def test_default_loan_verifier_accepts_a_configured_admin(self):
+        """The Settings picker offers admin — admin is a standing member of
+        the officer group — so naming them there has to take effect. It used
+        to be discarded silently, because the configured user was checked
+        against the root/admin-excluded sole-officer set."""
+        self.env["ir.config_parameter"].sudo().set_param(
+            "advance_payment.default_loan_verifier_id", str(self.manager.id)
+        )
+        self.assertEqual(
+            self.env["advance.payment"]._default_loan_verifier_id(), self.manager.id
+        )
+
+    def test_default_loan_verifier_ignores_archived_officer(self):
+        """Group membership is read off a m2m, which ignores active_test."""
+        self.env["ir.config_parameter"].sudo().set_param(
+            "advance_payment.default_loan_verifier_id", str(self.officer2.id)
+        )
+        self.officer2.active = False
+        self.assertNotEqual(
+            self.env["advance.payment"]._default_loan_verifier_id(), self.officer2.id
+        )
+
     def test_default_loan_verifier_ignores_stale_setting(self):
         self.env["ir.config_parameter"].sudo().set_param(
             "advance_payment.default_loan_verifier_id", str(self.user.id)
