@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import models, fields, api
 
 
@@ -7,5 +6,7 @@ class ResCompany(models.Model):
 
     @api.model
     def get_current_fiscal_year_name(self):
-        fy = self.env.company.find_daterange_fy(fields.Date.today())
-        return fy.name if fy else False
+        today = fields.Date.today()
+        # Thai fiscal year: Oct 1 – Sep 30; BE year = CE year + 544 when month >= 10
+        be_year = today.year + 544 if today.month >= 10 else today.year + 543
+        return str(be_year)
