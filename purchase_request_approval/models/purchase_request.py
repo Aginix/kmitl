@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -49,12 +48,8 @@ class PurchaseRequest(models.Model):
         for rec in self:
             rec.can_resume_returned_sarabun = (
                 rec.state == "to_approve"
-                and any(
-                    pa.state == "pending_pr" for pa in rec.request_approval_ids
-                )
-                and any(
-                    doc.state == "cancelled" for doc in rec.sarabun_document_ids
-                )
+                and any(pa.state == "pending_pr" for pa in rec.request_approval_ids)
+                and any(doc.state == "cancelled" for doc in rec.sarabun_document_ids)
             )
 
     def action_submit_to_sarabun(self):
@@ -139,7 +134,7 @@ class PurchaseRequest(models.Model):
     def _prepare_approval_vals(self):
         return {
             "request_id": self.id,
-            "requesting_department_id": self.department_id.id,
+            "requesting_department_id": self.requesting_department_id.id,
             "origin": self.name,
             "date_start": fields.Datetime.now(),
             "verified_by": False,
@@ -159,14 +154,18 @@ class PurchaseRequest(models.Model):
             "vat_included": self.vat_included,
             "tax_id": self.tax_id.id,
             "line_ids": [
-                (0, 0, {
-                    "product_id": line.product_id.id,
-                    "name": line.name,
-                    "product_qty": line.product_qty,
-                    "product_uom_id": line.product_uom_id.id,
-                    "uom_text": line.uom_text,
-                    "price_unit": line.price_unit,
-                })
+                (
+                    0,
+                    0,
+                    {
+                        "product_id": line.product_id.id,
+                        "name": line.name,
+                        "product_qty": line.product_qty,
+                        "product_uom_id": line.product_uom_id.id,
+                        "uom_text": line.uom_text,
+                        "price_unit": line.price_unit,
+                    },
+                )
                 for line in self.line_ids
             ],
         }
@@ -243,7 +242,6 @@ class PurchaseRequest(models.Model):
     def _purchase_request_approval_approved_message_content(self, approval):
         message = _("Purchase approval %(pa_name)s was successfully approved 👍.") % {
             "pa_name": approval.name,
-            "pa_name": approval.name,
         }
         return message
 
@@ -305,14 +303,11 @@ class PurchaseRequest(models.Model):
         for rec in self:
             rec.request_approval_count = len(rec.request_approval_ids)
 
-    @api.depends('state')
+    @api.depends("state")
     def _hide_create_po_button(self):
         for rec in self:
             rec.hide_create_po_button = True
-            if (
-                rec.state in ('approved', 'in_progress')
-                and rec.purchase_count == 0
-            ):
+            if rec.state in ("approved", "in_progress") and rec.purchase_count == 0:
                 rec.hide_create_po_button = False
             if rec.estimated_cost <= 100000:
                 rec.hide_create_po_button = True
@@ -330,9 +325,9 @@ class PurchaseRequest(models.Model):
 
     def _create_purchase_order_from_approval(self):
         self.ensure_one()
-        approval = self.request_approval_ids.filtered(
-            lambda a: a.state == "approved"
-        )[:1]
+        approval = self.request_approval_ids.filtered(lambda a: a.state == "approved")[
+            :1
+        ]
         wizard = (
             self.env["purchase.request.line.make.purchase.order"]
             .with_context(
@@ -341,11 +336,13 @@ class PurchaseRequest(models.Model):
                 active_id=self.id,
                 approval_id=approval.id,
             )
-            .create({
-                "supplier_id": approval.partner_id.id,
-                "vat_included": approval.vat_included,
-                "tax_id": approval.tax_id.id,
-            })
+            .create(
+                {
+                    "supplier_id": approval.partner_id.id,
+                    "vat_included": approval.vat_included,
+                    "tax_id": approval.tax_id.id,
+                }
+            )
         )
         wizard.make_purchase_order()
         return wizard

@@ -11,7 +11,10 @@
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">purchase.request.form.construction</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form" />
+        <field
+            name="inherit_id"
+            ref="purchase_request_kmitl.view_purchase_request_form"
+        />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='payment_type']" position="before">
                 <field name="is_construction" invisible="1" />
@@ -45,10 +48,7 @@
         </field>
     </record>
 
-    <record
-        id="view_purchase_request_form_ux_construction"
-        model="ir.ui.view"
-    >
+    <record id="view_purchase_request_form_ux_construction" model="ir.ui.view">
         <field name="name">purchase.request.form.construction</field>
         <field name="model">purchase.request</field>
         <field
@@ -73,21 +73,24 @@
         <field name="model">purchase.request</field>
         <field name="arch" type="xml">
             <tree string="Constructions">
-                <field name="active_sarabun_document_id" optional="show"/>
+                <field name="active_sarabun_document_id" optional="show" />
                 <field name="project_id" />
-                <field name="name" optional="hide"/>
-                <field name="title" optional="hide"/>
+                <field name="name" optional="hide" />
+                <field name="title" optional="hide" />
                 <field name="date_start" />
-                <field name="user_id" optional="hide"/>
-                <field name="requested_by" widget="many2one_avatar_user" optional="show"/>
-                <field name="procurement_type_id" optional="hide"/>
-                <field name="procurement_method_id" optional="hide"/>
-                <field name="account_fiscal_year_id" optional="hide"/>
-                <field name="operating_unit_id" optional="hide"/>
-                <field name="department_id" optional="show"/>
-                <field name="activity_ids" optional="hide"/>
-                <field name="origin" optional="hide"/>
-                <field name="estimated_cost" optional="show"/>
+                <field name="user_id" optional="hide" />
+                <field
+                    name="requested_by"
+                    widget="many2one_avatar_user"
+                    optional="show"
+                />
+                <field name="procurement_type_id" optional="hide" />
+                <field name="procurement_method_id" optional="hide" />
+                <field name="account_fiscal_year_id" optional="hide" />
+                <field name="operating_unit_id" optional="hide" />
+                <field name="activity_ids" optional="hide" />
+                <field name="origin" optional="hide" />
+                <field name="estimated_cost" optional="show" />
                 <field
                     name="state"
                     widget="badge"
@@ -96,13 +99,13 @@
                     decoration-warning="state == 'to_approve'"
                     decoration-danger="state == 'rejected'"
                 />
-                <field name="egp_status" optional="show"/>
-                <field name="main_exception_id" optional="hide"/>
-                <field name="budget_account_id" optional="hide"/>
-                <field name="department_analytic_id" optional="hide"/>
-                <field name="source_analytic_id" optional="show"/>
-                <field name="fund_analytic_id" optional="hide"/>
-                <field name="activity_analytic_id" optional="show"/>
+                <field name="egp_status" optional="show" />
+                <field name="main_exception_id" optional="hide" />
+                <field name="budget_account_id" optional="hide" />
+                <field name="department_analytic_id" optional="hide" />
+                <field name="source_analytic_id" optional="show" />
+                <field name="fund_analytic_id" optional="hide" />
+                <field name="activity_analytic_id" optional="show" />
                 <field name="currency_id" invisible="1" />
             </tree>
         </field>
