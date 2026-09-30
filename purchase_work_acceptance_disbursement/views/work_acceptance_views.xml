@@ -6,10 +6,12 @@
           <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
           <field name="arch" type="xml">
               <xpath expr="//field[@name='partner_id']" position="after">
-                  <field name="is_disbursed" readonly="1"/>
                   <field name="disbursement_request_id"
                       readonly="1"
                       attrs="{'invisible': [('disbursement_request_id', '=', False)]}"/>
+              </xpath>
+              <xpath expr="//field[@name='date_receive']" position="after">
+                  <field name="is_disbursed" readonly="1"/>
               </xpath>
               <!-- Return-to-source correction: Confirm button + statusbar + fields -->
               <xpath expr="//header//field[@name='state']" position="before">
