@@ -2,6 +2,8 @@
 
 Status: accepted (2026-07) — **supersedes the §"Scope 2 sketch" of [ADR-0002](0002-payment-type-per-actual-row.md)**; the rest of ADR-0002 stands.
 
+> **Note (2026-09):** `agx_approval_advance_payment` — the bridge this ADR describes (`advance_payment_ids`, `borrowing_headroom`, `allocation.advance_payment_id`, `_compute_show_create_disbursement_button`) — has been **deleted** by [agx_approval_disbursement ADR-0002](../../../agx_approval_disbursement/docs/adr/0002-advance-is-a-disbursed-payment-type.md), which routes `advance` allocation rows through a Disbursement Request instead. This ADR's borrowing-workflow decisions (per-participant, pulled not pushed, clears itself) still describe `advance_payment` on its own; only the AR-side bridge is gone.
+
 ## Context & Decision
 
 Once a request is `approved`, each **Participant** decides for themselves whether to draw a สัญญายืม or front the cost. One may borrow on the whole group's behalf, several may borrow their own, some may front and some borrow — every mix occurs. So the unit of borrowing is **the person, not the expense line**: neither `approval.request.line` (which is by expense type and carries no person) nor `approval.request.allocation` (which does not exist yet at `approved`) can be that unit.
