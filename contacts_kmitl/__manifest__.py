@@ -8,7 +8,7 @@
     "website": "https://github.com/aginix/kmitl",
     'depends': ['contacts'],
     "data": [
-        "views/contact_views.xml"
+        "views/contact_views.xml",
     ],
     'installable': True,
     'auto_install': False,
