@@ -905,6 +905,92 @@ class TestAdvancePayment(TransactionCase):
         self.assertEqual(ap.state, "approved")
 
     # ------------------------------------------------------------------ #
+    # Back-half To-Dos (ADR-0021)                                          #
+    # ------------------------------------------------------------------ #
+
+    def _in_progress(self, **kw):
+        ap = self._make(**kw)
+        ap.write({"state": "approved"})
+        ap.action_start()
+        return ap
+
+    def test_approve_raises_voucher_todo_and_voucher_closes_it(self):
+        ap = self._make(requested_by=self.user)
+        ap.action_submit()
+        ap.action_endorse()
+        ap.with_user(self.officer).action_verify()
+        ap.action_approve()
+        self.assertEqual(ap._workflow_activities("approved").user_id, self.officer)
+        ap.with_user(self.officer).action_create_payment_voucher()
+        self.assertFalse(ap._workflow_activities("approved"))
+
+    def test_transfer_raises_report_todo_on_borrower_due_on_return_date(self):
+        due = fields.Date.add(fields.Date.today(), days=15)
+        ap = self._make(requested_by=self.user)
+        ap.write({"state": "approved", "return_due_date": due})
+        ap.action_start()
+        todo = ap._workflow_activities("in_progress")
+        self.assertEqual(todo.user_id, self.user)
+        self.assertEqual(todo.date_deadline, due)
+
+    def test_report_todo_deadline_follows_return_due_date(self):
+        """The officer usually sets the due date after the transfer."""
+        ap = self._in_progress(requested_by=self.user)
+        due = fields.Date.add(fields.Date.today(), days=20)
+        ap.return_due_date = due
+        self.assertEqual(ap._workflow_activities("in_progress").date_deadline, due)
+
+    def test_back_half_todo_relay(self):
+        """Borrower reports → officer accepts → borrower returns → close:
+        each hand-off closes one To-Do and raises the next."""
+        ap = self._in_progress(requested_by=self.user, amount=1000)
+        ap.write({"expense_description": "partial", "actual_expense_amount": 700})
+        ap.with_user(self.user).action_submit_report()
+        self.assertFalse(ap._workflow_activities("in_progress"))
+        self.assertEqual(ap._workflow_activities("reported").user_id, self.officer)
+        ap.with_user(self.officer).action_accept_report()
+        self.assertEqual(ap.state, "to_reconcile")
+        self.assertFalse(ap._workflow_activities("reported"))
+        self.assertEqual(ap._workflow_activities("to_reconcile").user_id, self.user)
+        ap._do_close()
+        self.assertFalse(ap._workflow_activities())
+
+    def test_accept_with_nothing_to_return_leaves_nothing_open(self):
+        ap = self._in_progress(requested_by=self.user, amount=1000)
+        ap.write({"expense_description": "all", "actual_expense_amount": 1000})
+        ap.with_user(self.user).action_submit_report()
+        ap.with_user(self.officer).action_accept_report()
+        self.assertEqual(ap.state, "done")
+        self.assertFalse(ap._workflow_activities())
+
+    def test_borrower_without_user_gets_no_todo_not_even_on_the_actor(self):
+        """activity_schedule(user_id=False) would fall back to the acting user;
+        the borrower's task must not land in somebody else's tray."""
+        employee = self.env["hr.employee"].create(
+            {"name": "No User Borrower", "parent_id": self.emp[self.supervisor.id].id}
+        )
+        ap = self.env["advance.payment"].create(
+            {
+                "employee_id": employee.id,
+                "loan_amount": 1000,
+                "loan_type_id": self.loan_type.id,
+                "loan_reason": "Test reason",
+                "loan_verifier_id": self.officer.id,
+                "bank_id": self.banks[self.manager.id].id,
+            }
+        )
+        ap.write({"state": "approved"})
+        ap.action_start()
+        summary = ap._workflow_activity_specs()["in_progress"][0]
+        self.assertFalse(ap.activity_ids.filtered(lambda a: a.summary == summary))
+
+    def test_cancel_in_progress_drops_borrower_todo(self):
+        ap = self._in_progress(requested_by=self.user)
+        self.assertTrue(ap._workflow_activities("in_progress"))
+        ap._action_do_cancel("dup")
+        self.assertFalse(ap._workflow_activities())
+
+    # ------------------------------------------------------------------ #
     # Recall / reset                                                       #
     # ------------------------------------------------------------------ #
 

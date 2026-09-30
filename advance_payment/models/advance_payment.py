@@ -921,6 +921,17 @@ class AdvancePayment(models.Model):
             # _schedule_workflow_activity drops the stale one first.
             for rec in self.filtered(lambda r: r.state == "to_endorse"):
                 rec._schedule_workflow_activity("to_endorse")
+        if "return_due_date" in vals:
+            # The borrower's report To-Do is due on return_due_date (ADR-0021);
+            # the officer usually sets or moves it after the transfer, so keep
+            # the deadline in step in place rather than re-raising the task.
+            for rec in self.filtered(lambda r: r.state == "in_progress"):
+                rec._workflow_activities("in_progress").sudo().write(
+                    {
+                        "date_deadline": rec.return_due_date
+                        or fields.Date.context_today(rec)
+                    }
+                )
         return res
 
     def unlink(self):
@@ -987,6 +998,8 @@ class AdvancePayment(models.Model):
         One entry per state that waits on a named person, keyed by that state
         so the transitions can name the stage they are leaving or entering
         rather than repeating a set of near-identical helpers (ADR-0015).
+        The back half — approved through to_reconcile — joined in ADR-0021;
+        two of its stages wait on the borrower rather than on staff.
         """
         self.ensure_one()
         return {
@@ -1002,7 +1015,30 @@ class AdvancePayment(models.Model):
                 _("อนุมัติคำขอยืมเงิน %s", self.name),
                 self.approver_id,
             ),
+            "approved": (
+                _("สร้างใบสำคัญจ่ายเงินยืม %s", self.name),
+                self.loan_verifier_id,
+            ),
+            "in_progress": (
+                _("ส่งรายงานค่าใช้จ่ายเงินยืม %s", self.name),
+                self.employee_id.user_id,
+            ),
+            "reported": (
+                _("ตรวจรับรายงานค่าใช้จ่ายเงินยืม %s", self.name),
+                self.loan_verifier_id,
+            ),
+            "to_reconcile": (
+                _("คืนเงินยืม %s", self.name),
+                self.employee_id.user_id,
+            ),
         }
+
+    def _workflow_activity_deadline(self, stage):
+        """Due date for `stage`'s To-Do, or False for the activity type's own
+        default. Only the borrower's expense report has a real one: the
+        return due date the loan officer sets after approval (ADR-0021)."""
+        self.ensure_one()
+        return self.return_due_date if stage == "in_progress" else False
 
     def _workflow_activities(self, stage=None):
         """The records' open workflow To-Dos — one stage, or all of them.
@@ -1028,14 +1064,23 @@ class AdvancePayment(models.Model):
         Clears any stale one first so recall/resubmit loops (action_recall,
         the officer's own ส่งกลับแก้ไข) don't pile up duplicates on the same
         record (ADR-0013).
+
+        No assignee, no To-Do: a borrower whose employee has no linked user
+        simply gets none (ADR-0021). Passing user_id=False instead would make
+        activity_schedule fall back to the *acting* user — the officer who
+        just accepted the report would find the borrower's task in their tray.
         """
         for rec in self:
             summary, assignee = rec._workflow_activity_specs()[stage]
             rec._drop_workflow_activities(stage)
+            if not assignee:
+                continue
+            deadline = rec._workflow_activity_deadline(stage)
             rec.activity_schedule(
                 WORKFLOW_ACTIVITY_XMLID,
                 user_id=assignee.id,
                 summary=summary,
+                **({"date_deadline": deadline} if deadline else {}),
             )
 
     def _done_workflow_activity(self, stage, feedback):
@@ -1217,6 +1262,7 @@ class AdvancePayment(models.Model):
         self._done_workflow_activity(
             "to_approve", _("อนุมัติคำขอเรียบร้อย โดย %s", self.env.user.name)
         )
+        self._schedule_workflow_activity("approved")
         for rec in self:
             rec.message_post(
                 body=_(
@@ -1260,6 +1306,9 @@ class AdvancePayment(models.Model):
         # establishes authority; sudo() the create the same way
         # advance_payment.action_approve used to for the same ACL gap.
         payments = self.env["account.payment"].sudo().create(vals_list)
+        self._done_workflow_activity(
+            "approved", _("สร้างใบสำคัญจ่ายเรียบร้อย โดย %s", self.env.user.name)
+        )
         for rec, payment in zip(self, payments):
             rec.message_post(
                 body=_(
@@ -1309,6 +1358,11 @@ class AdvancePayment(models.Model):
                     "advance.payment.contract"
                 )
             rec.write(vals)
+            # The voucher step normally closed "approved" already; drop any
+            # leftover (a voucher made outside action_create_payment_voucher)
+            # so it cannot outlive the stage it belongs to.
+            rec._drop_workflow_activities("approved")
+            rec._schedule_workflow_activity("in_progress")
             body = _(
                 "โอนเงินยืมสำเร็จ — เป็นลูกหนี้โดยสมบูรณ์ เลขที่สัญญา"
                 " <b>%(contract)s</b> วันที่มีผล <b>%(date)s</b>."
@@ -1404,6 +1458,11 @@ class AdvancePayment(models.Model):
                       " submitting the report.")
                 )
             rec.state = "reported"
+            rec._done_workflow_activity(
+                "in_progress",
+                _("นำส่งรายงานค่าใช้จ่ายเรียบร้อย โดย %s", self.env.user.name),
+            )
+            rec._schedule_workflow_activity("reported")
             rec.message_post(
                 body=_(
                     "นำส่งรายงานค่าใช้จ่าย: ใช้จริง <b>%(used)s</b>,"
@@ -1429,6 +1488,11 @@ class AdvancePayment(models.Model):
                 rec._do_close()
             else:
                 rec.state = "to_reconcile"
+                rec._done_workflow_activity(
+                    "reported",
+                    _("ตรวจรับรายงานเรียบร้อย โดย %s", self.env.user.name),
+                )
+                rec._schedule_workflow_activity("to_reconcile")
                 rec.message_post(
                     body=_(
                         "ตรวจรับรายงานค่าใช้จ่าย ต้องคืน <b>%(left)s %(currency)s</b>"
@@ -1488,6 +1552,13 @@ class AdvancePayment(models.Model):
         for rec in self:
             if rec.state not in ("reported", "to_reconcile"):
                 raise UserError(_("This agreement cannot be closed from its state."))
+            # The single choke point every close goes through — accept with
+            # nothing to return, action_close, and the auto-close once the
+            # debt is settled — so the open reported/to_reconcile To-Do is
+            # closed here rather than in each caller (ADR-0021).
+            rec._done_workflow_activity(
+                rec.state, _("ปิดสัญญาเรียบร้อย โดย %s", self.env.user.name)
+            )
             rec.date_closed = fields.Datetime.now()
             rec.state = "done"
             rec.message_post(
