@@ -1,0 +1,42 @@
+<odoo>
+    <!-- ============================================================
+         พจ.1 letterhead — the e-Sarabun no-source layout, bound to
+         document_type_purchase_request_approval via report_template_id
+         (agx_sarabun_layout). Reuses the live body fragment from
+         purchase_request_approval.report_purchase_request_approval_body.
+         ============================================================ -->
+    <template id="report_sarabun_document_purchase_request_approval">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="header_title" t-value="'บันทึกรายงานขอซื้อ/จ้าง'"/>
+                <t t-set="header_code" t-value="'พจ.1'"/>
+                <t t-call="agx_sarabun.sarabun_document_layout"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_sarabun_document_purchase_request_approval" model="ir.actions.report">
+        <field name="name">บันทึกรายงานขอซื้อ/จ้าง (พจ.1)</field>
+        <field name="model">sarabun.document</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">purchase_request_approval_sarabun.report_sarabun_document_purchase_request_approval</field>
+        <field name="report_file">purchase_request_approval_sarabun.report_sarabun_document_purchase_request_approval</field>
+        <field name="paperformat_id" ref="agx_sarabun.paperformat_sarabun_a4"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- ADR-0007: append sarabun's เกษียน trail + signature block at the tail of the
+         approval report (the origin embeds sarabun's block). Resolved from the origin
+         via active_sarabun_document_id; renders nothing until steps complete. -->
+    <template
+        id="report_purchase_request_approval_sarabun_endorsement"
+        inherit_id="purchase_request_approval.report_purchase_request_approval"
+        priority="99"
+    >
+        <xpath expr="//div[@class='page']" position="inside">
+            <t t-call="agx_sarabun.sarabun_endorsement_block">
+                <t t-set="doc" t-value="o.active_sarabun_document_id" />
+            </t>
+        </xpath>
+    </template>
+</odoo>
