@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 10:22+0000\n"
-"PO-Revision-Date: 2026-09-02 10:22+0000\n"
+"POT-Creation-Date: 2026-09-30 01:54+0000\n"
+"PO-Revision-Date: 2026-09-30 01:54+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -68,6 +68,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
 msgid "<strong>เป็นค่า / PAY FOR</strong>"
 msgstr ""
+
+#. module: receipt_kmitl
+#. odoo-python
+#: code:addons/receipt_kmitl/models/receipt_remittance.py:0
+#, python-format
+msgid "A remittance must be filed under a top-level department."
+msgstr "รายงานนำส่งต้องถูกจัดเก็บภายใต้หน่วยงานระดับบนสุด"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__message_needaction
@@ -212,8 +219,8 @@ msgstr "เอกสารประกอบ"
 #. module: receipt_kmitl
 #: model:ir.model.fields,help:receipt_kmitl.field_kmitl_payment_method__deposit_account_id
 msgid ""
-"Bank account the cash is remitted to. Debited for the receipt's full "
-"total against the Cash Account, in the same journal entry."
+"Bank account the cash is remitted to. Debited for the receipt's full total "
+"against the Cash Account, in the same journal entry."
 msgstr ""
 "บัญชีธนาคารปลายทางที่นำเงินสดส่งเข้า จะถูกเดบิตเต็มยอดรวมของใบเสร็จ "
 "คู่กับบัญชีเงินสด ในรายการบัญชีเดียวกัน"
@@ -228,7 +235,7 @@ msgstr "รหัสสาขา (สำเนา)"
 #: code:addons/receipt_kmitl/models/receipt_remittance.py:0
 #, python-format
 msgid "Can only pull receipts on draft remittances."
-msgstr ""
+msgstr "สามารถดึงใบเสร็จได้เฉพาะในสถานะร่าง"
 
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_form
@@ -250,7 +257,7 @@ msgstr "ยกเลิกแล้ว"
 #: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
 #, python-format
 msgid "Cancelled and removed from remittance %s."
-msgstr ""
+msgstr "ยกเลิกแล้วและถูกลบออกจากรายงานนำส่ง %s"
 
 #. module: receipt_kmitl
 #. odoo-python
@@ -259,7 +266,7 @@ msgstr ""
 msgid ""
 "Cannot delete the walk-in customer because it is in use by the receipt "
 "system."
-msgstr ""
+msgstr "ไม่สามารถลบลูกค้าที่มาโดยตรงได้ เนื่องจากถูกใช้งานโดยระบบใบเสร็จ"
 
 #. module: receipt_kmitl
 #. odoo-python
@@ -278,6 +285,7 @@ msgstr "ไม่สามารถย้อนกลับแบบร่าง
 #. module: receipt_kmitl
 #: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__cash
 #: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__payment_type__cash
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
 msgid "Cash"
 msgstr "เงินสด"
 
@@ -301,6 +309,7 @@ msgstr ""
 #. module: receipt_kmitl
 #: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__cheque
 #: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt__payment_type__cheque
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
 msgid "Cheque"
 msgstr "เช็ค"
 
@@ -355,6 +364,11 @@ msgstr "ติดต่อ"
 #, python-format
 msgid "Copy of receipt printed."
 msgstr "พิมพ์ใบเสร็จรับเงินฉบับสำเนา"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_form
+msgid "Create Journal Entries"
+msgstr "สร้างใบสำคัญบัญชี"
 
 #. module: receipt_kmitl
 #. odoo-javascript
@@ -575,6 +589,12 @@ msgstr "หน่วยงาน"
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__journal_id
 msgid "Journal"
 msgstr "สมุดรายวัน"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt_remittance__state__posted
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_search
+msgid "Journal Created"
+msgstr "สร้างใบสำคัญแล้ว"
 
 #. module: receipt_kmitl
 #. odoo-python
@@ -861,7 +881,15 @@ msgstr ""
 #: code:addons/receipt_kmitl/wizard/receipt_remittance_reject.py:0
 #, python-format
 msgid "Only submitted remittances can be rejected."
+msgstr "รายงานนำส่งที่ส่งแล้วเท่านั้นที่สามารถปฏิเสธได้"
+
+#. module: receipt_kmitl
+#. odoo-python
+#: code:addons/receipt_kmitl/models/receipt_remittance.py:0
+#, python-format
+msgid "Only the assigned approver can act on this remittance."
 msgstr ""
+"ผู้อนุมัติที่ได้รับมอบหมายเท่านั้นที่สามารถดำเนินการกับรายงานนำส่งนี้ได้"
 
 #. module: receipt_kmitl
 #. odoo-python
@@ -943,17 +971,6 @@ msgid "Please specify the rejection reason"
 msgstr "กรุณาระบุเหตุผลที่ปฏิเสธ"
 
 #. module: receipt_kmitl
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_form
-msgid "Create Journal Entries"
-msgstr "สร้างใบสำคัญบัญชี"
-
-#. module: receipt_kmitl
-#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_receipt_remittance__state__posted
-#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_search
-msgid "Journal Created"
-msgstr "สร้างใบสำคัญแล้ว"
-
-#. module: receipt_kmitl
 #. odoo-python
 #: code:addons/receipt_kmitl/models/receipt_remittance.py:0
 #, python-format
@@ -1015,6 +1032,7 @@ msgstr "ใบเสร็จรับเงิน"
 
 #. module: receipt_kmitl
 #. odoo-python
+#: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
 #: code:addons/receipt_kmitl/models/receipt_kmitl.py:0
 #, python-format
 msgid "Receipt %s"
@@ -1243,6 +1261,15 @@ msgid "Settings"
 msgstr "ตั้งค่า"
 
 #. module: receipt_kmitl
+#. odoo-python
+#: code:addons/receipt_kmitl/models/receipt_remittance.py:0
+#, python-format
+msgid ""
+"Some receipts on this remittance are not accessible to you and cannot be "
+"posted."
+msgstr ""
+
+#. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__source_analytic_id
 msgid "Source"
 msgstr "แหล่งเงิน"
@@ -1321,6 +1348,11 @@ msgstr "วันนี้"
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_remittance_tree
 msgid "Total"
 msgstr "รวม"
+
+#. module: receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:receipt_kmitl.view_receipt_kmitl_search
+msgid "Transfer"
+msgstr "โอนเงิน"
 
 #. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__transfer_date
@@ -1430,6 +1462,21 @@ msgstr ""
 #. module: receipt_kmitl
 #: model_terms:ir.ui.view,arch_db:receipt_kmitl.report_receipt_kmitl_document
 msgid "ยกเลิก / CANCELLED"
+msgstr ""
+
+#. module: receipt_kmitl
+#: model:kmitl.payment.method,name:receipt_kmitl.payment_method_krungthai_69293
+msgid "รับโอน (ธ.กรุงไทย สาขาลาดกระบัง บ/ช 69293-9)"
+msgstr ""
+
+#. module: receipt_kmitl
+#: model:kmitl.payment.method,name:receipt_kmitl.payment_method_kasikorn_sa631
+msgid "รับโอน (ธ.กสิกรไทย /ย่อยเทคโนฯ /SA-631-2-01000-1)"
+msgstr ""
+
+#. module: receipt_kmitl
+#: model:kmitl.payment.method,name:receipt_kmitl.payment_method_kasikorn_sa034
+msgid "รับโอน (ธ.กสิกรไทย/เทคโน/SA-034-3-83718-6)"
 msgstr ""
 
 #. module: receipt_kmitl
