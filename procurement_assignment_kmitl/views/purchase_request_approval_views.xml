@@ -1,7 +1,88 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- PA has no Assigned Officer of its own; it derives from its parent PR
-         (request_id.assigned_to). See docs/adr/0001. -->
+    <!-- PA carries its own Assigned Officer (`pa_assigned_to`), independent
+         of the parent PR's `assigned_to`. Both officers are shown together
+         so users can see who is handling each stage.
+         See docs/adr/0006-pa-independent-assigned-officer.md. -->
+    <record id="view_purchase_request_approval_form_assignment" model="ir.ui.view">
+        <field name="name">purchase.request.approval.form.assignment</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_form"
+        />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="after">
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('pa_assigned_to', '!=', False)]}"
+                >
+                    <strong>ยังไม่มีเจ้าหน้าที่รับผิดชอบเอกสารนี้</strong>
+                    <button
+                        name="action_assignment_assign_me"
+                        type="object"
+                        string="Assign to me"
+                        class="btn btn-sm btn-primary ms-2"
+                        groups="purchase_request.group_purchase_request_user"
+                        attrs="{'invisible': [('assignment_can_assign_me', '=', False)]}"
+                    />
+                    <button
+                        name="action_assignment_open_wizard"
+                        type="object"
+                        string="Assign…"
+                        class="btn btn-sm btn-secondary ms-2"
+                        groups="purchase_request.group_purchase_request_manager"
+                    />
+                </div>
+                <div
+                    class="alert alert-info"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('pa_assigned_to', '=', False)]}"
+                >
+                    <strong>มอบหมายให้:</strong>
+                    <field
+                        name="pa_assigned_to"
+                        nolabel="1"
+                        readonly="1"
+                        class="oe_inline ms-1"
+                    />
+                    <button
+                        name="action_assignment_assign_me"
+                        type="object"
+                        string="Assign to me"
+                        class="btn btn-sm btn-primary ms-2"
+                        groups="purchase_request.group_purchase_request_user"
+                        attrs="{'invisible': [('assignment_can_assign_me', '=', False)]}"
+                    />
+                    <button
+                        name="action_assignment_open_wizard"
+                        type="object"
+                        string="Assign…"
+                        class="btn btn-sm btn-secondary ms-2"
+                        groups="purchase_request.group_purchase_request_manager"
+                    />
+                    <button
+                        name="action_assignment_unassign"
+                        type="object"
+                        string="Unassign"
+                        class="btn btn-sm btn-secondary ms-2"
+                        groups="purchase_request.group_purchase_request_manager"
+                    />
+                </div>
+            </xpath>
+            <!-- assigned_to on PA is the Approver (a different concept); show
+                 the Assigned Officer next to it with a clear distinct label. -->
+            <xpath expr="//page[@name='other_info']//field[@name='assigned_to']" position="after">
+                <field name="assignment_can_assign_me" invisible="1" />
+                <field name="pa_assigned_to" readonly="1" />
+            </xpath>
+        </field>
+    </record>
+
     <record
         id="view_purchase_request_approval_search_assignment"
         model="ir.ui.view"
@@ -16,17 +97,23 @@
             <xpath expr="//filter[@name='approved']" position="after">
                 <separator />
                 <filter
+                    name="assigned_to_me_pa"
+                    string="Assigned to me (พจ.1)"
+                    domain="[('pa_assigned_to', '=', uid)]"
+                />
+                <filter
                     name="assigned_to_me"
-                    string="Assigned to me"
+                    string="Assigned to me (พ.1)"
                     domain="[('request_id.assigned_to', '=', uid)]"
                 />
                 <filter
                     name="unassigned"
                     string="Unassigned"
-                    domain="[('request_id.assigned_to', '=', False)]"
+                    domain="[('pa_assigned_to', '=', False)]"
                 />
             </xpath>
             <xpath expr="//filter[@name='draft']" position="before">
+                <field name="pa_assigned_to" />
                 <field name="pr_assigned_to" />
             </xpath>
         </field>
@@ -44,6 +131,11 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='requested_by']" position="after">
+                <field
+                    name="pa_assigned_to"
+                    widget="many2one_avatar_user"
+                    optional="show"
+                />
                 <field
                     name="pr_assigned_to"
                     widget="many2one_avatar_user"

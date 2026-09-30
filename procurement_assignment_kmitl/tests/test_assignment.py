@@ -71,9 +71,9 @@ class TestProcurementAssignment(TransactionCase):
         self.pr.with_user(self.officer_a).action_assignment_assign_me()
         self.assertEqual(self.pr.assigned_to, self.officer_a)
 
-    def test_self_assign_creates_no_activity(self):
+    def test_self_assign_creates_activity(self):
         self.pr.with_user(self.officer_a).action_assignment_assign_me()
-        self.assertFalse(self._todo_activities(self.pr, self.officer_a))
+        self.assertTrue(self._todo_activities(self.pr, self.officer_a))
 
     def test_user_cannot_take_over_when_restricted(self):
         self.pr.assigned_to = self.officer_a
