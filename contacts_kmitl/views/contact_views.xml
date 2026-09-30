@@ -68,4 +68,19 @@
     <record id="contacts.action_contacts_view_tree" model="ir.actions.act_window.view">
         <field name="sequence" eval="0" />
     </record>
+
+    <!-- Restrict Contacts & Addresses and Sales & Purchase pages to admin ERP -->
+    <record id="view_res_partner_form_admin_pages" model="ir.ui.view">
+        <field name="name">res.partner.form.admin.pages</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='contact_addresses']" position="attributes">
+                <attribute name="groups">base.group_erp_manager</attribute>
+            </xpath>
+            <xpath expr="//page[@name='sales_purchases']" position="attributes">
+                <attribute name="groups">base.group_erp_manager</attribute>
+            </xpath>
+        </field>
+    </record>
   </odoo>
