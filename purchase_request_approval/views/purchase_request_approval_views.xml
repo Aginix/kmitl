@@ -224,13 +224,12 @@
                             />
                         </group>
                     </group>
-                    <group>
-                        <group name="attachment_info" string="Attachment">
-                            <field name="attachment_ids"
-                                nolabel="1"
-                                widget="many2many_binary"
-                                context="{'default_res_model': 'purchase.request.approval'}"/>
-                        </group>
+                    <group name="attachment_info" string="Attachment">
+                        <field name="attachment_ids"
+                            nolabel="1"
+                            colspan="2"
+                            widget="many2many_binary"
+                            context="{'default_res_model': 'purchase.request.approval'}"/>
                     </group>
                     <notebook>
                         <page name="lines" string="Products">
