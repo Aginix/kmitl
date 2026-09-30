@@ -196,7 +196,7 @@
                             <field name="procurement_mode" widget="radio" readonly="1"/>
                             <field
                                 name="partner_id"
-                                readonly="1"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
                                 options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                             />
                             <field
@@ -213,18 +213,23 @@
                     </group>
                     <group>
                         <group name="budget_info" string="Budget Information Section">
-                            <field name="budget_commitment_id" invisible="1"/>
                             <field name="budget_commitment_amount"
                                 readonly="1"
                                 attrs="{'invisible': [('budget_commitment_id', '=', False)]}"/>
-                            <field name="estimated_cost" readonly="1"/>
+                            <field
+                                name="budget_commitment_id"
+                                colspan="2" nolabel="1"
+                                widget="budget_commitment_info" readonly="1"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
                         </group>
                     </group>
                     <group>
                         <group name="attachment_info" string="Attachment">
                             <field name="attachment_ids"
-                                   widget="many2many_binary"
-                                   context="{'default_res_model': 'purchase.request.approval'}"/>
+                                nolabel="1"
+                                widget="many2many_binary"
+                                context="{'default_res_model': 'purchase.request.approval'}"/>
                         </group>
                     </group>
                     <notebook>
