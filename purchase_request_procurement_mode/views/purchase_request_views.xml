@@ -15,6 +15,12 @@
                     attrs="{'readonly': [('is_procurement_mode_editable', '=', False)], 'invisible': [('payment_type', '!=', 'direct')]}"
                 />
             </field>
+            <field name="partner_id" position="attributes">
+                <attribute name="attrs">{'readonly': [('is_editable', '=', False)], 'invisible': ['|', ('payment_type', '!=', 'direct'), ('procurement_mode', '=', 'by_officer')]}</attribute>
+            </field>
+            <field name="vat_included" position="attributes">
+                <attribute name="attrs">{'readonly': [('is_vat_editable', '=', False)], 'invisible': ['|', ('payment_type', '!=', 'direct'), ('procurement_mode', '=', 'by_officer')]}</attribute>
+            </field>
         </field>
     </record>
 </odoo>
