@@ -138,9 +138,34 @@
                             widget="budget_commitment_info" readonly="1"
                             options="{'no_create': True, 'no_open': True}" />
                     </group>
-                    <!-- Budget selection UI: reserved to budget officers. Users without
-                         budget.group_budget_commitment never see this group nor its
-                         heading — they only see the reserved commitment above. -->
+                    <!-- Budget selection: open to the requester (SELECT, ADR-0007).
+                         Reserving the selection into a budget.commitment (RESERVE)
+                         stays officer-only, in the group below. Hidden once a live
+                         slip exists — the read-only card above already shows it. -->
+                    <group name="budget_select" string="เลือกงบประมาณ"
+                        attrs="{'invisible': ['&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}">
+                        <field name="is_budget_editable" invisible="1" />
+                        <field name="budget_account_domain" invisible="1" />
+                        <field name="budget_account_id"
+                            domain="budget_account_domain"
+                            options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
+                            attrs="{'readonly': [('is_budget_editable', '=', False)]}" />
+                        <field name="activity_analytic_id"
+                            options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
+                            attrs="{'readonly': [('is_budget_editable', '=', False)]}" />
+                        <field name="department_analytic_id"
+                            options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
+                            attrs="{'readonly': [('is_budget_editable', '=', False)]}" />
+                        <field name="fund_analytic_id" widget="selection"
+                            attrs="{'readonly': [('is_budget_editable', '=', False)]}" />
+                        <field name="source_analytic_id" widget="selection"
+                            attrs="{'readonly': [('is_budget_editable', '=', False)]}" />
+                        <field name="analytic_distribution" invisible="1" />
+                    </group>
+                    <!-- Budget reservation UI: reserved to budget officers. Users
+                         without budget.group_budget_commitment never see this group
+                         nor its heading — they only see the reserved commitment
+                         above and select the code/dimensions in the group above. -->
                     <group name="budget" string="Budget"
                         groups="budget.group_budget_commitment">
                         <field name="is_budget_editable" invisible="1" />
@@ -166,23 +191,6 @@
                             string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
                             class="btn btn-primary mb-2" icon="fa-sitemap" colspan="2"
                             attrs="{'invisible': ['|', '|', ('is_budget_editable', '=', False), ('reservation_commitment_id', '!=', False), ('budget_selection_mode', '!=', 'normal')]}" />
-                        <!-- Only while budget is still being chosen from the chart:
-                             once reserved the same values are in the card above, and
-                             under the reservation mode they come from the slip. -->
-                        <field name="budget_account_id" readonly="1"
-                            options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
-                        <field name="activity_analytic_id" readonly="1"
-                            options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
-                        <field name="department_analytic_id" readonly="1"
-                            options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
-                        <field name="fund_analytic_id" widget="selection" readonly="1"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
-                        <field name="source_analytic_id" widget="selection" readonly="1"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
-                        <field name="analytic_distribution" invisible="1" />
                     </group>
                     <notebook>
                         <page string="Expense Details (Plan)" name="expense_details">
