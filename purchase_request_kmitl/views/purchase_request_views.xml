@@ -233,15 +233,6 @@
                 >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
             </xpath>
 
-            <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
-                position="attributes"
-            >
-                <attribute
-                    name="attrs"
-                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
-            </xpath>
-
             <xpath expr="//field[@name='line_ids']//tree" position="attributes">
                 <attribute name="no_open">1</attribute>
             </xpath>
@@ -443,8 +434,8 @@
             </xpath>
 
             <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
-                position="before"
+                expr="//field[@name='line_ids']//tree/field[@name='product_qty']"
+                position="after"
             >
                 <field
                     name="uom_text"

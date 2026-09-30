@@ -23,7 +23,7 @@
                 <field name="price_tax" widget="monetary" optional="hide" />
             </xpath>
             <field name="product_uom_id" position="after">
-                <field name="price_unit" />
+                <field name="price_unit" attrs="{'readonly': [('parent.state', '!=', 'draft')]}" />
             </field>
             <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="replace">
                 <group class="oe_subtotal_footer oe_right">
