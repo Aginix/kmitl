@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import base64
 
 from odoo import _, api, fields, models
@@ -224,6 +223,9 @@ class PurchaseRequestApproval(models.Model):
         compute="_amount_all",
     )
     tax_totals = fields.Binary(compute="_compute_tax_totals", exportable=False)
+    department_analytic_id = fields.Many2one(
+        related="request_id.department_analytic_id", store=True
+    )
     source_analytic_id = fields.Many2one(related="request_id.source_analytic_id")
     budget_account_id = fields.Many2one(related="request_id.budget_account_id")
     budget_commitment_id = fields.Many2one(related="request_id.budget_commitment_id")
@@ -268,12 +270,10 @@ class PurchaseRequestApproval(models.Model):
                     [line._convert_to_tax_base_line_dict() for line in line_ids]
                 )
                 totals = tax_results["totals"]
-                amount_untaxed = (
-                    totals.get(record.currency_id, {}).get("amount_untaxed", 0.0)
+                amount_untaxed = totals.get(record.currency_id, {}).get(
+                    "amount_untaxed", 0.0
                 )
-                amount_tax = (
-                    totals.get(record.currency_id, {}).get("amount_tax", 0.0)
-                )
+                amount_tax = totals.get(record.currency_id, {}).get("amount_tax", 0.0)
             else:
                 amount_untaxed = sum(line_ids.mapped("price_subtotal"))
                 amount_tax = sum(line_ids.mapped("price_tax"))
@@ -319,7 +319,10 @@ class PurchaseRequestApproval(models.Model):
             )
             total_pa = sum(siblings.mapped("amount_total"))
             rounding = (commitment.currency_id or rec.currency_id).rounding
-            if float_compare(total_pa, commitment.amount, precision_rounding=rounding) > 0:
+            if (
+                float_compare(total_pa, commitment.amount, precision_rounding=rounding)
+                > 0
+            ):
                 raise ValidationError(
                     _(
                         "แก้ไข พจ.1 เกินจำนวนเงินที่จองงบไว้: "
@@ -417,8 +420,10 @@ class PurchaseRequestApproval(models.Model):
             document = rec.active_sarabun_document_id
             if document and document.is_circulating:
                 raise UserError(
-                    _("Cannot manually approve while the หนังสือ is still circulating. "
-                      "Please wait for the routing to complete or recall the Sarabun document.")
+                    _(
+                        "Cannot manually approve while the หนังสือ is still circulating. "
+                        "Please wait for the routing to complete or recall the Sarabun document."
+                    )
                 )
         for rec in self:
             message = (
@@ -460,9 +465,10 @@ class PurchaseRequestApproval(models.Model):
 
     def _action_do_cancel(self, reason):
         self.ensure_one()
-        pa_body = _(
-            "ยกเลิกใบขออนุมัติ (พจ.1) %(pa)s เหตุผล: %(reason)s"
-        ) % {"pa": self.name, "reason": reason}
+        pa_body = _("ยกเลิกใบขออนุมัติ (พจ.1) %(pa)s เหตุผล: %(reason)s") % {
+            "pa": self.name,
+            "reason": reason,
+        }
         self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
         pr_body = self.request_id._purchase_request_approval_cancelled_message_content(
             self
@@ -475,9 +481,10 @@ class PurchaseRequestApproval(models.Model):
 
     def _action_do_reject(self, reason):
         self.ensure_one()
-        pa_body = _(
-            "ปฎิเสธใบขออนุมัติ (พจ.1) %(pa)s เหตุผล: %(reason)s"
-        ) % {"pa": self.name, "reason": reason}
+        pa_body = _("ปฎิเสธใบขออนุมัติ (พจ.1) %(pa)s เหตุผล: %(reason)s") % {
+            "pa": self.name,
+            "reason": reason,
+        }
         self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
         pr_body = self.request_id._purchase_request_approval_rejected_message_content(
             self
@@ -522,10 +529,8 @@ class PurchaseRequestApproval(models.Model):
             return
         doc.sudo().write({"state": "cancelled"})
         doc.message_post(
-            body=_(
-                "หนังสือถูกยกเลิกเนื่องจาก พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. "
-                "เหตุผล: %(reason)s"
-            ) % {"pa": self.name, "reason": reason},
+            body=_("หนังสือถูกยกเลิกเนื่องจาก พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. เหตุผล: %(reason)s")
+            % {"pa": self.name, "reason": reason},
             subtype_xmlid="mail.mt_note",
         )
 
@@ -544,13 +549,15 @@ class PurchaseRequestApproval(models.Model):
         - Redirect the user to the PR form so they can act immediately.
         """
         self.ensure_one()
-        pa_body = _(
-            "ตีกลับ พจ.1 %(pa)s (เก็บเลข) เหตุผล: %(reason)s"
-        ) % {"pa": self.name, "reason": reason}
+        pa_body = _("ตีกลับ พจ.1 %(pa)s (เก็บเลข) เหตุผล: %(reason)s") % {
+            "pa": self.name,
+            "reason": reason,
+        }
         self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
-        pr_body = _(
-            "พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. เหตุผล: %(reason)s"
-        ) % {"pa": self.name, "reason": reason}
+        pr_body = _("พจ.1 %(pa)s ถูกส่งกลับให้แก้ไข. เหตุผล: %(reason)s") % {
+            "pa": self.name,
+            "reason": reason,
+        }
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
         self._cancel_request_sarabun(reason)
         self.request_id.write({"state": "to_verify"})
@@ -596,9 +603,11 @@ class PurchaseRequestApproval(models.Model):
         # the field with the same value on every ตีกลับ/แก้ไข round trip.
         if "account_fiscal_year_id" in vals:
             numbered = self.filtered(
-                lambda r: r.name
-                and r.name != "/"
-                and r.account_fiscal_year_id.id != vals["account_fiscal_year_id"]
+                lambda r: (
+                    r.name
+                    and r.name != "/"
+                    and r.account_fiscal_year_id.id != vals["account_fiscal_year_id"]
+                )
             )
             if numbered:
                 raise UserError(
@@ -728,8 +737,7 @@ class PurchaseRequestApproval(models.Model):
                 )
             except UserError as e:
                 pr.message_post(
-                    body=_("Warning: Could not cancel budget commitment: %s")
-                    % str(e)
+                    body=_("Warning: Could not cancel budget commitment: %s") % str(e)
                 )
         return super()._on_sarabun_cancelled(document)
 
@@ -740,10 +748,13 @@ class PurchaseRequestApproval(models.Model):
     # committee) via _get_sarabun_body_template — mirroring purchase.request.
 
     def _get_sarabun_document_type(self):
-        return self.env.ref(
-            "purchase_request_approval.document_type_purchase_request_approval",
-            raise_if_not_found=False,
-        ) or super()._get_sarabun_document_type()
+        return (
+            self.env.ref(
+                "purchase_request_approval.document_type_purchase_request_approval",
+                raise_if_not_found=False,
+            )
+            or super()._get_sarabun_document_type()
+        )
 
     def _get_sarabun_body_template(self):
         """The live body — items table, budget details, committee appointments —
