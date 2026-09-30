@@ -7,12 +7,11 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='requested_by']" position="after">
+            <xpath expr="//field[@name='origin']/.." position="inside">
                 <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit"/>
             </xpath>
         </field>
     </record>
-
 
     <!-- View purchase.request tree -->
     <record id="view_purchase_request_tree" model="ir.ui.view">
