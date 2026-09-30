@@ -50,7 +50,7 @@ export function isImage(attachment) {
     return IMAGE_MIMETYPES.includes(attachment.mimetype);
 }
 
-function getRenderer(attachment) {
+export function getRenderer(attachment) {
     return photoviewerRenderers.getAll().find((renderer) => renderer.match(attachment));
 }
 
@@ -148,8 +148,12 @@ function showItem(viewer, state) {
         state.container.className = "o_agx_photoviewer_content";
         viewer.$stage[0].after(state.container);
         // Keep the pointer events of the content frozen while dragging or
-        // resizing so the mouseup always reaches the document.
-        modal.on("mousedown", () => {
+        // resizing so the mouseup always reaches the document; clicks inside
+        // the content itself must still reach it.
+        modal.on("mousedown", (ev) => {
+            if (state.container.contains(ev.target)) {
+                return;
+            }
             modal.addClass("o_agx_photoviewer_busy");
             document.addEventListener(
                 "mouseup",
@@ -157,7 +161,13 @@ function showItem(viewer, state) {
                 {once: true}
             );
         });
-        modal.on("keydown", (ev) => ev.key === "Escape" && viewer.close());
+        modal.on("keydown", (ev) => {
+            if (ev.key === "Escape") {
+                // Keep Odoo's hotkeys from also closing a dialog below.
+                ev.stopPropagation();
+                viewer.close();
+            }
+        });
     }
     if (state.thumbnails) {
         for (const [index, thumbnail] of [...state.thumbnails.children].entries()) {

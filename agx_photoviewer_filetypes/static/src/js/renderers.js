@@ -108,7 +108,8 @@ async function readPptx(attachment) {
         "application/xml"
     );
     let dirty = false;
-    for (const override of types.getElementsByTagName("Override")) {
+    // Copy the live collection: removing entries while iterating it skips some.
+    for (const override of [...types.getElementsByTagName("Override")]) {
         if (!zip.file(override.getAttribute("PartName").slice(1))) {
             override.remove();
             dirty = true;

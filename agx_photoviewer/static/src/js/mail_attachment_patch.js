@@ -1,13 +1,14 @@
 /** @odoo-module **/
 
-import {openPhotoViewer} from "@agx_photoviewer/js/photoviewer";
+import {getRenderer, isImage, openPhotoViewer} from "@agx_photoviewer/js/photoviewer";
 import {isEventHandled} from "@mail/utils/utils";
 import {registerPatch} from "@mail/model/model_core";
 
 /**
  * Whether the photo viewer takes over `attachment` from the native mail
- * viewer: every stored file, except links and files of a channel (which
- * needs a route we do not use).
+ * viewer: every stored file, except links, files of a channel (which
+ * needs a route we do not use) and files the native viewer previews but
+ * no renderer handles (e.g. text, or PDF without agx_photoviewer_filetypes).
  */
 function isOpenable(attachment) {
     return Boolean(
@@ -15,7 +16,10 @@ function isOpenable(attachment) {
             !attachment.isUploading &&
             attachment.type !== "url" &&
             (attachment.accessToken ||
-                attachment.originThread?.model !== "mail.channel")
+                attachment.originThread?.model !== "mail.channel") &&
+            (isImage(attachment) ||
+                getRenderer(attachment) ||
+                !(attachment.isText || attachment.isVideo || attachment.isPdf))
     );
 }
 
