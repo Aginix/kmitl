@@ -1,16 +1,16 @@
 /** @odoo-module **/
 
-import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
-import { browser } from "@web/core/browser/browser";
-import { AutoComplete } from "@web/core/autocomplete/autocomplete";
-import { Component, onWillStart, useState } from "@odoo/owl";
+import {registry} from "@web/core/registry";
+import {useService} from "@web/core/utils/hooks";
+import {browser} from "@web/core/browser/browser";
+import {AutoComplete} from "@web/core/autocomplete/autocomplete";
+import {Component, onWillStart, useState} from "@odoo/owl";
 
 // ส่วนงาน / กองทุน / กิจกรรม are hierarchical analytic dimensions (autocomplete).
 const HIER_DIMENSIONS = [
-    { key: "department_analytic_id", code: "departments", label: "ส่วนงาน" },
-    { key: "fund_analytic_id", code: "funds", label: "กองทุน" },
-    { key: "activity_analytic_id", code: "activities", label: "กิจกรรม" },
+    {key: "department_analytic_id", code: "departments", label: "ส่วนงาน"},
+    {key: "fund_analytic_id", code: "funds", label: "กองทุน"},
+    {key: "activity_analytic_id", code: "activities", label: "กิจกรรม"},
 ];
 // แหล่งเงิน is a flat, single, mandatory filter (defaults to source code "2").
 const SOURCE_KEY = "source_analytic_id";
@@ -18,9 +18,9 @@ const DEFAULT_SOURCE_CODE = "2";
 // Dimensions the row axis can be broken down by, in fixed nesting order (outer
 // to inner); the budget-account tree always hangs off the innermost one.
 const BREAKDOWN_ORDER = [
-    { key: "department_analytic_id", label: "แจกแจงตามส่วนงาน" },
-    { key: "activity_analytic_id", label: "แจกแจงตามกิจกรรม" },
-    { key: "fund_analytic_id", label: "แจกแจงตามกองทุน" },
+    {key: "department_analytic_id", label: "แจกแจงตามส่วนงาน"},
+    {key: "activity_analytic_id", label: "แจกแจงตามกิจกรรม"},
+    {key: "fund_analytic_id", label: "แจกแจงตามกองทุน"},
 ];
 // Fixed display order for the expense budget-category (root) dropdown.
 const ROOT_ORDER = ["51000", "52000", "53000", "54000", "55000", "07020"];
@@ -41,7 +41,7 @@ const VALUE_KEYS = [
 const DRILLDOWN_ACTION = "budget_drilldown";
 const DRILLDOWN_PREFIX = "budget_drill_";
 // Stage labels so each drill tab's breadcrumb names the column it came from.
-const USAGE_LABELS = { reserve: "เงินจอง", obligate: "ผูกพัน", consume: "เบิกจ่าย" };
+const USAGE_LABELS = {reserve: "เงินจอง", obligate: "ผูกพัน", consume: "เบิกจ่าย"};
 
 export class BudgetDashboard extends Component {
     setup() {
@@ -88,13 +88,16 @@ export class BudgetDashboard extends Component {
             "account.fiscal.year",
             [],
             ["id", "name", "date_from", "date_to"],
-            { order: "date_from desc" }
+            {order: "date_from desc"}
         );
         this.rootAccounts = await this.orm.searchRead(
             "budget.account",
-            [["budget_type", "=", "expense"], ["parent_id", "=", false]],
+            [
+                ["budget_type", "=", "expense"],
+                ["parent_id", "=", false],
+            ],
             ["id", "code", "name"],
-            { order: "code" }
+            {order: "code"}
         );
         // Apply the fixed display order; any root not listed is appended (by code).
         const rootRank = (code) => {
@@ -109,14 +112,20 @@ export class BudgetDashboard extends Component {
             "account.analytic.account",
             [["root_plan_id.code", "=", "sources"]],
             ["id", "display_name", "code"],
-            { order: "code" }
+            {order: "code"}
         );
         if (!this.state.fiscalYearId) {
-            const today = new Date().toISOString().slice(0, 10);
+            const _d = new Date();
+            const today = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(
+                2,
+                "0"
+            )}-${String(_d.getDate()).padStart(2, "0")}`;
+
             const covering = this.fiscalYears.find(
                 (fy) => fy.date_from <= today && fy.date_to >= today
             );
-            this.state.fiscalYearId = (covering || this.fiscalYears[0] || {}).id || false;
+            this.state.fiscalYearId =
+                (covering || this.fiscalYears[0] || {}).id || false;
         }
         if (!this.state.sourceId) {
             const def =
@@ -142,7 +151,7 @@ export class BudgetDashboard extends Component {
     }
 
     get effectiveFilters() {
-        const filters = { ...this.state.filters };
+        const filters = {...this.state.filters};
         if (this.state.sourceId) {
             filters[SOURCE_KEY] = this.state.sourceId;
         }
@@ -164,16 +173,12 @@ export class BudgetDashboard extends Component {
         this.state.loading = true;
         try {
             const breakdown = this.breakdownList;
-            const data = await this.orm.call(
-                "budget.dashboard",
-                "get_dashboard_data",
-                [
-                    this.state.fiscalYearId,
-                    this.state.rootAccountId || false,
-                    this.effectiveFilters,
-                    breakdown.length ? breakdown : false,
-                ]
-            );
+            const data = await this.orm.call("budget.dashboard", "get_dashboard_data", [
+                this.state.fiscalYearId,
+                this.state.rootAccountId || false,
+                this.effectiveFilters,
+                breakdown.length ? breakdown : false,
+            ]);
             this.state.rows = data.rows || [];
             this.state.hierOp = data.hier_op || "=";
         } finally {
@@ -215,13 +220,13 @@ export class BudgetDashboard extends Component {
                         "account.analytic.account",
                         domain,
                         ["id", "display_name"],
-                        { limit: 20, order: "code" }
+                        {limit: 20, order: "code"}
                     );
                     const options = recs.map((r) => ({
                         label: r.display_name,
                         accountId: r.id,
                     }));
-                    options.unshift({ label: "— ทั้งหมด —", accountId: false });
+                    options.unshift({label: "— ทั้งหมด —", accountId: false});
                     return options;
                 },
             },
@@ -500,7 +505,7 @@ export class BudgetDashboard extends Component {
     }
 }
 
-BudgetDashboard.components = { AutoComplete };
+BudgetDashboard.components = {AutoComplete};
 BudgetDashboard.template = "budget.BudgetDashboard";
 
 registry.category("actions").add("budget_dashboard", BudgetDashboard);
@@ -516,7 +521,5 @@ registry.category("actions").add(DRILLDOWN_ACTION, (env, action) => {
     }
     // Stale link (e.g. the tab was reloaded after the key was consumed): fall
     // back to the dashboard rather than leaving a blank screen.
-    return raw
-        ? JSON.parse(raw)
-        : { type: "ir.actions.client", tag: "budget_dashboard" };
+    return raw ? JSON.parse(raw) : {type: "ir.actions.client", tag: "budget_dashboard"};
 });
