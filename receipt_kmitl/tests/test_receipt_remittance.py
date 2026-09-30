@@ -1,5 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests.common import tagged
 
@@ -25,7 +26,7 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
         r2 = self._make_receipt()
 
         remittance = self.env["kmitl.receipt.remittance"].create(
-            {"department_analytic_id": self.dept_a.id}
+            {"department_analytic_id": self.dept_a.id, "approver_id": self.approver.id}
         )
         remittance.action_pull_pending_receipts()
         self.assertEqual(set(remittance.receipt_ids.ids), {r1.id, r2.id})
@@ -87,6 +88,7 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
             {
                 "department_analytic_id": self.dept_a.id,
                 "receipt_ids": [(6, 0, [r1.id, r2.id])],
+                "approver_id": self.approver.id,
             }
         )
         remittance.action_submit()
@@ -102,6 +104,7 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
             {
                 "department_analytic_id": self.dept_a.id,
                 "receipt_ids": [(6, 0, [r1.id])],
+                "approver_id": self.approver.id,
             }
         )
         remittance.action_submit()
@@ -116,6 +119,7 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
             {
                 "department_analytic_id": self.dept_a.id,
                 "receipt_ids": [(6, 0, [r1.id])],
+                "approver_id": self.approver.id,
             }
         )
         remittance.action_submit()
@@ -130,6 +134,7 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
             {
                 "department_analytic_id": self.dept_a.id,
                 "receipt_ids": [(6, 0, [r1.id])],
+                "approver_id": self.approver.id,
             }
         )
         remittance.action_submit()
@@ -143,7 +148,75 @@ class TestReceiptRemittance(ReceiptKmitlCommon):
             {
                 "department_analytic_id": self.dept_a.id,
                 "receipt_ids": [(6, 0, [r_other.id])],
+                "approver_id": self.approver.id,
             }
         )
         with self.assertRaises(ValidationError):
             remittance.action_submit()
+
+    def test_approve_rejects_non_assigned_approver(self):
+        r1 = self._make_receipt()
+        approver = self.env["res.users"].create(
+            {
+                "name": "Approver",
+                "login": "kmitl_receipt_approver",
+                "groups_id": [
+                    Command.set(
+                        [
+                            self.env.ref(
+                                "receipt_kmitl.group_receipt_kmitl_remittance_approver"
+                            ).id
+                        ]
+                    )
+                ],
+            }
+        )
+        other_user = self.env["res.users"].create(
+            {
+                "name": "Someone Else",
+                "login": "kmitl_receipt_someone_else",
+                "groups_id": [
+                    Command.set(
+                        [
+                            self.env.ref(
+                                "receipt_kmitl.group_receipt_kmitl_remittance_approver"
+                            ).id
+                        ]
+                    )
+                ],
+            }
+        )
+        remittance = self.env["kmitl.receipt.remittance"].create(
+            {
+                "department_analytic_id": self.dept_a.id,
+                "receipt_ids": [(6, 0, [r1.id])],
+                "approver_id": approver.id,
+            }
+        )
+        remittance.action_submit()
+        with self.assertRaises(UserError):
+            remittance.with_user(other_user).action_approve()
+        remittance.with_user(approver).action_approve()
+        self.assertEqual(remittance.state, "approved")
+
+    def test_remittance_department_must_be_root(self):
+        with self.assertRaises(ValidationError):
+            self.env["kmitl.receipt.remittance"].create(
+                {"department_analytic_id": self.dept_a_child.id}
+            )
+
+    def test_create_report_files_subdepartments_under_root(self):
+        r_parent = self._make_receipt(department=self.dept_a)
+        r_child = self._make_receipt(department=self.dept_a_child)
+
+        action = (r_parent | r_child).action_create_report()
+        remittance = self.env["kmitl.receipt.remittance"].browse(action["res_id"])
+        self.assertEqual(remittance.department_analytic_id, self.dept_a)
+        self.assertEqual(set(remittance.receipt_ids.ids), {r_parent.id, r_child.id})
+
+    def test_create_report_rejects_different_root_departments(self):
+        r_child = self._make_receipt(department=self.dept_a_child)
+        r_other = self._make_receipt(department=self.dept_b)
+
+        with self.assertRaises(UserError):
+            (r_child | r_other).action_create_report()

@@ -139,6 +139,7 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
             {
                 "department_analytic_id": self.dept_a.id,
                 "receipt_ids": [(6, 0, [receipt.id])],
+                "approver_id": self.approver.id,
             }
         )
         remittance.action_submit()
@@ -279,6 +280,7 @@ class TestReceiptLifecycle(ReceiptKmitlCommon):
             {
                 "department_analytic_id": self.dept_a.id,
                 "receipt_ids": [(6, 0, [receipt.id])],
+                "approver_id": self.approver.id,
             }
         )
         remittance.action_submit()
