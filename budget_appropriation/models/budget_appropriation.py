@@ -292,12 +292,20 @@ class BudgetAppropriation(models.Model):
                 all_account_ids += account_ids.mapped("id")
             rec.account_ids = [Command.set(list(set(all_account_ids)))]
 
-    def _compute_can_edit_user_id(self):
-        is_allowed = self.env.user.has_group(
+    def _is_user_id_editor(self):
+        return self.env.user.has_group(
             "budget.group_budget_manager"
         ) or self.env.user.has_group("base.group_erp_manager")
+
+    def _compute_can_edit_user_id(self):
+        is_allowed = self._is_user_id_editor()
         for record in self:
             record.can_edit_user_id = is_allowed
+
+    def write(self, vals):
+        if "user_id" in vals and not self.env.su and not self._is_user_id_editor():
+            raise UserError(_("เฉพาะผู้จัดการงบประมาณเท่านั้นที่สามารถแก้ไขผู้รับผิดชอบได้"))
+        return super().write(vals)
 
     @api.depends("line_ids.balance", "deduct_line_ids.balance")
     def _compute_amount(self):
