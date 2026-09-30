@@ -1601,6 +1601,10 @@ msgstr ""
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__description
+msgid "หมายเหตุ"
+msgstr ""
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__description
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__description
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_body

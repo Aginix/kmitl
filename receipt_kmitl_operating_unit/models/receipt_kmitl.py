@@ -1,6 +1,15 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import _, fields, models
+from odoo.exceptions import UserError
+
+# Readonly from submission onwards, mirroring the base model's states.
+READONLY_STATES = {
+    "submitted": [("readonly", True)],
+    "approved": [("readonly", True)],
+    "done": [("readonly", True)],
+    "cancelled": [("readonly", True)],
+}
 
 
 class ReceiptKmitl(models.Model):
@@ -9,8 +18,21 @@ class ReceiptKmitl(models.Model):
     operating_unit_id = fields.Many2one(
         "operating.unit",
         string="Operating Unit",
+        required=True,
         default=lambda self: self.env["res.users"].operating_unit_default_get(),
+        states=READONLY_STATES,
     )
+
+    def _prepare_remittance_vals(self, receipts):
+        vals = super()._prepare_remittance_vals(receipts)
+        operating_units = receipts.mapped("operating_unit_id")
+        if len(operating_units) > 1:
+            raise UserError(
+                _("Selected receipts belong to different operating units. "
+                  "Please select receipts from the same operating unit.")
+            )
+        vals["operating_unit_id"] = operating_units.id
+        return vals
 
     def _prepare_move_vals(self, line_vals):
         vals = super()._prepare_move_vals(line_vals)

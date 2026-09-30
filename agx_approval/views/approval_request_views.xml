@@ -266,13 +266,13 @@
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="product_id"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="description"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="amount" sum="รวม"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="partner_bank_id"
                                         options="{'no_create': True, 'no_create_edit': True}"
                                         attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}" />
+                                    <field name="description"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                 </tree>
                             </field>
                             <separator string="สำรองจ่าย" />
@@ -290,13 +290,13 @@
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="product_id"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="description"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="amount" sum="รวม"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="partner_bank_id"
                                         options="{'no_create': True, 'no_create_edit': True}"
                                         attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}" />
+                                    <field name="description"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                 </tree>
                             </field>
                             <separator string="เงินยืม" />
@@ -314,13 +314,13 @@
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="product_id"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="description"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="amount" sum="รวม"
                                         attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                     <field name="partner_bank_id"
                                         options="{'no_create': True, 'no_create_edit': True}"
                                         attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}" />
+                                    <field name="description"
+                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer oe_right">

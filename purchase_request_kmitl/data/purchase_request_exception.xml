@@ -81,4 +81,69 @@ if self.estimated_cost &gt; 500000:
         </field>
     </record>
 
+    <!-- ห้ามมีรายชื่อกรรมการซ้ำกันภายในชุดคณะกรรมการเดียวกัน -->
+    <record id="kmitl_pr_exception_committee_duplicate_same_type" model="exception.rule">
+        <field
+            name="name"
+        >Committee member must be unique within the same committee type.</field>
+        <field
+            name="description"
+        >The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)</field>
+        <field name="model">purchase.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+buckets = (
+    self.procurement_committee_ids
+    | self.work_acceptance_committee_ids
+    | self.tor_committee_ids
+    | self.price_determine_committee_ids
+    | self.evaluation_committee_ids
+    | self.work_supervisor_ids
+)
+seen = set()
+for line in buckets:
+    if not line.employee_id:
+        continue
+    key = (line.employee_id.id, line.committee_type)
+    if key in seen:
+        failed = True
+        break
+    seen.add(key)
+        </field>
+    </record>
+
+    <!-- ห้ามชื่อกรรมการซ้ำข้ามชุดคณะกรรมการ ยกเว้น TOR / Evaluation / Work Supervisor -->
+    <record
+        id="kmitl_pr_exception_committee_duplicate_cross_type"
+        model="exception.rule"
+    >
+        <field
+            name="name"
+        >Committee member cannot appear in multiple committee types, except TOR / Evaluation / Work Supervisor.</field>
+        <field
+            name="description"
+        >The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)</field>
+        <field name="model">purchase.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+ALLOWED = {"tor_committee", "evaluation", "work_supervisor"}
+buckets = (
+    self.procurement_committee_ids
+    | self.work_acceptance_committee_ids
+    | self.tor_committee_ids
+    | self.price_determine_committee_ids
+    | self.evaluation_committee_ids
+    | self.work_supervisor_ids
+)
+by_emp = {}
+for line in buckets:
+    if line.employee_id:
+        by_emp.setdefault(line.employee_id.id, set()).add(line.committee_type)
+for types in by_emp.values():
+    if len(types) &gt; 1 and not types.issubset(ALLOWED):
+        failed = True
+        break
+        </field>
+    </record>
+
 </odoo>

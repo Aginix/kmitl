@@ -67,7 +67,7 @@ class PurchaseRequest(models.Model):
         return document.action_send()
 
     def _on_sarabun_cancelled(self, document):
-        self.button_draft()
+        self._action_do_cancel(_("ยกเลิกจากสารบรรณ: %s") % document.name)
         return super()._on_sarabun_cancelled(document)
 
     # ADR-0015: render through Sarabun's own no-source layout (สารบรรณ owns the

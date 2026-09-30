@@ -4,25 +4,171 @@
         Separator page printed before each receipt's attachments when a
         remittance's whole batch of attachments is combined into one PDF
         (kmitl.receipt.remittance._build_attachments_pdf).
+
+        Layout is a single A4 page per receipt — see the page-count
+        invariant in _build_attachments_pdf: an index-based page match
+        only holds when every receipt's separator is exactly one page.
     -->
     <template id="report_receipt_kmitl_attachments_separator_document">
         <t t-call="web.basic_layout">
-            <div class="page">
-                <h2>ใบเสร็จ / Receipt <span t-field="o.name"/></h2>
-                <div>
-                    <strong>ผู้จ่าย / Payer: </strong>
-                    <span t-esc="o.customer_name or (o.partner_id and o.partner_id.name) or ''"/>
+            <style>
+                .cover, .cover * { font-family: 'THSarabunNew', Arial, sans-serif; }
+                .cover { position: relative; font-size: 16pt; line-height: 1.3; min-height: 260mm; }
+                .cover-brand {
+                    display: flex; align-items: center;
+                    border: 1px solid #cfd4dc; background: #f5f7fa;
+                    padding: 10px 16px; border-radius: 4px;
+                }
+                .cover-brand img { max-height: 60px; margin-right: 16px; }
+                .cover-brand .name-th { font-size: 20pt; font-weight: bold; line-height: 1.1; }
+                .cover-brand .name-en { font-size: 14pt; color: #495057; line-height: 1.1; }
+                .cover-title { text-align: center; margin-top: 22px; }
+                .cover-title .th { font-size: 24pt; font-weight: bold; }
+                .cover-title .en { font-size: 16pt; color: #495057; letter-spacing: 1px; }
+                .cover-number {
+                    margin: 22px auto 0;
+                    padding: 10px 24px;
+                    border: 2px solid #1f2d3d;
+                    border-radius: 8px;
+                    text-align: center;
+                    display: inline-block;
+                }
+                .cover-number-wrap { text-align: center; }
+                .cover-number .label { font-size: 13pt; color: #495057; letter-spacing: 1px; }
+                .cover-number .value { font-size: 34pt; font-weight: bold; line-height: 1.1; }
+                .cover-date { text-align: center; margin-top: 6px; font-size: 15pt; color: #495057; }
+                .cover-info {
+                    margin-top: 26px;
+                    width: 100%;
+                    border-collapse: collapse;
+                    border-top: 1px solid #dee2e6;
+                    border-bottom: 1px solid #dee2e6;
+                }
+                .cover-info td {
+                    padding: 8px 10px;
+                    border-bottom: 1px dashed #e9ecef;
+                    vertical-align: top;
+                }
+                .cover-info tr:last-child td { border-bottom: none; }
+                .cover-info .label {
+                    width: 34%;
+                    color: #495057;
+                    font-weight: bold;
+                    white-space: nowrap;
+                }
+                .cover-info .value {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+                .cover-info .amount { font-size: 22pt; font-weight: bold; text-align: right; }
+                .cover-summary {
+                    margin-top: 18px;
+                    padding: 10px 14px;
+                    background: #f5f7fa;
+                    border-left: 4px solid #1f2d3d;
+                    font-size: 15pt;
+                }
+                .cover-skipped {
+                    margin-top: 14px;
+                    padding: 10px 14px;
+                    border: 1px solid #f0d58a;
+                    background: #fff8e1;
+                    border-radius: 4px;
+                    font-size: 14pt;
+                }
+                .cover-skipped .heading { font-weight: bold; margin-bottom: 4px; }
+                .cover-skipped ul { margin: 0 0 0 20px; padding: 0; }
+                .cover-footer {
+                    position: absolute;
+                    left: 0; right: 0; bottom: 0;
+                    padding-top: 8px;
+                    border-top: 1px solid #dee2e6;
+                    font-size: 12pt;
+                    color: #6c757d;
+                    text-align: center;
+                }
+            </style>
+            <div class="page cover">
+                <div class="cover-brand">
+                    <img t-if="o.company_id.logo"
+                         t-att-src="image_data_uri(o.company_id.logo)"
+                         alt="Logo"/>
+                    <div>
+                        <div class="name-th">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
+                        <div class="name-en">King Mongkut's Institute of Technology Ladkrabang</div>
+                    </div>
                 </div>
-                <div>
-                    <strong>จำนวนเงิน / Amount: </strong>
-                    <span t-esc="'{:,.2f}'.format(o.amount_total)"/>
+
+                <div class="cover-title">
+                    <div class="th">ใบปะหน้าเอกสารแนบใบเสร็จรับเงิน</div>
+                    <div class="en">RECEIPT ATTACHMENT COVER SHEET</div>
                 </div>
+
+                <div class="cover-number-wrap">
+                    <div class="cover-number">
+                        <div class="label">เลขที่ / No.</div>
+                        <div class="value" t-field="o.name"/>
+                    </div>
+                </div>
+                <div class="cover-date">
+                    <span>วันที่ / Date: </span>
+                    <span t-field="o.date"/>
+                </div>
+
+                <table class="cover-info">
+                    <tr>
+                        <td class="label">รับเงินจาก / Received From</td>
+                        <td class="value">
+                            <span t-esc="o.customer_name or (o.partner_id and o.partner_id.name) or '-'"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">ส่วนงาน / Department</td>
+                        <td class="value">
+                            <span t-esc="o.department_analytic_id.display_name or '-'"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">ประเภทการชำระเงิน / Payment Type</td>
+                        <td class="value">
+                            <t t-if="o.payment_type == 'cash'">เงินสด / Cash</t>
+                            <t t-elif="o.payment_type == 'cheque'">เช็ค / Cheque</t>
+                            <t t-elif="o.payment_type == 'transfer'">เงินโอน / Money Transfer</t>
+                            <t t-else="">-</t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">จำนวนเงิน / Amount</td>
+                        <td class="amount">
+                            <span t-esc="'{:,.2f}'.format(o.amount_total)"/>
+                            <span style="font-size:15pt; font-weight:normal; color:#495057;"> บาท / THB</span>
+                        </td>
+                    </tr>
+                </table>
+
+                <t t-set="attachment_count" t-value="len(o.attachment_ids)"/>
+                <div class="cover-summary">
+                    <strong>เอกสารแนบ / Attachments: </strong>
+                    <span t-esc="attachment_count"/>
+                    <span> ฉบับ / file(s)</span>
+                </div>
+
                 <t t-set="skipped" t-value="(skipped_map or {}).get(str(o.id), [])"/>
-                <div t-if="skipped" class="mt16">
-                    <strong>ไฟล์แนบที่ไม่รองรับ (ข้าม) / Unsupported attachments (skipped):</strong>
+                <div t-if="skipped" class="cover-skipped">
+                    <div class="heading">
+                        ⚠ ไฟล์แนบที่ไม่รองรับ (ข้าม) / Unsupported attachments (skipped)
+                    </div>
                     <ul>
                         <li t-foreach="skipped" t-as="fname" t-esc="fname"/>
                     </ul>
+                </div>
+
+                <div class="cover-footer">
+                    เอกสารต่อไปนี้เป็นหลักฐานประกอบใบเสร็จเลขที่
+                    <span t-field="o.name"/>
+                    / The following pages are supporting documents for receipt
+                    <span t-field="o.name"/>
                 </div>
             </div>
         </t>
@@ -38,8 +184,17 @@
 
     <template id="report_receipt_kmitl_no_attachments">
         <t t-call="web.html_container">
-            <div class="page text-center" style="margin-top: 300px;">
-                <h2>ไม่มีไฟล์แนบ / No attachments</h2>
+            <style>
+                .cover-empty, .cover-empty * { font-family: 'THSarabunNew', Arial, sans-serif; }
+                .cover-empty { text-align: center; margin-top: 220px; }
+                .cover-empty .th { font-size: 28pt; font-weight: bold; }
+                .cover-empty .en { font-size: 18pt; color: #495057; margin-top: 4px; letter-spacing: 1px; }
+                .cover-empty .hint { font-size: 15pt; color: #6c757d; margin-top: 18px; }
+            </style>
+            <div class="page cover-empty">
+                <div class="th">ไม่มีไฟล์แนบ</div>
+                <div class="en">NO ATTACHMENTS</div>
+                <div class="hint">รายงานนำส่งฉบับนี้ไม่มีเอกสารแนบสำหรับพิมพ์รวม</div>
             </div>
         </t>
     </template>

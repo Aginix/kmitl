@@ -51,7 +51,7 @@ class ProcurementPlan(models.Model):
         copy=False,
         tracking=True,
         index="trigram",
-        default=lambda self: _("New"),
+        default="/",
     )
     description = fields.Char(
         string="ชื่อรายการ",
@@ -231,7 +231,7 @@ class ProcurementPlan(models.Model):
         analytic account. Sequence is consumed here (not on save) so draft
         records that are deleted never waste a number."""
         for record in self.sorted("id"):
-            if not record.name or record.name == _("New"):
+            if not record.name or record.name == "/":
                 # The document number's year must come from the ปีงบประมาณ, not
                 # today. In the use_date_range path %(year_be)s reads the
                 # effective date from the ``ir_sequence_date`` context (the
@@ -244,7 +244,7 @@ class ProcurementPlan(models.Model):
                 ).next_by_code(
                     "procurement.plan",
                     sequence_date=fiscal_date,
-                ) or _("New")
+                ) or "/"
         self.write({"state": "to_verify"})
         for record in self:
             if not record.analytic_account_id:

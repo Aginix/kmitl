@@ -1255,7 +1255,7 @@ msgstr "เอกสารแนบ"
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_type
 msgid "Payment Type"
-msgstr "วิธีการจ่ายเงิน"
+msgstr "ประเภทการจ่ายเงิน"
 
 #. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__direct
@@ -1265,12 +1265,12 @@ msgstr "จ่ายตรง"
 #. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__advance
 msgid "Advance"
-msgstr "เงินยืมทดรอง"
+msgstr "เงินยืม"
 
 #. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__prepaid
 msgid "Prepaid"
-msgstr "จ่ายล่วงหน้า"
+msgstr "สำรองจ่าย"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__note

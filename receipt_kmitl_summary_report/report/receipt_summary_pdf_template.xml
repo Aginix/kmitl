@@ -65,36 +65,56 @@
                             <tr>
                                 <th style="width: 24pt">วันที่</th>
                                 <th style="width: 56pt;">เลขที่ใบเสร็จ</th>
+                                <th style="width: 12%;">ชื่อลูกค้า</th>
                                 <th>รายละเอียด</th>
                                 <th class="text-right" style="width: 64pt;">จำนวนเงิน</th>
-                                <th style="width: 30%;">มิติบัญชี</th>
-                                <th style="width: 16%;">หมายเหตุ</th>
+                                <th style="width: 14%;">ประเภทการชำระเงิน</th>
+                                <th style="width: 16%;">มิติบัญชี</th>
+                                <th style="width: 10%;">หมายเหตุ</th>
+                                <th style="width: 10%;">ผู้ออกใบเสร็จ</th>
                             </tr>
                         </thead>
                         <tbody>
                             <t t-foreach="groups" t-as="group">
                                 <tr class="group-row">
-                                    <td colspan="3" t-out="group['date']"/>
+                                    <td colspan="4" t-out="group['date']"/>
                                     <td class="text-right" t-out="format_amount(group['total'])"/>
-                                    <td colspan="2"/>
+                                    <td colspan="4"/>
                                 </tr>
                                 <t t-foreach="group['rows']" t-as="row">
                                     <tr>
                                         <td/>
                                         <td class="text-center" t-out="row['name']"/>
-                                        <td class="pre-line" t-out="row['description']"/>
+                                        <td t-out="row['customer_name']"/>
+                                        <td class="pre-line">
+                                            <div t-if="row['description']" t-out="row['description']"/>
+                                            <t t-if="row['lines']">
+                                                <div>รายการ</div>
+                                                <ul style="margin: 0; padding-left: 16px;">
+                                                    <li t-foreach="row['lines']" t-as="l"
+                                                        t-out="l['name'] + '  ' + format_amount(l['amount']) + ' บาท'"/>
+                                                </ul>
+                                            </t>
+                                        </td>
                                         <td class="text-right" t-out="format_amount(row['amount_total'])"/>
+                                        <td>
+                                            <div t-if="row['payment_type_label']" t-out="row['payment_type_label']"/>
+                                            <ul t-if="row['payment_extras']" style="margin: 0; padding-left: 16px;">
+                                                <li t-foreach="row['payment_extras']" t-as="e" t-out="e"/>
+                                            </ul>
+                                        </td>
                                         <td class="pre-line" t-out="row['dimensions']"/>
                                         <td t-out="row['note']"/>
+                                        <td t-out="row['user_name']"/>
                                     </tr>
                                 </t>
                             </t>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="3">Grand Total</td>
+                                <td colspan="4">Grand Total</td>
                                 <td class="text-right" t-out="format_amount(grand_total)"/>
-                                <td colspan="2"/>
+                                <td colspan="4"/>
                             </tr>
                         </tfoot>
                     </table>

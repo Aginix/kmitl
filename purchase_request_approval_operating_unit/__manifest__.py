@@ -6,10 +6,9 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['purchase_request_approval', 'purchase_request_operating_unit', 'purchase_request_department', 'hr_department_operating_unit'],
+    'depends': ['purchase_request_approval', 'operating_unit'],
     "data": [
         "security/purchase_request_approval_operating_unit.xml",
-        "security/purchase_request_operating_unit.xml",
         "views/purchase_request_approval_views.xml"
     ],
     'installable': True,
