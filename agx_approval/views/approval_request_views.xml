@@ -131,28 +131,19 @@
                             attrs="{'readonly': [('is_plan_editable', '=', False)]}" colspan="2"
                             nolabel="1" />
                     </group>
-                    <group name="plan_expense" string="ค่าใช้จ่ายตามแผน">
-                        <field name="multi_product" invisible="1" />
-                        <group string="ค่าใช้จ่าย" attrs="{'invisible': [('multi_product', '=', True)]}">
-                            <field name="plan_amount"
-                                attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
-                            <field name="plan_description"
-                                attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
-                        </group>
-                        <group string="Planned Expenses" attrs="{'invisible': [('multi_product', '=', False)]}">
-                            <field name="line_ids" nolabel="1"
-                                colspan="2"
-                                attrs="{'readonly': [('is_plan_editable', '=', False)]}">
-                                <tree editable="bottom">
-                                    <field name="allowed_product_ids" invisible="1" />
-                                    <field name="sequence" widget="handle" />
-                                    <field name="currency_id" invisible="1" />
-                                    <field name="product_id" />
-                                    <field name="description" />
-                                    <field name="total_amount" sum="Total" />
-                                </tree>
-                            </field>
-                        </group>
+                    <group name="plan_expense" string="ค่าใช้จ่าย">
+                        <field name="multi_product" invisible="1"/>
+                        <field name="plan_amount" attrs="{'readonly': [('is_plan_editable', '=', False)]}"/>
+                        <field name="line_ids" colspan="2" attrs="{'readonly': [('is_plan_editable', '=', False)], 'invisible': [('multi_product', '=', False)]}">
+                            <tree editable="bottom">
+                                <field name="allowed_product_ids" invisible="1"/>
+                                <field name="sequence" widget="handle"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="product_id"/>
+                                <field name="description"/>
+                                <field name="total_amount" sum="Total"/>
+                            </tree>
+                        </field>
                     </group>
                     <group name="plan_attachments" string="เอกสารแนบประกอบคำขอ">
                         <field name="attachment_ids" nolabel="1" colspan="2"
