@@ -67,10 +67,18 @@ Approve, and with both steps reading อนุมัติ the statusbar would n
   has no manager set can still name one by hand and proceed. The rule scopes itself to
   `state in ('draft', 'to_endorse')`: past the endorsement the endorser is already named on the
   record, so this must not false-block the loan officer's own corrections in `to_verify`.
-- **Own-only rule ORs in the endorser**, the same shape as ADR-0014's drafter extension: a
-  supervisor with no other role in the module can still see and endorse a subordinate's request
-  purely by being named `endorser_id` — but the branch is ANDed with `state != 'draft'`, because
-  the field is now prefilled in draft and a borrower's unsubmitted draft must stay private.
+- **Being named `endorser_id` always grants access**, whatever advance-payment tier the endorser
+  holds — none included. The endorser is pickable, and a supervisor who never borrows would
+  otherwise receive a To-Do (automated, so Odoo never checks the assignee can read the request)
+  they could neither open nor endorse, stranding it in `to_endorse`. Hence
+  `advance_payment_endorser_rule` on `base.group_user` (read/write — endorse writes state and
+  posts) plus matching read/write ACL on `advance.payment` and read on the loan type and return
+  line the form embeds. Group rules OR together, so it only widens access; return lines had no
+  rule before, so an unrestricted own-only rule keeps every advance-payment tier as it was. The
+  global OU rules (`advance_payment_operating_unit`, and `_access_all`'s rewrite of them) OR the
+  endorser in too, since a global rule ANDs with everything. The branch is ANDed with
+  `state != 'draft'`: the field is prefilled in draft and an unsubmitted draft must stay
+  private. `endorser_id` is limited to internal users (`share = False`), whom the rule covers.
 - **The endorser needs a menu of their own.** The tier is own-only, so neither สัญญาของฉัน (own
   records) nor สัญญาเงินยืมทั้งหมด (`group_advance_payment_user`) reaches the requests they must
   act on; without one the only route in is the To-Do activity. Hence the `รอฉันเห็นชอบ` filter

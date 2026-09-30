@@ -412,6 +412,9 @@ class AdvancePayment(models.Model):
         readonly=False,
         copy=False,
         tracking=True,
+        # Internal users only: advance_payment_endorser_rule, which gives the
+        # endorser access whatever their tier, sits on base.group_user.
+        domain=[("share", "=", False)],
         help="ผู้บังคับบัญชาผู้เห็นชอบคำขอ (ADR-0020) — เติมให้จาก"
         " employee_id.parent_id แต่เลือกเองได้ เช่นกรณีต้องให้ผู้บังคับบัญชา"
         " เหนือขึ้นไปเป็นผู้เห็นชอบ",
@@ -878,7 +881,9 @@ class AdvancePayment(models.Model):
             # its whole life; the contract number is searchable separately.
             name = rec.name
             if rec.reference:
-                name = "%s (%s)" % (name, rec.reference.display_name)
+                # sudo: only the label — the endorser may be named without
+                # any access to the source document (ADR-0020).
+                name = "%s (%s)" % (name, rec.reference.sudo().display_name)
             result.append((rec.id, name))
         return result
 
@@ -1183,7 +1188,7 @@ class AdvancePayment(models.Model):
                 raise UserError(
                     _("Only agreements awaiting endorsement can be sent back.")
                 )
-            # Drop the To-Do first, then sudo the transition: the own-only
+            # Drop the To-Do first, then sudo the transition: the endorser
             # rule only grants the endorser access outside draft, so from the
             # write on the endorser can no longer read or post on the record.
             # Authority was established just above, and sudo() keeps env.uid,

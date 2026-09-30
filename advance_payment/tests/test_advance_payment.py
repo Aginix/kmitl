@@ -495,9 +495,9 @@ class TestAdvancePayment(TransactionCase):
             ap.with_user(self.other_supervisor).action_endorse_reject()
 
     def test_own_only_supervisor_can_see_and_endorse_subordinate(self):
-        """The own-only rule ORs in the endorser (ADR-0020), mirroring the
-        ADR-0014 drafter precedent — a supervisor with no other role can
-        still see and endorse a subordinate's request."""
+        """The endorser rule (ADR-0020), mirroring the ADR-0014 drafter
+        precedent — a supervisor with no other role can still see and endorse
+        a subordinate's request."""
         ap = self._make(requested_by=self.user, as_user=self.user)
         ap.with_user(self.user).action_submit()
         visible = (
@@ -507,6 +507,37 @@ class TestAdvancePayment(TransactionCase):
         )
         self.assertEqual(visible, ap)
         ap.with_user(self.supervisor).action_endorse()
+        self.assertEqual(ap.state, "to_verify")
+
+    def test_endorser_without_any_advance_payment_tier_can_act(self):
+        """Being named endorser_id is enough on its own: a plain internal
+        user holding no advance-payment group at all can open the request,
+        its embedded return lines included, and endorse it — while another
+        plain user still sees nothing (advance_payment_endorser_rule)."""
+        plain = self.env.ref("base.group_user")
+        endorser, bystander = self.env["res.users"].create(
+            [
+                {
+                    "name": "Plain Endorser",
+                    "login": "plain_endorser_ap",
+                    "groups_id": [(6, 0, plain.ids)],
+                },
+                {
+                    "name": "Plain Bystander",
+                    "login": "plain_bystander_ap",
+                    "groups_id": [(6, 0, plain.ids)],
+                },
+            ]
+        )
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.endorser_id = endorser
+        Loan = self.env["advance.payment"]
+        self.assertFalse(Loan.with_user(endorser).search([("id", "=", ap.id)]))
+        ap.with_user(self.user).action_submit()
+        self.assertEqual(Loan.with_user(endorser).search([("id", "=", ap.id)]), ap)
+        self.assertFalse(Loan.with_user(bystander).search([("id", "=", ap.id)]))
+        ap.with_user(endorser).read(["name", "loan_type_id", "return_line_ids"])
+        ap.with_user(endorser).action_endorse()
         self.assertEqual(ap.state, "to_verify")
 
     def test_endorser_prefilled_in_draft(self):
@@ -535,7 +566,7 @@ class TestAdvancePayment(TransactionCase):
 
     def test_endorser_cannot_see_draft(self):
         """Prefilling endorser_id must not leak a borrower's unsubmitted
-        draft to their manager — the own-only rule excludes draft."""
+        draft to their manager — the endorser rule excludes draft."""
         ap = self._make(requested_by=self.user, as_user=self.user)
         self.assertEqual(ap.endorser_id, self.supervisor)
         visible = (
