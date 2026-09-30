@@ -1,32 +1,49 @@
-.o_dac {
+// ---------------------------------------------------------------------------
+// Field widget: cursor + hover cue on each attachment card so the user knows
+// clicking opens the preview instead of downloading the file.
+// ---------------------------------------------------------------------------
+.o_attachment_carousel_field {
+    .o_attachment.o_ac_clickable {
+        cursor: pointer;
+        transition: background-color 0.1s ease;
+
+        &:hover {
+            background-color: rgba(13, 110, 253, 0.08);
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Carousel dialog. The Dialog wrapper handles width via size="xl"; the inner
+// content gets a fixed height so the viewer fills the modal predictably.
+// ---------------------------------------------------------------------------
+.o_ac {
     height: 82vh;
     background: #f8f9fa;
-    display: flex;
-    flex-direction: column;
 
-    .o_dac_header {
+    .o_ac_header {
         background: #fff;
         flex: 0 0 auto;
     }
 
-    .o_dac_title {
+    .o_ac_title {
         min-width: 0;
     }
 
-    .o_dac_viewer {
+    .o_ac_viewer {
         overflow: hidden;
         background: #2b2b2b;
         display: flex;
         align-items: center;
         justify-content: center;
 
-        .o_dac_iframe {
+        .o_ac_iframe {
             width: 100%;
             height: 100%;
             background: #fff;
         }
 
-        .o_dac_image_wrap {
+        .o_ac_image_wrap {
             width: 100%;
             height: 100%;
             display: flex;
@@ -35,13 +52,13 @@
             padding: 8px;
         }
 
-        .o_dac_image {
+        .o_ac_image {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
         }
 
-        .o_dac_unsupported {
+        .o_ac_unsupported {
             color: #eee;
             padding: 24px;
 
@@ -50,7 +67,7 @@
             }
         }
 
-        .o_dac_nav {
+        .o_ac_nav {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
@@ -69,16 +86,11 @@
             }
         }
 
-        .o_dac_prev {
-            left: 12px;
-        }
-
-        .o_dac_next {
-            right: 12px;
-        }
+        .o_ac_prev { left: 12px; }
+        .o_ac_next { right: 12px; }
     }
 
-    .o_dac_thumbs {
+    .o_ac_thumbs {
         flex: 0 0 auto;
         display: flex;
         gap: 8px;
@@ -88,7 +100,7 @@
         background: #fff;
     }
 
-    .o_dac_thumb {
+    .o_ac_thumb {
         flex: 0 0 auto;
         width: 96px;
         cursor: pointer;
@@ -98,11 +110,9 @@
         background: #f1f3f5;
         transition: border-color 0.15s ease;
 
-        &:hover {
-            border-color: #adb5bd;
-        }
+        &:hover { border-color: #adb5bd; }
 
-        &.o_dac_thumb_active {
+        &.o_ac_thumb_active {
             border-color: #0d6efd;
             background: #e7f1ff;
         }
@@ -115,7 +125,7 @@
             display: block;
         }
 
-        .o_dac_thumb_icon {
+        .o_ac_thumb_icon {
             width: 100%;
             height: 60px;
             display: flex;
@@ -127,14 +137,12 @@
             border-radius: 2px;
         }
 
-        .o_dac_thumb_name {
+        .o_ac_thumb_name {
             font-size: 11px;
             margin-top: 4px;
             max-width: 100%;
         }
     }
 
-    .o_dac_empty {
-        margin: auto;
-    }
+    .o_ac_empty { margin: auto; }
 }

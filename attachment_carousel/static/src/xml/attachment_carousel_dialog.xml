@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="attachment_carousel.Dialog" owl="1">
+        <Dialog title="dialogTitle"
+                size="'xl'"
+                contentClass="'o_ac_dialog'"
+                withBodyPadding="false"
+                footer="false">
+            <div class="o_ac d-flex flex-column">
+                <t t-if="count === 0">
+                    <div class="o_ac_empty text-center p-5 m-auto">
+                        <i class="fa fa-folder-open-o fa-3x text-muted mb-3 d-block"/>
+                        <p class="mb-0">ไม่มีไฟล์แนบ</p>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="o_ac_header d-flex align-items-center px-3 py-2 border-bottom">
+                        <div class="o_ac_title flex-grow-1 text-truncate">
+                            <span t-esc="current.name"/>
+                        </div>
+                        <button class="btn btn-sm btn-secondary" t-on-click="download">
+                            <i class="fa fa-download me-1"/> ดาวน์โหลด
+                        </button>
+                    </div>
+
+                    <div class="o_ac_viewer position-relative flex-grow-1">
+                        <t t-if="isIframable(current)">
+                            <iframe class="o_ac_iframe" t-att-src="contentUrl(current)" frameborder="0"/>
+                        </t>
+                        <t t-elif="isImage(current)">
+                            <div class="o_ac_image_wrap">
+                                <img class="o_ac_image" t-att-src="contentUrl(current)" t-att-alt="current.name"/>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="o_ac_unsupported text-center">
+                                <i t-attf-class="fa fa-4x text-muted mb-3 d-block #{fileIcon(current)}"/>
+                                <p class="mb-1">ไม่สามารถแสดงตัวอย่างไฟล์ประเภทนี้ได้</p>
+                                <p class="text-muted small"><t t-esc="current.mimetype"/></p>
+                                <a class="btn btn-primary mt-2" t-att-href="contentUrl(current)" target="_blank">
+                                    <i class="fa fa-download me-1"/> ดาวน์โหลดไฟล์
+                                </a>
+                            </div>
+                        </t>
+
+                        <button t-if="count > 1"
+                                class="o_ac_nav o_ac_prev btn btn-light"
+                                t-on-click="prev"
+                                title="Previous">
+                            <i class="fa fa-chevron-left"/>
+                        </button>
+                        <button t-if="count > 1"
+                                class="o_ac_nav o_ac_next btn btn-light"
+                                t-on-click="next"
+                                title="Next">
+                            <i class="fa fa-chevron-right"/>
+                        </button>
+                    </div>
+
+                    <div t-if="count > 1" class="o_ac_thumbs border-top">
+                        <t t-foreach="props.attachments" t-as="att" t-key="att.id">
+                            <div class="o_ac_thumb"
+                                 t-att-class="{ o_ac_thumb_active: att_index === state.index }"
+                                 t-on-click="() => this.goTo(att_index)"
+                                 t-att-title="att.name">
+                                <t t-if="isImage(att)">
+                                    <img t-att-src="thumbnailUrl(att)" t-att-alt="att.name"/>
+                                </t>
+                                <t t-else="">
+                                    <div class="o_ac_thumb_icon">
+                                        <i t-attf-class="fa #{fileIcon(att)}"/>
+                                    </div>
+                                </t>
+                                <div class="o_ac_thumb_name text-truncate"><t t-esc="att.name"/></div>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </Dialog>
+    </t>
+
+</templates>

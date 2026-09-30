@@ -2,24 +2,20 @@
 
 {
     "name": "Disbursement - Attachment Carousel",
-    "version": "16.0.1.0.0",
+    "version": "16.0.2.0.0",
     "category": "Disbursement",
     "license": "AGPL-3",
     "author": "KMITL",
-    "summary": "In-app OWL carousel to preview all disbursement attachments",
+    "summary": (
+        "Preview all disbursement attachments in an in-app carousel "
+        "by clicking any file"
+    ),
     "depends": [
+        "attachment_carousel",
         "disbursement",
-        "web",
     ],
     "data": [
         "views/disbursement_request_views.xml",
     ],
-    "assets": {
-        "web.assets_backend": [
-            "disbursement_attachment_carousel/static/src/js/attachment_carousel.js",
-            "disbursement_attachment_carousel/static/src/xml/attachment_carousel.xml",
-            "disbursement_attachment_carousel/static/src/scss/attachment_carousel.scss",
-        ],
-    },
     "installable": True,
 }
