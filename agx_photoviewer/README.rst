@@ -12,7 +12,8 @@ bundled in ``static/lib/photoviewer``).
   naming the file type; the Download button stays available.
 * Chatter: clicking an attachment opens the viewer.
 * The previous / next buttons walk through all the previewable attachments of
-  the list, images and files alike. The modal can be resized freely.
+  the list, images and files alike, and a thumbnail strip above the footer
+  jumps straight to any of them. The modal can be resized freely.
 
 Other file types can be added by registering a renderer::
 

@@ -27,6 +27,9 @@ const IMAGE_MIMETYPES = [
 const MIN_WIDTH = 280;
 const MIN_HEIGHT = 180;
 
+// Height of the thumbnail strip; keep in sync with $thumbnail-strip-height.
+const THUMBNAIL_STRIP_HEIGHT = 68;
+
 const DOWNLOAD_ICON =
     '<svg viewBox="0 0 24 24" class="svg-inline-icon">' +
     '<path fill="currentColor" d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"></path></svg>';
@@ -70,6 +73,51 @@ const downloadButton = {
     },
 };
 
+function createThumbnails(viewer) {
+    const strip = document.createElement("div");
+    strip.className = "o_agx_photoviewer_thumbnails";
+    // Clicking or scrolling the strip must not drag the modal.
+    for (const type of ["mousedown", "touchstart"]) {
+        strip.addEventListener(type, (ev) => ev.stopPropagation(), {passive: true});
+    }
+    strip.addEventListener(
+        "wheel",
+        (ev) => {
+            if (!ev.deltaX) {
+                strip.scrollLeft += ev.deltaY;
+                ev.preventDefault();
+            }
+        },
+        {passive: false}
+    );
+    viewer.images.forEach(({attachment}, index) => {
+        const thumbnail = document.createElement("button");
+        thumbnail.type = "button";
+        thumbnail.className = "o_agx_photoviewer_thumbnail";
+        thumbnail.title = attachment.name || "";
+        thumbnail.addEventListener("click", () => viewer.jumpTo(index));
+        if (isImage(attachment)) {
+            const image = document.createElement("img");
+            image.loading = "lazy";
+            const token = attachment.accessToken
+                ? `?access_token=${attachment.accessToken}`
+                : "";
+            image.src = `/web/image/${attachment.id}/96x96${token}`;
+            thumbnail.append(image);
+        } else {
+            // Icon of the file type, styled by the "o_image" mimetype rules.
+            const icon = document.createElement("span");
+            icon.className = "o_image";
+            icon.dataset.mimetype = attachment.mimetype || "";
+            icon.dataset.ext = getExtension(attachment);
+            icon.title = attachment.name || "";
+            thumbnail.append(icon);
+        }
+        strip.append(thumbnail);
+    });
+    return strip;
+}
+
 /**
  * Show the item being loaded: images use the native stage, files are rendered
  * into a container placed below the header by their renderer.
@@ -89,6 +137,13 @@ function showItem(viewer, state) {
             viewer.isOpened = true;
             viewer.resize = () => {};
         }
+        if (viewer.images.length > 1) {
+            state.thumbnails = createThumbnails(viewer);
+            modal.addClass("o_agx_photoviewer_has_thumbnails");
+            modal[0].querySelector(".photoviewer-inner").append(state.thumbnails);
+            // The stage size was measured before the strip existed.
+            viewer._stageEdgeValue.vertical += THUMBNAIL_STRIP_HEIGHT;
+        }
         state.container = document.createElement("div");
         state.container.className = "o_agx_photoviewer_content";
         viewer.$stage[0].after(state.container);
@@ -103,6 +158,15 @@ function showItem(viewer, state) {
             );
         });
         modal.on("keydown", (ev) => ev.key === "Escape" && viewer.close());
+    }
+    if (state.thumbnails) {
+        for (const [index, thumbnail] of [...state.thumbnails.children].entries()) {
+            thumbnail.classList.toggle("active", index === viewer.index);
+        }
+        state.thumbnails.children[viewer.index].scrollIntoView({
+            block: "nearest",
+            inline: "center",
+        });
     }
     if (!item.renderer) {
         modal.removeClass("o_agx_photoviewer_embed");
