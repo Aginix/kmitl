@@ -331,6 +331,19 @@ class ReceiptKmitl(models.Model):
                 dashboard[bucket]["amount"] += g.get("amount_total") or 0.0
         return dashboard
 
+    def _get_root_departments(self):
+        """Top-level departments of the receipts: a remittance is filed per
+        root department and covers receipts of its sub-departments."""
+        return self.env["account.analytic.account"].browse(
+            {int(d.parent_path.split("/", 1)[0]) for d in self.department_analytic_id}
+        )
+
+    def _prepare_remittance_vals(self, receipts):
+        return {
+            "department_analytic_id": receipts._get_root_departments().id,
+            "receipt_ids": [(6, 0, receipts.ids)],
+        }
+
     def action_create_report(self):
         receipts = self.filtered(
             lambda r: r.state == "draft"
@@ -341,17 +354,14 @@ class ReceiptKmitl(models.Model):
             raise UserError(
                 _("No receipts eligible for remittance.")
             )
-        departments = receipts.mapped("department_analytic_id")
+        departments = receipts._get_root_departments()
         if len(departments) > 1:
             raise UserError(
                 _("Selected receipts belong to different departments. "
                   "Please select receipts from the same department.")
             )
         remittance = self.env["kmitl.receipt.remittance"].create(
-            {
-                "department_analytic_id": departments.id,
-                "receipt_ids": [(6, 0, receipts.ids)],
-            }
+            self._prepare_remittance_vals(receipts)
         )
         return {
             "type": "ir.actions.act_window",
