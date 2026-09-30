@@ -133,6 +133,7 @@ class BudgetAppropriation(models.Model):
         readonly=False,
         states=READONLY_STATES,
     )
+    can_edit_user_id = fields.Boolean(compute="_compute_can_edit_user_id")
     line_ids = fields.One2many(
         comodel_name="budget.appropriation.line",
         inverse_name="appropriation_id",
@@ -140,7 +141,7 @@ class BudgetAppropriation(models.Model):
         tracking=True,
         readonly=False,
         states=READONLY_STATES,
-        domain=[('deduct', '=', False)],
+        domain=[("deduct", "=", False)],
     )
     deduct_line_ids = fields.One2many(
         comodel_name="budget.appropriation.line",
@@ -149,7 +150,7 @@ class BudgetAppropriation(models.Model):
         tracking=True,
         readonly=False,
         states=READONLY_STATES,
-        domain=[('deduct', '=', True)],
+        domain=[("deduct", "=", True)],
     )
     budget_type = fields.Selection(
         [("revenue", "Revenue"), ("expense", "Expense")],
@@ -291,6 +292,13 @@ class BudgetAppropriation(models.Model):
                 all_account_ids += account_ids.mapped("id")
             rec.account_ids = [Command.set(list(set(all_account_ids)))]
 
+    def _compute_can_edit_user_id(self):
+        is_allowed = self.env.user.has_group(
+            "budget.group_budget_manager"
+        ) or self.env.user.has_group("base.group_erp_manager")
+        for record in self:
+            record.can_edit_user_id = is_allowed
+
     @api.depends("line_ids.balance", "deduct_line_ids.balance")
     def _compute_amount(self):
         for appropriation in self:
@@ -305,14 +313,11 @@ class BudgetAppropriation(models.Model):
         # Build account_id -> field_name mapping in 2 queries instead of 12
         BudgetAccount = self.env["budget.account"]
         code_to_field = {v: k for k, v in self.BUDGET_SUMMARY_CODES.items()}
-        parents = BudgetAccount.search(
-            [("code", "in", list(code_to_field.keys()))]
-        )
+        parents = BudgetAccount.search([("code", "in", list(code_to_field.keys()))])
         account_field_map = {}
         if parents:
             domain = expression.OR(
-                [("parent_path", "=like", f"{p.parent_path}%")]
-                for p in parents
+                [("parent_path", "=like", f"{p.parent_path}%")] for p in parents
             )
             descendants = BudgetAccount.search(domain)
             # Map each descendant back to the parent code's field name
@@ -339,7 +344,9 @@ class BudgetAppropriation(models.Model):
             if appropriation.state == "cancel":
                 continue
 
-            appropriation_has_name = appropriation.name and appropriation.name != _("New")
+            appropriation_has_name = appropriation.name and appropriation.name != _(
+                "New"
+            )
             if appropriation_has_name or (
                 appropriation.state not in ("review", "posted")
             ):
@@ -383,9 +390,7 @@ class BudgetAppropriation(models.Model):
             initial = self.filtered(lambda r: r.appropriation_type == "initial")
             if initial:
                 raise UserError(
-                    _(
-                        "เฉพาะผู้จัดการงบประมาณเท่านั้นที่สามารถอนุมัติการจัดสรรงบประมาณต้นปีได้"
-                    )
+                    _("เฉพาะผู้จัดการงบประมาณเท่านั้นที่สามารถอนุมัติการจัดสรรงบประมาณต้นปีได้")
                 )
         self._create_budget_move()
         self.write({"state": "posted"})
@@ -401,9 +406,7 @@ class BudgetAppropriation(models.Model):
     def button_cancel(self):
         for record in self:
             if record.state != "draft":
-                raise UserError(
-                    _("สามารถยกเลิกได้เฉพาะรายการที่อยู่ในสถานะ Draft เท่านั้น")
-                )
+                raise UserError(_("สามารถยกเลิกได้เฉพาะรายการที่อยู่ในสถานะ Draft เท่านั้น"))
         self.write({"state": "cancel"})
 
     def button_draft(self):
@@ -502,9 +505,9 @@ class BudgetAppropriation(models.Model):
         """Open portal preview URL in new tab."""
         if self.id:
             return {
-                'type': 'ir.actions.act_url',
-                'url': '/budget/budget_appropriation/%s' % (self.id),
-                'target': 'new',
+                "type": "ir.actions.act_url",
+                "url": "/budget/budget_appropriation/%s" % (self.id),
+                "target": "new",
             }
 
     def get_f4_report_data(self):
@@ -521,8 +524,10 @@ class BudgetAppropriation(models.Model):
         def _process_account(account_id, array, deduct):
             rows = self.deduct_line_ids if deduct else self.line_ids
             rows = rows.filtered(
-                lambda x: x.account_id.parent_path.startswith(account_id.parent_path)
-                or ("/" + account_id.parent_path) in x.account_id.parent_path
+                lambda x: (
+                    x.account_id.parent_path.startswith(account_id.parent_path)
+                    or ("/" + account_id.parent_path) in x.account_id.parent_path
+                )
             )
 
             balance = sum(rows.mapped("balance"))
