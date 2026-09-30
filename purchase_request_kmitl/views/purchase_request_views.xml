@@ -27,11 +27,11 @@
             <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-            <xpath expr="//field[@name='department_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
             <xpath expr="//field[@name='requested_by']" position="attributes">
                 <attribute name="optional">show</attribute>
+            </xpath>
+            <xpath expr="//field[@name='requested_by']" position="after">
+                <field name="requesting_department_id" optional="show" />
             </xpath>
             <xpath expr="//field[@name='estimated_cost']" position="attributes">
                 <attribute name="optional">show</attribute>
@@ -91,13 +91,16 @@
                     domain="[]"
                     context="{'group_by': 'procurement_method_id'}"
                 />
+                <filter
+                    string="Requesting Department"
+                    name="group_requesting_department"
+                    domain="[]"
+                    context="{'group_by': 'requesting_department_id'}"
+                />
             </group>
-            <xpath expr="//filter[@name='group_department']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='department_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
+            <field name="requested_by" position="after">
+                <field name="requesting_department_id" />
+            </field>
         </field>
     </record>
 
@@ -273,6 +276,11 @@
                             name="requested_by"
                             widget="employee_detail_many2one"
                             attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                        <field
+                            name="requesting_department_id"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                            attrs="{'required': [('is_editable', '=', True)], 'readonly': [('is_editable', '=', False)]}"
                         />
                         <field name="user_id" readonly="1" />
                         <field
@@ -507,10 +515,6 @@
             </xpath>
 
             <xpath expr="//field[@name='description']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='department_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 

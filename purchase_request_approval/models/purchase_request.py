@@ -134,7 +134,7 @@ class PurchaseRequest(models.Model):
     def _prepare_approval_vals(self):
         return {
             "request_id": self.id,
-            "requesting_department_id": self.requested_by.employee_id.department_id.id,
+            "requesting_department_id": self.requesting_department_id.id,
             "origin": self.name,
             "date_start": fields.Datetime.now(),
             "verified_by": False,

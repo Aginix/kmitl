@@ -1,6 +1,6 @@
 {
     "name": "Purchase Request Approval",
-    "version": "16.0.2.1.1",
+    "version": "16.0.2.2.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",

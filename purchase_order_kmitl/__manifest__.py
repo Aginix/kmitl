@@ -12,7 +12,6 @@
         "account_fiscal_year",
         "hr",
         "purchase_operating_unit",
-        "purchase_request_department",
         "purchase_order_link_purchase_request",
         "purchase_contract_kmitl",
         # payment type merged into this module

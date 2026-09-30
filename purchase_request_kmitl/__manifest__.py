@@ -1,11 +1,12 @@
 {
     "name": "Purchase Request KMITL",
-    "version": "16.0.1.0.2",
+    "version": "16.0.1.1.0",
     "summary": """ Purchase Request KMITL""",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": [
+        "account_analytic_kmitl",
         "hr",
         "hr_employee_name_detail_kmitl",
         "purchase_exception",

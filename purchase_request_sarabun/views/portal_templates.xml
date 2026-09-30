@@ -35,7 +35,7 @@
                     <tr class="active">
                         <th>Reference</th>
                         <th>Date</th>
-                        <th>Department</th>
+                        <th>Requesting Department</th>
                         <th class="text-end">Amount</th>
                         <th>State</th>
                     </tr>
@@ -55,7 +55,7 @@
                                 />
                             </td>
                             <td>
-                                <span t-field="request.department_analytic_id" />
+                                <span t-field="request.requesting_department_id" />
                             </td>
                             <td class="text-end">
                                 <span

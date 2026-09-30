@@ -117,7 +117,11 @@ class PurchaseRequestApproval(models.Model):
     )
 
     requesting_department_id = fields.Many2one(
-        "hr.department", string="Department", tracking=True
+        comodel_name="account.analytic.account",
+        string="Requesting Department",
+        domain=[("root_plan_id.code", "=", "departments")],
+        tracking=True,
+        help="ส่วนงานผู้ขอให้จัดหา — copy มาจาก พ.1 และแก้บน พจ.1 ได้ (ADR-0004)",
     )
 
     report_html_url = fields.Char(compute="_compute_report_html_url")
@@ -164,7 +168,6 @@ class PurchaseRequestApproval(models.Model):
     # accidentally shadowed the own declarations above and prevented PA-side
     # divergence. Removed to restore ADR-0004 intent.
     requested_by = fields.Many2one(related="request_id.requested_by")
-    department_id = fields.Many2one(related="request_id.department_id", store=True)
     company_id = fields.Many2one(related="request_id.company_id", store=True)
     partner_id = fields.Many2one(
         "res.partner",
@@ -224,7 +227,7 @@ class PurchaseRequestApproval(models.Model):
     )
     tax_totals = fields.Binary(compute="_compute_tax_totals", exportable=False)
     department_analytic_id = fields.Many2one(
-        related="request_id.department_analytic_id", store=True
+        related="request_id.department_analytic_id"
     )
     source_analytic_id = fields.Many2one(related="request_id.source_analytic_id")
     budget_account_id = fields.Many2one(related="request_id.budget_account_id")
@@ -691,7 +694,10 @@ class PurchaseRequestApproval(models.Model):
         return super()._sarabun_submit_guard()
 
     def _get_sarabun_sender_department(self):
-        return self.requesting_department_id or super()._get_sarabun_sender_department()
+        return (
+            self.requested_by.employee_id.department_id
+            or super()._get_sarabun_sender_department()
+        )
 
     def _on_sarabun_circulating(self, document):
         # Explicit override: flip the PA to 'to_approve' on send. Do NOT call
