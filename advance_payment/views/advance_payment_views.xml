@@ -179,7 +179,8 @@
                                     'invisible': [('state', 'in', ['draft', 'to_endorse', 'to_verify', 'to_approve'])],
                                     'readonly': ['|', ('is_loan_officer', '=', False), ('state', 'in', ['done', 'cancel'])]
                                 }" />
-                            <field name="endorser_id" />
+                            <field name="endorser_id"
+                                attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}" />
                             <field name="loan_verifier_id"
                                 attrs="{'readonly': ['&amp;', ('state', '!=', 'draft'), ('is_manager', '=', False)]}" />
                             <field name="approver_id"

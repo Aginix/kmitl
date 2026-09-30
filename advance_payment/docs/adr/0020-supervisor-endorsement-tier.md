@@ -31,16 +31,27 @@ Approve, and with both steps reading อนุมัติ the statusbar would n
 
 ## Design
 
-- **Endorser identity is prefilled in draft, then frozen.** `endorser_id` (`res.users`,
-  `store=True`, `copy=False`, `tracking=True`) is a stored compute over
-  `employee_id.parent_id.user_id`: it tracks the borrower while the request is `draft`, and
-  keeps its value in every later state. A plain `default=` would not do — the `user` tier may
-  draft on behalf and `employee_id` stays editable in draft, so the default (evaluated from the
-  *creator*) would name the wrong manager. Prefilling lets the borrower see who will endorse,
-  and notice a missing manager, before hitting `excep_missing_manager` at submit; freezing keeps
-  the ADR-0020 guarantee that a manager reorg does not retarget an in-flight request. Going back
-  to `draft` (`action_recall` / `action_endorse_reject`) re-evaluates it, which is correct — the
-  request is in the borrower's hands again.
+- **The endorser is suggested, not dictated.** `endorser_id` (`res.users`, `store=True`,
+  **`readonly=False`**, `copy=False`, `tracking=True`) is a stored compute over
+  `employee_id.parent_id.user_id` — a default that follows the borrower, which the form may
+  override, because a request sometimes has to go to somebody *above* the direct manager. A
+  plain `default=` would not do: the `user` tier may draft on behalf and `employee_id` stays
+  editable in draft, so a default evaluated from the *creator* would name the wrong manager.
+  Who may change it follows `loan_verifier_id` / `approver_id` exactly — anyone editing the
+  draft, and a manager thereafter.
+- **`employee_id` is the compute's only dependency**, and both omissions are deliberate. Not
+  `employee_id.parent_id`: re-suggesting when the borrower changes is wanted, but an unrelated
+  HR reorg must not silently overwrite a deliberate choice. Not `state` either: the value has to
+  survive submit *and* a later ส่งกลับแก้ไข, and a compute cannot tell which dependency fired —
+  keying on the borrower alone means a state change never reaches it. The `draft` guard inside
+  then only covers an admin re-pointing `employee_id` on an in-flight request.
+- **The borrower may not be their own endorser** (`_check_endorser_not_borrower`). Everything
+  else is a matter of judgement, but self-endorsement would leave the step with no second pair
+  of eyes at all — the same line `_check_submit_permission` draws for borrowing on behalf.
+- **Reassigning a pending endorser re-points the To-Do.** `write()` re-runs
+  `_schedule_workflow_activity('to_endorse')` whenever `endorser_id` changes on a record in
+  `to_endorse`; without it the affordance is broken on arrival, leaving the task on somebody who
+  can no longer act and the new endorser with nothing in their tray.
 - **Endorse is distinct from Approve.** The glossary reserves อนุมัติ/"confirm" for Approve
   (`to_approve`); the new step is เห็นชอบ, state key `to_endorse` (follows the repo's `to_<verb>`
   convention), action `action_endorse`. `_check_endorse_permission` mirrors
@@ -51,10 +62,11 @@ Approve, and with both steps reading อนุมัติ the statusbar would n
 - **Blocking exception at submit**, not a soft warning: a borrower with no manager, or whose
   manager has no linked `res.users`, cannot submit at all (`excep_missing_manager`, mirrors
   `excep_missing_bank_account`'s shape). Silently letting `endorser_id` come back empty would
-  leave the To-Do with no assignee and the request stuck with nobody able to act on it. The rule
-  scopes itself to `state in ('draft', 'to_endorse')`: past the endorsement the endorser is
-  already named on the record, so a manager leaving must not false-block the loan officer's own
-  corrections in `to_verify`.
+  leave the To-Do with no assignee and the request stuck with nobody able to act on it. It tests
+  `endorser_id` rather than the `employee_id.parent_id` chain, so a borrower whose `hr.employee`
+  has no manager set can still name one by hand and proceed. The rule scopes itself to
+  `state in ('draft', 'to_endorse')`: past the endorsement the endorser is already named on the
+  record, so this must not false-block the loan officer's own corrections in `to_verify`.
 - **Own-only rule ORs in the endorser**, the same shape as ADR-0014's drafter extension: a
   supervisor with no other role in the module can still see and endorse a subordinate's request
   purely by being named `endorser_id` — but the branch is ANDed with `state != 'draft'`, because

@@ -545,6 +545,47 @@ class TestAdvancePayment(TransactionCase):
         )
         self.assertFalse(visible)
 
+    def test_endorser_can_be_overridden_and_survives_submit(self):
+        """The suggestion is a default, not a verdict: a request may need to
+        go to somebody above the direct manager (ADR-0020)."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        self.assertEqual(ap.endorser_id, self.supervisor)
+        ap.endorser_id = self.other_supervisor
+        ap.with_user(self.user).action_submit()
+        self.assertEqual(ap.endorser_id, self.other_supervisor)
+        todo = ap._workflow_activities("to_endorse")
+        self.assertEqual(todo.user_id, self.other_supervisor)
+
+    def test_endorser_override_survives_send_back(self):
+        """state is not a dependency of the compute, so ส่งกลับแก้ไข must not
+        re-suggest the direct manager over a deliberate choice."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.endorser_id = self.other_supervisor
+        ap.with_user(self.user).action_submit()
+        ap.with_user(self.other_supervisor).action_endorse_reject()
+        self.assertEqual(ap.state, "draft")
+        self.assertEqual(ap.endorser_id, self.other_supervisor)
+
+    def test_endorser_cannot_be_the_borrower(self):
+        """Self-endorsement would leave the step with no second pair of eyes."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        with self.assertRaises(ValidationError):
+            ap.endorser_id = self.user
+
+    def test_reassigning_endorser_repoints_the_todo(self):
+        """A manager may hand a pending request to another endorser; the To-Do
+        has to follow, or it sits on somebody who can no longer act."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        self.assertEqual(
+            ap._workflow_activities("to_endorse").user_id, self.supervisor
+        )
+        ap.with_user(self.manager).write({"endorser_id": self.other_supervisor.id})
+        ap.invalidate_recordset()
+        todo = ap._workflow_activities("to_endorse")
+        self.assertEqual(len(todo), 1)
+        self.assertEqual(todo.user_id, self.other_supervisor)
+
     # ------------------------------------------------------------------ #
     # Blocking exceptions on the officer's own corrections                 #
     # ------------------------------------------------------------------ #

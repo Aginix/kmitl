@@ -409,27 +409,49 @@ class AdvancePayment(models.Model):
         string="ผู้บังคับบัญชา",
         compute="_compute_endorser_id",
         store=True,
+        readonly=False,
         copy=False,
         tracking=True,
-        help="ผู้บังคับบัญชาของผู้ยืม (ADR-0020) — ติดตาม employee_id.parent_id"
-        " ขณะยังเป็นแบบร่าง แล้วตรึงค่าตั้งแต่ส่งคำขอเป็นต้นไป",
+        help="ผู้บังคับบัญชาผู้เห็นชอบคำขอ (ADR-0020) — เติมให้จาก"
+        " employee_id.parent_id แต่เลือกเองได้ เช่นกรณีต้องให้ผู้บังคับบัญชา"
+        " เหนือขึ้นไปเป็นผู้เห็นชอบ",
     )
 
-    @api.depends("employee_id.parent_id.user_id", "state")
+    @api.depends("employee_id")
     def _compute_endorser_id(self):
-        """Track the borrower's line manager while the request is still a
-        draft — so the borrower sees who will endorse (and notices a missing
-        manager) before submitting — then freeze it: once the request is out
-        of their hands a manager reorg must not retarget it (ADR-0020).
+        """Suggest the borrower's own line manager, but let it be overridden
+        (ADR-0020): with `readonly=False` this is a default that follows the
+        borrower, not a value nobody can change — a request may have to go to
+        somebody above the direct manager.
 
-        Re-opens with the draft: action_recall / action_endorse_reject put the
-        request back in the borrower's hands, so the endorser is re-evaluated.
+        `employee_id` is the only dependency, and both omissions are
+        deliberate. Not `employee_id.parent_id`: re-suggesting when the
+        borrower changes is wanted, but an unrelated HR reorg must not
+        silently overwrite a deliberate choice. Not `state` either: the value
+        must survive submit *and* a later ส่งกลับแก้ไข, and a compute cannot
+        tell which of its dependencies fired — keying only on the borrower
+        means a state change never reaches it in the first place.
+
+        The `draft` guard then only matters when an admin re-points
+        `employee_id` on an already-submitted request: the named endorser
+        stands rather than silently changing under a request in flight.
         """
         for rec in self:
             if rec.state == "draft":
                 rec.endorser_id = rec.employee_id.parent_id.user_id
             else:
                 rec.endorser_id = rec.endorser_id
+
+    @api.constrains("endorser_id", "employee_id")
+    def _check_endorser_not_borrower(self):
+        """Now that the endorser is pickable, the one person it may never be
+        is the borrower — that would leave the step with no second pair of
+        eyes at all (same spirit as _check_submit_permission)."""
+        for rec in self:
+            if rec.endorser_id and rec.endorser_id == rec.employee_id.user_id:
+                raise ValidationError(
+                    _("ผู้ยืมไม่สามารถเป็นผู้เห็นชอบคำขอของตนเองได้")
+                )
 
     @api.model
     def _loan_officer_candidates(self):
@@ -869,7 +891,15 @@ class AdvancePayment(models.Model):
                             fields=", ".join(sorted(blocked)),
                         )
                     )
-        return super().write(vals)
+        res = super().write(vals)
+        if "endorser_id" in vals:
+            # Re-point the pending To-Do, otherwise reassigning the endorser
+            # of a request already awaiting endorsement leaves the task on
+            # somebody who can no longer act on it (ADR-0015/0020).
+            # _schedule_workflow_activity drops the stale one first.
+            for rec in self.filtered(lambda r: r.state == "to_endorse"):
+                rec._schedule_workflow_activity("to_endorse")
+        return res
 
     def unlink(self):
         """An agreement may only be deleted once cancelled (ยกเลิกก่อน) — a
