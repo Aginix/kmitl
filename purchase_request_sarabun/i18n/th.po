@@ -409,3 +409,8 @@ msgstr "รอพิจารณาให้จัดหา"
 #: model_terms:ir.ui.view,arch_db:purchase_request_sarabun.view_purchase_request_tree
 msgid "Document Number"
 msgstr "เลขที่หนังสือ"
+
+#. module: purchase_request_sarabun
+#: model_terms:ir.ui.view,arch_db:purchase_request_sarabun.view_purchase_request_form
+msgid "Open Document for Dispatch"
+msgstr "เปิดหนังสือเพื่อส่ง"

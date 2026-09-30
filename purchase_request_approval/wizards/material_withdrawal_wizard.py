@@ -9,23 +9,23 @@ class MaterialWithdrawalWizard(models.TransientModel):
 
     approval_id = fields.Many2one(
         comodel_name="purchase.request.approval",
-        string="พจ.1",
+        string="Approval Request (พจ.1)",
         required=True,
         ondelete="cascade",
     )
     requester_id = fields.Many2one(
         comodel_name="hr.employee",
-        string="ผู้ขอเบิก/ผู้รับของ",
+        string="Requester / Receiver",
         required=True,
     )
     dept_head_id = fields.Many2one(
         comodel_name="hr.employee",
-        string="หัวหน้าหน่วยงาน",
+        string="Department Head",
         required=True,
     )
     disburser_id = fields.Many2one(
         comodel_name="hr.employee",
-        string="ผู้เบิกจ่าย",
+        string="Disbursing Officer",
         required=True,
     )
 

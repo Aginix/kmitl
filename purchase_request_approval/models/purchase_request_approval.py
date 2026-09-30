@@ -229,7 +229,7 @@ class PurchaseRequestApproval(models.Model):
     budget_commitment_id = fields.Many2one(related="request_id.budget_commitment_id")
     budget_commitment_amount = fields.Monetary(
         related="request_id.budget_commitment_id.amount",
-        string="จำนวนเงินที่จองงบไว้",
+        string="Reserved Budget Amount",
         currency_field="currency_id",
         readonly=True,
     )

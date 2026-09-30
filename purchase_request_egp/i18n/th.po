@@ -87,18 +87,18 @@ msgstr "สถานะ e-GP"
 
 #. module: purchase_request_egp
 #: model:ir.model.fields,field_description:purchase_request_egp.field_purchase_request__egp_project_url
-msgid "ลิงค์ e-GP"
-msgstr ""
+msgid "e-GP Link"
+msgstr "ลิงค์ e-GP"
 
 #. module: purchase_request_egp
 #: model_terms:ir.ui.view,arch_db:purchase_request_egp.view_purchase_request_form
-msgid "อยู่ในกระบวนการ e-GP"
-msgstr ""
+msgid "In e-GP Process"
+msgstr "อยู่ในกระบวนการ e-GP"
 
 #. module: purchase_request_egp
 #: model:ir.model.fields,field_description:purchase_request_egp.field_purchase_request__egp_project_id
-msgid "เลขที่โครงการ e-GP"
-msgstr ""
+msgid "e-GP Project ID"
+msgstr "เลขที่โครงการ e-GP"
 
 #. module: purchase_request_egp
 #: model_terms:ir.ui.view,arch_db:purchase_request_egp.view_purchase_request_form

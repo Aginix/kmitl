@@ -63,7 +63,7 @@
                 <button
                     name="action_egp_in_progress"
                     type="object"
-                    string="อยู่ในกระบวนการ e-GP"
+                    string="In e-GP Process"
                     attrs="{'invisible': ['|', ('state', '!=', 'in_egp'), ('egp_status', '!=', 'waiting')]}"
                     class="btn-primary"
                 />

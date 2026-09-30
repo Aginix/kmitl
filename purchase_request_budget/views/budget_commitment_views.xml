@@ -14,7 +14,7 @@
                     attrs="{'invisible': [('purchase_request_count', '=', 0)]}"
                 >
                     <field
-                        string="ใบขอให้จัดหา"
+                        string="Purchase Requests"
                         name="purchase_request_count"
                         widget="statinfo"
                     />

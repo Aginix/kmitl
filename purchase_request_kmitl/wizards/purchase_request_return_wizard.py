@@ -11,7 +11,7 @@ class PurchaseRequestReturnWizard(models.TransientModel):
         required=True,
         readonly=True,
     )
-    reason = fields.Text(string="เหตุผลการตีกลับ", required=True)
+    reason = fields.Text(string="Return Reason", required=True)
 
     def action_confirm(self):
         self.ensure_one()

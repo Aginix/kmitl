@@ -412,7 +412,7 @@
                                 name="date_start"
                                 readonly="1"
                             />
-                            <field name="create_date" string="วันที่สร้าง" readonly="1"/>
+                            <field name="create_date" string="Created On" readonly="1"/>
                         </group>
                     </group>
                 </page>
@@ -563,6 +563,7 @@
     <!-- menu -->
     <menuitem
         id="purchase_request.menu_purchase_request"
+        name="Purchase Requests"
         parent="purchase_request.parent_menu_purchase_request"
     />
     <menuitem

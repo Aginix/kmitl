@@ -91,7 +91,7 @@
                     <button
                         name="action_open_return_cancel_wizard"
                         states="draft"
-                        string="ตีกลับ/แก้ไข"
+                        string="Return / Amend"
                         type="object"
                         groups="purchase.group_purchase_user"
                     />
@@ -104,7 +104,7 @@
                     />
                     <button
                         name="action_open_material_withdrawal_wizard"
-                        string="พิมพ์ใบเบิกวัสดุ"
+                        string="Print Material Withdrawal"
                         type="object"
                         states="approved"
                     />
@@ -166,7 +166,7 @@
                         <i class="fa fa-pencil-square-o me-1"/>
                         หนังสือสารบรรณถูกสร้างแล้วแต่ยังไม่ได้ส่งออก (สถานะ: ร่าง)
                         <button name="action_view_sarabun_documents" type="object"
-                                class="btn btn-sm btn-warning ms-2" string="เปิดหนังสือเพื่อส่ง"/>
+                                class="btn btn-sm btn-warning ms-2" string="Open Document for Dispatch"/>
                     </div>
                     <div class="alert alert-info mb-2" role="alert"
                          attrs="{'invisible': ['|', ('sarabun_has_live_document', '=', False), ('sarabun_is_draft', '=', True)]}">

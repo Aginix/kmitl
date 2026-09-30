@@ -1670,3 +1670,92 @@ msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
 #: model:ir.actions.act_window,help:purchase_request_approval.action_purchase_request_approval_my
 msgid "คุณยังไม่มีรายงานขอซื้อ/จ้าง (พจ.1) ที่สร้างเอง"
 msgstr "คุณยังไม่มีรายงานขอซื้อ/จ้าง (พจ.1) ที่สร้างเอง"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__budget_commitment_amount
+msgid "Reserved Budget Amount"
+msgstr "จำนวนเงินที่จองงบไว้"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__uom_text
+msgid "Unit of Measure"
+msgstr "หน่วยนับ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_cancel_wizard__reason
+msgid "Cancellation Reason"
+msgstr "เหตุผลการยกเลิก"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_return_cancel_wizard__reason
+msgid "Reason"
+msgstr "เหตุผล"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_material_withdrawal_wizard__approval_id
+msgid "Approval Request (พจ.1)"
+msgstr "พจ.1"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_material_withdrawal_wizard__requester_id
+msgid "Requester / Receiver"
+msgstr "ผู้ขอเบิก/ผู้รับของ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_material_withdrawal_wizard__dept_head_id
+msgid "Department Head"
+msgstr "หัวหน้าหน่วยงาน"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_material_withdrawal_wizard__disburser_id
+msgid "Disbursing Officer"
+msgstr "ผู้เบิกจ่าย"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+msgid "Return / Amend"
+msgstr "ตีกลับ/แก้ไข"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+msgid "Print Material Withdrawal"
+msgstr "พิมพ์ใบเบิกวัสดุ"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+msgid "Open Document for Dispatch"
+msgstr "เปิดหนังสือเพื่อส่ง"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_cancel_wizard_form
+#: model:ir.actions.act_window,name:purchase_request_approval.action_purchase_request_approval_cancel_wizard
+msgid "Cancel Approval Request (พจ.1)"
+msgstr "ยกเลิกใบขออนุมัติ (พจ.1)"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_return_cancel_wizard_form
+msgid "Return / Amend (พจ.1)"
+msgstr "ตีกลับ/แก้ไข พจ.1"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_material_withdrawal_wizard_form
+#: model:ir.actions.act_window,name:purchase_request_approval.action_material_withdrawal_wizard
+msgid "Print Material Withdrawal (พ.43)"
+msgstr "พิมพ์ใบเบิกวัสดุ (พ.43)"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_cancel_wizard_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_return_cancel_wizard_form
+msgid "Confirm"
+msgstr "ยืนยัน"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_cancel_wizard_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_return_cancel_wizard_form
+msgid "Close"
+msgstr "ปิด"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_material_withdrawal_wizard_form
+msgid "Cancel"
+msgstr "ยกเลิก"
