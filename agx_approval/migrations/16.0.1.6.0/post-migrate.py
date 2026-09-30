@@ -38,3 +38,26 @@ def migrate(cr, version):
         "analytic_distribution",
         cr.rowcount,
     )
+
+    # plan_amount is now stored. Single-product rows were computed from their
+    # line on column creation; multi-product rows (whose compute leaves the
+    # requester-typed ceiling alone) start at their current line total, so
+    # existing requests satisfy excep_plan_amount_mismatch.
+    cr.execute(
+        """
+        UPDATE approval_request ar
+        SET plan_amount = sub.total
+        FROM (
+            SELECT l.request_id, SUM(l.total_amount) AS total
+            FROM approval_request_line l
+            GROUP BY l.request_id
+        ) sub, approval_category ac
+        WHERE sub.request_id = ar.id
+          AND ac.id = ar.category_id
+          AND ac.multi_product
+        """
+    )
+    _logger.info(
+        "agx_approval plan_amount: backfilled %s multi-product rows from lines",
+        cr.rowcount,
+    )

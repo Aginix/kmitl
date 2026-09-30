@@ -13,10 +13,21 @@
                     <field name="is_correction" invisible="1" />
                     <button name="action_to_verify" string="Submit request" type="object"
                         class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
+                    <button name="action_confirm_verify" string="ยืนยันตรวจสอบ" type="object"
+                        class="oe_highlight" attrs="{'invisible': [('state', '!=', 'to_verify')]}"
+                        groups="agx_approval.group_approval_verify" />
                     <button name="action_reserve_budget" type="object"
                         attrs="{'invisible':[('hide_reserve_budget_button', '=', True)]}"
-                        string="Reserve Budget" class="oe_highlight btn-success"
-                        groups="budget.group_budget_commitment" />
+                        string="ยืนยันงบประมาณ" class="oe_highlight btn-success"
+                        groups="agx_approval.group_approval_budget_commit" />
+                    <button name="action_open_send_back_wizard" string="ตีกลับ" type="object"
+                        class="btn btn-secondary"
+                        attrs="{'invisible': [('state', '!=', 'to_verify')]}"
+                        groups="agx_approval.group_approval_verify" />
+                    <button name="action_open_send_back_wizard" string="ตีกลับ" type="object"
+                        class="btn btn-secondary"
+                        attrs="{'invisible': [('state', '!=', 'to_commit')]}"
+                        groups="agx_approval.group_approval_budget_commit" />
                     <button name="action_approve" string="Approve" type="object"
                         class="oe_highlight"
                         attrs="{'invisible': [('state', 'not in', ['to_send', 'sent'])]}"
@@ -38,12 +49,12 @@
                         attrs="{'invisible': [('state', 'not in', ['to_disburse', 'billed'])]}" />
                     <button name="action_open_pull_back_wizard" string="Pull Back" type="object"
                         class="btn btn-secondary"
-                        attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_send'])]}" />
+                        attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_commit', 'to_send'])]}" />
                     <button name="action_cancel" string="Cancel / Reject" type="object"
-                        attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_send', 'approved'])]}"
+                        attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_commit', 'to_send', 'approved'])]}"
                         groups="agx_approval.group_approval_manager" />
                     <field name="state" widget="statusbar"
-                        statusbar_visible="draft,to_verify,to_send,sent,approved,to_disburse,billed" />
+                        statusbar_visible="draft,to_verify,to_commit,to_send,sent,approved,to_disburse,billed" />
                 </header>
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"
                     attrs="{'invisible': [('exceptions_summary', '=', False)]}">
@@ -153,7 +164,7 @@
                     </group>
                     <!-- The reserved commitment, however it came to be: reserved by
                          this request or drawn from an existing slip. Shown to everyone
-                         once a slip exists — users without budget.group_budget_commitment
+                         once a slip exists — users outside the verify / budget-commit groups
                          never see the selection UI below, but they must still see the
                          ใบจองงบประมาณ their request ended up with. -->
                     <group name="budget_commitment_info_group" string="รหัสงบประมาณ"
@@ -163,11 +174,11 @@
                             widget="budget_commitment_info" readonly="1"
                             options="{'no_create': True, 'no_open': True}" />
                     </group>
-                    <!-- Budget selection UI: reserved to budget officers. Users without
-                         budget.group_budget_commitment never see this group nor its
-                         heading — they only see the reserved commitment above. -->
+                    <!-- Budget selection UI: reserved to ผู้ตรวจสอบคำขอ and ผู้ยืนยัน
+                         งบประมาณ (ADR-0008). Everyone else never sees this group nor
+                         its heading — they only see the reserved commitment above. -->
                     <group name="budget" string="Budget"
-                        groups="budget.group_budget_commitment">
+                        groups="agx_approval.group_approval_verify,agx_approval.group_approval_budget_commit">
                         <field name="is_budget_editable" invisible="1" />
                         <!-- Ask which way first, then show only that way's fields.
                              The mode is a UI affordance: the server still keys
@@ -187,26 +198,24 @@
                             attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '=', 'normal'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
                             placeholder="เลือกใบจองงบประมาณที่จะหยิบไปใช้" />
 
-                        <button name="action_open_reservation_picker" type="object"
-                            string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
-                            class="btn btn-primary mb-2" icon="fa-sitemap" colspan="2"
-                            attrs="{'invisible': ['|', '|', ('is_budget_editable', '=', False), ('reservation_commitment_id', '!=', False), ('budget_selection_mode', '!=', 'normal')]}" />
-                        <!-- Only while budget is still being chosen from the chart:
-                             once reserved the same values are in the card above, and
-                             under the reservation mode they come from the slip. -->
-                        <field name="budget_account_id" readonly="1"
+                        <!-- Picked directly on the form (no chart picker, ADR-0008):
+                             ผู้ตรวจสอบคำขอ at to_verify, ผู้ยืนยันงบประมาณ at to_commit.
+                             Hidden once reserved (the card above shows them) and
+                             under the reservation mode (they come from the slip). -->
+                        <field name="budget_account_domain" invisible="1" />
+                        <field name="budget_account_id" domain="budget_account_domain"
                             options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
-                        <field name="activity_analytic_id" readonly="1"
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}" />
+                        <field name="activity_analytic_id"
                             options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
-                        <field name="department_analytic_id" readonly="1"
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}" />
+                        <field name="department_analytic_id"
                             options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
-                        <field name="fund_analytic_id" widget="selection" readonly="1"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
-                        <field name="source_analytic_id" widget="selection" readonly="1"
-                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}" />
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}" />
+                        <field name="fund_analytic_id" widget="selection"
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}" />
+                        <field name="source_analytic_id" widget="selection"
+                            attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}" />
                         <field name="analytic_distribution" invisible="1" />
                     </group>
                     <notebook>
@@ -355,7 +364,7 @@
                     optional="show" />
                 <field name="state" widget="badge" decoration-success="state == 'billed'"
                     decoration-muted="state == 'draft'"
-                    decoration-warning="state in ('to_verify', 'to_send', 'sent')"
+                    decoration-warning="state in ('to_verify', 'to_commit', 'to_send', 'sent')"
                     decoration-info="state in ('approved', 'to_disburse')"
                     decoration-danger="state in ('rejected', 'returned')" />
             </tree>
@@ -393,8 +402,10 @@
                     domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator />
                 <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]" />
-                <filter name="filter_to_verify" string="To Verify / Reserve Budget"
+                <filter name="filter_to_verify" string="รอตรวจสอบข้อมูล"
                     domain="[('state', '=', 'to_verify')]" />
+                <filter name="filter_to_commit" string="รอยืนยันงบประมาณ"
+                    domain="[('state', '=', 'to_commit')]" />
                 <filter name="filter_submitted" string="To Send"
                     domain="[('state', '=', 'to_send')]" />
                 <filter name="filter_sent" string="Sent" domain="[('state', '=', 'sent')]" />

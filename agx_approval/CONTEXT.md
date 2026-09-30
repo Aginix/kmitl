@@ -19,8 +19,12 @@ The planned spending captured while filling the form — the purpose of the entr
 _Avoid_: budget, estimate, quotation
 
 **Expense (ค่าใช้จ่าย)**:
-A single **planned** line (`approval.request.line`): รายการ (product) + รายละเอียด (detail) + จำนวนเงิน (planned amount). Broken down **by expense type, not by person**, and carries **no payee** — a plan line says what is spent, not who is paid. For a single-product category the product is implicit (the category's own product) and the form shows only a bare `plan_amount` + `plan_description` on the header, mirrored onto this line behind the scenes; the per-line product picker is shown **only** for the 5 multi-product (travel/training) categories ([ADR-0006](docs/adr/0006-category-owned-product-single-product-plan.md)).
+A single **planned** line (`approval.request.line`): รายการ (product) + รายละเอียด (detail) + จำนวนเงิน (planned amount). Broken down **by expense type, not by person**, and carries **no payee** — a plan line says what is spent, not who is paid. For a single-product category the product is implicit (the category's own product) and the form shows only a bare จำนวนเงิน (`plan_amount`) on the header, mirrored onto this line behind the scenes; the per-line product picker is shown **only** for the 5 multi-product (travel/training) categories, where จำนวนเงิน is instead the Spending Ceiling ([ADR-0006](docs/adr/0006-category-owned-product-single-product-plan.md)).
 _Avoid_: request line, payee line, actual expense
+
+**Spending Ceiling (เพดานค่าใช้จ่าย)**:
+On a multi-product request, the จำนวนเงิน the requester declares up front; the plan lines must add up to exactly this amount before the request can move to the next step. On a single-product request จำนวนเงิน is simply the one line's amount.
+_Avoid_: budget limit, reserved amount (that is the ใบจองงบประมาณ's)
 
 **Participant (รายชื่อ)**:
 A person involved in the activity — traveller, attendee, or related person — listed on the plan (person + note, no bank, no amount). The roster from which recipients are later chosen: to pay someone they must first appear here.
@@ -50,20 +54,40 @@ _Avoid_: the removed plan-level `payment_type` (ADR-0001 D6) — this is its pos
 The สัญญายืม an `advance` allocation row was paid out of — **chosen per row** from the loans drawn against this request, and **not necessarily the recipient's own**: one participant may borrow on the group's behalf and pay the others from it. Answers "which loan did this money come from", which is a different question from "who received it".
 _Avoid_: the recipient's loan, borrower's loan (it may be someone else's), auto-matched loan
 
+**Awaiting Verification (รอตรวจสอบข้อมูล — `to_verify`)**:
+The step after ส่งคำขอ where the Request Verifier checks the request and may fill in the budget code and dimensions, which need not be complete yet. Ends with ยืนยันตรวจสอบ (to the next step) or ตีกลับ (to draft).
+_Avoid_: รอตรวจสอบ / จองงบประมาณ (the old combined step), reserve step
+
+**Awaiting Budget Confirmation (รอยืนยันงบประมาณ — `to_commit`)**:
+The step after verification where the Budget Confirmer completes the budget code and dimensions and presses ยืนยันงบประมาณ, which reserves the budget and moves the request on to รอส่งขออนุมัติ. ตีกลับ returns it to รอตรวจสอบข้อมูล.
+_Avoid_: รอตรวจสอบ / จองงบประมาณ, verify step
+
+**Request Verifier (ผู้ตรวจสอบคำขอ)**:
+The person who confirms a submitted request's data at รอตรวจสอบข้อมูล. May enter budget code and dimensions but **cannot reserve budget**. A separate duty from the Budget Confirmer: holding one does not grant the other.
+_Avoid_: budget officer, เจ้าหน้าที่งบ
+
+**Budget Confirmer (ผู้ยืนยันงบประมาณ)**:
+The person who, at รอยืนยันงบประมาณ, completes the budget code and dimensions and reserves the budget. The only role that reserves on an Approval Request.
+_Avoid_: verifier, budget officer (ambiguous with the budget module's own roles)
+
+**Send back (ตีกลับ — verification steps)**:
+The Request Verifier or Budget Confirmer returning a request one step back, with a mandatory reason: รอยืนยันงบประมาณ → รอตรวจสอบข้อมูล, or รอตรวจสอบข้อมูล → draft. **Distinct** from Pull back (the requester's own action) and from e-Saraban's ตีกลับ (which lands a circulating request in `returned`).
+_Avoid_: pull back, reject, returned
+
 **Pull back (ดึงกลับ — pre-routing)**:
 The clerk returning a *not-yet-sent* request to `draft` (via a confirm wizard, releasing the budget reservation), available only before the หนังสือ is sent to e-Saraban. **Distinct** from e-Saraban's own ดึงกลับ/ตีกลับ, which act on a *circulating* หนังสือ and land the request in `returned`.
 _Avoid_: recall (that is e-Saraban's, on a circulating document), reset
 
 **Budget Selection Mode (วิธีเลือกงบประมาณ)**:
-The up-front choice of how a request gets its budget (`budget_selection_mode`). Base ships **`normal`** (ใช้เงินจากแผน — reserve a new commitment from the budget chart, scoped by the category's non-procurement baseline and any pinned code, [ADR-0004](docs/adr/0004-budget-code-selection-scoped-by-category-non-procurement.md)). A bridge (`kmitl_project_agx_approval`) adds **`project`** (โครงการ/กิจกรรม — draw down a commitment a `kmitl.project` already reserved for itself; the category pin does not apply). A UI affordance only — the server always keys draw-down off `reservation_commitment_id`, never off this field.
+The up-front choice of how a request gets its budget (`budget_selection_mode`). Base ships **`normal`** (ใช้เงินจากแผน — reserve a new commitment against a budget code and dimensions entered directly on the form, scoped by the category's non-procurement baseline and any pinned code, [ADR-0004](docs/adr/0004-budget-code-selection-scoped-by-category-non-procurement.md)). A bridge (`kmitl_project_agx_approval`) adds **`project`** (โครงการ/กิจกรรม — draw down a commitment a `kmitl.project` already reserved for itself; the category pin does not apply). A UI affordance only — the server always keys draw-down off `reservation_commitment_id`, never off this field.
 _Avoid_: the removed generic "draw any existing reservation" mode — each mode now scopes its own draw-eligible slips
 
 **Project-Funded Request (คำขอใช้งบโครงการ)**:
-An approval request in `project` mode. Its money was already authorized when the `kmitl.project` itself was approved (kmitl_project [ADR-0005](../kmitl_project/docs/adr/0005-approval-gated-lifecycle-esaraban.md)), so spending it is bookkeeping, not a fresh authorization — the request **skips e-Saraban entirely**, jumping `to_verify → approved` on draw ([ADR-0005](docs/adr/0005-project-mode-auto-approve-skips-esaraban.md)). No expense-side manager approval, no หนังสือ, no expense-side PDF (the project's own letter is the authority). Drawable only from a project in `in_progress` — a project reserves its slip *before* its own approval, so the slip alone is not the authorization the skip relies on.
+An approval request in `project` mode. Its money was already authorized when the `kmitl.project` itself was approved (kmitl_project [ADR-0005](../kmitl_project/docs/adr/0005-approval-gated-lifecycle-esaraban.md)), so spending it is bookkeeping, not a fresh authorization — the request **skips e-Saraban entirely**, jumping `to_commit → approved` on draw ([ADR-0005](docs/adr/0005-project-mode-auto-approve-skips-esaraban.md)). No expense-side manager approval, no หนังสือ, no expense-side PDF (the project's own letter is the authority). Drawable only from a project in `in_progress` — a project reserves its slip *before* its own approval, so the slip alone is not the authorization the skip relies on.
 _Avoid_: assuming every request routes through e-Saraban when the Sarabun bridge is installed — project mode is the one path that deliberately does not; and assuming any reserved project slip is drawable — the project must be approved first
 
 **Requesting Unit (หน่วยงานผู้ขอ)**:
-The unit the requester files the expense under (`requesting_department_id`), declared at entry — required while the plan is editable, defaulting to the current user's most recently used unit. Distinct from the budget dimension ส่วนงาน (`department_analytic_id`, the charged unit chosen at reservation by the budget officer, and overwritten by the picker/mode-switch/project draw-down): the two may differ, e.g. a project-funded request charged to the project's own ส่วนงาน while the requester still belongs to their own unit. No check compares them. See [ADR-0007](docs/adr/0007-requesting-unit-separate-from-budget-department.md).
+The unit the requester files the expense under (`requesting_department_id`), declared at entry — required while the plan is editable, defaulting to the current user's most recently used unit. Distinct from the budget dimension ส่วนงาน (`department_analytic_id`, the charged unit chosen by the Request Verifier / Budget Confirmer, and overwritten by the mode switch/project draw-down): the two may differ, e.g. a project-funded request charged to the project's own ส่วนงาน while the requester still belongs to their own unit. No check compares them. See [ADR-0007](docs/adr/0007-requesting-unit-separate-from-budget-department.md).
 _Avoid_: ส่วนงาน/department (ambiguous with the budget dimension), OU
 
 **Disbursement Voucher Cover Sheet (งบหน้าใบสำคัญคู่จ่าย)**:
