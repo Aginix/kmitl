@@ -100,6 +100,8 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                 "payment_type": approval.payment_type,
                 "procurement_method_id": approval.procurement_method_id.id,
                 "requesting_department_id": approval.requesting_department_id.id,
+                "operating_unit_id": approval.operating_unit_id.id,
+                "requesting_operating_unit_id": approval.operating_unit_id.id,
             }
         )
         return vals
