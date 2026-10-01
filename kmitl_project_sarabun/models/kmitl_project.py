@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from markupsafe import escape
 
-from odoo import _, models
+from odoo import _, fields, models
 
 # เกณฑ์อำนาจอนุมัติ: โครงการที่ใช้เงินเกินจำนวนนี้ให้เรียน "อธิการบดี" และเดินเส้นทาง
 # ลงนามของอธิการบดี ต่ำกว่าหรือเท่ากับให้เรียน "คณบดี" (หัวหน้าส่วนงาน). เป็นแหล่งอ้างอิง
@@ -18,6 +18,15 @@ class KmitlProject(models.Model):
 
     _name = "kmitl.project"
     _inherit = ["kmitl.project", "sarabun.document.mixin"]
+
+    approval_document_number = fields.Char(
+        string="เลขที่หนังสือขออนุมัติ",
+        readonly=True,
+        copy=False,
+        index=True,
+        help="เลขทะเบียนหนังสือขออนุมัติจัดโครงการ (e-Saraban) ประทับเมื่อหนังสือลงนามครบ "
+        "— คงไว้แม้หนังสือถูกรีเซ็ต และประทับใหม่เมื่ออนุมัติอีกครั้ง.",
+    )
 
     def _get_sarabun_subject(self):
         # เรื่อง: ขออนุมัติจัดโครงการและขออนุมัติใช้เงิน<แหล่งเงิน>ในการจัด<ชื่อโครงการ>.
@@ -124,8 +133,29 @@ class KmitlProject(models.Model):
     def _on_sarabun_completed(self, document):
         # หนังสือลงนามครบ → อนุมัติแล้ว = เริ่มดำเนินการทันที (ADR-0005: no idle
         # "approved" state — the project may raise purchase requests / เบิกจ่าย now).
+        # ลงทะเบียน + freeze ฉบับลงนาม run before this callback (_complete_document),
+        # so the register number and signed PDF are both ready here.
+        self.approval_document_number = document.name
         self.state = "in_progress"
         return super()._on_sarabun_completed(document)
+
+    def _sarabun_post(self, kind, document, step=None):
+        # Attach the frozen ฉบับลงนาม to the "approved" chatter note so the signed
+        # หนังสือ is downloadable from the project itself; other kinds unchanged.
+        body = self._sarabun_note(kind, document, step)
+        if kind != "completed" or not body or not document.sudo().signed_pdf:
+            return super()._sarabun_post(kind, document, step)
+        # sudo: completion runs in the final approver's env (as _freeze_signed_copy).
+        attachment = self.env["ir.attachment"].sudo().create({
+            "name": document.signed_pdf_filename or "%s.pdf" % document.name,
+            "datas": document.sudo().signed_pdf,
+            "res_model": self._name,
+            "res_id": self.id,
+            "mimetype": "application/pdf",
+        })
+        self.message_post(
+            body=body, subtype_xmlid="mail.mt_note", attachment_ids=attachment.ids
+        )
 
     def _on_sarabun_returned(self, document, step):
         # ตีกลับ / ดึงกลับ: กลับสู่ ``returned`` — คงงบ, แก้ได้ทุกฟิลด์ แล้วส่ง

@@ -30,6 +30,11 @@
                 <attribute name="attrs">{'invisible': [('state', '!=', 'to_send')]}</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='key']" position="after">
+                <field name="approval_document_number"
+                    attrs="{'invisible': [('approval_document_number', '=', False)]}" />
+            </xpath>
+
             <!-- Ungrouped field declarations + Sarabun status notice, between the
                  statusbar and the sheet. -->
             <xpath expr="//header" position="after">
@@ -57,8 +62,22 @@
         <field name="model">kmitl.project</field>
         <field name="inherit_id" ref="kmitl_project.view_kmitl_project_tree" />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='key']" position="after">
+                <field name="approval_document_number" optional="show" />
+            </xpath>
             <xpath expr="//field[@name='state']" position="after">
                 <field name="active_sarabun_document_id" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_kmitl_project_search_sarabun" model="ir.ui.view">
+        <field name="name">view.kmitl.project.search.sarabun</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="filter_domain">['|', '|', ('name', 'ilike', self), ('key', 'ilike', self), ('approval_document_number', 'ilike', self)]</attribute>
             </xpath>
         </field>
     </record>
