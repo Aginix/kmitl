@@ -323,12 +323,20 @@ class ApprovalRequest(models.Model):
         copy=False,
     )
 
-    external_participant_ids = fields.One2many(
+    student_participant_ids = fields.One2many(
         "approval.request.participant",
         "request_id",
-        string="รายชื่อบุคคลภายนอก",
-        domain=[("participant_type", "=", "external")],
+        string="รายชื่อนักศึกษา",
+        domain=[("participant_type", "=", "student")],
         copy=False,
+    )
+
+    external_participant_count = fields.Integer(
+        string="จำนวนบุคคลภายนอก", copy=True
+    )
+
+    external_participant_note = fields.Text(
+        string="รายละเอียดบุคคลภายนอก", copy=True
     )
 
     allocation_ids = fields.One2many(
@@ -631,7 +639,9 @@ class ApprovalRequest(models.Model):
         self.line_ids = False
         self.participant_ids = False
         self.internal_participant_ids = False
-        self.external_participant_ids = False
+        self.student_participant_ids = False
+        self.external_participant_count = 0
+        self.external_participant_note = False
         self.description = self.category_id.default_description
 
     @api.model
@@ -724,6 +734,11 @@ class ApprovalRequest(models.Model):
             ) or "/"
         self.write(vals)
         return True
+
+    @api.constrains("external_participant_count")
+    def _check_external_participant_count(self):
+        if any(rec.external_participant_count < 0 for rec in self):
+            raise ValidationError(_("External participant count cannot be negative."))
 
     @api.constrains("account_fiscal_year_id")
     def _check_fiscal_year_locked_after_submission(self):
