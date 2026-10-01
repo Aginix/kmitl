@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """sarabun.routing.step — the single unified Route entity (ADR-0001).
 
 One row = target (who acts) + verb (what they must do) + state + outcome
@@ -11,6 +10,9 @@ phase-2 magic-link controller can drive the same path. Holder resolution and
 notification (mail.activity) are wired here but the notification body itself is a
 P4 concern (stubbed). Numbering (P3) and freeze/sign (P5) live on the document.
 """
+
+from markupsafe import Markup
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
@@ -33,7 +35,8 @@ class SarabunRoutingStep(models.Model):
     _inherit = ["mail.thread"]
 
     name = fields.Char(
-        compute="_compute_name", store=True,
+        compute="_compute_name",
+        store=True,
         help="Human-readable label used in dropdowns (e.g. resume_step_id picker).",
     )
 
@@ -41,7 +44,8 @@ class SarabunRoutingStep(models.Model):
         "sarabun.document", required=True, ondelete="cascade", index=True
     )
     order = fields.Integer(
-        string="Stage", default=1,
+        string="Stage",
+        default=1,
         help="Steps sharing one order form a Stage and run in parallel.",
     )
 
@@ -66,11 +70,14 @@ class SarabunRoutingStep(models.Model):
     position_id = fields.Many2one("sarabun.position", string="Position")
     employee_id = fields.Many2one("hr.employee", string="บุคลากร (Person)")
     department_id = fields.Many2one(
-        "hr.department", string="Unit",
+        "hr.department",
+        string="Unit",
         domain=[("is_sarabun_office", "=", True)],
         help="เป้าหมายแบบ ธุรการหน่วยงาน — เลือกได้เฉพาะหน่วยงานที่ตั้งเป็นหน่วยงานธุรการ.",
     )
-    target_name = fields.Char(compute="_compute_target_name", store=True, string="Target")
+    target_name = fields.Char(
+        compute="_compute_target_name", store=True, string="Target"
+    )
     preview_holder_ids = fields.Many2many(
         "hr.employee",
         compute="_compute_preview_holders",
@@ -132,11 +139,15 @@ class SarabunRoutingStep(models.Model):
     acted_by_id = fields.Many2one("res.users", string="Acted By", readonly=True)
     acted_date = fields.Datetime(string="วันที่ลงนาม/ดำเนินการ", readonly=True)
     signed_as_position_id = fields.Many2one(
-        "sarabun.position", string="Signed As (Capacity)", readonly=True,
+        "sarabun.position",
+        string="Signed As (Capacity)",
+        readonly=True,
         help="Capacity signed in — validated against the step's target Position (ADR-0003).",
     )
     note = fields.Text(string="เกษียน (Note)")
-    delegated_to_id = fields.Many2one("hr.employee", string="Delegated To", readonly=True)
+    delegated_to_id = fields.Many2one(
+        "hr.employee", string="Delegated To", readonly=True
+    )
 
     # === Signature snapshot (frozen at signing — ADR-0009) ===
     # ชื่อ / ตำแหน่ง / ลายเซ็น captured the instant this step is signed, so later edits
@@ -178,11 +189,19 @@ class SarabunRoutingStep(models.Model):
 
     # === Provenance ===
     created_by_disposition = fields.Selection(
-        [("seed", "Seed"), ("direct", "Direct"), ("delegate", "Delegate"), ("return", "Return")],
-        default="seed", readonly=True,
+        [
+            ("seed", "Seed"),
+            ("direct", "Direct"),
+            ("delegate", "Delegate"),
+            ("return", "Return"),
+        ],
+        default="seed",
+        readonly=True,
     )
     inserted_by_step_id = fields.Many2one("sarabun.routing.step", readonly=True)
-    seeded_from_template_line_id = fields.Many2one("sarabun.route.template.line", readonly=True)
+    seeded_from_template_line_id = fields.Many2one(
+        "sarabun.route.template.line", readonly=True
+    )
 
     # === Originator (ผู้จัดทำ/ผู้ส่ง) — the mandatory, locked first step ===
     is_originator = fields.Boolean(
@@ -199,10 +218,14 @@ class SarabunRoutingStep(models.Model):
     attempt_seq = fields.Integer(default=1, readonly=True)
 
     # === Phase-2 magic-link seam (never generated in v1) ===
-    act_token = fields.Char(index=True, copy=False, groups="agx_sarabun.group_sarabun_manager")
+    act_token = fields.Char(
+        index=True, copy=False, groups="agx_sarabun.group_sarabun_manager"
+    )
 
     # === Related (display) ===
-    document_state = fields.Selection(related="document_id.state", string="Document Status")
+    document_state = fields.Selection(
+        related="document_id.state", string="Document Status"
+    )
 
     # ------------------------------------------------------------------ defaults
     @api.model
@@ -232,10 +255,12 @@ class SarabunRoutingStep(models.Model):
         verb. Engine writes (sudo: activation, archive, stamping) pass through."""
         if not self.env.su and vals and set(vals) - {"verb"}:
             if self.filtered("is_originator"):
-                raise UserError(_(
-                    "The ผู้จัดทำ/ผู้ส่ง step is fixed — only its การดำเนินการ (verb) "
-                    "may be changed."
-                ))
+                raise UserError(
+                    _(
+                        "The ผู้จัดทำ/ผู้ส่ง step is fixed — only its การดำเนินการ (verb) "
+                        "may be changed."
+                    )
+                )
         return super().write(vals)
 
     def unlink(self):
@@ -243,20 +268,22 @@ class SarabunRoutingStep(models.Model):
         Document deletion cascades at the DB level (ondelete='cascade'), bypassing
         the ORM unlink, so it is not blocked here."""
         if not self.env.su and self.filtered("is_originator"):
-            raise UserError(_(
-                "The ผู้จัดทำ/ผู้ส่ง step cannot be removed from the Route."
-            ))
+            raise UserError(_("The ผู้จัดทำ/ผู้ส่ง step cannot be removed from the Route."))
         return super().unlink()
 
     # ------------------------------------------------------------------ computes
     @api.depends("order", "verb.name", "target_name")
     def _compute_name(self):
         for step in self:
-            parts = [p for p in (
-                str(step.order) if step.order else None,
-                step.verb.name,
-                step.target_name,
-            ) if p]
+            parts = [
+                p
+                for p in (
+                    str(step.order) if step.order else None,
+                    step.verb.name,
+                    step.target_name,
+                )
+                if p
+            ]
             step.name = " — ".join(parts) if parts else _("Step")
 
     @api.depends("verb.gating", "for_info")
@@ -282,7 +309,9 @@ class SarabunRoutingStep(models.Model):
             if step.target_mode == "position" and step.position_id:
                 step.preview_holder_ids = step.position_id._current_holder_employees()
             elif step.target_mode == "unit" and step.department_id:
-                step.preview_holder_ids = step.department_id._saraban_central_employees()
+                step.preview_holder_ids = (
+                    step.department_id._saraban_central_employees()
+                )
             elif step.target_mode == "person" and step.employee_id:
                 step.preview_holder_ids = step.employee_id
             else:
@@ -331,11 +360,13 @@ class SarabunRoutingStep(models.Model):
         existing = self.recipient_ids.mapped("user_id")
         now = fields.Datetime.now()
         for user in users - existing:
-            Recipient.create({
-                "step_id": self.id,
-                "user_id": user.id,
-                "received_date": now,
-            })
+            Recipient.create(
+                {
+                    "step_id": self.id,
+                    "user_id": user.id,
+                    "received_date": now,
+                }
+            )
 
     def _activate(self):
         """Make a waiting step active: snapshot holders + schedule activities."""
@@ -347,7 +378,28 @@ class SarabunRoutingStep(models.Model):
 
     def _activity_summary(self):
         self.ensure_one()
-        return self.verb.name
+        subject = self.document_id._activity_subject()
+        return subject or self.verb.name
+
+    def _activity_note(self):
+        self.ensure_one()
+        doc = self.document_id
+        sender_name = doc.sender_user_id.name or ""
+        dept_name = doc.sender_department_id.name or ""
+        if dept_name:
+            detail = _(
+                "ขั้นตอน: %(verb)s · จาก: %(sender)s (%(dept)s)",
+                verb=self.verb.name,
+                sender=sender_name,
+                dept=dept_name,
+            )
+        else:
+            detail = _(
+                "ขั้นตอน: %(verb)s · จาก: %(sender)s",
+                verb=self.verb.name,
+                sender=sender_name,
+            )
+        return Markup("<p>%s</p>") % detail
 
     def _activity_type_xmlid(self):
         """The awaiting-action activity type for this step (ADR-0014): EXECUTION iff
@@ -380,10 +432,13 @@ class SarabunRoutingStep(models.Model):
                 act = doc.activity_schedule(
                     act_type_xmlid=xmlid,
                     summary=step._activity_summary(),
+                    note=step._activity_note(),
                     user_id=usr.id,
                 )
                 if act:
-                    Link.create({"step_id": step.id, "activity_id": act.id, "user_id": usr.id})
+                    Link.create(
+                        {"step_id": step.id, "activity_id": act.id, "user_id": usr.id}
+                    )
 
     def _clear_activities(self):
         """Clear every awaiting-action activity tied to these steps (all holders) —
@@ -393,8 +448,10 @@ class SarabunRoutingStep(models.Model):
         # ir.rule only lets a user unlink their own / self-created ones), and clearing
         # them is an engine operation — e.g. the sender's ดึงกลับ drops the approvers'
         # pending activities.
-        links = self.env["sarabun.routing.step.activity"].sudo().search(
-            [("step_id", "in", self.ids)]
+        links = (
+            self.env["sarabun.routing.step.activity"]
+            .sudo()
+            .search([("step_id", "in", self.ids)])
         )
         links.mapped("activity_id").unlink()
         links.unlink()
@@ -423,10 +480,12 @@ class SarabunRoutingStep(models.Model):
         # ตีกลับ / ปฏิเสธ are gating-actor moves only (ADR-0006): a รับทราบ / CC
         # recipient may only acknowledge (complete), never return or reject.
         if disposition in ("return", "reject") and not self.gating:
-            raise UserError(_(
-                "Only the actor of a gating step (เห็นชอบ / ลงนาม-อนุมัติ) may "
-                "ตีกลับ (return) or ปฏิเสธ (reject)."
-            ))
+            raise UserError(
+                _(
+                    "Only the actor of a gating step (เห็นชอบ / ลงนาม-อนุมัติ) may "
+                    "ตีกลับ (return) or ปฏิเสธ (reject)."
+                )
+            )
 
         # Authority is verified above. The lifecycle transition itself — stamping the
         # step and driving the document's state / register / freeze — is a SYSTEM
@@ -462,7 +521,9 @@ class SarabunRoutingStep(models.Model):
             "acted_by_id": actor.id,
             "acted_date": now,
             "note": note or self.note,
-            "signed_as_position_id": signed_as_position and signed_as_position.id or False,
+            "signed_as_position_id": signed_as_position
+            and signed_as_position.id
+            or False,
         }
         # v1: a positive action auto-sends the หนังสือ onward, so วันที่ส่ง = วันที่ลงนาม
         # (a future sign-then-manual-send would stamp sent_date separately).
@@ -502,12 +563,17 @@ class SarabunRoutingStep(models.Model):
         self.ensure_one()
         if not self.verb.is_signature:
             return self.env["sarabun.position"]
-        capacity = self.env["sarabun.position"].browse(signed_as_position_id) if signed_as_position_id else self.position_id
+        capacity = (
+            self.env["sarabun.position"].browse(signed_as_position_id)
+            if signed_as_position_id
+            else self.position_id
+        )
         # In Position mode you sign in the step's capacity (acting capacity = phase-2).
         if self.position_id and capacity != self.position_id:
-            raise UserError(_(
-                "You must sign in the capacity the step targets (%s)."
-            ) % self.position_id.display_name)
+            raise UserError(
+                _("You must sign in the capacity the step targets (%s).")
+                % self.position_id.display_name
+            )
         return capacity
 
     def _do_complete(self, actor, note, signed_as_position_id=False):
@@ -519,34 +585,38 @@ class SarabunRoutingStep(models.Model):
         self._stamp(actor, note, "direct")
         insert_order = self.order + 1
         self.document_id._shift_stages_from(insert_order)
-        self.env["sarabun.routing.step"].create({
-            "document_id": self.document_id.id,
-            "order": insert_order,
-            "inserted_by_step_id": self.id,
-            "created_by_disposition": "direct",
-            "attempt_seq": self.document_id.attempt_seq,
-            "state": "waiting",
-            "verb": vals.get("verb") or self._default_verb().id,
-            "for_info": vals.get("for_info", False),
-            "target_mode": vals.get("target_mode", "position"),
-            "position_id": vals.get("position_id", False),
-            "employee_id": vals.get("employee_id", False),
-            "department_id": vals.get("department_id", False),
-        })
+        self.env["sarabun.routing.step"].create(
+            {
+                "document_id": self.document_id.id,
+                "order": insert_order,
+                "inserted_by_step_id": self.id,
+                "created_by_disposition": "direct",
+                "attempt_seq": self.document_id.attempt_seq,
+                "state": "waiting",
+                "verb": vals.get("verb") or self._default_verb().id,
+                "for_info": vals.get("for_info", False),
+                "target_mode": vals.get("target_mode", "position"),
+                "position_id": vals.get("position_id", False),
+                "employee_id": vals.get("employee_id", False),
+                "department_id": vals.get("department_id", False),
+            }
+        )
         self.document_id._advance_stage()
 
     def _do_delegate(self, actor, note, vals):
         # Reassign THIS step to a new target; it stays active (Delegate ≠ Direct).
         self._clear_activities()  # drop the original holders' to-dos (§7.4)
-        self.write({
-            "disposition": "delegate",
-            "delegated_to_id": vals.get("employee_id") or False,
-            "note": (self.note or "") + (("\n" + note) if note else ""),
-            "target_mode": vals.get("target_mode", self.target_mode),
-            "position_id": vals.get("position_id", self.position_id.id),
-            "employee_id": vals.get("employee_id", self.employee_id.id),
-            "department_id": vals.get("department_id", self.department_id.id),
-        })
+        self.write(
+            {
+                "disposition": "delegate",
+                "delegated_to_id": vals.get("employee_id") or False,
+                "note": (self.note or "") + (("\n" + note) if note else ""),
+                "target_mode": vals.get("target_mode", self.target_mode),
+                "position_id": vals.get("position_id", self.position_id.id),
+                "employee_id": vals.get("employee_id", self.employee_id.id),
+                "department_id": vals.get("department_id", self.department_id.id),
+            }
+        )
         self._snapshot_holders()
         self._schedule_activities()  # fresh to-do for the new holder(s)
 
