@@ -12,7 +12,6 @@
     "data": [
         "security/purchase_request_security.xml",
         "security/ir.model.access.csv",
-        "views/purchase_request_views.xml",
     ],
     "installable": True,
     "auto_install": False,
