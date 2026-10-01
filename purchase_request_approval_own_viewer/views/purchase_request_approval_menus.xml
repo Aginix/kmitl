@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="action_purchase_request_approval_requested_by_me" model="ir.actions.act_window">
-        <field name="name">พจ.1 ของฉัน</field>
-        <field name="res_model">purchase.request.approval</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[('requested_by', '=', uid)]</field>
-        <field name="context">{}</field>
-    </record>
-
+    <!-- Expose existing Purchase Request parent menu to the own-viewer group -->
     <record id="purchase_request.parent_menu_purchase_request" model="ir.ui.menu">
         <field name="groups_id" eval="[(4, ref('group_purchase_request_approval_own_viewer'))]" />
     </record>
 
-    <menuitem
-        id="menu_purchase_request_approval_requested_by_me"
-        name="พจ.1 ของฉัน"
-        parent="purchase_request.parent_menu_purchase_request"
-        action="action_purchase_request_approval_requested_by_me"
-        sequence="25"
-        groups="group_purchase_request_approval_own_viewer"
-    />
+    <!-- Expose the existing พจ.1 parent menu item -->
+    <record id="purchase_request_approval.purchase_request_approval_menu_purchase_request" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('group_purchase_request_approval_own_viewer'))]" />
+    </record>
+
+    <!-- Expose the My Requests submenu (record rule limits data to own records automatically) -->
+    <record id="purchase_request_approval.purchase_request_approval_menu_purchase_request_my" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('group_purchase_request_approval_own_viewer'))]" />
+    </record>
+
+    <!-- Expose All Requests submenu (record rule ensures they see only their own) -->
+    <record id="purchase_request_approval.purchase_request_approval_menu_purchase_request_all" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('group_purchase_request_approval_own_viewer'))]" />
+    </record>
 
 </odoo>
