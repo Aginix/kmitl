@@ -27,11 +27,11 @@
             <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-            <xpath expr="//field[@name='department_id']" position="attributes">
-                <attribute name="optional">show</attribute>
-            </xpath>
             <xpath expr="//field[@name='requested_by']" position="attributes">
                 <attribute name="optional">show</attribute>
+            </xpath>
+            <xpath expr="//field[@name='requested_by']" position="after">
+                <field name="requesting_department_id" optional="show" />
             </xpath>
             <xpath expr="//field[@name='estimated_cost']" position="attributes">
                 <attribute name="optional">show</attribute>
@@ -91,7 +91,16 @@
                     domain="[]"
                     context="{'group_by': 'procurement_method_id'}"
                 />
+                <filter
+                    string="Requesting Department"
+                    name="group_requesting_department"
+                    domain="[]"
+                    context="{'group_by': 'requesting_department_id'}"
+                />
             </group>
+            <field name="requested_by" position="after">
+                <field name="requesting_department_id" />
+            </field>
         </field>
     </record>
 
@@ -150,7 +159,9 @@
 
             <button name="button_to_approve" position="attributes">
                 <attribute name="states">to_verify</attribute>
-                <attribute name="groups">purchase_request_kmitl.group_purchase_request_verify</attribute>
+                <attribute
+                    name="groups"
+                >purchase_request_kmitl.group_purchase_request_verify</attribute>
                 <attribute name="string">ตรวจสอบ</attribute>
             </button>
 
@@ -258,10 +269,9 @@
                             attrs="{'readonly': [('is_editable','=', False)]}"
                         />
                         <field
-                            name="department_id"
-                            string="Department"
-                            options="{'limit': 50, 'search_more': false, 'create': false, 'create_edit': false}"
-                            attrs="{'readonly': [('is_editable', '=', False)]}"
+                            name="requesting_department_id"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                            attrs="{'required': [('is_editable', '=', True)], 'readonly': [('is_editable', '=', False)]}"
                         />
                         <field name="user_id" readonly="1" />
                         <field
@@ -399,11 +409,12 @@
                 <page name="operation" string="Operation">
                     <group>
                         <group>
+                            <field name="date_start" readonly="1" />
                             <field
-                                name="date_start"
+                                name="create_date"
+                                string="วันที่สร้าง"
                                 readonly="1"
                             />
-                            <field name="create_date" string="วันที่สร้าง" readonly="1"/>
                         </group>
                     </group>
                 </page>
@@ -498,10 +509,6 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='department_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
             <xpath expr="//field[@name='requested_by']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -538,7 +545,10 @@
         <field name="view_mode">tree,kanban,form</field>
         <field name="domain">[('create_uid', '=', uid)]</field>
         <field name="context">{}</field>
-        <field name="search_view_id" ref="purchase_request.view_purchase_request_search" />
+        <field
+            name="search_view_id"
+            ref="purchase_request.view_purchase_request_search"
+        />
     </record>
 
     <record id="action_purchase_request_all" model="ir.actions.act_window">
@@ -548,7 +558,10 @@
         <field name="view_mode">tree,kanban,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
-        <field name="search_view_id" ref="purchase_request.view_purchase_request_search" />
+        <field
+            name="search_view_id"
+            ref="purchase_request.view_purchase_request_search"
+        />
     </record>
 
     <!-- menu -->

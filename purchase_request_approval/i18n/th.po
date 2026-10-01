@@ -91,21 +91,6 @@ msgid "Activity Exception Decoration"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__payment_type__direct
-msgid "Direct paid"
-msgstr "จ่ายตรง"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__payment_type__advance
-msgid "Advance"
-msgstr "เงินยืม"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__payment_type__prepaid
-msgid "Prepaid"
-msgstr "สำรองจ่าย"
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_state
 msgid "Activity State"
 msgstr ""
@@ -114,6 +99,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_type_icon
 msgid "Activity Type Icon"
 msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__payment_type__advance
+msgid "Advance"
+msgstr "เงินยืม"
+
+#. module: purchase_request_approval
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu_all
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu_purchase_request_all
+msgid "All Requests"
+msgstr "คำขอทั้งหมด"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__procurement_method_ids
@@ -139,6 +135,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__analytic_precision
 msgid "Analytic Precision"
 msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__approval_id
+msgid "Approval"
+msgstr "รายงานขอซื้อ/จ้าง"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__approval_date
@@ -258,9 +259,16 @@ msgstr "ยกเลิก"
 #. odoo-python
 #: code:addons/purchase_request_approval/models/purchase_request_approval.py:0
 #, python-format
+msgid "Cancelled via Sarabun. Reason: %s"
+msgstr "ถูกยกเลิกผ่านสารบรรณ. เหตุผล: %s"
+
+#. module: purchase_request_approval
+#. odoo-python
+#: code:addons/purchase_request_approval/models/purchase_request_approval.py:0
+#, python-format
 msgid ""
-"Cannot manually approve while Sarabun routing is pending. Please wait for the routing to "
-"complete or cancel the Sarabun document."
+"Cannot manually approve while Sarabun routing is pending. Please wait for "
+"the routing to complete or cancel the Sarabun document."
 msgstr ""
 
 #. module: purchase_request_approval
@@ -282,6 +290,11 @@ msgstr "ติดต่อ"
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_form
 msgid "Create Purchase Order"
 msgstr "สร้างสัญญา/ใบสั่งซื้อ/จ้าง"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+msgid "Create Sarabun"
+msgstr "สร้างหนังสือ"
 
 #. module: purchase_request_approval
 #: model:mail.activity.type,summary:purchase_request_approval.mail_activity_awaiting_approval_creation
@@ -333,7 +346,6 @@ msgstr "วันที่สร้างเอกสาร"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__department_id
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__requesting_department_id
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.portal_my_purchase_request_approvals
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Department"
@@ -346,6 +358,16 @@ msgid "Description"
 msgstr "เหตุผล/ความจำเป็น"
 
 #. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__name
+msgid "Description"
+msgstr "รายการ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__payment_type__direct
+msgid "Direct paid"
+msgstr "จ่ายตรง"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__display_name
 msgid "Display Name"
 msgstr "ชื่อที่แสดง"
@@ -354,6 +376,11 @@ msgstr "ชื่อที่แสดง"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__attachment_ids
 msgid "Document Attachments"
 msgstr "เอกสารแนบ"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_tree
+msgid "Document Number"
+msgstr "เลขที่หนังสือพจ.1"
 
 #. module: purchase_request_approval
 #. odoo-python
@@ -372,6 +399,11 @@ msgstr "ดาวน์โหลด"
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Draft"
 msgstr "แบบร่าง"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__estimated_cost
+msgid "Estimated Cost"
+msgstr "จำนวนเงิน"
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
@@ -395,6 +427,11 @@ msgstr "สรุปข้อยกเว้น"
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__account_fiscal_year_id
 msgid "Fiscal Year"
 msgstr "ปีงบประมาณ"
 
@@ -597,6 +634,17 @@ msgid "My Activity Deadline"
 msgstr ""
 
 #. module: purchase_request_approval
+#: model:ir.actions.act_window,name:purchase_request_approval.action_purchase_request_approval_my
+msgid "My Purchase Request Approvals"
+msgstr "รายงานขอซื้อ/จ้าง (พจ.1) ของฉัน"
+
+#. module: purchase_request_approval
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu_my
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu_purchase_request_my
+msgid "My Requests"
+msgstr "คำขอของฉัน"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request__need_make_purchase_order
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__need_make_purchase_order
 msgid "Need Make Purchase Order"
@@ -690,6 +738,11 @@ msgid "PA Report is generated on %s"
 msgstr "เอกสารพจ.1 ถูกสร้างขึ้นเมื่อ %s"
 
 #. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_tree
+msgid "PR Number"
+msgstr "เลขที่ใบพจ.1"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__partner_id
 msgid "Partner"
 msgstr "ผู้ขาย/คู่ค้า"
@@ -700,6 +753,11 @@ msgid "Payment Type"
 msgstr "ประเภทการจ่ายเงิน"
 
 #. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__pending_pr
+msgid "Pending PR Revision"
+msgstr "รอ พ.1 แก้ไข"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__picking_type_id
 msgid "Picking Type"
 msgstr ""
@@ -708,6 +766,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__access_url
 msgid "Portal Access URL"
 msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__payment_type__prepaid
+msgid "Prepaid"
+msgstr "สำรองจ่าย"
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
@@ -765,6 +828,11 @@ msgid "Product"
 msgstr "สินค้า"
 
 #. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__product_id
+msgid "Product"
+msgstr "สินค้า"
+
+#. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Products"
 msgstr "สินค้า"
@@ -805,6 +873,16 @@ msgid "Purchase Request Approval Count"
 msgstr ""
 
 #. module: purchase_request_approval
+#: model:ir.model,name:purchase_request_approval.model_purchase_request_approval_line
+msgid "Purchase Request Approval Line"
+msgstr "รายการรายงานขอซื้อ/จ้าง (พจ.1)"
+
+#. module: purchase_request_approval
+#: model:ir.model,name:purchase_request_approval.model_purchase_request_approval_return_cancel_wizard
+msgid "Purchase Request Approval Return/Cancel Wizard"
+msgstr "Wizard ตีกลับ/ยกเลิก พจ.1"
+
+#. module: purchase_request_approval
 #. odoo-python
 #: code:addons/purchase_request_approval/models/purchase_request.py:0
 #, python-format
@@ -814,6 +892,12 @@ msgstr "บันทึกรายงานขอซื้อ/จ้าง (พ
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.portal_my_home_purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.portal_my_purchase_request_approvals
+msgid "Purchase Request Approvals"
+msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
+
+#. module: purchase_request_approval
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu_purchase_request
 msgid "Purchase Request Approvals"
 msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
 
@@ -837,10 +921,11 @@ msgstr "ประเภทการซื้อ"
 #: code:addons/purchase_request_approval/models/purchase_request.py:0
 #, python-format
 msgid ""
-"Purchase approval %(pa_name)s for your Request %(pr_name)s created successfully, waiting for "
-"operation."
+"Purchase approval %(pa_name)s for your Request %(pr_name)s created "
+"successfully, waiting for operation."
 msgstr ""
-"ตามใบขอซื้อขอจ้างเลขที่ %(pr_name)s ได้จัดทำรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ %(pa_name)s แล้ว อยู่ระหว่างดำเนินการ"
+"ตามใบขอซื้อขอจ้างเลขที่ %(pr_name)s ได้จัดทำรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ "
+"%(pa_name)s แล้ว อยู่ระหว่างดำเนินการ"
 
 #. module: purchase_request_approval
 #. odoo-python
@@ -850,7 +935,8 @@ msgid ""
 "Purchase approval %(pa_name)s for your Request %(pr_name)s has been "
 "cancelled."
 msgstr ""
-"ตามใบขอซื้อขอจ้างเลขที่ %(pr_name)s ได้จัดทำรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ %(pa_name)s ถูกยกเลิก."
+"ตามใบขอซื้อขอจ้างเลขที่ %(pr_name)s ได้จัดทำรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ "
+"%(pa_name)s ถูกยกเลิก."
 
 #. module: purchase_request_approval
 #. odoo-python
@@ -863,6 +949,11 @@ msgstr "รายงานขอซื้อ/จ้าง (พจ.1) เลข�
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__purchase_count
 msgid "Purchases count"
 msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__product_qty
+msgid "Quantity"
+msgstr "จำนวน"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__expense_reason
@@ -892,13 +983,6 @@ msgstr "ปฎิเสธ"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__rejected_message
 msgid "Rejected Message"
 msgstr "ข้อความตีกลับ"
-
-#. module: purchase_request_approval
-#. odoo-python
-#: code:addons/purchase_request_approval/models/purchase_request_approval.py:0
-#, python-format
-msgid "Cancelled via Sarabun. Reason: %s"
-msgstr "ถูกยกเลิกผ่านสารบรรณ. เหตุผล: %s"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__budget_commitment_id
@@ -933,6 +1017,13 @@ msgid "Requested By"
 msgstr "ชื่อผู้ขอให้จัดหา"
 
 #. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__requesting_department_id
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.portal_my_purchase_request_approvals
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "Requesting Department"
+msgstr "ส่วนงานผู้ขอ"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__requisition_count
 msgid "Requisition Count"
 msgstr ""
@@ -951,11 +1042,6 @@ msgstr "ดึงกลับ"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__user_id
 msgid "Responsible"
 msgstr "ผู้รับผิดชอบ"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__sarabun_returned
-msgid "Sarabun Returned"
-msgstr "รอการแก้ไข"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_user_id
@@ -978,6 +1064,11 @@ msgid "Sarabun Document"
 msgstr ""
 
 #. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+msgid "Sarabun Document"
+msgstr "หนังสืออนุมัติ"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__sarabun_document_count
 msgid "Sarabun Document Count"
 msgstr "จำนวนเอกสารสารบรรณ"
@@ -986,6 +1077,11 @@ msgstr "จำนวนเอกสารสารบรรณ"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__sarabun_document_ids
 msgid "Sarabun Documents"
 msgstr "เอกสารสารบรรณ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__sarabun_returned
+msgid "Sarabun Returned"
+msgstr "รอการแก้ไข"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__access_token
@@ -1057,6 +1153,11 @@ msgid "Tax"
 msgstr "ภาษี"
 
 #. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_line_make_purchase_order__tax_id
+msgid "Tax"
+msgstr "ภาษี"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__tax_totals
 msgid "Tax Totals"
 msgstr "ภาษีรวม"
@@ -1065,6 +1166,11 @@ msgstr "ภาษีรวม"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__amount_tax
 msgid "Taxes"
 msgstr "ภาษี"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_line_make_purchase_order__amount_tax
+msgid "Taxes"
+msgstr "ยอดรวมภาษี"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__tender_count
@@ -1094,14 +1200,17 @@ msgstr "ปีนี้"
 #. module: purchase_request_approval
 #: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__procurement_method_ids
 msgid ""
-"This field will help to filter procurement method in each purchase type on the purchase request"
+"This field will help to filter procurement method in each purchase type on "
+"the purchase request"
 msgstr ""
 
 #. module: purchase_request_approval
 #. odoo-python
 #: code:addons/purchase_request_approval/models/purchase_request_approval.py:0
 #, python-format
-msgid "This record has been created from: <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
+msgid ""
+"This record has been created from: <a href=\"%(link)s\" "
+"target=\"_blank\">%(name)s</a>"
 msgstr "เอกสารนี้ถูกสร้างจาก : <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
 
 #. module: purchase_request_approval
@@ -1140,6 +1249,11 @@ msgid "Total"
 msgstr "รวม"
 
 #. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_line_make_purchase_order__amount_total
+msgid "Total"
+msgstr "รวม"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__estimated_cost
 msgid "Total Estimated Cost"
 msgstr "มูลค่าประมาณการรวม"
@@ -1150,9 +1264,44 @@ msgid "Type of the exception activity on record."
 msgstr ""
 
 #. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__price_unit
+msgid "Unit Price"
+msgstr "ราคา"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__amount_untaxed
 msgid "Untaxed Amount"
 msgstr "ยอดก่อนภาษี"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_line_make_purchase_order__amount_untaxed
+msgid "Untaxed Amount"
+msgstr "จำนวนเงินไม่รวมภาษี"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__product_uom_id
+msgid "UoM"
+msgstr "หน่วยนับ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__vat_included__exclusive
+msgid "VAT Exclusive"
+msgstr "ไม่มีภาษีมูลค่าเพิ่ม"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_line_make_purchase_order__vat_included__exclusive
+msgid "VAT Exclusive"
+msgstr "ไม่มีภาษีมูลค่าเพิ่ม"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__vat_included__inclusive
+msgid "VAT Inclusive"
+msgstr "มีภาษีมูลค่าเพิ่ม"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_line_make_purchase_order__vat_included__inclusive
+msgid "VAT Inclusive"
+msgstr "มีภาษีมูลค่าเพิ่ม"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__validate
@@ -1186,49 +1335,9 @@ msgid "Vat Included"
 msgstr "ภาษีมูลค่าเพิ่ม"
 
 #. module: purchase_request_approval
-#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__vat_included__exclusive
-msgid "VAT Exclusive"
-msgstr "ไม่มีภาษีมูลค่าเพิ่ม"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__vat_included__inclusive
-msgid "VAT Inclusive"
-msgstr "มีภาษีมูลค่าเพิ่ม"
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_line_make_purchase_order__vat_included
 msgid "Vat Included"
 msgstr "ภาษีมูลค่าเพิ่ม"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_line_make_purchase_order__vat_included__exclusive
-msgid "VAT Exclusive"
-msgstr "ไม่มีภาษีมูลค่าเพิ่ม"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_line_make_purchase_order__vat_included__inclusive
-msgid "VAT Inclusive"
-msgstr "มีภาษีมูลค่าเพิ่ม"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_line_make_purchase_order__tax_id
-msgid "Tax"
-msgstr "ภาษี"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_line_make_purchase_order__amount_untaxed
-msgid "Untaxed Amount"
-msgstr "จำนวนเงินไม่รวมภาษี"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_line_make_purchase_order__amount_tax
-msgid "Taxes"
-msgstr "ยอดรวมภาษี"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_line_make_purchase_order__amount_total
-msgid "Total"
-msgstr "รวม"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__verified_by
@@ -1305,7 +1414,8 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_committee
-msgid "ขออนุมัติแต่งตั้งคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน ดังต่อไปนี้"
+msgid ""
+"ขออนุมัติแต่งตั้งคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน ดังต่อไปนี้"
 msgstr ""
 
 #. module: purchase_request_approval
@@ -1326,6 +1436,11 @@ msgstr ""
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_sign
 msgid "คณบดี"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.actions.act_window,help:purchase_request_approval.action_purchase_request_approval_my
+msgid "คุณยังไม่มีรายงานขอซื้อ/จ้าง (พจ.1) ที่สร้างเอง"
 msgstr ""
 
 #. module: purchase_request_approval
@@ -1393,7 +1508,9 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
-msgid "บันทึกเสนอซื้อ/จ้าง (พัสดุ) <span class=\"fw-bolder text-decoration-underline\">1</span> ชุด"
+msgid ""
+"บันทึกเสนอซื้อ/จ้าง (พัสดุ) <span class=\"fw-bolder text-decoration-"
+"underline\">1</span> ชุด"
 msgstr ""
 
 #. module: purchase_request_approval
@@ -1412,11 +1529,6 @@ msgid "ประจำปีพ.ศ."
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__account_fiscal_year_id
-msgid "Fiscal Year"
-msgstr "ปีงบประมาณ"
-
-#. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_sign
 msgid "ผู้ขอให้จัดหา"
 msgstr ""
@@ -1433,12 +1545,12 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
-msgid "ราคาก่อนรวมภาษีมูลค่าเพิ่ม"
+msgid "ราคา"
 msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
-msgid "ราคา"
+msgid "ราคาก่อนรวมภาษีมูลค่าเพิ่ม"
 msgstr ""
 
 #. module: purchase_request_approval
@@ -1497,19 +1609,9 @@ msgid "วันที่"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
-msgid "Create Sarabun"
-msgstr "สร้างหนังสือ"
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__department_analytic_id
 msgid "ส่วนงาน"
 msgstr ""
-
-#. module: purchase_request_approval
-#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
-msgid "Sarabun Document"
-msgstr "หนังสืออนุมัติ"
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval

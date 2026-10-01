@@ -25,9 +25,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                 raise UserError(_("The purchase has already been completed."))
             line_company_id = line.company_id and line.company_id.id or False
             if company_id is not False and line_company_id != company_id:
-                raise UserError(
-                    _("You have to select lines from the same company.")
-                )
+                raise UserError(_("You have to select lines from the same company."))
             else:
                 company_id = line_company_id
             line_picking_type = line.request_id.picking_type_id or False
@@ -60,6 +58,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             {
                 "operating_unit_id": request.operating_unit_id.id,
                 "account_fiscal_year_id": request.account_fiscal_year_id.id,
+                "requesting_department_id": request.requesting_department_id.id,
                 "requesting_operating_unit_id": request.operating_unit_id.id,
                 "payment_type": request.payment_type,
                 "procurement_method_id": request.procurement_method_id.id,
@@ -71,9 +70,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         for item in self.item_ids:
             if item.line_id.purchase_lines:
                 raise UserError(
-                    _(
-                        "The purchase request '%s' already has a Purchase Order."
-                    )
+                    _("The purchase request '%s' already has a Purchase Order.")
                     % item.line_id.display_name
                 )
         return super().make_purchase_order()
