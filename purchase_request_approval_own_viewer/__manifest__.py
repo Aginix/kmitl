@@ -11,6 +11,7 @@
         "security/purchase_request_approval_own_viewer_rules.xml",
         "security/ir.model.access.csv",
         "views/purchase_request_approval_menus.xml",
+        "views/purchase_request_views.xml",
     ],
     "application": False,
     "installable": True,
