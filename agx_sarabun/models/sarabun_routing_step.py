@@ -436,6 +436,8 @@ class SarabunRoutingStep(models.Model):
                     user_id=usr.id,
                 )
                 if act:
+                    if act.res_name == "/":
+                        act.sudo().write({"res_name": _("(รอเลขที่)")})
                     Link.create(
                         {"step_id": step.id, "activity_id": act.id, "user_id": usr.id}
                     )
