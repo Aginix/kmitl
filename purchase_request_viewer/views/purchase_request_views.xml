@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_purchase_request_form_viewer" model="ir.ui.view">
+        <field name="name">purchase.request.form.viewer</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//form/sheet" position="before">
+                <field name="is_pr_owner_or_manager" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//button[@name='button_to_verify']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_pr_owner_or_manager', '=', False)]}</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_to_approve']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_pr_owner_or_manager', '=', False)]}</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_draft']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('can_reset_to_draft', '=', False), ('is_pr_owner_or_manager', '=', False)]}</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_cancel']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_pr_owner_or_manager', '=', False)]}</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_return']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_pr_owner_or_manager', '=', False)]}</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_approved']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_pr_owner_or_manager', '=', False)]}</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_in_progress']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_pr_owner_or_manager', '=', False)]}</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_done']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_pr_owner_or_manager', '=', False)]}</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_rejected']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_pr_owner_or_manager', '=', False)]}</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
