@@ -1,15 +1,15 @@
 // ---------------------------------------------------------------------------
-// Field widget: cursor + hover cue on each attachment card so the user knows
-// clicking opens the preview instead of downloading the file.
+// Many2ManyBinaryField in carousel-opt-in mode: cursor + hover cue on each
+// file chip so the user knows clicking opens the preview instead of
+// downloading. Applied only when `options="{'carousel': 1}"` added the
+// o_ac_clickable class to the wrap div.
 // ---------------------------------------------------------------------------
-.o_attachment_carousel_field {
-    .o_attachment.o_ac_clickable {
-        cursor: pointer;
-        transition: background-color 0.1s ease;
+.o_attachment_wrap.o_ac_clickable {
+    cursor: pointer;
+    transition: background-color 0.1s ease;
 
-        &:hover {
-            background-color: rgba(13, 110, 253, 0.08);
-        }
+    &:hover {
+        background-color: rgba(13, 110, 253, 0.08);
     }
 }
 

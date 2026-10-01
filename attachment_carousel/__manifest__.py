@@ -2,7 +2,7 @@
 
 {
     "name": "Attachment Carousel",
-    "version": "16.0.2.0.0",
+    "version": "16.0.3.0.0",
     "category": "Extra Tools",
     "license": "AGPL-3",
     "author": "KMITL",
@@ -17,9 +17,9 @@
     "assets": {
         "web.assets_backend": [
             "attachment_carousel/static/src/js/attachment_carousel_dialog.js",
-            "attachment_carousel/static/src/js/attachment_carousel_field.js",
+            "attachment_carousel/static/src/js/attachment_carousel_patch.js",
             "attachment_carousel/static/src/xml/attachment_carousel_dialog.xml",
-            "attachment_carousel/static/src/xml/attachment_carousel_field.xml",
+            "attachment_carousel/static/src/xml/attachment_carousel_patch.xml",
             "attachment_carousel/static/src/scss/attachment_carousel.scss",
         ],
     },

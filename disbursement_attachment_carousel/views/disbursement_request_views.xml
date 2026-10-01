@@ -5,10 +5,12 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
         <field name="arch" type="xml">
-            <!-- Swap the default many2many_binary chips for the clickable
-                 carousel widget so any file opens the in-app viewer. -->
+            <!-- Keep widget="many2many_binary" so other patches on this
+                 widget (e.g. web_attachment_document_type for doctype badges
+                 and drag-drop upload) stay active. Opt into the carousel
+                 click-to-preview behaviour via options. -->
             <xpath expr="//group[@name='attachment']/field[@name='attachment_ids']" position="attributes">
-                <attribute name="widget">attachment_carousel</attribute>
+                <attribute name="options">{'carousel': 1}</attribute>
             </xpath>
         </field>
     </record>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <!-- When carousel is enabled, make the whole file chip clickable: one
+         handler on the wrap catches image / filename / extension-label clicks
+         in one go. Delete button + doctype badge are filtered out inside
+         onCarouselClick so other modules' affordances still work. -->
+    <t t-inherit="web.Many2ManyBinaryField.attachment_preview" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('o_attachment_wrap')]" position="attributes">
+            <attribute name="t-on-click">(ev) => this.onCarouselClick(ev, file_index)</attribute>
+            <attribute name="t-attf-class">o_attachment_wrap #{ props.carousel ? 'o_ac_clickable' : '' }</attribute>
+        </xpath>
+    </t>
+
+</templates>
