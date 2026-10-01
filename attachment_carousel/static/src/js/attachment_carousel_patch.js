@@ -14,14 +14,16 @@ Many2ManyBinaryField.props = {
     carousel: { type: Boolean, optional: true },
 };
 
-patch(Many2ManyBinaryField, "attachment_carousel.static", {
-    extractProps({ attrs, field }) {
-        const base = this._super({ attrs, field });
-        return {
-            ...base,
-            carousel: !!(attrs.options && attrs.options.carousel),
-        };
-    },
+// Static override via direct reassignment — Odoo destructures extractProps
+// off the class (field.js: `const extractProps = FieldComponent.extractProps`)
+// and calls it as a free function, so `this` is undefined and patch()'s
+// _super chain cannot reach the original. Capture the original closure-side
+// instead, matching the pattern web_attachment_document_type uses for
+// fieldsToFetch.
+const _originalExtractProps = Many2ManyBinaryField.extractProps;
+Many2ManyBinaryField.extractProps = ({ attrs, field }) => ({
+    ..._originalExtractProps({ attrs, field }),
+    carousel: !!(attrs.options && attrs.options.carousel),
 });
 
 patch(
