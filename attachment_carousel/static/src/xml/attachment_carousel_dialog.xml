@@ -25,12 +25,53 @@
                     </div>
 
                     <div class="o_ac_viewer position-relative flex-grow-1">
-                        <t t-if="isIframable(current)">
-                            <iframe class="o_ac_iframe" t-att-src="contentUrl(current)" frameborder="0"/>
+                        <!-- Loading state covers any async render path -->
+                        <div t-if="state.loading" class="o_ac_overlay">
+                            <i class="fa fa-spinner fa-spin fa-2x text-white"/>
+                        </div>
+
+                        <!-- Error state wins over everything -->
+                        <t t-if="state.error">
+                            <div class="o_ac_unsupported text-center">
+                                <i t-attf-class="fa fa-exclamation-triangle fa-4x text-warning mb-3 d-block"/>
+                                <p class="mb-1">ไม่สามารถแสดงตัวอย่างได้</p>
+                                <p class="text-muted small"><t t-esc="state.error"/></p>
+                                <a class="btn btn-primary mt-2" t-att-href="contentUrl(current)" target="_blank">
+                                    <i class="fa fa-download me-1"/> ดาวน์โหลดไฟล์
+                                </a>
+                            </div>
                         </t>
                         <t t-elif="isImage(current)">
                             <div class="o_ac_image_wrap">
                                 <img class="o_ac_image" t-att-src="contentUrl(current)" t-att-alt="current.name"/>
+                            </div>
+                        </t>
+                        <t t-elif="isPdf(current)">
+                            <iframe class="o_ac_iframe" t-att-src="contentUrl(current)" frameborder="0"/>
+                        </t>
+                        <t t-elif="isDocx(current)">
+                            <div class="o_ac_html_wrap">
+                                <div t-if="state.htmlPreview" class="o_ac_html_preview" t-out="state.htmlPreview"/>
+                            </div>
+                        </t>
+                        <t t-elif="isXlsx(current)">
+                            <div class="o_ac_sheet_wrap d-flex flex-column">
+                                <div t-if="state.sheets and state.sheets.length > 1" class="o_ac_sheet_tabs">
+                                    <t t-foreach="state.sheets" t-as="sheet" t-key="sheet_index">
+                                        <button class="o_ac_sheet_tab"
+                                                t-att-class="{ active: sheet_index === state.activeSheet }"
+                                                t-on-click="() => this.setSheet(sheet_index)">
+                                            <t t-esc="sheet.name"/>
+                                        </button>
+                                    </t>
+                                </div>
+                                <div t-if="state.sheets" class="o_ac_html_preview o_ac_sheet_body" t-out="state.sheets[state.activeSheet].html"/>
+                            </div>
+                        </t>
+                        <t t-elif="isPptx(current)">
+                            <!-- PPTXjs renders into this div; key forces a fresh element per attachment switch -->
+                            <div class="o_ac_pptx_wrap">
+                                <div class="o_ac_pptx_container" t-ref="pptxContainer" t-key="state.renderKey"/>
                             </div>
                         </t>
                         <t t-else="">

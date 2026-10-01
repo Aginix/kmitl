@@ -2,13 +2,14 @@
 
 {
     "name": "Attachment Carousel",
-    "version": "16.0.1.0.0",
+    "version": "16.0.2.0.0",
     "category": "Extra Tools",
     "license": "AGPL-3",
     "author": "KMITL",
     "summary": (
         "Reusable OWL field widget that turns attachment_ids into a "
-        "clickable in-app carousel, with LibreOffice preview for Office files"
+        "clickable in-app carousel with client-side preview for "
+        "images, PDF, docx, xlsx/csv and pptx"
     ),
     "depends": [
         "web",

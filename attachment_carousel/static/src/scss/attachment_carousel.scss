@@ -145,4 +145,108 @@
     }
 
     .o_ac_empty { margin: auto; }
+
+    // Overlay for async preview loading
+    .o_ac_overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3;
+    }
+
+    // Shared container for client-side rendered previews (docx/xlsx html)
+    .o_ac_html_wrap,
+    .o_ac_sheet_wrap {
+        position: absolute;
+        inset: 0;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .o_ac_html_preview {
+        flex: 1 1 auto;
+        overflow: auto;
+        padding: 24px 32px;
+        background: #fff;
+        color: #212529;
+        font-family: Georgia, "Times New Roman", serif;
+        line-height: 1.5;
+
+        p { margin: 0 0 0.7em; }
+        h1, h2, h3, h4, h5 { margin: 1em 0 0.4em; }
+        table {
+            border-collapse: collapse;
+            margin: 0.8em 0;
+            td, th {
+                border: 1px solid #ced4da;
+                padding: 4px 8px;
+            }
+        }
+        img { max-width: 100%; height: auto; }
+    }
+
+    // xlsx: sheet tab bar
+    .o_ac_sheet_tabs {
+        display: flex;
+        gap: 2px;
+        padding: 4px 8px 0;
+        background: #f1f3f5;
+        border-bottom: 1px solid #dee2e6;
+        overflow-x: auto;
+        flex: 0 0 auto;
+    }
+
+    .o_ac_sheet_tab {
+        appearance: none;
+        border: 1px solid #dee2e6;
+        border-bottom: none;
+        background: #e9ecef;
+        color: #495057;
+        padding: 4px 12px;
+        font-size: 12px;
+        border-radius: 4px 4px 0 0;
+        cursor: pointer;
+        white-space: nowrap;
+
+        &:hover { background: #dee2e6; }
+
+        &.active {
+            background: #fff;
+            color: #0d6efd;
+            font-weight: 600;
+        }
+    }
+
+    .o_ac_sheet_body {
+        font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+        font-size: 13px;
+
+        table {
+            border-collapse: collapse;
+            td, th {
+                border: 1px solid #e9ecef;
+                padding: 2px 6px;
+            }
+        }
+    }
+
+    // pptx container (PPTXjs renders slides inside)
+    .o_ac_pptx_wrap {
+        position: absolute;
+        inset: 0;
+        background: #e9ecef;
+        overflow: auto;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .o_ac_pptx_container {
+        width: 100%;
+    }
 }
