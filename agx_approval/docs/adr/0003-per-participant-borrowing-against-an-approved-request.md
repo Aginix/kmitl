@@ -1,5 +1,7 @@
 # Borrowing is per participant, pulled from the loan side, and clears itself
 
+> **Superseded (2026-10) by [ADR-0009](0009-finance-authors-disbursements-from-actuals.md):** `agx_approval_advance_payment` was removed before deployment; loan ↔ request integration is future work.
+
 Status: accepted (2026-07) — **supersedes the §"Scope 2 sketch" of [ADR-0002](0002-payment-type-per-actual-row.md)**; the rest of ADR-0002 stands.
 
 ## Context & Decision

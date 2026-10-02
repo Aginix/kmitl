@@ -1,6 +1,6 @@
 {
     "name": "Aginix Approval",
-    "version": "16.0.1.6.0",
+    "version": "16.0.1.7.0",
     "category": "Accounting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -25,7 +25,6 @@
         "wizard/finance_confirm_views.xml",
         "wizard/send_back_confirm_views.xml",
         "reports/paperformat_approval_request.xml",
-        "reports/report_disbursement_voucher.xml",
         "views/approval_category_views.xml",
         "views/approval_category_group_views.xml",
         "views/approval_request_views.xml",
