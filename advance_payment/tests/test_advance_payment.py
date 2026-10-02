@@ -165,6 +165,37 @@ class TestAdvancePayment(TransactionCase):
                 ],
             }
         )
+        # First-line supervisor (ADR-0020) — own-only tier only, so the
+        # own-only-rule-ORs-in-the-endorser test (below) exercises the
+        # narrowest possible role, mirroring the ADR-0014 drafter precedent.
+        cls.supervisor = Users.create(
+            {
+                "name": "Supervisor",
+                "login": "supervisor_ap",
+                "email": "supervisor@test.local",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [cls.env.ref("advance_payment.group_advance_payment_own_only").id],
+                    )
+                ],
+            }
+        )
+        # The "wrong endorser" foil. `user` tier, not own-only, exactly like
+        # officer2/approver2: own-only would not even be able to *read* a
+        # request they are not named on, so the AccessError would mask the
+        # endorser check these tests are meant to exercise.
+        cls.other_supervisor = Users.create(
+            {
+                "name": "Other Supervisor",
+                "login": "other_supervisor_ap",
+                "email": "other_supervisor@test.local",
+                "groups_id": [
+                    (6, 0, [cls.env.ref("advance_payment.group_advance_payment_user").id])
+                ],
+            }
+        )
         cls.loan_type = cls.env["advance.payment.loan.type"].create(
             {"name": "Test Loan Type"}
         )
@@ -177,11 +208,24 @@ class TestAdvancePayment(TransactionCase):
         # creating a second one here would violate hr_employee_user_uniq.
         Employee = cls.env["hr.employee"]
         cls.emp = {}
-        for u in (cls.manager, cls.user, cls.user2, cls.staff, cls.officer):
+        for u in (
+            cls.manager,
+            cls.user,
+            cls.user2,
+            cls.staff,
+            cls.officer,
+            cls.supervisor,
+            cls.other_supervisor,
+        ):
             existing = Employee.search([("user_id", "=", u.id)], limit=1)
             cls.emp[u.id] = existing or Employee.create(
                 {"name": u.name, "user_id": u.id}
             )
+        # Every borrower's first-line supervisor (ADR-0020). hr.employee's
+        # line manager is parent_id — manager_id lives on hr.department.
+        # endorser_id prefills to cls.supervisor's user already in draft.
+        for u in (cls.manager, cls.user, cls.user2, cls.staff, cls.officer):
+            cls.emp[u.id].parent_id = cls.emp[cls.supervisor.id]
         cls.banks = {}
         for rec in (cls.manager, cls.user, cls.user2, cls.staff, cls.officer):
             cls.banks[rec.id] = cls.env["res.partner.bank"].create(
@@ -222,10 +266,11 @@ class TestAdvancePayment(TransactionCase):
         self.assertEqual(ap.state, "draft")
         self.assertEqual(ap.name, "New")
 
-    def test_submit_moves_to_verify_and_numbers(self):
+    def test_submit_moves_to_endorse_and_numbers(self):
         ap = self._make()
         ap.action_submit()
-        self.assertEqual(ap.state, "to_verify")
+        self.assertEqual(ap.state, "to_endorse")
+        self.assertEqual(ap.endorser_id, self.supervisor)
         self.assertNotEqual(ap.name, "New")
         self.assertTrue(ap.date_submitted)
 
@@ -248,7 +293,7 @@ class TestAdvancePayment(TransactionCase):
     def test_creator_can_submit_own(self):
         ap = self._make(requested_by=self.user, as_user=self.user)
         ap.with_user(self.user).action_submit()
-        self.assertEqual(ap.state, "to_verify")
+        self.assertEqual(ap.state, "to_endorse")
 
     def test_non_creator_cannot_submit(self):
         ap = self._make(requested_by=self.user)
@@ -258,7 +303,7 @@ class TestAdvancePayment(TransactionCase):
     def test_admin_can_submit_on_behalf(self):
         ap = self._make(requested_by=self.user)
         ap.with_user(self.manager).action_submit()
-        self.assertEqual(ap.state, "to_verify")
+        self.assertEqual(ap.state, "to_endorse")
 
     def test_create_on_behalf_blocked_for_non_admin(self):
         with self.assertRaises(ValidationError):
@@ -294,16 +339,17 @@ class TestAdvancePayment(TransactionCase):
         with self.assertRaises(UserError):
             ap.with_user(self.staff).action_submit()
         ap.with_user(self.user2).action_submit()
-        self.assertEqual(ap.state, "to_verify")
+        self.assertEqual(ap.state, "to_endorse")
 
     def test_loan_officer_can_verify_and_accept_report(self):
         ap = self._make(amount=1000)
         ap.action_submit()
+        ap.action_endorse()
         ap.with_user(self.officer).action_verify()
         self.assertEqual(ap.state, "to_approve")
         ap.write(
             {
-                "state": "to_verify_report",
+                "state": "reported",
                 "expense_description": "all spent",
                 "actual_expense_amount": 1000,
             }
@@ -338,14 +384,262 @@ class TestAdvancePayment(TransactionCase):
         a1.write({"state": "done"})
         a2 = self._make(requested_by=self.user)
         a2.action_submit()
-        self.assertEqual(a2.state, "to_verify")
+        self.assertEqual(a2.state, "to_endorse")
 
     def test_other_borrower_does_not_block(self):
         a1 = self._make(requested_by=self.user)
         a1.action_submit()
         a2 = self._make(requested_by=self.user2)
         a2.action_submit()
-        self.assertEqual(a2.state, "to_verify")
+        self.assertEqual(a2.state, "to_endorse")
+
+    # ------------------------------------------------------------------ #
+    # Supervisor endorsement (ADR-0020)                                     #
+    # ------------------------------------------------------------------ #
+
+    def test_submit_blocked_when_borrower_has_no_manager(self):
+        """Blocking exception rule keeps a manager-less borrower's request
+        in draft (excep_missing_manager, ADR-0020)."""
+        employee = self.env["hr.employee"].create({"name": "Manager-less Employee"})
+        ap = self.env["advance.payment"].create(
+            {
+                "employee_id": employee.id,
+                "loan_amount": 1000,
+                "loan_type_id": self.loan_type.id,
+                "loan_reason": "Test reason",
+                "loan_verifier_id": self.officer.id,
+                "bank_id": self.banks[self.manager.id].id,
+            }
+        )
+        ap.with_user(self.manager).action_submit()
+        self.assertEqual(ap.state, "draft")
+
+    def test_submit_blocked_when_manager_has_no_user(self):
+        """Same blocking rule when the manager exists but has no linked
+        user account to endorse with (ADR-0020)."""
+        userless_manager = self.env["hr.employee"].create({"name": "Userless Manager"})
+        employee = self.env["hr.employee"].create(
+            {
+                "name": "Employee With Userless Manager",
+                "parent_id": userless_manager.id,
+            }
+        )
+        ap = self.env["advance.payment"].create(
+            {
+                "employee_id": employee.id,
+                "loan_amount": 1000,
+                "loan_type_id": self.loan_type.id,
+                "loan_reason": "Test reason",
+                "loan_verifier_id": self.officer.id,
+                "bank_id": self.banks[self.manager.id].id,
+            }
+        )
+        ap.with_user(self.manager).action_submit()
+        self.assertEqual(ap.state, "draft")
+
+    def test_endorser_can_endorse(self):
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        self.assertEqual(ap.endorser_id, self.supervisor)
+        self.assertTrue(ap.with_user(self.supervisor).can_endorse)
+        ap.with_user(self.supervisor).action_endorse()
+        self.assertEqual(ap.state, "to_verify")
+
+    def test_endorse_stamps_date(self):
+        """Every other step records its own timestamp; so does this one."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        self.assertFalse(ap.date_endorsed)
+        ap.with_user(self.supervisor).action_endorse()
+        self.assertTrue(ap.date_endorsed)
+
+    def test_other_supervisor_cannot_endorse(self):
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        self.assertFalse(ap.with_user(self.other_supervisor).can_endorse)
+        with self.assertRaises(UserError):
+            ap.with_user(self.other_supervisor).action_endorse()
+
+    def test_admin_can_endorse_any_assignment(self):
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        ap.with_user(self.manager).action_endorse()
+        self.assertEqual(ap.state, "to_verify")
+
+    def test_endorse_only_from_to_endorse(self):
+        ap = self._make()
+        with self.assertRaises(UserError):
+            ap.with_user(self.manager).action_endorse()
+
+    def test_endorse_schedules_verify_activity_and_closes_endorse_activity(self):
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        self.assertTrue(ap._workflow_activities("to_endorse"))
+        ap.with_user(self.supervisor).action_endorse()
+        self.assertFalse(ap._workflow_activities("to_endorse"))
+        todo = ap._workflow_activities("to_verify")
+        self.assertTrue(todo)
+        self.assertEqual(todo.user_id, ap.loan_verifier_id)
+
+    def test_endorse_reject_returns_to_draft(self):
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        ap.with_user(self.supervisor).action_endorse_reject()
+        self.assertEqual(ap.state, "draft")
+        self.assertFalse(ap._workflow_activities("to_endorse"))
+
+    def test_endorse_reject_requires_endorser_or_admin(self):
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        with self.assertRaises(UserError):
+            ap.with_user(self.other_supervisor).action_endorse_reject()
+
+    def test_own_only_supervisor_can_see_and_endorse_subordinate(self):
+        """The endorser rule (ADR-0020), mirroring the ADR-0014 drafter
+        precedent — a supervisor with no other role can still see and endorse
+        a subordinate's request."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        visible = (
+            self.env["advance.payment"]
+            .with_user(self.supervisor)
+            .search([("id", "=", ap.id)])
+        )
+        self.assertEqual(visible, ap)
+        ap.with_user(self.supervisor).action_endorse()
+        self.assertEqual(ap.state, "to_verify")
+
+    def test_endorser_without_any_advance_payment_tier_can_act(self):
+        """Being named endorser_id is enough on its own: a plain internal
+        user holding no advance-payment group at all can open the request,
+        its embedded return lines included, and endorse it — while another
+        plain user still sees nothing (advance_payment_endorser_rule)."""
+        plain = self.env.ref("base.group_user")
+        endorser, bystander = self.env["res.users"].create(
+            [
+                {
+                    "name": "Plain Endorser",
+                    "login": "plain_endorser_ap",
+                    "groups_id": [(6, 0, plain.ids)],
+                },
+                {
+                    "name": "Plain Bystander",
+                    "login": "plain_bystander_ap",
+                    "groups_id": [(6, 0, plain.ids)],
+                },
+            ]
+        )
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.endorser_id = endorser
+        Loan = self.env["advance.payment"]
+        self.assertFalse(Loan.with_user(endorser).search([("id", "=", ap.id)]))
+        ap.with_user(self.user).action_submit()
+        self.assertEqual(Loan.with_user(endorser).search([("id", "=", ap.id)]), ap)
+        self.assertFalse(Loan.with_user(bystander).search([("id", "=", ap.id)]))
+        ap.with_user(endorser).read(["name", "loan_type_id", "return_line_ids"])
+        ap.with_user(endorser).action_endorse()
+        self.assertEqual(ap.state, "to_verify")
+
+    def test_endorser_prefilled_in_draft(self):
+        """The borrower sees who will endorse before submitting (ADR-0020)."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        self.assertEqual(ap.state, "draft")
+        self.assertEqual(ap.endorser_id, self.supervisor)
+
+    def test_endorser_follows_employee_change_in_draft(self):
+        """Prefill tracks employee_id, so the `user` tier drafting on behalf
+        of somebody else does not leave the drafter's own manager behind."""
+        ap = self._make(requested_by=self.user)
+        other_emp = self.env["hr.employee"].create(
+            {"name": "Other Borrower", "parent_id": self.emp[self.officer.id].id}
+        )
+        ap.employee_id = other_emp
+        self.assertEqual(ap.endorser_id, self.officer)
+
+    def test_endorser_frozen_after_submit(self):
+        """A manager reorg must not retarget an in-flight request."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        self.emp[self.user.id].parent_id = self.emp[self.officer.id]
+        ap.invalidate_recordset()
+        self.assertEqual(ap.endorser_id, self.supervisor)
+
+    def test_endorser_cannot_see_draft(self):
+        """Prefilling endorser_id must not leak a borrower's unsubmitted
+        draft to their manager — the endorser rule excludes draft."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        self.assertEqual(ap.endorser_id, self.supervisor)
+        visible = (
+            self.env["advance.payment"]
+            .with_user(self.supervisor)
+            .search([("id", "=", ap.id)])
+        )
+        self.assertFalse(visible)
+
+    def test_endorser_can_be_overridden_and_survives_submit(self):
+        """The suggestion is a default, not a verdict: a request may need to
+        go to somebody above the direct manager (ADR-0020)."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        self.assertEqual(ap.endorser_id, self.supervisor)
+        ap.endorser_id = self.other_supervisor
+        ap.with_user(self.user).action_submit()
+        self.assertEqual(ap.endorser_id, self.other_supervisor)
+        todo = ap._workflow_activities("to_endorse")
+        self.assertEqual(todo.user_id, self.other_supervisor)
+
+    def test_endorser_override_survives_send_back(self):
+        """state is not a dependency of the compute, so ส่งกลับแก้ไข must not
+        re-suggest the direct manager over a deliberate choice."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.endorser_id = self.other_supervisor
+        ap.with_user(self.user).action_submit()
+        ap.with_user(self.other_supervisor).action_endorse_reject()
+        self.assertEqual(ap.state, "draft")
+        self.assertEqual(ap.endorser_id, self.other_supervisor)
+
+    def test_endorser_cannot_be_the_borrower(self):
+        """Self-endorsement would leave the step with no second pair of eyes."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        with self.assertRaises(ValidationError):
+            ap.endorser_id = self.user
+
+    def test_reassigning_endorser_repoints_the_todo(self):
+        """A manager may hand a pending request to another endorser; the To-Do
+        has to follow, or it sits on somebody who can no longer act."""
+        ap = self._make(requested_by=self.user, as_user=self.user)
+        ap.with_user(self.user).action_submit()
+        self.assertEqual(
+            ap._workflow_activities("to_endorse").user_id, self.supervisor
+        )
+        ap.with_user(self.manager).write({"endorser_id": self.other_supervisor.id})
+        ap.invalidate_recordset()
+        todo = ap._workflow_activities("to_endorse")
+        self.assertEqual(len(todo), 1)
+        self.assertEqual(todo.user_id, self.other_supervisor)
+
+    # ------------------------------------------------------------------ #
+    # Blocking exceptions on the officer's own corrections                 #
+    # ------------------------------------------------------------------ #
+
+    def test_officer_amount_edit_in_to_verify_is_checked(self):
+        """The officer may correct loan_amount in to_verify (ADR-0005), so
+        that edit faces the same blocking rules the borrower's submit did."""
+        ap = self._make(amount=1000)
+        ap.action_submit()
+        ap.action_endorse()
+        with self.assertRaises(ValidationError):
+            ap.with_user(self.officer).write({"loan_amount": 60000})
+
+    def test_missing_manager_does_not_block_officer_in_to_verify(self):
+        """excep_missing_manager is scoped to draft/to_endorse: past the
+        endorsement the endorser is already named, so a manager leaving must
+        not lock the loan officer out of their own corrections."""
+        ap = self._make(amount=1000)
+        ap.action_submit()
+        ap.action_endorse()
+        self.emp[self.manager.id].parent_id = False
+        ap.with_user(self.officer).write({"loan_amount": 4200})
+        self.assertEqual(ap.loan_amount, 4200)
 
     # ------------------------------------------------------------------ #
     # verify / approve guards                                              #
@@ -354,6 +648,7 @@ class TestAdvancePayment(TransactionCase):
     def test_verify_moves_to_approve(self):
         ap = self._make()
         ap.action_submit()
+        ap.action_endorse()
         ap.action_verify()
         self.assertEqual(ap.state, "to_approve")
 
@@ -368,15 +663,16 @@ class TestAdvancePayment(TransactionCase):
         with self.assertRaises(UserError):
             ap.action_approve()
 
-    def test_approve_moves_to_waiting_transfer_without_payment(self):
+    def test_approve_moves_to_approved_without_payment(self):
         """Approval hands the request to the loan officer; issuing the
         voucher is a separate, later act (see the payment-voucher tests
         below) — action_approve itself must not create a payment."""
         ap = self._make()
         ap.action_submit()
+        ap.action_endorse()
         ap.with_user(self.officer).action_verify()
         ap.action_approve()
-        self.assertEqual(ap.state, "waiting_transfer")
+        self.assertEqual(ap.state, "approved")
         self.assertEqual(ap.disbursement_state, "pending")
         self.assertTrue(ap.date_approved)
         self.assertEqual(ap.payment_count, 0)
@@ -387,7 +683,7 @@ class TestAdvancePayment(TransactionCase):
 
     def test_loan_officer_creates_payment_voucher(self):
         ap = self._make(requested_by=self.user, amount=1000)
-        ap.write({"state": "waiting_transfer", "disbursement_state": "pending"})
+        ap.write({"state": "approved", "disbursement_state": "pending"})
         ap.with_user(self.officer).action_create_payment_voucher()
         self.assertEqual(ap.payment_count, 1)
         payment = ap.payment_ids
@@ -405,11 +701,11 @@ class TestAdvancePayment(TransactionCase):
 
     def test_create_payment_voucher_requires_loan_officer(self):
         ap = self._make(requested_by=self.user)
-        ap.write({"state": "waiting_transfer"})
+        ap.write({"state": "approved"})
         with self.assertRaises(AccessError):
             ap.with_user(self.staff).action_create_payment_voucher()
 
-    def test_create_payment_voucher_only_from_waiting_transfer(self):
+    def test_create_payment_voucher_only_from_approved(self):
         ap = self._make()
         with self.assertRaises(UserError):
             ap.with_user(self.officer).action_create_payment_voucher()
@@ -417,6 +713,7 @@ class TestAdvancePayment(TransactionCase):
     def test_cancel_after_approve_voids_the_voucher(self):
         ap = self._make()
         ap.action_submit()
+        ap.action_endorse()
         ap.with_user(self.officer).action_verify()
         ap.action_approve()
         ap.with_user(self.officer).action_create_payment_voucher()
@@ -437,6 +734,7 @@ class TestAdvancePayment(TransactionCase):
     def test_assigned_officer_can_verify(self):
         ap = self._make()
         ap.action_submit()
+        ap.action_endorse()
         self.assertTrue(ap.with_user(self.officer).can_verify)
         ap.with_user(self.officer).action_verify()
         self.assertEqual(ap.state, "to_approve")
@@ -444,6 +742,7 @@ class TestAdvancePayment(TransactionCase):
     def test_other_officer_cannot_verify(self):
         ap = self._make()
         ap.action_submit()
+        ap.action_endorse()
         self.assertFalse(ap.with_user(self.officer2).can_verify)
         with self.assertRaises(UserError):
             ap.with_user(self.officer2).action_verify()
@@ -451,14 +750,15 @@ class TestAdvancePayment(TransactionCase):
     def test_admin_can_verify_any_assignment(self):
         ap = self._make()
         ap.action_submit()
+        ap.action_endorse()
         ap.with_user(self.manager).action_verify()
         self.assertEqual(ap.state, "to_approve")
 
-    def test_submit_schedules_verify_activity(self):
+    def test_submit_schedules_endorse_activity(self):
         ap = self._make()
         ap.action_submit()
         activity = ap.activity_ids.filtered(
-            lambda a: a.user_id == self.officer
+            lambda a: a.user_id == self.supervisor
         )
         self.assertTrue(activity)
 
@@ -469,6 +769,7 @@ class TestAdvancePayment(TransactionCase):
     def test_verify_marks_activity_done(self):
         ap = self._make()
         ap.action_submit()
+        ap.action_endorse()
         self.assertTrue(ap._workflow_activities("to_verify"))
         ap.with_user(self.officer).action_verify()
         # _action_done unlinks the activity and leaves an mt_activities
@@ -484,6 +785,7 @@ class TestAdvancePayment(TransactionCase):
     def test_reset_to_draft_drops_activity(self):
         ap = self._make()
         ap.action_submit()
+        ap.action_endorse()
         self.assertTrue(ap._workflow_activities("to_verify"))
         ap.with_user(self.officer).action_reset_to_draft()
         self.assertFalse(ap._workflow_activities("to_verify"))
@@ -491,16 +793,16 @@ class TestAdvancePayment(TransactionCase):
     def test_recall_drops_activity(self):
         ap = self._make(requested_by=self.user)
         ap.with_user(self.user).action_submit()
-        self.assertTrue(ap._workflow_activities("to_verify"))
+        self.assertTrue(ap._workflow_activities("to_endorse"))
         ap.with_user(self.user).action_recall()
-        self.assertFalse(ap._workflow_activities("to_verify"))
+        self.assertFalse(ap._workflow_activities("to_endorse"))
 
     def test_cancel_drops_activity(self):
         ap = self._make()
         ap.action_submit()
-        self.assertTrue(ap._workflow_activities("to_verify"))
+        self.assertTrue(ap._workflow_activities("to_endorse"))
         ap._action_do_cancel("dup")
-        self.assertFalse(ap._workflow_activities("to_verify"))
+        self.assertFalse(ap._workflow_activities("to_endorse"))
 
     def test_default_loan_verifier_from_settings(self):
         """With two officers the sole-officer fallback is ambiguous, so the
@@ -510,6 +812,28 @@ class TestAdvancePayment(TransactionCase):
             "advance_payment.default_loan_verifier_id", str(self.officer2.id)
         )
         self.assertEqual(
+            self.env["advance.payment"]._default_loan_verifier_id(), self.officer2.id
+        )
+
+    def test_default_loan_verifier_accepts_a_configured_admin(self):
+        """The Settings picker offers admin — admin is a standing member of
+        the officer group — so naming them there has to take effect. It used
+        to be discarded silently, because the configured user was checked
+        against the root/admin-excluded sole-officer set."""
+        self.env["ir.config_parameter"].sudo().set_param(
+            "advance_payment.default_loan_verifier_id", str(self.manager.id)
+        )
+        self.assertEqual(
+            self.env["advance.payment"]._default_loan_verifier_id(), self.manager.id
+        )
+
+    def test_default_loan_verifier_ignores_archived_officer(self):
+        """Group membership is read off a m2m, which ignores active_test."""
+        self.env["ir.config_parameter"].sudo().set_param(
+            "advance_payment.default_loan_verifier_id", str(self.officer2.id)
+        )
+        self.officer2.active = False
+        self.assertNotEqual(
             self.env["advance.payment"]._default_loan_verifier_id(), self.officer2.id
         )
 
@@ -531,9 +855,9 @@ class TestAdvancePayment(TransactionCase):
         neither, so this only works because the helper sudo()s."""
         ap = self._make(requested_by=self.user)
         ap.with_user(self.user).action_submit()
-        self.assertTrue(ap._workflow_activities("to_verify"))
+        self.assertTrue(ap._workflow_activities("to_endorse"))
         ap.with_user(self.manager)._action_do_cancel("dup")
-        self.assertFalse(ap._workflow_activities("to_verify"))
+        self.assertFalse(ap._workflow_activities("to_endorse"))
 
     # ------------------------------------------------------------------ #
     # Approver assignment + approve To-Do (ADR-0016)                       #
@@ -563,6 +887,7 @@ class TestAdvancePayment(TransactionCase):
     def test_verify_schedules_approve_activity(self):
         ap = self._make()
         ap.action_submit()
+        ap.action_endorse()
         ap.with_user(self.officer).action_verify()
         todo = ap._workflow_activities("to_approve")
         self.assertTrue(todo)
@@ -571,6 +896,7 @@ class TestAdvancePayment(TransactionCase):
     def test_cancel_from_to_approve_drops_approve_activity(self):
         ap = self._make()
         ap.action_submit()
+        ap.action_endorse()
         ap.with_user(self.officer).action_verify()
         self.assertTrue(ap._workflow_activities("to_approve"))
         ap._action_do_cancel("dup")
@@ -584,15 +910,17 @@ class TestAdvancePayment(TransactionCase):
         ap = self._make()
         ap.approver_id = self.approver.id
         ap.action_submit()
+        ap.action_endorse()
         ap.with_user(self.officer).action_verify()
         self.assertTrue(ap.with_user(self.approver).can_approve)
         ap.with_user(self.approver).action_approve()
-        self.assertEqual(ap.state, "waiting_transfer")
+        self.assertEqual(ap.state, "approved")
 
     def test_other_approver_cannot_approve(self):
         ap = self._make()
         ap.approver_id = self.approver.id
         ap.action_submit()
+        ap.action_endorse()
         ap.with_user(self.officer).action_verify()
         self.assertFalse(ap.with_user(self.approver2).can_approve)
         with self.assertRaises(UserError):
@@ -602,15 +930,102 @@ class TestAdvancePayment(TransactionCase):
         ap = self._make()
         ap.approver_id = self.approver.id
         ap.action_submit()
+        ap.action_endorse()
         ap.with_user(self.officer).action_verify()
         ap.with_user(self.manager).action_approve()
-        self.assertEqual(ap.state, "waiting_transfer")
+        self.assertEqual(ap.state, "approved")
+
+    # ------------------------------------------------------------------ #
+    # Back-half To-Dos (ADR-0021)                                          #
+    # ------------------------------------------------------------------ #
+
+    def _in_progress(self, **kw):
+        ap = self._make(**kw)
+        ap.write({"state": "approved"})
+        ap.action_start()
+        return ap
+
+    def test_approve_raises_voucher_todo_and_voucher_closes_it(self):
+        ap = self._make(requested_by=self.user)
+        ap.action_submit()
+        ap.action_endorse()
+        ap.with_user(self.officer).action_verify()
+        ap.action_approve()
+        self.assertEqual(ap._workflow_activities("approved").user_id, self.officer)
+        ap.with_user(self.officer).action_create_payment_voucher()
+        self.assertFalse(ap._workflow_activities("approved"))
+
+    def test_transfer_raises_report_todo_on_borrower_due_on_return_date(self):
+        due = fields.Date.add(fields.Date.today(), days=15)
+        ap = self._make(requested_by=self.user)
+        ap.write({"state": "approved", "return_due_date": due})
+        ap.action_start()
+        todo = ap._workflow_activities("in_progress")
+        self.assertEqual(todo.user_id, self.user)
+        self.assertEqual(todo.date_deadline, due)
+
+    def test_report_todo_deadline_follows_return_due_date(self):
+        """The officer usually sets the due date after the transfer."""
+        ap = self._in_progress(requested_by=self.user)
+        due = fields.Date.add(fields.Date.today(), days=20)
+        ap.return_due_date = due
+        self.assertEqual(ap._workflow_activities("in_progress").date_deadline, due)
+
+    def test_back_half_todo_relay(self):
+        """Borrower reports → officer accepts → borrower returns → close:
+        each hand-off closes one To-Do and raises the next."""
+        ap = self._in_progress(requested_by=self.user, amount=1000)
+        ap.write({"expense_description": "partial", "actual_expense_amount": 700})
+        ap.with_user(self.user).action_submit_report()
+        self.assertFalse(ap._workflow_activities("in_progress"))
+        self.assertEqual(ap._workflow_activities("reported").user_id, self.officer)
+        ap.with_user(self.officer).action_accept_report()
+        self.assertEqual(ap.state, "to_reconcile")
+        self.assertFalse(ap._workflow_activities("reported"))
+        self.assertEqual(ap._workflow_activities("to_reconcile").user_id, self.user)
+        ap._do_close()
+        self.assertFalse(ap._workflow_activities())
+
+    def test_accept_with_nothing_to_return_leaves_nothing_open(self):
+        ap = self._in_progress(requested_by=self.user, amount=1000)
+        ap.write({"expense_description": "all", "actual_expense_amount": 1000})
+        ap.with_user(self.user).action_submit_report()
+        ap.with_user(self.officer).action_accept_report()
+        self.assertEqual(ap.state, "done")
+        self.assertFalse(ap._workflow_activities())
+
+    def test_borrower_without_user_gets_no_todo_not_even_on_the_actor(self):
+        """activity_schedule(user_id=False) would fall back to the acting user;
+        the borrower's task must not land in somebody else's tray."""
+        employee = self.env["hr.employee"].create(
+            {"name": "No User Borrower", "parent_id": self.emp[self.supervisor.id].id}
+        )
+        ap = self.env["advance.payment"].create(
+            {
+                "employee_id": employee.id,
+                "loan_amount": 1000,
+                "loan_type_id": self.loan_type.id,
+                "loan_reason": "Test reason",
+                "loan_verifier_id": self.officer.id,
+                "bank_id": self.banks[self.manager.id].id,
+            }
+        )
+        ap.write({"state": "approved"})
+        ap.action_start()
+        summary = ap._workflow_activity_specs()["in_progress"][0]
+        self.assertFalse(ap.activity_ids.filtered(lambda a: a.summary == summary))
+
+    def test_cancel_in_progress_drops_borrower_todo(self):
+        ap = self._in_progress(requested_by=self.user)
+        self.assertTrue(ap._workflow_activities("in_progress"))
+        ap._action_do_cancel("dup")
+        self.assertFalse(ap._workflow_activities())
 
     # ------------------------------------------------------------------ #
     # Recall / reset                                                       #
     # ------------------------------------------------------------------ #
 
-    def test_recall_from_to_verify_keeps_number(self):
+    def test_recall_from_to_endorse_keeps_number(self):
         ap = self._make(requested_by=self.user)
         ap.with_user(self.user).action_submit()
         number = ap.name
@@ -618,9 +1033,17 @@ class TestAdvancePayment(TransactionCase):
         self.assertEqual(ap.state, "draft")
         self.assertEqual(ap.name, number)
 
+    def test_recall_from_to_verify(self):
+        ap = self._make(requested_by=self.user)
+        ap.with_user(self.user).action_submit()
+        ap.action_endorse()
+        ap.with_user(self.user).action_recall()
+        self.assertEqual(ap.state, "draft")
+
     def test_recall_from_to_approve(self):
         ap = self._make(requested_by=self.user)
         ap.with_user(self.user).action_submit()
+        ap.action_endorse()
         ap.action_verify()
         ap.with_user(self.user).action_recall()
         self.assertEqual(ap.state, "draft")
@@ -633,13 +1056,14 @@ class TestAdvancePayment(TransactionCase):
 
     def test_recall_not_after_approval(self):
         ap = self._make(requested_by=self.user)
-        ap.write({"state": "waiting_transfer"})
+        ap.write({"state": "approved"})
         with self.assertRaises(UserError):
             ap.with_user(self.user).action_recall()
 
     def test_officer_reset_to_draft(self):
         ap = self._make()
         ap.action_submit()
+        ap.action_endorse()
         ap.with_user(self.officer).action_reset_to_draft()
         self.assertEqual(ap.state, "draft")
 
@@ -649,7 +1073,7 @@ class TestAdvancePayment(TransactionCase):
 
     def test_start_sets_effective_date_and_contract(self):
         ap = self._make()
-        ap.write({"state": "waiting_transfer"})
+        ap.write({"state": "approved"})
         ap.action_start()
         self.assertEqual(ap.state, "in_progress")
         self.assertTrue(ap.effective_date)
@@ -666,7 +1090,7 @@ class TestAdvancePayment(TransactionCase):
         with self.assertRaises(UserError):
             ap.action_submit_report()
 
-    def test_submit_report_moves_to_verify_report(self):
+    def test_submit_report_moves_to_reported(self):
         ap = self._make(amount=1000)
         ap.write(
             {
@@ -676,13 +1100,13 @@ class TestAdvancePayment(TransactionCase):
             }
         )
         ap.action_submit_report()
-        self.assertEqual(ap.state, "to_verify_report")
+        self.assertEqual(ap.state, "reported")
 
     def test_accept_report_no_leftover_closes(self):
         ap = self._make(amount=1000)
         ap.write(
             {
-                "state": "to_verify_report",
+                "state": "reported",
                 "expense_description": "all spent",
                 "actual_expense_amount": 1000,
             }
@@ -694,7 +1118,7 @@ class TestAdvancePayment(TransactionCase):
         ap = self._make(amount=1000)
         ap.write(
             {
-                "state": "to_verify_report",
+                "state": "reported",
                 "expense_description": "partial",
                 "actual_expense_amount": 700,
             }
@@ -813,6 +1237,7 @@ class TestAdvancePayment(TransactionCase):
     def test_officer_can_edit_material_in_to_verify(self):
         ap = self._make(requested_by=self.user)
         ap.with_user(self.user).action_submit()
+        ap.action_endorse()
         ap.with_user(self.officer).write({"loan_amount": 4200})
         self.assertEqual(ap.loan_amount, 4200)
 
@@ -824,7 +1249,7 @@ class TestAdvancePayment(TransactionCase):
 
     def test_bank_editable_by_officer_until_transfer(self):
         ap = self._make(requested_by=self.user)
-        ap.write({"state": "waiting_transfer"})
+        ap.write({"state": "approved"})
         new_bank = self.env["res.partner.bank"].create(
             {"acc_number": "new-1", "partner_id": self.user.partner_id.id}
         )
@@ -927,7 +1352,15 @@ class TestAdvancePayment(TransactionCase):
     # ------------------------------------------------------------------ #
 
     def test_employee_without_user_can_draft_but_not_submit(self):
-        employee = self.env["hr.employee"].create({"name": "No User Employee"})
+        employee = self.env["hr.employee"].create(
+            {
+                "name": "No User Employee",
+                # Give it a real manager so this test only exercises submit
+                # permission, not the separate missing-manager exception
+                # (ADR-0020, tested on its own below).
+                "parent_id": self.emp[self.officer.id].id,
+            }
+        )
         ap = self.env["advance.payment"].create(
             {
                 "employee_id": employee.id,
@@ -945,7 +1378,7 @@ class TestAdvancePayment(TransactionCase):
         with self.assertRaises(UserError):
             ap.with_user(self.staff).action_submit()
         ap.with_user(self.manager).action_submit()
-        self.assertEqual(ap.state, "to_verify")
+        self.assertEqual(ap.state, "to_endorse")
 
     # ------------------------------------------------------------------ #
     # Own-only rule ORs in the drafter (ADR-0014)                          #
