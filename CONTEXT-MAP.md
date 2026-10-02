@@ -89,6 +89,12 @@ upfront.
   **booking side** split, the finance office's own `finance_state`, and the instrument
   that carries the money — the **ไฟล์ e-Payment** one bank is sent, or the **เช็ค** one
   payee collects. Ends at the **Hand-over**.
+- [Account Payment — WHT Counterpart Leg](./account_payment_wht_counterpart_kmitl/CONTEXT.md)
+  — optional add-on giving each withholding-tax line on a payment voucher its own debit
+  on the payable (**ขาเจ้าหนี้คู่ภาษี**), so the entry says on its own that the payable
+  was cleared by the amount paid _and_ the amount withheld, instead of one lump debit
+  that has to be read against the tax line. Owns no document and no state;
+  `finance_kmitl` is unchanged with it uninstalled.
 - [KMITL Finance Reports](./finance_kmitl_reports/CONTEXT.md) — the กองคลัง's reports on
   money in both directions. Out: **รายงานการจ่ายเงิน**, one row per voucher paid, on the
   day the money left rather than the day it was authorised, and
