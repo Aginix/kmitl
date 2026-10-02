@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_purchase_request_approval_own_viewer,purchase.request.approval.own.viewer,purchase_request_approval.model_purchase_request_approval,group_purchase_request_approval_own_viewer,1,0,0,0
-access_purchase_request_approval_line_own_viewer,purchase.request.approval.line.own.viewer,purchase_request_approval.model_purchase_request_approval_line,group_purchase_request_approval_own_viewer,1,0,0,0
