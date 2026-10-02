@@ -196,7 +196,7 @@
         </table>
 
         <!-- Participants -->
-        <t t-if="o.participant_ids">
+        <t t-if="o.participant_ids or o.external_participant_count">
             <div class="row my-2">
                 <div class="col fw-bolder">รายชื่อผู้เกี่ยวข้อง</div>
             </div>
@@ -218,6 +218,11 @@
                         </tr>
                         <t t-set="p_no" t-value="p_no + 1" />
                     </t>
+                    <tr t-if="o.external_participant_count">
+                        <td class="text-center" t-out="p_no" />
+                        <td>บุคคลภายนอก <t t-out="o.external_participant_count" /> คน</td>
+                        <td t-out="o.external_participant_note" />
+                    </tr>
                 </tbody>
             </table>
         </t>

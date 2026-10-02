@@ -27,8 +27,12 @@ On a multi-product request, the จำนวนเงิน the requester declar
 _Avoid_: budget limit, reserved amount (that is the ใบจองงบประมาณ's)
 
 **Participant (รายชื่อ)**:
-A person involved in the activity — traveller, attendee, or related person — listed on the plan (person + note, no bank, no amount). The roster from which recipients are later chosen: to pay someone they must first appear here.
+A person listed by name on the plan — either บุคลากรภายใน (internal staff) or นักศึกษา (a student contact) — with a note, no bank, no amount. External people are not Participants (see External Attendees).
 _Avoid_: payee, recipient (ผู้รับเงิน)
+
+**External Attendees (บุคคลภายนอก)**:
+A headcount plus a free-text description on the plan — speakers, company representatives and the like. They are not Participants: no contact is needed to plan for them.
+_Avoid_: external participant, external roster
 
 **Borrowing Participant (ผู้ยืมในคำขอ)**:
 A Participant who drew a สัญญายืม against this request rather than fronting the cost. Borrowing is **per person and discretionary** — each participant decides for themselves once the request is approved and *before* the money is spent — and the amount is the borrower's own declaration, since the plan apportions nothing per person. A request may have none, one borrowing on the group's behalf, several borrowing their own, or any mix with people who front the cost instead.
@@ -39,11 +43,11 @@ The request's approved amount (reserved budget, else the plan total) minus every
 _Avoid_: remaining budget, credit limit, per-person cap
 
 **Actual Expense Allocation (ค่าใช้จ่ายจริง / จัดสรรรายคน)**:
-The after-mission breakdown recorded on the request: rows of (**recipient**, expense product, **actual** amount, **payment type**, bank). Grouped by recipient it *is* the งบหน้าใบสำคัญคู่จ่าย view; recipients are drawn from the participants. A `direct`/`prepaid` row bills into a disbursement line; an `advance` row is excluded from the disbursement and instead **names the Funding Loan** it was paid out of (see Payment type). The allocation is the *itemisation* of what happened; it never clears a loan by itself.
+The after-mission breakdown recorded on the request: rows of (**recipient**, expense product, **actual** amount, **payment type**, bank). Grouped by recipient it *is* the งบหน้าใบสำคัญคู่จ่าย view; recipients are any contact (usually a participant). A `direct`/`prepaid` row bills into a disbursement line; an `advance` row is excluded from the disbursement and instead **names the Funding Loan** it was paid out of (see Payment type). The allocation is the *itemisation* of what happened; it never clears a loan by itself.
 _Avoid_: expense plan (that is the pre-spend estimate), payee sync, loan clearing
 
 **Recipient (ผู้รับเงิน)**:
-A participant who actually receives money — known only after the mission, named on an Actual Expense Allocation row with their bank. A single request may pay **several** recipients.
+Anyone who actually receives money — known only after the mission, named on an Actual Expense Allocation row with their bank; any contact, not necessarily a Participant. A direct-pay external payee gets a contact only at this actual stage. A single request may pay **several** recipients.
 _Avoid_: participant, payee-per-plan-line
 
 **Payment type (ประเภทการจ่ายเงิน)**:

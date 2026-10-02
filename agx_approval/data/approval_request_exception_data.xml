@@ -23,7 +23,7 @@ if not self.line_ids:
             <field name="model">approval.request</field>
             <field name="exception_type">by_py_code</field>
             <field name="code">
-if not self.participant_ids:
+if not self.participant_ids and not self.external_participant_count:
     failed = True
             </field>
             <field name="is_blocking" eval="True"/>

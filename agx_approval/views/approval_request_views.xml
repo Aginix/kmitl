@@ -237,22 +237,27 @@
                                         <field name="description" />
                                     </tree>
                                 </field>
-                                <separator string="รายชื่อบุคคลภายนอก" />
-                                <field name="external_participant_ids" nolabel="1"
+                                <separator string="รายชื่อนักศึกษา" />
+                                <field name="student_participant_ids" nolabel="1"
                                     colspan="2"
-                                    context="{'default_participant_type': 'external'}"
+                                    context="{'default_participant_type': 'student'}"
                                     attrs="{'readonly': [('is_plan_editable', '=', False)]}">
                                     <tree editable="bottom">
                                         <field name="allowed_partner_type_ids" invisible="1" />
                                         <field name="participant_type" invisible="1" />
                                         <field name="sequence" widget="handle" />
                                         <field name="partner_id" />
-                                        <field name="partner_type_id" optional="show" />
                                         <field name="vat" optional="show" />
                                         <field name="phone" optional="show" />
                                         <field name="description" />
                                     </tree>
                                 </field>
+                            </group>
+                            <group string="บุคคลภายนอก">
+                                <field name="external_participant_count"
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
+                                <field name="external_participant_note"
+                                    attrs="{'readonly': [('is_plan_editable', '=', False)]}" />
                             </group>
                         </page>
                         <page string="Actual Expenses (Disbursement)" name="actual_expenses">
