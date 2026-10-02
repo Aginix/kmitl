@@ -4,8 +4,8 @@ from odoo import api, fields, models
 class ApprovalRequestParticipant(models.Model):
     """รายชื่อ — people involved in the activity (travellers, attendees,
     related persons). A roster captured on the plan; it carries no bank and
-    no amount. Recipients for the actual disbursement are later chosen from
-    this roster (see approval.request.allocation)."""
+    no amount. Not a payee list — finance names the recipients on the
+    ใบขอเบิก (ADR-0009)."""
 
     _name = "approval.request.participant"
     _description = "Approval Request Participant"
