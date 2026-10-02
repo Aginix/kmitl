@@ -188,7 +188,7 @@
                             class="d-inline fw-bold"
                         />
                     </div>
-                    <div class="oe_title">
+                    <div class="oe_title" name="approval_title">
                         <h1 class="d-flex">
                             <field name="name" readonly="1"/>
                         </h1>
