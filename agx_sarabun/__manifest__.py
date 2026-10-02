@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 {
     "name": "e-Sarabun",
     "summary": "Electronic Correspondence Management System (สารบรรณอิเล็กทรอนิกส์)",
-    "version": "16.0.6.0.0",
+    "version": "16.0.6.1.0",
     "category": "KMITL/Correspondence",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

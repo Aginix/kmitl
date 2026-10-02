@@ -1,3 +1,5 @@
+from markupsafe import Markup
+
 from odoo import _, models
 
 
@@ -31,6 +33,7 @@ class SarabunDocument(models.Model):
             return
         self.activity_schedule(
             act_type_xmlid=xmlid,
-            summary=_("หนังสือดำเนินการเสร็จสิ้นแล้ว"),
+            summary=self._activity_subject() or _("หนังสือดำเนินการเสร็จสิ้นแล้ว"),
+            note=Markup("<p>%s</p>") % _("หนังสือดำเนินการเสร็จสิ้นแล้ว"),
             user_id=creator.id,
         )

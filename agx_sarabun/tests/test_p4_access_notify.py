@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """P4 — access record-rules + mail.activity notifications."""
+
 from unittest.mock import patch
 
 from odoo.exceptions import AccessError
@@ -44,8 +44,13 @@ class TestP4Access(SarabunCommon):
         activation, so a Position/Unit target resolves to readable users.
         """
         doc = self._make_doc(sender=self.user_a)
-        self._add_step(doc, order=10, verb="sign_approve", target_mode="position",
-                       position=self.pos)  # holder = user_a
+        self._add_step(
+            doc,
+            order=10,
+            verb="sign_approve",
+            target_mode="position",
+            position=self.pos,
+        )  # holder = user_a
         doc.action_send()
         self.assertTrue(self._can_read(doc, self.user_a))
 
@@ -56,17 +61,24 @@ class TestP4Access(SarabunCommon):
 
     # ----------------------------------------------------------- notifications
     def _activities(self, doc, user):
-        return self.env["mail.activity"].search([
-            ("res_model", "=", "sarabun.document"),
-            ("res_id", "=", doc.id),
-            ("user_id", "=", user.id),
-        ])
+        return self.env["mail.activity"].search(
+            [
+                ("res_model", "=", "sarabun.document"),
+                ("res_id", "=", doc.id),
+                ("user_id", "=", user.id),
+            ]
+        )
 
     def test_activity_per_holder_and_first_to_act_autoclear(self):
         """Each holder of an active gating step gets an activity; first-to-act clears the rest."""
         doc = self._make_doc()
-        self._add_step(doc, order=10, verb="sign_approve", target_mode="position",
-                       position=self.pos_multi)  # holders a + b
+        self._add_step(
+            doc,
+            order=10,
+            verb="sign_approve",
+            target_mode="position",
+            position=self.pos_multi,
+        )  # holders a + b
         self._add_step(doc, order=20, verb="sign_approve", user=self.user_a)
         doc.action_send()
         self.assertTrue(self._activities(doc, self.user_a))
@@ -77,6 +89,17 @@ class TestP4Access(SarabunCommon):
         # the other holder's pending activity is auto-cleared
         self.assertFalse(self._activities(doc, self.user_b))
 
+    def test_activity_summary_is_subject_and_note_contains_verb_sender(self):
+        """Scheduled activity summary = collapsed เรื่อง; note contains verb + sender."""
+        doc = self._make_doc(subject="  ทดสอบ\nเรื่อง  ", sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.action_send()
+        act = self._activities(doc, self.user_b)
+        self.assertTrue(act)
+        self.assertEqual(act.summary, "ทดสอบ เรื่อง")
+        self.assertIn(self._verb("sign_approve").name, act.note or "")
+        self.assertIn(self.user_a.name, act.note or "")
+
     def test_acknowledge_step_schedules_ack_activity(self):
         """Every active step now raises an activity (ADR-0014) — gating AND a pure
         รับทราบ / CC alike — picking the type by discriminator (gating OR
@@ -86,15 +109,16 @@ class TestP4Access(SarabunCommon):
         ack_type = self.env.ref("agx_sarabun.mail_activity_sarabun_ack")
         doc = self._make_doc()
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)  # gating
-        self._add_step(doc, order=10, verb="acknowledge", target_mode="person",
-                       user=self.user_b)  # non-gating รับทราบ
+        self._add_step(
+            doc, order=10, verb="acknowledge", target_mode="person", user=self.user_b
+        )  # non-gating รับทราบ
         doc.action_send()
         acts_a = self._activities(doc, self.user_a)
         acts_b = self._activities(doc, self.user_b)
         self.assertTrue(acts_a)
         self.assertTrue(acts_b, "รับทราบ now raises an activity too (ADR-0014)")
         self.assertEqual(acts_a.activity_type_id, action_type)  # gating → execution
-        self.assertEqual(acts_b.activity_type_id, ack_type)     # รับทราบ → acknowledgement
+        self.assertEqual(acts_b.activity_type_id, ack_type)  # รับทราบ → acknowledgement
 
     def test_acknowledge_sign_step_schedules_execution_activity(self):
         """รับทราบและลงนาม is non-gating yet SIGNS the letter (show_signature), so its
@@ -103,8 +127,13 @@ class TestP4Access(SarabunCommon):
         action_type = self.env.ref("agx_sarabun.mail_activity_sarabun_action")
         doc = self._make_doc()
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)  # gating
-        self._add_step(doc, order=10, verb="acknowledge_sign", target_mode="person",
-                       user=self.user_b)  # non-gating but show_signature
+        self._add_step(
+            doc,
+            order=10,
+            verb="acknowledge_sign",
+            target_mode="person",
+            user=self.user_b,
+        )  # non-gating but show_signature
         doc.action_send()
         acts_b = self._activities(doc, self.user_b)
         self.assertTrue(acts_b)
@@ -143,8 +172,9 @@ class TestP4Access(SarabunCommon):
         (which visibility now keys on) persists."""
         doc = self._make_doc()
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)  # gating
-        self._add_step(doc, order=10, verb="acknowledge", target_mode="person",
-                       user=self.user_b)  # non-gating; reached, will not act
+        self._add_step(
+            doc, order=10, verb="acknowledge", target_mode="person", user=self.user_b
+        )  # non-gating; reached, will not act
         doc.action_send()
         self.assertTrue(self._can_read(doc, self.user_b))  # reached
         step_a = doc.routing_step_ids.filtered(
@@ -213,12 +243,13 @@ class TestP4Access(SarabunCommon):
         holder becomes readable — the send path is no longer masked by an admin env."""
         doc = self._make_doc(sender=self.user_a)
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)  # gating
-        self._add_step(doc, order=10, verb="acknowledge", target_mode="person",
-                       user=self.user_a)  # a รับทราบ CC too
+        self._add_step(
+            doc, order=10, verb="acknowledge", target_mode="person", user=self.user_a
+        )  # a รับทราบ CC too
         doc.with_user(self.user_a).action_send()
         self.assertEqual(doc.state, "circulating")
-        self.assertTrue(self._activities(doc, self.user_b))   # execution
-        self.assertTrue(self._activities(doc, self.user_a))   # acknowledgement
+        self.assertTrue(self._activities(doc, self.user_b))  # execution
+        self.assertTrue(self._activities(doc, self.user_a))  # acknowledgement
         self.assertTrue(self._can_read(doc, self.user_b))
 
     def test_direct_by_actor_schedules_next_holder_activity(self):
@@ -229,8 +260,13 @@ class TestP4Access(SarabunCommon):
         doc.with_user(self.user_a).action_send()
         step = self._active_step(doc)
         step.with_user(self.user_b).act_on_step(
-            "direct", {"note": "ส่งต่อ", "verb": self._verb("acknowledge").id,
-                       "target_mode": "person", "employee_id": self.emp_a.id},
+            "direct",
+            {
+                "note": "ส่งต่อ",
+                "verb": self._verb("acknowledge").id,
+                "target_mode": "person",
+                "employee_id": self.emp_a.id,
+            },
             actor=self.user_b,
         )
         # user_a is the new holder of the inserted step → has an activity + can read
@@ -246,7 +282,8 @@ class TestP4Access(SarabunCommon):
         step = self._active_step(doc)
         self.assertTrue(self._activities(doc, self.user_b))
         step.with_user(self.user_b).act_on_step(
-            "delegate", {"target_mode": "person", "employee_id": self.emp_a.id},
+            "delegate",
+            {"target_mode": "person", "employee_id": self.emp_a.id},
             actor=self.user_b,
         )
         self.assertFalse(self._activities(doc, self.user_b), "original to-do cleared")
@@ -260,15 +297,17 @@ class TestP4Access(SarabunCommon):
         """ตีกลับ (Return) archives the chain; the returner (and a reached CC) keep read."""
         doc = self._make_doc(sender=self.user_a)
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)  # gating
-        self._add_step(doc, order=10, verb="acknowledge", target_mode="person",
-                       user=self.manager)  # reached CC, will not act
+        self._add_step(
+            doc, order=10, verb="acknowledge", target_mode="person", user=self.manager
+        )  # reached CC, will not act
         doc.with_user(self.user_a).action_send()
         self.assertTrue(self._can_read(doc, self.user_b))
         step = doc.routing_step_ids.filtered(
             lambda s: s.verb == self._verb("sign_approve") and s.state == "active"
         )
         step.with_user(self.user_b).act_on_step(
-            "return", {"note": "แก้ไข", "destination": "sender_restart"},
+            "return",
+            {"note": "แก้ไข", "destination": "sender_restart"},
             actor=self.user_b,
         )
         self.assertEqual(doc.state, "returned")
