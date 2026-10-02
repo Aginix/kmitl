@@ -236,7 +236,7 @@
         <div class="my-4" />
         <p style="text-indent: 6em"> 1.1 ตาม อนุมัติให้จัดซื้อ <span
                 t-field="o.product_id.name"
-            /> จำนวน 1 รายการ เป็นเงิน <span
+            /> จำนวน <t t-out="len(o.line_ids)"/> รายการ เป็นเงิน <span
                 t-out="'{0:,.2f}'.format(o.estimated_cost)"
             /> บาท (<t
                 t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.estimated_cost)"
