@@ -1,0 +1,152 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_invoice_plan_subinstallment_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-22 00:00+0000\n"
+"PO-Revision-Date: 2026-06-22 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model:ir.model,name:purchase_invoice_plan_subinstallment_kmitl.model_add_sub_installment_wizard
+msgid "Add Sub-Installments under a Parent Installment"
+msgstr "เพิ่มงวดย่อยภายใต้งวดหลัก"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model:ir.model.fields,field_description:purchase_invoice_plan_subinstallment_kmitl.field_purchase_invoice_plan__child_ids
+msgid "Sub-Installments"
+msgstr "งวดย่อย"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model:ir.model.fields,field_description:purchase_invoice_plan_subinstallment_kmitl.field_purchase_invoice_plan__parent_id
+#: model:ir.model.fields,field_description:purchase_invoice_plan_subinstallment_kmitl.field_add_sub_installment_wizard__parent_id
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan_subinstallment_kmitl.view_add_sub_installment_wizard_form
+msgid "Parent Installment"
+msgstr "งวดหลัก"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model:ir.model.fields,field_description:purchase_invoice_plan_subinstallment_kmitl.field_purchase_invoice_plan__sub_installment
+msgid "Sub Installment"
+msgstr "งวดย่อย"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model:ir.model.fields,help:purchase_invoice_plan_subinstallment_kmitl.field_purchase_invoice_plan__sub_installment
+msgid "0 for root installment; >=1 for the sequence of a sub-installment."
+msgstr "0 สำหรับงวดหลัก >=1 สำหรับลำดับของงวดย่อย"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model:ir.model.fields,field_description:purchase_invoice_plan_subinstallment_kmitl.field_purchase_invoice_plan__installment_display
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan_subinstallment_kmitl.view_purchase_invoice_plan_tree_sub
+msgid "Installment"
+msgstr "งวดที่"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model:ir.model.fields,field_description:purchase_invoice_plan_subinstallment_kmitl.field_add_sub_installment_wizard__num_sub
+msgid "Number of Sub-Installments"
+msgstr "จำนวนงวดย่อย"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model:ir.model.fields,field_description:purchase_invoice_plan_subinstallment_kmitl.field_add_sub_installment_wizard__plan_date
+msgid "Initial Plan Date"
+msgstr "วันที่กำหนดเริ่มต้น"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model:ir.model.fields,help:purchase_invoice_plan_subinstallment_kmitl.field_add_sub_installment_wizard__plan_date
+msgid "Plan date applied to every sub-installment. Edit per row afterwards."
+msgstr "วันที่กำหนดที่ใช้กับทุกงวดย่อย แก้ไขรายงวดได้ภายหลัง"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model:ir.model.fields,field_description:purchase_invoice_plan_subinstallment_kmitl.field_add_sub_installment_wizard__split_evenly
+msgid "Split Evenly"
+msgstr "แบ่งเท่ากัน"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model:ir.model.fields,help:purchase_invoice_plan_subinstallment_kmitl.field_add_sub_installment_wizard__split_evenly
+msgid "Split parent's amount/percent evenly across sub-installments. Last sub takes the rounding remainder so the total matches the parent."
+msgstr "แบ่งจำนวนเงิน/ร้อยละของงวดหลักเท่าๆ กัน งวดย่อยสุดท้ายจะรับส่วนที่เหลือจากการปัดเศษ"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: code:addons/purchase_invoice_plan_subinstallment_kmitl/models/purchase_invoice_plan.py:0
+#, python-format
+msgid "Sub-installments cannot be nested further."
+msgstr "ไม่สามารถซ้อนงวดย่อยลึกกว่านี้ได้"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: code:addons/purchase_invoice_plan_subinstallment_kmitl/models/purchase_invoice_plan.py:0
+#, python-format
+msgid "Sub-installments under installment %(parent)s sum to %(children)s%% which exceeds the parent's %(parent_percent)s%%."
+msgstr "งวดย่อยภายใต้งวดที่ %(parent)s รวมเป็น %(children)s%% ซึ่งเกินกว่าร้อยละ %(parent_percent)s%% ของงวดหลัก"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: code:addons/purchase_invoice_plan_subinstallment_kmitl/models/purchase_invoice_plan.py:0
+#: code:addons/purchase_invoice_plan_subinstallment_kmitl/wizard/add_sub_installment_wizard.py:0
+#, python-format
+msgid "A sub-installment cannot be split further."
+msgstr "งวดย่อยไม่สามารถแบ่งซอยเพิ่มได้"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: code:addons/purchase_invoice_plan_subinstallment_kmitl/models/purchase_invoice_plan.py:0
+#: code:addons/purchase_invoice_plan_subinstallment_kmitl/wizard/add_sub_installment_wizard.py:0
+#, python-format
+msgid "Installment %s is already locked (Work Acceptance or invoice exists) and cannot be split."
+msgstr "งวดที่ %s ถูกล็อกแล้ว (มีการตรวจรับงานหรือใบแจ้งหนี้) ไม่สามารถแบ่งงวดย่อยได้"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: code:addons/purchase_invoice_plan_subinstallment_kmitl/models/purchase_invoice_plan.py:0
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan_subinstallment_kmitl.view_add_sub_installment_wizard_form
+#, python-format
+msgid "Split into Sub-Installments"
+msgstr "แบ่งงวดย่อย"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: code:addons/purchase_invoice_plan_subinstallment_kmitl/models/purchase_order.py:0
+#, python-format
+msgid "Invoice plan total percentage must not exceed 100%"
+msgstr "ร้อยละของงวดงานทั้งหมดต้องไม่เกิน 100%"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: code:addons/purchase_invoice_plan_subinstallment_kmitl/wizard/add_sub_installment_wizard.py:0
+#, python-format
+msgid "Installment %s already has sub-installments. Delete them first to re-split."
+msgstr "งวดที่ %s มีงวดย่อยอยู่แล้ว กรุณาลบก่อนเพื่อแบ่งใหม่"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: code:addons/purchase_invoice_plan_subinstallment_kmitl/wizard/add_sub_installment_wizard.py:0
+#, python-format
+msgid "Please choose at least 2 sub-installments."
+msgstr "กรุณาเลือกอย่างน้อย 2 งวดย่อย"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: code:addons/purchase_invoice_plan_subinstallment_kmitl/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid "Installment Warning:"
+msgstr "คำเตือนงวดงาน:"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: code:addons/purchase_invoice_plan_subinstallment_kmitl/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid "The 1st installment is %(min_install)s but you are choosing %(cur_install)s"
+msgstr "งวดแรกที่ต้องดำเนินการคืองวดที่ %(min_install)s แต่คุณกำลังเลือกงวดที่ %(cur_install)s"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan_subinstallment_kmitl.view_add_sub_installment_wizard_form
+msgid "New Sub-Installments"
+msgstr "งวดย่อยใหม่"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan_subinstallment_kmitl.view_add_sub_installment_wizard_form
+msgid "Create"
+msgstr "สร้าง"
+
+#. module: purchase_invoice_plan_subinstallment_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan_subinstallment_kmitl.view_add_sub_installment_wizard_form
+msgid "Cancel"
+msgstr "ยกเลิก"
