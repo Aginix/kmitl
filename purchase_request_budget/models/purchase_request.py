@@ -36,6 +36,20 @@ class PurchaseRequest(models.Model):
             "— การยกเลิกใบจองไม่ล้างค่า budget_commitment_id จึงต้องดูสถานะประกอบ"
         ),
     )
+    budget_committed_by = fields.Many2one(
+        comodel_name="res.users",
+        string="ผู้จองงบประมาณ",
+        index=True,
+        copy=False,
+        tracking=True,
+        readonly=True,
+        help="ผู้กดจองงบประมาณ (หรือหยิบใบจอง) ที่ส่งคำขอไปขั้นถัดไปครั้งล่าสุด",
+    )
+    date_budget_committed = fields.Date(
+        string="วันที่จองงบประมาณ",
+        copy=False,
+        readonly=True,
+    )
     budget_selection_mode = fields.Selection(
         selection=[
             ("normal", "จองงบใหม่จากผังงบประมาณ"),
@@ -357,8 +371,21 @@ class PurchaseRequest(models.Model):
         self._check_can_verify()
         self._check_can_commit_budget()
         to_budget = self.filtered(lambda r: r.state == "to_verify")
+        to_budget._mark_verified()
         to_budget.write({"state": "to_verify_budget"})
-        return super(PurchaseRequest, self - to_budget).button_to_approve()
+        # Every reserve path (new, already-reserved, draw-down, project/plan
+        # bridges) advances through here from to_verify_budget, so the
+        # committer is stamped once, for all of them.
+        rest = self - to_budget
+        committing = rest.filtered(lambda r: r.state == "to_verify_budget")
+        res = super(PurchaseRequest, rest).button_to_approve()
+        committing.filtered(lambda r: r.state != "to_verify_budget").write(
+            {
+                "budget_committed_by": self.env.user.id,
+                "date_budget_committed": fields.Date.context_today(self),
+            }
+        )
+        return res
 
     def _check_can_commit_budget(self):
         self._check_step_group(
@@ -380,7 +407,34 @@ class PurchaseRequest(models.Model):
             "reason": reason,
         }
         self.message_post(body=body, subtype_xmlid="mail.mt_note")
-        self.write({"state": "to_verify"})
+        self.write(self._back_to_verify_vals())
+
+    def _back_to_verify_vals(self):
+        # Back at to_verify the verification is void until ตรวจสอบ is pressed again.
+        return {"state": "to_verify", "verified_by": False, "date_verified": False}
+
+    def action_recall_to_verify(self):
+        """ดึงกลับ ถอยทีละขั้น (root ADR-0010): ผู้ตรวจสอบดึงเรื่องที่กดตรวจสอบไปแล้ว
+        จาก ``to_verify_budget`` กลับมาแก้ที่ ``to_verify`` ได้ ตราบที่ยังไม่ได้จองงบ —
+        จองแล้วต้องให้ผู้จองงบประมาณตีกลับ เพื่อไม่ให้ผู้ตรวจสอบแตะเงินที่ล็อกไว้."""
+        self._check_step_group(
+            "to_verify_budget",
+            "purchase_request_kmitl.group_purchase_request_verify",
+            _("เฉพาะผู้ตรวจสอบใบขอให้จัดหา (พ.1) เท่านั้นที่ดึงกลับได้"),
+        )
+        for rec in self:
+            if rec.state != "to_verify_budget":
+                raise UserError(_("ดึงกลับได้เฉพาะคำขอที่รอจองงบประมาณ"))
+            if rec.budget_commitment_id.state not in (False, "cancel", "draft"):
+                raise UserError(
+                    _("คำขอ %s จองงบประมาณแล้ว ดึงกลับไม่ได้ — ให้ผู้จองงบประมาณตีกลับแทน")
+                    % rec.name
+                )
+            rec.message_post(
+                body=_("ดึงกลับคำขอ (พ.1) %s มาตรวจสอบใหม่") % rec.name,
+                subtype_xmlid="mail.mt_note",
+            )
+        self.write(self._back_to_verify_vals())
 
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
@@ -634,8 +688,7 @@ class PurchaseRequest(models.Model):
                             body=_("Warning: Could not cancel budget commitment: %s")
                             % str(e)
                         )
-                record.write({"verified_by": "", "date_verified": False})
-
+        self.write({"budget_committed_by": False, "date_budget_committed": False})
         return super().button_draft()
 
     def _release_commitment_on_draft(self):

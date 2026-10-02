@@ -233,9 +233,27 @@ class PurchaseRequest(models.Model):
             _("เฉพาะผู้ตรวจสอบใบขอให้จัดหา (พ.1) เท่านั้นที่ดำเนินการขั้นนี้ได้"),
         )
 
+    def _mark_verified(self):
+        """Stamp who pressed ตรวจสอบ, and when (ADR-0010)."""
+        self.write(
+            {
+                "verified_by": self.env.user.id,
+                "date_verified": fields.Date.context_today(self),
+            }
+        )
+
     def button_to_approve(self):
         self._check_can_verify()
-        return super().button_to_approve()
+        to_verify = self.filtered(lambda r: r.state == "to_verify")
+        res = super().button_to_approve()
+        # Only those that actually advanced: an exception popup returns
+        # without moving the state.
+        to_verify.filtered(lambda r: r.state != "to_verify")._mark_verified()
+        return res
+
+    def button_draft(self):
+        self.write({"verified_by": False, "date_verified": False})
+        return super().button_draft()
 
     @api.depends("state", "requested_by")
     def _compute_can_reset_to_draft(self):

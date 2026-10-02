@@ -49,7 +49,8 @@ different role), Purchase Representative.
 
 **ผู้ตรวจสอบ พ.1 (Verifier)**: The ธุรการ who checks a submitted PR at `to_verify`. They
 enter its รหัสงบประมาณ and dimensions, and either press ตรวจสอบ to pass it to the budget
-step or ตีกลับ it to `draft`. They do not reserve money. See
+step or ตีกลับ it to `draft`. After ตรวจสอบ they may ดึงกลับ it from `to_verify_budget`
+to fix a mistake, as long as nothing is reserved yet. They do not reserve money. See
 [ADR-0010](docs/adr/0010-pr-split-verify-and-budget-commit-direct-entry.md). _Avoid_:
 ผู้อนุมัติ (that is the หัวหน้าส่วนงาน signing through Sarabun); Assigned Officer.
 

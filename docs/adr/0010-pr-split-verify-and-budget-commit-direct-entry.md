@@ -53,6 +53,21 @@ practice the two steps were not two duties:
     untouched;
   - `to_verify → draft` by the verifier.
   - This replaces the old Return, which sent both steps straight to draft.
+- **ดึงกลับ pulls the document back to the presser's own step:**
+  - the verifier pulls `to_verify_budget → to_verify` to correct what they verified, but
+    only while nothing is reserved (no live commitment); once reserved, the budget
+    committer must ตีกลับ instead, so the verifier never touches locked money;
+  - the requester's ดึงกลับ (Reset) still goes to `draft`, their own step.
+- **Who did each step is stored on the พ.1, not only in the chatter:**
+  - ตรวจสอบ stamps the existing `verified_by` / `date_verified`, which nothing wrote
+    before;
+  - the press that leaves `to_verify_budget` for `to_approve` stamps the new
+    `budget_committed_by` / `date_budget_committed`. Every reserve path (new,
+    already-reserved, draw-down, project and plan bridges) goes through
+    `button_to_approve`, so one place covers them all;
+  - stepping back past a step clears its stamp: back to `to_verify` (ตีกลับ or ดึงกลับ)
+    clears the verifier's, and back to `draft` clears both. The values on the form are
+    therefore always those of the latest pass.
 - **Reserve runs under `sudo()` after the group check.**
   `budget.group_budget_commitment` carries no ACL on `budget.commitment`, so the
   reserve-new path would otherwise demand Budget User, which opens the whole budget app.
