@@ -94,7 +94,11 @@
                     </h1>
                     <group>
                         <field name="is_editable" invisible="1" />
-                        <field name="date" invisible="1" />
+                        <field
+                            name="date"
+                            string="Registration Date"
+                            attrs="{'readonly': [('is_editable', '=', False)]}"
+                        />
                         <field
                             name="source_of_asset"
                             required="1"
