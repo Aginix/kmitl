@@ -230,7 +230,7 @@ class PurchaseRequest(models.Model):
         self._check_step_group(
             "to_verify",
             "purchase_request_kmitl.group_purchase_request_verify",
-            _("เฉพาะผู้ตรวจสอบใบขอให้จัดหา (พ.1) เท่านั้นที่ดำเนินการขั้นนี้ได้"),
+            _("เฉพาะผู้ตรวจสอบแบบขอให้จัดหา (พ.1) เท่านั้นที่ดำเนินการขั้นนี้ได้"),
         )
 
     def _mark_verified(self):

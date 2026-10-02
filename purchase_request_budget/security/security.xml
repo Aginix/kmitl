@@ -5,7 +5,7 @@
          people's requests, still OU-scoped) and budget.group_budget_commitment;
          the generic role จองงบประมาณ alone no longer reserves a พ.1. -->
     <record id="group_purchase_request_budget_commit" model="res.groups">
-        <field name="name">ผู้จองงบประมาณใบขอให้จัดหา (พ.1)</field>
+        <field name="name">สามารถยืนยัน/จองงบประมาณแบบขอให้จัดหา (พ.1) ได้</field>
         <field
             name="implied_ids"
             eval="[

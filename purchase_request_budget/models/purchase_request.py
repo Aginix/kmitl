@@ -391,7 +391,7 @@ class PurchaseRequest(models.Model):
         self._check_step_group(
             "to_verify_budget",
             "purchase_request_budget.group_purchase_request_budget_commit",
-            _("เฉพาะผู้จองงบประมาณใบขอให้จัดหา (พ.1) เท่านั้นที่ดำเนินการขั้นนี้ได้"),
+            _("เฉพาะผู้ที่มีสิทธิ์จองงบประมาณแบบขอให้จัดหา (พ.1) เท่านั้นที่ดำเนินการขั้นนี้ได้"),
         )
 
     def _action_do_return_to_draft(self, reason):
@@ -420,7 +420,7 @@ class PurchaseRequest(models.Model):
         self._check_step_group(
             "to_verify_budget",
             "purchase_request_kmitl.group_purchase_request_verify",
-            _("เฉพาะผู้ตรวจสอบใบขอให้จัดหา (พ.1) เท่านั้นที่ดึงกลับได้"),
+            _("เฉพาะผู้ตรวจสอบแบบขอให้จัดหา (พ.1) เท่านั้นที่ดึงกลับได้"),
         )
         for rec in self:
             if rec.state != "to_verify_budget":
