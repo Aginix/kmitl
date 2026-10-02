@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!--
+        Contact-Administrator landing page.
+        Used only as a user's Home Action (res.users.action_id) - intentionally
+        NOT attached to any menuitem, so it never appears in the app drawer.
+    -->
+    <record id="action_contact_admin" model="ir.actions.client">
+        <field name="name">ติดต่อผู้ดูแลระบบ</field>
+        <field name="tag">contact_admin</field>
+        <field name="target">main</field>
+    </record>
+
+</odoo>
