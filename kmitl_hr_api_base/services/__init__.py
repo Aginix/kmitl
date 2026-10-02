@@ -1,0 +1,2 @@
+from . import api_base_hr_employee_service_kmitl
+from . import api_base_hr_education_history_service_kmitl
