@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <record id="mail_activity_pr_returned_edit" model="mail.activity.type">
+        <field name="name">กลับมาแก้ไข: แก้ไขและส่งหนังสือใหม่ (พ.1)</field>
+        <field name="summary">พ.1 ถูกตีกลับจากสารบรรณ กรุณาแก้ไขและส่งหนังสือใหม่</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">purchase.request</field>
+        <field name="icon">fa-reply</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <record id="mail_activity_pr_approved_fyi" model="mail.activity.type">
+        <field name="name">คำขอ พ.1 ได้รับอนุมัติแล้ว</field>
+        <field name="summary">คำขอ พ.1 ของท่านได้รับอนุมัติแล้ว</field>
+        <field name="todo_category">acknowledgement</field>
+        <field name="res_model">purchase.request</field>
+        <field name="icon">fa-check-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <record id="mail_activity_pr_rejected_fyi" model="mail.activity.type">
+        <field name="name">คำขอ พ.1 ถูกปฏิเสธ</field>
+        <field name="summary">คำขอ พ.1 ของท่านถูกปฏิเสธ</field>
+        <field name="todo_category">acknowledgement</field>
+        <field name="res_model">purchase.request</field>
+        <field name="icon">fa-times-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>
