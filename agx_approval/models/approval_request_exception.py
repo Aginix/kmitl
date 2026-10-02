@@ -63,6 +63,18 @@ class ApprovalRequest(models.Model):
             > 0
         )
 
+    def _exception_plan_amount_mismatch(self):
+        """True when a multi-product request's lines do not add up to its
+        จำนวนเงิน (``plan_amount``) — the ceiling the requester declared up
+        front. Single-product requests mirror plan_amount onto their one line,
+        so they can never mismatch."""
+        self.ensure_one()
+        if not self.multi_product:
+            return False
+        return bool(
+            self.currency_id.compare_amounts(self.total_amount, self.plan_amount)
+        )
+
     @api.model
     def _get_popup_action(self):
         return self.env.ref(
