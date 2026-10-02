@@ -1,11 +1,15 @@
-# -*- coding: utf-8 -*-
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 
 class PurchaseRequest(models.Model):
-    _name = 'purchase.request'
-    _inherit = ["purchase.request", "sarabun.document.mixin", "portal.mixin", 'thai.date.mixin']
+    _name = "purchase.request"
+    _inherit = [
+        "purchase.request",
+        "sarabun.document.mixin",
+        "portal.mixin",
+        "thai.date.mixin",
+    ]
 
     state = fields.Selection(
         # หมุดท้ายต้องเป็น approved ไม่ใช่ in_progress: approved ของ OCA คั่นอยู่
@@ -24,21 +28,24 @@ class PurchaseRequest(models.Model):
 
     def _get_report_base_filename(self):
         self.ensure_one()
-        return 'Purchase Request-%s' % (self.name)
+        return "Purchase Request-%s" % (self.name)
 
     def open_preview(self):
         if self.id:
             return {
-                'type': 'ir.actions.act_url',
-                'url': self.access_url,
-                'target': 'new',
+                "type": "ir.actions.act_url",
+                "url": self.access_url,
+                "target": "new",
             }
 
     def _get_sarabun_subject(self):
         return self.title
 
     def _get_sarabun_sender_department(self):
-        return self.department_id or super()._get_sarabun_sender_department()
+        return (
+            self.requested_by.employee_id.department_id
+            or super()._get_sarabun_sender_department()
+        )
 
     def _on_sarabun_circulating(self, document):
         self.write({"state": "sent"})
@@ -79,10 +86,13 @@ class PurchaseRequest(models.Model):
     #     _get_sarabun_body_template.
 
     def _get_sarabun_document_type(self):
-        return self.env.ref(
-            "purchase_request_sarabun.document_type_purchase_request",
-            raise_if_not_found=False,
-        ) or super()._get_sarabun_document_type()
+        return (
+            self.env.ref(
+                "purchase_request_sarabun.document_type_purchase_request",
+                raise_if_not_found=False,
+            )
+            or super()._get_sarabun_document_type()
+        )
 
     def _get_sarabun_body_template(self):
         """The live body — items table, budget details, enclosure list, committee
