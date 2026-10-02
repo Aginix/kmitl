@@ -1,5 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
+from collections import defaultdict
+
 from odoo import _, api, fields, models
 from odoo.tools import date_utils
 
@@ -95,9 +97,7 @@ class DimensionFilterMixin(models.AbstractModel):
         for r in rows:
             for aid in r.get("analytic_distribution") or {}:
                 analytic_ids.add(int(aid))
-        ana = (
-            self.env["account.analytic.account"].browse(list(analytic_ids)).exists()
-        )
+        ana = self.env["account.analytic.account"].browse(list(analytic_ids)).exists()
         ana_map = {
             a.id: (a.root_plan_id.code or "", a.code or "", a.name or "") for a in ana
         }
@@ -156,17 +156,105 @@ class DimensionFilterMixin(models.AbstractModel):
         return self._kmitl_move_lines_detail(move_ids)
 
     # ------------------------------------------------------------------
+    # Move-line domains and opening balances
+    #
+    # Shared by the Trial Balance and the General Ledger so both read the
+    # ledger the same way: the same filters, and -- critically -- the same
+    # opening balance, so the two reports cannot drift apart.
+    #
+    # KMITL dimensions live in ``account.move.line.analytic_distribution``
+    # (a JSON of {analytic_account_id: percentage}); the caller appends the
+    # leaves from :meth:`_kmitl_build_dim_leaves` to the domains below.
+    # ------------------------------------------------------------------
+    @api.model
+    def _kmitl_common_ml_domain(
+        self, company_id, journal_ids, partner_ids, only_posted
+    ):
+        """The leaves shared by the opening-balance and period aggregations."""
+        domain = [("company_id", "=", company_id)]
+        if journal_ids:
+            domain.append(("journal_id", "in", journal_ids))
+        if partner_ids:
+            domain.append(("partner_id", "in", partner_ids))
+        if only_posted:
+            domain.append(("move_id.state", "=", "posted"))
+        else:
+            domain.append(("move_id.state", "in", ["posted", "draft"]))
+        return domain
+
+    @api.model
+    def _kmitl_accounts(self, company_id, account_ids, include_initial_balance=None):
+        """The accounts to report on, optionally restricted to the
+        balance-sheet ones (``include_initial_balance``) or the P&L ones."""
+        domain = [("company_id", "=", company_id)]
+        if account_ids:
+            domain.append(("id", "in", account_ids))
+        if include_initial_balance is not None:
+            domain.append(("include_initial_balance", "=", include_initial_balance))
+        return self.env["account.account"].search(domain)
+
+    # ------------------------------------------------------------------
+    # Compute
+    # ------------------------------------------------------------------
+    @api.model
+    def _kmitl_opening_balances(
+        self, company_id, account_ids, common_domain, date_from, fy_start_date
+    ):
+        """``{account_id: opening balance}`` as of ``date_from``.
+
+        Read in two passes because profit & loss accounts restart every
+        fiscal year: balance-sheet accounts (``include_initial_balance``)
+        accumulate every entry before ``date_from``, P&L accounts only the
+        entries since ``fy_start_date``.
+        """
+        opening = defaultdict(float)
+        for include_initial_balance in (True, False):
+            accounts = self._kmitl_accounts(
+                company_id, account_ids, include_initial_balance
+            )
+            if not accounts:
+                continue
+            domain = common_domain + [
+                ("account_id", "in", accounts.ids),
+                ("date", "<", date_from),
+            ]
+            if not include_initial_balance:
+                domain.append(("date", ">=", fy_start_date))
+            for group in self.env["account.move.line"].read_group(
+                domain, ["balance"], ["account_id"]
+            ):
+                opening[group["account_id"][0]] += group["balance"] or 0.0
+        return opening
+
+    # ------------------------------------------------------------------
     # Shared filter helpers used by the date-ranged reports (Trial Balance,
     # General Ledger).
     # ------------------------------------------------------------------
     @api.model
     def _kmitl_fy_start_date(self, date_from, company):
         """Fiscal-year start that contains ``date_from`` (the date from
-        which profit & loss opening balances accumulate)."""
+        which profit & loss opening balances accumulate).
+
+        The declared ``account.fiscal.year`` wins: it is what the reports'
+        Fiscal Year selector offers, it is what KMITL's ปีงบประมาณ actually
+        runs on (1 ต.ค. - 30 ก.ย.), and it is the only source that can express
+        a year of irregular length. The company's year-end setting is the
+        fallback for a period no declared year covers.
+        """
         if not date_from:
             return False
         if isinstance(date_from, str):
             date_from = fields.Date.to_date(date_from)
+        fiscal_year = self.env["account.fiscal.year"].search(
+            [
+                ("company_id", "=", company.id),
+                ("date_from", "<=", date_from),
+                ("date_to", ">=", date_from),
+            ],
+            limit=1,
+        )
+        if fiscal_year:
+            return fiscal_year.date_from
         start, _end = date_utils.get_fiscal_year(
             date_from,
             day=company.fiscalyear_last_day,

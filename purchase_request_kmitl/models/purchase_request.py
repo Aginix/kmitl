@@ -106,6 +106,13 @@ class PurchaseRequest(models.Model):
     # construction
     is_construction = fields.Boolean(string="Construction", readonly=True)
     title = fields.Char(string="Title", tracking=True)
+    requesting_department_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="Requesting Department",
+        domain=[("root_plan_id.code", "=", "departments")],
+        tracking=True,
+        help="ส่วนงานผู้ขอให้จัดหา — ไม่จำเป็นต้องตรงกับส่วนงานของงบประมาณ",
+    )
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
@@ -128,6 +135,7 @@ class PurchaseRequest(models.Model):
             ],
             limit=1,
         )
+
     attachment_ids = fields.One2many(
         comodel_name="ir.attachment",
         inverse_name="res_id",
@@ -285,16 +293,18 @@ class PurchaseRequest(models.Model):
     def _action_do_return(self, reason=None, post_message=True):
         self.ensure_one()
         if post_message:
-            body = _(
-                "ตีกลับคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s"
-            ) % {"pr": self.name, "reason": reason or ""}
+            body = _("ตีกลับคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s") % {
+                "pr": self.name,
+                "reason": reason or "",
+            }
             self.message_post(body=body, subtype_xmlid="mail.mt_note")
         self.write({"state": "returned"})
 
     def _action_do_return_to_draft(self, reason):
         self.ensure_one()
-        body = _(
-            "ตีกลับคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s"
-        ) % {"pr": self.name, "reason": reason}
+        body = _("ตีกลับคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s") % {
+            "pr": self.name,
+            "reason": reason,
+        }
         self.message_post(body=body, subtype_xmlid="mail.mt_note")
         return self.button_draft()

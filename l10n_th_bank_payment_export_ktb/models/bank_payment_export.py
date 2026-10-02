@@ -81,7 +81,7 @@ class BankPaymentExport(models.Model):
     @api.depends("bank")
     def _compute_required_effective_date(self):
         res = super()._compute_required_effective_date()
-        for rec in self.filtered(lambda l: l.bank == "KRTHTHBK"):
+        for rec in self.filtered(lambda r: r.bank == "KRTHTHBK"):
             rec.is_required_effective_date = True
         return res
 
@@ -92,7 +92,7 @@ class BankPaymentExport(models.Model):
 
     def _check_constraint_confirm(self):
         res = super()._check_constraint_confirm()
-        for rec in self.filtered(lambda l: l.bank == "KRTHTHBK"):
+        for rec in self.filtered(lambda r: r.bank == "KRTHTHBK"):
             if not rec.ktb_bank_type:
                 raise UserError(_("You need to add 'Bank Type' before confirm."))
             if rec.ktb_bank_type == "direct" and any(

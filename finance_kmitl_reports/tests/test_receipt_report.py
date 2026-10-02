@@ -57,7 +57,7 @@ class TestReceiptReport(ReceiptKmitlCommon):
         """Take receipts through the real submit -> approve -> post flow,
         rather than the internal ``_action_post()`` shortcut, whenever the
         test cares about the remittance itself (its date, its number)."""
-        department = receipts[:1].department_analytic_id
+        department = receipts[:1]._get_root_departments()
         remittance = self.env["kmitl.receipt.remittance"].create(
             {
                 "department_analytic_id": department.id,
