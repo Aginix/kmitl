@@ -497,7 +497,7 @@
         id="purchase_request_approval_menu_purchase_request"
         name="Purchase Request Approvals"
         parent="purchase_request.parent_menu_purchase_request"
-        groups="purchase.group_purchase_user"
+        groups="purchase.group_purchase_user,purchase_request.group_purchase_request_user"
         sequence="20"
     />
     <menuitem
@@ -505,7 +505,7 @@
         name="My Requests"
         parent="purchase_request_approval_menu_purchase_request"
         action="action_purchase_request_approval_my"
-        groups="purchase.group_purchase_user"
+        groups="purchase.group_purchase_user,purchase_request.group_purchase_request_user"
         sequence="10"
     />
     <menuitem
@@ -513,7 +513,7 @@
         name="All Requests"
         parent="purchase_request_approval_menu_purchase_request"
         action="action_purchase_request_approval"
-        groups="purchase.group_purchase_user"
+        groups="purchase.group_purchase_user,purchase_request.group_purchase_request_user"
         sequence="20"
     />
 </odoo>
