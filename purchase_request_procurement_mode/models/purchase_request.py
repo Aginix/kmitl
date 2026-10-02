@@ -32,3 +32,8 @@ class PurchaseRequest(models.Model):
             self.partner_id = False
             self.vat_included = "exclusive"
             self.tax_id = False
+
+    @api.onchange("payment_type")
+    def _onchange_payment_type_force_by_requester(self):
+        if self.payment_type and self.payment_type != "direct":
+            self.procurement_mode = "by_requester"

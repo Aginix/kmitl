@@ -73,6 +73,13 @@ class PurchaseRequest(models.Model):
         [("direct", "Direct paid"), ("advance", "Advance"), ("prepaid", "Prepaid")],
         tracking=True,
     )
+
+    @api.onchange("payment_type")
+    def _onchange_payment_type_clear_vendor_fields(self):
+        if self.payment_type and self.payment_type != "direct":
+            self.partner_id = False
+            self.vat_included = "exclusive"
+            self.tax_id = False
     assigned_to = fields.Many2one(
         string="Purchase Representative",
         copy=False,
