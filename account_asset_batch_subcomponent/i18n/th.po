@@ -44,8 +44,11 @@ msgid "Add"
 msgstr "เพิ่ม"
 
 #. module: account_asset_batch_subcomponent
+#. odoo-python
+#: code:addons/account_asset_batch_subcomponent/models/account_asset_batch_line.py:0
 #: model:ir.actions.act_window,name:account_asset_batch_subcomponent.action_batch_subcomponent_wizard
 #: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_batch_subcomponent_wizard_form
+#, python-format
 msgid "Add Subcomponents"
 msgstr "เพิ่มส่วนประกอบครุภัณฑ์/สินทรัพย์"
 
