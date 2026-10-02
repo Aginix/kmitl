@@ -240,11 +240,14 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
         <field name="arch" type="xml">
-            <!-- Extend the status bar with the post-bill payment states -->
+            <!-- Extend the status bar with the post-bill payment states (carries forward
+                 disbursement_accounting_kmitl's bill_draft/bill_posted/bills_posted too,
+                 since position="attributes" replaces the value wholesale rather than
+                 merging — keep this list a superset of every ancestor bridge's list). -->
             <xpath expr="//field[@name='display_status']" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,submitted,signed,verified,approved,bills_posted,payment_audited,payment_authorized,paid,cleared</attribute>
+                >draft,submitted,signed,verified,approved,bill_draft,bill_posted,bills_posted,payment_draft,payment_posted,payment_audited,payment_authorized,paid,cleared,done</attribute>
             </xpath>
 
             <!-- Payment-execution buttons, placed before Reset to draft -->
