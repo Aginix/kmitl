@@ -11,11 +11,7 @@
                       attrs="{'invisible': [('disbursement_request_id', '=', False)]}"/>
               </xpath>
               <xpath expr="//field[@name='date_receive']" position="after">
-                  <label for="is_disbursed" string="สถานะการเบิกจ่าย"/>
-                  <div>
-                      <field name="is_disbursed" nolabel="1" readonly="1" class="oe_inline"/>
-                      <span> เบิกจ่ายแล้ว</span>
-                  </div>
+                  <field name="is_disbursed" invisible="1"/>
               </xpath>
               <!-- Return-to-source correction: Confirm button + statusbar + fields -->
               <xpath expr="//header//field[@name='state']" position="before">

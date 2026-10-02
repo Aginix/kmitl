@@ -39,6 +39,17 @@ class PurchaseOrder(models.Model):
         for rec in self:
             rec.wa_tier_validation = rec.acceptance_type == "paperless"
 
+    @api.model
+    def default_get(self, fields_list):
+        defaults = super().default_get(fields_list)
+        if "acceptance_type" in fields_list and "acceptance_type" not in defaults:
+            defaults["acceptance_type"] = (
+                "paperless"
+                if defaults.get("wa_tier_validation", True)
+                else "attachment"
+            )
+        return defaults
+
     work_end_original = fields.Date(
         string="Original Work End Date",
         copy=False,

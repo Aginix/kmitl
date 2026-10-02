@@ -475,14 +475,14 @@ msgid "File Name"
 msgstr "ไฟล์แนบ"
 
 #. module: purchase_work_acceptance_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
-msgid "Fines"
-msgstr "ค่าปรับ"
-
-#. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__fines_late
 msgid "Fines Amount"
 msgstr "ค่าปรับรวม"
+
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
+msgid "Fines Information"
+msgstr "ข้อมูลค่าปรับ"
 
 #. module: purchase_work_acceptance_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form

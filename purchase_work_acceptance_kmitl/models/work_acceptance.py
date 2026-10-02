@@ -56,6 +56,17 @@ class WorkAcceptance(models.Model):
     def _inverse_acceptance_type(self):
         for rec in self:
             rec.wa_tier_validation = rec.acceptance_type == "paperless"
+
+    @api.model
+    def default_get(self, fields_list):
+        defaults = super().default_get(fields_list)
+        if "acceptance_type" in fields_list and "acceptance_type" not in defaults:
+            defaults["acceptance_type"] = (
+                "paperless"
+                if defaults.get("wa_tier_validation", True)
+                else "attachment"
+            )
+        return defaults
     # attachment_ids is the "regular" documents tab on the paper-WA flow.
     # Kept separate from supporting_document_ids by excluding the m2m set
     # at compute time — do NOT distinguish via ir.attachment.res_field: any
