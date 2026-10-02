@@ -47,6 +47,20 @@ its own — it derives from its parent PR's officer. _Avoid_: Responsible (that'
 creator, `user_id`), Buyer (PO `user_id`), Approver (the PA manager who signs off, a
 different role), Purchase Representative.
 
+**ผู้ตรวจสอบ พ.1 (Verifier)**: The ธุรการ who checks a submitted PR at `to_verify`. They
+enter its รหัสงบประมาณ and dimensions, and either press ตรวจสอบ to pass it to the budget
+step or ตีกลับ it to `draft`. After ตรวจสอบ they may ดึงกลับ it from `to_verify_budget`
+to fix a mistake, as long as nothing is reserved yet. They do not reserve money. See
+[ADR-0010](docs/adr/0010-pr-split-verify-and-budget-commit-direct-entry.md). _Avoid_:
+ผู้อนุมัติ (that is the หัวหน้าส่วนงาน signing through Sarabun); Assigned Officer.
+
+**ผู้จองงบประมาณ พ.1 (Budget Committer)**: The holder of the PR-specific budget-commit
+duty at `to_verify_budget`. They may still correct the code and dimensions, then either
+press Reserve (which checks completeness and availability and creates the ใบจองงบประมาณ)
+or ตีกลับ the PR one step to `to_verify`. This is a separate, independent duty from the
+Verifier. _Avoid_: the generic role จองงบประมาณ, which reserves คำขออนุมัติ but no
+longer a พ.1.
+
 **God Mode (PA edit while `to_approve` / `approved`)**: An elevated, narrow edit surface
 on the พจ.1 (PA) while the record is in state `to_approve` or `approved` (never
 `rejected` / `cancelled`). Members of the security group
@@ -141,3 +155,7 @@ flow (real cancels go through `action_recall`).
   PR side. The PA stays orphaned in `pending_pr` unless an admin explicitly cleans it
   up. Acceptable today; a future iteration may auto-cascade PA `pending_pr` →
   `cancelled` when the PR cancels.
+- **A general requester cannot choose a โครงการ/กิจกรรม (`kmitl.project`) on a PR.** A
+  project PR is created only from the project form, which most requesters cannot open.
+  User feedback says requesters should be able to pick the project by name when buying
+  under a project. Deferred.
