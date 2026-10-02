@@ -193,6 +193,46 @@ class TestBudgetTransfer(TransactionCase):
         self.assertEqual(from_line.available_budget, 100_000)
         self.assertTrue(from_line.budget_sufficient)
 
+    def test_from_descendant_of_pool_rejected_at_submit(self):
+        """A FROM line at a descendant code of a funded pool nests (ADR-0016).
+
+        The pool lives at the parent code; draining from a child code would carve
+        a phantom child pool, so the guard rejects it at submit — before any
+        e-Saraban letter is sent."""
+        BA = self.env["budget.account"]
+        parent = BA.create(
+            {"code": "TR_PAR", "name": "Parent", "budget_type": "expense"}
+        )
+        child = BA.create(
+            {
+                "code": "TR_CHD",
+                "name": "Child",
+                "budget_type": "expense",
+                "parent_id": parent.id,
+            }
+        )
+        self._appropriate(parent, 100_000)
+        transfer = self._transfer(
+            from_lines=[
+                {
+                    "account_id": child.id,
+                    "amount": 1000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                }
+            ],
+            to_lines=[
+                {
+                    "account_id": self.dst.id,
+                    "amount": 1000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                }
+            ],
+        )
+        with self.assertRaises(ValidationError):
+            transfer.action_submit()
+
     # ------------------------------------------------------------------
     # editability (can_edit drives the form's readonly modifiers)
     # ------------------------------------------------------------------

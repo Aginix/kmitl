@@ -129,6 +129,10 @@ class BudgetTransfer(models.Model):
 
     # --- lifecycle callbacks ------------------------------------------
     def _on_sarabun_circulating(self, document):
+        # Re-validate the pool-nesting guard (ADR-0016): a returned transfer can
+        # be re-sent without submitting again, so a conflict introduced meanwhile
+        # must surface before the letter circulates.
+        self._check_pool_nesting()
         if self.state in ("submitted", "returned"):
             # The transfer's own date field is hidden (ADR-0014 follow-up) —
             # it now tracks the letter's ลงวันที่ (re-stamped on every send),

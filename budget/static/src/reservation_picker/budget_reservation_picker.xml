@@ -116,7 +116,9 @@
                             <t t-if="row.selectable">
                                 <span t-if="selectMode" class="o_brp_check"
                                       t-esc="state.selectedId === row.key ? '●' : '○'"/>
-                                <input t-else="" type="number" min="0" step="0.01"
+                                <!-- amount mode: a coarse pool that must be narrowed
+                                     to a descendant code shows no amount input. -->
+                                <input t-elif="!row.narrow_required" type="number" min="0" step="0.01"
                                        class="o_brp_amount form-control form-control-sm text-end"
                                        t-att-value="state.amounts[row.key] || ''"
                                        t-on-input="(ev) => this.onAmountInput(row, ev)"/>
@@ -130,10 +132,35 @@
             </table>
             </div>
 
+            <!-- Narrow box + availability live in a separate template so the ztree
+                 bridge's //AutoComplete xpath still targets the filter-bar box. -->
+            <t t-call="budget.BudgetReservationPickerNarrow"/>
+
             <div class="o_brp_footer d-flex justify-content-end gap-2 p-2 border-top">
                 <button class="btn btn-secondary" t-on-click="() => this.close()">ยกเลิก</button>
                 <button class="btn btn-primary" t-on-click="() => this.confirm()">ยืนยัน</button>
             </div>
+        </div>
+    </t>
+
+    <t t-name="budget.BudgetReservationPickerNarrow" owl="1">
+        <div t-if="selectMode and selectedRow and selectedRow.account_narrowable"
+             class="o_brp_narrow p-2 border-top">
+            <label>รหัสงบประมาณ (ระบุรหัสย่อยภายใต้กองงบ<t t-esc="' ' + (selectedRow.code || '')"/>)</label>
+            <AutoComplete
+                value="state.narrowLabel"
+                sources="narrowSourcesFor(selectedRow)"
+                placeholder="'ค้นหารหัสงบประมาณย่อย'"
+                onSelect="(option) => this.onNarrowSelect(option)"
+                onInput="(args) => this.onNarrowInput(args)"
+            />
+        </div>
+        <div t-if="state.availabilityLine" class="o_brp_available p-2 text-end">
+            <span>งบที่จองได้ </span>
+            <b t-esc="format(state.availabilityLine.available)"/>
+            <t t-if="state.availabilityLine.poolCode">
+                <span> (คุมงบที่ <t t-esc="state.availabilityLine.poolCode"/>)</span>
+            </t>
         </div>
     </t>
 
