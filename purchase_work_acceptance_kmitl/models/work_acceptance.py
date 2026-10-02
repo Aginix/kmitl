@@ -30,6 +30,43 @@ class WorkAcceptance(models.Model):
         "If not checked, WA will be approved by paper outside Odoo, "
         "and the result of WA will be filled in by procurement officer",
     )
+    # UI-facing dropdown mirror of wa_tier_validation.
+    # paperless  ↔ wa_tier_validation = True
+    # attachment ↔ wa_tier_validation = False
+    acceptance_type = fields.Selection(
+        [
+            ("paperless", "ตรวจรับผ่านระบบ"),
+            ("attachment", "ตรวจรับโดยการแนบเอกสาร"),
+        ],
+        string="Acceptance Type",
+        compute="_compute_acceptance_type",
+        inverse="_inverse_acceptance_type",
+        store=True,
+        readonly=False,
+        tracking=True,
+    )
+
+    @api.depends("wa_tier_validation")
+    def _compute_acceptance_type(self):
+        for rec in self:
+            rec.acceptance_type = (
+                "paperless" if rec.wa_tier_validation else "attachment"
+            )
+
+    def _inverse_acceptance_type(self):
+        for rec in self:
+            rec.wa_tier_validation = rec.acceptance_type == "paperless"
+
+    @api.model
+    def default_get(self, fields_list):
+        defaults = super().default_get(fields_list)
+        if "acceptance_type" in fields_list and "acceptance_type" not in defaults:
+            defaults["acceptance_type"] = (
+                "paperless"
+                if defaults.get("wa_tier_validation", True)
+                else "attachment"
+            )
+        return defaults
     # attachment_ids is the "regular" documents tab on the paper-WA flow.
     # Kept separate from supporting_document_ids by excluding the m2m set
     # at compute time — do NOT distinguish via ir.attachment.res_field: any

@@ -1,7 +1,7 @@
 # Copyright 2021 Ecosoft Co., Ltd. (http://ecosoft.co.th)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class PurchaseOrder(models.Model):
@@ -15,6 +15,40 @@ class PurchaseOrder(models.Model):
         "If not checked, WA will be approved by paper outside Odoo, "
         "and the result of WA will be filled in by procurement officer",
     )
+    # UI-facing dropdown mirror of wa_tier_validation (see work.acceptance).
+    acceptance_type = fields.Selection(
+        [
+            ("paperless", "ตรวจรับผ่านระบบ"),
+            ("attachment", "ตรวจรับโดยการแนบเอกสาร"),
+        ],
+        string="Acceptance Type",
+        compute="_compute_acceptance_type",
+        inverse="_inverse_acceptance_type",
+        store=True,
+        readonly=False,
+    )
+
+    @api.depends("wa_tier_validation")
+    def _compute_acceptance_type(self):
+        for rec in self:
+            rec.acceptance_type = (
+                "paperless" if rec.wa_tier_validation else "attachment"
+            )
+
+    def _inverse_acceptance_type(self):
+        for rec in self:
+            rec.wa_tier_validation = rec.acceptance_type == "paperless"
+
+    @api.model
+    def default_get(self, fields_list):
+        defaults = super().default_get(fields_list)
+        if "acceptance_type" in fields_list and "acceptance_type" not in defaults:
+            defaults["acceptance_type"] = (
+                "paperless"
+                if defaults.get("wa_tier_validation", True)
+                else "attachment"
+            )
+        return defaults
 
     work_end_original = fields.Date(
         string="Original Work End Date",
