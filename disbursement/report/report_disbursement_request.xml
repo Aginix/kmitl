@@ -147,8 +147,8 @@
                                                 <td class="text-center" style="width: 8%" t-out="global_row_no"/>
                                                 <td t-out="line.name"/>
                                                 <td class="text-center" t-out="'{0:,.2f}'.format(line.quantity)"/>
-                                                <td class="text-end" t-out="'{0:,.2f} ฿'.format(line.price_unit)"/>
-                                                <td class="text-end" t-out="'{0:,.2f} ฿'.format(line.price_subtotal)"/>
+                                                <td class="text-end" t-out="'{0:,.2f}'.format(line.price_unit)"/>
+                                                <td class="text-end" t-out="'{0:,.2f}'.format(line.price_subtotal)"/>
                                             </tr>
                                             <t t-set="global_row_no" t-value="global_row_no + 1"/>
                                         </t>
@@ -172,15 +172,15 @@
                                         <span t-if="o.amount_tax">ราคาก่อนรวมภาษีมูลค่าเพิ่ม</span>
                                         <span t-else="">รวมเป็นเงิน</span>
                                     </td>
-                                    <td class="text-end" style="width: 25%" t-out="'{0:,.2f} ฿'.format(o.amount_untaxed if o.amount_tax else o.amount_total)"/>
+                                    <td class="text-end" style="width: 25%" t-out="'{0:,.2f}'.format(o.amount_untaxed if o.amount_tax else o.amount_total)"/>
                                 </tr>
                                 <tr t-if="o.amount_tax">
                                     <td class="text-center">ภาษีมูลค่าเพิ่ม (VAT 7%)</td>
-                                    <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.amount_tax)"/>
+                                    <td class="text-end" t-out="'{0:,.2f}'.format(o.amount_tax)"/>
                                 </tr>
                                 <tr t-if="o.amount_tax">
                                     <td class="text-center">ราคาสุทธิ</td>
-                                    <td class="text-end" t-out="'{0:,.2f} ฿'.format(o.amount_total)"/>
+                                    <td class="text-end" t-out="'{0:,.2f}'.format(o.amount_total)"/>
                                 </tr>
                             </tbody>
                         </table>
