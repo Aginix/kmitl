@@ -188,9 +188,13 @@
                             class="d-inline fw-bold"
                         />
                     </div>
+                    <div class="oe_title">
+                        <h1 class="d-flex">
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
                     <group>
                         <group name="main_info" string="Main Information">
-                            <field name="name" placeholder="Approval Reference..." readonly="1"/>
                             <field name="active_sarabun_document_id" readonly="1"/>
                             <field name="title" attrs="{'readonly': [('is_editable', '=', False)]}" />
                             <field name="description" attrs="{'readonly': [('is_editable', '=', False)]}" />
