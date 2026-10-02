@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-02 07:36+0000\n"
-"PO-Revision-Date: 2026-10-02 07:36+0000\n"
+"POT-Creation-Date: 2026-10-02 08:33+0000\n"
+"PO-Revision-Date: 2026-10-02 08:33+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -522,7 +522,7 @@ msgstr "รายละเอียดแบบขอให้จัดหา"
 #. module: purchase_request_kmitl
 #: model:ir.model,name:purchase_request_kmitl.model_purchase_request_line
 msgid "Purchase Request Line"
-msgstr "แบบขอให้จัดหา (พ.1) ไลน์"
+msgstr "แบบขอให้จัดหา (พ.1) แต่ละรายการสินค้า"
 
 #. module: purchase_request_kmitl
 #: model:ir.model,name:purchase_request_kmitl.model_purchase_request_line_make_purchase_order
