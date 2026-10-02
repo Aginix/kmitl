@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="agx_approval_dashboard.ApprovalDashboard" owl="1">
+        <div class="o_action o_approval_dashboard">
+            <div class="o_ad_page_header">
+                <span class="o_ad_page_title">ขออนุมัติออนไลน์</span>
+                <div class="o_ad_view_switcher">
+                    <button class="btn o_ad_switch_btn active" title="Dashboard" disabled="disabled">
+                        <i class="oi oi-apps"/>
+                    </button>
+                    <button class="btn o_ad_switch_btn" title="Kanban" t-on-click="onSwitchToKanban">
+                        <i class="oi oi-view-kanban"/>
+                    </button>
+                    <button class="btn o_ad_switch_btn" title="List" t-on-click="onSwitchToList">
+                        <i class="oi oi-view-list"/>
+                    </button>
+                </div>
+            </div>
+
+            <div class="o_ad_body">
+                <aside class="o_ad_sidebar">
+                    <div class="o_ad_sidebar_header">หมวดหมู่</div>
+                    <ul class="o_ad_group_list">
+                        <t t-foreach="state.groups" t-as="group" t-key="group.id">
+                            <li
+                                class="o_ad_group_item"
+                                t-att-class="{'o_ad_active': isGroupActive(group.id)}"
+                                t-on-click="() => this.onSidebarClick(group.id)"
+                            >
+                                <span class="o_ad_group_bullet"/>
+                                <span class="o_ad_group_name" t-esc="group.name"/>
+                            </li>
+                        </t>
+                    </ul>
+                </aside>
+
+                <main class="o_ad_main">
+                    <div class="o_ad_search_bar">
+                        <input
+                            type="text"
+                            class="form-control o_ad_search_input"
+                            placeholder="โปรดระบุคีย์เวิร์ด อย่างน้อย 3 ตัวอักษร"
+                            t-on-input="onSearchInput"
+                        />
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary o_ad_clear_btn"
+                            t-on-click="onClearSearch"
+                            t-if="state.searchText"
+                        >
+                            ล้างค้นหา
+                        </button>
+                    </div>
+
+                    <div class="o_ad_result_header" t-if="state.selectedGroupId">
+                        <span class="o_ad_result_group" t-esc="selectedGroupName"/>
+                        <span class="o_ad_result_count">
+                            พบ <t t-esc="resultCount"/> รายการ
+                        </span>
+                    </div>
+
+                    <div class="o_ad_cards">
+                        <t t-if="!state.loading">
+                            <t t-if="resultCount === 0">
+                                <div class="o_ad_empty">
+                                    <t t-if="state.searchText">
+                                        ไม่พบรายการที่ตรงกับ "<t t-esc="state.searchText"/>"
+                                    </t>
+                                    <t t-else="">
+                                        ยังไม่มีรายการในหมวดหมู่นี้
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-foreach="filteredCategories" t-as="cat" t-key="cat.id">
+                                <div class="o_ad_card">
+                                    <div class="o_ad_card_body">
+                                        <img
+                                            class="o_ad_card_image"
+                                            t-att-src="imageUrl(cat.id)"
+                                            t-att-alt="cat.name"
+                                        />
+                                        <div class="o_ad_card_info">
+                                            <h6 class="o_ad_card_title" t-esc="cat.name"/>
+                                        </div>
+                                    </div>
+                                    <div class="o_ad_card_actions">
+                                        <button
+                                            type="button"
+                                            class="btn btn-primary btn-sm"
+                                            t-on-click="() => this.onCardClick(cat.id)"
+                                        >
+                                            สร้างคำร้อง
+                                        </button>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </t>
+</templates>
