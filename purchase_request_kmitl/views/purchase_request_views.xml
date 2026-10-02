@@ -196,12 +196,14 @@
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
+                <!-- ตีกลับ ถอยทีละขั้น: แต่ละ state มีปุ่มของตัวเอง ตามกลุ่มเจ้าของขั้น
+                     (ADR-0010) — budget ต่อปุ่มของ to_verify_budget เอง -->
                 <button
                     name="button_return"
                     states="to_verify"
                     string="Return"
                     type="object"
-                    groups="purchase_request_kmitl.group_purchase_request_user_all"
+                    groups="purchase_request_kmitl.group_purchase_request_verify"
                 />
             </xpath>
 

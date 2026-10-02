@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from odoo import Command, _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -12,7 +11,11 @@ class PurchaseRequest(models.Model):
     _inherit = ["purchase.request", "budget.commitment.mixin", "analytic.mixin"]
 
     state = fields.Selection(
-        selection_add=[("to_verify",), ("to_verify_budget", "To Verify Budget"), ("to_approve",)],
+        selection_add=[
+            ("to_verify",),
+            ("to_verify_budget", "To Verify Budget"),
+            ("to_approve",),
+        ],
         ondelete={"to_verify_budget": "set default"},
     )
 
@@ -114,6 +117,17 @@ class PurchaseRequest(models.Model):
     def _domain_budget_account_id(self):
         return [("purchase_ok", "=", True), ("product_id", "!=", False)]
 
+    budget_account_domain = fields.Binary(
+        compute="_compute_budget_account_domain",
+        help="Domain for budget_account_id on the form: the same codes the chart "
+        "picker offered, so direct entry honours the bridges' narrowing too.",
+    )
+
+    @api.depends("budget_selection_mode")
+    def _compute_budget_account_domain(self):
+        for rec in self:
+            rec.budget_account_domain = rec._reservation_account_domain()
+
     def _reservation_account_domain(self):
         # Only purchasable, product-backed budget codes are selectable for a PR,
         # matching the budget_account_id field domain — so the picker cannot
@@ -192,21 +206,30 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         # Means "budget selection is still open on this request", which is also
         # exactly when a reservation may be picked — so the reservation field
-        # rides on this rather than re-listing states. The chart picker is
-        # hidden view-side while a reservation is picked, since dimensions then
-        # come from it. Drawing an existing reservation does not close
-        # selection: the user must be able to un-pick.
-        can_edit = self.env.user.has_group("budget.group_budget_commitment")
+        # rides on this rather than re-listing states. Drawing an existing
+        # reservation does not close selection: the user must be able to
+        # un-pick. Each step's own group edits: ผู้ตรวจสอบ พ.1 at to_verify,
+        # ผู้จองงบประมาณ พ.1 at to_verify_budget and when re-reserving at
+        # to_approve after the slip was cancelled (root ADR-0010).
+        user = self.env.user
+        can_commit = user.has_group(
+            "purchase_request_budget.group_purchase_request_budget_commit"
+        )
+        can_edit = {
+            "to_verify": user.has_group(
+                "purchase_request_kmitl.group_purchase_request_verify"
+            ),
+            "to_verify_budget": can_commit,
+            "to_approve": can_commit,
+        }
         for rec in self:
-            if rec.state == "to_verify_budget" and can_edit:
-                rec.is_budget_editable = True
-            elif rec.state == "to_approve" and (
+            if rec.state in can_edit and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
             ):
-                rec.is_budget_editable = can_edit
+                rec.is_budget_editable = can_edit[rec.state]
             else:
-                rec.is_budget_editable = rec.is_editable
+                rec.is_budget_editable = rec.state == "draft"
 
     @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
     def _compute_hide_reserve_budget_button(self):
@@ -250,9 +273,7 @@ class PurchaseRequest(models.Model):
         )
         for rec in self:
             if rec.state == "to_verify_budget":
-                rec.can_reset_to_draft = (
-                    is_manager or rec.requested_by == self.env.user
-                )
+                rec.can_reset_to_draft = is_manager or rec.requested_by == self.env.user
 
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
@@ -287,7 +308,8 @@ class PurchaseRequest(models.Model):
             "context": {
                 "default_fiscal_year_id": self.account_fiscal_year_id.id or False,
                 "default_root_account_id": root.id if root else False,
-                "default_department_analytic_id": self.department_analytic_id.id or False,
+                "default_department_analytic_id": self.department_analytic_id.id
+                or False,
                 "default_source_analytic_id": self.source_analytic_id.id or False,
                 "default_fund_analytic_id": self.fund_analytic_id.id or False,
                 "default_activity_analytic_id": self.activity_analytic_id.id or False,
@@ -332,13 +354,38 @@ class PurchaseRequest(models.Model):
         ไป ``to_approve`` ตรง ๆ — การเขียน ``to_approve`` จริงเกิดที่
         ``action_reserve_budget`` หลังมี commitment แล้ว
         """
+        self._check_can_verify()
+        self._check_can_commit_budget()
         to_budget = self.filtered(lambda r: r.state == "to_verify")
         to_budget.write({"state": "to_verify_budget"})
         return super(PurchaseRequest, self - to_budget).button_to_approve()
 
+    def _check_can_commit_budget(self):
+        self._check_step_group(
+            "to_verify_budget",
+            "purchase_request_budget.group_purchase_request_budget_commit",
+            _("เฉพาะผู้จองงบประมาณใบขอให้จัดหา (พ.1) เท่านั้นที่ดำเนินการขั้นนี้ได้"),
+        )
+
+    def _action_do_return_to_draft(self, reason):
+        """ตีกลับ ถอยทีละขั้น (root ADR-0010): ผู้จองงบประมาณตีกลับ
+        ``to_verify_budget`` ไปให้ผู้ตรวจสอบที่ ``to_verify`` — ไม่ผ่าน
+        ``button_draft`` เพราะจะยกเลิกใบจองที่ยังมีผลอยู่ (กรณีตีกลับ/แก้ไข ADR-0007)."""
+        self.ensure_one()
+        if self.state != "to_verify_budget":
+            return super()._action_do_return_to_draft(reason)
+        self._check_can_commit_budget()
+        body = _("ตีกลับคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s") % {
+            "pr": self.name,
+            "reason": reason,
+        }
+        self.message_post(body=body, subtype_xmlid="mail.mt_note")
+        self.write({"state": "to_verify"})
+
     def action_reserve_budget(self):
         """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
+        self._check_can_commit_budget()
 
         # Draw-down mode: the user picked an existing ใบจองงบประมาณ. Adopt it
         # instead of creating a new commitment (ADR-0010) — presence of the pick
@@ -374,12 +421,33 @@ class PurchaseRequest(models.Model):
                 "context": self.env.context,
             }
 
+        # Entered directly, not through the picker (root ADR-0010), and ตรวจสอบ
+        # does not demand completeness — so it is enforced once, here.
+        missing = []
+        if not self.budget_account_id:
+            missing.append(_("รหัสงบประมาณ"))
+        if not self.department_analytic_id:
+            missing.append(_("ส่วนงาน"))
+        if not self.source_analytic_id:
+            missing.append(_("แหล่งเงิน"))
+        if not self.fund_analytic_id:
+            missing.append(_("กองทุน"))
+        if not self.activity_analytic_id:
+            missing.append(_("กิจกรรม"))
+        if missing:
+            raise UserError(
+                _("กรุณาระบุข้อมูลงบประมาณให้ครบก่อนจองงบประมาณ: %s") % ", ".join(missing)
+            )
+
         amount = sum(self.line_ids.mapped("estimated_cost"))
 
         # ปีงบยึดตามเอกสาร: check/reserve against this request's own fiscal year
         # (account_fiscal_year_id), not today() — otherwise a request whose FY differs
         # from today is checked against the wrong year.
-        check_result = self._check_budget_availability(
+        # sudo after _check_can_commit_budget: the budget-commit group carries no
+        # ACL on budget.commitment, and granting Budget User would open the whole
+        # budget app (root ADR-0010).
+        check_result = self.sudo()._check_budget_availability(
             amount=amount,
             activity_analytic_id=self.activity_analytic_id.id,
             department_analytic_id=self.department_analytic_id.id,
@@ -395,7 +463,7 @@ class PurchaseRequest(models.Model):
             )
 
         try:
-            commitment = self._create_budget_commitment(
+            commitment = self.sudo()._create_budget_commitment(
                 amount=amount,
                 activity_analytic_id=self.activity_analytic_id.id,
                 department_analytic_id=self.department_analytic_id.id,
