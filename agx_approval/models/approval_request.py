@@ -37,11 +37,6 @@ class ApprovalRequest(models.Model):
     is_plan_editable = fields.Boolean(compute="_compute_is_plan_editable")
     # The actual expense allocation is filled after the mission, in `actual`.
     is_actual_editable = fields.Boolean(compute="_compute_is_actual_editable")
-    # Return-correction mode — only clerical fields (recipient bank,
-    # description, evidence) are editable. Always False in base; a bridge sets
-    # it (e.g. agx_approval_disbursement, when a disbursement is returned).
-    is_correction = fields.Boolean(compute="_compute_is_correction")
-
     is_budget_editable = fields.Boolean(compute="_compute_is_budget_editable")
 
     # True once the official AR/<be>/#### number has been minted. Used by the
@@ -335,30 +330,6 @@ class ApprovalRequest(models.Model):
         "approval.request.allocation",
         "request_id",
         string="ค่าใช้จ่ายจริง",
-        copy=False,
-    )
-
-    allocation_direct_ids = fields.One2many(
-        "approval.request.allocation",
-        "request_id",
-        domain=[("payment_type", "=", "direct")],
-        string="จ่ายตรง",
-        copy=False,
-    )
-
-    allocation_prepaid_ids = fields.One2many(
-        "approval.request.allocation",
-        "request_id",
-        domain=[("payment_type", "=", "prepaid")],
-        string="สำรองจ่าย",
-        copy=False,
-    )
-
-    allocation_advance_ids = fields.One2many(
-        "approval.request.allocation",
-        "request_id",
-        domain=[("payment_type", "=", "advance")],
-        string="เงินยืม",
         copy=False,
     )
 
@@ -1287,11 +1258,6 @@ class ApprovalRequest(models.Model):
         for rec in self:
             rec.is_actual_editable = rec.state == "approved"
 
-    def _compute_is_correction(self):
-        # Base has no return-correction mode; bridges override this.
-        for rec in self:
-            rec.is_correction = False
-
     @api.depends("name")
     def _compute_is_number_assigned(self):
         # "/" is the placeholder a request carries until action_to_verify mints
@@ -1312,7 +1278,7 @@ class ApprovalRequest(models.Model):
     def _plan_actual_rows(self):
         """Per-product (planned, actual) totals for the plan-vs-actual
         comparison, ordered by the plan's sequence with any actual-only products
-        appended. Actual amounts are summed across recipients so a per-product
+        appended. Actual amounts are summed across rows so a per-product
         total lines up with the single planned amount. ``descriptions`` gathers
         the distinct plan-line details (รายละเอียด) for the product."""
         self.ensure_one()
@@ -1424,31 +1390,6 @@ class ApprovalRequest(models.Model):
             "<div style=\"background-color:#f8f9fa;border-radius:8px;padding:16px;"
             "box-shadow:0 1px 4px rgba(0,0,0,.15);white-space:pre-line;\">{table}</div>"
         ).format(table=table)
-
-    def _voucher_groups(self):
-        """งบหน้าใบสำคัญคู่จ่าย data: the disbursed actual allocation — จ่ายตรง /
-        สำรองจ่าย only; เงินยืม is excluded (it clears against the สัญญายืม, not a
-        disbursement) — grouped per recipient, with the per-recipient subtotal,
-        withholding-tax total and voucher (line) count."""
-        self.ensure_one()
-        groups = []
-        allocations = self.allocation_ids.filtered(
-            lambda a: a.payment_type != "advance"
-        )
-        for recipient in allocations.mapped("partner_id"):
-            allocs = allocations.filtered(
-                lambda a: a.partner_id == recipient
-            )
-            wht_total = sum(a._wht_amount() for a in allocs)
-            groups.append({
-                "recipient": recipient,
-                "allocs": allocs,
-                "subtotal": sum(allocs.mapped("amount")),
-                "wht_total": wht_total,
-                "voucher_count": len(allocs),
-                "has_wht": bool(wht_total),
-            })
-        return groups
 
     @api.constrains("allocation_ids", "state")
     def _check_allocation_within_budget(self):

@@ -1,5 +1,7 @@
 # Record payment type per actual-allocation row; route billing by type; defer advance clearing
 
+> **Superseded (2026-10) by [ADR-0009](0009-finance-authors-disbursements-from-actuals.md):** actual rows no longer carry a payment type or recipient; finance sets the payment type per ใบขอเบิก.
+
 > **Note (2026-07):** the §"Scope 2 sketch" below is **superseded by [ADR-0003](0003-per-participant-borrowing-against-an-approved-request.md)** — borrowing turned out to be per *participant* (not per recipient-matched row), the Funding Loan on an `advance` row is **chosen** rather than auto-matched by partner, and the loan clears itself instead of being written to from billing. The per-row `payment_type` decision and the billing routing recorded here still stand.
 
 Each **actual expense allocation** row (`approval.request.allocation`) now carries a **payment type** — `direct` (จ่ายตรง — the institute pays the named recipient directly), `prepaid` (สำรองจ่าย — a participant fronts the cost themselves, then claims it back), or `advance` (เงินยืม — the recipient drew a สัญญายืม and the expense clears that loan). The type is recorded **per row, at the `actual` stage** (after the mission), because one recipient may mix สำรองจ่าย and ยืมเงิน across their own expenses. Billing routes by type: `direct` and `prepaid` rows become disbursement lines; `advance` rows are excluded from the disbursement (the money already left as a loan) and clear against the borrower's สัญญายืม instead.

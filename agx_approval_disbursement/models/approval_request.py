@@ -1,11 +1,9 @@
-from odoo import Command, _, api, fields, models
-from odoo.exceptions import UserError
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 
 class ApprovalRequest(models.Model):
-    _name = "approval.request"
-    _inherit = ["approval.request", "disbursement.return.source.mixin"]
-    _disbursement_return_state = "billed"
+    _inherit = "approval.request"
 
     # A DR is "billed" once its budget has been committed at ``approved`` and
     # stays billed through every downstream state a finance/accounting bridge
@@ -16,52 +14,6 @@ class ApprovalRequest(models.Model):
     _DISBURSEMENT_NOT_BILLED_STATES = (
         "draft", "submitted", "signed", "verified", "cancel",
     )
-
-    # -- return-correction editability (D3) --------------------------------
-    def _compute_is_correction(self):
-        """A returned request that already has a disbursement is a DR-return:
-        only the recipient bank, description and disbursement evidence may be
-        corrected (contrast a Sarabun return, which reopens the whole plan)."""
-        super()._compute_is_correction()
-        for rec in self:
-            if rec.state == "returned" and rec.has_active_disbursement:
-                rec.is_correction = True
-
-    # -- return-to-source contract (disbursement.return.source.mixin) -----
-    def _disbursement_get_request(self):
-        self.ensure_one()
-        return self._disbursement_pick_request(self.disbursement_request_ids)
-
-    def _disbursement_apply_correction(self, dr):
-        """Push the corrected recipient bank, description and disbursement
-        evidence onto the still-signed DR. The banner/To-Do/state bookkeeping
-        is handled generically by disbursement.request._apply_source_correction."""
-        self.ensure_one()
-        dr.note = self.description
-        allocs = self.allocation_ids.filtered("partner_bank_id")
-        for line in dr.line_ids:
-            candidates = allocs.filtered(lambda a: a.partner_id == line.partner_id)
-            banks = candidates.mapped("partner_bank_id")
-            if len(banks) > 1:
-                # The recipient has rows with differing banks (one DR line per
-                # allocation row) — narrow to this line's own row so the other
-                # rows' banks are not clobbered.
-                exact = candidates.filtered(
-                    lambda a: a.product_id == line.product_id
-                    and a.currency_id.compare_amounts(a.amount, line.price_unit)
-                    == 0
-                )
-                banks = exact.mapped("partner_bank_id")
-            if len(banks) == 1 and line.partner_bank_id != banks:
-                line.partner_bank_id = banks
-        self._disbursement_copy_evidence(dr)
-
-    def _disbursement_evidence_attachments(self):
-        return self.disbursement_attachment_ids
-
-    def _disbursement_correction_user(self):
-        self.ensure_one()
-        return self.user_id or self.create_uid
 
     disbursement_request_ids = fields.One2many(
         comodel_name="disbursement.request",
@@ -102,11 +54,27 @@ class ApprovalRequest(models.Model):
         compute="_compute_has_active_disbursement",
     )
 
+    disbursed_amount = fields.Monetary(
+        string="ยอดตั้งเบิกแล้ว",
+        currency_field="currency_id",
+        compute="_compute_disbursed_amount",
+        help="ยอดรวมใบขอเบิกที่ไม่ถูกยกเลิกของคำขอนี้ — ต้องไม่เกินยอดค่าใช้จ่ายจริง",
+    )
+
     @api.depends("disbursement_request_ids.state")
     def _compute_has_active_disbursement(self):
         for record in self:
             record.has_active_disbursement = any(
                 d.state != "cancel" for d in record.disbursement_request_ids
+            )
+
+    @api.depends(
+        "disbursement_request_ids.state", "disbursement_request_ids.amount_total"
+    )
+    def _compute_disbursed_amount(self):
+        for record in self:
+            record.disbursed_amount = sum(
+                record._active_disbursements().mapped("amount_total")
             )
 
     @api.depends("disbursement_request_ids")
@@ -138,92 +106,75 @@ class ApprovalRequest(models.Model):
             ).write({"is_disbursement_evidence": True})
         return result
 
-    def _billable_allocations(self):
-        """Allocation rows that become disbursement lines — everything except
-        `advance` (เงินยืม), which is money already lent and clears against the
-        borrower's สัญญายืม instead of being disbursed again (ADR-0002)."""
-        return self.allocation_ids.filtered(lambda a: a.payment_type != "advance")
+    def _active_disbursements(self):
+        self.ensure_one()
+        return self.sudo().disbursement_request_ids.filtered(
+            lambda d: d.state != "cancel"
+        )
 
-    def _prepare_disbursement_request_vals(self):
-        """Build a single multi-partner DR from the billable actual-expense
-        allocation — one DR line per direct/prepaid row (recipient × product ×
-        actual × bank); `advance` rows are excluded. The header carries
-        `payment_type='direct'` as an interim: the DR module does not yet support
-        mixed/per-line payment types, so direct and prepaid share one DR
-        (ADR-0002)."""
-        return {
-            "reference": "approval.request,%d" % self.id,
-            "approval_request_id": self.id,
-            "partner_type": "multi",
-            "payment_type": "direct",
-            "line_ids": [
-                Command.create(alloc._prepare_disbursement_request_line_vals())
-                for alloc in self._billable_allocations()
-            ],
-            "ref": self.name,
-            "note": self.description,
-            "budget_commitment_id": self.budget_commitment_id.id,
-            "budget_account_id": self.budget_account_id.id,
-            "analytic_distribution": self.analytic_distribution,
-        }
+    @api.constrains("allocation_ids")
+    def _check_actual_covers_disbursed(self):
+        """The recorded actuals cap what finance may bill (ADR-0009), so they may
+        not be lowered below what is already on non-cancelled ใบขอเบิก."""
+        for rec in self:
+            if rec.currency_id.compare_amounts(
+                rec.total_actual_amount, rec.disbursed_amount
+            ) < 0:
+                raise ValidationError(
+                    _(
+                        "ยอดค่าใช้จ่ายจริง (%(actual)s) ต่ำกว่ายอดที่ตั้งเบิกแล้ว"
+                        " (%(disbursed)s)"
+                    )
+                    % {
+                        "actual": rec.total_actual_amount,
+                        "disbursed": rec.disbursed_amount,
+                    }
+                )
 
     def action_create_disbursement_request(self):
+        """Open a new ใบขอเบิก prefilled with this request's header only —
+        finance enters recipients, items, amounts, banks and the payment type.
+        May be pressed repeatedly: one request → many ใบขอเบิก (ADR-0009)."""
         self.ensure_one()
-        if not self.allocation_ids:
+        if self.state != "to_disburse":
             raise UserError(
-                _("กรุณาบันทึกค่าใช้จ่ายจริงอย่างน้อย 1 รายการก่อนส่งเบิก")
+                _("สร้างใบขอเบิกได้เฉพาะสถานะ 'รอการเงินตรวจสอบ/ส่งเบิก'")
             )
-        missing = self._billable_allocations().filtered(
-            lambda a: not a.partner_bank_id
-        )
-        if missing:
-            raise UserError(
-                _("กรุณาเลือกบัญชีธนาคารของผู้รับเงินให้ครบทุกรายการก่อนส่งเบิก: %s")
-                % ", ".join(missing.mapped("partner_id.name"))
-            )
-        self.action_bill()
-
-        if not self._billable_allocations():
-            # Every row is เงินยืม → nothing to disburse; those rows clear against
-            # the สัญญายืม (deferred to the advance overhaul, ADR-0002). Bill the
-            # request without creating an empty disbursement.
-            self.message_post(
-                body=_(
-                    "ทุกรายการเป็นเงินยืม — ไม่ได้สร้างใบเบิก (รอเคลียร์กับสัญญายืม)"
-                ),
-                message_type="comment",
-            )
-            return True
-
-        vals = self._prepare_disbursement_request_vals()
-        disbursement = self.env["disbursement.request"].create(vals)
-        self._copy_attachments_to_disbursement(disbursement)
-
-        link = self._get_record_url()
-        disbursement.message_post(
-            body=_(
-                'This record has been created from: '
-                '<a href="%(link)s" target="_blank">%(name)s</a>',
-                link=link,
-                name=self.name,
-            ),
-            message_type="comment",
-        )
-        self.message_post(
-            body=_(
-                "Disbursement %(dr_name)s created successfully.",
-                dr_name=disbursement.name,
-            ),
-            message_type="comment",
-        )
-
         return {
             "type": "ir.actions.act_window",
+            "name": _("ใบขอเบิก"),
             "res_model": "disbursement.request",
             "view_mode": "form",
-            "res_id": disbursement.id,
             "target": "current",
+            "context": {
+                "default_approval_request_id": self.id,
+                "default_reference": "approval.request,%d" % self.id,
+                "default_partner_type": "multi",
+                "default_ref": self.name,
+                "default_note": self.description,
+                "default_budget_commitment_id": self.budget_commitment_id.id,
+                "default_budget_account_id": self.budget_account_id.id,
+                "default_analytic_distribution": self.analytic_distribution,
+            },
         }
+
+    def action_bill(self):
+        """ตั้งเบิกครบแล้ว: finance closes billing. Unused reservation is not
+        returned here — budget staff use คืนจอง on the ใบจองงบประมาณ."""
+        for record in self:
+            if not record._active_disbursements():
+                raise UserError(
+                    _("กรุณาสร้างใบขอเบิกอย่างน้อย 1 ใบก่อนกดตั้งเบิกครบแล้ว")
+                )
+        return super().action_bill()
+
+    def action_pull_back_from_finance(self):
+        for record in self:
+            if record._active_disbursements():
+                raise UserError(
+                    _("ดึงกลับไม่ได้ เนื่องจากการเงินสร้างใบขอเบิกแล้ว")
+                )
+        return super().action_pull_back_from_finance()
 
     def action_view_disbursement_request(self):
         self.ensure_one()
@@ -241,25 +192,3 @@ class ApprovalRequest(models.Model):
                 ("id", "in", self.disbursement_request_ids.ids)
             ]
         return action
-
-    def _copy_attachments_to_disbursement(self, disbursement):
-        """Clone AR attachments to the given DR.
-
-        Includes both the request-side attachment_ids (filtered to
-        non-evidence on this model) and the disbursement_attachment_ids
-        many2many that gathers DR-evidence files staged on the AR.
-
-        Each clone gets its own ir.attachment row pointing at the same
-        SHA1-hashed file in the Odoo filestore, so no binary is duplicated
-        on disk.
-        """
-        self.ensure_one()
-        attachments = self.attachment_ids | self.disbursement_attachment_ids
-        for attachment in attachments:
-            attachment.copy({
-                "res_model": "disbursement.request",
-                "res_id": disbursement.id,
-            })
-
-    def _get_record_url(self):
-        return "/web#id={}&model={}&view_type=form".format(self.id, self._name)
