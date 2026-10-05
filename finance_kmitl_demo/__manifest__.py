@@ -18,6 +18,7 @@
         "disbursement_wst_verify",
         "disbursement_wst_approve_finance",
         "disbursement_wst_approve_rector",
+        "disbursement_wst_bill",
         "accounting_kmitl",
         "account_asset_kmitl",
         "account_asset_depreciation_board",

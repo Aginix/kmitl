@@ -8,11 +8,9 @@ class AccountingKmitlDashboard(models.AbstractModel):
     def get_dashboard_data(self):
         """Add the "disbursement requests awaiting billing" KPI card.
 
-        A disbursement request stays ``approved`` until every active bill is
-        posted, at which point it advances to ``bills_posted`` (see
-        ``account.move._post`` in this module). So ``state == 'approved'`` is
-        exactly the accounting team's queue of approved requests that still
-        need a bill posted.
+        A disbursement request stays at the billing station until every active
+        bill is posted. So ``station_code == 'bill'`` is exactly the accounting
+        team's queue of approved requests that still need a bill posted.
         """
         data = super().get_dashboard_data()
         data["cards"].append(
@@ -22,7 +20,7 @@ class AccountingKmitlDashboard(models.AbstractModel):
                 "info",
                 25,
                 "disbursement.request",
-                [("state", "=", "approved")],
+                [("station_code", "=", "bill")],
             )
         )
         return data

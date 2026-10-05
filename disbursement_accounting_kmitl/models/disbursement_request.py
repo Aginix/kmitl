@@ -96,9 +96,6 @@ class DisbursementRequest(models.Model):
         """Create vendor bill(s) from disbursement request."""
         self.ensure_one()
 
-        if self.state != "approved":
-            raise UserError(_("Only approved requests can be used to create bills."))
-
         bills = self._create_bills()
 
         for bill in bills:
@@ -206,25 +203,23 @@ class DisbursementRequest(models.Model):
             "target": "current",
         }
 
+    def _on_bills_posted(self):
+        """Hook: every active bill of the request is now posted."""
+
     def action_post_bills(self):
-        """Post all unposted bills and transition DR state to bills_posted.
+        """Post all unposted bills.
 
         Programmatic/demo entry point only — it posts bills directly, bypassing
         the account.move approval. In the UI bills are posted by approving them
         on the account.move (Approve = post); there is no "Post Bills" button.
         """
         for record in self:
-            if record.state != "approved":
-                raise UserError(
-                    _("Only approved disbursement requests can post bills.")
-                )
             unposted_bills = record.bill_ids.filtered(
                 lambda b: b.state in ("draft", "submitted")
             )
             if not unposted_bills:
                 raise UserError(_("No bills to post."))
             unposted_bills.action_post()
-            record.state = "bills_posted"
         return True
 
     # ------------------------------------------------------------------

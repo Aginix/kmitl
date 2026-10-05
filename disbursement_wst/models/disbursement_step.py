@@ -120,15 +120,26 @@ class DisbursementStep(models.Model):
         step = self.sudo()
         request = step.request_id
         if disposition == "complete":
-            request._station_check(step.station_code)
-            step._stamp("complete", vals.get("note"))
-            request._station_complete(step.station_code)
-            step._advance()
+            step._do_complete(vals.get("note"))
         else:
             if not vals.get("note"):
                 raise UserError(_("A note is required to return a request."))
             request._action_return_to_verification(vals["note"])
         return True
+
+    def _do_complete(self, note=None):
+        """Complete the step without the group check.
+
+        ``act()`` is the gate for a person pressing a button. A station whose
+        completion is a business event (a bill posted, a payment booked) calls
+        this directly from that event: the event's own workflow is the authority.
+        """
+        self.ensure_one()
+        request = self.request_id
+        request._station_check(self.station_code)
+        self._stamp("complete", note)
+        request._station_complete(self.station_code)
+        self._advance()
 
     def _stamp(self, disposition, note):
         self.ensure_one()

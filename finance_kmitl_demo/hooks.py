@@ -570,9 +570,9 @@ def _approve_dr(dr):
     dr.ignore_exception = True
     dr.action_submit()
     dr.action_sign()
-    # Walk the route: verification, the two approvers (the last commits the
-    # budget), then every further station that is installed.
-    while dr.current_step_id:
+    # Walk the route: verification and the two approvers (the last commits the
+    # budget), up to the billing station, which completes when the bills post.
+    while dr.current_step_id and dr.station_code != "bill":
         dr.current_step_id.act("complete")
 
 
