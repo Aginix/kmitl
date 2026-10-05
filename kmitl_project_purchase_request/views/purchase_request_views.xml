@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <!-- Purchase request form - link back to the source KMITL project -->
+    <!-- Purchase request form - the requester names the project it is bought
+         under (จัดซื้อภายใต้, root ADR-0011) + link back to it -->
     <record id="view_purchase_request_form_kmitl_project" model="ir.ui.view">
         <field name="name">view.purchase.request.form (KMITL Project)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
+        <field
+            name="inherit_id"
+            ref="purchase_request_budget.view_purchase_request_form"
+        />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='budget_selection_mode']" position="after">
+                <field
+                    name="kmitl_project_id"
+                    options="{'no_create': True, 'no_open': True}"
+                    attrs="{'invisible': [('budget_selection_mode', '!=', 'project')], 'required': [('budget_selection_mode', '=', 'project'), ('is_procurement_under_editable', '=', True)], 'readonly': [('is_procurement_under_editable', '=', False)]}"
+                />
+                <field
+                    name="kmitl_project_remaining"
+                    attrs="{'invisible': [('kmitl_project_id', '=', False)]}"
+                />
+            </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <field name="use_project" invisible="1" />
-                <field name="kmitl_project_id" invisible="1" />
                 <button
                     name="action_view_kmitl_project"
                     type="object"

@@ -33,7 +33,7 @@ A sequential running number that identifies a Project. Minted once, when the pro
 _Avoid_: Project Code (รหัสโครงการ) — a distinct approval-time identifier, **not yet implemented**; do not conflate it with the Project Number even though both currently share the `key` field.
 
 **Project Budget Remaining (งบประมาณคงเหลือ)**:
-A project's reserved `budget_amount` minus what has actually been **consumed (เบิกจ่าย)** from its commitment — the project money still available to spend. It is the project's own reservation-vs-spend, **not** the budget account's disbursement *Remaining (f)*, and **not** the พ.1 planning headroom (`budget_amount − Σ estimated_cost`) that caps how many purchase requests a project may raise.
+A project's reserved `budget_amount` minus what has actually been **consumed (เบิกจ่าย)** from its commitment — the project money still available to spend. It is the project's own reservation-vs-spend, **not** the budget account's disbursement *Remaining (f)*, and **not** the พ.1 headroom (`budget_amount − Σ estimated_cost` of the purchase requests that have **drawn**, i.e. passed Reserve) that caps how much the project's purchase requests may draw. A purchase request that names the project but has not drawn yet does not count ([root ADR-0011](../docs/adr/0011-requester-chooses-procurement-under.md)).
 _Avoid_: remaining (unqualified — clashes with [budget » Remaining (f)](../budget/CONTEXT.md))
 
 **Project Budget Plan (แผนงบประมาณโครงการ)**:
