@@ -81,6 +81,13 @@ class TestProcurementUnderPlan(TransactionCase):
             )
         return self.env["purchase.request"].create(vals)
 
+    def _cancel(self, pr):
+        # As the UI does: button_cancel only opens the wizard, which cancels.
+        pr.button_cancel()
+        self.env["purchase.request.cancel.wizard"].create(
+            {"request_id": pr.id, "reason": "test"}
+        ).action_confirm()
+
     def _offered(self, pr):
         return self.env["procurement.plan"].search(pr.procurement_plan_domain)
 
@@ -110,7 +117,7 @@ class TestProcurementUnderPlan(TransactionCase):
     def test_cancel_releases_claim(self):
         plan = self._verified_plan()
         first = self._make_pr(plan)
-        first.button_cancel()
+        self._cancel(first)
 
         other = self._make_pr()
         self.assertIn(plan, self._offered(other))
@@ -128,7 +135,7 @@ class TestProcurementUnderPlan(TransactionCase):
         self.assertEqual(pr.budget_commitment_id, plan.budget_commitment_ids)
         self.assertEqual(plan.state, "in_progress")
 
-        pr.button_cancel()
+        self._cancel(pr)
 
         self.assertFalse(pr.budget_commitment_id)
         self.assertEqual(plan.state, "verified")
@@ -141,3 +148,5 @@ class TestProcurementUnderPlan(TransactionCase):
 
         self.assertFalse(copy.procurement_plan_id)
         self.assertFalse(copy.use_procurement_plan)
+        self.assertFalse(copy.budget_account_id)
+        self.assertFalse(copy.analytic_distribution)
