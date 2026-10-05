@@ -33,6 +33,13 @@ The only way backwards, and only while no budget has been committed — past tha
 point the obligation has to be reversed, which only **Cancel** does.
 _Avoid_: Return (there is no separate return flow), Reject.
 
+**Settled** (ไม่ค้าง):
+A request that no longer holds anything open — the money has left and the books are
+closed, or it was cancelled. Core names the fact; the finance office decides when it is
+true. A request that has merely committed its budget is not settled.
+_Avoid_: Closed, done (that is the slip's own lifecycle), paid (that is one voucher's
+state, not the request's).
+
 **Head-of-department approval** (การลงนามของหัวหน้าส่วนงาน):
 The signature that moves a submitted request to `signed`, performed by the head
 of the requesting unit. Obtained through e-Saraban when `disbursement_sarabun` is
