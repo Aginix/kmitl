@@ -75,6 +75,17 @@
                 </button>
             </xpath>
 
+            <!-- จัดซื้อภายใต้: asked of the requester, confirmed by the verifier
+                 (root ADR-0011). Source bridges add their project/plan field
+                 after it; the source's fiscal year is written server-side. -->
+            <xpath expr="//field[@name='account_fiscal_year_id']" position="after">
+                <field name="is_procurement_under_editable" invisible="1" />
+                <field
+                    name="budget_selection_mode"
+                    widget="radio"
+                    attrs="{'readonly': [('is_procurement_under_editable', '=', False)]}"
+                />
+            </xpath>
             <xpath expr="//notebook" position="before">
                 <field name="product_id" invisible="1" />
 
@@ -118,57 +129,38 @@
                     groups="purchase_request_kmitl.group_purchase_request_verify,purchase_request_budget.group_purchase_request_budget_commit"
                 >
                     <field name="is_budget_editable" invisible="1" />
-                    <!-- Ask which way first, then show only that way's fields. The
-                         mode is a UI affordance: the server still keys draw-down off
-                         reservation_commitment_id (ADR-0010). -->
-                    <field
-                        name="budget_selection_mode"
-                        colspan="2"
-                        widget="radio"
-                        options="{'horizontal': True}"
-                        attrs="{'invisible': [('is_budget_editable', '=', False)]}"
-                    />
                     <field name="analytic_distribution" invisible="1" />
-                    <field name="reservation_commitment_domain" invisible="1" />
-
-                    <field
-                        name="reservation_commitment_id"
-                        colspan="2"
-                        widget="budget_commitment_info"
-                        domain="reservation_commitment_domain"
-                        options="{'no_create': True, 'no_open': True}"
-                        attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '=', 'normal'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
-                        placeholder="เลือกใบจองงบประมาณที่จะหยิบไปใช้"
-                    />
 
                     <!-- Entered directly, no chart picker (root ADR-0010):
-                         completeness and availability are checked at Reserve. -->
+                         completeness and availability are checked at Reserve. A
+                         project/plan fills them and they show read-only; its
+                         ใบจอง is found at Reserve, never picked (root ADR-0011). -->
                     <field name="budget_account_domain" invisible="1" />
                     <field
                         name="budget_account_id"
                         domain="budget_account_domain"
-                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                        attrs="{'invisible': [('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
                     <field
                         name="activity_analytic_id"
-                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                        attrs="{'invisible': [('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
                     <field
                         name="department_analytic_id"
-                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                        attrs="{'invisible': [('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
                     <field
                         name="fund_analytic_id"
                         widget="selection"
-                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                        attrs="{'invisible': [('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
                     />
                     <field
                         name="source_analytic_id"
                         widget="selection"
-                        attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'normal'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                        attrs="{'invisible': [('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
                     />
                 </group>
             </xpath>

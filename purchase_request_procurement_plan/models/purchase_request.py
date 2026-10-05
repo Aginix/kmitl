@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -13,6 +12,7 @@ class PurchaseRequest(models.Model):
     use_procurement_plan = fields.Boolean(
         string="Use Procurement Plan",
         store=True,
+        copy=False,
     )
 
     budget_selection_mode = fields.Selection(
@@ -22,9 +22,19 @@ class PurchaseRequest(models.Model):
 
     procurement_plan_id = fields.Many2one(
         comodel_name="procurement.plan",
-        string="Procurement Plan",
+        string="แผนจัดซื้อจัดจ้าง",
         domain="",
         tracking=True,
+        # 1 แผน = 1 พ.1: a copy would claim the plan a second time.
+        copy=False,
+    )
+    procurement_plan_domain = fields.Binary(
+        compute="_compute_procurement_plan_domain",
+        help=(
+            "Record-aware domain for the แผนจัดซื้อจัดจ้าง dropdown: it must leave "
+            "out plans another live พ.1 already holds, which a static domain "
+            "cannot express."
+        ),
     )
 
     procurement_plan_analytic_id = fields.Many2one(
@@ -46,19 +56,64 @@ class PurchaseRequest(models.Model):
     def _domain_budget_account_id(self):
         return super()._domain_budget_account_id() + [("procurement_plan", "=", False)]
 
-    def _reservation_commitment_mode_domain(self):
-        # ``verified`` is the plan's only drawable state and expresses ADR-0006's
-        # one-active-PR rule in the picker itself, exactly as ADR-0010 describes
-        # it: drawing moves the plan to ``in_progress``, so a plan that already
-        # has an active PR drops out of the dropdown, and a rejected PR bounces
-        # the plan back to ``verified`` and makes it offerable again.
-        domain = super()._reservation_commitment_mode_domain()
-        if self.budget_selection_mode == "procurement_plan":
-            domain = domain + [
-                ("account_id.procurement_plan", "=", True),
-                ("procurement_plan_id.state", "=", "verified"),
+    @api.depends("procurement_plan_id")
+    def _compute_procurement_plan_domain(self):
+        """Plans this request may be bought under (root ADR-0011): verified
+        (money reserved) on a purchasable, product-backed code, and not claimed
+        by another live พ.1 — the plan is claimed the moment it is chosen.
+        Claims are read with sudo: PR record rules hide other requesters' พ.1.
+        OU scoping comes from the global procurement.plan rule."""
+        claims = (
+            self.env["purchase.request"]
+            .sudo()
+            .search(
+                [
+                    ("procurement_plan_id", "!=", False),
+                    ("state", "not in", ("rejected", "cancelled")),
+                ]
+            )
+        )
+        for rec in self:
+            taken = claims.filtered(lambda r: r.id != rec._origin.id)
+            rec.procurement_plan_domain = [
+                ("state", "=", "verified"),
+                ("id", "not in", taken.procurement_plan_id.ids),
+                ("budget_account_id.purchase_ok", "=", True),
+                ("budget_account_id.product_id", "!=", False),
             ]
-        return domain
+
+    def _procurement_under_fields(self):
+        return super()._procurement_under_fields() | {"procurement_plan_id"}
+
+    def _prepare_procurement_under_vals(self):
+        """A chosen plan is claimed (1 แผน = 1 พ.1) and brings its budget code,
+        fiscal year, full analytic distribution and procurement method — root
+        ADR-0011. Choosing another answer releases it."""
+        vals = super()._prepare_procurement_under_vals()
+        plan = self.procurement_plan_id
+        if plan and self.budget_selection_mode in ("normal", "procurement_plan"):
+            self._check_one_active_pr(plan)
+            vals.update(
+                {
+                    "budget_selection_mode": "procurement_plan",
+                    "use_procurement_plan": True,
+                    "budget_account_id": plan.budget_account_id.id,
+                    "account_fiscal_year_id": plan.account_fiscal_year_id.id,
+                    "analytic_distribution": plan.analytic_distribution or False,
+                }
+            )
+            if plan.procurement_method_id:
+                vals["procurement_method_id"] = plan.procurement_method_id.id
+        elif plan:
+            vals.update({"procurement_plan_id": False, "use_procurement_plan": False})
+        elif self.use_procurement_plan:
+            vals["use_procurement_plan"] = False
+        return vals
+
+    @api.onchange("budget_selection_mode")
+    def _onchange_budget_selection_mode_procurement_plan(self):
+        if self.budget_selection_mode != "procurement_plan":
+            self.procurement_plan_id = False
 
     def _check_drawable_commitment(self, commitment):
         # A plan's shared commitment sits on a ``procurement_plan`` budget code
@@ -73,9 +128,7 @@ class PurchaseRequest(models.Model):
                 super()._domain_budget_account_id()
                 + [("id", "=", commitment.account_id.id)]
             ):
-                raise UserError(
-                    _("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้")
-                )
+                raise UserError(_("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้"))
             return True
         return super()._check_drawable_commitment(commitment)
 
@@ -88,27 +141,24 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         super()._compute_is_budget_editable()
         for rec in self:
-            # Once a พ.1 is attributed to a plan its budget is the plan's, in
-            # every state — ดึงกลับ recalls the request for editing, it does not
-            # reopen the แหล่งงบประมาณ (ADR-0015). The PR-first draw is
-            # unaffected: ``use_procurement_plan`` is still False while the slip
-            # is being picked, and is written only by the draw itself.
+            # A plan พ.1's code and dims are the plan's, in every state:
+            # correcting them means changing the plan (root ADR-0011).
             if rec.use_procurement_plan:
                 rec.is_budget_editable = False
 
-    @api.onchange("use_procurement_plan", "procurement_plan_id")
+    @api.onchange("procurement_plan_id")
     def _onchange_procurement_plan_id(self):
-        if self.use_procurement_plan:
-            if self.procurement_plan_id:
-                self.account_fiscal_year_id = self.procurement_plan_id.account_fiscal_year_id.id
-                self.procurement_method_id = self.procurement_plan_id.procurement_method_id.id
-                self.budget_account_id = self.procurement_plan_id.budget_account_id.id
-                self.analytic_distribution = self.procurement_plan_id.analytic_distribution
-                self.title = _("%s") % self.procurement_plan_id.description
-        else:
-            self.procurement_plan_id = False
-            self.budget_account_id = False
-            self.analytic_distribution = False
+        """Preview the plan's code, fiscal year and method on the live form; the
+        dimensions are written server-side (see _sync_procurement_under) —
+        re-assigning analytic_distribution here would wipe it."""
+        plan = self.procurement_plan_id
+        if plan:
+            self.account_fiscal_year_id = plan.account_fiscal_year_id.id
+            if plan.procurement_method_id:
+                self.procurement_method_id = plan.procurement_method_id.id
+            self.budget_account_id = plan.budget_account_id.id
+            if not self.title:
+                self.title = plan.description
 
     def action_view_procurement_plan(self):
         self.ensure_one()
@@ -155,61 +205,40 @@ class PurchaseRequest(models.Model):
         return commitment_vals
 
     def action_reserve_budget(self):
-        """Plan-driven PRs draw down the plan's shared commitment instead of
-        creating their own (D2). Non-plan PRs keep the standard own-commitment
-        behaviour (D4)."""
+        """A plan พ.1 names the plan, not its ใบจอง (root ADR-0011): find the
+        plan's single live commitment and draw it through the base draw-down
+        path, which re-takes code/dims/FY from it. Reservation itself happened
+        when the plan's appropriation posted."""
         self.ensure_one()
-        # A picked ใบจองงบประมาณ (PR-first, incl. one changed after ดึงกลับ) takes
-        # priority: fall through to the base draw so the *chosen* commitment is
-        # drawn, not the plan's default one.
-        if (
-            self.use_procurement_plan
-            and self.procurement_plan_id
-            and not self.reservation_commitment_id
-        ):
-            plan = self.procurement_plan_id
-            commitment = plan.budget_commitment_ids.filtered(
+        plan = self.procurement_plan_id
+        if plan:
+            self._check_can_commit_budget()
+            commitment = plan.sudo().budget_commitment_ids.filtered(
                 lambda c: c.state in ("reserved", "partial")
             )[:1]
             if not commitment:
                 raise UserError(
-                    _(
-                        "แผนจัดซื้อจัดจ้างยังไม่ได้จองงบประมาณ "
-                        "(แผนต้องอยู่สถานะรอดำเนินการ)"
-                    )
+                    _("แผนจัดซื้อจัดจ้างยังไม่ได้จองงบประมาณ (แผนต้องอยู่สถานะรอดำเนินการ)")
                 )
-            self.budget_commitment_id = commitment.id
-            if plan.state == "verified":
-                plan.action_in_progress()
-            # Same rail as the reserve-new path: จองงบ advances to to_approve
-            # (จองแล้ว รอสร้างหนังสือ) and สร้างหนังสือ is a separate press.
-            # to_approve_allowed is keyed on to_verify_budget, which is exactly
-            # where the record sits when this runs (ADR-0008).
-            self.button_to_approve()
-            return {
-                "type": "ir.actions.act_window",
-                "res_model": "purchase.request",
-                "view_mode": "form",
-                "res_id": self.id,
-                "target": "current",
-                "context": self.env.context,
-            }
+            self.reservation_commitment_id = commitment.id
         return super().action_reserve_budget()
 
     def _action_draw_from_reservation(self):
-        """PR-first draw of a procurement plan's shared commitment (as opposed
-        to the source-driven ``procurement.plan`` create-from-plan button
-        above): derive the plan, enforce 1-แผน-1-ใบ, link it and copy its
-        procurement method, advance the plan out of ``verified``, then run the
-        base draw — which copies the commitment's dims/account/FY onto the PR
-        + lines, validates via the already-overridden
-        ``_check_drawable_commitment``, and advances state."""
+        """Draw a plan's shared commitment: enforce 1 แผน = 1 พ.1, link the plan,
+        then run the base draw — which copies the commitment's dims/account/FY
+        onto the PR + lines, validates via the already-overridden
+        ``_check_drawable_commitment``, and advances state. The plan starts
+        (``in_progress``) here, at Reserve, not when it is chosen (root
+        ADR-0011). Also the backstop for a slip injected over RPC."""
         plan = self.reservation_commitment_id.procurement_plan_id
         if plan:
-            # Backstop for the picker domain: a พ.1 may only realise a plan that
-            # is waiting to be realised, and the picker is not the only way in
-            # (context default, RPC) — ADR-0006, budget ADR-0015.
-            if plan.state != "verified":
+            # ``in_progress`` is accepted only for the plan's own holder: a
+            # ตีกลับ/แก้ไข return re-reserves after the plan already started, and
+            # พ.1 made by the old create-from-plan button started it at create.
+            holder = self.budget_commitment_id.procurement_plan_id == plan
+            if not (
+                plan.state == "verified" or (plan.state == "in_progress" and holder)
+            ):
                 raise UserError(
                     _(
                         "แผนจัดซื้อจัดจ้าง %s ไม่อยู่สถานะรอดำเนินการ "
@@ -218,14 +247,11 @@ class PurchaseRequest(models.Model):
                     % plan.display_name
                 )
             self._check_one_active_pr(plan)
-            self.write(
-                {
-                    "use_procurement_plan": True,
-                    "procurement_plan_id": plan.id,
-                    "procurement_method_id": plan.procurement_method_id.id,
-                }
-            )
-            plan.action_in_progress()
+            if self.procurement_plan_id != plan:
+                self.write({"procurement_plan_id": plan.id})
+            if plan.state == "verified":
+                # The budget committer holds no write on procurement.plan.
+                plan.sudo().action_in_progress()
         return super()._action_draw_from_reservation()
 
     def _release_commitment_on_draft(self):
@@ -244,94 +270,57 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
         commitment = self.budget_commitment_id
         if commitment and commitment.procurement_plan_id:
-            self.budget_commitment_id = False
+            self.write(
+                {"budget_commitment_id": False, "reservation_commitment_id": False}
+            )
             return True
         return super()._cancel_budget_commitment()
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        records = super().create(vals_list)
-        for record in records.filtered(lambda r: r.procurement_plan_id):
-            record._link_to_procurement_plan()
-        return records
-
     def _check_one_active_pr(self, plan):
-        """Raise unless this PR is the plan's only active (non-rejected) PR
-        (ADR-0006, 1 แผน ต่อ 1 ใบขอซื้อ). Shared by the source-driven
-        create-from-plan link and the PR-first draw-down path."""
-        active_others = plan.purchase_request_ids.filtered(
-            lambda r: r.id != self.id and r.state != "rejected"
+        """Raise unless this PR is the plan's only live PR (1 แผน ต่อ 1 ใบขอซื้อ).
+        Checked when the plan is chosen — that is when it is claimed — and again
+        at Reserve (root ADR-0011). sudo: PR record rules hide other requesters'
+        พ.1, which would let a second claim through."""
+        active_others = plan.sudo().purchase_request_ids.filtered(
+            lambda r: r.id != self.id and r.state not in ("rejected", "cancelled")
         )
         if active_others:
             raise UserError(
-                _(
-                    "แผนจัดซื้อจัดจ้าง %s มีใบขอซื้อที่ยังดำเนินการอยู่แล้ว "
-                    "(1 แผน ต่อ 1 ใบขอซื้อ)"
-                )
+                _("แผนจัดซื้อจัดจ้าง %s มีใบขอซื้อที่ยังดำเนินการอยู่แล้ว (1 แผน ต่อ 1 ใบขอซื้อ)")
                 % plan.display_name
             )
-
-    def _link_to_procurement_plan(self):
-        """A plan-driven PR (created from the plan, ADR-0006) enforces one active
-        PR per plan, links the plan's already-reserved shared commitment, and
-        starts the plan. Reservation itself happened at appropriation post.
-
-        The plan's budget context — budget account, fiscal year and the full
-        analytic distribution — is written here **server-side** instead of being
-        left to the create-from-plan context defaults: those defaults are wiped
-        by ``_onchange_budget_selection_mode`` on the form's first onchange pass,
-        and only happen to survive today because
-        ``_onchange_procurement_plan_id`` runs after it. Same guarantee a project
-        พ.1 already has in ``_link_to_project`` (budget ADR-0007)."""
-        self.ensure_one()
-        plan = self.procurement_plan_id
-        self._check_one_active_pr(plan)
-        vals = {
-            "use_procurement_plan": True,
-            "budget_account_id": plan.budget_account_id.id,
-            "account_fiscal_year_id": plan.account_fiscal_year_id.id,
-            "analytic_distribution": plan.analytic_distribution or False,
-        }
-        if not self.budget_commitment_id:
-            commitment = plan.budget_commitment_ids.filtered(
-                lambda c: c.state in ("reserved", "partial")
-            )[:1]
-            if commitment:
-                vals["budget_commitment_id"] = commitment.id
-        self.write(vals)
-        # write() does not fire the form's _onchange_analytic_distribution, so
-        # push the plan's distribution onto any existing lines explicitly.
-        if self.line_ids and plan.analytic_distribution:
-            self.line_ids.write(
-                {"analytic_distribution": plan.analytic_distribution}
-            )
-        if plan.state == "verified":
-            plan.action_in_progress()
 
     def button_rejected(self):
         res = super().button_rejected()
         for record in self:
-            record._reopen_plan_on_reject()
+            record._release_plan()
         return res
 
-    def _reopen_plan_on_reject(self):
-        """When the single plan-driven PR is rejected, return the plan to
-        ``verified`` so a replacement PR can be created — but only while no draw-down
-        has started and no other active PR exists (ADR-0006, decision ข)."""
+    def button_cancel(self):
+        res = super().button_cancel()
+        for record in self:
+            record._release_plan()
+        return res
+
+    def _release_plan(self):
+        """A rejected or cancelled พ.1 gives its plan back: an undrawn plan was
+        never started (its claim lapses with the พ.1's state), a drawn one returns
+        from ``in_progress`` to ``verified`` so a replacement PR can be made — but
+        only while nothing has been consumed and no other live PR holds it
+        (ADR-0006, root ADR-0011)."""
         self.ensure_one()
-        plan = self.procurement_plan_id
+        plan = self.procurement_plan_id.sudo()
         if not plan or plan.state != "in_progress":
             return
         active_others = plan.purchase_request_ids.filtered(
-            lambda r: r.id != self.id and r.state != "rejected"
+            lambda r: r.id != self.id and r.state not in ("rejected", "cancelled")
         )
         consumed = any(c.total_consumed for c in plan.budget_commitment_ids)
         if active_others or consumed:
             return
         plan.write({"state": "verified"})
         plan.message_post(
-            body=_("ใบขอซื้อ %s ถูกปฏิเสธ แผนกลับสู่สถานะรอดำเนินการ")
-            % self.display_name
+            body=_("ใบขอซื้อ %s ไม่ดำเนินการต่อ แผนกลับสู่สถานะรอดำเนินการ") % self.display_name
         )
 
 
@@ -370,65 +359,7 @@ class ProcurementPlan(models.Model):
         }
         # One plan normally holds a single PR — open it straight in form view.
         if len(self.purchase_request_ids) == 1:
-            action.update(
-                {"view_mode": "form", "res_id": self.purchase_request_ids.id}
-            )
+            action.update({"view_mode": "form", "res_id": self.purchase_request_ids.id})
         else:
             action["view_mode"] = "tree,form"
         return action
-
-    can_create_purchase_request = fields.Boolean(
-        compute="_compute_can_create_purchase_request"
-    )
-
-    @api.depends("state", "purchase_request_ids.state")
-    def _compute_can_create_purchase_request(self):
-        """Show the create-PR button while the plan is verified (budget
-        reserved) and has no active PR."""
-        for rec in self:
-            active = rec.purchase_request_ids.filtered(
-                lambda r: r.state != "rejected"
-            )
-            rec.can_create_purchase_request = (
-                rec.state == "verified" and not active
-            )
-
-    def action_create_purchase_request(self):
-        """Create the plan's single purchase request (ADR-0006). Opens a PR form
-        pre-filled from the plan via context defaults; the existing onchange
-        builds the budget lines. The plan must be verified and hold an
-        active reservation."""
-        self.ensure_one()
-        if self.state != "verified":
-            raise UserError(
-                _("สร้างใบขอซื้อได้เฉพาะแผนที่อยู่สถานะรอดำเนินการเท่านั้น")
-            )
-        if self.purchase_request_ids.filtered(lambda r: r.state != "rejected"):
-            raise UserError(
-                _("แผนนี้มีใบขอซื้อที่ยังดำเนินการอยู่แล้ว (1 แผน ต่อ 1 ใบขอซื้อ)")
-            )
-        commitment = self.budget_commitment_ids.filtered(
-            lambda c: c.state in ("reserved", "partial")
-        )[:1]
-        if not commitment:
-            raise UserError(
-                _("แผนยังไม่ได้จองงบประมาณ ไม่สามารถสร้างใบขอซื้อได้")
-            )
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("สร้างใบขอซื้อจากแผน"),
-            "res_model": "purchase.request",
-            "view_mode": "form",
-            "target": "current",
-            "context": {
-                "default_use_procurement_plan": True,
-                "default_budget_selection_mode": "procurement_plan",
-                "default_procurement_plan_id": self.id,
-                "default_budget_commitment_id": commitment.id,
-                "default_budget_account_id": self.budget_account_id.id,
-                "default_account_fiscal_year_id": self.account_fiscal_year_id.id,
-                "default_procurement_method_id": self.procurement_method_id.id,
-                "default_analytic_distribution": self.analytic_distribution,
-                "default_title": self.description,
-            },
-        }
