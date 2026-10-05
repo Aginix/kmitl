@@ -70,6 +70,36 @@ class WorkAcceptance(models.Model):
         string="Supporting Documents",
     )
 
+    def write(self, vals):
+        # many2many_binary removes chips with FORGET, leaving the underlying
+        # ir.attachment attached to this record — which keeps it visible in
+        # the chatter even though the widget no longer shows it. Treat a
+        # removal from either widget as "delete the file" and unlink the
+        # attachment physically. Compare against the union so moving a file
+        # between the two widgets in one write is not mistaken for a delete.
+        tracked = "attachment_ids" in vals or "supporting_document_ids" in vals
+        before = {}
+        if tracked:
+            for rec in self:
+                before[rec.id] = (
+                    set(rec.attachment_ids.ids)
+                    | set(rec.supporting_document_ids.ids)
+                )
+        res = super().write(vals)
+        if tracked:
+            orphan_ids = set()
+            for rec in self:
+                after = (
+                    set(rec.attachment_ids.ids)
+                    | set(rec.supporting_document_ids.ids)
+                )
+                orphan_ids |= before.get(rec.id, set()) - after
+            if orphan_ids:
+                self.env["ir.attachment"].browse(
+                    list(orphan_ids)
+                ).exists().unlink()
+        return res
+
     work_acceptance_committee_ids = fields.One2many(
         comodel_name="work.acceptance.committee",
         inverse_name="wa_id",
