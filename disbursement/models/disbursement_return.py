@@ -22,8 +22,8 @@ class DisbursementRequest(models.Model):
 
     * return-for-correction: a signed request goes back to ``draft`` for the
       creator to fix and resubmit (``action_resubmit_verification``);
-    * return-to-verification: a verified/approved request goes back to
-      ``signed`` for the officer to re-check.
+    * return-to-verification: a request in progress goes back to the first
+      station for the officer to re-check.
     """
 
     _inherit = "disbursement.request"
@@ -77,9 +77,9 @@ class DisbursementRequest(models.Model):
         head sign.
         """
         self.ensure_one()
-        if self.state != "signed":
+        if not self._is_under_verification():
             raise UserError(
-                _("Only a request under verification (signed) can be returned.")
+                _("Only a request under verification can be returned.")
             )
         self.returned_for_edit = True
         self.action_draft()
@@ -102,7 +102,8 @@ class DisbursementRequest(models.Model):
     def action_resubmit_verification(self):
         """Creator resubmits a corrected request straight back to verification.
 
-        Skips the head sign (already done before the return).
+        Skips the head sign (already done before the return): the request is
+        signed again on the head's behalf, which sends it back to the stations.
         """
         self.ensure_one()
         if not (self.state == "draft" and self.returned_for_edit):
@@ -114,13 +115,14 @@ class DisbursementRequest(models.Model):
                 _("Cannot resubmit a disbursement request with no lines.")
             )
         self.returned_for_edit = False
-        self.state = "signed"
+        self.state = "submitted"
+        self.action_sign()
         self.message_post(body=_("Corrected and returned to verification."))
 
     # -- return to verification (approver / accounting -> officer) -------
     def action_return_verification_open_wizard(self):
         """Open the reason wizard for returning the request to the verification
-        officer (used by the approver at 'verified' and accounting at 'approved')."""
+        officer (used by whoever holds the request at a later station)."""
         self.ensure_one()
         return {
             "name": _("Return to Verification"),
@@ -135,26 +137,20 @@ class DisbursementRequest(models.Model):
         }
 
     def _action_return_to_verification(self, reason):
-        """Send a verified/approved request back to the verification officer.
+        """Send a request in progress back to the verification officer.
 
-        Moves the request to 'signed' (where the officer re-verifies), records
-        the reason, and raises the officer's To-Do. The budget is left
-        untouched: an approved request keeps its obligation/consumption, and a
-        re-approval will not double-cut it (see _action_approve_budget)."""
+        Walks the route again from its first station, records the reason, and
+        raises the officer's To-Do. The budget is left untouched: an approved
+        request keeps its obligation/consumption, and a re-approval will not
+        double-cut it (see _action_approve_budget)."""
         self.ensure_one()
-        if self.state not in ("verified", "approved"):
+        if self.state != "in_progress":
             raise UserError(
-                _("Only a verified or approved request can be returned to "
-                  "verification.")
+                _("Only a request in progress can be returned to verification.")
             )
         self.returned_to_verification = True
         self.return_verification_reason = reason
-        self.state = "signed"
-        # Reset the verification stamp and the two-approver sub-workflow so
-        # re-validation starts a clean cycle (budget stays intact; re-approval is
-        # idempotent). Both archive their signature rows.
-        self._reset_verification()
-        self._reset_approval()
+        self._restart_route(reason)
         # Always raise a "please re-verify" To-Do so the responsible user is
         # aware of the re-check.
         recipient = self._verification_officer()
@@ -174,6 +170,10 @@ class DisbursementRequest(models.Model):
         )
         return True
 
+    def _restart_route(self, reason=None):
+        """Walk the stations again from the first one. Core has no stations; the
+        module that owns them implements this."""
+
     def _clear_returned_to_verification(self):
         act_type = self.env.ref(_ACT_REVERIFY_XMLID, raise_if_not_found=False)
         for rec in self:
@@ -187,11 +187,6 @@ class DisbursementRequest(models.Model):
                 ).unlink()
 
     # -- workflow hooks --------------------------------------------------
-    def action_validate(self):
-        res = super().action_validate()
-        self._clear_returned_to_verification()
-        return res
-
     def action_draft(self):
         res = super().action_draft()
         self._clear_returned_to_verification()

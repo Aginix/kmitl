@@ -9,38 +9,6 @@ from odoo.osv import expression
 class DisbursementRequest(models.Model):
     _inherit = "disbursement.request"
 
-    state = fields.Selection(
-        selection_add=[
-            ("bills_posted", "Bills Posted"),
-            ("cancel",),
-        ],
-        ondelete={"bills_posted": "set default"},
-    )
-
-    pipeline_status = fields.Selection(
-        selection_add=[
-            ("bill_draft", "Bill Draft"),
-            ("bill_posted", "Bill Posted"),
-        ],
-        ondelete={
-            "bill_draft": "set default",
-            "bill_posted": "set default",
-        },
-    )
-
-    display_status = fields.Selection(
-        selection_add=[
-            ("bill_draft", "Bill Draft"),
-            ("bill_posted", "Bill Posted"),
-            ("bills_posted", "Bills Posted"),
-        ],
-        ondelete={
-            "bill_draft": "set default",
-            "bill_posted": "set default",
-            "bills_posted": "set default",
-        },
-    )
-
     bill_ids = fields.One2many(
         comodel_name="account.move",
         inverse_name="disbursement_request_id",
@@ -120,27 +88,6 @@ class DisbursementRequest(models.Model):
             )
             rec.related_move_ids = moves
             rec.related_move_count = len(moves)
-
-    @api.depends("bill_ids", "bill_ids.state")
-    def _compute_pipeline_status(self):
-        super()._compute_pipeline_status()
-        for rec in self:
-            if rec.state not in ("approved", "bills_posted"):
-                continue
-            active_bills = rec.bill_ids.filtered(lambda b: b.state != "cancel")
-            if not active_bills:
-                continue
-            if all(b.state == "posted" for b in active_bills):
-                rec.pipeline_status = "bill_posted"
-            else:
-                rec.pipeline_status = "bill_draft"
-
-    @api.depends("state", "pipeline_status")
-    def _compute_display_status(self):
-        super()._compute_display_status()
-        for rec in self:
-            if rec.state == "bills_posted":
-                rec.display_status = "bills_posted"
 
     # ------------------------------------------------------------------
     # Bill creation

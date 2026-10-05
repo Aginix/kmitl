@@ -13,7 +13,7 @@
                     string="Return"
                     class="btn-warning"
                     groups="disbursement.group_disbursement_officer"
-                    attrs="{'invisible': ['|', ('state', '!=', 'signed'), ('returned_to_source', '=', True)]}"
+                    attrs="{'invisible': ['|', ('under_verification', '=', False), ('returned_to_source', '=', True)]}"
                 />
                 <button
                     name="action_resubmit_verification"
@@ -28,11 +28,12 @@
                     string="Return to Verification"
                     class="btn-warning"
                     groups="disbursement.group_disbursement_manager"
-                    attrs="{'invisible': [('state', '!=', 'verified')]}"
+                    attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('under_verification', '=', True)]}"
                 />
             </xpath>
             <xpath expr="//header/field[@name='state']" position="after">
                 <field name="returned_for_edit" invisible="1" />
+                <field name="under_verification" invisible="1" />
             </xpath>
             <!-- Hide the normal Submit for a returned draft; the creator uses
                  "Resubmit to Verification" instead (which skips the head sign). -->

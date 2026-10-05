@@ -16,6 +16,10 @@ upfront.
   optional split of a research project's `project_value` into `in_cash` (cash KRIS
   receives) and `in_kind` (matching funds that never touch KRIS's cash accounts);
   anchors every cash-flow compute on `in_cash` when installed.
+- [Disbursement Work Stations](./disbursement_wst/CONTEXT.md) — engine that walks a signed
+  disbursement request through central-office work stations along an admin-editable
+  route; each station is its own `disbursement_wst_<station>` module (`verify`,
+  `approve_finance`, `approve_rector` so far).
 - [Budget](./budget/CONTEXT.md) — appropriation, reservation and disbursement tracking;
   appropriated pool (`budget.move`) consumed through a reserve→obligate→consume
   commitment pipeline (`budget.commitment`).

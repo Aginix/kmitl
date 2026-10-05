@@ -157,6 +157,8 @@ class PurchaseRequestApproval(models.Model):
         "payment_authorized": "in_progress",
         "paid": "in_progress",
         "cleared": "done",
+        "in_progress": "in_progress",
+        "done": "done",
     }
     _BILLING_STATUS_RANK = {"draft": 0, "submitted": 1, "in_progress": 2, "done": 3}
 

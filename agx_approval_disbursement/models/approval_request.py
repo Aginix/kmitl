@@ -14,7 +14,7 @@ class ApprovalRequest(models.Model):
     # states that precede budget commitment, plus ``cancel``, is the only
     # comparison that stays correct regardless of which bridges are installed.
     _DISBURSEMENT_NOT_BILLED_STATES = (
-        "draft", "submitted", "signed", "verified", "cancel",
+        "draft", "submitted", "signed", "cancel",
     )
 
     # -- return-correction editability (D3) --------------------------------

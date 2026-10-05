@@ -14,14 +14,12 @@
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
                 <field name="ref" />
                 <field name="amount_total" />
-                <field name="display_status" widget="badge"
-                    decoration-info="display_status == 'draft'"
-                    decoration-warning="display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft')"
-                    decoration-primary="display_status in ('verified', 'bill_posted')"
-                    decoration-success="display_status in ('approved', 'payment_posted', 'done')"
-                    decoration-danger="display_status == 'cancel'" />
-                <field name="state" invisible="1" />
-                <field name="pipeline_status" invisible="1" />
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state in ('submitted', 'signed')"
+                    decoration-primary="state == 'in_progress'"
+                    decoration-success="state == 'done'"
+                    decoration-danger="state == 'cancel'" />
                 <field name="main_exception_id" />
                 <field name="budget_commitment_id" optional="hide" />
                 <field name="department_analytic_id" optional="show" />
@@ -39,21 +37,11 @@
                 <header>
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
                     <button name="action_sign" string="Sign" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="disbursement.group_disbursement_head" />
-                    <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'signed')]}" confirm="Are you sure you want to validate this request?" groups="disbursement.group_disbursement_officer" />
-                    <button name="action_approve_finance" string="Approve (Finance Director)" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'verified'), ('approval_state', '!=', 'pending_finance')]}" groups="disbursement.group_disbursement_finance_director" />
-                    <button name="action_approve" string="Approve (Rector Delegate)" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'verified'), ('approval_state', '!=', 'pending_rector')]}" confirm="Are you sure you want to approve? This will obligate and consume the budget." groups="disbursement.group_disbursement_rector_delegate" />
-                    <button name="action_open_reject_wizard" string="Reject" type="object" attrs="{'invisible': [('approval_state', '!=', 'pending_finance')]}" groups="disbursement.group_disbursement_finance_director" />
-                    <button name="action_open_reject_wizard" string="Reject" type="object" attrs="{'invisible': [('approval_state', '!=', 'pending_rector')]}" groups="disbursement.group_disbursement_rector_delegate" />
-                    <button name="action_request_approval" string="Request Approval Again" type="object" class="oe_highlight" attrs="{'invisible': [('approval_state', '!=', 'rejected')]}" groups="disbursement.group_disbursement_officer" />
                     <button name="action_return_leftover_budget" string="ส่งคืนเงินเหลือจ่าย" type="object" attrs="{'invisible': ['|', ('budget_consumed_amount', '&lt;=', 0), ('budget_available_to_obligate', '&lt;=', 0)]}" groups="disbursement.group_disbursement_manager" />
                     <field name="budget_available_to_obligate" invisible="1"/>
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
-                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': ['|', ('state', 'in', ('draft', 'cancel')), ('pipeline_status', 'in', ('bill_posted', 'payment_draft', 'payment_posted', 'done'))]}" groups="disbursement.group_disbursement_officer" />
-                    <field name="state" invisible="1"/>
-                    <field name="pipeline_status" invisible="1"/>
-                    <field name="display_status" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,approved,bill_draft,bill_posted,payment_draft,payment_posted,done"/>
-                    <!-- Two-approver sub-status, shown only during the approval window -->
-                    <field name="approval_state" widget="statusbar" statusbar_visible="pending_finance,pending_rector" attrs="{'invisible': [('state', '!=', 'verified')]}"/>
+                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel'))]}" groups="disbursement.group_disbursement_officer" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,signed,in_progress,done"/>
                 </header>
                 <!-- Budget Consumed Banner -->
                 <div class="alert alert-success" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}">
@@ -73,11 +61,6 @@
                     <field name="returned_to_verification" invisible="1"/>
                     <strong>Returned to verification:</strong>
                     <field name="return_verification_reason" class="oe_inline" nolabel="1" readonly="1"/>
-                </div>
-                <!-- Approval rejected by an approver -->
-                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('approval_state', '!=', 'rejected')]}">
-                    <strong>Approval rejected:</strong>
-                    <field name="approval_reject_reason" class="oe_inline" nolabel="1" readonly="1"/>
                 </div>
                 <!-- Exception Alert -->
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary','=',False)]}">
@@ -140,12 +123,6 @@
                             <field name="company_id" groups="base.group_multi_company" />
                             <field name="user_id" groups="disbursement.group_disbursement_manager" />
                             <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
-                            <field name="verifier_id" attrs="{'invisible': [('verifier_id', '=', False)]}" />
-                            <field name="verify_date" attrs="{'invisible': [('verifier_id', '=', False)]}" />
-                            <field name="finance_approver_id" attrs="{'invisible': [('finance_approver_id', '=', False)]}" />
-                            <field name="finance_approve_date" attrs="{'invisible': [('finance_approver_id', '=', False)]}" />
-                            <field name="rector_approver_id" attrs="{'invisible': [('rector_approver_id', '=', False)]}" />
-                            <field name="rector_approve_date" attrs="{'invisible': [('rector_approver_id', '=', False)]}" />
                             <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
                             <field name="exception_ids" widget="many2many_tags" readonly="True" groups='base.group_no_one' />
                         </group>
@@ -207,25 +184,6 @@
                             </group>
                             <div class="oe_clear" />
                         </page>
-                        <!-- Read-only: rows are frozen snapshots written by the
-                             workflow, so the officer can check the block before
-                             printing but nobody can edit a signature. -->
-                        <page string="Signatures" name="signatures"
-                              attrs="{'invisible': [('signature_ids', '=', [])]}">
-                            <field name="signature_ids" nolabel="1">
-                                <tree create="0" delete="0" edit="0">
-                                    <field name="step"/>
-                                    <field name="signed_by_id"/>
-                                    <field name="signed_name"/>
-                                    <field name="signed_position_name"/>
-                                    <field name="signed_date"/>
-                                    <!-- signature_image, not the raw snapshot: this
-                                         is exactly what the PDF will print. -->
-                                    <field name="signature_image" widget="image"
-                                           options="{'size': [0, 40]}"/>
-                                </tree>
-                            </field>
-                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
@@ -248,17 +206,12 @@
                 <field name="account_fiscal_year_id" />
                 <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
                 <separator />
-                <filter string="Pre-approval" name="pre_approval" domain="[('pipeline_status', '=', 'pre_approval')]" />
+                <filter string="Pre-approval" name="pre_approval" domain="[('state', 'in', ('draft', 'submitted', 'signed', 'in_progress'))]" />
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />
                 <filter string="Submitted" name="submitted" domain="[('state', '=', 'submitted')]" />
                 <filter string="Signed" name="signed" domain="[('state', '=', 'signed')]" />
-                <filter string="Verified" name="verified" domain="[('state', '=', 'verified')]" />
-                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]" />
-                <filter string="Bill Draft" name="bill_draft" domain="[('pipeline_status', '=', 'bill_draft')]" />
-                <filter string="Bill Posted" name="bill_posted" domain="[('pipeline_status', '=', 'bill_posted')]" />
-                <filter string="Payment Draft" name="payment_draft" domain="[('pipeline_status', '=', 'payment_draft')]" />
-                <filter string="Payment Posted" name="payment_posted" domain="[('pipeline_status', '=', 'payment_posted')]" />
-                <filter string="Done" name="done" domain="[('pipeline_status', '=', 'done')]" />
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]" />
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
                 <separator />
                 <filter icon="fa-exclamation-circle" name="tofix" string="Blocked in Draft" domain="[('main_exception_id','!=',False)]" />
                 <separator />
@@ -291,7 +244,7 @@
                 ไม่มีใบขอเบิกที่อยู่ระหว่างขออนุมัติ
             </p>
             <p>
-                ใบขอเบิกที่กำลังอยู่ในขั้นตอนการอนุมัติ (draft / submitted / signed / verified)
+                ใบขอเบิกที่กำลังอยู่ในขั้นตอนการอนุมัติ (draft / submitted / signed / in progress)
             </p>
         </field>
     </record>

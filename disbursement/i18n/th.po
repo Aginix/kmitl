@@ -1037,6 +1037,7 @@ msgstr "หัวหน้าหน่วยงาน"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__done
 msgid "Done"
 msgstr "เสร็จสิ้น"
 
@@ -1204,6 +1205,7 @@ msgstr "สถานะ"
 #. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__pipeline_status__pre_approval
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__pre_approval
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Pre-approval"
 msgstr "รออนุมัติ"
 
@@ -1220,7 +1222,7 @@ msgstr ""
 
 #. module: disbursement
 #: model:ir.actions.act_window,help:disbursement.action_disbursement_request
-msgid "ใบขอเบิกที่กำลังอยู่ในขั้นตอนการอนุมัติ (draft / submitted / signed / verified)"
+msgid "ใบขอเบิกที่กำลังอยู่ในขั้นตอนการอนุมัติ (draft / submitted / signed / in progress)"
 msgstr ""
 
 #. module: disbursement
@@ -1876,3 +1878,23 @@ msgstr "ใช้งาน"
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signature_image
 msgid "Signature"
 msgstr "ลายเซ็น"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__in_progress
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+msgid "In Progress"
+msgstr "กำลังดำเนินการ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return.py:0
+#, python-format
+msgid "Only a request under verification can be returned."
+msgstr "ส่งกลับได้เฉพาะใบขอเบิกที่อยู่ระหว่างตรวจสอบ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return.py:0
+#, python-format
+msgid "Only a request in progress can be returned to verification."
+msgstr "ส่งกลับไปตรวจสอบได้เฉพาะใบขอเบิกที่อยู่ระหว่างดำเนินการ"

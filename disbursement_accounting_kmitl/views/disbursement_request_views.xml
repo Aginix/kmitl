@@ -6,7 +6,7 @@
         <field name="name">Disbursement Requests</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{"search_default_approved": 1}</field>
+        <field name="context">{"search_default_in_progress": 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 ไม่มีใบขอเบิกที่รออนุมัติเบิก
@@ -33,15 +33,10 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
         <field name="arch" type="xml">
-            <!-- Statusbar: add bills_posted -->
-            <xpath expr="//field[@name='display_status']" position="attributes">
-                <attribute name="statusbar_visible">draft,submitted,signed,verified,approved,bills_posted</attribute>
-            </xpath>
-
-            <!-- Create Bill button placed after Approve. Bills are posted
+            <!-- Create Bill button placed before Reset to draft. Bills are posted
                  through the account.move approval (Approve = post), not from
                  the request, so there is no "Post Bills" button here. -->
-            <xpath expr="//button[@name='action_approve']" position="after">
+            <xpath expr="//button[@name='action_draft']" position="before">
                 <button name="action_create_bill"
                         string="Create Bill"
                         type="object"

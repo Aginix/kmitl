@@ -43,56 +43,6 @@ class DisbursementRequest(models.Model):
 
     _inherit = "disbursement.request"
 
-    state = fields.Selection(
-        selection_add=[
-            ("payment_audited", "Payment Audited"),
-            ("payment_authorized", "Authorized for Disbursement"),
-            ("paid", "Paid"),
-            ("cleared", "Cleared"),
-            ("cancel",),
-        ],
-        ondelete={
-            "payment_audited": "set default",
-            "payment_authorized": "set default",
-            "paid": "set default",
-            "cleared": "set default",
-        },
-    )
-
-    pipeline_status = fields.Selection(
-        selection_add=[
-            ("payment_draft", "Payment Draft"),
-            ("payment_posted", "Payment Posted"),
-            ("done", "Done"),
-        ],
-        ondelete={
-            "payment_draft": "set default",
-            "payment_posted": "set default",
-            "done": "set default",
-        },
-    )
-
-    display_status = fields.Selection(
-        selection_add=[
-            ("payment_draft", "Payment Draft"),
-            ("payment_posted", "Payment Posted"),
-            ("done", "Done"),
-            ("payment_audited", "Payment Audited"),
-            ("payment_authorized", "Authorized for Disbursement"),
-            ("paid", "Paid"),
-            ("cleared", "Cleared"),
-        ],
-        ondelete={
-            "payment_draft": "set default",
-            "payment_posted": "set default",
-            "done": "set default",
-            "payment_audited": "set default",
-            "payment_authorized": "set default",
-            "paid": "set default",
-            "cleared": "set default",
-        },
-    )
-
     payment_subject_id = fields.Many2one(
         comodel_name="kmitl.payment.subject",
         string="Payment Subject",
@@ -183,28 +133,6 @@ class DisbursementRequest(models.Model):
             rec.payment_count = total
             paid = len(active.filtered(lambda p: p.finance_state == "paid"))
             rec.payment_status_display = _("จ่ายแล้ว %s/%s", paid, total) if total else ""
-
-    @api.depends(
-        "state",
-        "bill_ids",
-        "bill_ids.state",
-        "bill_ids.payment_state",
-        "payment_ids",
-        "payment_ids.state",
-    )
-    def _compute_pipeline_status(self):
-        # Base sets pre_approval/approved; the accounting bridge sets
-        # bill_draft/bill_posted while state is approved/bills_posted.
-        super()._compute_pipeline_status()
-        for rec in self:
-            if rec.state == "cleared":
-                rec.pipeline_status = "done"
-            elif rec.state in ("payment_authorized", "paid"):
-                active = rec.payment_ids.filtered(lambda p: p.state != "cancel")
-                if active.filtered(lambda p: p.state == "posted"):
-                    rec.pipeline_status = "payment_posted"
-                elif active:
-                    rec.pipeline_status = "payment_draft"
 
     # ------------------------------------------------------------------
     # Todo fan-out (mirrors accounting_kmitl_workflow._schedule_approval_todo)

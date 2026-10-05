@@ -119,7 +119,7 @@ class DisbursementAssignmentRule(models.Model):
         """
         Request = self.env["disbursement.request"]
         pending = Request.search(
-            [("state", "=", "signed"), ("assigned_to", "=", False)]
+            [("state", "in", ("signed", "in_progress")), ("assigned_to", "=", False)]
         )
         pending._assignment_auto_assign()
         assigned = pending.filtered("assigned_to")

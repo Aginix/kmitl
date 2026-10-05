@@ -1,3 +1,7 @@
+> **Superseded** by `disbursement_wst` ADR-0001: the two approvals are now two work
+> stations on a route and `approval_state` no longer exists. The reasons below for
+> rejecting `base_tier_validation` still stand.
+
 # Two-approver step via a parallel `approval_state` (not tier.validation, not new `state` values)
 
 The `verified → approved` transition on `disbursement.request` requires **two

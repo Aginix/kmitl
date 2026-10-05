@@ -158,8 +158,7 @@ class DisbursementRequest(models.Model):
     """Generic return-to-source layer on the DR.
 
     Loaded after ``disbursement_request_assignment`` so the ``_action_return_for_edit``
-    dispatcher and the ``action_validate`` guard sit on top of the base
-    signed -> draft return-for-correction behaviour in the MRO.
+    dispatcher sits on top of the base return-for-correction behaviour in the MRO.
     """
 
     _inherit = "disbursement.request"
@@ -192,7 +191,7 @@ class DisbursementRequest(models.Model):
     # -- return-for-correction dispatch ----------------------------------
     def _action_return_for_edit(self, reason):
         """Dispatch a return: DRs with a correctable source bounce the source to
-        'returned' (DR kept at 'signed'); the rest fall back to the base
+        'returned' (DR kept under verification); the rest fall back to the base
         signed -> draft return-for-correction."""
         to_source = self.filtered(lambda d: d._get_return_source())
         for record in to_source:
@@ -207,9 +206,9 @@ class DisbursementRequest(models.Model):
         'signed', no budget change). Records the reason, posts chatter on both
         sides, and raises To-Dos for the requester and the officer."""
         self.ensure_one()
-        if self.state != "signed":
+        if not self._is_under_verification():
             raise UserError(
-                _("Only a request under verification (signed) can be returned.")
+                _("Only a request under verification can be returned.")
             )
         self.returned_to_source = True
         self.return_source_reason = reason
@@ -266,28 +265,3 @@ class DisbursementRequest(models.Model):
             )
         )
         return True
-
-    def action_validate(self):
-        """Block validation while a correction is pending on the source side.
-
-        The DR is kept at 'signed' when returned, so without this guard the
-        officer could validate/approve (and obligate budget) against the stale
-        data before the requester confirms the correction."""
-        for record in self:
-            if record.returned_to_source:
-                raise UserError(
-                    _(
-                        "This request was returned to its source document. "
-                        "Please wait for the correction to be confirmed before "
-                        "validating."
-                    )
-                )
-        res = super().action_validate()
-        # The officer acted on the correction: auto-resolve the "continue
-        # verification" / "correction submitted" To-Dos on both sides.
-        for record in self:
-            _resolve_todos(record, _ACT_DR_CONTINUE)
-            source = record._get_return_source()
-            if source:
-                _resolve_todos(source.sudo(), _ACT_SOURCE_DONE)
-        return res

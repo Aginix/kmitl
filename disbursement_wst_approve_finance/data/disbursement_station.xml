@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="station_approve_finance" model="disbursement.station">
+        <field name="code">approve_finance</field>
+        <field name="name">Finance Director Approval</field>
+        <field name="sequence">20</field>
+        <field name="group_id" ref="disbursement_wst_approve_finance.group_disbursement_finance_director" />
+        <field name="is_signature" eval="True" />
+        <field name="activity_type_id" ref="mail_activity_dr_approve_finance" />
+        <field name="requires_codes">verify</field>
+    </record>
+</odoo>

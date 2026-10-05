@@ -68,26 +68,6 @@
         groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"
     />
 
-    <!-- Tree: colour the badge for the new payment-execution states -->
-    <record id="view_disbursement_request_tree_inherit_finance" model="ir.ui.view">
-        <field name="name">disbursement.request.tree.inherit.finance_kmitl</field>
-        <field name="model">disbursement.request</field>
-        <field name="inherit_id" ref="disbursement.view_disbursement_request_tree" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='display_status']" position="attributes">
-                <attribute
-                    name="decoration-warning"
-                >display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft', 'bills_posted', 'payment_audited')</attribute>
-                <attribute
-                    name="decoration-primary"
-                >display_status in ('verified', 'bill_posted', 'payment_authorized')</attribute>
-                <attribute
-                    name="decoration-success"
-                >display_status in ('approved', 'payment_posted', 'done', 'paid', 'cleared')</attribute>
-            </xpath>
-        </field>
-    </record>
-
     <!-- Search: add filters for the post-bill payment-execution states -->
     <record id="view_disbursement_request_search_inherit_finance" model="ir.ui.view">
         <field name="name">disbursement.request.search.inherit.finance_kmitl</field>
@@ -240,13 +220,6 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
         <field name="arch" type="xml">
-            <!-- Extend the status bar with the post-bill payment states -->
-            <xpath expr="//field[@name='display_status']" position="attributes">
-                <attribute
-                    name="statusbar_visible"
-                >draft,submitted,signed,verified,approved,bills_posted,payment_audited,payment_authorized,paid,cleared</attribute>
-            </xpath>
-
             <!-- Payment-execution buttons, placed before Reset to draft -->
             <xpath expr="//button[@name='action_draft']" position="before">
                 <button

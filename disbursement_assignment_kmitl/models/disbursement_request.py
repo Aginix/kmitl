@@ -34,8 +34,8 @@ class DisbursementRequest(models.Model):
         tracking=True,
         index=True,
     )
-    # Not added to READONLY_STATES on purpose: it must stay writable at the
-    # ``signed`` state, which is exactly where officers are assigned.
+    # Not added to READONLY_STATES on purpose: it must stay writable while the
+    # request is under verification, which is exactly when officers are assigned.
     assignment_can_assign_me = fields.Boolean(
         compute="_compute_assignment_can_assign_me",
     )
@@ -159,7 +159,7 @@ class DisbursementRequest(models.Model):
         head who may not read rules) still routes correctly.
         """
         Rule = self.env["disbursement.assignment.rule"].sudo()
-        for rec in self.filtered(lambda r: r.state == "signed"):
+        for rec in self.filtered(lambda r: r._is_under_verification()):
             if not rec.assigned_to:
                 rule = Rule._find_for_request(rec)
                 if not rule:
@@ -174,10 +174,10 @@ class DisbursementRequest(models.Model):
         self._assignment_auto_assign()
         return res
 
-    def action_validate(self):
-        res = super().action_validate()
-        self._assignment_close_activity()
-        return res
+    def _station_complete(self, code):
+        super()._station_complete(code)
+        if code == "verify":
+            self._assignment_close_activity()
 
     def action_draft(self):
         res = super().action_draft()
