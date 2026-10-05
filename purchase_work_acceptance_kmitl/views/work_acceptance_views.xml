@@ -155,7 +155,7 @@
                  <button
                     name="request_validation"
                     string="Request Validation"
-                    attrs="{'invisible': ['|', ('acceptance_type', '!=', 'paperless'), ('state', 'not in', ['draft'])]}"
+                    attrs="{'invisible': ['|', ('wa_tier_validation', '=', False), ('state', 'not in', ['draft'])]}"
                     type="object"
                     groups="purchase.group_purchase_user"
                 />
@@ -299,7 +299,7 @@
                 <attribute name="attrs">
                     {'invisible': ['&amp;',
                         ('state', '!=', 'in_review'),
-                        '|', ('state', '!=', 'draft'), ('acceptance_type', '=', 'paperless')
+                        '|', ('state', '!=', 'draft'), ('wa_tier_validation', '=', True)
                     ]}
                 </attribute>
                 <attribute name="groups">purchase.group_purchase_user</attribute>
@@ -376,7 +376,7 @@
 
             <xpath expr="/form/sheet/notebook" position="before">
                 <group string="Acceptance Evidence" name="acceptance_evidence"
-                       attrs="{'invisible': [('acceptance_type', '!=', 'attachment')]}">
+                       attrs="{'invisible': [('wa_tier_validation', '=', True)]}">
                     <group>
                         <field name="attachment_ids"
                                widget="many2many_binary"
