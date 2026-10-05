@@ -93,7 +93,7 @@
     <template id="report_purchase_request_approval_body">
         <t t-set="currency" t-value="o.currency_id" />
         <div class="my-4" />
-        <p style="text-indent: 6em"> ตาม ใบขอซื้อขอจ้าง,PR ต้องการ<span>
+        <p style="text-indent: 6em"> ตามแบบขอให้จัดหา (พ.1) ต้องการ<span>
                 <span t-field="o.procurement_type_id" />
                 <span t-out="o.product_id.name" />
             </span>
@@ -236,7 +236,7 @@
         <div class="my-4" />
         <p style="text-indent: 6em"> 1.1 ตาม อนุมัติให้จัดซื้อ <span
                 t-field="o.product_id.name"
-            /> จำนวน 1 รายการ เป็นเงิน <span
+            /> จำนวน <t t-out="len(o.line_ids)"/> รายการ เป็นเงิน <span
                 t-out="'{0:,.2f}'.format(o.estimated_cost)"
             /> บาท (<t
                 t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.estimated_cost)"
