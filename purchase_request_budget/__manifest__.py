@@ -11,6 +11,7 @@
         "purchase_request_kmitl",
     ],
     "data": [
+        "security/security.xml",
         "security/ir.model.access.csv",
         "data/purchase_request_exception.xml",
         "views/purchase_request_views.xml",
