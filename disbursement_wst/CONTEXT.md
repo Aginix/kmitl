@@ -20,11 +20,12 @@ when it is signed; later edits never touch a request already on its way.
 
 **Step**:
 One visit of one request to one station (`disbursement.step`): who may act, who did,
-when, and the frozen signature snapshot. Superseded rounds are archived, not deleted.
+when, and the frozen signature snapshot.
 
 **Disposition**:
-How a step ends — `complete` (proceed to the next station) or `return` (archive the
-round and walk the route again, `attempt_seq` + 1).
+How a step ends. There is one way: `complete` — the station is done and the request
+moves on. A request that must go backwards is pulled out of the stations entirely
+(**Reset to draft**, manager only, pre-budget).
 
 **Requirement** (`requires_codes`):
 A station's declared "I must come after these stations", by **code**. A required

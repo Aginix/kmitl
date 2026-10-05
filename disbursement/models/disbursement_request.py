@@ -970,14 +970,23 @@ class DisbursementRequest(models.Model):
             record.under_verification = record._is_under_verification()
 
     def action_draft(self):
-        """Reset to draft"""
+        """Reset to draft.
+
+        Reaches a request already walking the stations, which is the only way
+        back once the stations own the flow -- but only while no budget has
+        been committed: past that point the obligation has to be reversed, and
+        only ``action_cancel`` does that.
+        """
         for record in self:
-            if (
-                record.state not in ("submitted", "signed", "cancel")
-                and not record._is_under_verification()
-            ):
+            if record.state not in ("submitted", "signed", "in_progress", "cancel"):
                 raise UserError(
-                    _("Only submitted, sent, or cancelled requests can be reset to draft.")
+                    _("Only submitted, sent, in-progress or cancelled requests "
+                      "can be reset to draft.")
+                )
+            if record.state == "in_progress" and record.budget_consumed_amount:
+                raise UserError(
+                    _("This request has already committed budget. Cancel it "
+                      "instead of resetting it to draft.")
                 )
             record.state = "draft"
             record.exception_ids = False

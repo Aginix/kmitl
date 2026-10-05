@@ -1064,8 +1064,18 @@ msgstr "สามารถอนุมัติได้เฉพาะคำข
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
-msgid "Only submitted, sent, or cancelled requests can be reset to draft."
-msgstr "สามารถกลับไปฉบับร่างได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ยืนยันแล้ว\" \"ลงนามแล้ว\" หรือ \"ยกเลิก\" เท่านั้น"
+msgid ""
+"Only submitted, sent, in-progress or cancelled requests can be reset to "
+"draft."
+msgstr "สามารถกลับไปฉบับร่างได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ยืนยันแล้ว\" \"ลงนามแล้ว\" \"อยู่ระหว่างดำเนินการ\" หรือ \"ยกเลิก\" เท่านั้น"
+
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"This request has already committed budget. Cancel it instead of resetting it "
+"to draft."
+msgstr "คำขอเบิกนี้ตัดงบประมาณไปแล้ว กรุณายกเลิกคำขอแทนการกลับไปฉบับร่าง"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form

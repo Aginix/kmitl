@@ -64,18 +64,24 @@ class TestTwoApprover(TransactionCase):
             "disbursement_wst_approve_finance.mail_activity_dr_approve_finance")
         cls.act_rector = cls.env.ref(
             "disbursement_wst_approve_rector.mail_activity_dr_approve_rector")
+        # These tests walk the three request-phase stations end to end, so the
+        # route must hold exactly those: any further station module installed
+        # alongside (billing, payment, ...) appends its own line to the same
+        # standard route and would leave the request short of ``done``.
+        cls.env.ref("disbursement_wst.route_default").line_ids.filtered(
+            lambda line: line.station_id.code
+            not in ("verify", "approve_finance", "approve_rector")
+        ).unlink()
 
     def _todos(self, dr, act_type):
         return dr.activity_ids.filtered(lambda a: a.activity_type_id == act_type)
 
-    def _act(self, dr, user, disposition="complete", vals=None):
+    def _act(self, dr, user, note=None):
         """Act on the request's current step as ``user``."""
-        return dr.current_step_id.with_user(user).act(disposition, vals)
+        return dr.current_step_id.with_user(user).act(note)
 
-    def _steps(self, dr, active=True):
-        return self.Step.with_context(active_test=False).search([
-            ("request_id", "=", dr.id), ("active", "=", active),
-        ])
+    def _steps(self, dr):
+        return self.Step.search([("request_id", "=", dr.id)])
 
     def _make_signed_dr(self):
         dr = self.DR.create({
@@ -171,43 +177,6 @@ class TestTwoApprover(TransactionCase):
         with self.assertRaises(AccessError):
             self._act(dr, self.rector)
         self.assertEqual(dr.station_code, "approve_finance")
-        # Returning is gated by the same group.
-        with self.assertRaises(AccessError):
-            self._act(dr, self.rector, "return", {"note": "nope"})
-
-    def test_return_requires_a_note(self):
-        dr = self._make_verified_dr()
-        with self.assertRaises(UserError):
-            self._act(dr, self.finance, "return")
-
-    def test_return_archives_round_and_reseeds_from_first_station(self):
-        dr = self._make_verified_dr()
-        self.assertEqual(dr.attempt_seq, 1)
-        self._act(dr, self.finance, "return", {"note": "recheck"})
-        self.assertEqual(dr.state, "in_progress")
-        self.assertEqual(dr.attempt_seq, 2)
-        self.assertEqual(dr.station_code, "verify")
-        self.assertTrue(dr.returned_to_verification)
-        self.assertEqual(dr.return_verification_reason, "recheck")
-        self.assertFalse(self._todos(dr, self.act_finance))
-        self.assertFalse(self._todos(dr, self.act_rector))
-
-        # The first round is archived, whole; a fresh round is seeded.
-        archived = self._steps(dr, active=False)
-        self.assertEqual(len(archived), 3)
-        self.assertEqual(set(archived.mapped("attempt_seq")), {1})
-        current = self._steps(dr)
-        self.assertEqual(len(current), 3)
-        self.assertEqual(set(current.mapped("attempt_seq")), {2})
-        self.assertEqual(
-            current.sorted("sequence").mapped("state"),
-            ["active", "waiting", "waiting"],
-        )
-
-        # The new round walks the route from the first station again.
-        self._act(dr, self.officer)
-        self.assertEqual(dr.station_code, "approve_finance")
-        self.assertIn(self.finance, self._todos(dr, self.act_finance).user_id)
 
     def test_cancel_clears_the_route(self):
         dr = self._make_verified_dr()

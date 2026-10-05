@@ -573,7 +573,7 @@ def _approve_dr(dr):
     # Walk the route: verification and the two approvers (the last commits the
     # budget), up to the billing station, which completes when the bills post.
     while dr.current_step_id and dr.station_code != "bill":
-        dr.current_step_id.act("complete")
+        dr.current_step_id.act()
 
 
 def _bill_dr(dr, wht_tax=None):

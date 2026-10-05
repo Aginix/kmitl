@@ -23,15 +23,15 @@ takeover is allowed.
 _Avoid_: Review, Approve, Assigned officer.
 
 **Under verification** (`under_verification`):
-Where the verification officer may return the request to the requester or its source
-document for correction. Core says only `signed`; the verify station widens it to
-"in progress at the `verify` station".
+Where the request is the verification officer's to work on, which is what the
+officer-assignment addon keys its assign buttons off. Core says only `signed`; the
+verify station widens it to "in progress at the `verify` station".
 
-**Return to verification** (ตีกลับไปตรวจสอบ):
-Whoever holds the request at a later station sends it back to the verification
-officer with a reason. The route is walked again from its first station; the budget
-obligation is kept and a re-approval does not cut it twice.
-_Avoid_: Reject (there is no separate reject), Cancel (terminal).
+**Reset to draft** (ตีกลับไปแก้ไข):
+A manager pulls a request back out of the stations so the requester can correct it.
+The only way backwards, and only while no budget has been committed — past that
+point the obligation has to be reversed, which only **Cancel** does.
+_Avoid_: Return (there is no separate return flow), Reject.
 
 **Head-of-department approval** (การลงนามของหัวหน้าส่วนงาน):
 The signature that moves a submitted request to `signed`, performed by the head

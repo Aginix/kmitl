@@ -84,10 +84,7 @@ upfront.
   involved); the payee is deliberately **not** on the plan — the recipient is settled
   later at disbursement. Routed for approval through e-Saraban.
 - [Approval ↔ Disbursement Bridge](./agx_approval_disbursement/CONTEXT.md) — links an
-  Approval Request to the Disbursement Request it is billed into; returning a
-  disbursement keeps it intact (at `signed`) and bounces the approval request to
-  `returned`, where the requester corrects a limited set of fields and confirms to push
-  them back onto the disbursement.
+  Approval Request to the Disbursement Request it is billed into.
 - [KMITL Finance](./finance_kmitl/CONTEXT.md) — the finance office's side of paying
   money out: the **ใบจ่ายเงิน** (which _is_ an `account.move`), its **money side** /
   **booking side** split, the finance office's own `finance_state`, and the instrument
@@ -188,12 +185,6 @@ upfront.
   the payee holds it, so cancelling one takes its voucher back to `confirmed` while the
   request stays `paid` — the only way backwards in the whole phase (`finance_kmitl`
   ADR-0007).
-- **Disbursement → Approval (return)**: returning a `disbursement.request` at `signed`
-  keeps it untouched (still `signed`, budget unchanged) and bounces the linked
-  `approval.request` to `returned`; the requester corrects only the payee bank,
-  description and disbursement evidence, then **Confirm Correction** pushes those onto
-  the kept disbursement and moves the AR back to `billed` (`agx_approval_disbursement`
-  ADR-0001).
 - **Approval Request ↔ Advance Payment**: once a request is `approved`, each participant
   who is an internal employee may **pull** their own สัญญายืม and pick the request on
   the loan form — the request never pushes loans out. A request may back several loans,

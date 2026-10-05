@@ -31,7 +31,6 @@
         <field name="arch" type="xml">
             <xpath expr="//header/button[@name='action_draft']" position="before">
                 <button name="action_create_bill" string="Create Bill" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('station_code', '!=', 'bill'), ('bill_count', '>', 0)]}" groups="accounting_kmitl.group_accounting_kmitl_user" />
-                <button name="action_return_verification_open_wizard" string="Return to Verification" type="object" class="btn-warning" attrs="{'invisible': ['|', ('station_code', '!=', 'bill'), ('bill_count', '>', 0)]}" groups="accounting_kmitl.group_accounting_kmitl_user" />
             </xpath>
         </field>
     </record>

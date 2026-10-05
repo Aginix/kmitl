@@ -91,25 +91,24 @@ class TestSignatureBlock(TransactionCase):
         })
         return user
 
-    def _sigs(self, dr, station=None, active=True):
-        """The completed steps of one round (active) or of archived rounds."""
+    def _sigs(self, dr, station=None):
+        """The completed steps of the request."""
         domain = [
             ("request_id", "=", dr.id),
-            ("active", "=", active),
             ("state", "=", "done"),
             ("disposition", "=", "complete"),
         ]
         if station:
             domain.append(("station_code", "=", station))
-        return self.env[_STEP].with_context(active_test=False).search(domain)
+        return self.env[_STEP].search(domain)
 
     def _printed(self, dr):
         """What the signature block of the PDF iterates over."""
         dr.invalidate_recordset(["signature_step_ids"])
         return dr.signature_step_ids
 
-    def _act(self, dr, user, disposition="complete", vals=None):
-        return dr.current_step_id.with_user(user).act(disposition, vals)
+    def _act(self, dr, user, note=None):
+        return dr.current_step_id.with_user(user).act(note)
 
     def _make_signed_dr(self):
         dr = self.DR.create({
@@ -223,41 +222,12 @@ class TestSignatureBlock(TransactionCase):
         step.invalidate_recordset()
         self.assertEqual(step.signature_image, captured)
 
-    # ------------------------------------------------------------------
-    # Superseded rounds are archived, not deleted
-    # ------------------------------------------------------------------
-    def test_return_archives_the_previous_round_and_it_is_not_printed(self):
-        dr = self._make_signed_dr()
-        self._act(dr, self.officer)
-        self._act(dr, self.finance)
-        self._act(dr, self.rector, "return", {"note": "recheck"})
-
-        self.assertEqual(dr.state, "in_progress")
-        self.assertEqual(dr.station_code, "verify")
-        self.assertEqual(dr.attempt_seq, 2)
-        # Nothing of the superseded round is printed...
-        self.assertFalse(self._sigs(dr))
-        self.assertFalse(self._printed(dr))
-        # ...but the signatures that were given stay on file, archived (the
-        # returning step itself carries no signature).
-        archived = self._sigs(dr, active=False)
-        self.assertEqual(
-            archived.mapped("station_code"), ["verify", "approve_finance"]
-        )
-
-        self._act(dr, self.officer)
-        self._act(dr, self.finance)
-        self.assertEqual(
-            self._printed(dr).mapped("station_code"),
-            ["verify", "approve_finance"],
-        )
-        self.assertEqual(len(self._sigs(dr, active=False)), 2)
-
-    def test_reset_to_draft_archives_everything(self):
+    def test_reset_to_draft_drops_every_step(self):
+        """A reset starts the journey over: the steps go, the chatter stays."""
         dr = self._make_signed_dr()
         self._act(dr, self.officer)
         self._act(dr, self.finance)
         dr.action_cancel()
         dr.action_draft()
         self.assertFalse(self._printed(dr))
-        self.assertEqual(len(self._sigs(dr, active=False)), 2)
+        self.assertFalse(self._sigs(dr))

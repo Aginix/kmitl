@@ -279,7 +279,7 @@ class TestDisbursementAssignment(TransactionCase):
         dr = self._make_dr()
         self.assertTrue(self._todos(dr, self.officer_a))
         self.assertEqual(dr.station_code, "verify")
-        dr.current_step_id.with_user(self.officer_b).act("complete")
+        dr.current_step_id.with_user(self.officer_b).act()
         self.assertFalse(dr._is_under_verification())
         self.assertFalse(self._todos(dr, self.officer_a))
 

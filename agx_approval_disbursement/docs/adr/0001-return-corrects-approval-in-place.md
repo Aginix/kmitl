@@ -1,3 +1,9 @@
+> **Superseded** by `disbursement_wst` ADR-0004: the disbursement no longer has a
+> return-to-source flow at all. A request that needs correcting is pulled out of the
+> stations entirely (**Reset to draft**, manager only, pre-budget) and the approval
+> request is corrected through its own Saraban return. The `returned` state described
+> below survives — it is `agx_approval`'s own, not this bridge's.
+
 # Return a disbursement by correcting its approval in place, not by re-issuing
 
 When a Disbursement Request is returned at `signed` because its approval data is wrong, we keep the DR exactly as-is (still `signed`, budget untouched) and bounce the linked Approval Request to a new `returned` state. There the requester may edit only three fields — payee bank account, description, and disbursement evidence — and **Confirm Correction** pushes those onto the kept DR (note, per-line recipient bank, extra evidence attachments) and moves the AR back to `billed`; the officer then continues verifying the same DR.

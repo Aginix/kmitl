@@ -17,7 +17,7 @@ class DisbursementStep(models.Model):
     _name = "disbursement.step"
     _description = "Disbursement Step"
     _inherit = ["state.leadtime.mixin"]
-    _order = "attempt_seq, sequence, id"
+    _order = "sequence, id"
 
     request_id = fields.Many2one(
         "disbursement.request", required=True, ondelete="cascade", index=True
@@ -51,9 +51,7 @@ class DisbursementStep(models.Model):
         readonly=True,
         help="Members of the station's group when the step was activated.",
     )
-    disposition = fields.Selection(
-        [("complete", "Complete"), ("return", "Return")], readonly=True
-    )
+    disposition = fields.Selection([("complete", "Complete")], readonly=True)
     acted_by_id = fields.Many2one("res.users", readonly=True)
     acted_date = fields.Datetime(readonly=True)
     activated_date = fields.Datetime(readonly=True)
@@ -74,10 +72,6 @@ class DisbursementStep(models.Model):
         "employee signature when the snapshot is empty.",
     )
 
-    # A returned round is archived so the PDF prints only the current one while
-    # the history stays.
-    active = fields.Boolean(default=True)
-    attempt_seq = fields.Integer(default=1, index=True)
     can_act = fields.Boolean(compute="_compute_can_act")
 
     @api.depends("signed_signature", "acted_by_id")
@@ -99,7 +93,7 @@ class DisbursementStep(models.Model):
             step.can_act = step.state == "active" and step.station_id.group_id in groups
 
     # ----------------------------------------------------------------- acting
-    def _check_act_allowed(self, disposition):
+    def _check_act_allowed(self):
         self.ensure_one()
         if self.state != "active":
             raise UserError(_("This step is not active."))
@@ -107,24 +101,14 @@ class DisbursementStep(models.Model):
             raise AccessError(
                 _("You are not authorised to act at station %s.", self.station_id.name)
             )
-        if disposition not in ("complete", "return"):
-            raise UserError(_("Unknown disposition: %s", disposition))
 
-    def act(self, disposition, vals=None):
+    def act(self, note=None):
         """The single entry point for every transition of a step."""
         self.ensure_one()
-        vals = vals or {}
-        self._check_act_allowed(disposition)
+        self._check_act_allowed()
         # Authority is verified above; the transition itself is a system
         # operation (the actor is recorded in acted_by_id, env.user is kept).
-        step = self.sudo()
-        request = step.request_id
-        if disposition == "complete":
-            step._do_complete(vals.get("note"))
-        else:
-            if not vals.get("note"):
-                raise UserError(_("A note is required to return a request."))
-            request._action_return_to_verification(vals["note"])
+        self.sudo()._do_complete(note)
         return True
 
     def _do_complete(self, note=None):
@@ -166,7 +150,7 @@ class DisbursementStep(models.Model):
         self.ensure_one()
         request = self.request_id
         for step in request.step_ids.filtered(
-            lambda s: s.state == "waiting" and s.attempt_seq == self.attempt_seq
+            lambda s: s.state == "waiting"
         ).sorted(lambda s: (s.sequence, s.id)):
             if _domain_matches(step.condition_domain, request):
                 step._activate()

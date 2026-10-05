@@ -13,7 +13,6 @@ class DisbursementRequest(models.Model):
     step_ids = fields.One2many(
         "disbursement.step", "request_id", string="Steps", readonly=True, copy=False
     )
-    attempt_seq = fields.Integer(default=1, copy=False)
     current_step_id = fields.Many2one(
         "disbursement.step",
         compute="_compute_current_step_id",
@@ -58,7 +57,7 @@ class DisbursementRequest(models.Model):
                 else False
             )
 
-    @api.depends("step_ids.state", "step_ids.active")
+    @api.depends("step_ids.state")
     def _compute_current_step_id(self):
         for request in self:
             step = request.step_ids.filtered(lambda s: s.state == "active")[:1]
@@ -98,22 +97,16 @@ class DisbursementRequest(models.Model):
             request.state = "in_progress"
             request._seed_steps()
 
-    def _restart_route(self, reason=None):
-        """Return: archive the current round and walk the route again."""
-        for request in self.sudo():
-            if request.current_step_id:
-                request.current_step_id._stamp("return", reason)
-            request.step_ids.write({"active": False})
-            request.attempt_seq += 1
-            request._seed_steps()
-
     def _reset_route(self):
-        """Drop the route (cancel / back to draft): clear its Todos, archive it."""
+        """Drop the route (cancel / back to draft): clear its Todos and steps.
+
+        The steps are deleted rather than archived: a reset starts the journey
+        over, and what happened is already in the chatter.
+        """
         for request in self.sudo().filtered("step_ids"):
             request.step_ids._clear_activities()
-            request.step_ids.write({"active": False})
+            request.step_ids.unlink()
             request.route_id = False
-            request.attempt_seq += 1
 
     def _seed_steps(self):
         self.ensure_one()
@@ -124,7 +117,6 @@ class DisbursementRequest(models.Model):
                     "station_id": line.station_id.id,
                     "sequence": line.sequence,
                     "condition_domain": line.condition_domain,
-                    "attempt_seq": self.attempt_seq,
                 }
                 for line in self.route_id.line_ids
             ]
@@ -145,17 +137,11 @@ class DisbursementRequest(models.Model):
         self._reset_route()
         return res
 
-    def _action_return_to_verification(self, reason):
-        # Only whoever holds the request at its current station may send it back.
-        for request in self.filtered("current_step_id"):
-            request.current_step_id._check_act_allowed("return")
-        return super()._action_return_to_verification(reason)
-
     # --------------------------------------------------------------- actions
     def action_station_complete(self):
         """Proceed: complete the current station's step."""
         for request in self:
-            request.current_step_id.act("complete")
+            request.current_step_id.act()
         return True
 
     def action_act_batch(self):
