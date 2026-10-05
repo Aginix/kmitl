@@ -35,7 +35,7 @@ class DisbursementRequest(models.Model):
     current_holder_ids = fields.Many2many(
         "res.users", related="current_step_id.actor_user_ids"
     )
-    can_act = fields.Boolean(related="current_step_id.can_act")
+    can_act = fields.Boolean(compute="_compute_can_act")
     signature_step_ids = fields.Many2many(
         "disbursement.step", compute="_compute_signature_step_ids"
     )
@@ -46,6 +46,17 @@ class DisbursementRequest(models.Model):
             (station.code, station.name)
             for station in self.env["disbursement.station"].search([])
         ]
+
+    @api.depends("current_step_id.station_id.group_id")
+    @api.depends_context("uid")
+    def _compute_can_act(self):
+        groups = self.env.user.groups_id
+        for request in self:
+            request.can_act = (
+                request.current_step_id.station_id.group_id in groups
+                if request.current_step_id
+                else False
+            )
 
     @api.depends("step_ids.state", "step_ids.active")
     def _compute_current_step_id(self):
