@@ -365,7 +365,7 @@
                 </attribute>
             </xpath>
 
-            <xpath expr="//field[@name='date_due']" position="before">
+            <xpath expr="//field[@name='company_id']" position="after">
                 <xpath expr="//field[@name='invoice_ref']" position="move"/>
             </xpath>
 
