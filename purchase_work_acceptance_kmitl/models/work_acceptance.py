@@ -24,7 +24,6 @@ class WorkAcceptance(models.Model):
         readonly=True,
         default=True,
         states={"draft": [("readonly", False)]},
-        tracking=True,
         help="If checked, WA created will be approved by committee by tier validation."
         "Each committee will be notified (by email or inbox) to approve WA.\n"
         "If not checked, WA will be approved by paper outside Odoo, "
@@ -41,7 +40,6 @@ class WorkAcceptance(models.Model):
         string="Acceptance Type",
         compute="_compute_acceptance_type",
         inverse="_inverse_acceptance_type",
-        store=True,
         readonly=False,
         tracking=True,
     )
@@ -57,26 +55,12 @@ class WorkAcceptance(models.Model):
         for rec in self:
             rec.wa_tier_validation = rec.acceptance_type == "paperless"
 
-    @api.model
-    def default_get(self, fields_list):
-        defaults = super().default_get(fields_list)
-        if "acceptance_type" in fields_list and "acceptance_type" not in defaults:
-            defaults["acceptance_type"] = (
-                "paperless"
-                if defaults.get("wa_tier_validation", True)
-                else "attachment"
-            )
-        return defaults
-    # attachment_ids is the "regular" documents tab on the paper-WA flow.
-    # Kept separate from supporting_document_ids by excluding the m2m set
-    # at compute time — do NOT distinguish via ir.attachment.res_field: any
-    # value there triggers AccessError for non-system users in Odoo core
-    # (see odoo/addons/base/models/ir_attachment.py — check()).
     attachment_ids = fields.Many2many(
         "ir.attachment",
+        "work_acceptance_attachment_rel",
+        "wa_id",
+        "attachment_id",
         string="Document Attachments",
-        compute="_compute_attachment_ids",
-        inverse="_inverse_attachment_ids",
     )
     supporting_document_ids = fields.Many2many(
         "ir.attachment",
@@ -85,34 +69,6 @@ class WorkAcceptance(models.Model):
         "attachment_id",
         string="Supporting Documents",
     )
-
-    @api.depends("supporting_document_ids")
-    def _compute_attachment_ids(self):
-        # Filter ("res_field", "=", False) is defensive: legacy rows still
-        # carry res_field='supporting_document_ids' from PR #1026, and any
-        # read on them raises AccessError for non-system users. Even after
-        # the SQL cleanup that resets them, the filter also guards against
-        # future stray res_field values leaking into this list.
-        Attachment = self.env["ir.attachment"]
-        for rec in self:
-            if not isinstance(rec.id, int):
-                rec.attachment_ids = Attachment
-                continue
-            atts = Attachment.search([
-                ("res_model", "=", "work.acceptance"),
-                ("res_id", "=", rec.id),
-                ("res_field", "=", False),
-            ])
-            rec.attachment_ids = atts - rec.supporting_document_ids
-
-    def _inverse_attachment_ids(self):
-        for rec in self:
-            for att in rec.attachment_ids:
-                if att.res_model != "work.acceptance" or att.res_id != rec.id:
-                    att.write({
-                        "res_model": "work.acceptance",
-                        "res_id": rec.id,
-                    })
 
     work_acceptance_committee_ids = fields.One2many(
         comodel_name="work.acceptance.committee",
