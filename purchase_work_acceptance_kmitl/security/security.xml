@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="group_process_wa" model="res.groups">
+        <field name="name">สามารถดำเนินการใบตรวจรับ (WA) ได้</field>
+        <field name="category_id" ref="base.module_category_hidden" />
+    </record>
+
+    <record id="base.group_erp_manager" model="res.groups">
+        <field
+            name="implied_ids"
+            eval="[(4, ref('purchase_work_acceptance_kmitl.group_process_wa'))]"
+        />
+    </record>
+
+    <record
+        id="purchase_work_acceptance.access_work_acceptance"
+        model="ir.model.access"
+    >
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+    <record
+        id="purchase_work_acceptance.access_work_acceptance_line"
+        model="ir.model.access"
+    >
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="purchase_work_acceptance.menu_work_acceptance" model="ir.ui.menu">
+        <field
+            name="groups_id"
+            eval="[(6, 0, [ref('purchase_work_acceptance_kmitl.group_process_wa')])]"
+        />
+    </record>
+</odoo>

@@ -45,11 +45,11 @@
                 <field name="contract_number" readonly="1" />
             </xpath>
             <xpath expr="//header/button[@name='button_draft']" position="attributes">
-                <attribute name="groups">purchase.group_purchase_user</attribute>
+                <attribute name="groups">purchase_work_acceptance_kmitl.group_process_wa</attribute>
             </xpath>
             <xpath expr="//header/button[@name='button_cancel']" position="attributes">
                 <attribute name="states">draft,in_review</attribute>
-                <attribute name="groups">purchase.group_purchase_user</attribute>
+                <attribute name="groups">purchase_work_acceptance_kmitl.group_process_wa</attribute>
                 <attribute name="confirm">Are you sure you want to Cancel?</attribute>
             </xpath>
             <xpath expr="//header/button[@name='button_cancel']" position="after">
@@ -58,7 +58,7 @@
                     type="object"
                     states="accept"
                     string="Cancel"
-                    groups="purchase.group_purchase_manager"
+                    groups="purchase_work_acceptance_kmitl.group_process_wa"
                     confirm="Are you sure you want to Cancel?"
                 />
             </xpath>
@@ -165,14 +165,14 @@
                     string="Request Validation"
                     attrs="{'invisible': ['|', ('wa_tier_validation', '!=', True), ('state', 'not in', ['draft'])]}"
                     type="object"
-                    groups="purchase.group_purchase_user"
+                    groups="purchase_work_acceptance_kmitl.group_process_wa"
                 />
                 <button
                     name="restart_validation"
                     string="Restart Validation"
                     attrs="{'invisible': ['|',('review_ids', '=', []),('state', 'not in', ['draft'])]}"
                     type="object"
-                    groups="purchase.group_purchase_user"
+                    groups="purchase_work_acceptance_kmitl.group_process_wa"
                 />
             </xpath>
             <header position="after">
@@ -310,7 +310,7 @@
                         '|', ('state', '!=', 'draft'), ('wa_tier_validation', '=', True)
                     ]}
                 </attribute>
-                <attribute name="groups">purchase.group_purchase_user</attribute>
+                <attribute name="groups">purchase_work_acceptance_kmitl.group_process_wa</attribute>
             </xpath>
 
             <xpath expr="//field[@name='product_id']" position="attributes">
@@ -537,5 +537,6 @@
               name="Work Acceptance"
               parent="purchase_kmitl.menu_purchase_contract_root"
               action="purchase_work_acceptance.action_work_acceptance"
+              groups="purchase_work_acceptance_kmitl.group_process_wa"
               sequence="20"/>
 </odoo>
