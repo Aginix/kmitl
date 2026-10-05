@@ -1069,6 +1069,7 @@ msgid ""
 "draft."
 msgstr "สามารถกลับไปฉบับร่างได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ยืนยันแล้ว\" \"ลงนามแล้ว\" \"อยู่ระหว่างดำเนินการ\" หรือ \"ยกเลิก\" เท่านั้น"
 
+#. module: disbursement
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
