@@ -82,6 +82,18 @@ class PurchaseRequest(models.Model):
                 ("budget_account_id.product_id", "!=", False),
             ]
 
+    def copy(self, default=None):
+        # The copy is not under the plan (1 แผน = 1 พ.1), so it must not keep the
+        # plan's code and dims either, or Reserve would reserve anew on them.
+        default = dict(default or {})
+        if self.use_procurement_plan:
+            default.setdefault("budget_account_id", False)
+            default.setdefault("analytic_distribution", False)
+        new = super().copy(default)
+        if self.use_procurement_plan:
+            new.line_ids.write({"analytic_distribution": False})
+        return new
+
     def _procurement_under_fields(self):
         return super()._procurement_under_fields() | {"procurement_plan_id"}
 
@@ -296,10 +308,11 @@ class PurchaseRequest(models.Model):
             record._release_plan()
         return res
 
-    def button_cancel(self):
-        res = super().button_cancel()
-        for record in self:
-            record._release_plan()
+    def _action_do_cancel(self, reason):
+        # Not button_cancel: that only opens the cancel wizard, and สารบรรณ
+        # cancels through here directly.
+        res = super()._action_do_cancel(reason)
+        self._release_plan()
         return res
 
     def _release_plan(self):
