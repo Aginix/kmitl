@@ -89,8 +89,9 @@ class PurchaseRequest(models.Model):
             ]
 
     def copy(self, default=None):
-        # The copy is not under the plan (1 แผน = 1 พ.1), so it must not keep the
-        # plan's code and dims either, or Reserve would reserve anew on them.
+        # The copy stays under "แผนจัดซื้อจัดจ้าง" but not under this plan (1 แผน =
+        # 1 พ.1): it must not keep the plan's code and dims either, or Reserve
+        # would reserve anew on them. The requester picks another plan.
         default = dict(default or {})
         if self.use_procurement_plan:
             default.setdefault("budget_account_id", False)
@@ -106,14 +107,14 @@ class PurchaseRequest(models.Model):
     def _prepare_procurement_under_vals(self):
         """A chosen plan is claimed (1 แผน = 1 พ.1) and brings its budget code,
         fiscal year, full analytic distribution and procurement method — root
-        ADR-0011. Choosing another answer releases it."""
+        ADR-0011. The mode is the answer, the plan only its detail: any other
+        mode releases the plan, never the other way round."""
         vals = super()._prepare_procurement_under_vals()
         plan = self.procurement_plan_id
-        if plan and self.budget_selection_mode in ("normal", "procurement_plan"):
+        if plan and self.budget_selection_mode == "procurement_plan":
             self._check_one_active_pr(plan)
             vals.update(
                 {
-                    "budget_selection_mode": "procurement_plan",
                     "use_procurement_plan": True,
                     "budget_account_id": plan.budget_account_id.id,
                     "account_fiscal_year_id": plan.account_fiscal_year_id.id,

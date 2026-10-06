@@ -56,7 +56,9 @@ class PurchaseRequest(models.Model):
         ],
         string="จัดซื้อภายใต้",
         default="normal",
-        copy=False,
+        # The answer itself, never inferred from the project/plan picked: a
+        # copy keeps it (root ADR-0011).
+        copy=True,
         tracking=True,
         help=(
             "ใบขอซื้อนี้จัดซื้อภายใต้อะไร — งบประมาณปกติ (จองใหม่) หรือโครงการ/กิจกรรม "

@@ -91,13 +91,13 @@ class PurchaseRequest(models.Model):
     def _prepare_procurement_under_vals(self):
         """A chosen project brings its budget code, fiscal year and full
         analytic distribution (4 dims + its own kmitl_project dim), locked —
-        root ADR-0011. Choosing another answer drops the project."""
+        root ADR-0011. The mode is the answer, the project only its detail:
+        any other mode drops the project, never the other way round."""
         vals = super()._prepare_procurement_under_vals()
         project = self.kmitl_project_id
-        if project and self.budget_selection_mode in ("normal", "project"):
+        if project and self.budget_selection_mode == "project":
             vals.update(
                 {
-                    "budget_selection_mode": "project",
                     "use_project": True,
                     "budget_account_id": project.budget_account_id.id,
                     "account_fiscal_year_id": project.account_fiscal_year_id.id,

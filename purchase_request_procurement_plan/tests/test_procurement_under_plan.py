@@ -162,6 +162,8 @@ class TestProcurementUnderPlan(TransactionCase):
 
         copy = pr.copy()
 
+        # Still under "แผนจัดซื้อจัดจ้าง", but the requester picks another plan.
+        self.assertEqual(copy.budget_selection_mode, "procurement_plan")
         self.assertFalse(copy.procurement_plan_id)
         self.assertFalse(copy.use_procurement_plan)
         self.assertFalse(copy.budget_account_id)

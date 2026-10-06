@@ -165,6 +165,30 @@ class TestProcurementUnderProject(TransactionCase):
         self.assertFalse(pr.budget_account_id)
         self.assertFalse(pr.analytic_distribution)
 
+    def test_mode_alone_drops_project(self):
+        """The mode is the answer: writing งบประมาณปกติ alone drops the project
+        instead of being read back as "chose the project"."""
+        project = self._reserved_project()
+        pr = self._make_pr(project)
+
+        pr.write({"budget_selection_mode": "normal"})
+
+        self.assertEqual(pr.budget_selection_mode, "normal")
+        self.assertFalse(pr.kmitl_project_id)
+        self.assertFalse(pr.use_project)
+        self.assertFalse(pr.budget_account_id)
+
+    def test_copy_stays_under_project(self):
+        project = self._reserved_project()
+        pr = self._make_pr(project)
+
+        copy = pr.copy()
+
+        self.assertEqual(copy.budget_selection_mode, "project")
+        self.assertEqual(copy.kmitl_project_id, project)
+        self.assertTrue(copy.use_project)
+        self.assertEqual(copy.budget_account_id, self.budget_account)
+
     def test_reserve_waits_for_project_approval(self):
         """A project whose หนังสือ is not signed yet (to_send) may be chosen, but
         Reserve refuses, naming the project's state."""
