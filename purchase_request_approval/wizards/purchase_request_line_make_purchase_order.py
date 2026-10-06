@@ -126,6 +126,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             pa_line = pa_lines[idx]
             res["product_qty"] = pa_line.product_qty
             res["price_unit"] = pa_line.price_unit
+            res["name"] = pa_line.name
         return res
 
 
