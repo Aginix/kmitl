@@ -122,8 +122,10 @@ class PurchaseRequest(models.Model):
         project = self.kmitl_project_id
         if project:
             self.budget_account_id = project.budget_account_id.id
-            if not self.title:
-                self.title = project.name
+            # ชื่อเรื่อง is composed (root ADR-0012): seed only its expense
+            # blank, and never over the requester's own words.
+            if not self.expense_type:
+                self.expense_type = "วัสดุในโครงการ"
 
     @api.onchange("account_fiscal_year_id")
     def _onchange_account_fiscal_year_id_project(self):

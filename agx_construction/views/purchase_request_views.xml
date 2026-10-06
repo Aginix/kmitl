@@ -56,7 +56,10 @@
             ref="purchase_request_kmitl.view_purchase_request_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='title']" position="before">
+            <xpath
+                expr="//group[@name='purchase_request_title_group']/label[@for='procurement_type_id']"
+                position="before"
+            >
                 <field name="is_construction" invisible="1" />
                 <!-- <field name="is_construction" groups="base.group_no_one" readonly="1"/> -->
                 <field

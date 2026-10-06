@@ -410,6 +410,7 @@ class PurchaseRequest(models.Model):
         ``action_reserve_budget`` หลังมี commitment แล้ว
         """
         self._check_can_verify()
+        self._check_verify_complete()
         self._check_can_commit_budget()
         to_budget = self.filtered(lambda r: r.state == "to_verify")
         to_budget._mark_verified()

@@ -170,8 +170,9 @@ class PurchaseRequest(models.Model):
             if plan.procurement_method_id:
                 self.procurement_method_id = plan.procurement_method_id.id
             self.budget_account_id = plan.budget_account_id.id
-            if not self.title:
-                self.title = plan.description
+            # ชื่อเรื่อง is composed (root ADR-0012). A plan is realised by
+            # exactly one พ.1, so its ชื่อรายการ is the expense outright.
+            self.expense_type = plan.description
 
     @api.onchange("account_fiscal_year_id")
     def _onchange_account_fiscal_year_id_procurement_plan(self):

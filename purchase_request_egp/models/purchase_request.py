@@ -8,7 +8,7 @@ class PurchaseRequest(models.Model):
     _STATES = [
         ("waiting", "Waiting for e-GP"),
         ("in_progress", "In progress e-GP"),
-        ("done", "done e-GP")
+        ("done", "done e-GP"),
     ]
 
     state = fields.Selection(
@@ -20,6 +20,7 @@ class PurchaseRequest(models.Model):
         string="e-GP",
         compute="_compute_is_egp",
         store=True,
+        readonly=False,
     )
     egp_project_id = fields.Char(string="เลขที่โครงการ e-GP", tracking=True)
     egp_project_url = fields.Char(
@@ -35,7 +36,9 @@ class PurchaseRequest(models.Model):
         compute="_compute_can_edit_egp",
         default=False,
     )
-    show_egp_create_purchase_order_button = fields.Boolean(compute="_show_egp_create_purchase_order_button")
+    show_egp_create_purchase_order_button = fields.Boolean(
+        compute="_show_egp_create_purchase_order_button"
+    )
 
     @api.depends("egp_project_id")
     def _compute_egp_project_url(self):
@@ -48,20 +51,19 @@ class PurchaseRequest(models.Model):
         project_id = self.egp_project_id
         return f"https://process.gprocurement.go.th/egp2procmainWeb/jsp/public_announ_search.jsp?projectId={project_id}&homeflag=QR"
 
-    @api.depends('estimated_cost')
+    @api.depends("estimated_cost")
     def _compute_is_egp(self):
+        """Mandatory above 100,000; below it the Verifier may tick it, and a
+        new amount resets it (root ADR-0012)."""
         for rec in self:
-            if rec.estimated_cost and rec.estimated_cost > 100000:
-                rec.is_egp = True
-            else:
-                rec.is_egp = rec.is_egp
+            rec.is_egp = rec.estimated_cost > 100000
 
     def _show_egp_create_purchase_order_button(self):
         for rec in self:
             rec.show_egp_create_purchase_order_button = False
             if (
                 rec.is_egp
-                and rec.state in ('approved', 'in_progress')
+                and rec.state in ("approved", "in_progress")
                 and rec.purchase_count == 0
             ):
                 rec.show_egp_create_purchase_order_button = True
@@ -78,11 +80,11 @@ class PurchaseRequest(models.Model):
     def _compute_can_edit_egp(self):
         user_in_group = self.env.user.has_group(
             "purchase_request_kmitl.group_purchase_request_user_all"
-        ) or self.env.user.has_group(
-            "purchase.group_purchase_user"
-        )
+        ) or self.env.user.has_group("purchase.group_purchase_user")
         for record in self:
-            record.can_edit_egp = bool(user_in_group and record.egp_status in ("waiting", "in_progress"))
+            record.can_edit_egp = bool(
+                user_in_group and record.egp_status in ("waiting", "in_progress")
+            )
 
     def _hide_create_po_button(self):
         super()._hide_create_po_button()
@@ -92,10 +94,16 @@ class PurchaseRequest(models.Model):
 
     def action_egp_create_purchase_order(self):
         for record in self:
-            if record.is_egp and record.egp_status not in ['in_progress']:
+            if record.is_egp and record.egp_status not in ["in_progress"]:
                 raise UserError("ท่านสามารถสร้างใบสั่งซื้อ/จ้างได้เมื่ออยู่ในกระบวนการ e-GP เท่านั้น")
 
-        action = self.env.ref("purchase_request.action_purchase_request_line_make_purchase_order").sudo().read()[0]
+        action = (
+            self.env.ref(
+                "purchase_request.action_purchase_request_line_make_purchase_order"
+            )
+            .sudo()
+            .read()[0]
+        )
         return action
 
     def action_del_egp_status(self):
@@ -116,4 +124,3 @@ class PurchaseRequest(models.Model):
         res = super().button_draft()
         self.write({"egp_status": False})
         return res
-

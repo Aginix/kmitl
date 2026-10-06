@@ -192,29 +192,64 @@
                     </div>
                     <div class="oe_title" name="approval_title">
                         <h1 class="d-flex">
-                            <field name="name" readonly="1"/>
+                            <field name="name" readonly="1" />
                         </h1>
                     </div>
                     <group>
                         <group name="main_info" string="Main Information">
-                            <field name="active_sarabun_document_id" readonly="1"/>
-                            <field name="title" attrs="{'readonly': [('is_editable', '=', False)]}" />
-                            <field name="description" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                            <field name="active_sarabun_document_id" readonly="1" />
+                            <!-- ชื่อเรื่อง is composed from the PA's own copies,
+                                 never typed (root ADR-0012) -->
+                            <label for="procurement_type_id" string="ชื่อเรื่อง" />
+                            <div class="o_row">
+                                <span>รายงานขอ</span>
+                                <field
+                                    name="procurement_type_id"
+                                    attrs="{'readonly': [('is_editable', '=', False)]}"
+                                    widget="selection"
+                                />
+                                <field
+                                    name="expense_type"
+                                    class="flex-grow-1"
+                                    placeholder="ประเภทค่าใช้จ่าย เช่น วัสดุการศึกษาใช้ไป"
+                                    attrs="{'readonly': [('is_editable', '=', False)]}"
+                                />
+                            </div>
+                            <field
+                                name="title"
+                                string="ชื่อเรื่องเต็ม"
+                                attrs="{'invisible': [('title', '=', False)]}"
+                            />
+                            <field
+                                name="description"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                            />
                             <field name="date_start" invisible="1" />
-                            <field name="requested_by" widget="many2one_avatar_user" readonly="1"/>
+                            <field
+                                name="requested_by"
+                                widget="many2one_avatar_user"
+                                readonly="1"
+                            />
                             <field name="requesting_department_id" readonly="1" />
                         </group>
                         <group name="procurement_info" string="Procurement Information">
                             <field name="company_id" invisible="1" />
-                            <field name="procurement_type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
-                            <field name="procurement_method_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
-                            <field name="account_fiscal_year_id" readonly="1"/>
+                            <field
+                                name="procurement_method_id"
+                                attrs="{'readonly': [('is_editable', '=', False)]}"
+                                widget="selection"
+                            />
+                            <field name="account_fiscal_year_id" readonly="1" />
                             <field name="payment_type" readonly="1" />
                         </group>
                     </group>
                     <group>
                         <group name="vendor_info" string="Vendor Information">
-                            <field name="procurement_mode" widget="radio" readonly="1"/>
+                            <field
+                                name="procurement_mode"
+                                widget="radio"
+                                readonly="1"
+                            />
                             <field
                                 name="partner_id"
                                 attrs="{'readonly': [('is_editable', '=', False)]}"
@@ -234,23 +269,29 @@
                     </group>
                     <group>
                         <group name="budget_info" string="Budget Information Section">
-                            <field name="budget_commitment_amount"
+                            <field
+                                name="budget_commitment_amount"
                                 readonly="1"
-                                attrs="{'invisible': [('budget_commitment_id', '=', False)]}"/>
+                                attrs="{'invisible': [('budget_commitment_id', '=', False)]}"
+                            />
                             <field
                                 name="budget_commitment_id"
-                                colspan="2" nolabel="1"
-                                widget="budget_commitment_info" readonly="1"
+                                colspan="2"
+                                nolabel="1"
+                                widget="budget_commitment_info"
+                                readonly="1"
                                 options="{'no_create': True, 'no_open': True}"
                             />
                         </group>
                     </group>
                     <group name="attachment_info" string="Attachment">
-                        <field name="attachment_ids"
+                        <field
+                            name="attachment_ids"
                             nolabel="1"
                             colspan="2"
                             widget="many2many_binary"
-                            context="{'default_res_model': 'purchase.request.approval'}"/>
+                            context="{'default_res_model': 'purchase.request.approval'}"
+                        />
                     </group>
                     <notebook>
                         <page name="lines" string="Products">
@@ -259,18 +300,34 @@
                                 attrs="{'readonly': [('is_editable', '=', False)]}"
                             >
                                 <tree editable="bottom">
-                                    <field name="currency_id" invisible="1"/>
-                                    <field name="product_id" readonly="1" optional="hide"/>
-                                    <field name="name" readonly="1"/>
-                                    <field name="product_qty"/>
-                                    <field name="uom_text" required="1"/>
-                                    <field name="price_unit"/>
-                                    <field name="product_uom_id" invisible="1"/>
-                                    <field name="tax_id" optional="hide"/>
-                                    <field name="price_subtotal" widget="monetary" invisible="1"/>
-                                    <field name="price_total" widget="monetary" invisible="1"/>
-                                    <field name="price_tax" widget="monetary" optional="hide"/>
-                                    <field name="estimated_cost" readonly="1"/>
+                                    <field name="currency_id" invisible="1" />
+                                    <field
+                                        name="product_id"
+                                        readonly="1"
+                                        optional="hide"
+                                    />
+                                    <field name="name" readonly="1" />
+                                    <field name="product_qty" />
+                                    <field name="uom_text" required="1" />
+                                    <field name="price_unit" />
+                                    <field name="product_uom_id" invisible="1" />
+                                    <field name="tax_id" optional="hide" />
+                                    <field
+                                        name="price_subtotal"
+                                        widget="monetary"
+                                        invisible="1"
+                                    />
+                                    <field
+                                        name="price_total"
+                                        widget="monetary"
+                                        invisible="1"
+                                    />
+                                    <field
+                                        name="price_tax"
+                                        widget="monetary"
+                                        optional="hide"
+                                    />
+                                    <field name="estimated_cost" readonly="1" />
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer oe_right">

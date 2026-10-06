@@ -28,6 +28,38 @@ specifies vendor + VAT up front). It replaces the old amount-based vendor-requir
 budget is never mandatory at PR creation regardless of mode. _Avoid_: deriving "must
 specify a vendor" from an amount threshold.
 
+**Procurement Type (ประเภทการจัดซื้อ/จ้าง)**: What kind of procurement a PR asks for —
+ซื้อ, เช่า, or one kind of จ้าง. The requester names it as the verb of the PR's title
+("ขอให้**ซื้อ**…"), and the Verifier may correct it. Its name goes into the title as is,
+so each type is a single verb phrase. _Avoid_: combined names such as
+จ้างทำของ/จ้างเหมาบริการ; Procurement Mode (who sources the vendor); Procurement Method
+(the legal procedure, e.g. เฉพาะเจาะจง).
+
+**ชื่อเรื่อง (of a PR)**: The PR's subject, always worded ขอให้{Procurement
+Type}{ประเภทค่าใช้จ่าย}, e.g. "ขอให้ซื้อวัสดุการศึกษาใช้ไป". It is composed, never
+typed, and becomes the เรื่อง of the PR's หนังสือ (see
+[ADR-0012](docs/adr/0012-pr-form-composed-title-verifier-owns-procurement-method.md)). A
+PA's title is composed the same way but worded รายงานขอ{Procurement
+Type}{ประเภทค่าใช้จ่าย}, e.g. "รายงานขอซื้อวัสดุการศึกษาใช้ไป", from the PA's own copies
+of those two values. _Avoid_: free-typed titles; using a project or plan name as the
+title; carrying the PR's "ขอให้…" wording onto the PA.
+
+**ประเภทค่าใช้จ่าย (of a PR)**: What the PR's money is spent on, as worded in its title
+— e.g. วัสดุการศึกษาใช้ไป. The requester writes it in their own words, and the Verifier
+may correct it. A project PR starts as "วัสดุในโครงการ"; a plan PR starts as the plan's
+ชื่อรายการ. It means the same as the expense type of a budget code, but is not linked to
+one yet. _Avoid_: the Approval Category record of agx_approval (that one is a chosen
+record, not words).
+
+**Procurement Method (วิธีการจัดซื้อจัดจ้าง)**: The legal procedure a PR's purchase will
+follow — เฉพาะเจาะจง, คัดเลือก, e-bidding, or ประกาศเชิญชวนทั่วไป. It is a staff
+decision: the Verifier sets it, and the requester never answers it. _Avoid_: Procurement
+Type; asking the requester.
+
+**e-GP (of a PR)**: Whether a PR's purchase goes through the government e-GP system
+instead of an in-house PA. It is mandatory above 100,000 บาท. Below that it is the
+Verifier's choice. _Avoid_: treating it as the requester's choice.
+
 **Requesting Department (ส่วนงานผู้ขอ)**: The ส่วนงาน that asks for the procurement — a
 value from the `departments` analytic plan at any level (คณะ / ภาควิชา / หลักสูตร),
 chosen by the requester on the PR and carried PR → PA → PO (copied, so the PA may
@@ -51,14 +83,15 @@ different role), Purchase Representative.
 โครงการ/กิจกรรม, or a แผนจัดซื้อจัดจ้าง, and which one. The requester proposes it on the
 PR form and the Verifier confirms it. It can change until the PR reserves, and is fixed
 after that. Defined in [budget » จัดซื้อภายใต้](budget/CONTEXT.md). See
-[ADR-0011](docs/adr/0011-requester-chooses-procurement-under.md). _Avoid_:
-แหล่งงบประมาณ (the earlier label); creating a PR from the project or plan form (that path
-was removed).
+[ADR-0011](docs/adr/0011-requester-chooses-procurement-under.md). _Avoid_: แหล่งงบประมาณ
+(the earlier label); creating a PR from the project or plan form (that path was
+removed).
 
 **ผู้ตรวจสอบ พ.1 (Verifier)**: The ธุรการ who checks a submitted PR at `to_verify`. They
-enter its รหัสงบประมาณ and dimensions, and either press ตรวจสอบ to pass it to the budget
-step or ตีกลับ it to `draft`. After ตรวจสอบ they may ดึงกลับ it from `to_verify_budget`
-to fix a mistake, as long as nothing is reserved yet. They do not reserve money. See
+enter its รหัสงบประมาณ and dimensions, decide its Procurement Method and e-GP, and
+either press ตรวจสอบ to pass it to the budget step or ตีกลับ it to `draft`. After
+ตรวจสอบ they may ดึงกลับ it from `to_verify_budget` to fix a mistake, as long as nothing
+is reserved yet. They do not reserve money. See
 [ADR-0010](docs/adr/0010-pr-split-verify-and-budget-commit-direct-entry.md). _Avoid_:
 ผู้อนุมัติ (that is the หัวหน้าส่วนงาน signing through Sarabun); Assigned Officer.
 
@@ -72,13 +105,16 @@ longer a พ.1.
 **God Mode (PA edit while `to_approve` / `approved`)**: An elevated, narrow edit surface
 on the พจ.1 (PA) while the record is in state `to_approve` or `approved` (never
 `rejected` / `cancelled`). Members of the security group
-`purchase_request_approval_godmode.group_pa_godmode` may amend six PA header fields
+`purchase_request_approval_godmode.group_pa_godmode` may amend the PA header fields
 (`partner_id`, `procurement_type_id`, `procurement_method_id`, `payment_type`,
-`vat_included`, `tax_id`) and three line fields (`product_qty`, `price_unit`, `name`) on
-`purchase.request.approval.line` **without transitioning the PA state**. Adding/removing
-lines is not allowed; `product_id`, `product_uom_id`, `title`, `description`, and audit
-columns (`verified_by`, `approved_by`, `date_verified`, `date_approved`, `assigned_to`)
-stay locked. An `@api.constrains` rail enforces
+`vat_included`, `tax_id`, `description`, and the PA's ประเภทค่าใช้จ่าย) and three line
+fields (`product_qty`, `price_unit`, `name`) on `purchase.request.approval.line`
+**without transitioning the PA state**. God Mode is meant to bypass the normal locks.
+The PA's ชื่อเรื่อง is composed, so God Mode changes it only through the Procurement
+Type and the ประเภทค่าใช้จ่าย, and the หนังสือ already sent keeps its old เรื่อง.
+Adding/removing lines is not allowed; `product_id`, `product_uom_id`, and audit columns
+(`verified_by`, `approved_by`, `date_verified`, `date_approved`, `assigned_to`) stay
+locked. An `@api.constrains` rail enforces
 `sum(open PAs.amount_total) ≤ budget_commitment.amount` at the elevated states —
 covering the KMITL Project shared-commitment case — paired with a mirror rail in the
 base module that owns `draft` state for all users (see **Budget-cap rail (พจ.1)** below
@@ -91,8 +127,8 @@ Downstream PO/DR/bill artefacts are **not** re-derived — God Mode is a surgica
 correction, not a re-issue. Sarabun sync of God-Mode edits is owned by a separate branch
 which detects changes by diffing the `vals` dict inside its own `write()` override. See
 [ADR-0006](docs/adr/0006-pa-godmode-edit.md). _Avoid_: treating God Mode as a
-re-approval, a cancel-and-reissue, or a way to add/remove line items; assuming
-`title`/`description` are editable in God Mode (they are not).
+re-approval, a cancel-and-reissue, or a way to add/remove line items; typing the PA's
+ชื่อเรื่อง directly.
 
 **Budget-cap rail (พจ.1)**: A pair of `@api.constrains` on `purchase.request.approval`
 enforcing the same rule —

@@ -1,9 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">view.purchase.request.form (e-GP)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form" />
+        <field
+            name="inherit_id"
+            ref="purchase_request_kmitl.view_purchase_request_form"
+        />
         <field name="arch" type="xml">
             <!-- state ที่โมดูลนี้เป็นเจ้าของ ต่อเข้า states ของ button_cancel เอง -->
             <xpath expr="//button[@name='button_cancel']" position="attributes">
@@ -21,13 +24,14 @@
                 />
                 <field name="can_edit_egp" invisible="1" />
             </xpath>
+            <!-- e-GP is the Verifier's answer (root ADR-0012) -->
             <xpath
-                expr="//group[@name='purchase_request_group']//field[@name='payment_type']"
+                expr="//group[@name='procurement_verifier_group']//field[@name='procurement_method_id']"
                 position="after"
             >
                 <field
                     name="is_egp"
-                    attrs="{'readonly': ['|', ('estimated_cost', '&gt;', 100000), ('is_editable', '=', False)]}"
+                    attrs="{'readonly': ['|', ('estimated_cost', '&gt;', 100000), ('is_verifier_editable', '=', False)]}"
                 />
                 <div colspan="2" class="alert alert-info mb-0" role="alert">
                     If e-GP procurement is selected, an internal Purchase Request approval (พจ.1) is not required.

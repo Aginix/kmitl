@@ -104,9 +104,21 @@ class PurchaseRequest(models.Model):
     )
     partner_id = fields.Many2one("res.partner", tracking=True)
 
+    is_verifier_editable = fields.Boolean(compute="_compute_is_verifier_editable")
+
     # construction
     is_construction = fields.Boolean(string="Construction", readonly=True)
-    title = fields.Char(string="Title", tracking=True)
+    title = fields.Char(
+        string="Title",
+        compute="_compute_title",
+        store=True,
+        tracking=True,
+    )
+    expense_type = fields.Char(
+        string="Expense Type",
+        tracking=True,
+        help="ประเภทค่าใช้จ่ายในชื่อเรื่อง เช่น วัสดุการศึกษาใช้ไป",
+    )
     requesting_department_id = fields.Many2one(
         comodel_name="account.analytic.account",
         string="Requesting Department",
@@ -182,6 +194,38 @@ class PurchaseRequest(models.Model):
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
     can_reset_to_draft = fields.Boolean(compute="_compute_can_reset_to_draft")
 
+    @api.depends("procurement_type_id", "expense_type")
+    def _compute_title(self):
+        """ชื่อเรื่อง = ขอให้{ประเภทการจัดซื้อ/จ้าง}{ประเภทค่าใช้จ่าย}, never typed
+        (root ADR-0012).
+
+        Depends on the type record, not its name: renaming a type must not
+        rewrite titles already issued. A request without an expense type (typed
+        before titles were composed) keeps its title."""
+        for rec in self:
+            if rec.expense_type:
+                rec.title = "ขอให้%s%s" % (
+                    rec.procurement_type_id.name or "",
+                    rec.expense_type.strip(),
+                )
+            else:
+                rec.title = rec.title
+
+    @api.depends("state")
+    @api.depends_context("uid")
+    def _compute_is_verifier_editable(self):
+        """The Verifier's own answers (Procurement Method, e-GP) are open to
+        the verify group only, while the request is on its desk or back from
+        Sarabun for revision (root ADR-0012)."""
+        is_verifier = self.env.user.has_group(
+            "purchase_request_kmitl.group_purchase_request_verify"
+        )
+        for rec in self:
+            rec.is_verifier_editable = is_verifier and rec.state in (
+                "to_verify",
+                "returned",
+            )
+
     def _compute_is_purchase_request(self):
         for rec in self:
             rec.is_purchase_request = rec._name == "purchase.request"
@@ -233,6 +277,15 @@ class PurchaseRequest(models.Model):
             _("เฉพาะผู้ตรวจสอบแบบขอให้จัดหา (พ.1) เท่านั้นที่ดำเนินการขั้นนี้ได้"),
         )
 
+    def _check_verify_complete(self):
+        """ตรวจสอบ needs the Verifier's own answer (root ADR-0012): the
+        requester never sees the Procurement Method, so the view's required
+        flag alone is not enough."""
+        if self.filtered(
+            lambda r: r.state == "to_verify" and not r.procurement_method_id
+        ):
+            raise UserError(_("กรุณาระบุวิธีการจัดซื้อจัดจ้างก่อนกดตรวจสอบ"))
+
     def _mark_verified(self):
         """Stamp who pressed ตรวจสอบ, and when (ADR-0010)."""
         self.write(
@@ -244,6 +297,7 @@ class PurchaseRequest(models.Model):
 
     def button_to_approve(self):
         self._check_can_verify()
+        self._check_verify_complete()
         to_verify = self.filtered(lambda r: r.state == "to_verify")
         res = super().button_to_approve()
         # Only those that actually advanced: an exception popup returns

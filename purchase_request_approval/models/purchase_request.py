@@ -132,7 +132,7 @@ class PurchaseRequest(models.Model):
                 super(PurchaseRequest, rec)._transition_after_sarabun_approve()
 
     def _prepare_approval_vals(self):
-        return {
+        vals = {
             "request_id": self.id,
             "requesting_department_id": self.requesting_department_id.id,
             "origin": self.name,
@@ -144,7 +144,7 @@ class PurchaseRequest(models.Model):
             "assigned_to": False,
             "state": "draft",
             "validation_status": "no",
-            "title": self.title,
+            "expense_type": self.expense_type,
             "description": self.description,
             "procurement_type_id": self.procurement_type_id.id,
             "procurement_method_id": self.procurement_method_id.id,
@@ -170,6 +170,12 @@ class PurchaseRequest(models.Model):
                 for line in self.line_ids
             ],
         }
+        # The PA composes its own title from the two values above (root
+        # ADR-0012); passing ``title`` would pin the พ.1 wording onto it. Only a
+        # พ.1 typed before titles were composed hands its title over.
+        if not self.expense_type:
+            vals["title"] = self.title
+        return vals
 
     def _prepare_approval_sync_vals(self):
         """Vals to re-sync an EXISTING PA record from this PR — used when a
