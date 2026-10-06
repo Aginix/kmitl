@@ -209,8 +209,13 @@ class TestProcurementUnderProject(TransactionCase):
         pr = self._make_pr(project, cost=1000.0)
         self._reserve(pr)
 
+        # As the UI does: button_cancel only opens the wizard, which cancels.
         pr.button_cancel()
+        self.env["purchase.request.cancel.wizard"].create(
+            {"request_id": pr.id, "reason": "test"}
+        ).action_confirm()
 
+        self.assertEqual(pr.state, "cancelled")
         self.assertFalse(pr.budget_commitment_id)
         self.assertEqual(project._project_pr_total(), 0.0)
 

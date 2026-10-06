@@ -70,7 +70,6 @@ class PurchaseRequest(models.Model):
     reservation_commitment_id = fields.Many2one(
         "budget.commitment",
         string="ใบจองงบประมาณ",
-        domain=lambda self: self._domain_reservation_commitment_id(),
         copy=False,
         tracking=True,
         help=(
@@ -79,47 +78,6 @@ class PurchaseRequest(models.Model):
             "เอกสารจะสืบทอดรหัสงบ/มิติ/ปีงบจากใบจองแบบล็อก และไม่จองซ้ำ"
         ),
     )
-
-    def _domain_reservation_commitment_id(self):
-        """Reservations this document may draw down (phase-1 dropdown).
-
-        Any reserved/in-progress commitment with obligable headroom, restricted to
-        purchasable, product-backed budget codes — the same purchase_ok + product
-        gate as the ``budget_account_id`` selector, so the dropdown only offers
-        reservations this PR can actually draw — and to this request's own fiscal
-        year, since drawing one adopts its ปีงบ (ADR-0010): offering another year's
-        slip would silently flip the request's year. OU visibility is already
-        enforced by the record rules (owner or beneficiary unit — ADR-0011).
-        """
-        return [
-            ("state", "in", ("reserved", "partial")),
-            ("available_to_obligate", ">", 0),
-            ("account_id.purchase_ok", "=", True),
-            ("account_id.product_id", "!=", False),
-            ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
-        ] + self._reservation_commitment_mode_domain()
-
-    def _reservation_commitment_mode_domain(self):
-        """Per-mode extension point for the ใบจองงบประมาณ picker domain.
-
-        Base ships only the ``normal`` mode (no reservation picker). Bridge
-        modules adding a mode override this to scope the picker to their own
-        commitments (e.g. ``account_id.is_project`` / ``account_id.procurement_plan``)."""
-        return []
-
-    reservation_commitment_domain = fields.Binary(
-        compute="_compute_reservation_commitment_domain",
-        help=(
-            "Record-aware domain for the ใบจองงบประมาณ dropdown. A static field "
-            "domain cannot see this request's own account_fiscal_year_id, so the "
-            "year filter is applied through this computed domain instead."
-        ),
-    )
-
-    @api.depends("account_fiscal_year_id", "budget_selection_mode")
-    def _compute_reservation_commitment_domain(self):
-        for rec in self:
-            rec.reservation_commitment_domain = rec._domain_reservation_commitment_id()
 
     budget_account_id = fields.Many2one(
         "budget.account",
@@ -482,13 +440,12 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
         self._check_can_commit_budget()
 
-        # Draw-down mode: the user picked an existing ใบจองงบประมาณ. Adopt it
-        # instead of creating a new commitment (ADR-0010) — presence of the pick
-        # is the sole discriminator, no extra flag.
+        # Draw-down: a project/plan bridge found its source's ใบจอง and set it
+        # here (root ADR-0011). Adopt it instead of creating a new commitment.
         if self.reservation_commitment_id:
             return self._action_draw_from_reservation()
 
-        # Chose a draw-down mode but picked nothing: say so, instead of falling
+        # Under a project/plan but none named: say so, instead of falling
         # through to reserve-new against the dimensions the mode switch cleared.
         if self.budget_selection_mode != "normal":
             raise UserError(_("กรุณาระบุโครงการ/กิจกรรม หรือแผนจัดซื้อจัดจ้างที่จัดซื้อภายใต้"))
@@ -648,42 +605,10 @@ class PurchaseRequest(models.Model):
             % commitment.display_name
         )
 
-    @api.onchange("reservation_commitment_id")
-    def _onchange_reservation_commitment_id(self):
-        """Preview the picked reservation's budget code + fiscal year on the live
-        form. The dimension distribution is written server-side on draw-down, not
-        here — re-assigning analytic_distribution in an onchange makes its no-op
-        compute wipe it on the unsaved record."""
-        commitment = self.reservation_commitment_id
-        if commitment:
-            self.budget_account_id = commitment.account_id.id
-            self.account_fiscal_year_id = commitment.account_fiscal_year_id.id
-
-    @api.onchange("account_fiscal_year_id")
-    def _onchange_account_fiscal_year_id(self):
-        """เปลี่ยนปีงบ = ใบจองที่หยิบไว้ (คนละปีงบ) ใช้กับเอกสารนี้ไม่ได้แล้ว → ล้างทิ้ง.
-
-        เทียบกับปีงบของใบจองเอง ไม่ใช่ล้างทุกครั้งที่ปีงบเปลี่ยน เพราะการหยิบใบจอง
-        (``_onchange_reservation_commitment_id``) ตั้งปีงบ = ปีงบของใบจองอยู่แล้ว ถ้าล้าง
-        ดื้อๆ การหยิบจะล้างตัวเองทันทีในรอบ onchange เดียวกัน."""
-        if (
-            self.reservation_commitment_id
-            and self.reservation_commitment_id.account_fiscal_year_id
-            != self.account_fiscal_year_id
-        ):
-            self.reservation_commitment_id = False
-
     @api.onchange("budget_selection_mode")
     def _onchange_budget_selection_mode(self):
-        """Start budget selection fresh whenever จัดซื้อภายใต้ changes.
-
-        ``budget_selection_mode`` is a **UI affordance only** — the server still
-        keys draw-down off the presence of ``reservation_commitment_id``
-        (ADR-0010), never off this field. Clear both the reservation pick and the
-        accounting dimensions so nothing carries over from the previous source:
-        in particular, switching back to ``normal`` after picking a ใบจองงบประมาณ
-        must not leave that commitment's dimensions on the form, or the user
-        could reserve new budget against them.
+        """Start budget selection fresh whenever จัดซื้อภายใต้ changes, so a
+        project/plan's code and dimensions never carry over to another source.
 
         Note this also runs on the **first onchange of a new record** (Odoo fires
         every onchange when the client asks with no field name), so it wipes any
@@ -691,7 +616,6 @@ class PurchaseRequest(models.Model):
         as context defaults. Source bridges therefore write their budget context
         **server-side** (``_sync_procurement_under``), never through defaults.
         """
-        self.reservation_commitment_id = False
         self.budget_account_id = False
         self.analytic_distribution = False
 
@@ -758,22 +682,23 @@ class PurchaseRequest(models.Model):
 
         return super().button_rejected()
 
-    def button_cancel(self):
-        for record in self:
-            if record.budget_commitment_id:
-                try:
-                    record._cancel_budget_commitment()
-                    record.message_post(
-                        body=_("Budget commitment %s has been cancelled")
-                        % record.budget_commitment_id.name
-                    )
-                except UserError as e:
-                    record.message_post(
-                        body=_("Warning: Could not cancel budget commitment: %s")
-                        % str(e)
-                    )
-
-        return super().button_cancel()
+    def _action_do_cancel(self, reason):
+        # Not button_cancel: that only opens the cancel wizard (releasing there
+        # frees the money even if the wizard is closed), and สารบรรณ cancels
+        # through here directly.
+        self.ensure_one()
+        if self.budget_commitment_id:
+            name = self.budget_commitment_id.name
+            try:
+                self._cancel_budget_commitment()
+                self.message_post(
+                    body=_("Budget commitment %s has been cancelled") % name
+                )
+            except UserError as e:
+                self.message_post(
+                    body=_("Warning: Could not cancel budget commitment: %s") % str(e)
+                )
+        return super()._action_do_cancel(reason)
 
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):

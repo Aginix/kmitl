@@ -64,22 +64,26 @@ class PurchaseRequest(models.Model):
         claimed the moment it is chosen.
         Claims are read with sudo: PR record rules hide other requesters' พ.1.
         OU scoping comes from the global procurement.plan rule."""
+        # Only verified plans are offered, so only their claims matter.
         claims = (
             self.env["purchase.request"]
             .sudo()
-            .search(
+            .search_read(
                 [
-                    ("procurement_plan_id", "!=", False),
+                    ("procurement_plan_id.state", "=", "verified"),
                     ("state", "not in", ("rejected", "cancelled")),
-                ]
+                ],
+                ["procurement_plan_id"],
             )
         )
         for rec in self:
-            taken = claims.filtered(lambda r: r.id != rec._origin.id)
+            taken = [
+                c["procurement_plan_id"][0] for c in claims if c["id"] != rec._origin.id
+            ]
             rec.procurement_plan_domain = [
                 ("state", "=", "verified"),
                 ("account_fiscal_year_id", "=", rec.account_fiscal_year_id.id),
-                ("id", "not in", taken.procurement_plan_id.ids),
+                ("id", "not in", taken),
                 ("budget_account_id.purchase_ok", "=", True),
                 ("budget_account_id.product_id", "!=", False),
             ]

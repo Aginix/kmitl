@@ -97,6 +97,12 @@
             <xpath expr="//field[@name='budget_selection_mode']" position="before">
                 <xpath expr="//field[@name='account_fiscal_year_id']" position="move" />
             </xpath>
+            <!-- A project/plan imposes its year: it is locked with the pick. -->
+            <xpath expr="//field[@name='account_fiscal_year_id']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': ['|', ('is_editable', '=', False), '&amp;', ('budget_selection_mode', '!=', 'normal'), ('is_procurement_under_editable', '=', False)]}</attribute>
+            </xpath>
             <xpath expr="//notebook" position="before">
                 <field name="product_id" invisible="1" />
 
