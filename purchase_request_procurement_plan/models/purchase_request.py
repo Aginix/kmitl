@@ -56,11 +56,12 @@ class PurchaseRequest(models.Model):
     def _domain_budget_account_id(self):
         return super()._domain_budget_account_id() + [("procurement_plan", "=", False)]
 
-    @api.depends("procurement_plan_id")
+    @api.depends("procurement_plan_id", "account_fiscal_year_id")
     def _compute_procurement_plan_domain(self):
         """Plans this request may be bought under (root ADR-0011): verified
-        (money reserved) on a purchasable, product-backed code, and not claimed
-        by another live พ.1 — the plan is claimed the moment it is chosen.
+        (money reserved), in the request's own fiscal year, on a purchasable,
+        product-backed code, and not claimed by another live พ.1 — the plan is
+        claimed the moment it is chosen.
         Claims are read with sudo: PR record rules hide other requesters' พ.1.
         OU scoping comes from the global procurement.plan rule."""
         claims = (
@@ -77,6 +78,7 @@ class PurchaseRequest(models.Model):
             taken = claims.filtered(lambda r: r.id != rec._origin.id)
             rec.procurement_plan_domain = [
                 ("state", "=", "verified"),
+                ("account_fiscal_year_id", "=", rec.account_fiscal_year_id.id),
                 ("id", "not in", taken.procurement_plan_id.ids),
                 ("budget_account_id.purchase_ok", "=", True),
                 ("budget_account_id.product_id", "!=", False),
@@ -160,17 +162,24 @@ class PurchaseRequest(models.Model):
 
     @api.onchange("procurement_plan_id")
     def _onchange_procurement_plan_id(self):
-        """Preview the plan's code, fiscal year and method on the live form; the
-        dimensions are written server-side (see _sync_procurement_under) —
-        re-assigning analytic_distribution here would wipe it."""
+        """Preview the plan's code and method on the live form; the dimensions
+        are written server-side (see _sync_procurement_under) — re-assigning
+        analytic_distribution here would wipe it."""
         plan = self.procurement_plan_id
         if plan:
-            self.account_fiscal_year_id = plan.account_fiscal_year_id.id
             if plan.procurement_method_id:
                 self.procurement_method_id = plan.procurement_method_id.id
             self.budget_account_id = plan.budget_account_id.id
             if not self.title:
                 self.title = plan.description
+
+    @api.onchange("account_fiscal_year_id")
+    def _onchange_account_fiscal_year_id_procurement_plan(self):
+        # The year filters the plan dropdown: another year drops the pick.
+        plan = self.procurement_plan_id
+        if plan and plan.account_fiscal_year_id != self.account_fiscal_year_id:
+            self.procurement_plan_id = False
+            self.budget_account_id = False
 
     def action_view_procurement_plan(self):
         self.ensure_one()

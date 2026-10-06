@@ -31,10 +31,12 @@ created from the plan). Amends budget
    separate "proposed" field. Chatter tracking records who changed what.
 3. **Only sources whose money is already reserved can be picked.** A project can be picked
    in `to_send`, `sent` or `in_progress`. A plan can be picked in `verified`. The list holds
-   only the requester's own OUs. The existing global OU rules on both models do this, and
+   only the requester's own OUs, and only sources of the พ.1's ปีงบประมาณ. The existing global OU rules on both models do this, and
    PR users can already read both models.
-4. **Choosing a source fills and locks the budget code, all dimensions and the fiscal
-   year,** all taken from the project/plan. To correct them, change or clear the
+4. **The fiscal year comes first and filters the sources; choosing a source fills and
+   locks the budget code and all dimensions,** taken from the project/plan. The form asks
+   ปีงบประมาณ, then จัดซื้อภายใต้, then which project/plan. Changing the year drops a
+   source of another year. To correct the code or dimensions, change or clear the
    project/plan. Dimensions are never edited one by one.
 5. **The requester picks the project/plan, not its ใบจอง.** The ใบจอง dropdown is gone for
    these answers. A project and a plan each hold exactly one live commitment, so the slip
