@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-inherit="budget.BudgetDashboard" t-inherit-mode="extension" owl="1">
+        <xpath expr="//t[@t-foreach='breakdownOrder']" position="after">
+            <t t-foreach="state.poolTags" t-as="tag" t-key="tag.field">
+                <div class="o_bd_filter o_bd_check">
+                    <label>
+                        <input
+                            type="checkbox"
+                            t-att-checked="state.poolTagOn[tag.field]"
+                            t-on-change="() => this.togglePoolTag(tag.field)"
+                        />
+                        <t t-esc="tag.toggle_label" />
+                    </label>
+                </div>
+            </t>
+        </xpath>
+        <xpath expr="//span[@t-esc='row.name']" position="replace">
+            <a
+                t-if="row.row_type === 'pool_tag' and row.res_id"
+                href="#"
+                class="o_bd_pool_tag_link"
+                t-on-click.prevent="() => this.openPoolTagRecord(row)"
+                t-esc="row.name"
+            />
+            <span t-else="" t-esc="row.name" />
+        </xpath>
+    </t>
+
+</templates>
