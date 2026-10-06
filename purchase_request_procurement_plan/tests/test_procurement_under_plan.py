@@ -114,6 +114,22 @@ class TestProcurementUnderPlan(TransactionCase):
         with self.assertRaisesRegex(UserError, "1 แผน ต่อ 1 ใบขอซื้อ"):
             self._make_pr(plan)
 
+    def test_plan_offered_only_in_request_fiscal_year(self):
+        plan = self._verified_plan()
+        other_year = self.env["account.fiscal.year"].create(
+            {
+                "name": "FY-TEST-OTHER",
+                "date_from": date(2090, 10, 1),
+                "date_to": date(2091, 9, 30),
+                "company_id": self.env.company.id,
+            }
+        )
+        pr = self._make_pr()
+        self.assertIn(plan, self._offered(pr))
+
+        pr.account_fiscal_year_id = other_year
+        self.assertNotIn(plan, self._offered(pr))
+
     def test_cancel_releases_claim(self):
         plan = self._verified_plan()
         first = self._make_pr(plan)

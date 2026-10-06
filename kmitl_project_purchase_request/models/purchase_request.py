@@ -23,14 +23,14 @@ class PurchaseRequest(models.Model):
         comodel_name="kmitl.project",
         string="โครงการ/กิจกรรม",
         tracking=True,
-        # Pickable once the project's money is reserved (to_send onwards) —
-        # Reserve still waits for in_progress (root ADR-0011). OU scoping comes
-        # from the global kmitl.project rule.
-        domain=[
-            ("state", "in", ("to_send", "sent", "in_progress")),
-            ("budget_account_id.purchase_ok", "=", True),
-            ("budget_account_id.product_id", "!=", False),
-        ],
+        # Pickable once the project's money is reserved (to_send onwards) and
+        # in the request's own fiscal year — Reserve still waits for
+        # in_progress (root ADR-0011). OU scoping comes from the global
+        # kmitl.project rule.
+        domain="[('state', 'in', ('to_send', 'sent', 'in_progress')),"
+        " ('account_fiscal_year_id', '=', account_fiscal_year_id),"
+        " ('budget_account_id.purchase_ok', '=', True),"
+        " ('budget_account_id.product_id', '!=', False)]",
     )
     kmitl_project_remaining = fields.Float(
         string="งบโครงการคงเหลือ",
@@ -117,14 +117,21 @@ class PurchaseRequest(models.Model):
 
     @api.onchange("kmitl_project_id")
     def _onchange_kmitl_project_id(self):
-        """Preview the project's code and fiscal year on the live form; the
-        dimensions are written server-side (see _sync_procurement_under)."""
+        """Preview the project's code on the live form; the dimensions are
+        written server-side (see _sync_procurement_under)."""
         project = self.kmitl_project_id
         if project:
             self.budget_account_id = project.budget_account_id.id
-            self.account_fiscal_year_id = project.account_fiscal_year_id.id
             if not self.title:
                 self.title = project.name
+
+    @api.onchange("account_fiscal_year_id")
+    def _onchange_account_fiscal_year_id_project(self):
+        # The year filters the project dropdown: another year drops the pick.
+        project = self.kmitl_project_id
+        if project and project.account_fiscal_year_id != self.account_fiscal_year_id:
+            self.kmitl_project_id = False
+            self.budget_account_id = False
 
     def _check_drawable_commitment(self, commitment):
         # A project's shared commitment sits on an ``is_project`` budget code this

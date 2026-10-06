@@ -75,16 +75,27 @@
                 </button>
             </xpath>
 
-            <!-- จัดซื้อภายใต้: asked of the requester, confirmed by the verifier
-                 (root ADR-0011). Source bridges add their project/plan field
-                 after it; the source's fiscal year is written server-side. -->
-            <xpath expr="//field[@name='account_fiscal_year_id']" position="after">
-                <field name="is_procurement_under_editable" invisible="1" />
-                <field
-                    name="budget_selection_mode"
-                    widget="radio"
-                    attrs="{'readonly': [('is_procurement_under_editable', '=', False)]}"
-                />
+            <!-- Asked first, as it steers the rest of the form: ปีงบประมาณ, then
+                 จัดซื้อภายใต้ (asked of the requester, confirmed by the verifier —
+                 root ADR-0011). The year filters which project/plan can be
+                 picked; source bridges add that field after the radio. -->
+            <xpath
+                expr="//group[@name='purchase_request_details_group']"
+                position="before"
+            >
+                <group name="procurement_under_group">
+                    <group>
+                        <field name="is_procurement_under_editable" invisible="1" />
+                        <field
+                            name="budget_selection_mode"
+                            widget="radio"
+                            attrs="{'readonly': [('is_procurement_under_editable', '=', False)]}"
+                        />
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='budget_selection_mode']" position="before">
+                <xpath expr="//field[@name='account_fiscal_year_id']" position="move" />
             </xpath>
             <xpath expr="//notebook" position="before">
                 <field name="product_id" invisible="1" />
