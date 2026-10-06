@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import Command, _, api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -34,30 +34,8 @@ class PurchaseRequestApproval(models.Model):
         act = self.env.ref("purchase_work_acceptance.action_work_acceptance")
         result = act.sudo().read()[0]
         create_wa = self.env.context.get("create_wa", False)
-        lines = self._get_committee_line(self)
         result["context"] = {
             "default_approval_id": self.id,
-            "default_partner_id": self.partner_id.id,
-            "default_company_id": self.company_id.id,
-            "default_currency_id": self.currency_id.id,
-            "default_date_due": self.approval_date,
-            "default_work_acceptance_committee_ids": lines,
-            "default_wa_tier_validation": True,
-            "default_wa_line_ids": [
-                Command.create(
-                    {
-                        "approval_line_id": pr_line.id,
-                        "name": pa_line.name,
-                        "product_uom": pa_line.product_uom_id.id,
-                        "uom_text": pa_line.uom_text,
-                        "product_id": pa_line.product_id.id,
-                        "price_unit": pa_line.price_unit,
-                        "product_qty": pa_line.product_qty,
-                    }
-                )
-                for pa_line, pr_line in zip(self.line_ids, self.request_id.line_ids)
-                if pa_line.product_qty
-            ],
         }
         if len(self.wa_ids) > 1 and not create_wa:
             result["domain"] = "[('id', 'in', " + str(self.wa_ids.ids) + ")]"
@@ -69,19 +47,6 @@ class PurchaseRequestApproval(models.Model):
             if not create_wa:
                 result["res_id"] = self.wa_ids.id or False
         return result
-
-    def _prepare_committee_line(self, line):
-        return {
-            "employee_id": line.employee_id.id,
-            "name": line.name,
-            "approve_role": line.approve_role,
-            "note": line.note,
-        }
-
-    def _get_committee_line(self, approval):
-        committees = approval.mapped("work_acceptance_committee_ids")
-        lines = [(0, 0, self._prepare_committee_line(line)) for line in committees]
-        return lines
 
     def action_create_invoice(self):
         enable_wa = self.env.user.has_group(
