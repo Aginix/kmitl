@@ -144,12 +144,6 @@ msgstr "เฉพาะใบขอเบิกที่อนุมัติแ
 #. module: disbursement_accounting_kmitl
 #: code:addons/disbursement_accounting_kmitl/models/disbursement_request.py:0
 #, python-format
-msgid "Vendor Bill <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> has been created."
-msgstr "สร้างใบตั้งหนี้ผู้ขาย <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> เรียบร้อยแล้ว"
-
-#. module: disbursement_accounting_kmitl
-#: code:addons/disbursement_accounting_kmitl/models/disbursement_request.py:0
-#, python-format
 msgid "Vendor Bill"
 msgstr "ใบตั้งหนี้ผู้ขาย"
 

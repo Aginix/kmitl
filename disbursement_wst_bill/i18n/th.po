@@ -46,3 +46,28 @@ msgstr "ใบขอเบิก"
 msgid "Disbursement Requests"
 msgstr "ใบขอเบิก"
 
+#. module: disbursement_wst_bill
+#: models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Vendor Bill <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> has "
+"been created."
+msgstr ""
+"สร้างใบตั้งหนี้ผู้ขาย <a href=\"%(link)s\" "
+"target=\"_blank\">%(name)s</a> เรียบร้อยแล้ว"
+
+#. module: disbursement_wst_bill
+#: models/disbursement_request.py:0
+#, python-format
+msgid "Vendor Bills"
+msgstr "ใบตั้งหนี้ผู้ขาย"
+
+#. module: disbursement_wst_bill
+#: models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Cannot create new bill: existing bill(s) %s are still in progress. "
+"Cancel them first before creating a new one."
+msgstr ""
+"ไม่สามารถสร้างใบตั้งหนี้ใหม่ได้: มีใบตั้งหนี้ %s ที่ยังดำเนินการอยู่ "
+"กรุณายกเลิกก่อนสร้างใบใหม่"

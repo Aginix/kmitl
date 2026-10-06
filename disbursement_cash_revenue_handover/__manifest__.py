@@ -12,7 +12,7 @@
     "depends": [
         "account_analytic_kmitl",
         "account_kmitl",
-        "disbursement_accounting_kmitl",
+        "disbursement_wst_bill",
     ],
     "data": [
         "security/ir.model.access.csv",

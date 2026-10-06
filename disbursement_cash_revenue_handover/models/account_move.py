@@ -11,7 +11,7 @@ class AccountMove(models.Model):
     ``disbursement_request_id``: that one is the inverse of the request's
     ``bill_ids``, which carries no ``move_type`` filter, so a handover reusing it
     would *be* one of the request's vendor bills — blocking bill creation, and
-    advancing the request to ``bills_posted`` the moment the handover posted.
+    completing the billing station the moment the handover posted.
     """
 
     _inherit = "account.move"
