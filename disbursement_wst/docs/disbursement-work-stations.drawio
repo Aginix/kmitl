@@ -1,0 +1,321 @@
+<mxfile host="Electron" modified="" version="26.0.0">
+  <diagram id="dr-wst-route" name="เส้นทางงาน (Route)">
+    <mxGraphModel dx="1422" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="t1_title" value="ใบขอเบิก (DR) เดินยังไง — route กับ work station" style="text;html=1;strokeColor=none;fillColor=none;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="12" width="800" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_sub" value="core เหลือ state แค่ 6 ค่า · ตอนนี้ใบอยู่ที่ใคร ดูจาก station_code ซึ่งเป็น data ไม่ใช่ code" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;align=left;verticalAlign=middle;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="46" width="800" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_legend" value="&lt;b&gt;อ่านภาพนี้ยังไง&lt;/b&gt;&lt;br/&gt;กล่องเหลือง = station ที่ต้องมีคนกดปุ่มส่งต่อ&lt;br/&gt;กล่องฟ้า = station ที่ปิดตัวเองเมื่อมีเหตุการณ์เกิดขึ้น ไม่มีใครต้องกด&lt;br/&gt;กรอบหนา = จุดที่ตัดงบ มีที่เดียวในเส้นทางทั้งหมด&lt;br/&gt;&quot;· ลงนาม&quot; = station นั้น is_signature จะโผล่เป็นช่องเซ็นในใบที่พิมพ์&lt;br/&gt;— — —&lt;br/&gt;เส้นเขียวทึบ = forward ส่งต่อตามปกติ&lt;br/&gt;เส้นม่วงประ = divert / detour&lt;br/&gt;เส้นแดงประ = ตีกลับไปแก้ หรือยกเลิก&lt;br/&gt;เส้นฟ้าประ = เอกสารที่เกิดขึ้นตรงนั้น" style="text;html=1;strokeColor=#666666;fillColor=#fafafa;fontSize=11;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="60" width="440" height="200" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_src" value="แทบไม่มีใครพิมพ์ใบขอเบิกเอง เอกสารต้นเรื่องสร้างให้&lt;br/&gt;ใบขออนุมัติ · ใบสั่งซื้อ · ตรวจรับงาน · สัญญายืมเงิน&lt;br/&gt;โครงการ · แผนจัดซื้อจัดจ้าง&lt;br/&gt;&lt;i&gt;โมดูล *_disbursement&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#999999;dashed=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="76" width="250" height="76" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_draft" value="ฉบับร่าง&lt;br/&gt;&lt;b&gt;draft&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="70" y="162" width="200" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_submitted" value="ยืนยันแล้ว&lt;br/&gt;&lt;b&gt;submitted&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="70" y="230" width="200" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_signed" value="ลงนามแล้ว&lt;br/&gt;&lt;b&gt;signed&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="70" y="298" width="200" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_done" value="เสร็จสิ้น&lt;br/&gt;&lt;b&gt;done&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="70" y="1060" width="200" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_cancel" value="ยกเลิกแล้ว&lt;br/&gt;&lt;b&gt;cancel&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="70" y="1150" width="200" height="44" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_band" value="&lt;b&gt;in_progress&lt;/b&gt; &amp;nbsp;&amp;nbsp; ช่วงที่ใบเดินอยู่บน route — route ถูกคัดลอกลงใบตอนลงนาม แล้วไม่เปลี่ยนอีก ต่อให้แอดมินไปแก้ route ทีหลังก็ไม่กระทบใบที่ออกเดินไปแล้ว" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f2f7fd;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;align=left;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="320" y="350" width="1010" height="690" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_st1" value="หมวดตรวจ&lt;br/&gt;&lt;b&gt;verify&lt;/b&gt; · ลงนาม&lt;br/&gt;เจ้าหน้าที่เบิกจ่าย" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="355" y="378" width="255" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_st2" value="ผอ.กองคลังอนุมัติ&lt;br/&gt;&lt;b&gt;approve_finance&lt;/b&gt; · ลงนาม&lt;br/&gt;ผู้อำนวยการกองคลัง" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="355" y="456" width="255" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_st3" value="ผู้รับมอบอำนาจอนุมัติ&lt;br/&gt;&lt;b&gt;approve_rector&lt;/b&gt; · ลงนาม&lt;br/&gt;ผู้รับมอบอำนาจอธิการบดี" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=3;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="355" y="534" width="255" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_st4" value="ตั้งหนี้&lt;br/&gt;&lt;b&gt;bill&lt;/b&gt;&lt;br/&gt;เจ้าหน้าที่บัญชี" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="355" y="612" width="255" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_st5" value="ตรวจสอบการเบิกจ่าย&lt;br/&gt;&lt;b&gt;payment_audit&lt;/b&gt; · ลงนาม&lt;br/&gt;ผู้ตรวจสอบการเบิกจ่าย" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="355" y="690" width="255" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_st6" value="อนุมัติเบิกจ่าย&lt;br/&gt;&lt;b&gt;payment_authorize&lt;/b&gt; · ลงนาม&lt;br/&gt;ผู้อนุมัติเบิกจ่าย (มอบอำนาจอธิการ)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="355" y="768" width="255" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_st7" value="จ่ายเงิน&lt;br/&gt;&lt;b&gt;pay&lt;/b&gt;&lt;br/&gt;เจ้าหน้าที่การเงินจ่าย" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="355" y="846" width="255" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_st8" value="ล้างหนี้&lt;br/&gt;&lt;b&gt;clear&lt;/b&gt;&lt;br/&gt;เจ้าหน้าที่บัญชี" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="355" y="924" width="255" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_hooks" value="&lt;b&gt;station ต่อเข้ากับ engine ผ่าน hook 3 ตัวบน disbursement.request&lt;/b&gt;&lt;br/&gt;&lt;b&gt;_station_check(code)&lt;/b&gt; — ยังไปต่อไม่ได้ถ้า… (บิลยังไม่ post ครบ / ใบสำคัญยังจ่ายไม่ครบ)&lt;br/&gt;&lt;b&gt;_station_enter(code)&lt;/b&gt; — พอใบมาถึงแล้วทำอะไร (payment_audit → _ensure_payment_lines())&lt;br/&gt;&lt;b&gt;_station_complete(code)&lt;/b&gt; — พอส่งต่อแล้วทำอะไร (approve_rector → ตัดงบ, payment_authorize → ออกใบสำคัญจ่าย)&lt;br/&gt;&lt;br/&gt;engine ประกาศ hook ไว้เป็น no-op เฉย ๆ แล้วให้ station มา override เอง — engine เลยไม่รู้จัก station ตัวไหนเลยสักตัว" style="text;html=1;strokeColor=#9673a6;fillColor=#f9f5fc;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="680" y="372" width="630" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_d3" value="&lt;b&gt;budget.commitment&lt;/b&gt; — ผูกพันและตัดงบ&lt;br/&gt;_action_approve_budget()" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8f3ff;strokeColor=#6c8ebf;dashed=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="680" y="540" width="290" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_d4" value="&lt;b&gt;account.move (in_invoice)&lt;/b&gt; — บิล 1 ใบต่อผู้รับเงิน 1 ราย&lt;br/&gt;post ครบทุกใบเมื่อไหร่ _on_bills_posted() ปิด station ให้เอง" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8f3ff;strokeColor=#6c8ebf;dashed=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="680" y="618" width="290" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_d5" value="&lt;b&gt;disbursement.payment.line&lt;/b&gt; — 1 แถวต่อผู้รับเงิน 1 ราย&lt;br/&gt;ผู้ตรวจเลือกเรื่องที่จ่าย แล้วทุกแถวได้หัวจ่ายของตัวเอง" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8f3ff;strokeColor=#6c8ebf;dashed=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="680" y="696" width="290" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_d6" value="&lt;b&gt;account.payment&lt;/b&gt; — ใบสำคัญจ่าย 1 ใบต่อ 1 แถว หักภาษีแล้ว&lt;br/&gt;กดอนุมัติเมื่อไหร่ ใบสำคัญเกิดตอนนั้น (ADR-0006)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8f3ff;strokeColor=#6c8ebf;dashed=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="680" y="774" width="290" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_d7" value="&lt;b&gt;bank.payment.export&lt;/b&gt; ไฟล์ e-Payment + ใบรับรองหัก ณ ที่จ่าย&lt;br/&gt;ปิด 1 ไฟล์ = จ่ายผู้รับทุกคนที่อยู่ในไฟล์นั้น" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8f3ff;strokeColor=#6c8ebf;dashed=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="680" y="852" width="290" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_d8" value="&lt;b&gt;account.move ของใบสำคัญจ่าย ถูก post&lt;/b&gt;&lt;br/&gt;post นี่แหละคือการล้างหนี้ · post ครบแล้ว station ปิดเอง" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8f3ff;strokeColor=#6c8ebf;dashed=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="680" y="930" width="290" height="52" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_rc_close" value="&lt;b&gt;step ปิดได้ 2 แบบ&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;1) มีคนกด&lt;/b&gt; — step.act() เช็กว่า step ยัง active อยู่ไหม แล้วคนกดอยู่ใน group ของ station นั้นหรือเปล่า&lt;br/&gt;verify · approve_finance · approve_rector · payment_audit · payment_authorize&lt;br/&gt;&lt;br/&gt;&lt;b&gt;2) ปิดตัวเองจากเหตุการณ์&lt;/b&gt; — เรียก _do_complete() ตรง ๆ ไม่ต้องเช็ก group เพราะเหตุการณ์นั้นผ่านการอนุมัติของมันเองมาแล้ว&lt;br/&gt;bill (บิลใบสุดท้าย post) · pay (ใบสำคัญใบสุดท้ายจ่าย) · clear (voucher ใบสุดท้าย post)" style="text;html=1;strokeColor=#d6b656;fillColor=#fffdf5;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="540" width="310" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_rc_sign" value="&lt;b&gt;ช่องเซ็นในใบที่พิมพ์ออกมา&lt;/b&gt;&lt;br/&gt;มีเฉพาะ 5 station ที่ is_signature = True&lt;br/&gt;ลายเซ็นถูกก๊อปเก็บไว้ที่ disbursement.step ตอนกด ใครไปแก้ข้อมูลใน HR ทีหลัง ใบเก่าก็ไม่เปลี่ยน&lt;br/&gt;station ที่ยังไม่ผ่าน ไม่พิมพ์อะไรออกมาเลย" style="text;html=1;strokeColor=#9673a6;fillColor=#f9f5fc;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="722" width="310" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_rc_settled" value="&lt;b&gt;สองคำนี้คนละเรื่องกัน&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;is_settled&lt;/b&gt; = ใบสำคัญทุกใบ finance_state = paid&lt;br/&gt;เงินออกจากบัญชีแล้ว เกิดที่ station &lt;b&gt;pay&lt;/b&gt; — &lt;i&gt;แต่ยังไม่ได้ลงบัญชี&lt;/i&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;state = done&lt;/b&gt; = เดินครบทุก station บน route&lt;br/&gt;เกิดที่ station &lt;b&gt;clear&lt;/b&gt; ตอนบัญชี post ครบ" style="text;html=1;strokeColor=#82b366;fillColor=#f6fbf4;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="844" width="310" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_divert" value="&lt;b&gt;divert กับ detour&lt;/b&gt; &amp;nbsp;&amp;nbsp; — ไม่มีคำว่า &quot;ส่งกลับ&quot; ในระบบนี้แล้ว" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fbf8fd;strokeColor=#9673a6;dashed=1;verticalAlign=top;align=left;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="320" y="1070" width="500" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_dv_l1" value="come_back = True — ส่งไปแล้วให้กลับมาหาฉัน (ค่าเริ่มต้น)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;align=left;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="340" y="1110" width="420" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_dv_a" value="X" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="340" y="1134" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_dv_b" value="Y" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="450" y="1134" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_dv_c" value="X" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="1134" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_dv_d" value="ไปตาม route ต่อ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="670" y="1134" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_dv_l2" value="come_back = False — ส่งไปแล้วไม่ต้องกลับมา" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;align=left;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="340" y="1188" width="420" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_dv_e" value="X" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="340" y="1212" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_dv_f" value="Y" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="450" y="1212" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_dv_g" value="ไปตาม route ต่อ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="1212" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_dv_note" value="• ใช้ผ่าน disbursement.divert.wizard — ใส่เหตุผลทุกครั้ง และส่งไป station ที่ตัวเองยืนอยู่ไม่ได้&lt;br/&gt;• _check_divert_target() กันไม่ให้ส่งไป station ที่งานข้างหน้ายังไม่เสร็จ นับเฉพาะ station ที่อยู่บน route ของใบนี้&lt;br/&gt;• route ไม่ถูกแก้ แค่แทรก step เพิ่มแล้วไล่เลขใหม่ (_open_slots / _copy_for)&lt;br/&gt;• เก็บแยกเป็น disposition = divert ตั้งใจให้นับได้ว่า station ไหนตีงานกลับบ่อย" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;align=left;verticalAlign=top;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="340" y="1256" width="460" height="92" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_stepbox" value="&lt;b&gt;disbursement.step = ใบนี้แวะ station นี้ 1 ครั้ง&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#666666;dashed=1;verticalAlign=top;align=left;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="850" y="1070" width="480" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_sp_w" value="waiting" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="875" y="1120" width="95" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_sp_a" value="active" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1005" y="1120" width="95" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_sp_d" value="done" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1135" y="1120" width="95" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_sp_s" value="skipped" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;dashed=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1005" y="1178" width="95" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_sp_note" value="&lt;b&gt;disposition&lt;/b&gt; จบยังไง: forward · divert&lt;br/&gt;&lt;b&gt;origin&lt;/b&gt; มายังไง: route · insert (ถูก divert มา) · resume (station ที่ divert รอรับคืน)&lt;br/&gt;&lt;b&gt;เก็บสำเนาไว้เอง&lt;/b&gt;: station_code · station_name · is_signature + ลายเซ็น&lt;br/&gt;→ ถอนโมดูล station ทิ้งแล้ว ประวัติยังอ่านได้ (station_id กลายเป็น null เฉย ๆ)&lt;br/&gt;&lt;b&gt;actor_user_ids&lt;/b&gt;: สมาชิก group ณ ตอนที่ step เปิด Todo ยิงเข้าทุกคนในนั้น&lt;br/&gt;&lt;b&gt;condition_domain&lt;/b&gt;: ไม่เข้าเงื่อนไขก็ข้าม (skipped) ไม่ใช่ค้าง&lt;br/&gt;สืบ &lt;b&gt;state.leadtime.mixin&lt;/b&gt; → ดูได้ว่างานค้างที่ station ไหนนานแค่ไหน" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;align=left;verticalAlign=top;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="870" y="1226" width="445" height="124" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_warn" value="&lt;b&gt;2 เรื่องที่คนมักสับสน&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;1. คำว่าตรวจสอบกับอนุมัติ มี 2 รอบ คนละโต๊ะ คนละ group&lt;/b&gt;&lt;br/&gt;รอบแรก ก่อนตั้งหนี้ อยู่ในแอป &lt;b&gt;การขอเบิก&lt;/b&gt; — verify / approve_finance / approve_rector&lt;br/&gt;รอบสอง หลังตั้งหนี้ อยู่ในแอป &lt;b&gt;การเงิน&lt;/b&gt; — payment_audit / payment_authorize&lt;br/&gt;รอบสองใช้คำว่าตรวจสอบการเบิกจ่าย / อนุมัติเบิกจ่าย ตั้งใจเลี่ยงไม่ให้ชนกับรอบแรก&lt;br/&gt;&lt;br/&gt;&lt;b&gt;2. งบตัดครั้งเดียว&lt;/b&gt; ที่ approve_rector แล้วรอบสองไม่แตะงบอีกเลย&lt;br/&gt;หลังจุดนั้นกด action_draft ไม่ได้แล้ว เหลือแค่ยกเลิก ซึ่งจะกลับรายการผูกพันให้" style="text;html=1;strokeColor=#b85450;fillColor=#fdf6f6;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1390" width="640" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_cycles" value="&lt;b&gt;ใบขอเบิกเดินบน station แต่เอกสารที่มันสร้างมี lifecycle ของตัวเอง คนละอันกัน&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;account.move.workflow_state&lt;/b&gt; (accounting_kmitl_workflow) — maker-checker ของบัญชี&lt;br/&gt;draft → submitted → approved (= posted) ใช้ทั้งกับบิลและใบสำคัญจ่าย&lt;br/&gt;&lt;br/&gt;&lt;b&gt;account.payment.finance_state&lt;/b&gt; (finance_kmitl) — ฝั่งการเงิน&lt;br/&gt;draft → confirmed (ได้เลขใบสำคัญ) → paid · ส่วน bank_result_status เป็นคำยืนยันของเจ้าหน้าที่ ธนาคารไม่เคยส่งผลกลับเข้าระบบ&lt;br/&gt;&lt;br/&gt;&lt;b&gt;bank.payment.export.state&lt;/b&gt; — จบที่ paid · ปิด 1 ไฟล์ = จ่ายทุกคนที่อยู่ในไฟล์นั้น" style="text;html=1;strokeColor=#6c8ebf;fillColor=#f7fafd;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="720" y="1390" width="610" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_e0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#999999;dashed=1;endArrow=block;" edge="1" parent="1" source="t1_src" target="t1_draft">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_e1" value="action_submit()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=10;" edge="1" parent="1" source="t1_draft" target="t1_submitted">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_e2" value="หัวหน้าส่วนงานเซ็นใน e-Saraban&lt;br/&gt;_on_sarabun_completed() → action_sign()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=10;verticalAlign=bottom;" edge="1" parent="1" source="t1_submitted" target="t1_signed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_e3" value="action_sign() → _start_route()&lt;br/&gt;คัดลอก route ลงใบ แล้วตั้ง state = in_progress&lt;br/&gt;(ตรงนี้เองที่งานถูกจ่ายให้เจ้าหน้าที่ตรวจอัตโนมัติ)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t1_signed" target="t1_st1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t1_f1" value="forward" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=9;" edge="1" parent="1" source="t1_st1" target="t1_st2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_f2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;strokeWidth=2;" edge="1" parent="1" source="t1_st2" target="t1_st3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_f3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;strokeWidth=2;" edge="1" parent="1" source="t1_st3" target="t1_st4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_f4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;strokeWidth=2;" edge="1" parent="1" source="t1_st4" target="t1_st5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_f5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;strokeWidth=2;" edge="1" parent="1" source="t1_st5" target="t1_st6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_f6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;strokeWidth=2;" edge="1" parent="1" source="t1_st6" target="t1_st7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_f7" value="Hand-over — จากนี้เป็นงานของบัญชี" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=9;" edge="1" parent="1" source="t1_st7" target="t1_st8"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_f8" value="_finish_route()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t1_st8" target="t1_done"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="t1_r1" value="ตีกลับไปแก้ — action_draft() → _reset_route()&lt;br/&gt;&lt;b&gt;ทำได้ก่อนตัดงบเท่านั้น&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#b85450;dashed=1;fontSize=9;exitX=0;exitY=0.03;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t1_band" target="t1_draft"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_r2" value="ยกเลิก — action_cancel() → _reset_route()&lt;br/&gt;กลับรายการผูกพันงบให้ด้วย" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#b85450;dashed=1;fontSize=9;exitX=0;exitY=0.97;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t1_band" target="t1_cancel"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="t1_g3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#6c8ebf;dashed=1;endArrow=open;" edge="1" parent="1" source="t1_st3" target="t1_d3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_g4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#6c8ebf;dashed=1;endArrow=open;startArrow=open;" edge="1" parent="1" source="t1_st4" target="t1_d4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_g5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#6c8ebf;dashed=1;endArrow=open;" edge="1" parent="1" source="t1_st5" target="t1_d5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_g6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#6c8ebf;dashed=1;endArrow=open;" edge="1" parent="1" source="t1_st6" target="t1_d6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_g7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#6c8ebf;dashed=1;endArrow=open;startArrow=open;" edge="1" parent="1" source="t1_st7" target="t1_d7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_g8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#6c8ebf;dashed=1;endArrow=open;startArrow=open;" edge="1" parent="1" source="t1_st8" target="t1_d8"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="t1_dve1" value="divert" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673a6;dashed=1;fontSize=9;" edge="1" parent="1" source="t1_dv_a" target="t1_dv_b"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_dve2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673a6;dashed=1;" edge="1" parent="1" source="t1_dv_b" target="t1_dv_c"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_dve3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;" edge="1" parent="1" source="t1_dv_c" target="t1_dv_d"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_dve4" value="divert" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673a6;dashed=1;fontSize=9;" edge="1" parent="1" source="t1_dv_e" target="t1_dv_f"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_dve5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#82b366;" edge="1" parent="1" source="t1_dv_f" target="t1_dv_g"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="t1_spe1" value="_activate()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;fontSize=9;" edge="1" parent="1" source="t1_sp_w" target="t1_sp_a"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_spe2" value="_stamp()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;fontSize=9;" edge="1" parent="1" source="t1_sp_a" target="t1_sp_d"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t1_spe3" value="ไม่เข้าเงื่อนไข" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#999999;dashed=1;fontSize=9;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t1_sp_w" target="t1_sp_s"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="dr-wst-modules" name="สถาปัตยกรรมโมดูล">
+    <mxGraphModel dx="1422" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="t2_title" value="ใบขอเบิก — โมดูลหลังเปลี่ยนมาเป็น work station" style="text;html=1;strokeColor=none;fillColor=none;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="14" width="700" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_sub" value="data อยู่ที่ bridge, verb อยู่ที่ station (ADR-0004) · station ไม่ depends กันเอง (ADR-0002)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;align=left;verticalAlign=middle;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="46" width="700" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_legend" value="&lt;b&gt;อ่านภาพนี้ยังไง&lt;/b&gt; &amp;nbsp;&amp;nbsp; กล่องเหลือง = station ที่ต้องมีคนกด &amp;nbsp;·&amp;nbsp; กล่องฟ้า = station ที่ปิดตัวเอง&lt;br/&gt;เส้นเทาทึบ = &lt;b&gt;depends&lt;/b&gt; จริง ๆ ใน manifest ลูกศรชี้ไปตัวที่ถูกพึ่ง&lt;br/&gt;เส้นส้มประ = &lt;b&gt;requires_codes&lt;/b&gt; ลำดับที่ station ประกาศไว้เป็นสตริง — ไม่ใช่ depends ไม่ใช่ xmlid" style="text;html=1;strokeColor=#666666;fillColor=#fafafa;fontSize=11;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="990" y="14" width="580" height="86" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t2_l4" value="&lt;b&gt;ชั้น 4 — ส่วนเสริมที่เกาะ station ไม่ได้เกาะ core&lt;/b&gt; &amp;nbsp;&amp;nbsp; อะไรที่เป็นทางเลือกแยกเป็นโมดูลของตัวเอง ถอดออกแล้ว route ก็ยังเดินได้" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdfaf7;strokeColor=#d79b00;dashed=1;verticalAlign=top;align=left;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="120" width="1500" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_a1" value="&lt;b&gt;disbursement_assignment_kmitl&lt;/b&gt;&lt;br/&gt;จ่ายงานตรวจให้เจ้าหน้าที่อัตโนมัติ&lt;br/&gt;disbursement.assignment.rule · รับงานเอง / โอนงานกันได้&lt;br/&gt;เคลียร์งานตอน _station_complete(&quot;verify&quot;)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="80" y="152" width="300" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_a2" value="&lt;b&gt;disbursement_cash_revenue_handover&lt;/b&gt;&lt;br/&gt;ตอนตั้งหนี้ โอนเงินและรายได้ให้ส่วนงาน&lt;br/&gt;(เฉพาะงบแผ่นดิน)&lt;br/&gt;ต่อยอด _create_bill() ให้ร่าง JV เพิ่มอีกใบ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="152" width="300" height="84" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t2_l3" value="&lt;b&gt;ชั้น 3 — โมดูล station · 1 โมดูล = 1 station&lt;/b&gt; &amp;nbsp;&amp;nbsp; ไม่มีโมดูลฐานร่วมกัน และ&lt;b&gt;ไม่ depends กันเอง&lt;/b&gt; สิ่งเดียวที่รู้จักกันคือ code ที่เป็นสตริง&lt;br/&gt;อยากเพิ่ม station ก็ติดตั้งโมดูล อยากเอาออกก็ถอน (uninstall_hook ไม่ยอมให้ถอนถ้ายังมีใบค้างอยู่ที่ station นั้น)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fffdf5;strokeColor=#d6b656;dashed=1;verticalAlign=top;align=left;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="280" width="1500" height="400" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t2_s1" value="&lt;b&gt;disbursement_wst_verify&lt;/b&gt;&lt;br/&gt;code: &lt;b&gt;verify&lt;/b&gt; · sequence 10&lt;br/&gt;requires: —&lt;br/&gt;group: เจ้าหน้าที่เบิกจ่าย (ยืมของ core)&lt;br/&gt;is_signature: ใช่ · Todo: ไม่มี&lt;br/&gt;depends: disbursement_wst&lt;br/&gt;&lt;i&gt;มีแค่ขยายเงื่อนไข under_verification ของ core&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=left;verticalAlign=top;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="80" y="320" width="300" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_s2" value="&lt;b&gt;disbursement_wst_approve_finance&lt;/b&gt;&lt;br/&gt;code: &lt;b&gt;approve_finance&lt;/b&gt; · sequence 20&lt;br/&gt;requires: verify&lt;br/&gt;group: ผู้อำนวยการกองคลัง (ของตัวเอง)&lt;br/&gt;is_signature: ใช่ · Todo: มี&lt;br/&gt;depends: disbursement_wst&lt;br/&gt;&lt;i&gt;Python 0 บรรทัด มีแต่ data ไม่แตะงบ&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=left;verticalAlign=top;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="450" y="320" width="300" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_s3" value="&lt;b&gt;disbursement_wst_approve_rector&lt;/b&gt;&lt;br/&gt;code: &lt;b&gt;approve_rector&lt;/b&gt; · sequence 30&lt;br/&gt;requires: approve_finance&lt;br/&gt;group: ผู้รับมอบอำนาจอธิการบดี (ของตัวเอง)&lt;br/&gt;is_signature: ใช่ · Todo: มี&lt;br/&gt;depends: disbursement_wst&lt;br/&gt;&lt;b&gt;_station_complete → _action_approve_budget()&lt;/b&gt;&lt;br/&gt;&lt;i&gt;ที่เดียวในระบบที่ผูกพันและตัดงบ&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=3;fontSize=10;align=left;verticalAlign=top;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="820" y="320" width="300" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_s4" value="&lt;b&gt;disbursement_wst_bill&lt;/b&gt;&lt;br/&gt;code: &lt;b&gt;bill&lt;/b&gt; · sequence 40&lt;br/&gt;requires: approve_rector&lt;br/&gt;group: เจ้าหน้าที่บัญชี (ยืมของ accounting_kmitl)&lt;br/&gt;is_signature: ไม่ · Todo: ไม่มี&lt;br/&gt;depends: + &lt;b&gt;disbursement_accounting_kmitl&lt;/b&gt;&lt;br/&gt;&lt;i&gt;เป็นเจ้าของ method สร้างบิล และการ์ด KPI บนแดชบอร์ดบัญชี&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;align=left;verticalAlign=top;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="320" width="300" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t2_s5" value="&lt;b&gt;disbursement_wst_payment_audit&lt;/b&gt;&lt;br/&gt;code: &lt;b&gt;payment_audit&lt;/b&gt; · sequence 50&lt;br/&gt;requires: bill&lt;br/&gt;group: ผู้ตรวจสอบการเบิกจ่าย (ของตัวเอง)&lt;br/&gt;is_signature: ใช่ · Todo: มี&lt;br/&gt;depends: + &lt;b&gt;disbursement_finance_kmitl&lt;/b&gt;&lt;br/&gt;_station_enter → _ensure_payment_lines()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=left;verticalAlign=top;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="80" y="500" width="300" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_s6" value="&lt;b&gt;disbursement_wst_payment_authorize&lt;/b&gt;&lt;br/&gt;code: &lt;b&gt;payment_authorize&lt;/b&gt; · sequence 60&lt;br/&gt;requires: payment_audit&lt;br/&gt;group: ผู้อนุมัติเบิกจ่าย (ของตัวเอง)&lt;br/&gt;is_signature: ใช่ · Todo: มี&lt;br/&gt;depends: + &lt;b&gt;disbursement_finance_kmitl&lt;/b&gt;&lt;br/&gt;_station_complete → _try_create_payments()&lt;br/&gt;&lt;i&gt;กดอนุมัติ = ใบสำคัญจ่ายเกิดตรงนั้น&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=left;verticalAlign=top;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="450" y="500" width="300" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_s7" value="&lt;b&gt;disbursement_wst_pay&lt;/b&gt;&lt;br/&gt;code: &lt;b&gt;pay&lt;/b&gt; · sequence 70&lt;br/&gt;requires: payment_authorize&lt;br/&gt;group: เจ้าหน้าที่การเงินจ่าย (ของตัวเอง)&lt;br/&gt;is_signature: ไม่ · Todo: มี&lt;br/&gt;depends: + &lt;b&gt;disbursement_finance_kmitl&lt;/b&gt;&lt;br/&gt;&lt;i&gt;คอยดู account.payment — ใบสุดท้าย paid เมื่อไหร่ก็ _hand_over()&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;align=left;verticalAlign=top;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="820" y="500" width="300" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_s8" value="&lt;b&gt;disbursement_wst_clear&lt;/b&gt;&lt;br/&gt;code: &lt;b&gt;clear&lt;/b&gt; · sequence 80&lt;br/&gt;requires: pay&lt;br/&gt;group: เจ้าหน้าที่บัญชี (ยืมของ accounting_kmitl)&lt;br/&gt;is_signature: ไม่ · Todo: มี&lt;br/&gt;depends: + &lt;b&gt;disbursement_finance_kmitl&lt;/b&gt;&lt;br/&gt;&lt;i&gt;คอยดู account.move._post() — post ครบแล้วปิด station · post = ล้างหนี้&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;align=left;verticalAlign=top;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="500" width="300" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t2_l2" value="&lt;b&gt;ชั้น 2 — bridge&lt;/b&gt; &amp;nbsp;&amp;nbsp; เก็บ data ที่เชื่อมใบขอเบิกกับเอกสารในแอปอื่น ไม่ตั้งชื่อ station ไม่รู้จัก route — station depends bridge เสมอ ไม่เคยกลับทาง" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f7fafd;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;align=left;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="720" width="1500" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_b1" value="&lt;b&gt;disbursement_accounting_kmitl&lt;/b&gt; — bridge ระหว่างใบขอเบิกกับบิล&lt;br/&gt;เก็บ: account.move.disbursement_request_id · bill_ids&lt;br/&gt;ปุ่มดูรายการบันทึกบัญชีที่เกี่ยวข้อง (ไล่หา m2o ให้เอง)&lt;br/&gt;ยิงเหตุการณ์ _on_bills_posted() ไว้ให้ station มาเกาะ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="300" y="755" width="420" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_b2" value="&lt;b&gt;disbursement_finance_kmitl&lt;/b&gt; — bridge ระหว่างใบขอเบิกกับใบสำคัญจ่าย&lt;br/&gt;เก็บ: disbursement.payment.line (1 แถวต่อผู้รับ) · payment_subject_id (เรื่องที่จ่าย) · หัวจ่าย + ผลการจับคู่&lt;br/&gt;account.payment.disbursement_request_id + finance_state / export_status · bank.payment.export(.line) · _compute_is_settled&lt;br/&gt;&lt;i&gt;ส่วนเสริมที่เกาะ bridge ตัวนี้ ไม่ใช่ station: disbursement_cash_movement_kmitl (เส้นทางเดินเงินระหว่างบัญชี)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="860" y="755" width="600" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t2_l1" value="&lt;b&gt;ชั้น 1 — core กับ engine&lt;/b&gt; &amp;nbsp;&amp;nbsp; ชั้นนี้ไม่มีใครรู้จัก station ตัวไหนเลย" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f6f6f6;strokeColor=#666666;dashed=1;verticalAlign=top;align=left;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="930" width="1500" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_c1" value="&lt;b&gt;disbursement&lt;/b&gt; — ตัวใบขอเบิก ฝั่งคนขอ&lt;br/&gt;state 6 ค่า: draft · submitted · signed · in_progress · done · cancel&lt;br/&gt;&lt;b&gt;ปิดแล้ว&lt;/b&gt; ไม่มีโมดูลไหน selection_add เข้ามาได้อีก&lt;br/&gt;ช่องเซ็นในใบที่พิมพ์ · is_settled (ประกาศไว้ให้โมดูลปลายทางถาม)&lt;br/&gt;จบแค่ลายเซ็นหัวหน้าส่วนงาน ซึ่ง&lt;b&gt;ไม่ใช่ station&lt;/b&gt; (ADR-0003)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="120" y="965" width="440" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_c2" value="&lt;b&gt;disbursement_wst&lt;/b&gt; — engine&lt;br/&gt;disbursement.station · disbursement.route(.line) · disbursement.step · disbursement.divert.wizard&lt;br/&gt;ต่อ disbursement.request ให้มี: route_id · step_ids · current_step_id · &lt;b&gt;station_code&lt;/b&gt;&lt;br/&gt;station_code เป็น Selection ที่สร้างจาก station ที่ติดตั้งอยู่ → ลงโมดูลใหม่ status bar ยาวขึ้นเอง ไม่ต้องแก้ view&lt;br/&gt;hook ที่ประกาศไว้เป็น no-op: _station_check · _station_enter · _station_complete&lt;br/&gt;&lt;i&gt;รู้แค่ว่า station คืออะไร ไม่รู้จัก station ตัวไหนเลย&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="620" y="965" width="600" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_c3" value="&lt;b&gt;base_state_leadtime&lt;/b&gt;&lt;br/&gt;state.leadtime.mixin&lt;br/&gt;&lt;i&gt;ไว้ดูว่างานค้างที่ไหนนาน&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="995" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t2_n1" value="&lt;b&gt;requires_codes — ลำดับที่ประกาศเป็นสตริง ไม่ใช่ xmlid (ADR-0002)&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;verify → approve_finance → approve_rector → bill → payment_audit → payment_authorize → pay → clear&lt;br/&gt;&lt;br/&gt;• station ไม่เคย import และไม่เคย depends กันเอง รู้จักกันแค่ชื่อ code&lt;br/&gt;• disbursement.route._check_station_order() ตรวจเฉพาะ station ที่อยู่บน route เดียวกัน&lt;br/&gt;• station ที่ไม่ได้ติดตั้ง หรือไม่ได้อยู่บน route ไม่บังคับอะไรเลย&lt;br/&gt;• ตอน divert ก็ใช้กฎเดียวกัน _check_divert_target() กันไม่ให้ข้ามงานที่ยังไม่เสร็จ&lt;br/&gt;• ผลคือถอด station กลางทางออกได้ ที่เหลือยังเดินต่อโดยไม่ต้องไปแก้โมดูลอื่น" style="text;html=1;strokeColor=#d79b00;fillColor=#fffaf3;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1160" width="740" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_n2" value="&lt;b&gt;station หนึ่งตัวมีอะไรบ้าง&lt;/b&gt; (ดูตัวอย่างจาก disbursement_wst_approve_rector — 13 ไฟล์ Python 38 บรรทัด)&lt;br/&gt;&lt;br/&gt;__manifest__.py &amp;nbsp;depends: [disbursement_wst, bridge ถ้ามี] + uninstall_hook&lt;br/&gt;data/disbursement_station.xml &amp;nbsp;&lt;b&gt;noupdate=&quot;0&quot;&lt;/b&gt; — station เป็น code&lt;br/&gt;data/disbursement_route_line.xml &amp;nbsp;&lt;b&gt;noupdate=&quot;1&quot;&lt;/b&gt; — route เป็น config แอดมินแก้ได้&lt;br/&gt;data/mail_activity_type.xml &amp;nbsp;Todo ที่ยิงเข้าทุกคนใน group ตอนใบมาถึง&lt;br/&gt;models/disbursement_request.py &amp;nbsp;override hook 3 ตัว&lt;br/&gt;security/security.xml · views/ (ปุ่ม + คิวงาน) · i18n/th.po · CONTEXT.md&lt;br/&gt;&lt;br/&gt;&lt;b&gt;ไม่มีเมนู Work Stations&lt;/b&gt; และ ACL ของ disbursement.station เป็น 1,0,0,0 ทั้ง user และ manager — สร้าง station จากหน้าจอไม่ได้ เพราะจะได้ step ที่ไม่มีโค้ดรองรับ&lt;br/&gt;&lt;b&gt;คิวงานคือ list view&lt;/b&gt; กรองด้วย station_code ไม่ใช่หน้าจอใหม่ · กด Proceed ทีละหลายใบได้" style="text;html=1;strokeColor=#d6b656;fillColor=#fffdf5;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="800" y="1160" width="740" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_n3" value="&lt;b&gt;ของเดิมที่หายไป&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;state selection ~39 ค่า ที่ core กับ bridge ช่วยกัน selection_add&lt;br/&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;→ เหลือ state 6 ค่า + station_code ที่เป็น data&lt;br/&gt;pipeline_status · display_status · approval_state (4 ฟิลด์สถานะเดินคู่กัน) → เหลือฟิลด์เดียว&lt;br/&gt;disbursement.request.signature → disbursement.step (เก็บลายเซ็นรายขั้น)&lt;br/&gt;ฟิลด์คนอนุมัติ / คนตรวจ แยกตัว (payment_auditor_id ฯลฯ) → acted_by_id / acted_date บน step&lt;br/&gt;ทางส่งกลับ 3 เส้น + disbursement.return.source.mixin + state &quot;returned&quot; ของ bridge ต้นทาง 4 ตัว&lt;br/&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;→ เหลือ divert ที่&lt;b&gt;ต้องใส่เหตุผล&lt;/b&gt; และ&lt;b&gt;นับสถิติได้&lt;/b&gt;" style="text;html=1;strokeColor=#b85450;fillColor=#fdf6f6;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1370" width="740" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_n4" value="&lt;b&gt;กฎที่งานชุดนี้ยึด&lt;/b&gt; (ตัวเต็มอยู่ใน disbursement_wst/docs/adr/)&lt;br/&gt;&lt;br/&gt;&lt;b&gt;ADR-0001&lt;/b&gt; ใช้ station แทนคำศัพท์ state ที่ใครก็เติมได้&lt;br/&gt;&lt;b&gt;ADR-0002&lt;/b&gt; station ประกาศลำดับด้วย code ไม่ใช่ xmlid จึงไม่ depends กันเอง&lt;br/&gt;&lt;b&gt;ADR-0003&lt;/b&gt; ลายเซ็นหัวหน้าส่วนงานไม่ใช่ station&lt;br/&gt;&lt;b&gt;ADR-0004&lt;/b&gt; data อยู่ที่ bridge, verb อยู่ที่ station&lt;br/&gt;&lt;b&gt;ADR-0005&lt;/b&gt; ถอด station ออกได้ แต่ถอดตอนยังมีงานค้างไม่ได้ — ประวัติอยู่รอด งานค้างไม่รอด&lt;br/&gt;&lt;b&gt;disbursement/ADR-0003&lt;/b&gt; core ประกาศข้อเท็จจริงที่โมดูลปลายทางจะถาม (is_settled)&lt;br/&gt;&lt;br/&gt;คำศัพท์ที่ใช้ร่วมกัน: disbursement_wst/CONTEXT.md กับ disbursement/CONTEXT.md" style="text;html=1;strokeColor=#9673a6;fillColor=#f9f5fc;fontSize=10;align=left;verticalAlign=top;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="800" y="1370" width="740" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t2_ea1" value="depends" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;fontSize=9;" edge="1" parent="1" source="t2_a1" target="t2_s1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2_ea2" value="depends" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;fontSize=9;" edge="1" parent="1" source="t2_a2" target="t2_s4"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="t2_q1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;dashed=1;endArrow=open;" edge="1" parent="1" source="t2_s1" target="t2_s2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2_q2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;dashed=1;endArrow=open;" edge="1" parent="1" source="t2_s2" target="t2_s3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2_q3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;dashed=1;endArrow=open;" edge="1" parent="1" source="t2_s3" target="t2_s4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2_q4" value="requires_codes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;dashed=1;endArrow=open;fontSize=9;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="t2_s4" target="t2_s5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2_q5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;dashed=1;endArrow=open;" edge="1" parent="1" source="t2_s5" target="t2_s6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2_q6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;dashed=1;endArrow=open;" edge="1" parent="1" source="t2_s6" target="t2_s7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2_q7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;dashed=1;endArrow=open;" edge="1" parent="1" source="t2_s7" target="t2_s8"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="t2_ed1" value="ทุก station depends disbursement_wst" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;strokeWidth=2;fontSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.283;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="t2_l3" target="t2_c2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2_ed2" value="bill" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;fontSize=10;exitX=0.387;exitY=1;exitDx=0;exitDy=0;entryX=0.762;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="t2_l3" target="t2_b1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2_ed3" value="payment_audit · payment_authorize · pay · clear" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;fontSize=10;exitX=0.64;exitY=1;exitDx=0;exitDy=0;entryX=0.233;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="t2_l3" target="t2_b2"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="t2_ed4" value="depends" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;fontSize=10;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.6;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="t2_b1" target="t2_c1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2_ed5" value="depends" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t2_b2" target="t2_b1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2_ed6" value="depends" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t2_c2" target="t2_c1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="t2_ed7" value="depends" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t2_c2" target="t2_c3"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
