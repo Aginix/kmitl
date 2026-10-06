@@ -35,24 +35,6 @@ msgstr ""
 "ซึ่งเป็นวันเดียวกับที่ใช้ออกหนังสือรับรองการหักภาษี ณ ที่จ่าย"
 
 #. module: finance_kmitl_reports
-#. odoo-javascript
-#. odoo-python
-#: code:addons/finance_kmitl_reports/models/report_base.py:0
-#: code:addons/finance_kmitl_reports/models/payment_report.py:0
-#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
-#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
-#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
-#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
-#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
-#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
-#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
-#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
-#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
-#, python-format
-msgid "Activities"
-msgstr "ด้าน/แผนงาน/กิจกรรม"
-
-#. module: finance_kmitl_reports
 #. odoo-python
 #: code:addons/finance_kmitl_reports/models/payment_report.py:0
 #, python-format
@@ -98,6 +80,24 @@ msgstr ""
 "ยอดคงเหลือคือส่วนที่ยังไม่ได้รับชำระของใบตั้งหนี้ "
 "ใบที่ได้รับชำระบางส่วนจึงแสดงเฉพาะยอดที่เหลือ "
 "และจำนวนวันที่เกินกำหนดนับจากวันนี้"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/report_base.py:0
+#: code:addons/finance_kmitl_reports/models/payment_report.py:0
+#: code:addons/finance_kmitl_reports/models/payable_due_report.py:0
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/payment_report/payment_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/payable_due_report/payable_due_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_raised_report/receivable_raised_report.js:0
+#: code:addons/finance_kmitl_reports/static/src/receivable_due_report/receivable_due_report.js:0
+#, python-format
+msgid "Analytic Activities"
+msgstr "ด้าน/แผนงาน/กิจกรรม"
 
 #. module: finance_kmitl_reports
 #. odoo-python
@@ -306,6 +306,18 @@ msgstr "จำนวนเงินตามใบตั้งหนี้"
 #. module: finance_kmitl_reports
 #. odoo-python
 #: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
+#, python-format
+msgid ""
+"Invoice Amount is the full amount raised; Amount Due is what remains of it, "
+"for an invoice that has since been paid in part."
+msgstr ""
+"จำนวนเงินตามใบตั้งหนี้คือยอดเต็มที่ตั้งหนี้ไว้ "
+"ส่วนยอดคงเหลือคือส่วนที่ยังไม่ได้รับชำระ "
+"สำหรับใบตั้งหนี้ที่ได้รับชำระบางส่วนแล้ว"
+
+#. module: finance_kmitl_reports
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
 #: code:addons/finance_kmitl_reports/models/receivable_due_report.py:0
 #, python-format
 msgid "Invoice Date"
@@ -332,18 +344,6 @@ msgstr "ถึงวันที่"
 #, python-format
 msgid "Invoice No."
 msgstr "เลขที่ใบตั้งหนี้"
-
-#. module: finance_kmitl_reports
-#. odoo-python
-#: code:addons/finance_kmitl_reports/models/receivable_raised_report.py:0
-#, python-format
-msgid ""
-"Invoice Amount is the full amount raised; Amount Due is what remains of "
-"it, for an invoice that has since been paid in part."
-msgstr ""
-"จำนวนเงินตามใบตั้งหนี้คือยอดเต็มที่ตั้งหนี้ไว้ "
-"ส่วนยอดคงเหลือคือส่วนที่ยังไม่ได้รับชำระ "
-"สำหรับใบตั้งหนี้ที่ได้รับชำระบางส่วนแล้ว"
 
 #. module: finance_kmitl_reports
 #. odoo-python
@@ -417,13 +417,12 @@ msgstr "ไม่มีรายการถึงกำหนดชำระต
 #: code:addons/finance_kmitl_reports/models/receipt_report.py:0
 #, python-format
 msgid ""
-"Only receipts the treasury has recorded as remitted are counted — a "
-"receipt still waiting on its remittance is money in a department's "
-"drawer, not yet the treasury's."
+"Only receipts the treasury has recorded as remitted are counted — a receipt "
+"still waiting on its remittance is money in a department's drawer, not yet "
+"the treasury's."
 msgstr ""
 "นับเฉพาะใบเสร็จที่กองคลังบันทึกว่านำส่งแล้วเท่านั้น "
-"ใบเสร็จที่ยังรอการนำส่งยังเป็นเงินที่อยู่ในมือหน่วยงาน "
-"ไม่ใช่เงินของกองคลัง"
+"ใบเสร็จที่ยังรอการนำส่งยังเป็นเงินที่อยู่ในมือหน่วยงาน ไม่ใช่เงินของกองคลัง"
 
 #. module: finance_kmitl_reports
 #. odoo-javascript
