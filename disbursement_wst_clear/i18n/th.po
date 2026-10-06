@@ -1,0 +1,96 @@
+# Thai translation of disbursement_wst_clear.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_wst_clear
+#: model:mail.activity.type,name:disbursement_wst_clear.mail_activity_dr_to_book
+msgid "Disbursement to book"
+msgstr "ใบขอเบิกรอบันทึกบัญชี"
+
+#. module: disbursement_wst_clear
+#: model:mail.activity.type,summary:disbursement_wst_clear.mail_activity_dr_to_book
+msgid ""
+"The finance office paid a disbursement request — book its payment "
+"vouchers"
+msgstr ""
+"ฝ่ายการเงินจ่ายเงินตามใบขอเบิกนี้ครบแล้ว — กรุณาบันทึกบัญชีใบสำคัญจ่าย"
+
+#. module: disbursement_wst_clear
+#: model:disbursement.station,name:disbursement_wst_clear.station_clear
+msgid "Clear"
+msgstr "ล้างหนี้"
+
+#. module: disbursement_wst_clear
+#: code:addons/disbursement_wst_clear/models/account_move.py:0
+#, python-format
+msgid ""
+"Payment %(payment)s cannot be posted: the disbursement request %(dr)s "
+"is not confirmed paid by finance yet."
+msgstr ""
+"ใบสำคัญจ่าย %(payment)s ยังลงบัญชีไม่ได้: ใบขอเบิก %(dr)s "
+"ยังไม่ได้รับการยืนยันจ่ายสำเร็จจากฝ่ายการเงิน"
+
+#. module: disbursement_wst_clear
+#: code:addons/disbursement_wst_clear/models/disbursement_request.py:0
+#, python-format
+msgid "Every payment of the request must be posted before it is cleared."
+msgstr "ใบจ่ายเงินทุกใบของใบขอเบิกต้องลงบัญชีแล้วก่อนจึงจะล้างหนี้ได้"
+
+#. module: disbursement_wst_clear
+#: code:addons/disbursement_wst_clear/models/disbursement_request.py:0
+#, python-format
+msgid "Only a request the finance office has paid can be booked."
+msgstr "บันทึกบัญชีได้เฉพาะใบขอเบิกที่ฝ่ายการเงินยืนยันจ่ายสำเร็จแล้ว"
+
+#. module: disbursement_wst_clear
+#: code:addons/disbursement_wst_clear/models/disbursement_request.py:0
+#, python-format
+msgid "Every voucher of %s is already submitted."
+msgstr "ใบสำคัญจ่ายของ %s ส่งอนุมัติไปครบแล้ว"
+
+#. module: disbursement_wst_clear
+#: code:addons/disbursement_wst_clear/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"%s has vouchers with blocking exceptions. Open the entry and submit it"
+" there to see them."
+msgstr ""
+"%s มีใบสำคัญที่ติดข้อยกเว้น "
+"กรุณาเปิดรายการบันทึกบัญชีแล้วส่งอนุมัติที่นั่นเพื่อดูรายละเอียด"
+
+#. module: disbursement_wst_clear
+#: model:ir.actions.act_window,name:disbursement_wst_clear.action_dr_book_queue
+#: model:ir.ui.menu,name:disbursement_wst_clear.menu_dr_book_queue
+msgid "Book Disbursement Payments"
+msgstr "ใบขอเบิกรอบันทึกบัญชี"
+
+#. module: disbursement_wst_clear
+#: model_terms:ir.actions.act_window,help:disbursement_wst_clear.action_dr_book_queue
+msgid "No disbursement request is waiting to be booked."
+msgstr "ไม่มีใบขอเบิกที่รอบันทึกบัญชี"
+
+#. module: disbursement_wst_clear
+#: model_terms:ir.actions.act_window,help:disbursement_wst_clear.action_dr_book_queue
+msgid ""
+"Requests the finance office has paid in full, waiting for the "
+"accounting maker to submit their payment vouchers."
+msgstr ""
+"ใบขอเบิกที่การเงินจ่ายเงินครบทุกรายการแล้ว "
+"รอผู้จัดทำส่งใบสำคัญจ่ายเข้าอนุมัติบัญชี"
+
+#. module: disbursement_wst_clear
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_clear.view_disbursement_request_queue_tree_clear
+msgid "Submit Selected"
+msgstr "ส่งอนุมัติที่เลือก"
+
+#. module: disbursement_wst_clear
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_clear.view_disbursement_request_search_inherit_clear
+msgid "To Book"
+msgstr "รอบันทึกบัญชี"

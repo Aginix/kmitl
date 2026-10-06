@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- 'execution' = clears only by acting on the DR, not by "Mark as Read". -->
+    <record id="mail_activity_dr_to_audit" model="mail.activity.type">
+        <field name="name">Disbursement to audit</field>
+        <field name="summary">A disbursement request is billed and waiting for your audit</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="icon">fa-search</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

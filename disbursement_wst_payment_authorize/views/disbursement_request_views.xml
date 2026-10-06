@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_queue_tree_payment_authorize" model="ir.ui.view">
+        <field name="name">disbursement.request.queue.tree.payment.authorize</field>
+        <field name="model">disbursement.request</field>
+        <field name="mode">primary</field>
+        <!-- Same guard as the shared tree: never the default list of an action
+             that pins no view_id. -->
+        <field name="priority">99</field>
+        <field name="inherit_id" ref="disbursement_finance_kmitl.view_disbursement_request_queue_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <header>
+                    <button name="action_act_batch" type="object" string="Authorize Selected" class="btn-primary" groups="disbursement_wst_payment_authorize.group_disbursement_payment_authorizer" />
+                </header>
+            </xpath>
+            <xpath expr="//field[@name='currency_id']" position="before">
+                <button name="action_station_complete" type="object" string="Authorize" icon="fa-check-circle" confirm="Authorize this disbursement? The payment vouchers will be raised and numbered for every payee at once, ready to go to the bank." groups="disbursement_wst_payment_authorize.group_disbursement_payment_authorizer" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_dr_authorize_queue" model="ir.actions.act_window">
+        <field name="name">Authorize Disbursements</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_disbursement_request_queue_tree_payment_authorize" />
+        <field name="search_view_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="domain">[('station_code', '=', 'payment_authorize')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No disbursement request is waiting to be authorized.
+            </p>
+            <p>
+                Requests that have passed the audit, waiting for the authorization that raises the payment vouchers.
+            </p>
+        </field>
+    </record>
+
+    <!-- The authorization is an approver's step, so it gets its own heading in
+         the Finance app. The group implies no finance-office group (an authorizer
+         holds none on the books), but the Finance app is gated on those, so it is
+         added to the root menu rather than set (4, not 6) — see the same note in
+         disbursement_wst_payment_audit. -->
+    <record id="finance_kmitl.menu_payment_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('group_disbursement_payment_authorizer'))]" />
+    </record>
+
+    <menuitem id="menu_finance_approver" name="Approver" parent="finance_kmitl.menu_payment_root" sequence="30" groups="group_disbursement_payment_authorizer" />
+
+    <menuitem id="menu_dr_authorize_queue" name="Authorize Disbursements" parent="menu_finance_approver" action="action_dr_authorize_queue" sequence="10" groups="group_disbursement_payment_authorizer" />
+
+    <!-- The authorizer's own history: every request that has been through this
+         station, so it stays here after it is paid and cleared. -->
+    <record id="action_disbursement_payment_authorized" model="ir.actions.act_window">
+        <field name="name">Authorized for Payment</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('done_station_codes', '=', 'payment_authorize')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ยังไม่มีใบขอเบิกที่อนุมัติเบิกจ่ายแล้ว
+            </p>
+            <p>
+                รายการนี้เก็บประวัติใบขอเบิกที่ผ่านการอนุมัติเบิกจ่าย และอยู่ต่อไปหลังจ่ายเงินและล้างหนี้แล้ว
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_finance_payment_authorized" name="รายการที่อนุมัติแล้ว" parent="menu_finance_approver" action="action_disbursement_payment_authorized" sequence="20" groups="group_disbursement_payment_authorizer" />
+
+    <record id="view_disbursement_request_search_inherit_payment_authorize" model="ir.ui.view">
+        <field name="name">disbursement.request.search.inherit.payment.authorize</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='done']" position="after">
+                <filter string="Payment Authorization" name="payment_authorize" domain="[('station_code', '=', 'payment_authorize')]" />
+                <filter string="Authorized by Me" name="my_payment_authorizations" domain="[('my_done_station_codes', '=', 'payment_authorize')]" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

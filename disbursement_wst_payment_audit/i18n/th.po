@@ -1,0 +1,75 @@
+# Thai translation of disbursement_wst_payment_audit.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_wst_payment_audit
+#: model:res.groups,name:disbursement_wst_payment_audit.group_disbursement_payment_auditor
+msgid "Disbursement Auditor"
+msgstr "ผู้ตรวจสอบการเบิกจ่าย (Disbursement Auditor)"
+
+#. module: disbursement_wst_payment_audit
+#: model:mail.activity.type,name:disbursement_wst_payment_audit.mail_activity_dr_to_audit
+msgid "Disbursement to audit"
+msgstr "ใบขอเบิกรอตรวจสอบ"
+
+#. module: disbursement_wst_payment_audit
+#: model:mail.activity.type,summary:disbursement_wst_payment_audit.mail_activity_dr_to_audit
+msgid "A disbursement request is billed and waiting for your audit"
+msgstr "ใบขอเบิกตั้งหนี้แล้วและรอการตรวจสอบจากท่าน"
+
+#. module: disbursement_wst_payment_audit
+#: model:disbursement.station,name:disbursement_wst_payment_audit.station_payment_audit
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_payment_audit.view_disbursement_request_search_inherit_payment_audit
+msgid "Payment Audit"
+msgstr "ตรวจสอบการเบิกจ่าย"
+
+#. module: disbursement_wst_payment_audit
+#: model:ir.actions.act_window,name:disbursement_wst_payment_audit.action_dr_audit_queue
+#: model:ir.ui.menu,name:disbursement_wst_payment_audit.menu_dr_audit_queue
+msgid "Audit Disbursements"
+msgstr "ตรวจสอบการเบิกจ่าย"
+
+#. module: disbursement_wst_payment_audit
+#: model_terms:ir.actions.act_window,help:disbursement_wst_payment_audit.action_dr_audit_queue
+msgid "No disbursement request is waiting to be audited."
+msgstr "ไม่มีใบขอเบิกที่รอตรวจสอบ"
+
+#. module: disbursement_wst_payment_audit
+#: model_terms:ir.actions.act_window,help:disbursement_wst_payment_audit.action_dr_audit_queue
+msgid ""
+"A request arrives here once the accounting office has billed it, "
+"waiting for its payment subject and the audit."
+msgstr ""
+"ใบขอเบิกจะมาปรากฏที่นี่เมื่อบัญชีตั้งหนี้เสร็จ "
+"รอกำหนดเรื่องที่จ่ายและตรวจสอบ"
+
+#. module: disbursement_wst_payment_audit
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_payment_audit.view_disbursement_request_queue_tree_payment_audit
+msgid "Audit Selected"
+msgstr "ตรวจสอบที่เลือก"
+
+#. module: disbursement_wst_payment_audit
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_payment_audit.view_disbursement_request_queue_tree_payment_audit
+msgid "Audit"
+msgstr "ตรวจสอบ"
+
+#. module: disbursement_wst_payment_audit
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_payment_audit.view_disbursement_request_search_inherit_payment_audit
+msgid "Audited by Me"
+msgstr "ที่ฉันตรวจสอบ"
+
+#. module: disbursement_wst_payment_audit
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_payment_audit.view_disbursement_request_form_inherit_payment_audit
+msgid ""
+"Choose the payment subject before auditing: it is what decides which "
+"account each payee is paid from."
+msgstr ""
+"กรุณาเลือกเรื่องที่จ่ายก่อนตรวจสอบ "
+"เพราะเป็นตัวกำหนดว่าผู้รับแต่ละรายจะจ่ายจากหัวจ่ายใด"

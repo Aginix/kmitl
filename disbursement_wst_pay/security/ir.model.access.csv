@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_disbursement_request_payment_finance,disbursement.request.payment.finance,disbursement.model_disbursement_request,group_disbursement_payment_finance,1,1,0,0
+access_disbursement_request_line_payment_finance,disbursement.request.line.payment.finance,disbursement.model_disbursement_request_line,group_disbursement_payment_finance,1,0,0,0
+access_disbursement_payment_line_payment_finance,disbursement.payment.line.payment.finance,disbursement_finance_kmitl.model_disbursement_payment_line,group_disbursement_payment_finance,1,1,0,0

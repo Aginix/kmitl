@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Appended to the standard route of disbursement_wst. -->
+    <record id="route_line_payment_authorize" model="disbursement.route.line">
+        <field name="route_id" ref="disbursement_wst.route_default" />
+        <field name="station_id" ref="station_payment_authorize" />
+        <field name="sequence">60</field>
+    </record>
+</odoo>

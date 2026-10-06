@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The audit is a clerk's step in the paying run, so it sits with the rest of
+         that run under Payment Out. -->
+    <record id="view_disbursement_request_queue_tree_payment_audit" model="ir.ui.view">
+        <field name="name">disbursement.request.queue.tree.payment.audit</field>
+        <field name="model">disbursement.request</field>
+        <field name="mode">primary</field>
+        <!-- Same guard as the shared tree: never the default list of an action
+             that pins no view_id. -->
+        <field name="priority">99</field>
+        <field name="inherit_id" ref="disbursement_finance_kmitl.view_disbursement_request_queue_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <header>
+                    <button name="action_act_batch" type="object" string="Audit Selected" class="btn-primary" groups="disbursement_wst_payment_audit.group_disbursement_payment_auditor" />
+                </header>
+            </xpath>
+            <!-- The single-record press, beside the row it acts on, for the
+                 request that is looked at rather than swept up in a batch. -->
+            <xpath expr="//field[@name='currency_id']" position="before">
+                <button name="action_station_complete" type="object" string="Audit" icon="fa-check" groups="disbursement_wst_payment_audit.group_disbursement_payment_auditor" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_dr_audit_queue" model="ir.actions.act_window">
+        <field name="name">Audit Disbursements</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_disbursement_request_queue_tree_payment_audit" />
+        <field name="search_view_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="domain">[('station_code', '=', 'payment_audit')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No disbursement request is waiting to be audited.
+            </p>
+            <p>
+                A request arrives here once the accounting office has billed it, waiting for its payment subject and the audit.
+            </p>
+        </field>
+    </record>
+
+    <!-- The audit group implies no finance-office group: an auditor holds no
+         rights on a payment voucher and should gain none by being given a screen.
+         But the Finance app and its Payment Out branch are gated on those finance
+         groups, so without this the auditor would be shown a door inside a room
+         they cannot enter. The group is added rather than set (4, not 6) so the
+         finance groups survive; note that finance_kmitl's own menuitem sets the
+         whole list, so upgrading it alone drops this until this module is
+         upgraded too. -->
+    <record id="finance_kmitl.menu_payment_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('group_disbursement_payment_auditor'))]" />
+    </record>
+    <record id="finance_kmitl.menu_finance_payment_out" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('group_disbursement_payment_auditor'))]" />
+    </record>
+
+    <menuitem id="menu_dr_audit_queue" name="Audit Disbursements" parent="finance_kmitl.menu_finance_payment_out" action="action_dr_audit_queue" sequence="20" groups="group_disbursement_payment_auditor" />
+
+    <record id="view_disbursement_request_search_inherit_payment_audit" model="ir.ui.view">
+        <field name="name">disbursement.request.search.inherit.payment.audit</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='done']" position="after">
+                <filter string="Payment Audit" name="payment_audit" domain="[('station_code', '=', 'payment_audit')]" />
+                <filter string="Audited by Me" name="my_payment_audits" domain="[('my_done_station_codes', '=', 'payment_audit')]" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- The subject is editable only while the auditor holds the request. It is
+         not marked required here: the field is empty for every request that
+         arrives at the station, and a view-level required blocks the smart
+         buttons the auditor needs to review the request's other documents first
+         (form save runs on every object button, dirty or not).
+         _check_payment_classification is the real gate — it refuses to audit
+         without a subject — so the alert carries the reminder instead. -->
+    <record id="view_disbursement_request_form_inherit_payment_audit" model="ir.ui.view">
+        <field name="name">disbursement.request.form.inherit.payment.audit</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_subject_id']" position="attributes">
+                <attribute name="readonly" />
+                <attribute name="attrs">{'readonly': [('station_code', '!=', 'payment_audit')]}</attribute>
+            </xpath>
+            <xpath expr="//page[@name='payment_execution']/group" position="before">
+                <div class="alert alert-warning mb-2" role="alert" attrs="{'invisible': ['|', ('station_code', '!=', 'payment_audit'), ('payment_subject_id', '!=', False)]}">
+                    <i class="fa fa-exclamation-triangle me-1" />
+                    <span>Choose the payment subject before auditing: it is what decides which account each payee is paid from.</span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

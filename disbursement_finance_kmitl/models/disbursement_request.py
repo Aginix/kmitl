@@ -3,42 +3,14 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-# Groups that gate each post-bill payment-execution step.
-AUDITOR_GROUP = "disbursement_finance_kmitl.group_disbursement_payment_auditor"
-AUTHORIZER_GROUP = "disbursement_finance_kmitl.group_disbursement_payment_authorizer"
-FINANCE_GROUP = "disbursement_finance_kmitl.group_disbursement_payment_finance"
-# The accounting office's makers, who book the vouchers once the request is paid.
-ACCOUNTING_MAKER_GROUP = "accounting_kmitl.group_accounting_kmitl_user"
-
-# Execution Todos fanned out to the group responsible for the next step.
-TO_AUDIT_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_audit"
-TO_AUTHORIZE_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_authorize"
-TO_PAY_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_pay"
-TO_BOOK_ACTIVITY = "disbursement_finance_kmitl.mail_activity_dr_to_book"
-
 
 class DisbursementRequest(models.Model):
-    """Post-bill payment-execution workflow on the disbursement request.
+    """The request's side of the payment phase: what is paid, to whom, from where.
 
-    After the accounting office posts the vendor bills (``bills_posted``), the
-    request enters a second, forward-only approval phase that is separate from
-    the pre-bill request approval (signed/verified/approved):
-
-        bills_posted
-          -> payment_audited      (auditor       : action_audit)
-          -> payment_authorized   (rector delegate: action_authorize, which also
-                                   raises the vouchers, numbered and confirmed
-                                   for the bank -- see ADR-0006)
-          -> paid                 (no press: reached when the last of the request's
-                                   vouchers is paid, which happens as each officer
-                                   closes the e-payment file they handled -- see
-                                   ADR-0007)
-          -> cleared              (accounting posts the payment move through the
-                                   account.move maker-checker; set in
-                                   account_move._post)
-
-    Budget was already obligated/consumed once at ``approved`` and is never
-    touched again here.
+    Data only. *When* it happens — audit, authorise, pay, clear — is a work
+    station each (``disbursement_wst_payment_audit``, ``_payment_authorize``,
+    ``_pay``, ``_clear``): this bridge owns the payment lines, the vouchers and
+    their links, and names no station (disbursement_wst ADR-0004).
     """
 
     _inherit = "disbursement.request"
@@ -62,34 +34,6 @@ class DisbursementRequest(models.Model):
         inverse_name="request_id",
         string="Payment Lines",
         copy=False,
-    )
-
-    # Who performed each round-2 step, and when. Round 1 stamps its two approvals
-    # the same way (``finance_approver_id`` / ``rector_approver_id``); round 2 used
-    # to leave the answer in the chatter alone, which is not something a list can
-    # be built on. The authorizer's history list stands on the stamp rather than on
-    # the state, so a request stays in it once it is paid and cleared.
-    payment_auditor_id = fields.Many2one(
-        comodel_name="res.users",
-        string="Payment Auditor",
-        copy=False,
-        readonly=True,
-    )
-    payment_audit_date = fields.Datetime(
-        string="Payment Audited On",
-        copy=False,
-        readonly=True,
-    )
-    payment_authorizer_id = fields.Many2one(
-        comodel_name="res.users",
-        string="Payment Authorizer",
-        copy=False,
-        readonly=True,
-    )
-    payment_authorize_date = fields.Datetime(
-        string="Payment Authorized On",
-        copy=False,
-        readonly=True,
     )
 
     # One2many via the stored back-reference on account.payment, so payment
@@ -134,32 +78,23 @@ class DisbursementRequest(models.Model):
             paid = len(active.filtered(lambda p: p.finance_state == "paid"))
             rec.payment_status_display = _("จ่ายแล้ว %s/%s", paid, total) if total else ""
 
-    # ------------------------------------------------------------------
-    # Todo fan-out (mirrors accounting_kmitl_workflow._schedule_approval_todo)
-    # ------------------------------------------------------------------
-    def _schedule_payment_todo(self, activity_xmlid, group_xmlid):
-        """Push an execution Todo to every member of the responsible group."""
-        group = self.env.ref(group_xmlid, raise_if_not_found=False)
-        if not group:
-            return
-        for rec in self:
-            for user in group.users:
-                rec.activity_schedule(
-                    activity_xmlid, user_id=user.id, note=rec.name or ""
-                )
-
     def write(self, vals):
         res = super().write(vals)
-        # Entering bills_posted (set by the accounting bridge when the last
-        # bill posts) opens the payment-execution phase: notify the auditors.
-        if vals.get("state") == "bills_posted":
-            self._ensure_payment_lines()
-            self._schedule_payment_todo(TO_AUDIT_ACTIVITY, AUDITOR_GROUP)
         # A new subject re-derives every row it is allowed to.
         if "payment_subject_id" in vals:
             for record in self:
                 record._apply_subject_defaults(record.payment_line_ids)
         return res
+
+    @api.depends("payment_ids.state", "payment_ids.finance_state")
+    def _compute_is_settled(self):
+        """Settled once every live voucher has its money — the finance office's
+        fact, not the accounting office's: the entry may not be booked yet."""
+        for rec in self:
+            active = rec.payment_ids.filtered(lambda p: p.state != "cancel")
+            rec.is_settled = bool(active) and all(
+                p.finance_state == "paid" for p in active
+            )
 
     # ------------------------------------------------------------------
     # Payment lines (one per payee)
@@ -169,7 +104,7 @@ class DisbursementRequest(models.Model):
         the amounts of the rows no payment has frozen up to date.
 
         Idempotent and cheap to call, so it runs at every door into the payment
-        phase rather than only at the ``bills_posted`` transition: a request can
+        phase rather than only when the audit station is entered: a request can
         then never show an empty payment tab, and a bill accounting reversed and
         re-issued picks up its own row unaided.
 
@@ -340,297 +275,13 @@ class DisbursementRequest(models.Model):
         return True
 
     # ------------------------------------------------------------------
-    # Workflow actions (forward-only, no reject in this phase)
-    # ------------------------------------------------------------------
-    def action_audit(self):
-        """Auditor verifies the disbursement after the bills are posted."""
-        for record in self:
-            if record.state != "bills_posted":
-                raise UserError(_("Only bills-posted requests can be audited."))
-            record._ensure_payment_lines()
-            record._check_payment_classification()
-            record.write(
-                {
-                    "state": "payment_audited",
-                    "payment_auditor_id": self.env.user.id,
-                    "payment_audit_date": fields.Datetime.now(),
-                }
-            )
-            record._stamp_signature("payment_audit")
-            record.activity_feedback([TO_AUDIT_ACTIVITY])
-            record._schedule_payment_todo(TO_AUTHORIZE_ACTIVITY, AUTHORIZER_GROUP)
-        return True
-
-    def action_authorize(self):
-        """Rector delegate authorizes the disbursement, which raises its vouchers.
-
-        The authorisation is what makes the money payable, so it is also what
-        issues the ใบสำคัญจ่าย: the finance office finds them numbered and
-        confirmed for the bank, ready to go straight into an e-payment file,
-        instead of a request they must first turn into payments one press per
-        payee. See ADR-0006.
-        """
-        for record in self:
-            if record.state != "payment_audited":
-                raise UserError(
-                    _("Only audited requests can be authorized for payment.")
-                )
-            record.write(
-                {
-                    "state": "payment_authorized",
-                    "payment_authorizer_id": self.env.user.id,
-                    "payment_authorize_date": fields.Datetime.now(),
-                }
-            )
-            record._stamp_signature("payment_authorize")
-            record.activity_feedback([TO_AUTHORIZE_ACTIVITY])
-            record._schedule_payment_todo(TO_PAY_ACTIVITY, FINANCE_GROUP)
-            record._try_create_payments()
-        return True
-
-    def _try_create_payments(self):
-        """Raise the vouchers without letting a failure undo the authorisation.
-
-        What can go wrong here is a banking coordinate — a payee with no account,
-        a หัวจ่าย naming no bank — and none of it is the authorizer's to fix or to
-        be stopped by. So the request is authorized either way: the reason goes in
-        the chatter, the finance office's Todo stays where it is, and Create
-        Payment is the way back in once the coordinate is corrected.
-
-        The savepoint is what keeps a failed batch from taking the state write
-        with it (same pattern as ``_payment_batch``); the message is posted
-        outside it, or it would be rolled back too.
-
-        Runs sudo because raising the vouchers is a system derivation: the
-        authorizer holds no accounting rights, exactly as the accounting user who
-        posts the last bill holds none on the payment lines ``_ensure_payment_lines``
-        makes for them (ADR-0003). The finance office's own press keeps its own
-        identity — a voucher they create is created by them.
-        """
-        self.ensure_one()
-        try:
-            with self.env.cr.savepoint():
-                self.sudo()._create_payments()
-        except (UserError, ValidationError) as error:
-            self.env.invalidate_all()
-            self.message_post(
-                body=_(
-                    "The payment vouchers could not be raised: %s Correct it, "
-                    "then use Create Payment.",
-                    error.args and error.args[0] or _("error"),
-                ),
-                subtype_xmlid="mail.mt_note",
-            )
-        return True
-
-    def action_confirm_paid(self):
-        """The finance office's one confirmation that every payee has their money.
-
-        It **writes** the outcome it asserts onto every payment rather than
-        demanding that someone set it elsewhere first: the bank's own result file
-        never enters Odoo, so no other record can know it, and asking the officer
-        to tick each payee before ticking the request is a second pass over the
-        same judgement. What is checked instead is a fact the system does hold —
-        that the payments which travel in an e-payment file were actually put in
-        one. Whatever the bank rejected was chased and settled outside the system
-        before this is pressed.
-
-        This is also the **Hand-over**: it is where the request stops being the
-        finance office's and its vouchers enter the accounting office's approval
-        queue. See ADR-0004.
-        """
-        for record in self:
-            if record.state != "payment_authorized":
-                raise UserError(_("Only authorized requests can be confirmed as paid."))
-            active = record.payment_ids.filtered(lambda p: p.state != "cancel")
-            if not active:
-                raise UserError(
-                    _("Create the payment(s) before confirming the payment.")
-                )
-            not_exported = active.filtered(
-                lambda p: p.needs_bank_export and p.export_status != "exported"
-            )
-            if not_exported:
-                raise UserError(
-                    _(
-                        "These payments have not left in an e-payment file yet: "
-                        "%s. Put them in a file and mark it done before "
-                        "confirming the payment."
-                    )
-                    % ", ".join(not_exported.mapped("name"))
-                )
-            # Every voucher raised by the authorisation was confirmed for the bank
-            # there. One that reached the request another way — added by hand, or
-            # unconfirmed to correct a coordinate and left that way — is confirmed
-            # here instead: it is what gives it its number, and confirming it for a
-            # bank says nothing this press does not already imply.
-            active.filtered(
-                lambda p: p.finance_state == "draft"
-            ).action_confirm_for_bank()
-            # Only the ones still waiting. Closing an e-payment file is itself
-            # ยืนยันจ่ายสำเร็จ for the payees it carried, so by the time this press
-            # happens most of a request is usually paid already — and ``_mark_paid``
-            # refuses a voucher that is not ``confirmed``, so passing them all would
-            # make this press fail on exactly the requests that had gone out
-            # normally.
-            active.filtered(
-                lambda payment: payment.finance_state == "confirmed"
-            )._mark_paid()
-            # Usually a no-op by now: marking the last voucher paid crosses the
-            # Hand-over on its own. It still matters for a request whose vouchers
-            # were all paid before this press, where nothing was written and so
-            # nothing fired.
-            record._hand_over()
-        return True
-
-    def _hand_over(self):
-        """The Hand-over: the request stops being the finance office's.
-
-        Idempotent, and that is the point — it is reached two ways. Normally the
-        last voucher turning paid brings the request across
-        (``_try_hand_over_when_all_paid``); the finance office's own press calls it
-        too, for the case where there was nothing left to mark. Filtering on the
-        state it crosses *from* is what keeps the accounting office from getting the
-        same Todo twice.
-        """
-        for record in self.filtered(lambda rec: rec.state == "payment_authorized"):
-            record.state = "paid"
-            record.activity_feedback([TO_PAY_ACTIVITY])
-            # One Todo for the request, because the request is the document KMITL
-            # navigates by — not twelve for twelve payees.
-            record._schedule_payment_todo(TO_BOOK_ACTIVITY, ACCOUNTING_MAKER_GROUP)
-        return True
-
-    def _try_hand_over_when_all_paid(self):
-        """Cross the Hand-over once every payee of this request has their money.
-
-        A request's payees can span several หัวจ่าย, so its vouchers go out in as
-        many e-payment files, and no two of those files need be the same officer's.
-        Nobody is therefore in a position to say "all of them are paid" on behalf of
-        the others — so nobody is asked to. Each officer closes the file they
-        handled, each closed file pays the vouchers it carried, and the request
-        crosses when the last of them lands. The officer who happens to be last
-        brings it across without having to know they were.
-
-        A voucher still at ``draft`` — added by hand and never confirmed for the
-        bank — holds the request here. That is intended: it has not been paid and
-        the accounting office has nothing to book for it. What says so is the
-        finance office's own Todo, which stays open, and จ่ายแล้ว n/m on the
-        request.
-        """
-        for record in self:
-            if record.state != "payment_authorized":
-                continue
-            active = record.payment_ids.filtered(
-                lambda payment: payment.state != "cancel"
-            )
-            if not active or active.filtered(
-                lambda payment: payment.finance_state != "paid"
-            ):
-                continue
-            record._hand_over()
-        return True
-
-    def action_submit_payments(self):
-        """The accounting maker submits every voucher of a paid request at once.
-
-        Their step is per voucher — correct the booking, then submit — but a request
-        whose vouchers need no correction is the same press repeated, and the request
-        is the document they navigate by. A voucher that does need work is opened
-        from the queue and submitted on its own entry instead.
-
-        Submitting is what asks the approver: ``account.move.action_submit`` puts the
-        Todo in their inbox, so the makers' own Todo on the request is cleared here.
-        """
-        for record in self:
-            if record.state != "paid":
-                raise UserError(
-                    _("Only a request the finance office has paid can be booked.")
-                )
-            active = record.payment_ids.filtered(lambda p: p.state != "cancel")
-            drafts = active.move_id.filtered(lambda move: move.state == "draft")
-            if not drafts:
-                raise UserError(
-                    _("Every voucher of %s is already submitted.") % record.display_name
-                )
-            result = drafts.action_submit()
-            if isinstance(result, dict):
-                # base_exception wants to show a popup, and a queue has nobody to
-                # show it to: report it as the reason this request could not be
-                # booked rather than leaving the vouchers silently in draft.
-                raise UserError(
-                    _(
-                        "%s has vouchers with blocking exceptions. Open the entry "
-                        "and submit it there to see them."
-                    )
-                    % record.display_name
-                )
-            record.activity_feedback([TO_BOOK_ACTIVITY])
-        return True
-
-    def action_submit_payments_batch(self):
-        return self._payment_batch("action_submit_payments", "paid")
-
-    def _payment_batch(self, single_method, valid_state):
-        """Run a per-record action in isolated savepoints (mirror of
-        accounting_kmitl_workflow.action_approve_batch)."""
-        candidates = self.filtered(lambda r: r.state == valid_state)
-        done = self.browse()
-        failures = []
-        for record in candidates:
-            try:
-                with self.env.cr.savepoint():
-                    getattr(record, single_method)()
-                done |= record
-            except (UserError, ValidationError) as error:
-                self.env.invalidate_all()
-                failures.append(
-                    (record.display_name, error.args and error.args[0] or _("error"))
-                )
-            except Exception as error:  # noqa: BLE001 - isolate per-record
-                self.env.invalidate_all()
-                failures.append((record.display_name, str(error)))
-        message = _("%s request(s) processed.") % len(done)
-        if failures:
-            message += "\n" + _("Could not process:") + "\n"
-            message += "\n".join(
-                "• %s — %s" % (name, reason) for name, reason in failures
-            )
-        if failures and not done:
-            notification_type = "danger"
-        elif failures:
-            notification_type = "warning"
-        else:
-            notification_type = "success"
-        return {
-            "type": "ir.actions.client",
-            "tag": "display_notification",
-            "params": {
-                "title": _("Disbursement"),
-                "message": message,
-                "type": notification_type,
-                "sticky": bool(failures),
-            },
-        }
-
-    def action_audit_batch(self):
-        return self._payment_batch("action_audit", "bills_posted")
-
-    def action_authorize_batch(self):
-        return self._payment_batch("action_authorize", "payment_audited")
-
-    # ------------------------------------------------------------------
     # Cancel guard
     # ------------------------------------------------------------------
     def action_cancel(self):
-        """Block cancel once paid/cleared or when a payment is posted."""
+        """Block cancel once a payment is posted or in progress."""
         for record in self:
             if record.state == "cancel":
                 continue
-            if record.state in ("paid", "cleared"):
-                raise UserError(
-                    _("Cannot cancel a request that is already paid/cleared.")
-                )
             active = record.payment_ids.filtered(lambda p: p.state != "cancel")
             posted = active.filtered(lambda p: p.state == "posted")
             if posted:
@@ -651,28 +302,8 @@ class DisbursementRequest(models.Model):
         return super().action_cancel()
 
     # ------------------------------------------------------------------
-    # Payment creation (finance)
+    # Payment creation
     # ------------------------------------------------------------------
-    def action_create_payment(self):
-        """The finance office's way back in when the authorisation raised nothing.
-
-        Normally the vouchers already exist by the time the request reaches them —
-        authorising it is what raises them (ADR-0006). This is what is left for
-        the cases where it could not: a banking coordinate that was wrong at the
-        time, a request authorized before this was built, or a batch that was
-        cancelled and is wanted again.
-        """
-        self.ensure_one()
-        payments = self._create_payments()
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Payments"),
-            "res_model": "account.payment",
-            "domain": [("id", "in", payments.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }
-
     def _create_payments(self):
         """Raise one numbered voucher per payee, confirmed for the bank.
 
@@ -683,10 +314,6 @@ class DisbursementRequest(models.Model):
         why the chatter can name them.
         """
         self.ensure_one()
-        if self.state != "payment_authorized":
-            raise UserError(
-                _("The disbursement must be authorized before creating the payment.")
-            )
         existing_payments = self.payment_ids.filtered(lambda p: p.state != "cancel")
         if existing_payments:
             raise UserError(
