@@ -1,0 +1,15 @@
+.o_budget_dashboard .o_bd_table {
+    // Pool Tag item rows (โครงการ/แผน) under a budget code.
+    tr.o_bd_pool_tag {
+        font-style: italic;
+
+        // Item figures are not drill targets: render them as plain numbers.
+        .o_bd_click,
+        .o_bd_click:hover {
+            cursor: default;
+            color: inherit;
+            text-decoration: none;
+            background: none;
+        }
+    }
+}

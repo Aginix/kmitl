@@ -101,54 +101,9 @@ class BudgetDashboard(models.AbstractModel):
         if not accounts:
             return {"rows": [], "currency_id": currency_id}
         account_ids = accounts.ids
-        analytic = self.env["account.analytic.account"]
-        # Dimension accounts are hierarchical (account_analytic_parent): a chosen
-        # value matches itself + all descendants via child_of. Source is a flat
-        # classification (exact match). Guarded in case the hierarchy is absent.
-        hier_op = "child_of" if "parent_id" in analytic._fields else "="
-        dim_leaves = []
-        for fname in self._DIM_FIELDS:
-            val = filters.get(fname)
-            if not val:
-                continue
-            is_list = isinstance(val, (list, tuple))
-            # source is flat (exact / "in"); the hierarchical dims use child_of
-            # when the analytic tree exists, else exact / "in" for a value list.
-            if fname == "source_analytic_id":
-                op = "in" if is_list else "="
-            elif is_list:
-                op = "child_of" if hier_op == "child_of" else "in"
-            else:
-                op = hier_op
-            dim_leaves.append((fname, op, val))
-
-        # Shared base domains for every column; dim filters apply set-based.
-        move_base = [
-            ("parent_state", "=", "posted"),
-            ("account_fiscal_year_id", "=", fiscal_year_id),
-            ("account_id", "in", account_ids),
-        ] + dim_leaves
-        cl_base = [
-            ("state", "=", "posted"),
-            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
-            ("account_fiscal_year_id", "=", fiscal_year_id),
-            ("account_id", "in", account_ids),
-        ] + dim_leaves
-        # (3) approved cap = Σ active commitment caps. Header analytic dims are
-        # non-stored, so when a dimension filter is set the matching commitments
-        # are resolved through their stored lines.
-        commit_domain = [
-            ("state", "in", self._ACTIVE_COMMITMENT_STATES),
-            ("account_fiscal_year_id", "=", fiscal_year_id),
-            ("account_id", "in", account_ids),
-        ]
-        if dim_leaves:
-            match = (
-                self.env["budget.commitment.line"]
-                .search(cl_base)
-                .mapped("commitment_id")
-            )
-            commit_domain.append(("id", "in", match.ids))
+        move_base, cl_base, commit_domain, hier_op = self._dashboard_domains(
+            fiscal_year_id, account_ids, filters
+        )
 
         # Optional breakdown: nest the budget-account tree under one or more
         # analytic dimensions (ordered, e.g. activities then departments)
@@ -253,6 +208,64 @@ class BudgetDashboard(models.AbstractModel):
             for child in reversed(kids):
                 stack.append((child, level + 1))
         return {"rows": rows, "currency_id": currency_id, "hier_op": hier_op}
+
+    def _dashboard_domains(self, fiscal_year_id, account_ids, filters):
+        """Shared base domains for every dashboard column.
+
+        Returns ``(move_base, cl_base, commit_domain, hier_op)``: posted budget
+        move lines, posted commitment lines of active commitments, and active
+        commitment headers, all scoped to the fiscal year, ``account_ids`` and
+        the optional dimension ``filters``.
+        """
+        analytic = self.env["account.analytic.account"]
+        # Dimension accounts are hierarchical (account_analytic_parent): a chosen
+        # value matches itself + all descendants via child_of. Source is a flat
+        # classification (exact match). Guarded in case the hierarchy is absent.
+        hier_op = "child_of" if "parent_id" in analytic._fields else "="
+        dim_leaves = []
+        for fname in self._DIM_FIELDS:
+            val = filters.get(fname)
+            if not val:
+                continue
+            is_list = isinstance(val, (list, tuple))
+            # source is flat (exact / "in"); the hierarchical dims use child_of
+            # when the analytic tree exists, else exact / "in" for a value list.
+            if fname == "source_analytic_id":
+                op = "in" if is_list else "="
+            elif is_list:
+                op = "child_of" if hier_op == "child_of" else "in"
+            else:
+                op = hier_op
+            dim_leaves.append((fname, op, val))
+
+        # Shared base domains for every column; dim filters apply set-based.
+        move_base = [
+            ("parent_state", "=", "posted"),
+            ("account_fiscal_year_id", "=", fiscal_year_id),
+            ("account_id", "in", account_ids),
+        ] + dim_leaves
+        cl_base = [
+            ("state", "=", "posted"),
+            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
+            ("account_fiscal_year_id", "=", fiscal_year_id),
+            ("account_id", "in", account_ids),
+        ] + dim_leaves
+        # (3) approved cap = Σ active commitment caps. Header analytic dims are
+        # non-stored, so when a dimension filter is set the matching commitments
+        # are resolved through their stored lines.
+        commit_domain = [
+            ("state", "in", self._ACTIVE_COMMITMENT_STATES),
+            ("account_fiscal_year_id", "=", fiscal_year_id),
+            ("account_id", "in", account_ids),
+        ]
+        if dim_leaves:
+            match = (
+                self.env["budget.commitment.line"]
+                .search(cl_base)
+                .mapped("commitment_id")
+            )
+            commit_domain.append(("id", "in", match.ids))
+        return move_base, cl_base, commit_domain, hier_op
 
     # ------------------------------------------------------------------
     # multi-dimension breakdown (e.g. activities)
