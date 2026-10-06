@@ -82,8 +82,31 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     def _prepare_purchase_order_line(self, po, item):
         res = super()._prepare_purchase_order_line(po, item)
         res["taxes_id"] = [(4, item.tax_id.id)] if item.tax_id else False
-        res["uom_text"] = item.line_id.uom_text
+        pa_line = self._approval_line_for(item.line_id)
+        res["uom_text"] = pa_line.uom_text if pa_line else item.line_id.uom_text
         return res
+
+    def _approval_line_for(self, pr_line):
+        """Return the PA line positionally paired with ``pr_line``.
+
+        Empty recordset if no approval is in context — PR→PA line parity is a
+        hard invariant (God Mode cannot add/remove PA lines), so pairing by
+        id-sorted position is safe.
+        """
+        PaLine = self.env["purchase.request.approval.line"]
+        approval_id = self.env.context.get("approval_id")
+        if not approval_id:
+            return PaLine
+        approval = self.env["purchase.request.approval"].browse(approval_id)
+        if not approval.exists():
+            return PaLine
+        pr_lines = pr_line.request_id.line_ids.sorted("id")
+        pa_lines = approval.line_ids.sorted("id")
+        try:
+            idx = list(pr_lines.ids).index(pr_line.id)
+        except ValueError:
+            return PaLine
+        return pa_lines[idx:idx + 1]
 
     @api.model
     def _prepare_purchase_order(self, picking_type, group_id, company, origin):
@@ -110,20 +133,8 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         # item.tax_id is now related from wiz_id.tax_id — drop any snapshot
         # of PR-line tax_id set by upstream overrides.
         res.pop("tax_id", None)
-        approval_id = self.env.context.get("approval_id")
-        if not approval_id:
-            return res
-        approval = self.env["purchase.request.approval"].browse(approval_id)
-        if not approval.exists():
-            return res
-        pr_lines = line.request_id.line_ids.sorted("id")
-        pa_lines = approval.line_ids.sorted("id")
-        try:
-            idx = list(pr_lines.ids).index(line.id)
-        except ValueError:
-            return res
-        if idx < len(pa_lines):
-            pa_line = pa_lines[idx]
+        pa_line = self._approval_line_for(line)
+        if pa_line:
             res["product_qty"] = pa_line.product_qty
             res["price_unit"] = pa_line.price_unit
             res["name"] = pa_line.name
