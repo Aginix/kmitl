@@ -76,7 +76,7 @@ class DisbursementRouteLine(models.Model):
         "disbursement.route", required=True, ondelete="cascade", index=True
     )
     station_id = fields.Many2one(
-        "disbursement.station", required=True, ondelete="restrict"
+        "disbursement.station", required=True, ondelete="cascade"
     )
     sequence = fields.Integer(default=10)
     condition_domain = fields.Char(

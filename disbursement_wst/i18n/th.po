@@ -22,6 +22,16 @@ msgid "No route with stations matches this request."
 msgstr "ไม่มีเส้นทางที่มีสถานีตรงกับใบขอเบิกนี้"
 
 #. module: disbursement_wst
+#: models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Cannot remove this work station: %(count)s request(s) are waiting at it: "
+"%(names)s. Send them on first."
+msgstr ""
+"ไม่สามารถถอดสถานีงานนี้ได้: มีใบขอเบิก %(count)s รายการรออยู่ที่สถานี: "
+"%(names)s กรุณาส่งต่อก่อน"
+
+#. module: disbursement_wst
 #: models/disbursement_step.py:0
 #, python-format
 msgid "This step is not active."
@@ -46,19 +56,13 @@ msgid "A note is required to return a request."
 msgstr "ต้องระบุหมายเหตุเมื่อตีกลับใบขอเบิก"
 
 #. module: disbursement_wst
-#: views/disbursement_station_views.xml:0
-#, python-format
-msgid "Work Stations"
-msgstr "สถานีงาน"
-
-#. module: disbursement_wst
-#: views/disbursement_station_views.xml:0
+#: models/disbursement_request.py:0
 #, python-format
 msgid "Work Station"
 msgstr "สถานีงาน"
 
 #. module: disbursement_wst
-#: views/disbursement_station_views.xml:0
+#: views/disbursement_route_views.xml:0
 #, python-format
 msgid "Archived"
 msgstr "เก็บถาวร"
@@ -212,3 +216,83 @@ msgstr "ดำเนินการแล้ว %s รายการ"
 msgid "Could not process:"
 msgstr "ดำเนินการไม่ได้:"
 
+#. module: disbursement_wst
+#: models/disbursement_request.py:0
+msgid "error"
+msgstr "ข้อผิดพลาด"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "A note is required to divert a request."
+msgstr "ต้องระบุหมายเหตุเมื่อส่งใบขอเบิกไปยังสถานีอื่น"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "A request cannot be diverted to the station it is at."
+msgstr "ไม่สามารถส่งใบขอเบิกไปยังสถานีที่อยู่ในขณะนี้"
+
+#. module: disbursement_wst
+#: models/disbursement_request.py:0
+#, python-format
+msgid "Station %(station)s needs %(required)s to be done first."
+msgstr "สถานี %(station)s ต้องให้ %(required)s เสร็จสิ้นก่อน"
+
+#. module: disbursement_wst
+#: models/disbursement_request.py:0
+#: views/disbursement_divert_wizard_views.xml:0
+#: views/disbursement_request_views.xml:0
+#, python-format
+msgid "Divert"
+msgstr "ส่งไปยังสถานี"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+msgid "Forward"
+msgstr "ส่งต่อ"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+msgid "Inserted"
+msgstr "แทรกเพิ่ม"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+msgid "Resumed"
+msgstr "กลับมาต่อ"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+msgid "Caused By"
+msgstr "เกิดจากขั้นตอน"
+
+#. module: disbursement_wst
+#: wizard/disbursement_divert_wizard.py:0
+msgid "Send To"
+msgstr "ส่งไปยังสถานี"
+
+#. module: disbursement_wst
+#: wizard/disbursement_divert_wizard.py:0
+msgid "Come Back to Me"
+msgstr "ให้กลับมาที่สถานีนี้"
+
+#. module: disbursement_wst
+#: wizard/disbursement_divert_wizard.py:0
+msgid "Reason"
+msgstr "เหตุผล"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+msgid "Disposition"
+msgstr "การดำเนินการ"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+msgid "Origin"
+msgstr "ที่มา"
+
+#. module: disbursement_wst
+#: wizard/disbursement_divert_wizard.py:0
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"

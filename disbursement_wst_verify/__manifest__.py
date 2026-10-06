@@ -13,5 +13,6 @@
         "data/disbursement_route_line.xml",
         "views/disbursement_request_views.xml",
     ],
+    "uninstall_hook": "uninstall_hook",
     "installable": True,
 }

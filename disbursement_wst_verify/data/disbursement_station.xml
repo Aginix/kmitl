@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo noupdate="1">
+<odoo noupdate="0">
     <record id="station_verify" model="disbursement.station">
         <field name="code">verify</field>
         <field name="name">Verification</field>

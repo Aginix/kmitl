@@ -38,6 +38,19 @@ class DisbursementRequest(models.Model):
     signature_step_ids = fields.Many2many(
         "disbursement.step", compute="_compute_signature_step_ids"
     )
+    # Not stored and not meant to be read: they exist to be *searched*. Odoo 16
+    # has no ``any`` operator, so "a done step at this station" cannot be written
+    # on ``step_ids`` without matching two different steps.
+    done_station_codes = fields.Char(
+        compute="_compute_done_station_codes",
+        search="_search_done_station_codes",
+        help="Search with ``=`` and a station code: requests that completed it.",
+    )
+    my_done_station_codes = fields.Char(
+        compute="_compute_done_station_codes",
+        search="_search_my_done_station_codes",
+        help="Same, restricted to the steps the current user acted on.",
+    )
 
     @api.model
     def _selection_station_code(self):
@@ -64,14 +77,34 @@ class DisbursementRequest(models.Model):
             request.current_step_id = step
             request.station_code = step.station_code
 
-    @api.depends("step_ids.state", "step_ids.disposition", "step_ids.station_id.is_signature")
+    @api.depends("step_ids.state", "step_ids.disposition", "step_ids.is_signature")
     def _compute_signature_step_ids(self):
+        """The latest signing step of each station: a request that detoured can
+        visit a station twice, and the officer signs the document once."""
         for request in self:
-            request.signature_step_ids = request.step_ids.filtered(
+            latest = {}
+            for step in request.step_ids.filtered(
                 lambda s: s.state == "done"
-                and s.disposition == "complete"
-                and s.station_id.is_signature
-            )
+                and s.disposition == "forward"
+                and s.is_signature
+            ).sorted(lambda s: (s.sequence, s.id)):
+                latest[step.station_code] = step
+            request.signature_step_ids = request.step_ids.browse(
+                [step.id for step in latest.values()]
+            ).sorted(lambda s: (s.sequence, s.id))
+
+    def _compute_done_station_codes(self):
+        self.done_station_codes = self.my_done_station_codes = False
+
+    def _search_done_station_codes(self, operator, value, user=None):
+        domain = [("station_code", operator, value), ("state", "=", "done")]
+        if user:
+            domain.append(("acted_by_id", "=", user))
+        steps = self.env["disbursement.step"].sudo().search(domain)
+        return [("id", "in", steps.request_id.ids)]
+
+    def _search_my_done_station_codes(self, operator, value):
+        return self._search_done_station_codes(operator, value, user=self.env.uid)
 
     # ----------------------------------------------------------------- route
     def action_sign(self):
@@ -144,19 +177,70 @@ class DisbursementRequest(models.Model):
             request.current_step_id.act()
         return True
 
-    def action_act_batch(self):
-        """Proceed many requests at once from a work queue.
+    def action_divert(self):
+        """Open the divert wizard: name the station that must look at this."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Divert"),
+            "res_model": "disbursement.divert.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_request_id": self.id},
+        }
 
-        Each request is processed in its own savepoint so one that fails (e.g.
-        insufficient budget) does not roll back the rest; returns a summary
-        notification.
+    def _check_divert_target(self, station):
+        """Refuse a station whose prerequisites this request has not finished.
+
+        Only the stations on this request's own route count: a required station
+        that is not on it imposes nothing (ADR-0002).
+        """
+        self.ensure_one()
+        on_route = set(self.step_ids.mapped("station_code"))
+        forwarded = set(
+            self.step_ids.filtered(
+                lambda s: s.state == "skipped"
+                or (s.state == "done" and s.disposition == "forward")
+            ).mapped("station_code")
+        )
+        missing = [
+            code
+            for code in station._required_codes()
+            if code in on_route and code not in forwarded
+        ]
+        if missing:
+            raise UserError(
+                _(
+                    "Station %(station)s needs %(required)s to be done first.",
+                    station=station.name,
+                    required=", ".join(
+                        sorted(
+                            {
+                                step.station_name
+                                for step in self.step_ids
+                                if step.station_code in missing
+                            }
+                        )
+                    ),
+                )
+            )
+
+    def action_act_batch(self):
+        """Proceed many requests at once from a work queue."""
+        return self._run_batch("action_station_complete")
+
+    def _run_batch(self, method):
+        """Run ``method`` on each request in its own savepoint.
+
+        One that fails (e.g. insufficient budget) does not roll back the rest;
+        returns a summary notification.
         """
         done = self.browse()
         failures = []
         for record in self:
             try:
                 with self.env.cr.savepoint():
-                    record.action_station_complete()
+                    getattr(record, method)()
                 done |= record
             except (UserError, ValidationError) as error:
                 self.env.invalidate_all()
@@ -183,6 +267,23 @@ class DisbursementRequest(models.Model):
                 "sticky": bool(failures),
             },
         }
+
+    def _wst_check_station_removable(self, code):
+        """Refuse to uninstall station ``code`` while a request is parked at it.
+
+        Called from each station module's ``uninstall_hook`` (ADR-0005): history
+        survives the station, work in progress does not.
+        """
+        parked = self.search([("station_code", "=", code)])
+        if parked:
+            raise UserError(
+                _(
+                    "Cannot remove this work station: %(count)s request(s) are "
+                    "waiting at it: %(names)s. Send them on first.",
+                    count=len(parked),
+                    names=", ".join(parked.mapped("name")),
+                )
+            )
 
     # ---------------------------------------------------------------- hooks
     def _station_check(self, code):

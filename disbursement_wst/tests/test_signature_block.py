@@ -96,7 +96,7 @@ class TestSignatureBlock(TransactionCase):
         domain = [
             ("request_id", "=", dr.id),
             ("state", "=", "done"),
-            ("disposition", "=", "complete"),
+            ("disposition", "=", "forward"),
         ]
         if station:
             domain.append(("station_code", "=", station))

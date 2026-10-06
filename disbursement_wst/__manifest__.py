@@ -14,9 +14,9 @@
     "data": [
         "security/ir.model.access.csv",
         "data/disbursement_route.xml",
-        "views/disbursement_station_views.xml",
         "views/disbursement_route_views.xml",
         "views/disbursement_request_views.xml",
+        "views/disbursement_divert_wizard_views.xml",
     ],
     "installable": True,
 }

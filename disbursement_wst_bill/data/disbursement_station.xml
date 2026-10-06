@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo noupdate="1">
+<odoo noupdate="0">
     <record id="station_bill" model="disbursement.station">
         <field name="code">bill</field>
         <field name="name">Billing</field>

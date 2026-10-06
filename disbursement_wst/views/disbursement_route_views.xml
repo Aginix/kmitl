@@ -29,7 +29,7 @@
                         <tree editable="bottom">
                             <field name="sequence" widget="handle" />
                             <field name="request_model" invisible="1" />
-                            <field name="station_id" />
+                            <field name="station_id" options="{'no_create': True}" />
                             <field name="condition_domain" widget="domain" options="{'model': 'request_model'}" />
                         </tree>
                     </field>

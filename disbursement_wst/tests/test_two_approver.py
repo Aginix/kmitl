@@ -185,3 +185,82 @@ class TestTwoApprover(TransactionCase):
         self.assertFalse(dr.route_id)
         self.assertFalse(self._steps(dr))
         self.assertFalse(self._todos(dr, self.act_finance))
+
+    # ------------------------------------------------------------------
+    # Divert: something is wrong, name the station that must look at it
+    # ------------------------------------------------------------------
+    def _divert(self, dr, user, station_code, come_back=True, note="wrong"):
+        station = self.env["disbursement.station"].search(
+            [("code", "=", station_code)]
+        )
+        return dr.current_step_id.with_user(user).divert(station, come_back, note)
+
+    def test_divert_and_come_back(self):
+        """X -> Y -> X -> (route continues): the diverting station is queued
+        again behind the detour."""
+        dr = self._make_verified_dr()
+        self._divert(dr, self.finance, "verify")
+        self.assertEqual(dr.station_code, "verify")
+        self._act(dr, self.officer)
+        self.assertEqual(dr.station_code, "approve_finance")
+        self._act(dr, self.finance)
+        self.assertEqual(dr.station_code, "approve_rector")
+        steps = self._steps(dr).sorted(lambda s: (s.sequence, s.id))
+        self.assertEqual(
+            steps.mapped("station_code"),
+            ["verify", "approve_finance", "verify", "approve_finance", "approve_rector"],
+        )
+        self.assertEqual(
+            steps.mapped("origin"),
+            ["route", "route", "insert", "resume", "route"],
+        )
+        self.assertEqual(
+            steps.mapped("disposition"),
+            ["forward", "divert", "forward", "forward", False],
+        )
+        self.assertEqual(
+            len(set(steps.mapped("sequence"))), len(steps), "slots never tie"
+        )
+        self.assertEqual(steps[2].inserted_by_step_id, steps[1])
+        self.assertEqual(steps[3].inserted_by_step_id, steps[1])
+
+    def test_divert_without_coming_back(self):
+        """X -> Y -> (route continues): the request does not return to X."""
+        dr = self._make_verified_dr()
+        self._divert(dr, self.finance, "verify", come_back=False)
+        self._act(dr, self.officer)
+        self.assertEqual(dr.station_code, "approve_rector")
+        steps = self._steps(dr).sorted(lambda s: (s.sequence, s.id))
+        self.assertEqual(
+            steps.mapped("station_code"),
+            ["verify", "approve_finance", "verify", "approve_rector"],
+        )
+
+    def test_divert_needs_a_reason_and_the_group(self):
+        dr = self._make_verified_dr()
+        with self.assertRaises(UserError):
+            self._divert(dr, self.finance, "verify", note=False)
+        with self.assertRaises(AccessError):
+            self._divert(dr, self.officer, "verify")
+        with self.assertRaises(UserError):
+            self._divert(dr, self.finance, "approve_finance")
+        self.assertEqual(dr.station_code, "approve_finance")
+
+    def test_divert_target_must_have_its_prerequisites_done(self):
+        """Diverting into a station that has to come after one the request has
+        not finished is refused, as it would be by the route."""
+        dr = self._make_signed_dr()
+        with self.assertRaises(UserError):
+            self._divert(dr, self.officer, "approve_rector")
+        self.assertEqual(dr.station_code, "verify")
+
+    def test_a_detour_prints_one_signature_cell_per_station(self):
+        dr = self._make_verified_dr()
+        self._divert(dr, self.finance, "verify")
+        self._act(dr, self.officer)
+        self._act(dr, self.finance)
+        cells = dr.signature_step_ids
+        self.assertEqual(cells.mapped("station_code"), ["verify", "approve_finance"])
+        # The latest visit of each, not the first.
+        self.assertEqual(cells[0].origin, "insert")
+        self.assertEqual(cells[1].origin, "resume")
