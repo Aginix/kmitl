@@ -5,12 +5,11 @@ from odoo.exceptions import UserError
 class ApprovalRequest(models.Model):
     _inherit = "approval.request"
 
-    # A DR is "billed" once its budget has been committed at ``approved`` and
-    # stays billed through every downstream state a finance/accounting bridge
-    # may add (bills_posted, payment_*, paid, cleared) — those states are not
-    # owned by this module and must never be enumerated here. Excluding the
-    # states that precede budget commitment, plus ``cancel``, is the only
-    # comparison that stays correct regardless of which bridges are installed.
+    # A DR is "billed" once it has left the requester's side and stays billed
+    # until it ends — the work stations it walks while ``in_progress`` belong to
+    # their own modules and must never be enumerated here. Excluding the states
+    # that precede the stations, plus ``cancel``, is the only comparison that
+    # stays correct regardless of which stations are installed.
     _DISBURSEMENT_NOT_BILLED_STATES = (
         "draft", "submitted", "signed", "cancel",
     )

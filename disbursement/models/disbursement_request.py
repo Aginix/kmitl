@@ -250,6 +250,12 @@ class DisbursementRequest(models.Model):
 
     under_verification = fields.Boolean(compute="_compute_under_verification")
 
+    # A fact downstream modules ask about instead of listing the state values of
+    # bridges they do not depend on (ADR-0003). Stored, because they use it in
+    # ``search()`` domains. Core cannot know the answer: whichever bridge actually
+    # moves the money overrides the compute.
+    is_settled = fields.Boolean(compute="_compute_is_settled", store=True, copy=False)
+
     analytic_distribution = fields.Json(
         inverse="_inverse_analytic_distribution",
         copy=False,
@@ -968,6 +974,12 @@ class DisbursementRequest(models.Model):
     def _compute_under_verification(self):
         for record in self:
             record.under_verification = record._is_under_verification()
+
+    @api.depends()
+    def _compute_is_settled(self):
+        """Whether the money has left. Nothing can have been paid until a bridge
+        that pays says so."""
+        self.is_settled = False
 
     def action_draft(self):
         """Reset to draft.

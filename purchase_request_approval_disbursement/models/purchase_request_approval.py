@@ -126,22 +126,13 @@ class PurchaseRequestApproval(models.Model):
             approval.disbursement_request_count = len(approval.disbursement_request_ids)
 
     # Vocabulary read off disbursement.request.state — never pipeline_status,
-    # which lives on a different field and was never reachable from here.
-    # bills_posted/payment_*/cleared are added by disbursement_accounting_kmitl
-    # and disbursement_finance_kmitl via selection_add; if neither bridge is
-    # installed a request simply never reaches those keys and stays
-    # "in_progress" once approved, which is correct.
+    # which lives on a different field and was never reachable from here. The
+    # state is core's closed six values; where a request is on its route is the
+    # work stations' business and says nothing more about the document.
     _DR_STATE_TO_BILLING_STATUS = {
         "draft": "draft",
         "submitted": "submitted",
         "signed": "submitted",
-        "verified": "submitted",
-        "approved": "in_progress",
-        "bills_posted": "in_progress",
-        "payment_audited": "in_progress",
-        "payment_authorized": "in_progress",
-        "paid": "in_progress",
-        "cleared": "done",
         "in_progress": "in_progress",
         "done": "done",
     }
