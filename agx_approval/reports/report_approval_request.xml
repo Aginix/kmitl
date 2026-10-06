@@ -44,7 +44,7 @@
                         <div class="row">
                             <div class="col">
                                 หน่วยงาน
-                                <span class="ms-2" t-field="o.owner_id.department_id" />
+                                <span class="ms-2" t-out="(o.requesting_department_id or o.owner_id.department_id).display_name" />
                             </div>
                         </div>
                         <div class="row">

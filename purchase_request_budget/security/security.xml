@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- ผู้จองงบประมาณ พ.1 (root ADR-0010). No category: its own checkbox,
+         independent of ผู้ตรวจสอบ พ.1. Implies All Documents (works other
+         people's requests, still OU-scoped) and budget.group_budget_commitment;
+         the generic role จองงบประมาณ alone no longer reserves a พ.1. -->
+    <record id="group_purchase_request_budget_commit" model="res.groups">
+        <field name="name">สามารถยืนยัน/จองงบประมาณแบบขอให้จัดหา (พ.1) ได้</field>
+        <field
+            name="implied_ids"
+            eval="[
+                (4, ref('purchase_request_kmitl.group_purchase_request_user_all')),
+                (4, ref('budget.group_budget_commitment')),
+            ]"
+        />
+    </record>
+</odoo>
