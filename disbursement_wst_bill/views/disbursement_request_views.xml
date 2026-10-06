@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Work queue: approved requests waiting for the accountant to bill them
+         (a worklist is a list view, finance_kmitl ADR-0008). First document in
+         the payable workflow (ใบขอเบิก → ใบตั้งหนี้ → ใบล้างเจ้าหนี้). -->
+    <record id="action_disbursement_queue_bill" model="ir.actions.act_window">
+        <field name="name">Disbursement Requests</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('station_code', '=', 'bill')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ไม่มีใบขอเบิกที่รออนุมัติเบิก
+            </p>
+            <p>
+                ใบขอเบิกที่ผู้อนุมัติอนุมัติแล้ว รอเจ้าหน้าที่บัญชีตั้งหนี้
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_accounting_disbursement_request" name="Disbursement Requests" parent="accounting_kmitl.menu_payable" action="action_disbursement_queue_bill" sequence="5" />
+
+    <!-- Create Bill / Return to Verification, only while the request is at this
+         station and nothing has been billed yet. Bills are posted through the
+         account.move approval (Approve = post), not from the request. -->
+    <record id="view_disbursement_request_form_inherit_wst_bill" model="ir.ui.view">
+        <field name="name">disbursement.request.form.inherit.wst.bill</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_draft']" position="before">
+                <button name="action_create_bill" string="Create Bill" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('station_code', '!=', 'bill'), ('bill_count', '>', 0)]}" groups="accounting_kmitl.group_accounting_kmitl_user" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

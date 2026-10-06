@@ -68,13 +68,7 @@
                 <field name="payment_auditor_id" optional="hide" />
                 <field name="payment_audit_date" optional="hide" />
                 <field name="payment_status_display" optional="hide" />
-                <field
-                    name="display_status"
-                    widget="badge"
-                    decoration-warning="display_status in ('bills_posted', 'payment_audited')"
-                    decoration-primary="display_status == 'payment_authorized'"
-                    decoration-success="display_status in ('paid', 'cleared')"
-                />
+                <field name="state" widget="badge" />
                 <!-- The single-record press, beside the row it acts on, for the
                      request that is looked at rather than swept up in a batch. -->
                 <button

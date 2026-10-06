@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Work queue: a worklist is a list view (finance_kmitl ADR-0008). -->
+    <record id="action_disbursement_queue_verify" model="ir.actions.act_window">
+        <field name="name">Awaiting Verification</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('station_code', '=', 'verify')]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+    <menuitem id="menu_disbursement_queue_verify" name="Awaiting Verification" parent="disbursement_wst.menu_disbursement_stations" action="action_disbursement_queue_verify" sequence="10" groups="disbursement.group_disbursement_officer" />
+</odoo>

@@ -10,7 +10,7 @@
     "website": "https://www.kmitl.ac.th",
     "license": "LGPL-3",
     "depends": [
-        "disbursement",
+        "disbursement_wst_verify",
     ],
     "data": [
         "security/security.xml",

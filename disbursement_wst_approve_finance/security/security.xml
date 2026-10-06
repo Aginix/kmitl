@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Implies only the base User group (record access), NOT the other
+         approver and NOT the Manager group, so approval rights are granted
+         deliberately. root/admin are members so the route is operable out of
+         the box. -->
+    <record id="group_disbursement_finance_director" model="res.groups">
+        <field name="name">Disbursement Finance Director</field>
+        <field name="category_id" ref="disbursement.module_category_disbursement" />
+        <field name="implied_ids" eval="[(4, ref('disbursement.group_disbursement_user'))]" />
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]" />
+    </record>
+</odoo>

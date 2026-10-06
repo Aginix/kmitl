@@ -1,0 +1,214 @@
+# Thai translation of disbursement_wst.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_wst
+#: models/disbursement_route.py:0
+#, python-format
+msgid "Station %(station)s must come after station %(required)s."
+msgstr "สถานี %(station)s ต้องอยู่หลังสถานี %(required)s"
+
+#. module: disbursement_wst
+#: models/disbursement_request.py:0
+#, python-format
+msgid "No route with stations matches this request."
+msgstr "ไม่มีเส้นทางที่มีสถานีตรงกับใบขอเบิกนี้"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "This step is not active."
+msgstr "ขั้นตอนนี้ไม่ได้อยู่ระหว่างดำเนินการ"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "You are not authorised to act at station %s."
+msgstr "คุณไม่มีสิทธิ์ดำเนินการที่สถานี %s"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "Unknown disposition: %s"
+msgstr "ไม่รู้จักการดำเนินการ: %s"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "A note is required to return a request."
+msgstr "ต้องระบุหมายเหตุเมื่อตีกลับใบขอเบิก"
+
+#. module: disbursement_wst
+#: views/disbursement_station_views.xml:0
+#, python-format
+msgid "Work Stations"
+msgstr "สถานีงาน"
+
+#. module: disbursement_wst
+#: views/disbursement_station_views.xml:0
+#, python-format
+msgid "Work Station"
+msgstr "สถานีงาน"
+
+#. module: disbursement_wst
+#: views/disbursement_station_views.xml:0
+#, python-format
+msgid "Archived"
+msgstr "เก็บถาวร"
+
+#. module: disbursement_wst
+#: views/disbursement_route_views.xml:0
+#, python-format
+msgid "Routes"
+msgstr "เส้นทาง"
+
+#. module: disbursement_wst
+#: views/disbursement_route_views.xml:0
+#, python-format
+msgid "Route"
+msgstr "เส้นทาง"
+
+#. module: disbursement_wst
+#: views/disbursement_request_views.xml:0
+#, python-format
+msgid "Stations"
+msgstr "สถานี"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "Waiting"
+msgstr "รอดำเนินการ"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "Active"
+msgstr "กำลังดำเนินการ"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "Done"
+msgstr "เสร็จสิ้น"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "Skipped"
+msgstr "ข้าม"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "Complete"
+msgstr "ดำเนินการ"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "Return"
+msgstr "ตีกลับ"
+
+#. module: disbursement_wst
+#: models/disbursement_station.py:0
+#, python-format
+msgid "Authorised Group"
+msgstr "กลุ่มผู้มีสิทธิ์"
+
+#. module: disbursement_wst
+#: models/disbursement_station.py:0
+#, python-format
+msgid "Todo Type"
+msgstr "ประเภทงานที่ต้องทำ"
+
+#. module: disbursement_wst
+#: models/disbursement_station.py:0
+#, python-format
+msgid "Prints a Signature"
+msgstr "พิมพ์ลายเซ็น"
+
+#. module: disbursement_wst
+#: models/disbursement_station.py:0
+#, python-format
+msgid "Must Come After"
+msgstr "ต้องอยู่หลัง"
+
+#. module: disbursement_wst
+#: models/disbursement_station.py:0
+#, python-format
+msgid "The station code must be unique."
+msgstr "รหัสสถานีต้องไม่ซ้ำ"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "Holders"
+msgstr "ผู้รับผิดชอบ"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "Signer Name (snapshot)"
+msgstr "ชื่อผู้ลงนาม (บันทึกไว้)"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "Signer Position (snapshot)"
+msgstr "ตำแหน่งผู้ลงนาม (บันทึกไว้)"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "Signature (snapshot)"
+msgstr "ลายเซ็น (บันทึกไว้)"
+
+#. module: disbursement_wst
+#: models/disbursement_step.py:0
+#, python-format
+msgid "Signature"
+msgstr "ลายเซ็น"
+
+#. module: disbursement_wst
+#: views/disbursement_request_views.xml:0
+msgid "Proceed"
+msgstr "ดำเนินการ"
+
+#. module: disbursement_wst
+#: views/disbursement_request_views.xml:0
+msgid "Current station:"
+msgstr "สถานีปัจจุบัน:"
+
+#. module: disbursement_wst
+#: views/disbursement_request_views.xml:0
+msgid "Station"
+msgstr "สถานี"
+
+#. module: disbursement_wst
+#: views/disbursement_request_views.xml:0
+msgid "Work Queues"
+msgstr "คิวงาน"
+
+#. module: disbursement_wst
+#: model:ir.actions.server,name:disbursement_wst.action_disbursement_act_batch
+msgid "Proceed"
+msgstr "ดำเนินการ"
+
+#. module: disbursement_wst
+#: models/disbursement_request.py:0
+msgid "%s request(s) processed."
+msgstr "ดำเนินการแล้ว %s รายการ"
+
+#. module: disbursement_wst
+#: models/disbursement_request.py:0
+msgid "Could not process:"
+msgstr "ดำเนินการไม่ได้:"
+

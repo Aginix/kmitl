@@ -3,9 +3,7 @@ from odoo.exceptions import UserError
 
 
 class ApprovalRequest(models.Model):
-    _name = "approval.request"
-    _inherit = ["approval.request", "disbursement.return.source.mixin"]
-    _disbursement_return_state = "billed"
+    _inherit = "approval.request"
 
     # A DR is "billed" once its budget has been committed at ``approved`` and
     # stays billed through every downstream state a finance/accounting bridge
@@ -14,54 +12,8 @@ class ApprovalRequest(models.Model):
     # states that precede budget commitment, plus ``cancel``, is the only
     # comparison that stays correct regardless of which bridges are installed.
     _DISBURSEMENT_NOT_BILLED_STATES = (
-        "draft", "submitted", "signed", "verified", "cancel",
+        "draft", "submitted", "signed", "cancel",
     )
-
-    # -- return-correction editability (D3) --------------------------------
-    def _compute_is_correction(self):
-        """A returned request that already has a disbursement is a DR-return:
-        only the recipient bank, description and disbursement evidence may be
-        corrected (contrast a Sarabun return, which reopens the whole plan)."""
-        super()._compute_is_correction()
-        for rec in self:
-            if rec.state == "returned" and rec.has_active_disbursement:
-                rec.is_correction = True
-
-    # -- return-to-source contract (disbursement.return.source.mixin) -----
-    def _disbursement_get_request(self):
-        self.ensure_one()
-        return self._disbursement_pick_request(self.disbursement_request_ids)
-
-    def _disbursement_apply_correction(self, dr):
-        """Push the corrected recipient bank, description and disbursement
-        evidence onto the still-signed DR. The banner/To-Do/state bookkeeping
-        is handled generically by disbursement.request._apply_source_correction."""
-        self.ensure_one()
-        dr.note = self.description
-        allocs = self.allocation_ids.filtered("partner_bank_id")
-        for line in dr.line_ids:
-            candidates = allocs.filtered(lambda a: a.partner_id == line.partner_id)
-            banks = candidates.mapped("partner_bank_id")
-            if len(banks) > 1:
-                # The recipient has rows with differing banks (one DR line per
-                # allocation row) — narrow to this line's own row so the other
-                # rows' banks are not clobbered.
-                exact = candidates.filtered(
-                    lambda a: a.product_id == line.product_id
-                    and a.currency_id.compare_amounts(a.amount, line.price_unit)
-                    == 0
-                )
-                banks = exact.mapped("partner_bank_id")
-            if len(banks) == 1 and line.partner_bank_id != banks:
-                line.partner_bank_id = banks
-        self._disbursement_copy_evidence(dr)
-
-    def _disbursement_evidence_attachments(self):
-        return self.disbursement_attachment_ids
-
-    def _disbursement_correction_user(self):
-        self.ensure_one()
-        return self.user_id or self.create_uid
 
     disbursement_request_ids = fields.One2many(
         comodel_name="disbursement.request",

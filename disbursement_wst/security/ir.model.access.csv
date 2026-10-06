@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_disbursement_station_user,disbursement.station.user,model_disbursement_station,disbursement.group_disbursement_user,1,0,0,0
+access_disbursement_station_manager,disbursement.station.manager,model_disbursement_station,disbursement.group_disbursement_manager,1,1,1,1
+access_disbursement_route_user,disbursement.route.user,model_disbursement_route,disbursement.group_disbursement_user,1,0,0,0
+access_disbursement_route_manager,disbursement.route.manager,model_disbursement_route,disbursement.group_disbursement_manager,1,1,1,1
+access_disbursement_route_line_user,disbursement.route.line.user,model_disbursement_route_line,disbursement.group_disbursement_user,1,0,0,0
+access_disbursement_route_line_manager,disbursement.route.line.manager,model_disbursement_route_line,disbursement.group_disbursement_manager,1,1,1,1
+access_disbursement_step_user,disbursement.step.user,model_disbursement_step,disbursement.group_disbursement_user,1,0,0,0
+access_disbursement_step_manager,disbursement.step.manager,model_disbursement_step,disbursement.group_disbursement_manager,1,0,0,0
