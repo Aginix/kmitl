@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Grant "All Approval" menu visibility to the viewer group -->
+    <record id="agx_approval.approval_all_approval_menu" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('group_approval_viewer'))]" />
+    </record>
+</odoo>

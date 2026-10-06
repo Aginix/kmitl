@@ -1,21 +1,12 @@
-# -*- coding: utf-8 -*-
-import logging
-
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import models
 
 
 class PurchaseRequest(models.Model):
-    _inherit = 'purchase.request'
+    _inherit = "purchase.request"
 
     def _prepare_approval_vals(self):
+        # PA must follow the PR's OU, not the acting user's default (the
+        # sarabun completion path runs as the last approver).
         vals = super()._prepare_approval_vals()
-
-        vals.update({
-            "operating_unit_id": self.operating_unit_id.id,
-            "requesting_operating_unit_id": self.department_id.operating_unit_id.id,
-        })
-        
+        vals["operating_unit_id"] = self.operating_unit_id.id
         return vals

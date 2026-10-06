@@ -1,6 +1,6 @@
 import logging
 
-from odoo import Command, _, api, fields, models
+from odoo import Command, api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -184,6 +184,15 @@ class BudgetAppropriationLine(models.Model):
         for appropriation in appropriations:
             appropriation._compute_amount()
         return result
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        # dimension fields in vals protect analytic_distribution from its compute group;
+        # recompute explicitly for lines that ended up with no distribution
+        for line in lines.filtered(lambda r: not r.analytic_distribution):
+            line._process_analytic_distribution()
+        return lines
 
     def budget_move_line_vals(self):
         return {

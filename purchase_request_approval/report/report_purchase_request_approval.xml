@@ -93,7 +93,7 @@
     <template id="report_purchase_request_approval_body">
         <t t-set="currency" t-value="o.currency_id" />
         <div class="my-4" />
-        <p style="text-indent: 6em"> ตาม ใบขอซื้อขอจ้าง,PR ต้องการ<span>
+        <p style="text-indent: 6em"> ตามแบบขอให้จัดหา (พ.1) ต้องการ<span>
                 <span t-field="o.procurement_type_id" />
                 <span t-out="o.product_id.name" />
             </span>
@@ -174,7 +174,7 @@
                 <tr>
                     <td
                         colspan="2"
-                        rowspan="3"
+                        t-att-rowspan="3 if o.amount_tax else 2"
                         class="text-center align-middle"
                     > ( <t
                             t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
@@ -188,7 +188,7 @@
                         t-out="'{0:,.2f}'.format(o.amount_untaxed)"
                     />
                 </tr>
-                <tr>
+                <tr t-if="o.amount_tax">
                     <td class="text-center" colspan="2">
                         ภาษีมูลค่าเพิ่ม (VAT 7%)
                     </td>
@@ -236,9 +236,17 @@
         <div class="my-4" />
         <p style="text-indent: 6em"> 1.1 ตาม อนุมัติให้จัดซื้อ <span
                 t-field="o.product_id.name"
-            /> จำนวน 1 รายการ เป็นเงิน <span
+            /> จำนวน <t t-out="len(o.line_ids)"/> รายการ ด้วยวิธี<span
+                t-field="o.payment_type"
+            /> เป็นเงิน <span
                 t-out="'{0:,.2f}'.format(o.estimated_cost)"
-            /> บาท โดยวิธี<span t-field="o.procurement_method_id" />
+            /> บาท (<t
+                t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.estimated_cost)"
+            />) <t t-if="o.payment_type == 'direct'">จาก <span
+                    t-field="o.partner_id.name"
+                /> เนื่องจากเป็นผู้ประกอบการ </t>โดยวิธี<span
+                t-field="o.procurement_method_id"
+            />
             ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา
             56 (2) ข้อ (ข) และกฎกระทรวง เรื่อง
             กำหนดวงเงินการจัดซื้อจัดจ้างพัสดุโดยวิธี<span
@@ -247,13 +255,10 @@
             พ.ศ. 2560 ข้อ 1 ซึ่งอยู่ใต้อำนาจจัดซื้อจัดจ้างและบริหารพัสดุภาครัฐ พ.ศ.
             2560 และได้ตรวจสอบเอกสารการเงินเป็นที่เรียบร้อยแล้ว โดยขอเบิกจ่ายจาก <span
                 t-field="o.source_analytic_id.name"
-            /> ประจำปีพ.ศ. <span
+            /> ประจำปี พ.ศ. <span
                 t-field="o.account_fiscal_year_id.name"
             />
         </p>
-        <div class="my-4" />
-        <p>จาก <span t-field="o.partner_id.name" /></p>
-        <p>เนื่องจากเป็นผู้ประกอบการ</p>
 
         <ol>
             <li> อนุมัติให้คณะกรรมการตรวจรับพัสดุ ประกอบด้วย <ul

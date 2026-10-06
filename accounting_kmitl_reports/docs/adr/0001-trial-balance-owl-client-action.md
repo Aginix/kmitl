@@ -12,3 +12,5 @@ The Trial Balance opens straight from the menu as an OWL `ir.actions.client` who
 
 - The on-screen report and the PDF share one compute (`get_trial_balance_data`), so the printout always matches the screen.
 - Filtering by a dimension narrows the lines feeding each balance, so dimension-filtered Debit and Credit totals need not net to zero (analytic distribution is not present on every line of every move).
+
+Superseded in part by [ADR 0002](0002-trial-balance-owns-its-compute.md): the compute is now ours, not the OCA engine.

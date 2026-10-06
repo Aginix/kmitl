@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 {
     "name": "Purchase Request Sarabun Integration",
     "summary": "Integrate Purchase Request with Sarabun document routing",
-    "version": "16.0.2.0.0",
+    "version": "16.0.2.0.1",
     "category": "Purchases",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
@@ -10,7 +9,6 @@
     "depends": [
         "purchase_request_kmitl",
         "purchase_request_budget",
-        "purchase_request_department",
         "l10n_th_amount_to_text",
         "l10n_th_fonts",
         "thai_date_utils",
@@ -28,8 +26,8 @@
         "data/sarabun_route_template_data.xml",
     ],
     "assets": {
-        'web.assets_frontend': [
-            'purchase_request_sarabun/static/src/js/purchase_request_sidebar.js',
+        "web.assets_frontend": [
+            "purchase_request_sarabun/static/src/js/purchase_request_sidebar.js",
         ],
     },
     "installable": True,

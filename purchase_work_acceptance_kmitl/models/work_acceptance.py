@@ -24,22 +24,43 @@ class WorkAcceptance(models.Model):
         readonly=True,
         default=True,
         states={"draft": [("readonly", False)]},
-        tracking=True,
         help="If checked, WA created will be approved by committee by tier validation."
         "Each committee will be notified (by email or inbox) to approve WA.\n"
         "If not checked, WA will be approved by paper outside Odoo, "
         "and the result of WA will be filled in by procurement officer",
     )
-    # attachment_ids is the "regular" documents tab on the paper-WA flow.
-    # Kept separate from supporting_document_ids by excluding the m2m set
-    # at compute time — do NOT distinguish via ir.attachment.res_field: any
-    # value there triggers AccessError for non-system users in Odoo core
-    # (see odoo/addons/base/models/ir_attachment.py — check()).
+    # UI-facing dropdown mirror of wa_tier_validation.
+    # paperless  ↔ wa_tier_validation = True
+    # attachment ↔ wa_tier_validation = False
+    acceptance_type = fields.Selection(
+        [
+            ("paperless", "ตรวจรับผ่านระบบ"),
+            ("attachment", "ตรวจรับโดยการแนบเอกสาร"),
+        ],
+        string="Acceptance Type",
+        compute="_compute_acceptance_type",
+        inverse="_inverse_acceptance_type",
+        readonly=False,
+        tracking=True,
+    )
+
+    @api.depends("wa_tier_validation")
+    def _compute_acceptance_type(self):
+        for rec in self:
+            rec.acceptance_type = (
+                "paperless" if rec.wa_tier_validation else "attachment"
+            )
+
+    def _inverse_acceptance_type(self):
+        for rec in self:
+            rec.wa_tier_validation = rec.acceptance_type == "paperless"
+
     attachment_ids = fields.Many2many(
         "ir.attachment",
+        "work_acceptance_attachment_rel",
+        "wa_id",
+        "attachment_id",
         string="Document Attachments",
-        compute="_compute_attachment_ids",
-        inverse="_inverse_attachment_ids",
     )
     supporting_document_ids = fields.Many2many(
         "ir.attachment",
@@ -49,33 +70,35 @@ class WorkAcceptance(models.Model):
         string="Supporting Documents",
     )
 
-    @api.depends("supporting_document_ids")
-    def _compute_attachment_ids(self):
-        # Filter ("res_field", "=", False) is defensive: legacy rows still
-        # carry res_field='supporting_document_ids' from PR #1026, and any
-        # read on them raises AccessError for non-system users. Even after
-        # the SQL cleanup that resets them, the filter also guards against
-        # future stray res_field values leaking into this list.
-        Attachment = self.env["ir.attachment"]
-        for rec in self:
-            if not isinstance(rec.id, int):
-                rec.attachment_ids = Attachment
-                continue
-            atts = Attachment.search([
-                ("res_model", "=", "work.acceptance"),
-                ("res_id", "=", rec.id),
-                ("res_field", "=", False),
-            ])
-            rec.attachment_ids = atts - rec.supporting_document_ids
-
-    def _inverse_attachment_ids(self):
-        for rec in self:
-            for att in rec.attachment_ids:
-                if att.res_model != "work.acceptance" or att.res_id != rec.id:
-                    att.write({
-                        "res_model": "work.acceptance",
-                        "res_id": rec.id,
-                    })
+    def write(self, vals):
+        # many2many_binary removes chips with FORGET, leaving the underlying
+        # ir.attachment attached to this record — which keeps it visible in
+        # the chatter even though the widget no longer shows it. Treat a
+        # removal from either widget as "delete the file" and unlink the
+        # attachment physically. Compare against the union so moving a file
+        # between the two widgets in one write is not mistaken for a delete.
+        tracked = "attachment_ids" in vals or "supporting_document_ids" in vals
+        before = {}
+        if tracked:
+            for rec in self:
+                before[rec.id] = (
+                    set(rec.attachment_ids.ids)
+                    | set(rec.supporting_document_ids.ids)
+                )
+        res = super().write(vals)
+        if tracked:
+            orphan_ids = set()
+            for rec in self:
+                after = (
+                    set(rec.attachment_ids.ids)
+                    | set(rec.supporting_document_ids.ids)
+                )
+                orphan_ids |= before.get(rec.id, set()) - after
+            if orphan_ids:
+                self.env["ir.attachment"].browse(
+                    list(orphan_ids)
+                ).exists().unlink()
+        return res
 
     work_acceptance_committee_ids = fields.One2many(
         comodel_name="work.acceptance.committee",

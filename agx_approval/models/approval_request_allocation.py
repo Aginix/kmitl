@@ -54,7 +54,7 @@ class ApprovalRequestAllocation(models.Model):
         compute="_compute_allowed_product_ids",
     )
 
-    description = fields.Text(string="รายละเอียด")
+    description = fields.Text(string="หมายเหตุ")
 
     payment_type = fields.Selection(
         selection=[
