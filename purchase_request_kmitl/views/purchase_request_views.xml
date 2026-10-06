@@ -27,11 +27,11 @@
             <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-            <xpath expr="//field[@name='department_id']" position="attributes">
-                <attribute name="optional">show</attribute>
-            </xpath>
             <xpath expr="//field[@name='requested_by']" position="attributes">
                 <attribute name="optional">show</attribute>
+            </xpath>
+            <xpath expr="//field[@name='requested_by']" position="after">
+                <field name="requesting_department_id" optional="show" />
             </xpath>
             <xpath expr="//field[@name='estimated_cost']" position="attributes">
                 <attribute name="optional">show</attribute>
@@ -91,14 +91,23 @@
                     domain="[]"
                     context="{'group_by': 'procurement_method_id'}"
                 />
+                <filter
+                    string="Requesting Department"
+                    name="group_requesting_department"
+                    domain="[]"
+                    context="{'group_by': 'requesting_department_id'}"
+                />
             </group>
+            <field name="requested_by" position="after">
+                <field name="requesting_department_id" />
+            </field>
         </field>
     </record>
 
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">purchase.request.form (KMITL)</field>
         <field name="model">purchase.request</field>
-        <field name="priority">100</field>
+        <field name="priority">80</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
 
@@ -141,7 +150,9 @@
 
             <button name="button_to_approve" position="attributes">
                 <attribute name="states">to_verify</attribute>
-                <attribute name="groups">purchase_request_kmitl.group_purchase_request_verify</attribute>
+                <attribute
+                    name="groups"
+                >purchase_request_kmitl.group_purchase_request_verify</attribute>
                 <attribute name="string">ตรวจสอบ</attribute>
             </button>
 
@@ -176,12 +187,14 @@
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
+                <!-- ตีกลับ ถอยทีละขั้น: แต่ละ state มีปุ่มของตัวเอง ตามกลุ่มเจ้าของขั้น
+                     (ADR-0010) — budget ต่อปุ่มของ to_verify_budget เอง -->
                 <button
                     name="button_return"
                     states="to_verify"
                     string="Return"
                     type="object"
-                    groups="purchase_request_kmitl.group_purchase_request_user_all"
+                    groups="purchase_request_kmitl.group_purchase_request_verify"
                 />
             </xpath>
 
@@ -224,15 +237,6 @@
                 >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
             </xpath>
 
-            <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
-                position="attributes"
-            >
-                <attribute
-                    name="attrs"
-                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
-            </xpath>
-
             <xpath expr="//field[@name='line_ids']//tree" position="attributes">
                 <attribute name="no_open">1</attribute>
             </xpath>
@@ -258,12 +262,24 @@
                             attrs="{'readonly': [('is_editable','=', False)]}"
                         />
                         <field
-                            name="department_id"
-                            string="Department"
-                            options="{'limit': 50, 'search_more': false, 'create': false, 'create_edit': false}"
-                            attrs="{'readonly': [('is_editable', '=', False)]}"
+                            name="requesting_department_id"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                            attrs="{'required': [('is_editable', '=', True)], 'readonly': [('is_editable', '=', False)]}"
                         />
                         <field name="user_id" readonly="1" />
+                        <field
+                            name="verified_by"
+                            string="ผู้ตรวจสอบ"
+                            readonly="1"
+                            attrs="{'invisible': [('verified_by', '=', False)]}"
+                            options="{'no_open': True}"
+                        />
+                        <field
+                            name="date_verified"
+                            string="วันที่ตรวจสอบ"
+                            readonly="1"
+                            attrs="{'invisible': [('date_verified', '=', False)]}"
+                        />
                         <field
                             name="assigned_to"
                             string="Responsible Officer"
@@ -399,11 +415,12 @@
                 <page name="operation" string="Operation">
                     <group>
                         <group>
+                            <field name="date_start" readonly="1" />
                             <field
-                                name="date_start"
+                                name="create_date"
+                                string="วันที่สร้าง"
                                 readonly="1"
                             />
-                            <field name="create_date" string="วันที่สร้าง" readonly="1"/>
                         </group>
                     </group>
                 </page>
@@ -434,7 +451,7 @@
             </xpath>
 
             <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
+                expr="//field[@name='line_ids']//tree/field[@name='product_qty']"
                 position="after"
             >
                 <field
@@ -498,10 +515,6 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='department_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
             <xpath expr="//field[@name='requested_by']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -538,7 +551,10 @@
         <field name="view_mode">tree,kanban,form</field>
         <field name="domain">[('create_uid', '=', uid)]</field>
         <field name="context">{}</field>
-        <field name="search_view_id" ref="purchase_request.view_purchase_request_search" />
+        <field
+            name="search_view_id"
+            ref="purchase_request.view_purchase_request_search"
+        />
     </record>
 
     <record id="action_purchase_request_all" model="ir.actions.act_window">
@@ -548,7 +564,10 @@
         <field name="view_mode">tree,kanban,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
-        <field name="search_view_id" ref="purchase_request.view_purchase_request_search" />
+        <field
+            name="search_view_id"
+            ref="purchase_request.view_purchase_request_search"
+        />
     </record>
 
     <!-- menu -->

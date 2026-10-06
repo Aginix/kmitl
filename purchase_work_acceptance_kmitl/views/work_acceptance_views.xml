@@ -39,7 +39,10 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="before">
-                <field name="wa_tier_validation" />
+                <field name="acceptance_type"
+                       required="1"
+                       attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                <field name="wa_tier_validation" invisible="1" />
             </xpath>
             <xpath expr="//field[@name='purchase_id']" position="before">
                 <field name="contract_number" readonly="1" />
@@ -63,7 +66,7 @@
                 />
             </xpath>
             <xpath expr="//form/sheet/notebook" position="inside">
-                <page string="Committee">
+                <page string="Committee" name="committee_page">
                         <field
                             name="work_acceptance_committee_ids"
                             nolabel="1"
@@ -92,17 +95,6 @@
                                 />
                             </tree>
                         </field>
-                </page>
-                <page name="document" string="Attachment"
-                      attrs="{'invisible': [('wa_tier_validation', '=', True)]}">
-                    <group>
-                        <field name="attachment_ids"
-                               widget="many2many_binary"
-                               colspan="2"
-                               nolabel="1"
-                               attrs="{'readonly': [('state', '!=', 'draft')]}"
-                               context="{'default_res_model': 'work.acceptance', 'default_res_id': active_id}"/>
-                    </group>
                 </page>
             </xpath>
         </field>
@@ -163,7 +155,7 @@
                  <button
                     name="request_validation"
                     string="Request Validation"
-                    attrs="{'invisible': ['|', ('wa_tier_validation', '!=', True), ('state', 'not in', ['draft'])]}"
+                    attrs="{'invisible': ['|', ('wa_tier_validation', '=', False), ('state', 'not in', ['draft'])]}"
                     type="object"
                     groups="purchase.group_purchase_user"
                 />
@@ -329,7 +321,7 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='date_receive']" position="after">
+            <xpath expr="//field[@name='date_receive']" position="before">
                 <field name="requested_delivery_date" required="1" widget="date"/>
             </xpath>
 
@@ -339,6 +331,10 @@
 
             <xpath expr="//field[@name='date_receive']" position="attributes">
                 <attribute name="widget">date</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='date_accept']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath
@@ -369,12 +365,25 @@
                 </attribute>
             </xpath>
 
+            <xpath expr="//field[@name='company_id']" position="after">
+                <xpath expr="//field[@name='invoice_ref']" position="move"/>
+            </xpath>
+
+            <xpath expr="//form/sheet/group[1]" position="attributes">
+                <attribute name="string">Acceptance Information</attribute>
+                <attribute name="name">acceptance_info</attribute>
+            </xpath>
+
             <xpath expr="/form/sheet/notebook" position="before">
-                <group string="Fines Details" name="fines_section">
+                <group string="Acceptance Evidence" name="acceptance_evidence"
+                       attrs="{'invisible': [('wa_tier_validation', '=', True)]}">
                     <group>
-                        <field name="late_days" />
-                        <field name="fines_rate" />
-                        <field name="fines_late" readonly="1"/>
+                        <field name="attachment_ids"
+                               widget="many2many_binary"
+                               colspan="2"
+                               nolabel="1"
+                               attrs="{'readonly': [('state', '!=', 'draft')]}"
+                               context="{'default_res_model': 'work.acceptance', 'default_res_id': active_id}"/>
                     </group>
                 </group>
                 <group string="Supporting Documents" name="support_document">
@@ -382,6 +391,16 @@
                         <field name="supporting_document_ids" nolabel="1" colspan="2" widget="many2many_binary"/>
                     </group>
                 </group>
+            </xpath>
+
+            <xpath expr="//page[@name='committee_page']" position="after">
+                <page string="Fines Information" name="fines_page">
+                    <group>
+                        <field name="late_days" />
+                        <field name="fines_rate" />
+                        <field name="fines_late" readonly="1"/>
+                    </group>
+                </page>
             </xpath>
 
             <xpath expr="//field[@name='wa_line_ids']" position="after">
@@ -438,9 +457,6 @@
             ref="view_work_acceptance_form_gov"
         />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='wa_tier_validation']" position="attributes">
-                <attribute name="invisible">0</attribute>
-            </xpath>
             <xpath
                 expr="//field[@name='work_acceptance_committee_ids']"
                 position="attributes"
@@ -472,7 +488,7 @@
         </field>
     </record>
 
-    <!-- Deliverables on WA form (shown next to the invoice plan installment) -->
+    <!-- Deliverables on WA form, wrapped in its own "Installment Information" section -->
     <record id="view_work_acceptance_form_deliverables" model="ir.ui.view">
         <field name="name">view.work.acceptance.form.deliverables</field>
         <field name="model">work.acceptance</field>
@@ -481,8 +497,14 @@
             ref="purchase_work_acceptance_invoice_plan.view_work_acceptance_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='installment_id']" position="after">
-                <field name="deliverables" />
+            <xpath expr="//form/sheet/group[1]" position="after">
+                <group string="Installment Information" name="installment_section">
+                    <group name="installment_inner"/>
+                </group>
+            </xpath>
+            <xpath expr="//group[@name='installment_inner']" position="inside">
+                <xpath expr="//field[@name='installment_id']" position="move"/>
+                <field name="deliverables"/>
             </xpath>
         </field>
     </record>

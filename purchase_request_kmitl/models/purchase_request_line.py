@@ -7,7 +7,7 @@ from odoo import api, fields, models
 class PurchaseRequestLine(models.Model):
     _inherit = "purchase.request.line"
 
-    name = fields.Text(string="Description", tracking=True)
+    name = fields.Text(string="Item", tracking=True)
 
     def _default_product_uom_id(self):
         return self.env.ref("uom.product_uom_unit", raise_if_not_found=False)

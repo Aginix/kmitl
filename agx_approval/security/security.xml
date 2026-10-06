@@ -26,6 +26,18 @@
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
+    <!-- Two separate duties at the budget step (ADR-0008). No category_id: each
+         is its own checkbox, ticked on top of the Approval level. -->
+    <record id="group_approval_verify" model="res.groups">
+        <field name="name">ผู้ตรวจสอบคำขออนุมัติ</field>
+        <field name="implied_ids" eval="[(4, ref('group_approval_user'))]"/>
+    </record>
+
+    <record id="group_approval_budget_commit" model="res.groups">
+        <field name="name">ผู้ยืนยันงบประมาณคำขออนุมัติ</field>
+        <field name="implied_ids" eval="[(4, ref('group_approval_user')), (4, ref('budget.group_budget_commitment'))]"/>
+    </record>
+
     <!-- "Own" members (and only them) are limited to their own requests. -->
     <record id="approval_request_own_rule" model="ir.rule">
         <field name="name">Approval Request: own requests only</field>

@@ -15,6 +15,11 @@
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
+        <!-- All internal users get sarabun user rights by default -->
+        <record id="base.group_user" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_sarabun_user'))]"/>
+        </record>
+
         <record id="group_sarabun_manager" model="res.groups">
             <field name="name">Manager</field>
             <field name="category_id" ref="module_category_sarabun"/>
