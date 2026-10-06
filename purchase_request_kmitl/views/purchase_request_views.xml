@@ -110,6 +110,9 @@
         <field name="priority">100</field>
         <field name="inherit_id" ref="purchase_request_price_tax_included.view_purchase_request_form" />
         <field name="arch" type="xml">
+            <field name="vat_included" position="before">
+                <field name="payment_type" invisible="1" />
+            </field>
             <field name="vat_included" position="attributes">
                 <attribute name="attrs">{'readonly': [('is_vat_editable', '=', False)], 'invisible': [('payment_type', '!=', 'direct')]}</attribute>
             </field>
