@@ -151,7 +151,7 @@
                             style="width: 8%"
                             t-out="row_no"
                         />
-                        <td t-out="line.name" />
+                        <td t-out="line.name" style="white-space: pre-wrap" />
                         <td class="text-center">
                             <span
                                 t-out="'{0:,g}'.format(line.product_qty)"
