@@ -18,7 +18,9 @@ class IrAttachment(models.Model):
         on every ใบขอเบิก of it (ADR-0009): whoever may read such a ใบขอเบิก may
         read the file, even without access to the request itself."""
         records = self
-        if mode == "read" and self and self.env.user._is_internal():
+        # Skip under sudo: base check() already allows it, and the sudo read in
+        # _disbursement_readable_evidence re-enters check() through _read.
+        if mode == "read" and self and not self.env.su and self.env.user._is_internal():
             records -= self._disbursement_readable_evidence()
         return super(IrAttachment, records).check(mode, values=values)
 
