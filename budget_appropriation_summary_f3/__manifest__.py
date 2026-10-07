@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Budget Appropriation Summary F3P",
+    "version": "16.0.1.0.1",
     "summary": "รายงาน F3-P สรุปประมาณการรายรับ-รายจ่าย ประจำหน่วยงาน",
     "author": "",
     "website": "",
