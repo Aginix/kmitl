@@ -39,6 +39,14 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.onlySelectable = !!ctx.only_selectable;
         this.state.selectedId = false;
         this.state.amounts = {};
+        // A coarse pool may be funded above the pickable code (ADR-0016). When a
+        // narrowable pool row is selected, the user pins a specific descendant
+        // budget code here (required when the pool's own account is out of the
+        // host domain — narrow_required). Reset whenever the selection changes.
+        this.state.narrowAccount = false;
+        this.state.narrowLabel = "";
+        // "งบที่จองได้ … (คุมงบที่ …)" — the engine's Available for the final pick.
+        this.state.availabilityLine = false;
         // The picker must open with a blank filter bar — never pre-seeded from the
         // host's current selection (feedback: no default filters). The host still
         // passes its dimensions as context defaults (the read-only dashboard uses
@@ -75,6 +83,9 @@ export class BudgetReservationPicker extends BudgetDashboard {
     async load() {
         this.state.selectedId = false;
         this.state.amounts = {};
+        this.state.narrowAccount = false;
+        this.state.narrowLabel = "";
+        this.state.availabilityLine = false;
         if (!this.state.fiscalYearId) {
             this.state.rows = [];
             return;
@@ -95,8 +106,78 @@ export class BudgetReservationPicker extends BudgetDashboard {
             );
             this.state.rows = data.rows || [];
             this.state.hierOp = data.hier_op || "=";
+            this.state.filterAncestors = data.filter_ancestors || {};
         } finally {
             this.state.loading = false;
+        }
+    }
+
+    // The currently-selected pickable row (select mode), or false.
+    get selectedRow() {
+        return (this.state.selectedId && this.rowsByKey[this.state.selectedId]) || false;
+    }
+
+    // AutoComplete sources for the "รหัสงบประมาณ" narrowing box, limited to the
+    // selected pool's budget-account subtree and the host's own account domain.
+    narrowSourcesFor(row) {
+        return [
+            {
+                options: async (request) => {
+                    const domain = [["id", "child_of", row.account_id]];
+                    if (this.accountDomain) {
+                        domain.push(...this.accountDomain);
+                    }
+                    const results = await this.orm.call(
+                        "budget.account",
+                        "name_search",
+                        [],
+                        { args: domain, name: request || "", limit: 20 }
+                    );
+                    return results.map(([id, label]) => ({
+                        value: id,
+                        label,
+                        accountId: id,
+                    }));
+                },
+            },
+        ];
+    }
+
+    onNarrowInput(args) {
+        this.state.narrowLabel = (args && args.inputValue) || "";
+        if (!this.state.narrowLabel) {
+            this.state.narrowAccount = false;
+            this._refreshAvailability();
+        }
+    }
+
+    onNarrowSelect(option) {
+        this.state.narrowAccount = option.accountId || false;
+        this.state.narrowLabel = option.label || "";
+        this._refreshAvailability();
+    }
+
+    // Fetch the engine Available + resolved pool for the final selection and
+    // show it on the footer line. Best-effort: any error just clears the line.
+    async _refreshAvailability() {
+        const sel = this.selections;
+        if (!this.selectMode || sel.length !== 1) {
+            this.state.availabilityLine = false;
+            return;
+        }
+        try {
+            const detail = await this.orm.call(
+                "budget.controller",
+                "get_available_detail",
+                [sel[0].account_id, this.selectedDistribution, this.state.fiscalYearId]
+            );
+            const pool = detail.pool;
+            this.state.availabilityLine = {
+                available: detail.available,
+                poolCode: pool ? pool.account.code : false,
+            };
+        } catch {
+            this.state.availabilityLine = false;
         }
     }
 
@@ -173,6 +254,10 @@ export class BudgetReservationPicker extends BudgetDashboard {
         if (this.selectMode && row.selectable) {
             this.state.selectedId =
                 this.state.selectedId === row.key ? false : row.key;
+            // Selecting a different row drops any prior narrowing.
+            this.state.narrowAccount = false;
+            this.state.narrowLabel = "";
+            this._refreshAvailability();
         }
     }
 
@@ -252,7 +337,12 @@ export class BudgetReservationPicker extends BudgetDashboard {
         const byKey = this.rowsByKey;
         if (this.selectMode) {
             const row = this.state.selectedId && byKey[this.state.selectedId];
-            return row ? [{ account_id: row.account_id }] : [];
+            if (!row) {
+                return [];
+            }
+            // A narrowed pick reserves at the chosen descendant code, not the
+            // coarse pool account of the row (ADR-0016).
+            return [{ account_id: this.state.narrowAccount || row.account_id }];
         }
         // One reserve line per budget account (the single reservation activity is
         // carried by the shared distribution); fold duplicate rows of the same
@@ -287,9 +377,23 @@ export class BudgetReservationPicker extends BudgetDashboard {
         const tuples = this._pickedTuples();
         if (tuples.size === 1) {
             const tuple = [...tuples.values()][0];
+            const anc = this.state.filterAncestors || {};
             for (const field of fields) {
-                if (tuple[field]) {
-                    dist[tuple[field]] = 100.0;
+                const rowVal = tuple[field];
+                const filterVal = this.effectiveFilters[field];
+                // Pin the FINER of the row (pool coordinate, may be a covering
+                // ancestor) and the filter (what the user typed). The filter is
+                // finer when the row value is one of its ancestors (ADR-0016).
+                let chosen = rowVal;
+                if (
+                    filterVal &&
+                    (!rowVal ||
+                        (anc[field] && anc[field].includes(rowVal)))
+                ) {
+                    chosen = filterVal;
+                }
+                if (chosen) {
+                    dist[chosen] = 100.0;
                 }
             }
         }
@@ -306,6 +410,16 @@ export class BudgetReservationPicker extends BudgetDashboard {
         }
         if (!this.selections.length) {
             this.notification.add("กรุณาเลือกงบประมาณ", { type: "warning" });
+            return;
+        }
+        // A coarse pool whose own account is out of this document's domain must
+        // be narrowed to a pickable descendant code before it can be reserved.
+        const selRow = this.selectedRow;
+        if (selRow && selRow.narrow_required && !this.state.narrowAccount) {
+            this.notification.add(
+                "กรุณาเลือกรหัสงบประมาณย่อยภายใต้กองงบที่เลือก",
+                { type: "warning" }
+            );
             return;
         }
         // The broken-down dimensions come from the picked rows; a reservation maps

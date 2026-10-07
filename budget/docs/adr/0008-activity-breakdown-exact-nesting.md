@@ -38,3 +38,12 @@ generalized to N (added departments).
   one budget account can appear under several tuples; each row carries a
   `dims` (field→id) map + `dim_level`. The reservation picker still selects by
   budget-account id.
+
+## Amendment (ADR-0016)
+
+A hierarchical dimension filter on the picker feed (`get_reservation_grid`) always matches pools that **cover** the typed code (its ancestors as well as its `child_of` subtree). A breakdown row's dimension tuple may then be an *ancestor* of what the user typed; the reservation pins the **finer** of the row value and the filter value (the client uses the returned `filter_ancestors`). Account rows also carry `own_current` (own posted appropriation at the exact tuple) so the picker can tell a real pool row from a pure roll-up, plus `account_narrowable` / `narrow_required` flags for the descendant-code autocomplete.
+
+**Usage is read at its pool.** Exact-match nesting still places *appropriation* on the tuple it was tagged to, but *usage* (cap, reserve, obligate, consume, return) booked at a Descendant Code is folded onto the tuple of the Budget Pool that covers it — keeping its own budget account, so the account tree under that tuple rolls it up to the pool's account. Without this a pool row showed its full คงเหลือ while the descendant row went negative. The fold runs on the full four-dimension tuple (deepest covering pool first, as the engine's control node) and only then projects onto the chosen breakdown, so the flat report and every breakdown reconcile. Usage that no pool covers stays on its own tuple (negative คงเหลือ = 0 available). A hierarchical filter now covers on the dashboard too: the pools funded above the typed code appear, each with the usage of every code under it, siblings included, so a sub-unit sees what it can still reserve. Rows whose usage was folded carry `usage_in` / `usage_out` coordinate pairs so the usage drill-down lists exactly the lines behind the figure.
+
+- **Considered:** show the reservation on both the pool row and the descendant row (rejected — reads money twice, the thing this ADR forbids); keep exact nesting and add a "remaining at pool" column (rejected — the pool row still reads full); resolve each usage coordinate through `budget.controller` (rejected — one query per coordinate on a report of thousands).
+- **Consequence:** the breakdown no longer shows *who* reserved under a coarse pool (e.g. which ภาควิชา); the usage drill-down does.
