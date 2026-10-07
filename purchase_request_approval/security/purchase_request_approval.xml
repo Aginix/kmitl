@@ -32,8 +32,8 @@
             eval="[(6,0, [ref('purchase_request.group_purchase_request_user')])]"
         />
         <field name="perm_read" eval="True" />
-        <field name="perm_write" eval="True" />
-        <field name="perm_create" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
         <field name="perm_unlink" eval="False" />
         <field name="domain_force">[('requested_by','=',user.id)]</field>
     </record>

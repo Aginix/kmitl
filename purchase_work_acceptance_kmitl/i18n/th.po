@@ -130,6 +130,22 @@ msgid "Accept"
 msgstr "ตรวจรับ"
 
 #. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
+msgid "Acceptance Evidence"
+msgstr "หลักฐานการตรวจรับหรือผลการตรวจรับ (จำเป็นต้องแนบ)"
+
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
+msgid "Acceptance Information"
+msgstr "ข้อมูลการตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_order__acceptance_type
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__acceptance_type
+msgid "Acceptance Type"
+msgstr "ประเภทการตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__status__accept_conditionally
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__status__accept_conditionally
 msgid "Accept Conditionally"
@@ -465,6 +481,11 @@ msgstr "ค่าปรับรวม"
 
 #. module: purchase_work_acceptance_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
+msgid "Fines Information"
+msgstr "ข้อมูลค่าปรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
 msgid "Fines Details"
 msgstr "รายละเอียดค่าปรับ"
 
@@ -543,6 +564,11 @@ msgstr ""
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance__state__in_review
 msgid "In Review"
 msgstr "อยู่ระหว่างการตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_deliverables
+msgid "Installment Information"
+msgstr "ข้อมูลงวดงาน"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model,name:purchase_work_acceptance_kmitl.model_purchase_invoice_plan

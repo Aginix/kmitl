@@ -107,7 +107,7 @@
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">purchase.request.form (KMITL)</field>
         <field name="model">purchase.request</field>
-        <field name="priority">100</field>
+        <field name="priority">80</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
 
@@ -196,12 +196,14 @@
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
+                <!-- ตีกลับ ถอยทีละขั้น: แต่ละ state มีปุ่มของตัวเอง ตามกลุ่มเจ้าของขั้น
+                     (ADR-0010) — budget ต่อปุ่มของ to_verify_budget เอง -->
                 <button
                     name="button_return"
                     states="to_verify"
                     string="Return"
                     type="object"
-                    groups="purchase_request_kmitl.group_purchase_request_user_all"
+                    groups="purchase_request_kmitl.group_purchase_request_verify"
                 />
             </xpath>
 
@@ -244,15 +246,6 @@
                 >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
             </xpath>
 
-            <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
-                position="attributes"
-            >
-                <attribute
-                    name="attrs"
-                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
-            </xpath>
-
             <xpath expr="//field[@name='line_ids']//tree" position="attributes">
                 <attribute name="no_open">1</attribute>
             </xpath>
@@ -283,6 +276,19 @@
                             attrs="{'required': [('is_editable', '=', True)], 'readonly': [('is_editable', '=', False)]}"
                         />
                         <field name="user_id" readonly="1" />
+                        <field
+                            name="verified_by"
+                            string="ผู้ตรวจสอบ"
+                            readonly="1"
+                            attrs="{'invisible': [('verified_by', '=', False)]}"
+                            options="{'no_open': True}"
+                        />
+                        <field
+                            name="date_verified"
+                            string="วันที่ตรวจสอบ"
+                            readonly="1"
+                            attrs="{'invisible': [('date_verified', '=', False)]}"
+                        />
                         <field
                             name="assigned_to"
                             string="Responsible Officer"
@@ -454,7 +460,7 @@
             </xpath>
 
             <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
+                expr="//field[@name='line_ids']//tree/field[@name='product_qty']"
                 position="after"
             >
                 <field
