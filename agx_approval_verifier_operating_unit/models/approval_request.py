@@ -47,8 +47,13 @@ class ApprovalRequest(models.Model):
 
     @api.constrains("verifier_id", "operating_unit_id")
     def _check_verifier_operating_unit(self):
+        # Only while the verifier is still pickable: past to_verify it is
+        # readonly, so an OU change there could never be fixed by the user.
         for rec in self:
-            if rec._verifier_outside_operating_unit():
+            if (
+                rec.state in ("draft", "to_verify")
+                and rec._verifier_outside_operating_unit()
+            ):
                 raise ValidationError(
                     _(
                         "ผู้ตรวจสอบที่ระบุ %(user)s ไม่ได้อยู่ในหน่วยปฏิบัติงาน %(ou)s ของคำขอ",
