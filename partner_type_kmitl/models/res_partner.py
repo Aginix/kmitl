@@ -8,13 +8,6 @@ class ResPartner(models.Model):
     partner_type_id = fields.Many2one(
         comodel_name='res.partner.type', string='Partner Type', tracking=True,
     )
-    is_erp_manager = fields.Boolean(compute="_compute_is_erp_manager")
-
-    @api.depends_context("uid")
-    def _compute_is_erp_manager(self):
-        is_manager = self.env.user.has_group("base.group_erp_manager")
-        for record in self:
-            record.is_erp_manager = is_manager
 
     @api.model
     def _default_partner_type_id(self, company_type):
