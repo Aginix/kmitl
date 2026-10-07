@@ -113,7 +113,7 @@
                     <t t-foreach="o.line_ids" t-as="line">
                         <tr>
                             <td class="text-center" t-out="row_no"/>
-                            <td t-out="line.product_id.name or line.name or ''"/>
+                            <td t-out="line.product_id.name or line.name or ''" style="white-space: pre-wrap"/>
                             <td class="text-center"
                                 t-out="line.uom_text or line.product_uom_id.name or ''"/>
                             <td class="text-center"

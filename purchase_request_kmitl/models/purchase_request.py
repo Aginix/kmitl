@@ -1,4 +1,5 @@
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class PurchaseRequest(models.Model):
@@ -212,6 +213,48 @@ class PurchaseRequest(models.Model):
             vals["date_start"] = fields.Date.context_today(self)
         self.write(vals)
 
+    def _check_step_group(self, state, group, message):
+        """Raise unless the user holds ``group`` for records at ``state``.
+
+        Each step of the พ.1 is held by its own group (ADR-0010) and the view
+        gate alone is bypassable over RPC. Superuser mode (hooks, sudo'ed
+        programmatic flows) passes."""
+        if (
+            not self.env.su
+            and any(rec.state == state for rec in self)
+            and not self.env.user.has_group(group)
+        ):
+            raise UserError(message)
+
+    def _check_can_verify(self):
+        self._check_step_group(
+            "to_verify",
+            "purchase_request_kmitl.group_purchase_request_verify",
+            _("เฉพาะผู้ตรวจสอบแบบขอให้จัดหา (พ.1) เท่านั้นที่ดำเนินการขั้นนี้ได้"),
+        )
+
+    def _mark_verified(self):
+        """Stamp who pressed ตรวจสอบ, and when (ADR-0010)."""
+        self.write(
+            {
+                "verified_by": self.env.user.id,
+                "date_verified": fields.Date.context_today(self),
+            }
+        )
+
+    def button_to_approve(self):
+        self._check_can_verify()
+        to_verify = self.filtered(lambda r: r.state == "to_verify")
+        res = super().button_to_approve()
+        # Only those that actually advanced: an exception popup returns
+        # without moving the state.
+        to_verify.filtered(lambda r: r.state != "to_verify")._mark_verified()
+        return res
+
+    def button_draft(self):
+        self.write({"verified_by": False, "date_verified": False})
+        return super().button_draft()
+
     @api.depends("state", "requested_by")
     def _compute_can_reset_to_draft(self):
         is_manager = self.env.user.has_group(
@@ -301,7 +344,9 @@ class PurchaseRequest(models.Model):
         self.write({"state": "returned"})
 
     def _action_do_return_to_draft(self, reason):
+        """ตีกลับ ถอยทีละขั้น (ADR-0010): ผู้ตรวจสอบตีกลับ ``to_verify`` ไป draft."""
         self.ensure_one()
+        self._check_can_verify()
         body = _("ตีกลับคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s") % {
             "pr": self.name,
             "reason": reason,
