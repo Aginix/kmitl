@@ -9,6 +9,9 @@
         "agx_approval_verifier",
         "agx_approval_operating_unit",
     ],
+    "data": [
+        "views/approval_request_views.xml",
+    ],
     "installable": True,
     "auto_install": True,
     "license": "LGPL-3",
