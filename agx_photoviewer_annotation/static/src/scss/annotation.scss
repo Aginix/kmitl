@@ -110,6 +110,12 @@
         pointer-events: all;
         cursor: pointer;
 
+        // The author drags their own pin to move it.
+        &.o_agx_annotation_own {
+            cursor: move;
+            touch-action: none;
+        }
+
         text {
             font-family: sans-serif;
             font-weight: bold;

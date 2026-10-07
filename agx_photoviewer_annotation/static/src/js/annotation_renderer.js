@@ -592,7 +592,11 @@ class AnnotationEditor {
             target && this.annotations.find((a) => String(a.id) === target.dataset.id);
         if (annotation?.kind === "comment") {
             ev.preventDefault();
-            this.openComment(sheet, annotation);
+            if (annotation.is_own && annotation.id && ev.button === 0) {
+                this.dragComment(ev, sheet, annotation, target);
+            } else {
+                this.openComment(sheet, annotation);
+            }
             return;
         }
         if (!this.drawing) {
@@ -670,6 +674,48 @@ class AnnotationEditor {
     }
 
     // ------------------------------------------------------------ comments
+
+    /**
+     * Move the user's own comment pin while the pointer is down; a click
+     * that does not move opens it instead.
+     */
+    dragComment(ev, sheet, annotation, pin) {
+        const [startX, startY] = this.point(ev, sheet);
+        const {x, y} = annotation.geometry;
+        let geometry = null;
+        const move = (moveEv) => {
+            const [mx, my] = this.point(moveEv, sheet);
+            if (!geometry && Math.hypot(mx - startX, my - startY) < 0.005) {
+                return;
+            }
+            geometry = {
+                x: round(clamp(x + mx - startX)),
+                y: round(clamp(y + my - startY)),
+            };
+            pin.setAttribute(
+                "transform",
+                `translate(${(geometry.x - x) * UNITS} ${
+                    (geometry.y - y) * UNITS * sheet.ratio
+                })`
+            );
+        };
+        const finish = () => {
+            window.removeEventListener("pointermove", move);
+            window.removeEventListener("pointerup", finish);
+            window.removeEventListener("pointercancel", finish);
+            if (!geometry) {
+                this.openComment(sheet, annotation);
+                return;
+            }
+            this.update(annotation, {geometry}).catch((error) => {
+                this.redraw();
+                throw error;
+            });
+        };
+        window.addEventListener("pointermove", move);
+        window.addEventListener("pointerup", finish);
+        window.addEventListener("pointercancel", finish);
+    }
 
     closePopover() {
         this.popover?.remove();
