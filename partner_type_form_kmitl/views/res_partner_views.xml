@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_form_partner_type_layout" model="ir.ui.view">
+        <field name="name">res.partner.form.partner.type.layout</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+            <!-- Hide partner_type_id in old position (after company_type) -->
+            <xpath expr="//field[@name='partner_type_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Hide address_name_kmitl in old position (after address_name) -->
+            <xpath expr="//span[@name='address_name_kmitl']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Replace address_name with partner_type_id + address_name_kmitl -->
+            <xpath expr="//span[@name='address_name']" position="replace">
+                <field name="partner_type_id" widget="selection" required="1"/>
+                <span class="o_form_label o_td_label" name="address_name_kmitl">
+                    <field name="type" invisible="1"/>
+                    <b>Address</b>
+                </span>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
