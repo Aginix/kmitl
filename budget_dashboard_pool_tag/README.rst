@@ -11,7 +11,11 @@ shows which project or plan owns the money on a code.
 * Each item row shows the report's full set of columns for its
   (budget code × tag) bucket. A "ไม่ระบุโครงการ/แผน" row carries the untagged
   remainder (e.g. เงินลอย), so the item rows reconcile with the code row.
-* One checkbox per tag (on by default); search also matches item code/name;
+* Items the user may not read (analytic OU rules) keep their figures under a
+  "(ไม่มีสิทธิ์ดูรายการ)" label.
+* One checkbox shows/hides every tag together (on by default), labelled from
+  the registered tags (e.g. "แสดงรายการโครงการ/กิจกรรม/แผนจัดซื้อจัดจ้าง");
+  search also matches item code/name;
   clicking an item name opens the project / plan in a new tab.
 * The reservation picker is unaffected.
 

@@ -3,18 +3,16 @@
 
     <t t-inherit="budget.BudgetDashboard" t-inherit-mode="extension" owl="1">
         <xpath expr="//t[@t-foreach='breakdownOrder']" position="after">
-            <t t-foreach="state.poolTags" t-as="tag" t-key="tag.field">
-                <div class="o_bd_filter o_bd_check">
-                    <label>
-                        <input
-                            type="checkbox"
-                            t-att-checked="state.poolTagOn[tag.field]"
-                            t-on-change="() => this.togglePoolTag(tag.field)"
-                        />
-                        <t t-esc="tag.toggle_label" />
-                    </label>
-                </div>
-            </t>
+            <div t-if="state.poolTags.length" class="o_bd_filter o_bd_check">
+                <label>
+                    <input
+                        type="checkbox"
+                        t-att-checked="state.showPoolTags"
+                        t-on-change="togglePoolTags"
+                    />
+                    <t t-esc="poolTagToggleLabel" />
+                </label>
+            </div>
         </xpath>
         <xpath expr="//span[@t-esc='row.name']" position="replace">
             <a

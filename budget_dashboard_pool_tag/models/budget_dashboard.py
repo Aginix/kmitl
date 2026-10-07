@@ -19,12 +19,13 @@ class BudgetDashboard(models.AbstractModel):
     _inherit = "budget.dashboard"
 
     _POOL_TAG_UNTAGGED_NAME = "ไม่ระบุโครงการ/แผน"
+    _POOL_TAG_NO_ACCESS_NAME = "(ไม่มีสิทธิ์ดูรายการ)"
 
     def _pool_tags(self):
         """Registered Pool Tags, in display order.
 
-        Each entry: ``{"field", "label", "toggle_label", "res_model",
-        "res_field"}`` — ``field`` is the stored tag field on budget move /
+        Each entry: ``{"field", "label", "res_model", "res_field"}`` —
+        ``field`` is the stored tag field on budget move /
         commitment lines; ``res_model`` / ``res_field`` locate the owning
         document (e.g. ``kmitl.project`` by ``analytic_account_id``).
         """
@@ -32,10 +33,9 @@ class BudgetDashboard(models.AbstractModel):
 
     @api.model
     def get_pool_tags(self):
-        """Tag toggles for the front end: ``[{field, toggle_label}]``."""
+        """Registered tags for the front end's single toggle: ``[{field, label}]``."""
         return [
-            {"field": tag["field"], "toggle_label": tag["toggle_label"]}
-            for tag in self._pool_tags()
+            {"field": tag["field"], "label": tag["label"]} for tag in self._pool_tags()
         ]
 
     @api.model
@@ -119,9 +119,13 @@ class BudgetDashboard(models.AbstractModel):
         tagged_ids = {
             tag_id for bucket in own.values() for (field, tag_id) in bucket if field
         }
+        # Only analytic accounts the user may read are named; the rest keep
+        # their figures under a no-access label (OU record rules).
         analytic = {
             a.id: a
-            for a in self.env["account.analytic.account"].browse(list(tagged_ids))
+            for a in self.env["account.analytic.account"]
+            .browse(list(tagged_ids))
+            ._filter_access_rules("read")
         }
         docs = self._pool_tag_documents(tags, tagged_ids)
         tag_order = {name: i for i, name in enumerate(tag_names)}
@@ -135,11 +139,17 @@ class BudgetDashboard(models.AbstractModel):
                 key=lambda it: (
                     not it[0],  # untagged remainder last
                     tag_order.get(it[0], 0),
-                    (analytic[it[1]].code or "") if it[0] else "",
+                    (analytic[it[1]].code or "") if it[1] in analytic else "",
                 ),
             )
             for field, tag_id in items:
                 rec = analytic.get(tag_id)
+                if rec:
+                    name = rec.name
+                elif field:
+                    name = self._POOL_TAG_NO_ACCESS_NAME
+                else:
+                    name = self._POOL_TAG_UNTAGGED_NAME
                 res_model, res_id = docs.get(tag_id, (False, False))
                 rows.append(
                     {
@@ -149,7 +159,7 @@ class BudgetDashboard(models.AbstractModel):
                         "tag_field": field,
                         "analytic_id": tag_id or False,
                         "code": (rec.code or "") if rec else "",
-                        "name": rec.name if rec else self._POOL_TAG_UNTAGGED_NAME,
+                        "name": name,
                         "res_model": res_model,
                         "res_id": res_id,
                         "has_children": False,
