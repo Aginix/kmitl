@@ -1,4 +1,5 @@
 from odoo import api, models
+from odoo.exceptions import ValidationError
 
 
 class BudgetTransfer(models.Model):
@@ -43,21 +44,28 @@ class BudgetTransfer(models.Model):
         return super().action_submit()
 
     # ------------------------------------------------------------------
-    # Approve / Post — re-check, availability may have moved since ยืนยัน
+    # Re-check on approve / post / re-send — availability or the lines may
+    # have moved since ยืนยัน
     # ------------------------------------------------------------------
-    def action_approve(self):
-        self.invalidate_recordset(
-            ["has_sufficient_budget", "budget_validation_message"]
-        )
-        self._check_exception()
-        return super().action_approve()
+    def _get_base_domain(self):
+        # base.exception skips ignored records outright; the re-check must still
+        # see their blocking rules.
+        if self.env.context.get("budget_transfer_recheck_ignored"):
+            return []
+        return super()._get_base_domain()
 
-    def action_post(self):
+    def _validate_transfer_data(self):
+        super()._validate_transfer_data()
         self.invalidate_recordset(
             ["has_sufficient_budget", "budget_validation_message"]
         )
-        self._check_exception()
-        return super().action_post()
+        self.with_context(budget_transfer_recheck_ignored=True).detect_exceptions()
+        # Non-blocking rules were already accepted when the transfer was ignored.
+        rules = self.exception_ids
+        if self.ignore_exception:
+            rules = rules.filtered("is_blocking")
+        if rules:
+            raise ValidationError("\n".join(rules.mapped("name")))
 
     # ------------------------------------------------------------------
     # Business-policy checks → toggleable exception.rule records

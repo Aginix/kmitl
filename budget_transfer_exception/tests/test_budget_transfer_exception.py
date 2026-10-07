@@ -152,6 +152,21 @@ class TestBudgetTransferException(TransactionCase):
             transfer.action_approve()
         self.assertEqual(transfer.state, "submitted")
 
+    def test_approve_rechecks_ignored_transfer(self):
+        # Ignoring a non-blocking exception at ยืนยัน must not skip the blocking
+        # re-check on approve (base.exception skips ignored records outright).
+        self.rule_dims.is_blocking = False
+        self.rule_avail.active = False
+        transfer = self._transfer(from_fund=False)
+        self._assert_popup(transfer, self.rule_dims)
+        transfer.action_ignore_exceptions()
+        transfer.action_submit()
+        self.assertEqual(transfer.state, "submitted")
+        self.rule_avail.active = True
+        with self.assertRaises(ValidationError):
+            transfer.action_approve()
+        self.assertEqual(transfer.state, "submitted")
+
     def _line(self, account, direction, amount, **extra):
         return Command.create(
             dict(
