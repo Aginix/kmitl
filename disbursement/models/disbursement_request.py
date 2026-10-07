@@ -607,8 +607,12 @@ class DisbursementRequest(models.Model):
                 rec.reference_model_name = False
         # Piggybacks here because this is the one stored compute left that
         # depends on ``reference``: the hook reads the reference document, so
-        # it has to run whenever that changes.
-        self._compute_analytic()
+        # it has to run whenever that changes. Only records without a
+        # distribution yet are filled in -- a distribution passed explicitly
+        # (e.g. the purchase order header one from
+        # ``purchase_order_disbursement_budget``) must win, so that it stays
+        # consistent with the ``budget_commitment_id`` passed alongside it.
+        self.filtered(lambda rec: not rec.analytic_distribution)._compute_analytic()
 
     def _compute_analytic(self):
         """Hook for extension modules to merge analytics from reference document."""
