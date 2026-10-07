@@ -11,7 +11,7 @@ an image or a PDF inside the photo viewer of ``agx_photoviewer``.
 * Each mark is saved as soon as it is drawn, in ``ir.attachment.annotation``;
   the file itself is never modified (``docs/adr/0001``). Everyone who can read
   the attachment sees all marks and may add some; only the author changes or
-  removes a mark.
+  removes a mark, and drags their own comment pins to move them.
 * **Download with annotations** builds a PDF of the file with the marks drawn
   on it and the comments listed on a last page; nothing is stored.
 * Leaving an annotated file posts one internal note on the chatter of the
