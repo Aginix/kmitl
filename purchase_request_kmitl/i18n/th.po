@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-02 08:33+0000\n"
-"PO-Revision-Date: 2026-10-02 08:33+0000\n"
+"POT-Creation-Date: 2026-10-05 23:42+0000\n"
+"PO-Revision-Date: 2026-10-05 23:42+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -83,6 +83,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__can_reset_to_draft
 msgid "Can Reset To Draft"
 msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:res.groups,name:purchase_request_kmitl.group_purchase_request_verify
+msgid "Can verify purchase request"
+msgstr "สามารถตรวจสอบคำขอซื้อขอจ้าง"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
@@ -197,7 +202,6 @@ msgstr "หน่วยงาน"
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__description
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__description
-#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_line__name
 msgid "Description"
 msgstr "เหตุผล/ความจำเป็น"
 
@@ -310,6 +314,11 @@ msgstr "สำหรับ พ.1 ทั้วไป"
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__is_purchase_request
 msgid "Is Purchase Request"
 msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_line__name
+msgid "Item"
+msgstr "รายการ"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
@@ -847,16 +856,6 @@ msgid "ปิด"
 msgstr ""
 
 #. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "ผู้ตรวจสอบ"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model:res.groups,name:purchase_request_kmitl.group_purchase_request_verify
-msgid "ผู้ตรวจสอบใบขอให้จัดหา (พ.1)"
-msgstr "สามารถตรวจสอบแบบขอให้จัดหา (พ.1)"
-
-#. module: purchase_request_kmitl
 #. odoo-python
 #: code:addons/purchase_request_kmitl/models/purchase_request.py:0
 #: model:ir.actions.act_window,name:purchase_request_kmitl.action_purchase_request_cancel_wizard
@@ -880,11 +879,6 @@ msgstr ""
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "วันที่ตรวจสอบ"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "วันที่สร้าง"
 msgstr ""
 
@@ -897,13 +891,6 @@ msgstr ""
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_line__uom_text
 msgid "หน่วยนับ"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#. odoo-python
-#: code:addons/purchase_request_kmitl/models/purchase_request.py:0
-#, python-format
-msgid "เฉพาะผู้ตรวจสอบแบบขอให้จัดหา (พ.1) เท่านั้นที่ดำเนินการขั้นนี้ได้"
 msgstr ""
 
 #. module: purchase_request_kmitl

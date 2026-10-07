@@ -28,7 +28,7 @@ msgstr "<span>งบประมาณ</span>"
 #. module: purchase_request_budget
 #: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__activity_analytic_id
 msgid "Activity"
-msgstr "ด้าน/แผนงาน/กิจกรรม"
+msgstr "กิจกรรม"
 
 #. module: purchase_request_budget
 #: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__analytic_distribution

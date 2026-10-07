@@ -202,9 +202,9 @@ class PurchaseRequestApproval(models.Model):
                         "partner_id": self.partner_id.id,
                     }
                 )
-                for line in self.request_id.line_ids
+                for line in self.line_ids
             ],
-            "ref": self.request_id.name,
+            "ref": self.name,
         }
 
     def action_view_disbursement_request(self):
