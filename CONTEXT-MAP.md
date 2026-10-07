@@ -144,6 +144,10 @@ upfront.
   academic staff get their [[hr-employee-academic-standing-thailand]] title, everyone
   else their personal honorific (`prefix_id`), glued to the
   [[kmitl-hr-employee-full-name]] first/middle/last name.
+- [Photo Viewer — Annotation](./agx_photoviewer_annotation/CONTEXT.md) — reviewers tick,
+  draw, highlight and comment directly on an image or PDF attachment inside the photo
+  viewer; marks are an overlay stored beside the untouched file, exportable on demand as
+  an annotated PDF.
 
 ## Relationships
 
