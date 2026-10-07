@@ -29,6 +29,40 @@ class PurchaseRequestApproval(models.Model):
         for request in self:
             request.wa_count = len(request.wa_ids)
 
+    def _prepare_wa_line_vals(self, pa_line):
+        """Prepare vals for a single work.acceptance.line from a PA line.
+        Returns False if the line should be skipped (remaining qty <= 0)."""
+        pr_line = pa_line.request_line_id
+        if pr_line:
+            accepted_qty = sum(
+                wl.product_qty
+                for wl in pr_line.wa_line_ids
+                if wl.wa_id.state != "cancel"
+            )
+            remaining = pa_line.product_qty - accepted_qty
+        else:
+            remaining = pa_line.product_qty
+        if remaining <= 0:
+            return False
+        return {
+            "approval_line_id": pr_line.id if pr_line else False,
+            "name": pa_line.name,
+            "product_uom": pa_line.product_uom_id.id,
+            "uom_text": pa_line.uom_text,
+            "product_id": pa_line.product_id.id,
+            "price_unit": pa_line.price_unit,
+            "product_qty": remaining,
+        }
+
+    def _prepare_wa_committee_vals(self, committee):
+        """Prepare vals for a single work.acceptance.committee from a PA committee."""
+        return {
+            "employee_id": committee.employee_id.id,
+            "name": committee.name,
+            "approve_role": committee.approve_role,
+            "note": committee.note,
+        }
+
     def action_view_wa(self):
         self.ensure_one()
         act = self.env.ref("purchase_work_acceptance.action_work_acceptance")
