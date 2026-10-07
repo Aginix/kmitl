@@ -8,9 +8,9 @@ import {toRaw} from "@odoo/owl";
 patch(BudgetDashboard.prototype, "budget_dashboard_pool_tag.BudgetDashboard", {
     setup() {
         this._super(...arguments);
-        // Registered Pool Tags (โครงการ/แผน) and which ones are shown.
+        // Registered Pool Tags (โครงการ/แผน), shown or hidden together.
         this.state.poolTags = [];
-        this.state.poolTagOn = {};
+        this.state.showPoolTags = true;
         this._poolTagSeq = 0;
     },
 
@@ -23,16 +23,17 @@ patch(BudgetDashboard.prototype, "budget_dashboard_pool_tag.BudgetDashboard", {
             "get_pool_tags",
             []
         );
-        for (const tag of this.state.poolTags) {
-            this.state.poolTagOn[tag.field] = true;
-        }
         await _super();
     },
 
     get enabledPoolTags() {
-        return this.state.poolTags
-            .filter((tag) => this.state.poolTagOn[tag.field])
-            .map((tag) => tag.field);
+        return this.state.showPoolTags
+            ? this.state.poolTags.map((tag) => tag.field)
+            : [];
+    },
+
+    get poolTagToggleLabel() {
+        return `แสดงรายการ${this.state.poolTags.map((tag) => tag.label).join("/")}`;
     },
 
     async load() {
@@ -94,8 +95,8 @@ patch(BudgetDashboard.prototype, "budget_dashboard_pool_tag.BudgetDashboard", {
         this.state.rows = rows;
     },
 
-    togglePoolTag(field) {
-        this.state.poolTagOn[field] = !this.state.poolTagOn[field];
+    togglePoolTags() {
+        this.state.showPoolTags = !this.state.showPoolTags;
         this.state.collapsed = {};
         this.load();
     },

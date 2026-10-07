@@ -15,7 +15,6 @@ class BudgetDashboard(models.AbstractModel):
             {
                 "field": "kmitl_project_analytic_id",
                 "label": "โครงการ/กิจกรรม",
-                "toggle_label": "แสดงโครงการ/กิจกรรม",
                 "res_model": "kmitl.project",
                 "res_field": "analytic_account_id",
             }

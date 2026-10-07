@@ -7,7 +7,6 @@ from odoo.tests.common import TransactionCase, tagged
 _TAG = {
     "field": "kmitl_project_analytic_id",
     "label": "โครงการ/กิจกรรม",
-    "toggle_label": "แสดงโครงการ/กิจกรรม",
     "res_model": False,
 }
 _VALUE_KEYS = (

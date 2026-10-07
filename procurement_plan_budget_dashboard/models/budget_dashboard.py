@@ -15,7 +15,6 @@ class BudgetDashboard(models.AbstractModel):
             {
                 "field": "procurement_plan_analytic_id",
                 "label": "แผนจัดซื้อจัดจ้าง",
-                "toggle_label": "แสดงแผนจัดซื้อจัดจ้าง",
                 "res_model": "procurement.plan",
                 "res_field": "analytic_account_id",
             }
