@@ -135,6 +135,12 @@ msgid "Highlight"
 msgstr "ไฮไลต์"
 
 #. module: agx_photoviewer_annotation
+#. odoo-python
+#: code:addons/agx_photoviewer_annotation/models/ir_attachment_annotation.py:0
+msgid "Invalid annotation geometry."
+msgstr "ตำแหน่งของรายการขีดเขียนไม่ถูกต้อง"
+
+#. module: agx_photoviewer_annotation
 #: model:ir.model.fields,field_description:agx_photoviewer_annotation.field_ir_attachment_annotation__kind
 msgid "Kind"
 msgstr "ประเภท"

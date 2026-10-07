@@ -210,11 +210,16 @@ class AnnotationEditor {
                 passive: true,
             });
         }
-        this.scroll.addEventListener("pointerdown", (ev) => {
-            if (this.popover && !this.popover.contains(ev.target)) {
-                this.closePopover();
-            }
-        });
+        // Captured so it runs before a sheet opens the next popover.
+        this.scroll.addEventListener(
+            "pointerdown",
+            (ev) => {
+                if (this.popover && !this.popover.contains(ev.target)) {
+                    this.closePopover();
+                }
+            },
+            {capture: true}
+        );
 
         this.observer = new IntersectionObserver(
             (entries) => {

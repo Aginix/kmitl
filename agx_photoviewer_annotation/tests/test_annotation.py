@@ -4,7 +4,7 @@ import io
 from PIL import Image
 from reportlab.pdfgen import canvas
 
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 from odoo.tools.pdf import PdfFileReader
 
@@ -84,6 +84,24 @@ class TestAnnotation(TransactionCase):
         self.Annotation.with_user(self.user_a).annotation_delete(saved["id"])
         self.attachment.invalidate_recordset(["annotation_count"])
         self.assertEqual(self.attachment.annotation_count, 1)
+
+    def test_invalid_geometry(self):
+        for kind, geometry in [
+            ("rect", {}),
+            ("pen", {"x": 0.1, "y": 0.1}),
+            ("pen", {"points": [[0.1, 0.1]]}),
+            ("check", {"x": "0.5", "y": 0.5}),
+            ("comment", {"x": 2, "y": 0.5}),
+            ("check", {"x": 0.5, "y": 0.5, "size": 5}),
+        ]:
+            with self.subTest(kind=kind, geometry=geometry):
+                with self.assertRaises(ValidationError):
+                    self._save(self.user_a, kind=kind, geometry=geometry)
+        saved = self._save(self.user_a)
+        with self.assertRaises(ValidationError):
+            self.Annotation.with_user(self.user_a).annotation_save(
+                {"id": saved["id"], "geometry": {"x": 0.5}}
+            )
 
     def test_unreadable_attachment(self):
         # An orphan upload (res_id 0) is only readable by its uploader.

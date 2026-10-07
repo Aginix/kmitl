@@ -1,12 +1,47 @@
 from markupsafe import Markup
 
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 from ..pdf_export import build_annotated_pdf
 
 # Values a client may set; the attachment, author and checksum are fixed.
 EDITABLE_FIELDS = ("geometry", "color", "text")
+# Fractions every kind's geometry must carry; pen carries its points instead.
+GEOMETRY_KEYS = {
+    "check": ("x", "y"),
+    "cross": ("x", "y"),
+    "comment": ("x", "y"),
+    "highlight": ("x", "y", "w", "h"),
+    "rect": ("x", "y", "w", "h"),
+}
+
+
+def _is_fraction(value):
+    # type() rather than isinstance() keeps booleans out.
+    return type(value) in (int, float) and 0 <= value <= 1
+
+
+def _is_valid_geometry(kind, geometry):
+    if not isinstance(geometry, dict):
+        return False
+    if any(
+        key in geometry and not _is_fraction(geometry[key]) for key in ("width", "size")
+    ):
+        return False
+    if kind == "pen":
+        points = geometry.get("points")
+        return (
+            isinstance(points, list)
+            and len(points) > 1
+            and all(
+                isinstance(point, list)
+                and len(point) == 2
+                and all(map(_is_fraction, point))
+                for point in points
+            )
+        )
+    return all(_is_fraction(geometry.get(key)) for key in GEOMETRY_KEYS.get(kind, ()))
 
 
 class IrAttachmentAnnotation(models.Model):
@@ -53,6 +88,13 @@ class IrAttachmentAnnotation(models.Model):
         readonly=True,
         help="Checksum of the attachment content the annotation was drawn on.",
     )
+
+    @api.constrains("kind", "geometry")
+    def _check_geometry(self):
+        # The viewer and the export both draw it as is.
+        for annotation in self:
+            if not _is_valid_geometry(annotation.kind, annotation.geometry):
+                raise ValidationError(_("Invalid annotation geometry."))
 
     # ------------------------------------------------------------------
     # Access helpers
@@ -170,9 +212,9 @@ class IrAttachmentAnnotation(models.Model):
         if not record:
             return False
         labels = [
-            (counts.get("added"), _("added %s")),
-            (counts.get("changed"), _("changed %s")),
-            (counts.get("removed"), _("removed %s")),
+            (int(counts.get("added") or 0), _("added %s")),
+            (int(counts.get("changed") or 0), _("changed %s")),
+            (int(counts.get("removed") or 0), _("removed %s")),
         ]
         summary = ", ".join(label % count for count, label in labels if count)
         if not summary:
