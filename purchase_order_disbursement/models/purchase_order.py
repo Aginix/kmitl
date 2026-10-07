@@ -73,8 +73,6 @@ class PurchaseOrder(models.Model):
     def _prepare_disbursement_request_vals(self):
         return {
             "reference": "purchase.order,%d" % self.id,
-            "partner_id": self.partner_id.id,
-            "partner_type": "multi",
             "line_ids": [
                 Command.create({
                     **line._prepare_disbursement_request_line_vals(),

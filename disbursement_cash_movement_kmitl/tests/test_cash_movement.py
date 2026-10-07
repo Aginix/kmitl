@@ -98,7 +98,6 @@ class TestCashMovement(TransactionCase):
         request = self.env["disbursement.request"].create(
             {
                 "date": "2026-01-15",
-                "partner_type": "multi",
                 "analytic_distribution": distribution,
                 "line_ids": [
                     (

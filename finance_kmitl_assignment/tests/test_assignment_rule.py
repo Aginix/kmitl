@@ -146,7 +146,6 @@ class TestFinanceAssignment(TransactionCase):
         return self.env["disbursement.request"].create(
             {
                 "date": fields.Date.today(),
-                "partner_type": "multi",
                 "payment_subject_id": subject.id,
             }
         )

@@ -230,11 +230,6 @@ msgid "Cancelled"
 msgstr "ยกเลิกแล้ว"
 
 #. module: disbursement
-#: model:ir.model.fields,help:disbursement.field_disbursement_request__is_company
-msgid "Check if the contact is a company, otherwise it is a person"
-msgstr ""
-
-#. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid ""
 "Click here to be able to confirm this Disbursement Request regardless of the "
@@ -497,11 +492,6 @@ msgid "Ignore Exceptions"
 msgstr ""
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__is_company
-msgid "Is Company"
-msgstr ""
-
-#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__message_is_follower
 msgid "Is Follower"
 msgstr ""
@@ -635,11 +625,9 @@ msgid "Outstanding exceptions to manage"
 msgstr ""
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_id
-#: model_terms:ir.ui.view,arch_db:disbursement.portal_my_disbursement_requests
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__partner_id
 msgid "Partner"
-msgstr "คู่ค้า"
+msgstr "ผู้รับเงิน"
 
 
 #. module: disbursement
@@ -664,7 +652,7 @@ msgid "Quantity"
 msgstr "จำนวน"
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_bank_id
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request_line__partner_bank_id
 msgid "Recipient Bank"
 msgstr "บัญชีธนาคารผู้รับ"
 
@@ -1065,31 +1053,6 @@ msgstr "สามารถอนุมัติได้เฉพาะคำข
 #, python-format
 msgid "Only submitted, sent, or cancelled requests can be reset to draft."
 msgstr "สามารถกลับไปฉบับร่างได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ยืนยันแล้ว\" \"ลงนามแล้ว\" หรือ \"ยกเลิก\" เท่านั้น"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Partner Information"
-msgstr "ข้อมูลคู่ค้า"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_type
-msgid "Partner Type"
-msgstr "จ่ายตาม"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__partner_type__single
-msgid "Single Partner"
-msgstr "ตามจ่ายให้"
-
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__partner_type__multi
-msgid "Multiple Partners"
-msgstr "ตามรายชื่อการเบิกจ่าย"
-
-#. module: disbursement
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Multi-Partner"
-msgstr "ตามรายชื่อการเบิกจ่าย"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_ids
@@ -1750,6 +1713,7 @@ msgstr "เปิด"
 #. module: disbursement
 #. odoo-javascript
 #: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Payee"
 msgstr "ผู้รับเงิน"
 
