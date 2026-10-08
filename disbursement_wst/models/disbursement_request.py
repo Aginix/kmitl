@@ -172,8 +172,17 @@ class DisbursementRequest(models.Model):
 
     # --------------------------------------------------------------- actions
     def action_station_complete(self):
-        """Proceed: complete the current station's step."""
+        """Proceed: complete the current station's step.
+
+        A request that is not at a station is refused as a UserError rather than
+        left to ``ensure_one``: the batch press reports a UserError row by row,
+        where the bare ValueError would take the whole selection down with it.
+        """
         for request in self:
+            if not request.current_step_id:
+                raise UserError(
+                    _("%s is not waiting at a work station.") % request.display_name
+                )
             request.current_step_id.act()
         return True
 

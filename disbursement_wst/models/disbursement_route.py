@@ -30,11 +30,15 @@ class DisbursementRoute(models.Model):
     def _compute_request_model(self):
         self.request_model = "disbursement.request"
 
-    @api.constrains("line_ids")
     def _check_station_order(self):
         """A station may not precede a station it declares it must follow.
 
         Stations not in the route (or not installed) impose nothing.
+
+        Not a constraint on the route: a station module appends its line to the
+        standard route straight from its data XML, and Odoo validates only the
+        model it created — a ``constrains("line_ids")`` here would never fire in
+        the one case this guard exists for. It is driven from the line instead.
         """
         for route in self:
             order = {
@@ -87,6 +91,10 @@ class DisbursementRouteLine(models.Model):
 
     def _compute_request_model(self):
         self.request_model = "disbursement.request"
+
+    @api.constrains("route_id", "station_id", "sequence")
+    def _check_station_order(self):
+        self.route_id._check_station_order()
 
 
 def _domain_matches(domain_str, request):

@@ -69,6 +69,9 @@
         <field name="model_id" ref="disbursement.model_disbursement_request" />
         <field name="binding_model_id" ref="disbursement.model_disbursement_request" />
         <field name="binding_view_types">list</field>
+        <!-- Without this the press sits in the Action menu of every DR list, for
+             every user; the station's own group check still runs underneath. -->
+        <field name="groups_id" eval="[(4, ref('disbursement.group_disbursement_user'))]" />
         <field name="state">code</field>
         <field name="code">action = records.action_act_batch()</field>
     </record>
