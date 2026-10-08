@@ -334,40 +334,40 @@
                                                     />
                                         <td class="month-cell"><t
                                                             t-if="plan.m10"
-                                                        >✓</t></td>
+                                                        >/</t></td>
                                         <td class="month-cell"><t
                                                             t-if="plan.m11"
-                                                        >✓</t></td>
+                                                        >/</t></td>
                                         <td class="month-cell"><t
                                                             t-if="plan.m12"
-                                                        >✓</t></td>
+                                                        >/</t></td>
                                         <td class="month-cell"><t
                                                             t-if="plan.m1"
-                                                        >✓</t></td>
+                                                        >/</t></td>
                                         <td class="month-cell"><t
                                                             t-if="plan.m2"
-                                                        >✓</t></td>
+                                                        >/</t></td>
                                         <td class="month-cell"><t
                                                             t-if="plan.m3"
-                                                        >✓</t></td>
+                                                        >/</t></td>
                                         <td class="month-cell"><t
                                                             t-if="plan.m4"
-                                                        >✓</t></td>
+                                                        >/</t></td>
                                         <td class="month-cell"><t
                                                             t-if="plan.m5"
-                                                        >✓</t></td>
+                                                        >/</t></td>
                                         <td class="month-cell"><t
                                                             t-if="plan.m6"
-                                                        >✓</t></td>
+                                                        >/</t></td>
                                         <td class="month-cell"><t
                                                             t-if="plan.m7"
-                                                        >✓</t></td>
+                                                        >/</t></td>
                                         <td class="month-cell"><t
                                                             t-if="plan.m8"
-                                                        >✓</t></td>
+                                                        >/</t></td>
                                         <td class="month-cell"><t
                                                             t-if="plan.m9"
-                                                        >✓</t></td>
+                                                        >/</t></td>
                                       </tr>
                                       <tr>
                                         <td class="bold num">รวม</td>
