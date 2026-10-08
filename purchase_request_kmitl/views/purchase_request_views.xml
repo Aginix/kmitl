@@ -410,7 +410,7 @@
                                 name="employee_id"
                                 options="{'no_create': True, 'no_open': True}"
                             />
-                            <field name="name" />
+                            <field name="name" readonly="1" />
                             <field name="department_id" />
                             <field name="email" />
                             <field name="mobile_phone" />
