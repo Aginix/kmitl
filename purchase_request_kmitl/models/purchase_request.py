@@ -81,6 +81,7 @@ class PurchaseRequest(models.Model):
             self.partner_id = False
             self.vat_included = "exclusive"
             self.tax_id = False
+
     assigned_to = fields.Many2one(
         string="Purchase Representative",
         copy=False,
