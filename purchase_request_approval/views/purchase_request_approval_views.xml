@@ -209,10 +209,10 @@
                             <field name="procurement_type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="procurement_method_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                             <field name="account_fiscal_year_id" readonly="1"/>
+                        </group>
+                        <group name="disbursement_info" string="Disbursement Information">
                             <field name="payment_type" readonly="1" />
                         </group>
-                    </group>
-                    <group>
                         <group name="vendor_info" string="Vendor Information">
                             <field name="procurement_mode" widget="radio" readonly="1"/>
                             <field

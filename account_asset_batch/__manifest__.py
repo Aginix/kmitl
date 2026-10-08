@@ -1,7 +1,7 @@
 {
-    "name": "Account Asset Batch",
-    "version": "16.0.1.0.1",
-    "summary": """ Account Asset Batch Summary """,
+    'name': 'Account Asset Batch',
+    'version': '16.0.1.1.0',
+    'summary': """ Account Asset Batch Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
