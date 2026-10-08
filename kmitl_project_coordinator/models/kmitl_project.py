@@ -24,6 +24,13 @@ class KmitlProject(models.Model):
         compute="_compute_is_project_owner",
         help="ผู้ใช้ปัจจุบันเป็นหัวหน้าโครงการ ผู้ประสานงาน หรือผู้สร้างโครงการ",
     )
+    # An owner from another OU can open the project, but the budget OU rules hide
+    # its commitment / budget moves (stamped with the project's OU) — compute the
+    # budget figures as sudo so they don't read 0.
+    budget_reserved = fields.Float(compute_sudo=True)
+    budget_remaining = fields.Float(compute_sudo=True)
+    budget_commitment_count = fields.Integer(compute_sudo=True)
+    budget_move_line_count = fields.Integer(compute_sudo=True)
 
     @api.depends_context("uid")
     @api.depends("manager_id", "coordinator_id", "creating_user_id")

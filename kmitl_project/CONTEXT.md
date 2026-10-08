@@ -29,7 +29,7 @@ The internal user (`coordinator_id`) who coordinates a project day to day. They 
 _Avoid_: Project Manager / หัวหน้าโครงการ (`manager_id`, the employee who leads the project, a different person and field)
 
 **Project Owner (เจ้าของโครงการ)**:
-Any of a project's หัวหน้าโครงการ, **Project Coordinator** or creator. A Project Owner has the project as **Own Project**: they read and edit it and all its tabs (still subject to each state's field locks), see it whatever their operating unit, and may raise its **Project Approval** หนังสือ. Project officers (Officer/Manager) may do all of this for every project. See [ADR-0007](./docs/adr/0007-project-owner-coordinator-extension.md).
+Any of a project's หัวหน้าโครงการ, **Project Coordinator** or creator. A Project Owner has the project as **Own Project**: they read and edit it and all its tabs (still subject to each state's field locks), see it whatever their operating unit, and may raise its **Project Approval** หนังสือ. Project officers (Officer/Manager) may do all of this for every project in their own operating units. See [ADR-0007](./docs/adr/0007-project-owner-coordinator-extension.md).
 _Avoid_: "Responsible" (the label of the creator field `creating_user_id`) as a synonym for owner
 
 **Project Number (เลขที่รันโครงการ, `key`)**:
