@@ -14,4 +14,11 @@
             ]"
         />
     </record>
+
+    <record id="base.group_erp_manager" model="res.groups">
+        <field
+            name="implied_ids"
+            eval="[(4, ref('purchase_request_budget.group_purchase_request_budget_commit'))]"
+        />
+    </record>
 </odoo>
