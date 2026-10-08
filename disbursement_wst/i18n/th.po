@@ -10,289 +10,296 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: disbursement_wst
-#: models/disbursement_route.py:0
-#, python-format
-msgid "Station %(station)s must come after station %(required)s."
-msgstr "สถานี %(station)s ต้องอยู่หลังสถานี %(required)s"
+#: model:ir.model,name:disbursement_wst.model_disbursement_station
+msgid "Disbursement Work Station"
+msgstr "สถานีงานใบขอเบิก"
 
 #. module: disbursement_wst
-#: models/disbursement_request.py:0
-#, python-format
-msgid "No route with stations matches this request."
-msgstr "ไม่มีเส้นทางที่มีสถานีตรงกับใบขอเบิกนี้"
+#: model:ir.model,name:disbursement_wst.model_disbursement_route
+msgid "Disbursement Route"
+msgstr "เส้นทางใบขอเบิก"
 
 #. module: disbursement_wst
-#: models/disbursement_request.py:0
-#, python-format
-msgid ""
-"Cannot remove this work station: %(count)s request(s) are waiting at it: "
-"%(names)s. Send them on first."
-msgstr ""
-"ไม่สามารถถอดสถานีงานนี้ได้: มีใบขอเบิก %(count)s รายการรออยู่ที่สถานี: "
-"%(names)s กรุณาส่งต่อก่อน"
+#: model:ir.model,name:disbursement_wst.model_disbursement_route_line
+msgid "Disbursement Route Line"
+msgstr "บรรทัดเส้นทางใบขอเบิก"
 
 #. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "This step is not active."
-msgstr "ขั้นตอนนี้ไม่ได้อยู่ระหว่างดำเนินการ"
+#: model:ir.model,name:disbursement_wst.model_disbursement_step
+msgid "Disbursement Step"
+msgstr "ขั้นตอนใบขอเบิก"
 
 #. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "You are not authorised to act at station %s."
-msgstr "คุณไม่มีสิทธิ์ดำเนินการที่สถานี %s"
+#: model:ir.model,name:disbursement_wst.model_disbursement_divert_wizard
+msgid "Divert a Disbursement Request"
+msgstr "ส่งใบขอเบิกไปยังสถานีอื่น"
 
 #. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "Unknown disposition: %s"
-msgstr "ไม่รู้จักการดำเนินการ: %s"
-
-#. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "A note is required to return a request."
-msgstr "ต้องระบุหมายเหตุเมื่อตีกลับใบขอเบิก"
-
-#. module: disbursement_wst
-#: models/disbursement_request.py:0
-#, python-format
-msgid "Work Station"
-msgstr "สถานีงาน"
-
-#. module: disbursement_wst
-#: views/disbursement_route_views.xml:0
-#, python-format
-msgid "Archived"
-msgstr "เก็บถาวร"
-
-#. module: disbursement_wst
-#: views/disbursement_route_views.xml:0
-#, python-format
-msgid "Routes"
-msgstr "เส้นทาง"
-
-#. module: disbursement_wst
-#: views/disbursement_route_views.xml:0
-#, python-format
-msgid "Route"
-msgstr "เส้นทาง"
-
-#. module: disbursement_wst
-#: views/disbursement_request_views.xml:0
-#, python-format
-msgid "Stations"
-msgstr "สถานี"
-
-#. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "Waiting"
-msgstr "รอดำเนินการ"
-
-#. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "Active"
-msgstr "กำลังดำเนินการ"
-
-#. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "Done"
-msgstr "เสร็จสิ้น"
-
-#. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "Skipped"
-msgstr "ข้าม"
-
-#. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "Complete"
-msgstr "ดำเนินการ"
-
-#. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "Return"
-msgstr "ตีกลับ"
-
-#. module: disbursement_wst
-#: models/disbursement_station.py:0
-#, python-format
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_station__group_id
 msgid "Authorised Group"
 msgstr "กลุ่มผู้มีสิทธิ์"
 
 #. module: disbursement_wst
-#: models/disbursement_station.py:0
-#, python-format
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_station__activity_type_id
 msgid "Todo Type"
 msgstr "ประเภทงานที่ต้องทำ"
 
 #. module: disbursement_wst
-#: models/disbursement_station.py:0
-#, python-format
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_station__is_signature
 msgid "Prints a Signature"
 msgstr "พิมพ์ลายเซ็น"
 
 #. module: disbursement_wst
-#: models/disbursement_station.py:0
-#, python-format
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_station__requires_codes
 msgid "Must Come After"
 msgstr "ต้องอยู่หลัง"
 
 #. module: disbursement_wst
-#: models/disbursement_station.py:0
-#, python-format
-msgid "The station code must be unique."
-msgstr "รหัสสถานีต้องไม่ซ้ำ"
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_route__line_ids
+#: model_terms:ir.ui.view,arch_db:disbursement_wst.view_disbursement_request_form_inherit_wst
+msgid "Stations"
+msgstr "สถานี"
 
 #. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "Holders"
-msgstr "ผู้รับผิดชอบ"
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_request__route_id
+#: model:ir.model.fields.selection,name:disbursement_wst.selection__disbursement_step__origin__route
+#: model_terms:ir.ui.view,arch_db:disbursement_wst.view_disbursement_route_form
+msgid "Route"
+msgstr "เส้นทาง"
 
 #. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "Signer Name (snapshot)"
-msgstr "ชื่อผู้ลงนาม (บันทึกไว้)"
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_request__step_ids
+msgid "Steps"
+msgstr "ขั้นตอน"
 
 #. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "Signer Position (snapshot)"
-msgstr "ตำแหน่งผู้ลงนาม (บันทึกไว้)"
-
-#. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "Signature (snapshot)"
-msgstr "ลายเซ็น (บันทึกไว้)"
-
-#. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "Signature"
-msgstr "ลายเซ็น"
-
-#. module: disbursement_wst
-#: views/disbursement_request_views.xml:0
-msgid "Proceed"
-msgstr "ดำเนินการ"
-
-#. module: disbursement_wst
-#: views/disbursement_request_views.xml:0
-msgid "Current station:"
-msgstr "สถานีปัจจุบัน:"
-
-#. module: disbursement_wst
-#: views/disbursement_request_views.xml:0
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_request__station_code
+#: model_terms:ir.ui.view,arch_db:disbursement_wst.view_disbursement_request_search_inherit_wst
 msgid "Station"
 msgstr "สถานี"
 
 #. module: disbursement_wst
-#: views/disbursement_request_views.xml:0
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_step__actor_user_ids
+msgid "Holders"
+msgstr "ผู้รับผิดชอบ"
+
+#. module: disbursement_wst
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_step__disposition
+msgid "Disposition"
+msgstr "การดำเนินการ"
+
+#. module: disbursement_wst
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_step__origin
+msgid "Origin"
+msgstr "ที่มา"
+
+#. module: disbursement_wst
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_step__inserted_by_step_id
+msgid "Caused By"
+msgstr "เกิดจากขั้นตอน"
+
+#. module: disbursement_wst
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_step__signed_name
+msgid "Signer Name (snapshot)"
+msgstr "ชื่อผู้ลงนาม (บันทึกไว้)"
+
+#. module: disbursement_wst
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_step__signed_position_name
+msgid "Signer Position (snapshot)"
+msgstr "ตำแหน่งผู้ลงนาม (บันทึกไว้)"
+
+#. module: disbursement_wst
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_step__signed_signature
+msgid "Signature (snapshot)"
+msgstr "ลายเซ็น (บันทึกไว้)"
+
+#. module: disbursement_wst
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_step__signature_image
+#: model_terms:ir.ui.view,arch_db:disbursement_wst.report_disbursement_request_signature
+msgid "Signature"
+msgstr "ลายเซ็น"
+
+#. module: disbursement_wst
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_step__request_id
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_divert_wizard__request_id
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_wst
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_divert_wizard__station_id
+msgid "Send To"
+msgstr "ส่งไปยังสถานี"
+
+#. module: disbursement_wst
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_divert_wizard__come_back
+msgid "Come Back to Me"
+msgstr "ให้กลับมาที่สถานีนี้"
+
+#. module: disbursement_wst
+#: model:ir.model.fields,field_description:disbursement_wst.field_disbursement_divert_wizard__note
+msgid "Reason"
+msgstr "เหตุผล"
+
+#. module: disbursement_wst
+#: model:ir.model.fields.selection,name:disbursement_wst.selection__disbursement_step__state__waiting
+msgid "Waiting"
+msgstr "รอดำเนินการ"
+
+#. module: disbursement_wst
+#: model:ir.model.fields.selection,name:disbursement_wst.selection__disbursement_step__state__active
+msgid "Active"
+msgstr "กำลังดำเนินการ"
+
+#. module: disbursement_wst
+#: model:ir.model.fields.selection,name:disbursement_wst.selection__disbursement_step__state__done
+msgid "Done"
+msgstr "เสร็จสิ้น"
+
+#. module: disbursement_wst
+#: model:ir.model.fields.selection,name:disbursement_wst.selection__disbursement_step__state__skipped
+msgid "Skipped"
+msgstr "ข้าม"
+
+#. module: disbursement_wst
+#: model:ir.model.fields.selection,name:disbursement_wst.selection__disbursement_step__disposition__forward
+msgid "Forward"
+msgstr "ส่งต่อ"
+
+#. module: disbursement_wst
+#: model:ir.model.fields.selection,name:disbursement_wst.selection__disbursement_step__origin__insert
+msgid "Inserted"
+msgstr "แทรกเพิ่ม"
+
+#. module: disbursement_wst
+#: model:ir.model.fields.selection,name:disbursement_wst.selection__disbursement_step__origin__resume
+msgid "Resumed"
+msgstr "กลับมาต่อ"
+
+#. module: disbursement_wst
+#: model:ir.model.constraint,message:disbursement_wst.constraint_disbursement_station_code_uniq
+msgid "The station code must be unique."
+msgstr "รหัสสถานีต้องไม่ซ้ำ"
+
+#. module: disbursement_wst
+#: model:ir.ui.menu,name:disbursement_wst.menu_disbursement_stations
 msgid "Work Queues"
 msgstr "คิวงาน"
 
 #. module: disbursement_wst
+#: model:ir.actions.act_window,name:disbursement_wst.action_disbursement_route
+#: model:ir.ui.menu,name:disbursement_wst.menu_disbursement_route
+#: model_terms:ir.ui.view,arch_db:disbursement_wst.view_disbursement_route_tree
+msgid "Routes"
+msgstr "เส้นทาง"
+
+#. module: disbursement_wst
+#: model_terms:ir.ui.view,arch_db:disbursement_wst.view_disbursement_route_form
+msgid "Archived"
+msgstr "เก็บถาวร"
+
+#. module: disbursement_wst
 #: model:ir.actions.server,name:disbursement_wst.action_disbursement_act_batch
+#: model_terms:ir.ui.view,arch_db:disbursement_wst.view_disbursement_request_form_inherit_wst
 msgid "Proceed"
 msgstr "ดำเนินการ"
 
 #. module: disbursement_wst
-#: models/disbursement_request.py:0
-msgid "%s request(s) processed."
-msgstr "ดำเนินการแล้ว %s รายการ"
+#: model_terms:ir.ui.view,arch_db:disbursement_wst.view_disbursement_request_form_inherit_wst
+msgid "Current station:"
+msgstr "สถานีปัจจุบัน:"
 
 #. module: disbursement_wst
-#: models/disbursement_request.py:0
-msgid "Could not process:"
-msgstr "ดำเนินการไม่ได้:"
+#: model_terms:ir.ui.view,arch_db:disbursement_wst.view_disbursement_divert_wizard_form
+msgid "Cancel"
+msgstr "ยกเลิก"
 
 #. module: disbursement_wst
-#: models/disbursement_request.py:0
-msgid "error"
-msgstr "ข้อผิดพลาด"
-
-#. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "A note is required to divert a request."
-msgstr "ต้องระบุหมายเหตุเมื่อส่งใบขอเบิกไปยังสถานีอื่น"
-
-#. module: disbursement_wst
-#: models/disbursement_step.py:0
-#, python-format
-msgid "A request cannot be diverted to the station it is at."
-msgstr "ไม่สามารถส่งใบขอเบิกไปยังสถานีที่อยู่ในขณะนี้"
-
-#. module: disbursement_wst
-#: models/disbursement_request.py:0
-#, python-format
-msgid "Station %(station)s needs %(required)s to be done first."
-msgstr "สถานี %(station)s ต้องให้ %(required)s เสร็จสิ้นก่อน"
-
-#. module: disbursement_wst
-#: models/disbursement_request.py:0
-#: views/disbursement_divert_wizard_views.xml:0
-#: views/disbursement_request_views.xml:0
+#: code:addons/disbursement_wst/models/disbursement_request.py:0
+#: model:ir.model.fields.selection,name:disbursement_wst.selection__disbursement_step__disposition__divert
+#: model_terms:ir.ui.view,arch_db:disbursement_wst.view_disbursement_request_form_inherit_wst
+#: model_terms:ir.ui.view,arch_db:disbursement_wst.view_disbursement_divert_wizard_form
 #, python-format
 msgid "Divert"
 msgstr "ส่งไปยังสถานี"
 
 #. module: disbursement_wst
-#: models/disbursement_step.py:0
-msgid "Forward"
-msgstr "ส่งต่อ"
+#: code:addons/disbursement_wst/models/disbursement_request.py:0
+#, python-format
+msgid "Work Station"
+msgstr "สถานีงาน"
 
 #. module: disbursement_wst
-#: models/disbursement_step.py:0
-msgid "Inserted"
-msgstr "แทรกเพิ่ม"
+#: code:addons/disbursement_wst/models/disbursement_request.py:0
+#, python-format
+msgid "No route with stations matches this request."
+msgstr "ไม่มีเส้นทางที่มีสถานีตรงกับใบขอเบิกนี้"
 
 #. module: disbursement_wst
-#: models/disbursement_step.py:0
-msgid "Resumed"
-msgstr "กลับมาต่อ"
+#: code:addons/disbursement_wst/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Cannot remove this work station: %(count)s request(s) are waiting at it:"
+" %(names)s. Send them on first."
+msgstr ""
+"ไม่สามารถถอดสถานีงานนี้ได้: มีใบขอเบิก %(count)s รายการรออยู่ที่สถานี: "
+"%(names)s กรุณาส่งต่อก่อน"
 
 #. module: disbursement_wst
-#: models/disbursement_step.py:0
-msgid "Caused By"
-msgstr "เกิดจากขั้นตอน"
+#: code:addons/disbursement_wst/models/disbursement_request.py:0
+#, python-format
+msgid "%s is not waiting at a work station."
+msgstr "%s ไม่ได้รออยู่ที่สถานีงานใด"
 
 #. module: disbursement_wst
-#: wizard/disbursement_divert_wizard.py:0
-msgid "Send To"
-msgstr "ส่งไปยังสถานี"
+#: code:addons/disbursement_wst/models/disbursement_request.py:0
+#, python-format
+msgid "Station %(station)s needs %(required)s to be done first."
+msgstr "สถานี %(station)s ต้องให้ %(required)s เสร็จสิ้นก่อน"
 
 #. module: disbursement_wst
-#: wizard/disbursement_divert_wizard.py:0
-msgid "Come Back to Me"
-msgstr "ให้กลับมาที่สถานีนี้"
+#: code:addons/disbursement_wst/models/disbursement_request.py:0
+#, python-format
+msgid "%s request(s) processed."
+msgstr "ดำเนินการแล้ว %s รายการ"
 
 #. module: disbursement_wst
-#: wizard/disbursement_divert_wizard.py:0
-msgid "Reason"
-msgstr "เหตุผล"
+#: code:addons/disbursement_wst/models/disbursement_request.py:0
+#, python-format
+msgid "Could not process:"
+msgstr "ดำเนินการไม่ได้:"
 
 #. module: disbursement_wst
-#: models/disbursement_step.py:0
-msgid "Disposition"
-msgstr "การดำเนินการ"
+#: code:addons/disbursement_wst/models/disbursement_request.py:0
+#, python-format
+msgid "error"
+msgstr "ข้อผิดพลาด"
 
 #. module: disbursement_wst
-#: models/disbursement_step.py:0
-msgid "Origin"
-msgstr "ที่มา"
+#: code:addons/disbursement_wst/models/disbursement_route.py:0
+#, python-format
+msgid "Station %(station)s must come after station %(required)s."
+msgstr "สถานี %(station)s ต้องอยู่หลังสถานี %(required)s"
 
 #. module: disbursement_wst
-#: wizard/disbursement_divert_wizard.py:0
-msgid "Disbursement Request"
-msgstr "ใบขอเบิก"
+#: code:addons/disbursement_wst/models/disbursement_step.py:0
+#, python-format
+msgid "This step is not active."
+msgstr "ขั้นตอนนี้ไม่ได้อยู่ระหว่างดำเนินการ"
+
+#. module: disbursement_wst
+#: code:addons/disbursement_wst/models/disbursement_step.py:0
+#, python-format
+msgid "You are not authorised to act at station %s."
+msgstr "คุณไม่มีสิทธิ์ดำเนินการที่สถานี %s"
+
+#. module: disbursement_wst
+#: code:addons/disbursement_wst/models/disbursement_step.py:0
+#, python-format
+msgid "A note is required to divert a request."
+msgstr "ต้องระบุหมายเหตุเมื่อส่งใบขอเบิกไปยังสถานีอื่น"
+
+#. module: disbursement_wst
+#: code:addons/disbursement_wst/models/disbursement_step.py:0
+#, python-format
+msgid "A request cannot be diverted to the station it is at."
+msgstr "ไม่สามารถส่งใบขอเบิกไปยังสถานีที่อยู่ในขณะนี้"

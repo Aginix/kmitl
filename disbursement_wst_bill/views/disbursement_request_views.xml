@@ -21,9 +21,9 @@
 
     <menuitem id="menu_accounting_disbursement_request" name="Disbursement Requests" parent="accounting_kmitl.menu_payable" action="action_disbursement_queue_bill" sequence="5" />
 
-    <!-- Create Bill / Return to Verification, only while the request is at this
-         station and nothing has been billed yet. Bills are posted through the
-         account.move approval (Approve = post), not from the request. -->
+    <!-- Create Bill, only while the request is at this station and nothing has
+         been billed yet. Bills are posted through the account.move approval
+         (Approve = post), not from the request. -->
     <record id="view_disbursement_request_form_inherit_wst_bill" model="ir.ui.view">
         <field name="name">disbursement.request.form.inherit.wst.bill</field>
         <field name="model">disbursement.request</field>

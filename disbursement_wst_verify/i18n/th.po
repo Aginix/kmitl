@@ -10,22 +10,12 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: disbursement_wst_verify
-#: models/disbursement_request.py:0
-msgid "This request was returned to its source document. Please wait for the correction to be confirmed before validating."
-msgstr "ใบขอเบิกนี้ถูกส่งกลับไปยังเอกสารต้นทางเพื่อแก้ไข กรุณารอให้ยืนยันการแก้ไขก่อนจึงจะตรวจสอบได้"
-
-#. module: disbursement_wst_verify
 #: model:disbursement.station,name:disbursement_wst_verify.station_verify
 msgid "Verification"
 msgstr "หมวดตรวจ"
 
 #. module: disbursement_wst_verify
 #: model:ir.actions.act_window,name:disbursement_wst_verify.action_disbursement_queue_verify
-msgid "Awaiting Verification"
-msgstr "รอตรวจสอบ"
-
-#. module: disbursement_wst_verify
 #: model:ir.ui.menu,name:disbursement_wst_verify.menu_disbursement_queue_verify
 msgid "Awaiting Verification"
 msgstr "รอตรวจสอบ"
-

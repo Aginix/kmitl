@@ -10,26 +10,12 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: disbursement_wst_approve_rector
-#: views/disbursement_request_views.xml:0
-msgid "Approve (Rector Delegate)"
-msgstr "อนุมัติ (ผู้รับมอบอำนาจอธิการบดี)"
-
-#. module: disbursement_wst_approve_rector
-#: views/disbursement_request_views.xml:0
-msgid "Are you sure you want to approve? This will obligate and consume the budget."
-msgstr "ยืนยันการอนุมัติหรือไม่? การดำเนินการนี้จะกันและตัดงบประมาณ"
-
-#. module: disbursement_wst_approve_rector
 #: model:disbursement.station,name:disbursement_wst_approve_rector.station_approve_rector
 msgid "Rector-delegated Approval"
 msgstr "ผู้รับมอบอำนาจอนุมัติ"
 
 #. module: disbursement_wst_approve_rector
 #: model:ir.actions.act_window,name:disbursement_wst_approve_rector.action_disbursement_queue_approve_rector
-msgid "Awaiting Rector Delegate"
-msgstr "รอผู้รับมอบอำนาจอนุมัติ"
-
-#. module: disbursement_wst_approve_rector
 #: model:ir.ui.menu,name:disbursement_wst_approve_rector.menu_disbursement_queue_approve_rector
 msgid "Awaiting Rector Delegate"
 msgstr "รอผู้รับมอบอำนาจอนุมัติ"
@@ -49,3 +35,14 @@ msgstr "ใบขอเบิกรอผู้รับมอบอำนาจ
 msgid "A disbursement request is awaiting your approval (Rector-delegated)"
 msgstr "มีใบขอเบิกรอการอนุมัติจากคุณ (ผู้รับมอบอำนาจอธิการบดี)"
 
+#. module: disbursement_wst_approve_rector
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_approve_rector.view_disbursement_request_form_inherit_wst_approve_rector
+msgid "Approve (Rector Delegate)"
+msgstr "อนุมัติ (ผู้รับมอบอำนาจอธิการบดี)"
+
+#. module: disbursement_wst_approve_rector
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_approve_rector.view_disbursement_request_form_inherit_wst_approve_rector
+msgid ""
+"Are you sure you want to approve? This will obligate and consume the "
+"budget."
+msgstr "ยืนยันการอนุมัติหรือไม่? การดำเนินการนี้จะกันและตัดงบประมาณ"

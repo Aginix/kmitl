@@ -110,3 +110,9 @@ msgstr "รายการที่อนุมัติแล้ว"
 #: model_terms:ir.ui.view,arch_db:disbursement_wst_payment_authorize.view_disbursement_request_search_inherit_payment_authorize
 msgid "Authorized by Me"
 msgstr "ที่ฉันอนุมัติ"
+
+#. module: disbursement_wst_payment_authorize
+#: code:addons/disbursement_wst_payment_authorize/models/disbursement_request.py:0
+#, python-format
+msgid "error"
+msgstr "ข้อผิดพลาด"

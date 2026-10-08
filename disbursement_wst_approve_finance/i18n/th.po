@@ -16,10 +16,6 @@ msgstr "ผอ.กองคลังอนุมัติ"
 
 #. module: disbursement_wst_approve_finance
 #: model:ir.actions.act_window,name:disbursement_wst_approve_finance.action_disbursement_queue_approve_finance
-msgid "Awaiting Finance Director"
-msgstr "รอ ผอ.กองคลังอนุมัติ"
-
-#. module: disbursement_wst_approve_finance
 #: model:ir.ui.menu,name:disbursement_wst_approve_finance.menu_disbursement_queue_approve_finance
 msgid "Awaiting Finance Director"
 msgstr "รอ ผอ.กองคลังอนุมัติ"
@@ -33,9 +29,7 @@ msgstr "ผู้อำนวยการกองคลัง (ใบขอเ�
 #: model:mail.activity.type,name:disbursement_wst_approve_finance.mail_activity_dr_approve_finance
 msgid "Disbursement awaiting Finance Director approval"
 msgstr "ใบขอเบิกรอ ผอ.กองคลังอนุมัติ"
-
 #. module: disbursement_wst_approve_finance
 #: model:mail.activity.type,summary:disbursement_wst_approve_finance.mail_activity_dr_approve_finance
 msgid "A disbursement request is awaiting your approval (Finance Director)"
 msgstr "มีใบขอเบิกรอการอนุมัติจากคุณ (ผอ.กองคลัง)"
-

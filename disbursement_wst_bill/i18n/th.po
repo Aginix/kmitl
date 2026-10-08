@@ -10,60 +10,57 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: disbursement_wst_bill
-#: models/disbursement_request.py:0
-#, python-format
-msgid "Bills can only be created while the request is at the billing station."
-msgstr "สร้างใบตั้งหนี้ได้เฉพาะเมื่อใบขอเบิกอยู่ที่สถานีตั้งหนี้"
-
-#. module: disbursement_wst_bill
-#: models/disbursement_request.py:0
-#, python-format
-msgid "Every bill of the request must be posted before billing is done."
-msgstr "ต้องบันทึกใบตั้งหนี้ทุกใบของใบขอเบิกก่อนจึงจะเสร็จสิ้นการตั้งหนี้"
-
-#. module: disbursement_wst_bill
 #: model:disbursement.station,name:disbursement_wst_bill.station_bill
 msgid "Billing"
 msgstr "ตั้งหนี้"
 
 #. module: disbursement_wst_bill
-#: views/disbursement_request_views.xml:0
-msgid "Create Bill"
-msgstr "สร้างใบตั้งหนี้"
-
-#. module: disbursement_wst_bill
-#: views/disbursement_request_views.xml:0
-msgid "Return to Verification"
-msgstr "ส่งกลับไปตรวจสอบ"
-
-#. module: disbursement_wst_bill
 #: model:ir.actions.act_window,name:disbursement_wst_bill.action_disbursement_queue_bill
-msgid "Disbursement Requests"
-msgstr "ใบขอเบิก"
-
-#. module: disbursement_wst_bill
 #: model:ir.ui.menu,name:disbursement_wst_bill.menu_accounting_disbursement_request
 msgid "Disbursement Requests"
 msgstr "ใบขอเบิก"
 
 #. module: disbursement_wst_bill
-#: models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_bill.view_disbursement_request_form_inherit_wst_bill
+msgid "Create Bill"
+msgstr "สร้างใบตั้งหนี้"
+
+#. module: disbursement_wst_bill
+#: code:addons/disbursement_wst_bill/models/accounting_kmitl_dashboard.py:0
+#, python-format
+msgid "Disbursement requests awaiting billing"
+msgstr "ใบขอเบิกที่รอตั้งหนี้"
+
+#. module: disbursement_wst_bill
+#: code:addons/disbursement_wst_bill/models/disbursement_request.py:0
+#, python-format
+msgid "Bills can only be created while the request is at the billing station."
+msgstr "สร้างใบตั้งหนี้ได้เฉพาะเมื่อใบขอเบิกอยู่ที่สถานีตั้งหนี้"
+
+#. module: disbursement_wst_bill
+#: code:addons/disbursement_wst_bill/models/disbursement_request.py:0
+#, python-format
+msgid "Every bill of the request must be posted before billing is done."
+msgstr "ต้องบันทึกใบตั้งหนี้ทุกใบของใบขอเบิกก่อนจึงจะเสร็จสิ้นการตั้งหนี้"
+
+#. module: disbursement_wst_bill
+#: code:addons/disbursement_wst_bill/models/disbursement_request.py:0
 #, python-format
 msgid ""
-"Vendor Bill <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> has "
-"been created."
+"Vendor Bill <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> has been"
+" created."
 msgstr ""
 "สร้างใบตั้งหนี้ผู้ขาย <a href=\"%(link)s\" "
 "target=\"_blank\">%(name)s</a> เรียบร้อยแล้ว"
 
 #. module: disbursement_wst_bill
-#: models/disbursement_request.py:0
+#: code:addons/disbursement_wst_bill/models/disbursement_request.py:0
 #, python-format
 msgid "Vendor Bills"
 msgstr "ใบตั้งหนี้ผู้ขาย"
 
 #. module: disbursement_wst_bill
-#: models/disbursement_request.py:0
+#: code:addons/disbursement_wst_bill/models/disbursement_request.py:0
 #, python-format
 msgid ""
 "Cannot create new bill: existing bill(s) %s are still in progress. "
