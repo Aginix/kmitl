@@ -4,7 +4,7 @@
     <record id="view_partner_form_partner_type_layout" model="ir.ui.view">
         <field name="name">res.partner.form.partner.type.layout</field>
         <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="inherit_id" ref="partner_type_kmitl.view_res_partner_form"/>
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_type_id']" position="attributes">
