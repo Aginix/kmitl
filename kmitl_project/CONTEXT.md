@@ -24,6 +24,14 @@ _Avoid_: allocation (unqualified — clashes with budget's appropriation sense),
 The amount a project actually **received via Project Allocation** — a *computed* mirror of Current Budget (a) at the project's own dimension (the net of every posted budget move carrying its `kmitl_project` dim), so it always reads the current, real figure and is never typed by hand. Reserved as one shared `budget.commitment` at the **จองงบ step** (state `to_verify → to_send`, *before* the ขออนุมัติ หนังสือ is sent) and **released if the approval is rejected**; drawn down by the project's purchase requests and disbursements. Reads 0 (shown as "ยังไม่ได้รับการจัดสรรงบประมาณ") until งานแผน allocates. See [budget » Reserve / Floating Budget](../budget/CONTEXT.md).
 _Avoid_: allocation, cost; the **Project Budget Plan** total (`budget_expense_total`, the project's *ask*, a different quantity — the two are never reconciled automatically)
 
+**Project Coordinator (ผู้ประสานงาน)**:
+The internal user (`coordinator_id`) who coordinates a project day to day. They are told of every **status** change, follow its chatter, and can be swapped at any point in the project's life, because they are a contact, not part of the approved content. One per project. They must be a KMITL Project user.
+_Avoid_: Project Manager / หัวหน้าโครงการ (`manager_id`, the employee who leads the project, a different person and field)
+
+**Project Owner (เจ้าของโครงการ)**:
+Any of a project's หัวหน้าโครงการ, **Project Coordinator** or creator. A Project Owner has the project as **Own Project**: they read and edit it and all its tabs (still subject to each state's field locks), see it whatever their operating unit, and may raise its **Project Approval** หนังสือ. Project officers (Officer/Manager) may do all of this for every project. See [ADR-0007](./docs/adr/0007-project-owner-coordinator-extension.md).
+_Avoid_: "Responsible" (the label of the creator field `creating_user_id`) as a synonym for owner
+
 **Project Number (เลขที่รันโครงการ, `key`)**:
 A sequential running number that identifies a Project. Minted once, when the project is **submitted to งานแผน** (`draft→to_verify`, ส่งเข้าแผน — the moment its analytic account is created and its budget target is locked, ahead of the allocation), and stable for the project's life — a later reset-to-draft never re-issues or clears it. Stamped with the project's **fiscal year** (`account_fiscal_year_id`), which stays freely editable while the project is a first draft and is frozen once a Project Number exists. Reused as the `code` of the project's analytic account.
 _Avoid_: Project Code (รหัสโครงการ) — a distinct approval-time identifier, **not yet implemented**; do not conflate it with the Project Number even though both currently share the `key` field.

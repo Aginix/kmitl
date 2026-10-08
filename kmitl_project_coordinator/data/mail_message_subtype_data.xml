@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Posted on every kmitl.project status change (_track_subtype). Default so a
+         subscribed coordinator (and the creator of a new project) is notified. -->
+    <record id="mt_kmitl_project_state" model="mail.message.subtype">
+        <field name="name">สถานะโครงการเปลี่ยน</field>
+        <field name="res_model">kmitl.project</field>
+        <field name="default" eval="True" />
+        <field name="internal" eval="True" />
+        <field name="description">สถานะโครงการเปลี่ยน</field>
+    </record>
+</odoo>
