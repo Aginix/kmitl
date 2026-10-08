@@ -70,7 +70,12 @@ msgstr "จำนวน"
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__analytic_distribution
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch_line__analytic_distribution
 msgid "Analytic"
-msgstr ""
+msgstr "งบประมาณเชิงวิเคราะห์"
+
+#. module: account_asset_batch
+#: model_terms:ir.ui.view,arch_db:account_asset_batch.view_account_asset_batch_form
+msgid "Budget Details"
+msgstr "ข้อมูลงบประมาณ"
 
 #. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__analytic_distribution_search
@@ -176,8 +181,8 @@ msgstr ""
 
 #. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__date
-msgid "Date"
-msgstr "วันที่กำหนด"
+msgid "Acquisition Date"
+msgstr "วันที่ได้มา"
 
 #. module: account_asset_batch
 #: model_terms:ir.ui.view,arch_db:account_asset_batch.view_account_asset_batch_form
@@ -543,6 +548,12 @@ msgstr ""
 #: model:ir.model.fields,help:account_asset_batch.field_account_asset_batch_line__website_message_ids
 msgid "Website communication history"
 msgstr ""
+
+#. module: account_asset_batch
+#: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__partner_id
+msgid "Partner"
+msgstr "คู่ค้า"
+
 
 #. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__received_from_agency

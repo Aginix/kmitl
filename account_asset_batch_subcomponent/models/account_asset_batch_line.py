@@ -19,7 +19,7 @@ class AccountAssetBatchLine(models.Model):
     def action_open_subcomponent_wizard(self):
         self.ensure_one()
         return {
-            'name': 'Add Subcomponents',
+            'name': _('Add Subcomponents'),
             'type': 'ir.actions.act_window',
             'res_model': 'batch.subcomponent.wizard',
             'view_mode': 'form',

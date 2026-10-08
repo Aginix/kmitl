@@ -12,6 +12,14 @@ DIMENSION_FIELDS = [
 ]
 
 
+def _payment_type_labels():
+    return {
+        "cash": _("Cash"),
+        "cheque": _("Cheque"),
+        "transfer": _("Transfer"),
+    }
+
+
 class ReceiptReport(models.AbstractModel):
     _name = "receipt_kmitl.receipt.report"
     _inherit = "accounting_kmitl_reports.dimension.filter.mixin"
@@ -57,22 +65,42 @@ class ReceiptReport(models.AbstractModel):
                 if account:
                     dim_parts.append(account.display_name)
 
-            description = r.department_analytic_id.display_name or ""
-            if r.description:
-                description += "\n" + r.description
+            payment_extras = []
+            if r.payment_method_id:
+                payment_extras.append("วิธีชำระเงิน: %s" % r.payment_method_id.name)
+            if r.payment_type == "cheque":
+                if r.cheque_number:
+                    payment_extras.append("เลขที่เช็ค: %s" % r.cheque_number)
+                if r.cheque_date:
+                    payment_extras.append("วันที่เช็ค: %s" % r.cheque_date)
+            elif r.payment_type == "transfer":
+                if r.transfer_date:
+                    payment_extras.append("วันที่โอนเงิน: %s" % r.transfer_date)
 
             rows.append({
                 "id": r.id,
                 "date": str(r.date),
                 "name": r.name or "/",
-                "description": description,
+                "description": r.description or "",
+                "lines": [
+                    {"name": l.name or "", "amount": l.amount or 0.0}
+                    for l in r.line_ids
+                ],
                 "amount_total": r.amount_total,
                 "dimensions": "\n".join(dim_parts),
                 "note": r.note or "",
                 "state": r.state,
+                "customer_name": r.customer_name or "",
+                "payment_type": r.payment_type or "",
+                "payment_type_label": (
+                    _payment_type_labels().get(r.payment_type, "")
+                    if r.payment_type else ""
+                ),
                 "payment_method": (
                     r.payment_method_id.name if r.payment_method_id else ""
                 ),
+                "payment_extras": payment_extras,
+                "user_name": r.user_id.name if r.user_id else "",
             })
 
         groups = {}
@@ -150,14 +178,9 @@ class ReceiptReport(models.AbstractModel):
 
         payment_type = options.get("payment_type")
         if payment_type:
-            payment_type_labels = {
-                "cash": _("Cash"),
-                "cheque": _("Cheque"),
-                "transfer": _("Transfer"),
-            }
             lines.append(
                 _("Payment Type: %s")
-                % payment_type_labels.get(payment_type, payment_type)
+                % _payment_type_labels().get(payment_type, payment_type)
             )
 
         dims = options.get("dims") or {}
@@ -212,10 +235,10 @@ class ReceiptReportXlsx(models.AbstractModel):
         wrap = workbook.add_format({"border": 1, "text_wrap": True})
         total_fmt = workbook.add_format({"bold": True, "num_format": "#,##0.00"})
 
-        sheet.merge_range(0, 0, 0, 5, company.display_name, bold)
-        sheet.merge_range(1, 0, 1, 5, _("Receipt Summary Report"), bold)
+        sheet.merge_range(0, 0, 0, 8, company.display_name, bold)
+        sheet.merge_range(1, 0, 1, 8, _("Receipt Summary Report"), bold)
         sheet.merge_range(
-            2, 0, 2, 5,
+            2, 0, 2, 8,
             "%s %s %s %s" % (
                 _("From"), options.get("date_from") or "",
                 _("to"), options.get("date_to") or "",
@@ -223,45 +246,70 @@ class ReceiptReportXlsx(models.AbstractModel):
         )
 
         headers = [
-            _("Date"), _("Receipt No."), _("Description"),
-            _("Amount"), _("Analytic Dimensions"), _("Note"),
+            _("Date"), _("Receipt No."), _("Customer Name"),
+            _("Description"), _("Amount"),
+            _("Payment Type"),
+            _("Analytic Dimensions"), _("Note"),
+            _("Issued By"),
         ]
         row = 4
         for col, label in enumerate(headers):
             sheet.write(row, col, label, head)
 
+        format_amount = self.env["receipt_kmitl.receipt.report"].format_amount
+
         row = 5
         for group in result.get("groups", []):
             sheet.write(row, 0, group["date"], group_fmt)
-            sheet.write(row, 1, "", group_fmt)
-            sheet.write(row, 2, "", group_fmt)
-            sheet.write_number(row, 3, group["total"], group_num)
-            sheet.write(row, 4, "", group_fmt)
-            sheet.write(row, 5, "", group_fmt)
+            for col in range(1, 4):
+                sheet.write(row, col, "", group_fmt)
+            sheet.write_number(row, 4, group["total"], group_num)
+            for col in range(5, 9):
+                sheet.write(row, col, "", group_fmt)
             row += 1
             for r in group["rows"]:
                 sheet.write(row, 0, "", cell)
                 sheet.write(row, 1, r["name"], cell)
-                sheet.write(row, 2, r["description"], wrap)
+                sheet.write(row, 2, r["customer_name"], cell)
+                details_parts = []
+                if r["description"]:
+                    details_parts.append(r["description"])
+                if r["lines"]:
+                    details_parts.append("รายการ")
+                    for l in r["lines"]:
+                        details_parts.append(
+                            "• %s  %s บาท" % (l["name"], format_amount(l["amount"]))
+                        )
+                sheet.write(row, 3, "\n".join(details_parts), wrap)
                 amt = r["amount_total"] or 0
                 if abs(amt) >= 0.005:
-                    sheet.write_number(row, 3, amt, num)
+                    sheet.write_number(row, 4, amt, num)
                 else:
-                    sheet.write_blank(row, 3, None, num)
-                sheet.write(row, 4, r["dimensions"], wrap)
-                sheet.write(row, 5, r["note"], cell)
+                    sheet.write_blank(row, 4, None, num)
+                payment_parts = []
+                if r["payment_type_label"]:
+                    payment_parts.append(r["payment_type_label"])
+                for extra in r["payment_extras"]:
+                    payment_parts.append("• %s" % extra)
+                sheet.write(row, 5, "\n".join(payment_parts), wrap)
+                sheet.write(row, 6, r["dimensions"], wrap)
+                sheet.write(row, 7, r["note"], cell)
+                sheet.write(row, 8, r["user_name"], cell)
                 row += 1
 
         row += 1
-        sheet.write(row, 2, _("Grand Total"), bold)
-        sheet.write_number(row, 3, result.get("grand_total", 0), total_fmt)
+        sheet.write(row, 3, _("Grand Total"), bold)
+        sheet.write_number(row, 4, result.get("grand_total", 0), total_fmt)
 
         sheet.set_column(0, 0, 12)
         sheet.set_column(1, 1, 16)
-        sheet.set_column(2, 2, 35)
-        sheet.set_column(3, 3, 16)
-        sheet.set_column(4, 4, 35)
-        sheet.set_column(5, 5, 25)
+        sheet.set_column(2, 2, 22)
+        sheet.set_column(3, 3, 40)
+        sheet.set_column(4, 4, 16)
+        sheet.set_column(5, 5, 26)
+        sheet.set_column(6, 6, 35)
+        sheet.set_column(7, 7, 25)
+        sheet.set_column(8, 8, 22)
 
 
 class ReceiptReportPdf(models.AbstractModel):

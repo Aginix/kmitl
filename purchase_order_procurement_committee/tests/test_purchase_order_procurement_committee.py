@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import SUPERUSER_ID
 from odoo.tests.common import TransactionCase, tagged
 
@@ -31,16 +30,13 @@ class TestPurchaseOrderProcurementCommittee(TransactionCase):
             {
                 "picking_type_id": self.picking_type.id,
                 "requested_by": SUPERUSER_ID,
-                "department_id": self.department.id,
                 "line_ids": [
                     (
                         0,
                         0,
                         {
                             "product_id": self.product1.id,
-                            "product_uom_id": self.env.ref(
-                                "uom.product_uom_unit"
-                            ).id,
+                            "product_uom_id": self.env.ref("uom.product_uom_unit").id,
                             "product_qty": 1.0,
                             "price_unit": 100.0,
                             "estimated_cost": 100.0,

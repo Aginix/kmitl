@@ -3,7 +3,7 @@
 
 {
     "name": "Access all OUs' Analytics",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "author": "Ecosoft, Odoo Community Association (OCA)",
     "category": "Sales",
     "license": "AGPL-3",
@@ -13,4 +13,5 @@
         "security/analytic_security.xml",
     ],
     "installable": True,
+    "maintainers": ["kittiu"],
 }

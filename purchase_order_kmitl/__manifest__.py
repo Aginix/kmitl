@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 {
     "name": "Purchase Order KMITL",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
@@ -13,7 +12,6 @@
         "account_fiscal_year",
         "hr",
         "purchase_operating_unit",
-        "purchase_request_department",
         "purchase_order_link_purchase_request",
         "purchase_contract_kmitl",
         # payment type merged into this module

@@ -147,6 +147,28 @@ class ApprovalRequest(models.Model):
                     _("You can only submit approval requests in your own name.")
                 )
 
+    requesting_department_id = fields.Many2one(
+        "account.analytic.account",
+        string="หน่วยงานผู้ขอ",
+        domain=[("root_plan_id.code", "=", "departments")],
+        default=lambda self: self._default_requesting_department_id(),
+        tracking=True,
+        index=True,
+        help="หน่วยงานที่ขออนุมัติค่าใช้จ่าย — ระบุโดยผู้ขอตั้งแต่แรก แยกจากมิติ "
+        "ส่วนงานของงบประมาณ (ส่วนงานที่ตัดงบ) ซึ่งเจ้าหน้าที่งบเลือกภายหลัง",
+    )
+
+    @api.model
+    def _default_requesting_department_id(self):
+        return self.search(
+            [
+                ("user_id", "=", self.env.uid),
+                ("requesting_department_id", "!=", False),
+            ],
+            order="id desc",
+            limit=1,
+        ).requesting_department_id
+
     description = fields.Text(
         string="Description",
         tracking=True,
@@ -222,11 +244,16 @@ class ApprovalRequest(models.Model):
         string="มีรายการย่อย",
     )
 
+    # Single-product: mirrors the one hidden line. Multi-product: the
+    # requester's spending ceiling (เพดานค่าใช้จ่าย) the lines must add up to —
+    # checked at each state transition (excep_plan_amount_mismatch), so stored.
     plan_amount = fields.Monetary(
         string="จำนวนเงิน",
         currency_field="currency_id",
-        compute="_compute_plan_single",
+        compute="_compute_plan_amount",
         inverse="_inverse_plan_single",
+        store=True,
+        readonly=False,
     )
 
     plan_description = fields.Text(
@@ -235,15 +262,19 @@ class ApprovalRequest(models.Model):
         inverse="_inverse_plan_single",
     )
 
-    @api.depends("line_ids.total_amount", "line_ids.description", "category_id.multi_product")
+    @api.depends("line_ids.total_amount", "category_id.multi_product")
+    def _compute_plan_amount(self):
+        # Multi-product keeps whatever ceiling the requester typed: no assignment.
+        for rec in self:
+            if not rec.multi_product:
+                rec.plan_amount = rec.line_ids[:1].total_amount
+
+    @api.depends("line_ids.description", "category_id.multi_product")
     def _compute_plan_single(self):
         for rec in self:
             if not rec.multi_product and rec.line_ids:
-                first = rec.line_ids[0]
-                rec.plan_amount = first.total_amount
-                rec.plan_description = first.description
+                rec.plan_description = rec.line_ids[0].description
             else:
-                rec.plan_amount = 0.0
                 rec.plan_description = False
 
     def _inverse_plan_single(self):
@@ -403,7 +434,8 @@ class ApprovalRequest(models.Model):
 
     state = fields.Selection([
         ("draft", "Draft"),
-        ("to_verify", "รอตรวจสอบ / จองงบประมาณ"),
+        ("to_verify", "รอตรวจสอบข้อมูล"),
+        ("to_commit", "รอยืนยันงบประมาณ"),
         ("to_send", "รอส่งขออนุมัติ"),
         ("sent", "ส่งขออนุมัติแล้ว"),
         ("approved", "คำขอได้รับอนุมัติแล้ว"),
@@ -448,6 +480,18 @@ class ApprovalRequest(models.Model):
             ("budget_type", "=", "expense"),
             ("purchase_ok", "=", False),
         ]
+
+    budget_account_domain = fields.Binary(
+        compute="_compute_budget_account_domain",
+        help="Record-aware domain for รหัสงบประมาณ, now picked directly on the "
+        "form (ADR-0008): the same codes the reservation picker would offer, "
+        "including a category-pinned code.",
+    )
+
+    @api.depends("category_id")
+    def _compute_budget_account_domain(self):
+        for rec in self:
+            rec.budget_account_domain = rec._reservation_account_domain()
 
     def _reservation_account_domain(self):
         """Budget codes selectable in the reservation picker for this request.
@@ -757,10 +801,67 @@ class ApprovalRequest(models.Model):
                     % rec.name
                 )
 
+    def action_confirm_verify(self):
+        """ยืนยันตรวจสอบ: ผู้ตรวจสอบคำขอ hands the request to ผู้ยืนยันงบประมาณ
+        (to_verify → to_commit). Budget code / dimensions need not be complete
+        yet — they are checked in full at ยืนยันงบประมาณ (action_reserve_budget)."""
+        self.ensure_one()
+        if self.state != "to_verify":
+            raise UserError(_("ยืนยันตรวจสอบได้เฉพาะสถานะ 'รอตรวจสอบข้อมูล'"))
+        if not self.env.user.has_group("agx_approval.group_approval_verify"):
+            raise UserError(_("คุณไม่มีสิทธิ์ยืนยันตรวจสอบคำขอ"))
+        if self.detect_exceptions() and not self.ignore_exception:
+            return self.with_context(
+                agx_exception_action="action_confirm_verify"
+            )._popup_exceptions()
+        self.state = "to_commit"
+        return True
+
+    def action_open_send_back_wizard(self):
+        """ตีกลับ: open the mandatory-reason wizard that sends the request one
+        step back (to_commit → to_verify, to_verify → draft)."""
+        self.ensure_one()
+        if self.state not in ("to_verify", "to_commit"):
+            raise UserError(
+                _("ตีกลับได้เฉพาะสถานะ 'รอตรวจสอบข้อมูล' หรือ 'รอยืนยันงบประมาณ'")
+            )
+        wizard = self.env["approval.request.send.back.confirm"].create(
+            {"request_id": self.id}
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ตีกลับคำขอ"),
+            "res_model": "approval.request.send.back.confirm",
+            "view_mode": "form",
+            "res_id": wizard.id,
+            "target": "new",
+        }
+
+    def _send_back(self, reason):
+        """to_commit → to_verify (ผู้ยืนยันงบประมาณ) / to_verify → draft
+        (ผู้ตรวจสอบคำขอ). No commitment exists before ยืนยันงบประมาณ, so
+        nothing is released. The reason rides on the state tracking message."""
+        self.ensure_one()
+        if self.state == "to_commit":
+            group, target = "agx_approval.group_approval_budget_commit", "to_verify"
+        elif self.state == "to_verify":
+            group, target = "agx_approval.group_approval_verify", "draft"
+        else:
+            raise UserError(
+                _("ตีกลับได้เฉพาะสถานะ 'รอตรวจสอบข้อมูล' หรือ 'รอยืนยันงบประมาณ'")
+            )
+        if not self.env.user.has_group(group):
+            raise UserError(_("คุณไม่มีสิทธิ์ตีกลับคำขอในสถานะนี้"))
+        self._track_set_log_message(
+            tools.plaintext2html(_("ตีกลับ: %s") % reason)
+        )
+        self.state = target
+        return True
+
     def action_submit(self):
         for record in self:
-            if record.state != "to_verify":
-                raise UserError(_("Only To Verify requests can be submitted."))
+            if record.state != "to_commit":
+                raise UserError(_("Only To Commit requests can be submitted."))
             record.state = "to_send"
         return True
 
@@ -895,9 +996,12 @@ class ApprovalRequest(models.Model):
         """ดึงกลับ (pre-routing): open the confirm wizard that returns a
         not-yet-sent request to draft."""
         self.ensure_one()
-        if self.state not in ("to_verify", "to_send"):
+        if self.state not in ("to_verify", "to_commit", "to_send"):
             raise UserError(
-                _("ดึงกลับได้เฉพาะสถานะ 'รอตรวจสอบ' หรือ 'รอส่งขออนุมัติ'")
+                _(
+                    "ดึงกลับได้เฉพาะสถานะ 'รอตรวจสอบข้อมูล', 'รอยืนยันงบประมาณ' "
+                    "หรือ 'รอส่งขออนุมัติ'"
+                )
             )
         wizard = self.env["approval.request.pull.back.confirm"].create({
             "request_id": self.id,
@@ -983,8 +1087,13 @@ class ApprovalRequest(models.Model):
         return self.action_submit()
 
     def action_reserve_budget(self):
-        """Reserve budget: either draw an existing reservation or reserve anew."""
+        """ยืนยันงบประมาณ (to_commit): either draw an existing reservation or
+        reserve anew."""
         self.ensure_one()
+        if self.state != "to_commit":
+            raise UserError(_("ยืนยันงบประมาณได้เฉพาะสถานะ 'รอยืนยันงบประมาณ'"))
+        if not self.env.user.has_group("agx_approval.group_approval_budget_commit"):
+            raise UserError(_("คุณไม่มีสิทธิ์ยืนยันงบประมาณ"))
 
         # Draw-down mode: the user picked an existing ใบจองงบประมาณ. Adopt it
         # instead of creating a new commitment (ADR-0010).
@@ -1015,6 +1124,11 @@ class ApprovalRequest(models.Model):
                 _("กรุณาระบุข้อมูลงบประมาณให้ครบก่อนจองงบประมาณ: %s")
                 % ", ".join(missing)
             )
+
+        if self.detect_exceptions() and not self.ignore_exception:
+            return self.with_context(
+                agx_exception_action="action_reserve_budget"
+            )._popup_exceptions()
 
         amount = sum(self.line_ids.mapped("total_amount"))
 
@@ -1187,20 +1301,26 @@ class ApprovalRequest(models.Model):
         # modules). Drawing an existing reservation does not close selection: the
         # user must be able to un-pick. The chart picker is hidden view-side
         # while a reservation is picked, since dimensions then come from it.
-        can_edit = self.env.user.has_group("budget.group_budget_commitment")
+        # Each step's own role edits: ผู้ตรวจสอบคำขอ at to_verify, ผู้ยืนยัน
+        # งบประมาณ at to_commit (ADR-0008).
+        user = self.env.user
+        can_edit = {
+            "to_verify": user.has_group("agx_approval.group_approval_verify"),
+            "to_commit": user.has_group("agx_approval.group_approval_budget_commit"),
+        }
         for rec in self:
-            if rec.state in ("to_verify") and (
+            if rec.state in can_edit and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
             ):
-                rec.is_budget_editable = can_edit
+                rec.is_budget_editable = can_edit[rec.state]
             else:
                 rec.is_budget_editable = rec.state == "draft"
 
     @api.depends("state", "budget_commitment_id")
     def _compute_hide_reserve_budget_button(self):
         for rec in self:
-            if rec.state == "to_verify" and (
+            if rec.state == "to_commit" and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
             ):
@@ -1211,11 +1331,13 @@ class ApprovalRequest(models.Model):
     @api.depends("state")
     def _compute_is_plan_editable(self):
         """The plan (expense lines, participants, header) stays editable until
-        the request is sent for approval — i.e. through draft, รอตรวจสอบ and
-        รอส่งขออนุมัติ. agx_approval_sarabun widens this to a Sarabun-returned
+        the request is sent for approval — i.e. through draft, รอตรวจสอบข้อมูล,
+        รอยืนยันงบประมาณ and รอส่งขออนุมัติ. agx_approval_sarabun widens this to a Sarabun-returned
         request (edit everything except budget)."""
         for rec in self:
-            rec.is_plan_editable = rec.state in ("draft", "to_verify", "to_send")
+            rec.is_plan_editable = rec.state in (
+                "draft", "to_verify", "to_commit", "to_send"
+            )
 
     @api.depends("state")
     def _compute_is_actual_editable(self):

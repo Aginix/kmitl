@@ -76,7 +76,9 @@ class BudgetMoveLine(models.Model):
     # a transfer authors them, so make them writable. Their compute-from-JSON
     # stays (round-trip); the create/write sync keeps the JSON carrying them.
     kmitl_project_analytic_id = fields.Many2one(readonly=False)
-    procurement_plan_analytic_id = fields.Many2one(string="Procurement Plan", readonly=False)
+    procurement_plan_analytic_id = fields.Many2one(
+        string="Procurement Plan", readonly=False
+    )
 
     # Source is the move header's, mirrored read-only onto the line.
     # Keep it read-only: as a *writable* related field a fresh line's empty
@@ -349,20 +351,24 @@ class BudgetMoveLine(models.Model):
 
     @api.constrains("transfer_direction", "account_id", "analytic_distribution")
     def _check_transfer_duplicate_lines(self):
+        # Compare dimensions from the columns, not the stored JSON: on create this
+        # runs inside super().create(), before _sync_transfer_distribution has
+        # written analytic_distribution, so every new line's JSON is still empty.
         for line in self.filtered("transfer_direction"):
             if not line.account_id:
                 continue
-            duplicate = self.search(
+            siblings = self.search(
                 [
                     ("move_id", "=", line.move_id.id),
                     ("transfer_direction", "=", line.transfer_direction),
                     ("account_id", "=", line.account_id.id),
-                    ("analytic_distribution", "=", line.analytic_distribution),
                     ("id", "!=", line.id),
-                ],
-                limit=1,
+                ]
             )
-            if duplicate:
+            distribution = line._transfer_distribution()
+            if any(
+                sibling._transfer_distribution() == distribution for sibling in siblings
+            ):
                 raise ValidationError(
                     _(
                         "Duplicate transfer line found. Each combination of "

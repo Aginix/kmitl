@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">purchase.request.form.ztree</field>
+        <field name="model">purchase.request</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_kmitl.view_purchase_request_form"
+        />
+        <field name="arch" type="xml">
+            <!-- ส่วนงานผู้ขอ (a departments analytic account, independent of
+                 the budget ส่วนงาน). -->
+            <xpath
+                expr="//group[@name='purchase_request_details_group']//field[@name='requesting_department_id']"
+                position="attributes"
+            >
+                <attribute name="widget">ztree_select</attribute>
+                <attribute
+                    name="options"
+                >{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '2', 'order': 'code', 'ztree_name_format': '[{code}] {name}'}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

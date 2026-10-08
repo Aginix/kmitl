@@ -1,6 +1,6 @@
 {
     "name": "Budget Appropriation",
-    "version": "16.0.1.2.1",
+    "version": "16.0.1.2.4",
     "summary": "Budget Appropriation Management",
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
@@ -8,6 +8,7 @@
     "depends": [
         "budget",
         "account_analytic_kmitl",
+        "analytic_operating_unit_access_all_name_search",
         "mail",
         "hr",
         "portal",

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import api, fields, models
 
 
@@ -18,7 +17,9 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     amount_tax = fields.Monetary(compute="_compute_amount_all")
     amount_total = fields.Monetary(compute="_compute_amount_all")
     tax_totals = fields.Binary(compute="_compute_tax_totals", exportable=False)
-    currency_id = fields.Many2one("res.currency", default=lambda self: self.env.company.currency_id)
+    currency_id = fields.Many2one(
+        "res.currency", default=lambda self: self.env.company.currency_id
+    )
 
     @api.onchange("vat_included")
     def _onchange_vat_included(self):
@@ -33,7 +34,9 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         else:
             self.tax_id = False
 
-    @api.depends("item_ids.price_total", "item_ids.price_subtotal", "item_ids.price_tax")
+    @api.depends(
+        "item_ids.price_total", "item_ids.price_subtotal", "item_ids.price_tax"
+    )
     def _compute_amount_all(self):
         for wiz in self:
             wiz.amount_untaxed = sum(wiz.item_ids.mapped("price_subtotal"))
@@ -50,14 +53,10 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     def _compute_tax_totals(self):
         for wiz in self:
             currency = (
-                wiz.item_ids[:1].request_id.currency_id
-                or self.env.company.currency_id
+                wiz.item_ids[:1].request_id.currency_id or self.env.company.currency_id
             )
             wiz.tax_totals = self.env["account.tax"]._prepare_tax_totals(
-                [
-                    item._convert_to_tax_base_line_dict()
-                    for item in wiz.item_ids
-                ],
+                [item._convert_to_tax_base_line_dict() for item in wiz.item_ids],
                 currency,
             )
 
@@ -83,14 +82,35 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     def _prepare_purchase_order_line(self, po, item):
         res = super()._prepare_purchase_order_line(po, item)
         res["taxes_id"] = [(4, item.tax_id.id)] if item.tax_id else False
-        res["uom_text"] = item.line_id.uom_text
+        pa_line = self._approval_line_for(item.line_id)
+        res["uom_text"] = pa_line.uom_text if pa_line else item.line_id.uom_text
         return res
+
+    def _approval_line_for(self, pr_line):
+        """Return the PA line positionally paired with ``pr_line``.
+
+        Empty recordset if no approval is in context — PR→PA line parity is a
+        hard invariant (God Mode cannot add/remove PA lines), so pairing by
+        id-sorted position is safe.
+        """
+        PaLine = self.env["purchase.request.approval.line"]
+        approval_id = self.env.context.get("approval_id")
+        if not approval_id:
+            return PaLine
+        approval = self.env["purchase.request.approval"].browse(approval_id)
+        if not approval.exists():
+            return PaLine
+        pr_lines = pr_line.request_id.line_ids.sorted("id")
+        pa_lines = approval.line_ids.sorted("id")
+        try:
+            idx = list(pr_lines.ids).index(pr_line.id)
+        except ValueError:
+            return PaLine
+        return pa_lines[idx:idx + 1]
 
     @api.model
     def _prepare_purchase_order(self, picking_type, group_id, company, origin):
-        vals = super()._prepare_purchase_order(
-            picking_type, group_id, company, origin
-        )
+        vals = super()._prepare_purchase_order(picking_type, group_id, company, origin)
         approval_id = self.env.context.get("approval_id")
         if not approval_id:
             return vals
@@ -102,6 +122,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                 "account_fiscal_year_id": approval.account_fiscal_year_id.id,
                 "payment_type": approval.payment_type,
                 "procurement_method_id": approval.procurement_method_id.id,
+                "requesting_department_id": approval.requesting_department_id.id,
             }
         )
         return vals
@@ -112,22 +133,11 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         # item.tax_id is now related from wiz_id.tax_id — drop any snapshot
         # of PR-line tax_id set by upstream overrides.
         res.pop("tax_id", None)
-        approval_id = self.env.context.get("approval_id")
-        if not approval_id:
-            return res
-        approval = self.env["purchase.request.approval"].browse(approval_id)
-        if not approval.exists():
-            return res
-        pr_lines = line.request_id.line_ids.sorted("id")
-        pa_lines = approval.line_ids.sorted("id")
-        try:
-            idx = list(pr_lines.ids).index(line.id)
-        except ValueError:
-            return res
-        if idx < len(pa_lines):
-            pa_line = pa_lines[idx]
+        pa_line = self._approval_line_for(line)
+        if pa_line:
             res["product_qty"] = pa_line.product_qty
             res["price_unit"] = pa_line.price_unit
+            res["name"] = pa_line.name
         return res
 
 
