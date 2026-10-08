@@ -9,6 +9,8 @@ class KmitlProject(models.Model):
     the flag clears that scope — the analytic becomes visible system-wide — so a
     supporting unit can transfer budget INTO the project's own coordinate.
     Unticking restores the owning unit's scope.
+
+    Also totals the project's Funding Summary (ADR-0007) beside the Estimate.
     """
 
     _inherit = "kmitl.project"
@@ -21,6 +23,21 @@ class KmitlProject(models.Model):
         "มิติโครงการ (analytic account) จะเปิดให้ทุกหน่วยงานมองเห็น "
         "เพื่อให้หน่วยงานผู้สนับสนุนเลือกโครงการนี้เป็นปลายทางในใบโอนงบประมาณได้ "
         "เอาติ๊กออกเพื่อจำกัดให้เห็นเฉพาะหน่วยงานเจ้าของโครงการตามเดิม",
+    )
+
+    funding_in_progress = fields.Float(
+        string="อยู่ระหว่างดำเนินการ",
+        digits="Product Price",
+        compute="_compute_funding",
+        compute_sudo=True,
+        help="ยอดโอนเข้าโครงการที่ยังไม่ผ่าน (รอส่งขออนุมัติ / กำลังเวียนสารบรรณ / ตีกลับเพื่อแก้ไข)",
+    )
+    funding_shortfall = fields.Float(
+        string="ยังขาด",
+        digits="Product Price",
+        compute="_compute_funding",
+        compute_sudo=True,
+        help="งบประมาณโครงการ − งบประมาณที่ได้รับการจัดสรร − อยู่ระหว่างดำเนินการ",
     )
 
     @api.model
@@ -45,3 +62,26 @@ class KmitlProject(models.Model):
             else:
                 command = [(6, 0, project.operating_unit_id.ids)]
             project.analytic_account_id.sudo().operating_unit_ids = command
+
+    @api.depends("budget_estimate", "budget_amount")
+    def _compute_funding(self):
+        groups = self.env["kmitl.project.funding"].read_group(
+            [("project_id", "in", self._origin.ids), ("status", "=", "in_progress")],
+            ["amount:sum"],
+            ["project_id"],
+        )
+        in_progress = {g["project_id"][0]: g["amount"] for g in groups}
+        for rec in self:
+            rec.funding_in_progress = in_progress.get(rec._origin.id, 0.0)
+            rec.funding_shortfall = max(
+                rec.budget_estimate - rec.budget_amount - rec.funding_in_progress,
+                0.0,
+            )
+
+    def action_open_funding(self):
+        self.ensure_one()
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "kmitl_project_budget_transfer.action_kmitl_project_funding"
+        )
+        action["domain"] = [("project_id", "=", self.id)]
+        return action
