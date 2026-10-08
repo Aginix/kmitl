@@ -50,7 +50,7 @@ msgstr "​ชื่อรหัส GPSC"
 #. module: l10n_th_gov_gpsc
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_gpsc.view_procurement_gpsc_search
 msgid "Group By"
-msgstr ""
+msgstr "จัดกลุ่มตาม"
 
 #. module: l10n_th_gov_gpsc
 #: model:ir.model.fields,field_description:l10n_th_gov_gpsc.field_procurement_gpsc__group_code
@@ -80,7 +80,7 @@ msgstr ""
 #. module: l10n_th_gov_gpsc
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_gpsc.view_procurement_gpsc_search
 msgid "Name"
-msgstr ""
+msgstr "ชื่อ"
 
 #. module: l10n_th_gov_gpsc
 #: model:ir.actions.act_window,name:l10n_th_gov_gpsc.action_procurement_gpsc
@@ -97,4 +97,4 @@ msgstr ""
 #. module: l10n_th_gov_gpsc
 #: model_terms:ir.actions.act_window,help:l10n_th_gov_gpsc.action_procurement_gpsc
 msgid "There is no examples click here to add new Procurement GPSC."
-msgstr ""
+msgstr "ยังไม่มีรหัส GPSC คลิกที่นี่เพื่อเพิ่มรายการใหม่"

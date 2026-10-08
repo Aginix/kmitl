@@ -25,9 +25,16 @@
         <field name="users" eval="[(4, ref('base.user_admin'))]" />
     </record>
 
+    <!-- ผู้ตรวจสอบ พ.1 (ADR-0010). No category: its own checkbox, independent of
+         the budget-commit duty in purchase_request_budget. Implies All Documents
+         because the verifier works other people's requests (still OU-scoped). -->
     <record id="group_purchase_request_verify" model="res.groups">
-        <field name="name">Can verify purchase request</field>
-        <field name="category_id" ref="base.module_category_hidden" />
+        <field name="name">ผู้ตรวจสอบใบขอให้จัดหา (พ.1)</field>
+        <field name="category_id" eval="False" />
+        <field
+            name="implied_ids"
+            eval="[(4, ref('purchase_request_kmitl.group_purchase_request_user_all'))]"
+        />
     </record>
 
     <record id="base.group_erp_manager" model="res.groups">
