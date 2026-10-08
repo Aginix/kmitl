@@ -231,13 +231,13 @@ msgstr ""
 #: model:ir.ui.menu,name:partner_type_kmitl.menu_res_partner_type
 #: model_terms:ir.ui.view,arch_db:partner_type_kmitl.res_partner_type_form
 msgid "Partner Type"
-msgstr "ประเภทคู่ค้า"
+msgstr "ประเภทผู้ขาย/คู่ค้า"
 
 #. module: partner_type_kmitl
 #: model_terms:ir.ui.view,arch_db:partner_type_kmitl.res_partner_type_search
 #: model_terms:ir.ui.view,arch_db:partner_type_kmitl.res_partner_type_tree
 msgid "Partner Types"
-msgstr "ประเภทคู่ค้า"
+msgstr "ประเภทผู้ขาย/คู่ค้า"
 
 #. module: partner_type_kmitl
 #: model:ir.model.fields,field_description:partner_type_kmitl.field_res_partner_type__partner_count
