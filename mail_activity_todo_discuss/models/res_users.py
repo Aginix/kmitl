@@ -1,4 +1,4 @@
-from odoo import api, fields, models, modules
+from odoo import api, fields, models
 from odoo.tools import html2plaintext
 
 
@@ -29,9 +29,7 @@ class ResUsers(models.Model):
         if res_model:
             domain = domain + [("res_model", "=", res_model)]
         total = Activity.search_count(domain)
-        activities = Activity.search(
-            domain, limit=limit, order="id desc"
-        )
+        activities = Activity.search(domain, limit=limit, order="id desc")
         icons = {}
         todos = [self._todo_activity_card(act, icons) for act in activities]
         return {"todos": todos, "total_count": total}
@@ -78,9 +76,7 @@ class ResUsers(models.Model):
         )
         read_date_by_act = {r.activity_id.id: r.read_date for r in reads}
 
-        done_logs = Log.search(
-            log_domain, limit=limit, order="completed_date desc"
-        )
+        done_logs = Log.search(log_domain, limit=limit, order="completed_date desc")
 
         # (sort_key, card) pairs so read and done interleave by when they were
         # handled, regardless of which table they came from.
@@ -101,31 +97,15 @@ class ResUsers(models.Model):
         }
 
     # ------------------------------------------------------------------
-    # Card builders (one dict per list row) + shared icon cache
+    # Card builders (one dict per list row)
     # ------------------------------------------------------------------
-    def _todo_model_icon(self, model_name, cache):
-        """Source model's app icon, resolved once per model and memoised in
-        ``cache``. try-guarded so an icon edge case never blanks the list."""
-        if model_name not in cache:
-            icon = False
-            try:
-                icon_module = self.env[model_name]._original_module
-                icon = icon_module and modules.module.get_module_icon(icon_module)
-            except Exception:  # never let an icon edge case blank the panel
-                icon = False
-            cache[model_name] = icon or False
-        return cache[model_name]
-
     def _todo_activity_card(self, act, icon_cache):
         """List row for a live Todo (an open inbox item or a read/dismissed
         one)."""
         return {
             "id": act.id,
             "summary": (
-                act.summary
-                or act.res_name
-                or act.activity_type_id.display_name
-                or ""
+                act.summary or act.res_name or act.activity_type_id.display_name or ""
             ),
             "res_name": act.res_name or "",
             "res_model": act.res_model,
@@ -142,17 +122,13 @@ class ResUsers(models.Model):
             "assigned": act.user_id.display_name or "",
             "note": html2plaintext(act.note)[:160] if act.note else "",
             "date_deadline": (
-                fields.Date.to_string(act.date_deadline)
-                if act.date_deadline
-                else False
+                fields.Date.to_string(act.date_deadline) if act.date_deadline else False
             ),
             "state": act.state,
             # Serialized UTC datetime; the client renders it as a locale-aware
             # relative time ("3 hours ago") and formats the tooltip.
             "create_date": (
-                fields.Datetime.to_string(act.create_date)
-                if act.create_date
-                else False
+                fields.Datetime.to_string(act.create_date) if act.create_date else False
             ),
             "create_uid": act.create_uid.display_name or "",
         }
@@ -166,11 +142,7 @@ class ResUsers(models.Model):
             "summary": (
                 log.summary
                 or log.res_name
-                or (
-                    log.activity_type_id.display_name
-                    if log.activity_type_id
-                    else ""
-                )
+                or (log.activity_type_id.display_name if log.activity_type_id else "")
                 or ""
             ),
             "res_name": log.res_name or "",
