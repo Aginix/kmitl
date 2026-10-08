@@ -104,6 +104,21 @@
         </field>
     </record>
 
+    <record id="view_purchase_request_form_vat_included" model="ir.ui.view">
+        <field name="name">purchase.request.form.vat_included (KMITL)</field>
+        <field name="model">purchase.request</field>
+        <field name="priority">100</field>
+        <field name="inherit_id" ref="purchase_request_price_tax_included.view_purchase_request_form" />
+        <field name="arch" type="xml">
+            <field name="vat_included" position="before">
+                <field name="payment_type" invisible="1" />
+            </field>
+            <field name="vat_included" position="attributes">
+                <attribute name="attrs">{'readonly': [('is_vat_editable', '=', False)], 'invisible': [('payment_type', '!=', 'direct')]}</attribute>
+            </field>
+        </field>
+    </record>
+
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">purchase.request.form (KMITL)</field>
         <field name="model">purchase.request</field>
@@ -123,23 +138,10 @@
                         <field name="partner_id_domain" invisible="1" />
                         <field
                             name="partner_id"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            attrs="{'readonly': [('is_editable','=', False)], 'invisible': [('payment_type', '!=', 'direct')]}"
                             domain="partner_id_domain"
                             options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                         />
-                    </group>
-                </group>
-                <group name="warning_prepaid">
-                    <group>
-                        <div
-                            colspan="2"
-                            class="alert alert-warning show"
-                            role="alert"
-                            attrs="{'invisible': [('payment_type', '!=', 'prepaid')]}"
-                        >
-                            When payment type is Prepaid, please select the advance
-                            payer's name in the Vendor field.
-                        </div>
                     </group>
                 </group>
             </xpath>
