@@ -52,7 +52,7 @@
                     </tr>
                     <tr t-foreach="followup_loans" t-as="loan">
                         <td><t t-esc="loan.contract_number or loan.name"/></td>
-                        <td><t t-esc="loan.employee_id.name"/></td>
+                        <td><t t-esc="loan.employee_name"/></td>
                         <td><t t-esc="format_date(loan.return_due_date)"/></td>
                         <td><t t-esc="loan.days_to_return_display"/></td>
                         <td><t t-esc="loan.return_amount"/></td>
