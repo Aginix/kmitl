@@ -7,3 +7,4 @@ access_disbursement_route_line_user,disbursement.route.line.user,model_disbursem
 access_disbursement_route_line_manager,disbursement.route.line.manager,model_disbursement_route_line,disbursement.group_disbursement_manager,1,1,1,1
 access_disbursement_step_user,disbursement.step.user,model_disbursement_step,disbursement.group_disbursement_user,1,0,0,0
 access_disbursement_step_manager,disbursement.step.manager,model_disbursement_step,disbursement.group_disbursement_manager,1,0,0,0
+access_disbursement_divert_wizard,disbursement.divert.wizard,model_disbursement_divert_wizard,disbursement.group_disbursement_user,1,1,1,1

@@ -9,6 +9,9 @@
     "author": "KMITL",
     "depends": ["disbursement_wst", "disbursement_finance_kmitl"],
     "data": [
+        # Same as the billing station: the clearing station is the accounting
+        # office's, and that group implies no disbursement group.
+        "security/ir.model.access.csv",
         "data/mail_activity_type.xml",
         "data/disbursement_station.xml",
         "data/disbursement_route_line.xml",

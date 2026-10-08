@@ -12,6 +12,10 @@
         "disbursement_accounting_kmitl",
     ],
     "data": [
+        # The billing station is held by the accounting office, whose group
+        # implies no disbursement group: without these the station's holder
+        # cannot read the steps its own request form renders.
+        "security/ir.model.access.csv",
         "data/disbursement_station.xml",
         "data/disbursement_route_line.xml",
         "views/disbursement_request_views.xml",
