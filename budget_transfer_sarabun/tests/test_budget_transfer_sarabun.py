@@ -1,7 +1,7 @@
 from datetime import date
 
 from odoo import Command
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 
 
@@ -222,7 +222,8 @@ class TestBudgetTransferSarabun(TransactionCase):
         document.with_user(self.requestor).action_send()
         step = self._gating_step(document)
         step.act_on_step(
-            "return", {"note": "ขอข้อมูลเพิ่ม", "destination": "sender_restart"},
+            "return",
+            {"note": "ขอข้อมูลเพิ่ม", "destination": "sender_restart"},
             actor=self.approver_user,
         )
         transfer.invalidate_recordset()
@@ -231,6 +232,41 @@ class TestBudgetTransferSarabun(TransactionCase):
         # The bridge reopens editing in `returned` (extends _compute_can_edit);
         # the base would leave it locked (editable in draft only).
         self.assertTrue(transfer.can_edit)
+
+    def test_resend_from_returned_rechecks_lines(self):
+        # The line policies aren't constraints — a revision made while returned
+        # must be re-checked before the letter goes back out.
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        step = self._gating_step(document)
+        step.act_on_step(
+            "return",
+            {"note": "ขอข้อมูลเพิ่ม", "destination": "sender_restart"},
+            actor=self.approver_user,
+        )
+        transfer.invalidate_recordset()
+        self.assertEqual(transfer.state, "returned")
+        from_line = transfer.from_line_ids
+        duplicate = {
+            "transfer_direction": "from",
+            "account_id": self.src.id,
+            "amount": 500,
+            "department_analytic_id": self.dept_analytic.id,
+            "activity_analytic_id": self.activity.id,
+            "fund_analytic_id": self.fund.id,
+        }
+        transfer.write(
+            {
+                "line_ids": [
+                    Command.update(from_line.id, {"amount": 500}),
+                    Command.create(duplicate),
+                ]
+            }
+        )
+        with self.assertRaises(ValidationError):
+            document.with_user(self.requestor).action_send()
+        self.assertEqual(transfer.state, "returned")
 
     def test_cancelled_send_falls_back_to_submitted(self):
         transfer = self._submitted_transfer()
@@ -307,7 +343,8 @@ class TestBudgetTransferSarabun(TransactionCase):
         document.with_user(self.requestor).action_send()
         step = self._gating_step(document)
         step.act_on_step(
-            "return", {"note": "ขอข้อมูลเพิ่ม", "destination": "sender_restart"},
+            "return",
+            {"note": "ขอข้อมูลเพิ่ม", "destination": "sender_restart"},
             actor=self.approver_user,
         )
         transfer.invalidate_recordset()
