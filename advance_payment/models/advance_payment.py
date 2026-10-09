@@ -125,6 +125,14 @@ class AdvancePayment(models.Model):
         tracking=True,
     )
 
+    employee_name = fields.Char(
+        string="ชื่อผู้ยืม",
+        compute="_compute_employee_name",
+        store=True,
+        readonly=False,
+        index=True,
+    )
+
     # Who filled the form in — the source of truth for "ผู้จัดทำ", not create_uid,
     # so a manager can correct a mis-attributed request. Grants visibility to a
     # `user`-tier drafter via the own-only rule (ADR-0014).
@@ -185,6 +193,13 @@ class AdvancePayment(models.Model):
     # True only for a manager/admin — gates edit access to user_id, the
     # "ผู้จัดทำ" field, in the UI (ADR-0014).
     can_edit_drafter = fields.Boolean(compute="_compute_can_edit_drafter")
+
+    @api.depends("employee_id")
+    def _compute_employee_name(self):
+        for rec in self:
+            rec.employee_name = (
+                rec.employee_id.display_name if rec.employee_id else ""
+            )
 
     @api.depends("employee_id")
     def _compute_is_requester(self):

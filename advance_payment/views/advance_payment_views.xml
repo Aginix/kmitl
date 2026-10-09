@@ -13,6 +13,7 @@
                 <field name="name" />
                 <field name="contract_number" optional="show" />
                 <field name="employee_id" />
+                <field name="employee_name" optional="hide" />
                 <field name="user_id" optional="hide" />
                 <field name="loan_type_id" />
                 <field name="loan_amount" />
@@ -149,6 +150,7 @@
                             <field name="can_edit_drafter" invisible="1" />
                             <field name="employee_id" options="{'no_create': True}"
                                 attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('can_draft_on_behalf', '=', False)]}" />
+                            <field name="employee_name" readonly="1" />
                             <field name="partner_id" invisible="1" />
                             <field name="is_reference_visible" invisible="1" />
                             <field name="loan_type_id" widget="selection"
