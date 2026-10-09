@@ -172,3 +172,24 @@ class TestProcurementPlanBudgetTransfer(TransactionCase):
         self.assertEqual(plan.budget_amount, 3000)
         self.assertEqual(plan.state, "to_verify", "plan must not auto-reserve")
         self.assertFalse(plan.budget_commitment_ids)
+
+    def test_picker_narrows_on_line_dimensions(self):
+        plan = self._make_plan(5000)
+        tag = plan.analytic_account_id
+        Line = self.env["budget.move.line"]
+
+        def allowed(**vals):
+            line = Line.new(dict(vals, transfer_direction="to"))
+            return line.allowed_procurement_plan_analytic_ids
+
+        self.assertIn(tag, allowed())  # blank dimensions do not filter
+        self.assertIn(
+            tag,
+            allowed(
+                account_id=self.proc_account.id,
+                department_analytic_id=self.dept.id,
+                activity_analytic_id=self.activity.id,
+                fund_analytic_id=self.fund.id,
+            ),
+        )
+        self.assertNotIn(tag, allowed(account_id=self.src.id))
