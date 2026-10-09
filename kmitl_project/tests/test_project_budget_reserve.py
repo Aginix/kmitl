@@ -347,6 +347,11 @@ class TestProjectBudgetReserve(TransactionCase):
     def test_auto_resync_on_allocation_change(self):
         """After a top-up allocation move, budget_amount rises and if commitment
         exists it is re-synced to the new amount (pre-spending)."""
+        if "budget.ledger.reconcile" in self.env:
+            self.skipTest(
+                "superseded by the ledger's transfer top-up (budget ADR-0016), "
+                "see kmitl_project_budget_ledger"
+            )
         project = self._make_project()
         project.action_confirm()
         self._allocate(project, 100000.0)

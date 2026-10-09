@@ -1063,20 +1063,10 @@ class KmitlProject(models.Model):
                 "description": self.name,
                 "kmitl_project_id": self.id,
                 "user_id": self.env.user.id,
-                "line_ids": [
-                    (
-                        0,
-                        0,
-                        {
-                            "move_type": "reserve",
-                            "account_id": self.budget_account_id.id,
-                            "analytic_distribution": dist or False,
-                            "amount": self.budget_amount,
-                            "name": _("Initial reservation"),
-                        },
-                    )
-                ],
             }
+        )
+        commitment._post_budget_event(
+            "reserve", self.budget_amount, name=_("Initial reservation")
         )
         commitment.action_reserve()
         self.message_post(
