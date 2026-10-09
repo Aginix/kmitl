@@ -302,11 +302,11 @@
                         <page name="settings" string="Settings">
                             <group>
                                 <group>
-                                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting" />
-                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" />
+                                    <field name="analytic_account_id" readonly="1" groups="analytic.group_analytic_accounting" />
+                                    <field name="analytic_distribution" widget="analytic_distribution" readonly="1" groups="analytic.group_analytic_accounting" />
                                 </group>
                                 <group>
-                                    <field name="creating_user_id" widget="many2one_avatar_user" attrs="{'readonly': [('id', '!=', False)]}" />
+                                    <field name="creating_user_id" widget="many2one_avatar_user" readonly="1" />
                                 </group>
                             </group>
                         </page>
