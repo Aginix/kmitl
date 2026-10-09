@@ -11,7 +11,9 @@ class BudgetMoveLine(models.Model):
             projects = (
                 self.env["kmitl.project"]
                 .sudo()
-                .search([("analytic_account_id", "=", self.kmitl_project_analytic_id.id)])
+                .search(
+                    [("analytic_account_id", "=", self.kmitl_project_analytic_id.id)]
+                )
             )
             commitments |= projects.budget_commitment_ids
         return commitments
