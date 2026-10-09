@@ -100,7 +100,14 @@ class KmitlProjectBudgetMoveLine(models.Model):
                             LIMIT 1
                         )
                     END AS counterpart_department_id,
-                    l.balance AS amount,
+                    -- A transfer line's balance is only stamped from its
+                    -- amount at posting; until then read the amount itself.
+                    CASE
+                        WHEN m.state = 'posted' THEN l.balance
+                        WHEN l.transfer_direction = 'to' THEN l.amount
+                        WHEN l.transfer_direction = 'from' THEN -l.amount
+                        ELSE l.balance
+                    END AS amount,
                     CASE
                         WHEN l.account_fiscal_year_id
                             IS DISTINCT FROM p.account_fiscal_year_id

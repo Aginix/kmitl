@@ -135,10 +135,6 @@
         <field name="name">การเคลื่อนไหวงบประมาณโครงการ</field>
         <field name="res_model">kmitl.project.budget.move.line</field>
         <field name="view_mode">tree,form</field>
-        <!-- Status first: each top-level total stays within one status, so
-             in-flight / other-year / off-target rows never blend into posted. -->
-        <field name="context">{
-            'search_default_group_status': 1, 'search_default_group_kind': 2
-        }</field>
+        <field name="context">{}</field>
     </record>
 </odoo>
