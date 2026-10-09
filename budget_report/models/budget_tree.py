@@ -43,48 +43,40 @@ class BudgetNode:
                     total += line["balance"]
         return total
 
+    def _usage(self, bucket):
+        """−Σ balance of this node's ledger lines in a usage bucket (ADR-0016):
+        the reservation's sub-ledger posts reserve/obligate/consume to the
+        budget ledger with liquidation, so each band is its own bucket."""
+        total = 0
+        for line in self.lines:
+            if (
+                line["model"] == "budget.move.line"
+                and line.get("is_usage")
+                and line.get("move_type") == bucket
+            ):
+                total -= line["balance"]
+        return total
+
     def commitment(self):
-        """(b) จองเงิน = sum(reserve) - sum(obligate) — reserved, not yet obligated"""
+        """(b) จองเงิน — reserved, not yet obligated (reserve bucket)"""
         total = 0
         for record in self.children:
             total += record.commitment()
-        reserve_total = 0
-        obligate_total = 0
-        for line in self.lines:
-            if line["model"] == "budget.commitment.line":
-                if line["move_type"] == "reserve":
-                    reserve_total += line["balance"]
-                elif line["move_type"] == "obligate":
-                    obligate_total += line["balance"]
-        total += reserve_total - obligate_total
-        return total
+        return total + self._usage("reserve")
 
     def obligation(self):
-        """(c) ผูกพัน = sum(obligate) - sum(consume) — obligated, not yet consumed"""
+        """(c) ผูกพัน — obligated, not yet consumed (obligate bucket)"""
         total = 0
         for record in self.children:
             total += record.obligation()
-        obligate_total = 0
-        consume_total = 0
-        for line in self.lines:
-            if line["model"] == "budget.commitment.line":
-                if line["move_type"] == "obligate":
-                    obligate_total += line["balance"]
-                elif line["move_type"] == "consume":
-                    consume_total += line["balance"]
-        total += obligate_total - consume_total
-        return total
+        return total + self._usage("obligate")
 
     def expenditure(self):
-        """(d) เบิกจ่ายแล้ว = sum(consume) from commitment lines"""
+        """(d) เบิกจ่ายแล้ว (consume bucket)"""
         total = 0
         for record in self.children:
             total += record.expenditure()
-        for line in self.lines:
-            if line["model"] == "budget.commitment.line":
-                if line["move_type"] == "consume":
-                    total += line["balance"]
-        return total
+        return total + self._usage("consume")
 
     def total_balance(self):
         return self.appropriation() - self.total_expenditure()
@@ -157,7 +149,10 @@ class BudgetTree:
 
         if model == "budget.move.line":
             data["budget_type"] = line.budget_type
-            data["move_type"] = line.move_id.move_type
+            # The line's own bucket, not the move's event type: a reservation
+            # top-up rides inside a transfer (entry) move.
+            data["move_type"] = line.move_type
+            data["is_usage"] = bool(line.commitment_id)
             data["state"] = line.parent_state
             data["balance"] = line.balance
             data["credit"] = line.credit

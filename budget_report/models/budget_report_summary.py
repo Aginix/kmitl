@@ -67,25 +67,11 @@ class BudgetReportSummary(models.AbstractModel):
             move_line_domain,
             order="date desc",
         )
-        # Build domain for commitment lines (ledger entries) with department filter
-        commitment_domain = [
-            ("state", "=", "posted"),
-            ("commitment_id.state", "in", ["reserved", "partial", "done"]),
-            ("account_fiscal_year_id", "=", fiscal_year.id),
-            ("source_analytic_id", "=", source_analytic.id),
-        ]
-
-        if department_ids:
-            commitment_domain.append(("department_analytic_id", "in", all_dept_ids))
-
-        commitment_lines = self.env["budget.commitment.line"].search(
-            commitment_domain,
-            order="date desc",
-        )
-
+        # Reservation usage is posted to the budget ledger (budget_ledger,
+        # ADR-0016), so the move lines above already carry b/c/d.
         tree = BudgetTree(
             move_lines=move_lines,
-            commitment_lines=commitment_lines,
+            commitment_lines=self.env["budget.commitment.line"],
             accounts=accounts,
             activities=activities,
             departments=departments,
