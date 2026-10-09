@@ -229,14 +229,22 @@ class SarabunRoutingStep(models.Model):
     # ------------------------------------------------------------ ORM guards
     def write(self, vals):
         """The originator (ผู้จัดทำ/ผู้ส่ง) row is locked — a user may change only its
-        verb. Engine writes (sudo: activation, archive, stamping) pass through."""
-        if not self.env.su and vals and set(vals) - {"verb"}:
+        verb. ``order`` is also allowed so the tree's handle widget can resequence
+        siblings around it; the document's normalizer runs afterward to renumber
+        the steps 1..N with the originator forced back to position 1, so a client
+        that dropped duplicates, gaps, or moved the originator gets repaired in
+        one pass. Engine writes (sudo) pass through both the guard and the
+        normalizer."""
+        if not self.env.su and vals and set(vals) - {"verb", "order"}:
             if self.filtered("is_originator"):
                 raise UserError(_(
                     "The ผู้จัดทำ/ผู้ส่ง step is fixed — only its การดำเนินการ (verb) "
                     "may be changed."
                 ))
-        return super().write(vals)
+        res = super().write(vals)
+        if not self.env.su and vals and "order" in vals:
+            self.mapped("document_id")._normalize_routing_step_order()
+        return res
 
     def unlink(self):
         """A user cannot remove the originator row (it must always be the first step).

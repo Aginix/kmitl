@@ -960,6 +960,20 @@ class SarabunDocument(models.Model):
         for step in self.routing_step_ids.filtered(lambda s: s.order >= order):
             step.order = step.order + 1
 
+    def _normalize_routing_step_order(self):
+        """Renumber routing_step_ids as 1..N in current visual order, originator
+        always at 1. Called after any user-driven ``order`` write (drag-handle
+        resequence) so gaps, duplicates, or a client that dropped the originator
+        away from first are all repaired in one pass. sudo() to bypass the step
+        write guard (which would loop back here otherwise)."""
+        for doc in self:
+            steps = doc.routing_step_ids.sorted(key=lambda s: (s.order, s.id))
+            originator = steps.filtered("is_originator")
+            ordered = list(originator) + list(steps - originator)
+            for i, step in enumerate(ordered, start=1):
+                if step.order != i:
+                    step.sudo().write({"order": i})
+
     def _stage_complete(self, order):
         """A stage is passed when every gating step in it is positively done.
         A stage with no gating step never stalls the Route."""
