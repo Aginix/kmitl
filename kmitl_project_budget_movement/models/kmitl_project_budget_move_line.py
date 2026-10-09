@@ -124,8 +124,7 @@ class KmitlProjectBudgetMoveLine(models.Model):
                 JOIN kmitl_project p
                     ON p.analytic_account_id = l.kmitl_project_analytic_id
                 LEFT JOIN budget_transfer t ON t.move_id = m.id
-                WHERE m.active
-                    AND m.move_type IN ('appropriation', 'entry', 'consume')
+                WHERE m.move_type IN ('appropriation', 'entry', 'consume')
                     AND (
                         m.state = 'posted'
                         OR t.state IN ('submitted', 'sent', 'returned')
