@@ -22,6 +22,20 @@ class KmitlProject(models.Model):
         help="ผู้ประสานงานโครงการ ได้รับแจ้งเมื่อสถานะโครงการเปลี่ยน "
         "และเข้าถึง/แก้ไขโครงการได้เช่นเดียวกับหัวหน้าโครงการ",
     )
+    # หัวหน้าโครงการ reaches the project through the Own rules, which only apply to
+    # KMITL Project users — offer only employees whose user can use them (or who
+    # have no user at all).
+    manager_id = fields.Many2one(
+        domain=lambda self: [
+            "|",
+            ("user_id", "=", False),
+            (
+                "user_id.groups_id",
+                "in",
+                self.env.ref("kmitl_project.group_kmitl_project_user").id,
+            ),
+        ],
+    )
     # Odoo 16 does not track many2many changes — log them through a mirror.
     coordinator_names = fields.Char(
         string="ผู้ประสานงาน (ชื่อ)",
@@ -65,15 +79,28 @@ class KmitlProject(models.Model):
         return records
 
     def write(self, vals):
+        if "coordinator_ids" not in vals:
+            return super().write(vals)
+        previous = {rec: rec.coordinator_ids for rec in self}
         res = super().write(vals)
-        if vals.get("coordinator_ids"):
-            self._subscribe_coordinator()
+        self._subscribe_coordinator()
+        for rec in self:
+            # A removed coordinator loses access, so stop notifying them too —
+            # unless they are still an owner (creator / หัวหน้าโครงการ).
+            removed = (
+                previous[rec]
+                - rec.coordinator_ids
+                - rec.creating_user_id
+                - rec.manager_id.sudo().user_id
+            )
+            if removed:
+                rec.message_unsubscribe(partner_ids=removed.partner_id.ids)
         return res
 
     def _subscribe_coordinator(self):
         """Make every coordinator a follower receiving status changes. A partner
         already following (e.g. the creator) gets the status subtype added rather
-        than its subtypes replaced; a removed coordinator is left subscribed."""
+        than its subtypes replaced."""
         subtype = self.env.ref("kmitl_project_coordinator.mt_kmitl_project_state")
         for rec in self:
             partners = rec.coordinator_ids.partner_id

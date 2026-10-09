@@ -29,5 +29,8 @@ a plain **install**: no existing module is upgraded or bumped.
 - Status changes post under the new subtype `mt_kmitl_project_state` (default), so a
   newly created project's creator, as auto-follower, is also notified of status changes.
   Existing followers keep the subtypes they already have.
+- Every owner must be a KMITL Project user, since the Own rules apply only to that group:
+  the coordinator picker allows only such users, and the หัวหน้าโครงการ picker is
+  narrowed to employees whose user is one (or who have no user).
 - Folding this back into `kmitl_project` later means moving the field and an xmlid (see
   the field-move pre-migration pattern) and dropping the OU-rule override and its hook.

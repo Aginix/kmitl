@@ -25,11 +25,11 @@ The amount a project actually **received via Project Allocation** — a *compute
 _Avoid_: allocation, cost; the **Project Budget Plan** total (`budget_expense_total`, the project's *ask*, a different quantity — the two are never reconciled automatically)
 
 **Project Coordinator (ผู้ประสานงาน)**:
-An internal user (`coordinator_ids`) who coordinates a project day to day. They are told of every **status** change, follow its chatter, and can be added or removed at any point in the project's life, because they are a contact, not part of the approved content. A project may have several. Each must be a KMITL Project user.
+An internal user (`coordinator_ids`) who coordinates a project day to day. They are told of every **status** change, follow its chatter, and can be added or removed at any point in the project's life, because they are a contact, not part of the approved content; a removed coordinator also stops following it (unless still an owner). A project may have several. Each must be a KMITL Project user.
 _Avoid_: Project Manager / หัวหน้าโครงการ (`manager_id`, the employee who leads the project, a different person and field)
 
 **Project Owner (เจ้าของโครงการ)**:
-Any of a project's หัวหน้าโครงการ, **Project Coordinator** or creator. A Project Owner has the project as **Own Project**: they read and edit it and all its tabs (still subject to each state's field locks), see it whatever their operating unit, and may raise its **Project Approval** หนังสือ. Project officers (Officer/Manager) may do all of this for every project in their own operating units. See [ADR-0007](./docs/adr/0007-project-owner-coordinator-extension.md).
+Any of a project's หัวหน้าโครงการ, **Project Coordinator** or creator. A Project Owner has the project as **Own Project**: they read and edit it and all its tabs (still subject to each state's field locks), see it whatever their operating unit, and may raise its **Project Approval** หนังสือ. Project officers (Officer/Manager) may do all of this for every project in their own operating units. See [ADR-0008](./docs/adr/0008-project-owner-coordinator-extension.md).
 _Avoid_: "Responsible" (the label of the creator field `creating_user_id`) as a synonym for owner
 
 **Project Number (เลขที่รันโครงการ, `key`)**:

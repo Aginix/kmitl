@@ -46,10 +46,16 @@ class TestProjectCoordinator(KmitlProjectCoordinatorCommon):
         )
         self.assertIn(self.subtype, follower.subtype_ids)
 
+        # create() discards tracking until the transaction's precommit runs.
+        self._flush_tracking()
         self.project.write({"state": "to_verify"})
         self._flush_tracking()
-        message = self.project.message_ids.filtered(
-            lambda m: m.subtype_id == self.subtype
+        message = self.env["mail.message"].search(
+            [
+                ("model", "=", "kmitl.project"),
+                ("res_id", "=", self.project.id),
+                ("subtype_id", "=", self.subtype.id),
+            ]
         )
         self.assertTrue(message)
         self.assertIn(partner, message.notified_partner_ids)
@@ -64,16 +70,42 @@ class TestProjectCoordinator(KmitlProjectCoordinatorCommon):
             )
             self.assertIn(self.subtype, follower.subtype_ids, user.login)
 
-    def test_removed_coordinator_loses_ownership_stays_subscribed(self):
+    def test_removed_coordinator_loses_ownership_and_is_unsubscribed(self):
         self.project.coordinator_ids = [Command.set(self.stranger.ids)]
         self.assertFalse(
             self.project.with_user(self.coordinator).sudo().is_project_owner
         )
-        # The removed coordinator stays subscribed (Odoo convention).
-        self.assertIn(
+        self.assertNotIn(
             self.coordinator.partner_id,
             self.project.message_follower_ids.partner_id,
         )
+
+    def test_removed_coordinator_who_is_still_owner_stays_subscribed(self):
+        self.project.coordinator_ids = [Command.link(self.creator.id)]
+        self.project.coordinator_ids = [Command.unlink(self.creator.id)]
+        self.assertIn(
+            self.creator.partner_id,
+            self.project.message_follower_ids.partner_id,
+        )
+
+    def test_manager_must_be_project_user(self):
+        domain = self.env["kmitl.project"].fields_get(["manager_id"])["manager_id"][
+            "domain"
+        ]
+        Employee = self.env["hr.employee"]
+        outsider = Employee.create(
+            {
+                "name": "kp_no_project_access",
+                "user_id": self.env["res.users"]
+                .create({"name": "kp_plain", "login": "kp_plain"})
+                .id,
+            }
+        )
+        no_user = Employee.create({"name": "kp_no_user"})
+        allowed = Employee.search(
+            domain + [("id", "in", (self.manager | outsider | no_user).ids)]
+        )
+        self.assertEqual(allowed, self.manager | no_user)
 
     def test_existing_follower_gets_status_subtype(self):
         partner = self.manager_user.partner_id
