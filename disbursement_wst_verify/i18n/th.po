@@ -1,0 +1,21 @@
+# Thai translation of disbursement_wst_verify.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_wst_verify
+#: model:disbursement.station,name:disbursement_wst_verify.station_verify
+msgid "Verification"
+msgstr "หมวดตรวจ"
+
+#. module: disbursement_wst_verify
+#: model:ir.actions.act_window,name:disbursement_wst_verify.action_disbursement_queue_verify
+#: model:ir.ui.menu,name:disbursement_wst_verify.menu_disbursement_queue_verify
+msgid "Awaiting Verification"
+msgstr "รอตรวจสอบ"

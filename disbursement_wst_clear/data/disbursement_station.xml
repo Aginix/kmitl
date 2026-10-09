@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="0">
+    <record id="station_clear" model="disbursement.station">
+        <field name="code">clear</field>
+        <field name="name">Clear</field>
+        <field name="sequence">80</field>
+        <field name="group_id" ref="accounting_kmitl.group_accounting_kmitl_user" />
+        <field name="activity_type_id" ref="mail_activity_dr_to_book" />
+        <field name="requires_codes">pay</field>
+    </record>
+</odoo>

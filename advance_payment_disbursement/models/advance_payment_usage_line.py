@@ -23,7 +23,7 @@ class AdvancePaymentUsageLine(models.Model):
     )
 
     disbursement_state = fields.Selection(
-        related="disbursement_request_id.pipeline_status",
+        related="disbursement_request_id.state",
         string="Disbursement State",
     )
 

@@ -1,0 +1,35 @@
+# Thai translation of disbursement_wst_approve_finance.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_wst_approve_finance
+#: model:disbursement.station,name:disbursement_wst_approve_finance.station_approve_finance
+msgid "Finance Director Approval"
+msgstr "ผอ.กองคลังอนุมัติ"
+
+#. module: disbursement_wst_approve_finance
+#: model:ir.actions.act_window,name:disbursement_wst_approve_finance.action_disbursement_queue_approve_finance
+#: model:ir.ui.menu,name:disbursement_wst_approve_finance.menu_disbursement_queue_approve_finance
+msgid "Awaiting Finance Director"
+msgstr "รอ ผอ.กองคลังอนุมัติ"
+
+#. module: disbursement_wst_approve_finance
+#: model:res.groups,name:disbursement_wst_approve_finance.group_disbursement_finance_director
+msgid "Disbursement Finance Director"
+msgstr "ผู้อำนวยการกองคลัง (ใบขอเบิก)"
+
+#. module: disbursement_wst_approve_finance
+#: model:mail.activity.type,name:disbursement_wst_approve_finance.mail_activity_dr_approve_finance
+msgid "Disbursement awaiting Finance Director approval"
+msgstr "ใบขอเบิกรอ ผอ.กองคลังอนุมัติ"
+#. module: disbursement_wst_approve_finance
+#: model:mail.activity.type,summary:disbursement_wst_approve_finance.mail_activity_dr_approve_finance
+msgid "A disbursement request is awaiting your approval (Finance Director)"
+msgstr "มีใบขอเบิกรอการอนุมัติจากคุณ (ผอ.กองคลัง)"

@@ -34,12 +34,12 @@
                 <field name="date" optional="show" />
                 <field name="ref" optional="show" />
                 <field name="amount_total" optional="show" />
-                <field name="display_status" widget="badge"
-                    decoration-info="display_status == 'draft'"
-                    decoration-warning="display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft')"
-                    decoration-primary="display_status in ('verified', 'bill_posted')"
-                    decoration-success="display_status in ('approved', 'payment_posted', 'done')"
-                    decoration-danger="display_status == 'cancel'"
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state in ('submitted', 'signed')"
+                    decoration-primary="state == 'in_progress'"
+                    decoration-success="state == 'done'"
+                    decoration-danger="state == 'cancel'"
                     optional="show" />
                 <field name="source_analytic_id" optional="show" />
                 <field name="department_analytic_id" optional="show" />

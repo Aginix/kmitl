@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="0">
+    <record id="station_payment_audit" model="disbursement.station">
+        <field name="code">payment_audit</field>
+        <field name="name">Payment Audit</field>
+        <field name="sequence">50</field>
+        <field name="group_id" ref="group_disbursement_payment_auditor" />
+        <field name="is_signature" eval="True" />
+        <field name="activity_type_id" ref="mail_activity_dr_to_audit" />
+        <field name="requires_codes">bill</field>
+    </record>
+</odoo>

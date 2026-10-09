@@ -20,6 +20,25 @@ class TestCashRevenueHandover(TransactionCase):
         cls.Move = cls.env["account.move"]
         cls.Analytic = cls.env["account.analytic.account"]
 
+        # Bills are created at the billing station, so the request is put on a
+        # route that holds just that.
+        cls.bill_route = cls.env["disbursement.route"].create(
+            {
+                "name": "Billing only",
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "station_id": cls.env.ref(
+                                "disbursement_wst_bill.station_bill"
+                            ).id
+                        },
+                    )
+                ],
+            }
+        )
+
         cls.plans = {}
         for code in ("departments", "sources", "funds", "activities"):
             plan = cls.env["account.analytic.plan"].search(
@@ -58,8 +77,8 @@ class TestCashRevenueHandover(TransactionCase):
             "activities", "09007010110170", "Sub", cls.act_secondary
         )
 
-        cls.bank_account = cls._account("THAND-BANK", "asset_cash")
-        cls.revenue_account = cls._account("THAND-REV", "income")
+        cls.bank_account = cls._account("THANDBANK", "asset_cash")
+        cls.revenue_account = cls._account("THANDREV", "income")
         cls.expense_account = cls.env["account.account"].search(
             [("account_type", "=", "expense"), ("company_id", "=", cls.company.id)],
             limit=1,
@@ -170,7 +189,9 @@ class TestCashRevenueHandover(TransactionCase):
                 ],
             }
         )
-        request.state = "approved"
+        request.route_id = self.bill_route
+        request.state = "in_progress"
+        request._seed_steps()
         return request
 
     @staticmethod
@@ -377,7 +398,7 @@ class TestCashRevenueHandover(TransactionCase):
         request = self._request()
         request.action_create_bill()
         request.cash_revenue_handover_move_ids.action_post()
-        self.assertEqual(request.state, "approved")
+        self.assertEqual(request.station_code, "bill")
 
     def test_cancelling_the_request_leaves_the_handover_standing(self):
         request = self._request()

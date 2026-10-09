@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- 'execution' = clears only by acting on the DR, not by "Mark as Read". -->
+    <record id="mail_activity_dr_to_pay" model="mail.activity.type">
+        <field name="name">Disbursement to pay</field>
+        <field name="summary">A disbursement request was authorized and its vouchers are ready — put them in an e-payment file and confirm the payment</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="icon">fa-money</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

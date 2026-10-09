@@ -38,6 +38,11 @@
                 'advance_payment_disbursement', 'agx_approval_disbursement',
                 'disbursement_accounting_kmitl', 'disbursement_finance_kmitl',
                 'disbursement_sarabun', 'purchase_order_disbursement_auto_submit',
+                'disbursement_wst', 'disbursement_wst_verify',
+                'disbursement_wst_approve_finance', 'disbursement_wst_approve_rector',
+                'disbursement_wst_bill', 'disbursement_wst_payment_audit',
+                'disbursement_wst_payment_authorize', 'disbursement_wst_pay',
+                'disbursement_wst_clear',
                 'purchase_request_approval_disbursement_budget',
                 'purchase_work_acceptance_disbursement', 'web_chatter_position'],
     'data': [

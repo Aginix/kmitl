@@ -22,6 +22,20 @@ class TestCashMovement(TransactionCase):
         cls.Route = cls.env["kmitl.cash.route"]
         cls.Account = cls.env["account.account"]
 
+        # Billing and the payment stations on a route of their own: the request
+        # phase would need a signed request and a budget, which is not under test.
+        cls.payment_route = cls.env["disbursement.route"].create(
+            {
+                "name": "Payment phase",
+                "line_ids": [
+                    (0, 0, {"station_id": station.id, "sequence": station.sequence})
+                    for station in cls.env["disbursement.station"].search(
+                        [("code", "in", ("bill", "payment_audit", "payment_authorize"))]
+                    )
+                ],
+            }
+        )
+
         Plan = cls.env["account.analytic.plan"]
         Analytic = cls.env["account.analytic.account"]
 
@@ -80,6 +94,14 @@ class TestCashMovement(TransactionCase):
                 "property_account_payable_id": cls.payable_account.id,
             }
         )
+        # Transfers are refused at the audit without a payee bank account.
+        cls.env["res.partner.bank"].create(
+            {
+                "partner_id": cls.payee.id,
+                "acc_number": "TEST-CASH-MOVEMENT",
+                "bank_id": cls.ktb_line.bank_id.id,
+            }
+        )
 
     # ------------------------------------------------------------------
     # Fixture helpers
@@ -91,7 +113,7 @@ class TestCashMovement(TransactionCase):
         return {str(account.id): 100.0 for account in accounts}
 
     def _billed_line(self, source, price=1000.0):
-        """A payment line at ``bills_posted``, before any ``account.payment``
+        """A payment line at payment audit, before any ``account.payment``
         exists — the exact point the auditor is choosing a paying account,
         which is what the live preview has to work from."""
         distribution = self._distribution(source)
@@ -117,11 +139,14 @@ class TestCashMovement(TransactionCase):
                 ],
             }
         )
-        request.state = "approved"
+        request.route_id = self.payment_route
+        request.state = "in_progress"
+        request._seed_steps()
         bill = self.env["account.move"].create(
             {
                 "move_type": "in_invoice",
                 "partner_id": self.payee.id,
+                "partner_bank_id": self.payee.bank_ids[:1].id,
                 "invoice_date": "2026-01-15",
                 "journal_id": self.purchase_journal.id,
                 "disbursement_request_id": request.id,
@@ -136,6 +161,9 @@ class TestCashMovement(TransactionCase):
                             "price_unit": price,
                             "account_id": self.expense_account.id,
                             "analytic_distribution": distribution,
+                            # KMITL has no VAT: a default purchase tax would ask the bill for a
+                            # tax invoice number it has no use for.
+                            "tax_ids": [(6, 0, [])],
                         },
                     )
                 ],
@@ -153,8 +181,8 @@ class TestCashMovement(TransactionCase):
         line.write(
             {"paying_account_id": paying_line.id, "paying_account_match": "manual"}
         )
-        line.request_id.action_audit()
-        line.request_id.action_authorize()
+        line.request_id.current_step_id.act()  # payment audit
+        line.request_id.current_step_id.act()  # payment authorization
         return line.request_id.payment_ids
 
     # ------------------------------------------------------------------
@@ -464,7 +492,7 @@ class TestCashMovement(TransactionCase):
         line = self._billed_line(self.source_rev)
         line.paying_account_id = self.ktb_line.id
         auditor_group = self.env.ref(
-            "disbursement_finance_kmitl.group_disbursement_payment_auditor"
+            "disbursement_wst_payment_audit.group_disbursement_payment_auditor"
         )
         auditor = (
             self.env["res.users"]

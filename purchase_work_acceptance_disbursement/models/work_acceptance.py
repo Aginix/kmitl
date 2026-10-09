@@ -4,22 +4,7 @@ from odoo.exceptions import UserError
 
 
 class WorkAcceptance(models.Model):
-    _name = "work.acceptance"
-    _inherit = ["work.acceptance", "disbursement.return.source.mixin"]
-    _disbursement_return_state = "accept"
-
-    state = fields.Selection(
-        selection_add=[("returned", "Returned")],
-        ondelete={"returned": "set default"},
-    )
-    disbursement_return_attachment_ids = fields.Many2many(
-        comodel_name="ir.attachment",
-        relation="work_acceptance_dr_return_attachment_rel",
-        column1="wa_id",
-        column2="attachment_id",
-        string="Correction Evidence",
-        copy=False,
-    )
+    _inherit = "work.acceptance"
 
     is_disbursed = fields.Boolean(
         string="Disbursed",
@@ -35,29 +20,6 @@ class WorkAcceptance(models.Model):
         copy=False,
         ondelete="set null",
     )
-
-    # -- return-to-source contract (disbursement.return.source.mixin) -----
-    def _disbursement_get_request(self):
-        self.ensure_one()
-        return self._disbursement_pick_request(self.disbursement_request_id)
-
-    def _disbursement_evidence_attachments(self):
-        return self.disbursement_return_attachment_ids
-
-    def _disbursement_return(self, dr, reason):
-        # skip_validation_check: the WA is 'accept' with its tier reviews already
-        # cleared; the return (accept -> returned) must not re-trigger the tier
-        # write guard.
-        return super(
-            WorkAcceptance, self.with_context(skip_validation_check=True)
-        )._disbursement_return(dr, reason)
-
-    def action_confirm_correction(self):
-        # skip_validation_check: returned -> accept must not spawn a new tier
-        # review (the acceptance was already validated).
-        return super(
-            WorkAcceptance, self.with_context(skip_validation_check=True)
-        ).action_confirm_correction()
 
     @api.constrains("state")
     def _check_pending_disbursement_before_accept(self):

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="0">
+    <record id="station_bill" model="disbursement.station">
+        <field name="code">bill</field>
+        <field name="name">Billing</field>
+        <field name="sequence">40</field>
+        <field name="group_id" ref="accounting_kmitl.group_accounting_kmitl_user" />
+        <field name="requires_codes">approve_rector</field>
+    </record>
+</odoo>

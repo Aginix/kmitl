@@ -1,6 +1,6 @@
 # Approval ↔ Disbursement Bridge
 
-Links an **Approval Request** to the **Disbursement Request** it is billed into, and governs how a disbursement is returned for correction: the disbursement is kept intact while its approval request is corrected in place.
+Links an **Approval Request** to the **Disbursement Request** it is billed into.
 
 ## Language
 
@@ -16,13 +16,6 @@ _Avoid_: bill, payment request
 The act of turning an approved Approval Request into a Disbursement Request; moves the AR to `billed`.
 _Avoid_: invoice, charge
 
-**Return (ตีกลับ)**:
-The verification officer sending an approval request back because its data is wrong. The Disbursement Request is kept as-is at `signed`; only the Approval Request moves to `returned`.
-_Avoid_: reject, refuse, cancel
-
-**Returned (state)**:
-The Approval Request state entered when its disbursement is returned; only the payee bank, description and disbursement evidence may be edited here.
-
-**Correction (การแก้ไข)**:
-The requester's edit of a returned request's payee bank, description and disbursement evidence, then **Confirm Correction** — which pushes those onto the kept disbursement request and moves the approval request back to `billed`.
-_Avoid_: revision, amendment
+**Disbursement evidence (หลักฐานการเบิก)**:
+Attachments on the Approval Request flagged `is_disbursement_evidence`, copied onto the Disbursement Request when it is created.
+_Avoid_: correction evidence (the DR-return flow that produced that name is gone — see ADR-0001).

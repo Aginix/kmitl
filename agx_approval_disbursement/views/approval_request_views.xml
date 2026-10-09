@@ -8,12 +8,6 @@
             ref="agx_approval.approval_request_view_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//header" position="after">
-                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;"
-                    attrs="{'invisible': [('is_correction', '=', False)]}">
-                    <p><strong>ตีกลับจากการเบิก:</strong> คำขอนี้ถูกตีกลับจากใบเบิก แก้ไขบัญชีผู้รับเงิน คำอธิบาย หรือหลักฐานการเบิก แล้วกด "ยืนยันการแก้ไข"</p>
-                </div>
-            </xpath>
             <xpath expr="//header/field[@name='is_correction']" position="after">
                 <field name="has_active_disbursement" invisible="1" />
             </xpath>
@@ -21,16 +15,6 @@
                 <attribute name="name">action_create_disbursement_request</attribute>
                 <attribute name="groups">disbursement.group_disbursement_user</attribute>
                 <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'to_disburse'), ('has_active_disbursement', '=', True)]}</attribute>
-            </xpath>
-            <xpath expr="//header/button[@name='action_cancel']" position="after">
-                <button
-                    name="action_confirm_correction"
-                    string="ยืนยันการแก้ไข"
-                    type="object"
-                    class="oe_highlight"
-                    groups="agx_approval.group_approval_user"
-                    attrs="{'invisible': [('is_correction', '=', False)]}"
-                />
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button

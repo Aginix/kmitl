@@ -6,7 +6,6 @@
     "depends": ["agx_approval", "disbursement"],
     "data": [
         "security/ir.model.access.csv",
-        "data/mail_activity_type_data.xml",
         "data/approval_request_exception_data.xml",
         "views/approval_request_views.xml",
         "views/disbursement_request_views.xml",

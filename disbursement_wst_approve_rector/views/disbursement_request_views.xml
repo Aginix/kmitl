@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Work queue: a worklist is a list view (finance_kmitl ADR-0008). -->
+    <record id="action_disbursement_queue_approve_rector" model="ir.actions.act_window">
+        <field name="name">Awaiting Rector Delegate</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('station_code', '=', 'approve_rector')]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+    <menuitem id="menu_disbursement_queue_approve_rector" name="Awaiting Rector Delegate" parent="disbursement_wst.menu_disbursement_stations" action="action_disbursement_queue_approve_rector" sequence="30" groups="disbursement_wst_approve_rector.group_disbursement_rector_delegate" />
+
+    <!-- This station cuts the budget, so its button asks for confirmation. -->
+    <record id="view_disbursement_request_form_inherit_wst_approve_rector" model="ir.ui.view">
+        <field name="name">disbursement.request.form.inherit.wst.approve.rector</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_station_complete']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('can_act', '=', False), ('station_code', '=', 'approve_rector')]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_station_complete']" position="after">
+                <button name="action_station_complete" string="Approve (Rector Delegate)" type="object" class="oe_highlight" confirm="Are you sure you want to approve? This will obligate and consume the budget." attrs="{'invisible': ['|', '|', ('state', '!=', 'in_progress'), ('can_act', '=', False), ('station_code', '!=', 'approve_rector')]}" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

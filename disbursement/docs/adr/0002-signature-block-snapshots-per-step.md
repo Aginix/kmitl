@@ -1,3 +1,8 @@
+> **Generalised, not superseded.** The snapshot rule below now lives on
+> `disbursement.step` in `disbursement_wst` (one row per station visit, same
+> `signed_name` / `signed_position_name` / `signed_signature` fields); the
+> `disbursement.request.signature` model it describes has been folded into it.
+
 # The printed signature block is a child model of frozen per-step snapshots
 
 The ใบขอเบิก PDF must show a real signature (image + ชื่อ + ตำแหน่ง + วันที่) for every

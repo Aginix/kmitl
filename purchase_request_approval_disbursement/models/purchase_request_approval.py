@@ -3,22 +3,7 @@ from odoo.exceptions import UserError
 
 
 class PurchaseRequestApproval(models.Model):
-    _name = "purchase.request.approval"
-    _inherit = ["purchase.request.approval", "disbursement.return.source.mixin"]
-    _disbursement_return_state = "approved"
-
-    state = fields.Selection(
-        selection_add=[("returned", "Returned")],
-        ondelete={"returned": "set default"},
-    )
-    disbursement_return_attachment_ids = fields.Many2many(
-        comodel_name="ir.attachment",
-        relation="purchase_request_approval_dr_return_attachment_rel",
-        column1="approval_id",
-        column2="attachment_id",
-        string="Correction Evidence",
-        copy=False,
-    )
+    _inherit = "purchase.request.approval"
 
     contract_mode = fields.Selection(
         selection=[
@@ -141,22 +126,15 @@ class PurchaseRequestApproval(models.Model):
             approval.disbursement_request_count = len(approval.disbursement_request_ids)
 
     # Vocabulary read off disbursement.request.state — never pipeline_status,
-    # which lives on a different field and was never reachable from here.
-    # bills_posted/payment_*/cleared are added by disbursement_accounting_kmitl
-    # and disbursement_finance_kmitl via selection_add; if neither bridge is
-    # installed a request simply never reaches those keys and stays
-    # "in_progress" once approved, which is correct.
+    # which lives on a different field and was never reachable from here. The
+    # state is core's closed six values; where a request is on its route is the
+    # work stations' business and says nothing more about the document.
     _DR_STATE_TO_BILLING_STATUS = {
         "draft": "draft",
         "submitted": "submitted",
         "signed": "submitted",
-        "verified": "submitted",
-        "approved": "in_progress",
-        "bills_posted": "in_progress",
-        "payment_audited": "in_progress",
-        "payment_authorized": "in_progress",
-        "paid": "in_progress",
-        "cleared": "done",
+        "in_progress": "in_progress",
+        "done": "done",
     }
     _BILLING_STATUS_RANK = {"draft": 0, "submitted": 1, "in_progress": 2, "done": 3}
 
@@ -181,14 +159,6 @@ class PurchaseRequestApproval(models.Model):
                 approval.billing_status = min(
                     statuses, key=self._BILLING_STATUS_RANK.get
                 )
-
-    # -- return-to-source contract (disbursement.return.source.mixin) -----
-    def _disbursement_get_request(self):
-        self.ensure_one()
-        return self._disbursement_pick_request(self.disbursement_request_ids)
-
-    def _disbursement_evidence_attachments(self):
-        return self.disbursement_return_attachment_ids
 
     def _prepare_disbursement_request_vals(self):
         return {

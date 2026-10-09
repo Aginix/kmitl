@@ -1,8 +1,13 @@
 # CONTEXT — Disbursement ↔ KMITL Finance Bridge
 
 Glossary for the **post-bill payment-execution workflow** on `disbursement.request`
-(DR). This module owns the phase that runs **after** the accounting office posts the
-vendor bills.
+(DR). This module owns the data of the phase that runs **after** the accounting office
+posts the vendor bills — the payment lines, the vouchers and their links — and names no
+station. The phase itself is four work stations, each its own module:
+`disbursement_wst_payment_audit` (`payment_audit`), `disbursement_wst_payment_authorize`
+(`payment_authorize`), `disbursement_wst_pay` (`pay`) and `disbursement_wst_clear`
+(`clear`). Data lives here, verbs live in the station
+([`disbursement_wst` ADR-0004](../disbursement_wst/docs/adr/0004-data-lives-in-the-bridge-verbs-live-in-the-station.md)).
 
 ## The two approval rounds (do not conflate)
 
@@ -11,8 +16,8 @@ They use different vocabulary and different security groups.
 
 | Concept | Round 1 — request approval (module `disbursement`, before bill)                                                    | Round 2 — payment execution (this module, after bill)                                                                                |
 | ------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Verify  | **Request Verification** — state `verified`, "ตรวจสอบคำขอ", `group_disbursement_officer`                           | **Payment Audit** — state `payment_audited`, "ตรวจสอบการเบิกจ่าย", `group_disbursement_payment_auditor`                              |
-| Approve | **Request Approval** — state `approved` (obligates + consumes budget), "อนุมัติคำขอ", `group_disbursement_manager` | **Payment Authorization** — state `payment_authorized`, "อนุมัติเบิกจ่าย" (rector delegate), `group_disbursement_payment_authorizer` |
+| Verify  | **Request Verification** — station `verify`, "ตรวจสอบคำขอ", `group_disbursement_officer`                           | **Payment Audit** — station `payment_audit`, "ตรวจสอบการเบิกจ่าย", `group_disbursement_payment_auditor`                              |
+| Approve | **Request Approval** — stations `approve_finance` / `approve_rector` (the latter obligates + consumes budget), "อนุมัติคำขอ" | **Payment Authorization** — station `payment_authorize`, "อนุมัติเบิกจ่าย" (rector delegate), `group_disbursement_payment_authorizer` |
 
 Round 2 deliberately uses the verbs **audit** and **authorize** so it never collides
 with round 1's verify/approve. Both round-2 steps also contribute a signature row to
@@ -76,24 +81,21 @@ overwrite the account the person just picked.
   payee-level row that becomes exactly one `account.payment` against exactly one posted
   bill. It is where the paying account and the payee's bank account live, and it reads
   its amount from the **posted bill** — the money that will actually leave, net of WHT —
-  not from the sum of the request lines, which is only what was asked for. Made when the
-  request reaches `bills_posted`, i.e. when the payee set is final. Thai keeps the two
+  not from the sum of the request lines, which is only what was asked for. Made when the request enters the `payment_audit` station, i.e. when the payee set is final. Thai keeps the two
   apart by document weight: a payment line is a **รายการ**จ่ายเงิน (a row), the
   `account.payment` it becomes is an **ใบ**จ่ายเงิน (a document). Never call a payment
   "รายการจ่ายเงิน".
-- **Payment Audit** (`action_audit`, `bills_posted → payment_audited`): the auditor
+- **Payment Audit** (station `payment_audit`): the auditor
   checks the disbursement documents after the bills are posted, and sets the
   เรื่องที่จ่าย that gives every payee its paying account. It is the **only** checkpoint
   on the banking coordinates — the finance office has none of its own, so a coordinate
   that is wrong after this is corrected on the voucher itself.
-- **ตราผู้กระทำรอบ 2 / Round-2 stamps** (`payment_auditor_id`, `payment_audit_date`,
-  `payment_authorizer_id`, `payment_authorize_date`): who took each round-2 step and
-  when, recorded the way round 1 records its two approvals. Round 2 left the answer in
-  the chatter alone, which is not something a list can be built on — and the
-  authorizer's own history (**รายการที่อนุมัติแล้ว**) has to stand on the stamp rather
-  than the state, or a request would drop out of it the moment it is paid.
-- **Payment Authorization** (`action_authorize`,
-  `payment_audited → payment_authorized`): the rector's delegate authorises the money to
+- **ตราผู้กระทำรอบ 2 / Round-2 stamps**: who took each round-2 step and when are the
+  `acted_by_id` / `acted_date` of the request's `disbursement.step` for that station — the
+  same record that carries its signature — not fields of the request. The authorizer's own
+  history (**รายการที่อนุมัติแล้ว**) stands on the step rather than on where the request is
+  now, or a request would drop out of it the moment it is paid.
+- **Payment Authorization** (station `payment_authorize`): the rector's delegate authorises the money to
   be paid, and that press is also what **raises the vouchers** — one `account.payment`
   per payment line (net of WHT), each numbered and confirmed for the bank, so the
   finance office's first act on the request is the e-payment file rather than turning
@@ -104,8 +106,7 @@ overwrite the account the person just picked.
 - **Payment** (`account.payment`, made by `_create_payments`): one payee's voucher
   against one posted bill. It carries the line's paying account and takes its voucher
   journal from it, and it is **dated the day the request was authorised** — that date is
-  its accounting period and what numbers it, and neither may move afterwards. The
-  request stays at `payment_authorized` while the payments are in transit.
+  its accounting period and what numbers it, and neither may move afterwards. The request stays at the `pay` station while the payments are in transit.
   `action_create_payment` is the same work behind a button, kept only for the requests
   the authorisation could not raise vouchers for.
 - **Bank Result / ผลการจ่าย** (`account.payment.bank_result_status`): the finance
@@ -114,7 +115,7 @@ overwrite the account the person just picked.
   Rules), so this field carries a person's word, given once per request at **Paid**, and
   it is the only thing downstream reads. _Avoid_ reading it as "what the bank reported":
   nothing in the system knows that.
-- **Paid / จ่ายครบ** (`payment_authorized → paid`): every payee of the request has their
+- **Paid / จ่ายครบ** (the `pay` station completing): every payee of the request has their
   money, as the finance office says so. **Nobody presses this for the request as a
   whole.** A request's payees span several หัวจ่าย and are settled in as many different
   ways, and no two of those need be the same officer's — so each officer confirms only
@@ -126,7 +127,7 @@ overwrite the account the person just picked.
   (below) — the moment the request stops being the finance office's and becomes the
   accounting office's. Never call this "เคลียร์": เคลียร์/ล้างหนี้ is the accounting act
   that comes after it.
-- **Hand-over / ส่งมอบให้บัญชี** (`paid`): the single moment a request's payments stop
+- **Hand-over / ส่งมอบให้บัญชี** (the `pay` station completing, the request now at `clear`): the single moment a request's payments stop
   being the finance office's work and become the accounting office's. Before it, a
   voucher is numbered and its **money side** is frozen, but it belongs to finance — it
   is theirs to put in an e-payment file, chase at the bank, and vouch for. After it, the
@@ -137,14 +138,13 @@ overwrite the account the person just picked.
   There is exactly **one** such moment per request, and it is per **request**, not per
   payment: a payee whose transfer succeeded waits for the payees whose did not, because
   a request is handed over whole or not at all. It is also what makes the work visible —
-  one Todo per request to the accounting makers, and a queue at `paid` — because the
+  one Todo per request to the accounting makers, and a queue at `clear` — because the
   request, not the voucher, is what KMITL navigates by. _Avoid_: "ส่งให้บัญชี / submit
   ให้บัญชี" (Submit is the accounting maker's action on the voucher, not the hand-over),
   "เคลียร์".
-- **Cleared / ล้างหนี้** (`paid → cleared`): the accounting office posts the payment
+- **Cleared / ล้างหนี้** (the `clear` station completing, the request `done`): the accounting office posts the payment
   move through the **same account.move maker-checker as the vendor bill** (Approve =
-  post). Posting reconciles the payment against the bill, clearing the payable. Set in
-  `account_move._post`. This is the KMITL sense of "ล้างหนี้" — recording the cash-out
+  post). Posting reconciles the payment against the bill, clearing the payable. Completed by `account_move._post` of `disbursement_wst_clear`. This is the KMITL sense of "ล้างหนี้" — recording the cash-out
   and matching it to the liability.
 
 ## Rules
@@ -155,7 +155,7 @@ overwrite the account the person just picked.
   out of date, drawn wrong. It is the only instrument that can fail once the payee is
   holding it, so cancelling it withdraws that payee's voucher back to `confirmed` and a
   replacement cheque is written on the same voucher. The **request does not follow it
-  back**: it stays at `paid` and reports จ่ายแล้ว n-1/m, because the other payees still
+  back**: it stays at `clear` and reports จ่ายแล้ว n-1/m, because the other payees still
   need booking and their queue should not be emptied over one of them. See
   `finance_kmitl` ADR-0007.
 - **The bank's result file is never imported into Odoo.** A transfer the bank rejects is
@@ -180,12 +180,10 @@ overwrite the account the person just picked.
   with them.
 - **Budget is untouched** in round 2. It is obligated and consumed exactly once at
   round-1 `approved` and never re-cut here.
-- A DR payment move can be **posted only after the request is `paid`** and the payment's
-  bank result is `success` (guard in `account_move._post`). A failed bank transfer
+- A DR payment move can be **posted only once the request has reached the `clear` station** (guard in `disbursement_wst_clear`'s `account_move._post`). A failed bank transfer
   therefore never produces an accounting entry.
 - **Full payment only** — each bill is paid in full (no partial). One payment line → one
-  bill → one payment; the DR reaches `paid` only when every payment is confirmed
-  success, and `cleared` only when every payment is posted.
+  bill → one payment; the `pay` station completes only when every payment is confirmed paid, and `clear` only when every payment is posted.
 - **One payee cannot be paid two ways.** This is not a rule that is checked — it is a
   rule that cannot be broken, because the payee-level payment line is the only place a
   paying account can be recorded, and it holds one.

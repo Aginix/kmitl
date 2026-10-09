@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="0">
+    <record id="station_payment_authorize" model="disbursement.station">
+        <field name="code">payment_authorize</field>
+        <field name="name">Payment Authorization</field>
+        <field name="sequence">60</field>
+        <field name="group_id" ref="group_disbursement_payment_authorizer" />
+        <field name="is_signature" eval="True" />
+        <field name="activity_type_id" ref="mail_activity_dr_to_authorize" />
+        <field name="requires_codes">payment_audit</field>
+    </record>
+</odoo>

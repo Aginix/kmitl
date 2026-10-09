@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The accounting office's end of the Hand-over: requests the finance office
+         has paid, whose vouchers are waiting in draft to be booked. Lives in the
+         Accounting app because the work is theirs, and the voucher-level list
+         (Accounting ▸ ใบจ่ายรอบันทึกบัญชี) catches the payments made by hand, which
+         have no request to navigate by. -->
+    <record id="view_disbursement_request_queue_tree_clear" model="ir.ui.view">
+        <field name="name">disbursement.request.queue.tree.clear</field>
+        <field name="model">disbursement.request</field>
+        <field name="mode">primary</field>
+        <!-- Same guard as the shared tree: never the default list of an action
+             that pins no view_id. -->
+        <field name="priority">99</field>
+        <field name="inherit_id" ref="disbursement_finance_kmitl.view_disbursement_request_queue_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <header>
+                    <button name="action_submit_payments_batch" type="object" string="Submit Selected" class="btn-primary" groups="accounting_kmitl.group_accounting_kmitl_user" />
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_dr_book_queue" model="ir.actions.act_window">
+        <field name="name">Book Disbursement Payments</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_disbursement_request_queue_tree_clear" />
+        <field name="search_view_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="domain">[('station_code', '=', 'clear')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No disbursement request is waiting to be booked.
+            </p>
+            <p>
+                Requests the finance office has paid in full, waiting for the accounting maker to submit their payment vouchers.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_dr_book_queue" name="Book Disbursement Payments" parent="accounting_kmitl.menu_accounting_root" action="action_dr_book_queue" sequence="23" groups="accounting_kmitl.group_accounting_kmitl_user" />
+
+    <record id="view_disbursement_request_search_inherit_clear" model="ir.ui.view">
+        <field name="name">disbursement.request.search.inherit.clear</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='done']" position="after">
+                <filter string="To Book" name="to_book" domain="[('station_code', '=', 'clear')]" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

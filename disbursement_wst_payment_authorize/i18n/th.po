@@ -1,0 +1,118 @@
+# Thai translation of disbursement_wst_payment_authorize.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_wst_payment_authorize
+#: model:res.groups,name:disbursement_wst_payment_authorize.group_disbursement_payment_authorizer
+msgid "Disbursement Authorizer"
+msgstr "ผู้อนุมัติเบิกจ่าย (มอบอำนาจอธิการ)"
+
+#. module: disbursement_wst_payment_authorize
+#: model:mail.activity.type,name:disbursement_wst_payment_authorize.mail_activity_dr_to_authorize
+msgid "Disbursement to authorize"
+msgstr "ใบขอเบิกรออนุมัติเบิกจ่าย"
+
+#. module: disbursement_wst_payment_authorize
+#: model:mail.activity.type,summary:disbursement_wst_payment_authorize.mail_activity_dr_to_authorize
+msgid ""
+"A disbursement request was audited and awaits your authorization to "
+"pay"
+msgstr "ใบขอเบิกผ่านการตรวจสอบแล้วและรอการอนุมัติเบิกจ่ายจากท่าน"
+
+#. module: disbursement_wst_payment_authorize
+#: model:disbursement.station,name:disbursement_wst_payment_authorize.station_payment_authorize
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_payment_authorize.view_disbursement_request_search_inherit_payment_authorize
+msgid "Payment Authorization"
+msgstr "อนุมัติเบิกจ่าย"
+
+#. module: disbursement_wst_payment_authorize
+#: code:addons/disbursement_wst_payment_authorize/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"The payment vouchers could not be raised: %s Correct it, then use "
+"Create Payment."
+msgstr "ออกใบสำคัญจ่ายไม่สำเร็จ: %s กรุณาแก้ไขแล้วกดปุ่มสร้างใบจ่ายเงิน"
+
+#. module: disbursement_wst_payment_authorize
+#: model:ir.actions.act_window,name:disbursement_wst_payment_authorize.action_dr_authorize_queue
+#: model:ir.ui.menu,name:disbursement_wst_payment_authorize.menu_dr_authorize_queue
+msgid "Authorize Disbursements"
+msgstr "อนุมัติเบิกจ่าย"
+
+#. module: disbursement_wst_payment_authorize
+#: model_terms:ir.actions.act_window,help:disbursement_wst_payment_authorize.action_dr_authorize_queue
+msgid "No disbursement request is waiting to be authorized."
+msgstr "ไม่มีใบขอเบิกที่รออนุมัติเบิกจ่าย"
+
+#. module: disbursement_wst_payment_authorize
+#: model_terms:ir.actions.act_window,help:disbursement_wst_payment_authorize.action_dr_authorize_queue
+msgid ""
+"Requests that have passed the audit, waiting for the authorization "
+"that raises the payment vouchers."
+msgstr "ใบขอเบิกที่ผ่านการตรวจสอบแล้ว รออนุมัติเพื่อออกใบสำคัญจ่าย"
+
+#. module: disbursement_wst_payment_authorize
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_payment_authorize.view_disbursement_request_queue_tree_payment_authorize
+msgid "Authorize Selected"
+msgstr "อนุมัติที่เลือก"
+
+#. module: disbursement_wst_payment_authorize
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_payment_authorize.view_disbursement_request_queue_tree_payment_authorize
+msgid ""
+"Authorize this disbursement? The payment vouchers will be raised and "
+"numbered for every payee at once, ready to go to the bank."
+msgstr ""
+"ยืนยันอนุมัติให้เบิกจ่ายเงินตามใบขอเบิกนี้? "
+"ระบบจะออกใบสำคัญจ่ายพร้อมเลขที่ให้ทุกผู้รับเงินทันที และพร้อมส่งธนาคาร"
+
+#. module: disbursement_wst_payment_authorize
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_payment_authorize.view_disbursement_request_queue_tree_payment_authorize
+msgid "Authorize"
+msgstr "อนุมัติ"
+
+#. module: disbursement_wst_payment_authorize
+#: model:ir.ui.menu,name:disbursement_wst_payment_authorize.menu_finance_approver
+msgid "Approver"
+msgstr "ผู้อนุมัติ"
+
+#. module: disbursement_wst_payment_authorize
+#: model:ir.actions.act_window,name:disbursement_wst_payment_authorize.action_disbursement_payment_authorized
+msgid "Authorized for Payment"
+msgstr "รายการที่อนุมัติแล้ว"
+
+#. module: disbursement_wst_payment_authorize
+#: model_terms:ir.actions.act_window,help:disbursement_wst_payment_authorize.action_disbursement_payment_authorized
+msgid "ยังไม่มีใบขอเบิกที่อนุมัติเบิกจ่ายแล้ว"
+msgstr "ยังไม่มีใบขอเบิกที่อนุมัติเบิกจ่ายแล้ว"
+
+#. module: disbursement_wst_payment_authorize
+#: model_terms:ir.actions.act_window,help:disbursement_wst_payment_authorize.action_disbursement_payment_authorized
+msgid ""
+"รายการนี้เก็บประวัติใบขอเบิกที่ผ่านการอนุมัติเบิกจ่าย "
+"และอยู่ต่อไปหลังจ่ายเงินและล้างหนี้แล้ว"
+msgstr ""
+"รายการนี้เก็บประวัติใบขอเบิกที่ผ่านการอนุมัติเบิกจ่าย "
+"และอยู่ต่อไปหลังจ่ายเงินและล้างหนี้แล้ว"
+
+#. module: disbursement_wst_payment_authorize
+#: model:ir.ui.menu,name:disbursement_wst_payment_authorize.menu_finance_payment_authorized
+msgid "รายการที่อนุมัติแล้ว"
+msgstr "รายการที่อนุมัติแล้ว"
+
+#. module: disbursement_wst_payment_authorize
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_payment_authorize.view_disbursement_request_search_inherit_payment_authorize
+msgid "Authorized by Me"
+msgstr "ที่ฉันอนุมัติ"
+
+#. module: disbursement_wst_payment_authorize
+#: code:addons/disbursement_wst_payment_authorize/models/disbursement_request.py:0
+#, python-format
+msgid "error"
+msgstr "ข้อผิดพลาด"

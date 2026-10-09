@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- The standard route. Each disbursement_wst_<station> module appends its
+         own line; an empty condition matches every request. -->
+    <record id="route_default" model="disbursement.route">
+        <field name="name">Standard Route</field>
+        <field name="sequence">100</field>
+    </record>
+</odoo>

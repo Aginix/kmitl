@@ -2,14 +2,16 @@
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 
-# Disbursement states that no longer hold the project open: cancelled, or fully
-# settled by the finance bridge (paid/cleared). Everything else is "ค้าง".
-DISBURSEMENT_SETTLED_STATES = ("cancel", "paid", "cleared")
-
-# States before the approval decision (still pending).
-DISBURSEMENT_PENDING_STATES = ("draft", "submitted", "signed", "verified")
-# States at or after approval (money committed or already paid out).
-DISBURSEMENT_DONE_STATES = ("approved", "payment_authorized", "paid", "cleared")
+# Pending / done are read off the budget, which core owns: a disbursement has
+# committed it once ``budget_consumed_amount`` is set, and cancelling resets it.
+# ``in (0, False)`` because an amount never set is NULL, which ``= 0`` misses.
+DISBURSEMENT_PENDING_DOMAIN = [
+    ("state", "!=", "cancel"),
+    ("budget_consumed_amount", "in", (0, False)),
+]
+DISBURSEMENT_DONE_DOMAIN = [("budget_consumed_amount", ">", 0)]
+# Neither cancelled nor settled (core's ``is_settled``) is "ค้าง".
+DISBURSEMENT_OPEN_DOMAIN = [("state", "!=", "cancel"), ("is_settled", "=", False)]
 
 
 class KmitlProject(models.Model):
@@ -17,7 +19,7 @@ class KmitlProject(models.Model):
 
     currency_id = fields.Many2one(related="company_id.currency_id")
 
-    # Pre-approval disbursements — drafted/submitted but not yet approved.
+    # Pre-approval disbursements — no budget committed yet.
     disbursement_pending_count = fields.Integer(
         compute="_compute_disbursement_count",
         string="Pending Disbursement Count",
@@ -27,7 +29,7 @@ class KmitlProject(models.Model):
         string="ยอดรอดำเนินการ",
         currency_field="currency_id",
     )
-    # Post-approval disbursements — approved, authorized, paid, or cleared.
+    # Post-approval disbursements — budget committed, whatever station they are at.
     disbursement_done_count = fields.Integer(
         compute="_compute_disbursement_count",
         string="Approved Disbursement Count",
@@ -56,8 +58,8 @@ class KmitlProject(models.Model):
                 rec.disbursement_cancelled_count = 0
                 continue
             base = [("kmitl_project_analytic_id", "=", rec.analytic_account_id.id)]
-            pending = DR.search(base + [("state", "in", DISBURSEMENT_PENDING_STATES)])
-            done = DR.search(base + [("state", "in", DISBURSEMENT_DONE_STATES)])
+            pending = DR.search(base + DISBURSEMENT_PENDING_DOMAIN)
+            done = DR.search(base + DISBURSEMENT_DONE_DOMAIN)
             rec.disbursement_pending_count = len(pending)
             rec.disbursement_pending_amount = sum(pending.mapped("amount_total"))
             rec.disbursement_done_count = len(done)
@@ -87,7 +89,7 @@ class KmitlProject(models.Model):
             "view_mode": "tree,form",
             "domain": [
                 ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
-                ("state", "in", DISBURSEMENT_PENDING_STATES),
+                *DISBURSEMENT_PENDING_DOMAIN,
             ],
         }
 
@@ -100,7 +102,7 @@ class KmitlProject(models.Model):
             "view_mode": "tree,form",
             "domain": [
                 ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
-                ("state", "in", DISBURSEMENT_DONE_STATES),
+                *DISBURSEMENT_DONE_DOMAIN,
             ],
         }
 
@@ -124,7 +126,7 @@ class KmitlProject(models.Model):
             self.env["disbursement.request"].sudo().search_count(
                 [
                     ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
-                    ("state", "not in", DISBURSEMENT_SETTLED_STATES),
+                    *DISBURSEMENT_OPEN_DOMAIN,
                 ]
             )
         )

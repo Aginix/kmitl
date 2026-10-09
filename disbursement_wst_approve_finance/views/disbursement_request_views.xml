@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Work queue: a worklist is a list view (finance_kmitl ADR-0008). -->
+    <record id="action_disbursement_queue_approve_finance" model="ir.actions.act_window">
+        <field name="name">Awaiting Finance Director</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('station_code', '=', 'approve_finance')]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+    <menuitem id="menu_disbursement_queue_approve_finance" name="Awaiting Finance Director" parent="disbursement_wst.menu_disbursement_stations" action="action_disbursement_queue_approve_finance" sequence="20" groups="disbursement_wst_approve_finance.group_disbursement_finance_director" />
+</odoo>

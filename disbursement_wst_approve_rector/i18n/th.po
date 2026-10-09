@@ -1,0 +1,48 @@
+# Thai translation of disbursement_wst_approve_rector.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_wst_approve_rector
+#: model:disbursement.station,name:disbursement_wst_approve_rector.station_approve_rector
+msgid "Rector-delegated Approval"
+msgstr "ผู้รับมอบอำนาจอนุมัติ"
+
+#. module: disbursement_wst_approve_rector
+#: model:ir.actions.act_window,name:disbursement_wst_approve_rector.action_disbursement_queue_approve_rector
+#: model:ir.ui.menu,name:disbursement_wst_approve_rector.menu_disbursement_queue_approve_rector
+msgid "Awaiting Rector Delegate"
+msgstr "รอผู้รับมอบอำนาจอนุมัติ"
+
+#. module: disbursement_wst_approve_rector
+#: model:res.groups,name:disbursement_wst_approve_rector.group_disbursement_rector_delegate
+msgid "Disbursement Rector-delegated Approver"
+msgstr "ผู้รับมอบอำนาจอธิการบดี (ใบขอเบิก)"
+
+#. module: disbursement_wst_approve_rector
+#: model:mail.activity.type,name:disbursement_wst_approve_rector.mail_activity_dr_approve_rector
+msgid "Disbursement awaiting Rector-delegated approval"
+msgstr "ใบขอเบิกรอผู้รับมอบอำนาจอนุมัติ"
+
+#. module: disbursement_wst_approve_rector
+#: model:mail.activity.type,summary:disbursement_wst_approve_rector.mail_activity_dr_approve_rector
+msgid "A disbursement request is awaiting your approval (Rector-delegated)"
+msgstr "มีใบขอเบิกรอการอนุมัติจากคุณ (ผู้รับมอบอำนาจอธิการบดี)"
+
+#. module: disbursement_wst_approve_rector
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_approve_rector.view_disbursement_request_form_inherit_wst_approve_rector
+msgid "Approve (Rector Delegate)"
+msgstr "อนุมัติ (ผู้รับมอบอำนาจอธิการบดี)"
+
+#. module: disbursement_wst_approve_rector
+#: model_terms:ir.ui.view,arch_db:disbursement_wst_approve_rector.view_disbursement_request_form_inherit_wst_approve_rector
+msgid ""
+"Are you sure you want to approve? This will obligate and consume the "
+"budget."
+msgstr "ยืนยันการอนุมัติหรือไม่? การดำเนินการนี้จะกันและตัดงบประมาณ"

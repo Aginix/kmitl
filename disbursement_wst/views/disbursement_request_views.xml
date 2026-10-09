@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_form_inherit_wst" model="ir.ui.view">
+        <field name="name">disbursement.request.form.inherit.wst</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_submit']" position="before">
+                <field name="can_act" invisible="1" />
+                <button name="action_station_complete" string="Proceed" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('can_act', '=', False)]}" />
+                <button name="action_divert" string="Divert" type="object" attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('can_act', '=', False)]}" />
+            </xpath>
+            <!-- Two bars, one visible at a time: the slip's own lifecycle until
+                 the request reaches the stations, then the stations themselves. -->
+            <xpath expr="//header/field[@name='state']" position="attributes">
+                <attribute name="statusbar_visible">draft,submitted,signed,done</attribute>
+                <attribute name="attrs">{'invisible': [('state', '=', 'in_progress')]}</attribute>
+            </xpath>
+            <xpath expr="//header/field[@name='state']" position="after">
+                <field name="station_code" widget="statusbar" attrs="{'invisible': [('state', '!=', 'in_progress')]}" />
+            </xpath>
+            <xpath expr="//div[hasclass('alert-success')]" position="before">
+                <div class="alert alert-info" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('state', '!=', 'in_progress')]}">
+                    <strong>Current station:</strong>
+                    <field name="current_station_id" class="oe_inline" nolabel="1" readonly="1" options="{'no_open': True}" />
+                    <span> — </span>
+                    <field name="current_holder_ids" class="oe_inline" nolabel="1" widget="many2many_tags" readonly="1" options="{'no_open': True}" />
+                </div>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Stations" name="stations" attrs="{'invisible': [('step_ids', '=', [])]}">
+                    <field name="route_id" />
+                    <!-- Read-only: rows are frozen snapshots written by the
+                         engine, so nobody can edit a signature. -->
+                    <field name="step_ids" nolabel="1">
+                        <tree create="0" delete="0" edit="0" decoration-muted="state in ('waiting', 'skipped')" decoration-bf="state == 'active'">
+                            <field name="station_name" />
+                            <field name="state" widget="badge" />
+                            <field name="disposition" optional="show" />
+                            <field name="origin" optional="hide" />
+                            <field name="acted_by_id" />
+                            <field name="acted_date" />
+                            <field name="note" optional="hide" />
+                            <!-- signature_image, not the raw snapshot: this is
+                                 exactly what the PDF will print. -->
+                            <field name="signature_image" widget="image" options="{'size': [0, 40]}" optional="hide" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_disbursement_request_search_inherit_wst" model="ir.ui.view">
+        <field name="name">disbursement.request.search.inherit.wst</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_by']" position="inside">
+                <filter string="Station" name="group_station" context="{'group_by': 'station_code'}" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Proceed many requests of a work queue at once; each is still checked
+         against its own station's group. -->
+    <record id="action_disbursement_act_batch" model="ir.actions.server">
+        <field name="name">Proceed</field>
+        <field name="model_id" ref="disbursement.model_disbursement_request" />
+        <field name="binding_model_id" ref="disbursement.model_disbursement_request" />
+        <field name="binding_view_types">list</field>
+        <!-- Without this the press sits in the Action menu of every DR list, for
+             every user; the station's own group check still runs underneath. -->
+        <field name="groups_id" eval="[(4, ref('disbursement.group_disbursement_user'))]" />
+        <field name="state">code</field>
+        <field name="code">action = records.action_act_batch()</field>
+    </record>
+
+    <!-- Work queues: one entry per station, added by each station module. -->
+    <menuitem id="menu_disbursement_stations" name="Work Queues" parent="disbursement.menu_disbursement_root" sequence="30" groups="disbursement.group_disbursement_user" />
+
+    <!-- ============================================================
+         Signature block (บล็อกลายเซ็น) — disbursement ADR-0002.
+         One cell per signing step done, three per line. Self-limiting: a step
+         exists only once its station has been passed, so a draft ใบขอเบิก prints
+         nothing. Each cell reads the snapshot frozen at acting, falling back to
+         the live employee image only when the snapshot is empty — so a
+         *replaced* image never rewrites an already-signed request.
+         inline-block, not flexbox: wkhtmltopdf's QtWebKit renders flex unreliably.
+         ============================================================ -->
+    <template id="report_disbursement_request_signature">
+        <div t-if="o.signature_step_ids" class="mt-5">
+            <div t-foreach="o.signature_step_ids" t-as="sig"
+                 style="display: inline-block; width: 32%; vertical-align: top; text-align: center; margin-bottom: 24px; page-break-inside: avoid;">
+                <div t-if="sig.signature_image">
+                    <img t-att-src="image_data_uri(sig.signature_image)" style="max-height: 60px;" alt="Signature"/>
+                </div>
+                <div t-else="" style="height: 60px;"/>
+                <div>(<span t-out="sig.signed_name or sig.acted_by_id.name"/>)</div>
+                <div t-out="sig.station_name"/>
+                <div t-if="sig.signed_position_name" t-out="sig.signed_position_name"/>
+                <div t-if="sig.acted_date" t-out="o.format_datetime_thai_sign(sig.acted_date)"/>
+            </div>
+        </div>
+    </template>
+
+    <template id="report_disbursement_request_wst" inherit_id="disbursement.report_disbursement_request">
+        <xpath expr="//div[hasclass('o_dr_signatures')]" position="inside">
+            <t t-call="disbursement_wst.report_disbursement_request_signature"/>
+        </xpath>
+    </template>
+</odoo>

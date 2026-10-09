@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_divert_wizard_form" model="ir.ui.view">
+        <field name="name">disbursement.divert.wizard.form</field>
+        <field name="model">disbursement.divert.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Divert">
+                <group>
+                    <field name="request_id" invisible="1" />
+                    <field name="current_station_id" invisible="1" />
+                    <field name="station_id" options="{'no_create': True, 'no_open': True}" />
+                    <field name="come_back" />
+                    <field name="note" />
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Divert" type="object" class="btn-primary" data-hotkey="q" />
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -13,25 +13,26 @@
                     string="Assign to me"
                     class="oe_highlight"
                     groups="disbursement.group_disbursement_officer"
-                    attrs="{'invisible': ['|', ('state', '!=', 'signed'), ('assignment_can_assign_me', '=', False)]}"
+                    attrs="{'invisible': ['|', ('under_verification', '=', False), ('assignment_can_assign_me', '=', False)]}"
                 />
                 <button
                     name="action_assignment_open_wizard"
                     type="object"
                     string="Assign…"
                     groups="disbursement.group_disbursement_manager"
-                    attrs="{'invisible': [('state', '!=', 'signed')]}"
+                    attrs="{'invisible': [('under_verification', '=', False)]}"
                 />
                 <button
                     name="action_assignment_unassign"
                     type="object"
                     string="Unassign"
                     groups="disbursement.group_disbursement_manager"
-                    attrs="{'invisible': ['|', ('state', '!=', 'signed'), ('assigned_to', '=', False)]}"
+                    attrs="{'invisible': ['|', ('under_verification', '=', False), ('assigned_to', '=', False)]}"
                 />
             </xpath>
             <xpath expr="//group[@id='other_information']" position="inside">
                 <field name="assignment_can_assign_me" invisible="1" />
+                <field name="under_verification" invisible="1" />
                 <field name="assigned_to" readonly="1" />
             </xpath>
         </field>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="0">
+    <record id="station_verify" model="disbursement.station">
+        <field name="code">verify</field>
+        <field name="name">Verification</field>
+        <field name="sequence">10</field>
+        <field name="group_id" ref="disbursement.group_disbursement_officer" />
+        <field name="is_signature" eval="True" />
+    </record>
+</odoo>

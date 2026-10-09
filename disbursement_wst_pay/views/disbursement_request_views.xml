@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_dr_pay_queue" model="ir.actions.act_window">
+        <field name="name">Pay Disbursements</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="disbursement_finance_kmitl.view_disbursement_request_queue_tree" />
+        <field name="search_view_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="domain">[('station_code', '=', 'pay')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No disbursement request is waiting to be paid.
+            </p>
+            <p>
+                Requests that have been authorized: their vouchers are raised and wait to go to the bank in an e-payment file.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_dr_pay_queue" name="Pay Disbursements" parent="finance_kmitl.menu_finance_payment_out" action="action_dr_pay_queue" sequence="25" groups="group_disbursement_payment_finance" />
+
+    <record id="view_disbursement_request_search_inherit_pay" model="ir.ui.view">
+        <field name="name">disbursement.request.search.inherit.pay</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='done']" position="after">
+                <filter string="To Pay" name="to_pay" domain="[('station_code', '=', 'pay')]" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_disbursement_request_form_inherit_pay" model="ir.ui.view">
+        <field name="name">disbursement.request.form.inherit.pay</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_draft']" position="before">
+                <!-- The authorisation raises the vouchers, so this is only ever
+                     reached when it could not: a banking coordinate that was
+                     wrong at the time, or a batch that was cancelled and is
+                     wanted again. -->
+                <button name="action_create_payment" string="Create Payment" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('station_code', '!=', 'pay'), ('payment_count', '>', 0)]}" groups="disbursement_wst_pay.group_disbursement_payment_finance" />
+                <!-- A request crosses the Hand-over on its own, when the last of
+                     its vouchers is paid — which happens as each officer closes
+                     the e-payment file they handled. Nobody is asked to say "all
+                     of them are paid" for files that were not theirs.
+
+                     So this press is no longer part of the work, and it is kept
+                     out of the way in developer mode. It stays because it is the
+                     only way past a voucher that is stuck for a technical reason:
+                     it confirms whatever is still draft, marks the rest paid and
+                     crosses, all in one. -->
+                <button name="action_confirm_paid" string="Confirm Paid" type="object" class="oe_highlight" confirm="Confirm the bank has successfully paid every item?" attrs="{'invisible': ['|', ('station_code', '!=', 'pay'), ('payment_count', '=', 0)]}" groups="base.group_no_one" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
