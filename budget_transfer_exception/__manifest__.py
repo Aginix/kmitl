@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budget Transfer Exception",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "summary": """ base.exception framework for reviewing budget transfers on confirm """,
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
@@ -11,6 +11,9 @@
     ],
     "data": [
         "security/ir.model.access.csv",
+        # The transfer's own toggleable policy rules (4 core dims, availability,
+        # line Pool-Tag / duplicate policies).
+        "data/exception_rule_data.xml",
         # The review popup raised on ยืนยัน (_get_popup_action refs
         # action_budget_transfer_exception_confirm from here).
         "wizard/budget_transfer_exception_confirm_view.xml",
@@ -18,7 +21,7 @@
         # column/filter to spot transfers carrying a review exception.
         "views/budget_transfer_views.xml",
     ],
-    # Framework layer only — ships no exception.rule. The concrete checks live in
+    # Ships the transfer's own policy rules; the source-record checks live in
     # thin bridge modules (budget_transfer_exception_kmitl_project /
     # budget_transfer_exception_procurement_plan). Auto-install wherever the
     # transfer feature meets base_exception, so the bridges can cascade on top.

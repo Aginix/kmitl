@@ -9,9 +9,10 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='asset_info']" position="before">
                     <page string="Subcomponents" name="subcomponents">
-                        <field 
+                        <field
                             name="subcomponent_ids"
-                            mode="tree">
+                            mode="tree"
+                            attrs="{'readonly': [('state', '!=', 'draft')]}">
                             <tree editable="bottom" string="Subcomponents">
                                 <field 
                                     name="sequence" 

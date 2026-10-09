@@ -110,6 +110,7 @@ class WorkAcceptance(models.Model):
                         "price_unit": -self.fines_late,
                         "product_id": fine_product.id,
                         "account_id": fine_account.id,
+                        "partner_id": disbursement.partner_id.id,
                         "analytic_distribution": analytic_distribution or False,
                         "tax_ids": [Command.set(fine_tax_ids or [])],
                     })
