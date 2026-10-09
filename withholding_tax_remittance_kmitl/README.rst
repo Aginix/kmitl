@@ -50,14 +50,21 @@ Key features
   certificates and how much the remittance held before it let go of them.
 * The WHT Certificate list gains a Remittance Status column and
   "ยังไม่นำส่ง" / "นำส่งแล้ว" filters.
+* If the WHT payable account has **Allow Reconciliation** ticked in the chart
+  of accounts, **ยืนยัน / ล้างหนี้** also reconciles the remittance's WHT
+  payable debit line against each certificate's source WHT credit line, so
+  the account's GL balance shows only what is genuinely still owed. This is
+  off by default (existing behaviour is unchanged until an accountant ticks
+  the flag) — see
+  ``docs/adr/0004-reconcile-wht-payable-on-post.md``. A **Reconcile** button
+  on posted remittances (form and list) matches certificates that were
+  remitted before the flag was turned on; it is safe to press repeatedly.
 
 Out of scope
 ============
 
 * No printable remittance cover sheet — the journal entry and the existing
   PND filing wizard are enough for v1.
-* No GL reconciliation of the WHT payable accounts; see
-  ``docs/adr/0001-wht-remittance-plain-je-no-reconcile.md``.
 * No payment-voucher, cheque-register, or bank-export integration — the
   cheque to the Revenue Department is handled manually outside this module.
 * A certificate is remitted whole or not at all; partial remittance of a
@@ -78,3 +85,8 @@ Usage
    the document leaves the "ยังไม่นำส่ง" list.
 4. To undo, open the remittance and click **ยกเลิก** — the entry is reversed
    and the certificates return to "ยังไม่นำส่ง".
+5. To reconcile remittances that were posted before Allow Reconciliation was
+   ticked on the WHT payable account: tick the account's Allow Reconciliation
+   in the chart of accounts, then select the affected remittances from the
+   list (or open one) and click **Reconcile**. Already-reconciled remittances
+   are skipped.
