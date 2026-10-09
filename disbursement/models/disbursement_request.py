@@ -1179,26 +1179,31 @@ class DisbursementRequest(models.Model):
         })
 
     def _action_approve_budget(self):
-        """Obligate and consume from the pre-linked budget commitment.
+        """Consume from the pre-linked budget commitment.
 
         The BC is expected to be set from an upstream process (PR/PO/PA);
-        this method does NOT create a new BC. It posts an obligate and a
-        consume line for the DR amount, leaving the BC open for other DRs.
+        this method does NOT create a new BC. It posts a single consume event
+        for the DR amount, leaving the BC open for other DRs. With nothing
+        obligated, the ledger liquidates the reservation directly
+        (``reserve +X / consume −X``, budget ADR-0016) — an obligate step
+        would be cancelled out by the consume in the same instant anyway.
         """
         self.ensure_one()
         # Idempotent: a request returned to verification (approved -> signed)
-        # keeps its obligation, so re-approving must not double-cut the budget.
+        # keeps its consumption, so re-approving must not double-cut the budget.
         if self._has_own_budget_obligation():
             return
         commitment = self._check_commitment_obligable()
-        first_reserve = self._get_commitment_reserve_line(commitment)
-        self.env["budget.commitment.line"].create(
-            self._prepare_budget_obligate_lines(commitment, first_reserve)
+        commitment._post_budget_event(
+            "consume",
+            self.amount_total,
+            source=self,
+            name=_("Consumption: %s") % self.name,
         )
         self.budget_consumed_amount = self.amount_total
         self.budget_consumed_date = fields.Datetime.now()
         self.message_post(
-            body=_("Budget obligated and consumed: %(amount)s on commitment %(name)s")
+            body=_("Budget consumed: %(amount)s on commitment %(name)s")
             % {"amount": self.amount_total, "name": commitment.name},
             subtype_xmlid="mail.mt_note",
         )
@@ -1247,62 +1252,22 @@ class DisbursementRequest(models.Model):
             )
         return commitment
 
-    def _get_commitment_reserve_line(self, commitment):
-        """Return the first active reserve line on the commitment."""
-        first_reserve = commitment.line_ids.filtered(
-            lambda l: l.move_type == "reserve" and l.state == "posted"
-        )[:1]
-        if not first_reserve:
-            raise UserError(
-                _("No active reserve line on commitment %s.") % commitment.name
-            )
-        return first_reserve
-
-    def _prepare_budget_obligate_lines(self, commitment, reserve_line):
-        """Build the obligate + consume commitment lines for this DR."""
-        self.ensure_one()
-        common = {
-            "commitment_id": commitment.id,
-            "account_id": reserve_line.account_id.id,
-            "analytic_distribution": reserve_line.analytic_distribution,
-            "amount": self.amount_total,
-            "res_model": "disbursement.request",
-            "res_id": self.id,
-        }
-        return [
-            dict(common, move_type="obligate",
-                 name=_("Obligation: %s") % self.name),
-            dict(common, move_type="consume",
-                 name=_("Consumption: %s") % self.name),
-        ]
-
     def _reverse_own_commitment_lines(self, commitment):
-        """Cancel only the obligate/consume lines THIS request created on a
-        shared commitment, leaving the reservation open for other requests."""
+        """Cancel only the events THIS request posted on a shared commitment
+        (obligate too, for requests approved before ADR-0016), leaving the
+        reservation open for other requests."""
         self.ensure_one()
-        own = commitment.line_ids.filtered(
-            lambda l: l.state == "posted"
-            and l.move_type in ("obligate", "consume")
-            and l.res_model == "disbursement.request"
-            and l.res_id == self.id
+        return commitment._cancel_budget_events(
+            source=self, move_types=("obligate", "consume")
         )
-        own.action_cancel()
-        return True
 
     def _has_own_budget_obligation(self):
-        """Whether this request already has a posted obligate line on its
+        """Whether this request already has a posted consume event on its
         commitment (used to keep _action_approve_budget idempotent across a
         return-to-verification round trip)."""
         self.ensure_one()
         commitment = self.budget_commitment_id
-        return bool(commitment) and bool(
-            commitment.line_ids.filtered(
-                lambda l: l.state == "posted"
-                and l.move_type == "obligate"
-                and l.res_model == "disbursement.request"
-                and l.res_id == self.id
-            )
-        )
+        return bool(commitment) and commitment._has_budget_event(self, "consume")
 
     def action_cancel(self):
         """Cancel the request.
