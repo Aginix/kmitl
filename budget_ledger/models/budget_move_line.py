@@ -67,8 +67,10 @@ class BudgetMoveLine(models.Model):
 
     @api.model
     def _selection_move_type(self):
-        return self.env["budget.move"]._fields["move_type"]._description_selection(
-            self.env
+        return (
+            self.env["budget.move"]
+            ._fields["move_type"]
+            ._description_selection(self.env)
         )
 
     @api.depends("move_id.move_type")
@@ -80,7 +82,9 @@ class BudgetMoveLine(models.Model):
         if _LEDGER_LOCKED_FIELDS & set(vals) and not self.env.context.get(
             "budget_ledger_posting"
         ):
-            if self.filtered(lambda l: l.commitment_id and l.parent_state == "posted"):
+            if self.filtered(
+                lambda line: line.commitment_id and line.parent_state == "posted"
+            ):
                 raise UserError(
                     _(
                         "Cannot edit a posted budget ledger line of a commitment. "
@@ -111,11 +115,13 @@ class BudgetMoveLine(models.Model):
         return (
             self._get_pool_owner_commitment()
             .filtered(
-                lambda c: c.state in ("reserved", "partial", "done")
-                and c.account_id == self.account_id
-                and c.account_fiscal_year_id == self.move_id.account_fiscal_year_id
-                and {int(key) for key in (c.analytic_distribution or {})}
-                == coordinate
+                lambda c: (
+                    c.state in ("reserved", "partial", "done")
+                    and c.account_id == self.account_id
+                    and c.account_fiscal_year_id == self.move_id.account_fiscal_year_id
+                    and {int(key) for key in (c.analytic_distribution or {})}
+                    == coordinate
+                )
             )
             .sorted("id")[:1]
         )
@@ -127,10 +133,22 @@ class BudgetMoveLine(models.Model):
             return self._transfer_distribution()
         return dict(self.analytic_distribution or {})
 
+    def _ledger_free_budget(self):
+        """Unreserved money at this transfer line's coordinate (the engine's
+        Available — reservations are already netted into the ledger)."""
+        self.ensure_one()
+        move = self.move_id
+        return self.env["budget.controller"].get_available(
+            self.account_id,
+            self._ledger_coordinate(),
+            move.account_fiscal_year_id.id,
+            self.company_id.id or move.company_id.id,
+        )
+
     def _compute_transfer_availability(self):
         """A FROM line out of a reserved coordinate may also draw what the
-        owning reservation still has unobligated: posting releases it
-        (ADR-0016, Q5)."""
+        owning reservation still has unobligated: posting draws the free money
+        first and releases only the rest (ADR-0016, Q5)."""
         res = super()._compute_transfer_availability()
         for line in self:
             move = line.move_id

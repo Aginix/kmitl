@@ -106,7 +106,12 @@ class TestBudgetLedger(TransactionCase):
         return move
 
     def _reserve(self, amount, tag=None):
-        commitment = self.env["budget.commitment"].create(
+        commitment = self._draft(amount, tag=tag)
+        commitment.action_reserve()
+        return commitment
+
+    def _draft(self, amount, tag=None):
+        return self.env["budget.commitment"].create(
             {
                 "date": date.today(),
                 "title": "Ledger commitment",
@@ -118,8 +123,6 @@ class TestBudgetLedger(TransactionCase):
                 "currency_id": self.env.company.currency_id.id,
             }
         )
-        commitment.action_reserve()
-        return commitment
 
     def _available(self, tag=None, account=None):
         return self.controller.get_available(
@@ -220,6 +223,35 @@ class TestBudgetLedger(TransactionCase):
         self.assertEqual(commitment.available_to_obligate, 30_000)
         self.assertEqual(self._available(), 40_000)
 
+    def test_consume_keeps_other_documents_obligation(self):
+        """A document that obligated nothing liquidates the reserve, never
+        another document's obligation on the shared reservation."""
+        self._appropriate(100_000)
+        commitment = self._reserve(100_000)
+        commitment._post_budget_event("obligate", 30_000, source=self.fy)
+        commitment._post_budget_event("consume", 50_000, source=self.account)
+        self.assertEqual(
+            self._buckets(commitment),
+            {"reserve": -20_000, "obligate": -30_000, "consume": -50_000},
+        )
+
+    def test_refund_mirrors_reserve_liquidation(self):
+        self._appropriate(100_000)
+        commitment = self._reserve(60_000)
+        commitment._post_budget_event("consume", 50_000, source=self.fy)
+        commitment._post_budget_event("consume", -20_000, source=self.fy)
+        self.assertEqual(
+            self._buckets(commitment),
+            {"reserve": -30_000, "obligate": 0.0, "consume": -30_000},
+        )
+        self.assertNotIn(commitment, commitment._ledger_mismatches())
+
+    def test_batch_reserve_checks_each_against_the_pool(self):
+        self._appropriate(100_000)
+        batch = self._draft(80_000) | self._draft(80_000)
+        with self.assertRaises(UserError):
+            batch.action_reserve()
+
     def test_mixin_consume_creates_no_extra_move(self):
         """The consume event's own move replaces the old consume-only move."""
         self._appropriate(100_000)
@@ -282,7 +314,9 @@ class TestBudgetLedger(TransactionCase):
         commitment = self._reserve(60_000)
         commitment._post_budget_event("obligate", 20_000)
         commitment.action_cancel()
-        self.assertEqual(set(commitment.ledger_line_ids.mapped("parent_state")), {"cancel"})
+        self.assertEqual(
+            set(commitment.ledger_line_ids.mapped("parent_state")), {"cancel"}
+        )
         self.assertEqual(self._available(), 100_000)
 
     def test_posted_ledger_line_is_locked(self):
@@ -383,6 +417,44 @@ class TestBudgetLedger(TransactionCase):
             with self.assertRaises(UserError):
                 self._post(release)
 
+    def test_transfer_draws_free_money_before_releasing(self):
+        self._appropriate(100_000, account=self.other)
+        self._appropriate(100_000, tag=self.tag)
+        commitment = self._reserve(50_000, tag=self.tag)
+        with self._own_pool(commitment):
+            for amount, cap in ((30_000, 50_000), (40_000, 30_000)):
+                transfer = self._transfer(
+                    {
+                        "account_id": self.account.id,
+                        "amount": amount,
+                        "kmitl_project_analytic_id": self.tag.id,
+                    },
+                    {"account_id": self.other.id, "amount": amount},
+                )
+                self._post(transfer)
+                self.assertEqual(commitment.amount, cap)
+                self.assertEqual(commitment.total_reserved, cap)
+        self.assertEqual(self._available(tag=self.tag), 0.0)
+
+    def test_transfer_releases_whole_reservation(self):
+        self._appropriate(100_000, account=self.other)
+        self._appropriate(50_000, tag=self.tag)
+        commitment = self._reserve(50_000, tag=self.tag)
+        with self._own_pool(commitment):
+            release = self._transfer(
+                {
+                    "account_id": self.account.id,
+                    "amount": 50_000,
+                    "kmitl_project_analytic_id": self.tag.id,
+                },
+                {"account_id": self.other.id, "amount": 50_000},
+            )
+            self._post(release)
+        self.assertEqual(commitment.amount, 0.0)
+        self.assertEqual(commitment.total_reserved, 0.0)
+        self.assertEqual(commitment.state, "reserved")
+        commitment.action_cancel()
+
     def test_transfer_reset_blocked_once_top_up_obligated(self):
         self._appropriate(100_000, account=self.other)
         self._appropriate(50_000, tag=self.tag)
@@ -415,7 +487,9 @@ class TestBudgetLedger(TransactionCase):
                 },
             )
             self._post(top_up)
+        self.assertTrue(commitment._has_budget_event(top_up, "reserve"))
         commitment.action_cancel()
+        self.assertFalse(commitment._budget_event_lines())
         self.assertEqual(top_up.move_id.state, "posted")
         self.assertEqual(top_up.state, "posted")
         self.assertEqual(
@@ -435,15 +509,19 @@ class TestBudgetLedger(TransactionCase):
         # Rewind to the pre-ledger world: no ledger postings, and the consume
         # event carrying its old consume-only move.
         moves = commitment.ledger_line_ids.move_id
-        commitment.line_ids.write({"budget_move_id": False, "budget_move_line_id": False})
+        commitment.line_ids.write(
+            {"budget_move_id": False, "budget_move_line_id": False}
+        )
         moves.unlink()
         consume._create_budget_move()
         legacy_move = consume.budget_move_id
         self.assertFalse(commitment.ledger_line_ids.filtered("commitment_line_id"))
 
-        mismatched = self.env["budget.commitment"].with_context(
-            budget_ledger_posting=True
-        )._ledger_backfill()
+        mismatched = (
+            self.env["budget.commitment"]
+            .with_context(budget_ledger_posting=True)
+            ._ledger_backfill()
+        )
 
         self.assertNotIn(commitment, mismatched)
         self.assertEqual(

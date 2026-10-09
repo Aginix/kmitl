@@ -35,9 +35,11 @@ class BudgetCommitmentLine(models.Model):
         if self.env.context.get("budget_ledger_external"):
             return
         to_post = self.filtered(
-            lambda l: l.state == "posted"
-            and not l.budget_move_line_id
-            and l.commitment_id.state != "draft"
+            lambda line: (
+                line.state == "posted"
+                and not line.budget_move_line_id
+                and line.commitment_id.state != "draft"
+            )
         ).sorted("id")
         for line in to_post:
             line._post_ledger_move()
@@ -58,7 +60,7 @@ class BudgetCommitmentLine(models.Model):
             {
                 "budget_move_id": move.id,
                 "budget_move_line_id": move.line_ids.filtered(
-                    lambda l: not l.is_liquidation
+                    lambda line: not line.is_liquidation
                 )[:1].id,
             }
         )
@@ -87,7 +89,10 @@ class BudgetCommitmentLine(models.Model):
             ],
         }
         move_fields = self.env["budget.move"]._fields
-        if "operating_unit_id" in move_fields and "operating_unit_id" in commitment._fields:
+        if (
+            "operating_unit_id" in move_fields
+            and "operating_unit_id" in commitment._fields
+        ):
             vals["operating_unit_id"] = commitment.operating_unit_id.id
         return vals
 
@@ -113,10 +118,13 @@ class BudgetCommitmentLine(models.Model):
 
         reserve X  → reserve −X
         obligate X → obligate −X, reserve +X
-        consume X  → consume −X, obligate +X — or reserve +X when nothing is
-                     obligated (so an over-consume of an obligation is still
-                     blocked by the limits, as before)
-        A negative amount (a return, a de-obligation, a refund) mirrors it.
+        consume X  → consume −X, obligate +X — or reserve +X when the source
+                     document obligated nothing (so an over-consume of an
+                     obligation is still blocked by the limits, as before, and
+                     a document never liquidates another document's obligation
+                     on a shared reservation)
+        A negative amount (a return, a de-obligation, a refund) mirrors it; a
+        refund goes back to the bucket the source's consumes liquidated.
         """
         self.ensure_one()
         amount = self.amount
@@ -125,13 +133,38 @@ class BudgetCommitmentLine(models.Model):
         if self.move_type == "obligate":
             return [("obligate", -amount, False), ("reserve", amount, True)]
         currency = self.currency_id or self.env.company.currency_id
-        obligated = self.commitment_id.available_to_consume
-        bucket = (
-            "reserve"
-            if amount > 0 and currency.compare_amounts(obligated, 0.0) <= 0
-            else "obligate"
-        )
+        if amount > 0:
+            obligated = -self._ledger_source_balance("obligate")
+            from_reserve = currency.compare_amounts(obligated, 0.0) <= 0
+        else:
+            liquidated = self._ledger_source_balance("reserve", liquidated_by="consume")
+            from_reserve = currency.compare_amounts(liquidated, -amount) >= 0
+        bucket = "reserve" if from_reserve else "obligate"
         return [("consume", -amount, False), (bucket, amount, True)]
+
+    def _ledger_source_balance(self, bucket, liquidated_by=None):
+        """Σ posted balance in ``bucket`` of the events of this event's source
+        document on its reservation — the whole reservation when the event has
+        no source. ``liquidated_by`` keeps only the liquidation lines of that
+        event type."""
+        self.ensure_one()
+        domain = [
+            ("commitment_id", "=", self.commitment_id.id),
+            ("parent_state", "=", "posted"),
+            ("move_type", "=", bucket),
+        ]
+        if self.res_model:
+            domain += [
+                ("commitment_line_id.res_model", "=", self.res_model),
+                ("commitment_line_id.res_id", "=", self.res_id),
+            ]
+        if liquidated_by:
+            domain += [
+                ("is_liquidation", "=", True),
+                ("commitment_line_id.move_type", "=", liquidated_by),
+            ]
+        lines = self.env["budget.move.line"].sudo().search(domain)
+        return sum(lines.mapped("balance"))
 
     def _ledger_distribution(self):
         """The event's full coordinate: its own dimensions plus the header's
@@ -163,10 +196,12 @@ class BudgetCommitmentLine(models.Model):
     def action_cancel(self):
         """Cancel the events' own moves; reverse a top-up living in a transfer's
         move with a new move instead of touching the transfer."""
-        to_cancel = self.filtered(lambda l: l.state != "cancel")
-        to_cancel.budget_move_id.filtered(lambda m: m.state != "cancel").sudo().button_cancel()
+        to_cancel = self.filtered(lambda line: line.state != "cancel")
+        to_cancel.budget_move_id.filtered(
+            lambda m: m.state != "cancel"
+        ).sudo().button_cancel()
         foreign = to_cancel.filtered(
-            lambda l: l.budget_move_line_id and not l.budget_move_id
+            lambda line: line.budget_move_line_id and not line.budget_move_id
         )
         res = super().action_cancel()
         for line in foreign:
@@ -177,14 +212,23 @@ class BudgetCommitmentLine(models.Model):
     def _post_ledger_reversal(self):
         """Post a move negating this event's posted ledger lines."""
         self.ensure_one()
-        lines = self.env["budget.move.line"].sudo().search(
-            [("commitment_line_id", "=", self.id), ("parent_state", "=", "posted")]
+        lines = (
+            self.env["budget.move.line"]
+            .sudo()
+            .search(
+                [("commitment_line_id", "=", self.id), ("parent_state", "=", "posted")]
+            )
         )
         if not lines:
             return False
         commitment = self.commitment_id
+        # The header is not stamped as the event (nor its source document):
+        # the reversal undoes an event, it is not one.
         vals = dict(
             self._prepare_ledger_move_vals(),
+            commitment_line_id=False,
+            res_model=False,
+            res_id=False,
             date=fields.Date.context_today(self),
             note=_("ยกเลิก: %s") % (self.name or ""),
             line_ids=[
@@ -226,7 +270,7 @@ class BudgetCommitmentLine(models.Model):
         Line = self.env["budget.move.line"].with_context(budget_ledger_posting=True)
         distribution = self._ledger_distribution()
         entries = self._ledger_entries()
-        primary = move.line_ids.filtered(lambda l: l.move_type == "consume")[:1]
+        primary = move.line_ids.filtered(lambda line: line.move_type == "consume")[:1]
         primary_vals = {
             "commitment_id": self.commitment_id.id,
             "commitment_line_id": self.id,

@@ -40,13 +40,23 @@ class BudgetTransfer(models.Model):
         commitments = self.env["budget.commitment"]
         if self.move_id.line_ids.filtered("commitment_line_id"):
             return commitments  # already applied (idempotent re-post)
+        free = {}  # unreserved money left per owner's coordinate
         for line in self.line_ids.filtered("transfer_direction"):
             commitment = line._ledger_pool_owner()
             if not commitment:
                 continue
             amount = line.amount or 0.0
             if line.transfer_direction == "from":
+                # Free money at the coordinate goes first; only the rest is
+                # released from the reservation.
+                if commitment not in free:
+                    free[commitment] = max(line._ledger_free_budget(), 0.0)
+                from_free = min(amount, free[commitment])
+                free[commitment] -= from_free
+                amount -= from_free
                 rounding = commitment.currency_id.rounding or 0.01
+                if float_compare(amount, 0.0, precision_rounding=rounding) <= 0:
+                    continue
                 if (
                     float_compare(
                         amount,
@@ -89,7 +99,9 @@ class BudgetTransfer(models.Model):
             rounding = commitment.currency_id.rounding or 0.01
             if (
                 float_compare(
-                    amount, commitment.available_to_obligate, precision_rounding=rounding
+                    amount,
+                    commitment.available_to_obligate,
+                    precision_rounding=rounding,
                 )
                 > 0
             ):
@@ -109,7 +121,7 @@ class BudgetTransfer(models.Model):
                 )
             event = ledger_line.commitment_line_id
             ledger_line.sudo().unlink()
-            commitment.sudo().amount -= amount
+            commitment.sudo().with_context(budget_ledger_posting=True).amount -= amount
             event.sudo().action_cancel()
             commitments |= commitment
         return commitments

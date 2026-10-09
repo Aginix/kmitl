@@ -68,10 +68,39 @@ class BudgetCommitment(models.Model):
         return {key: currency.round(value) for key, value in buckets.items()}
 
     def action_reserve(self):
-        """Reserving posts the reserve events written while draft."""
-        res = super().action_reserve()
-        self.line_ids.filtered(lambda l: l.state == "posted")._post_budget_moves()
+        """Reserving posts the reserve events written while draft.
+
+        One reservation at a time: the pool only nets a reservation once its
+        events are posted, so the next one in a batch must be checked after.
+        """
+        res = None
+        for record in self:
+            res = super(BudgetCommitment, record).action_reserve()
+            record.line_ids.filtered(
+                lambda line: line.state == "posted"
+            )._post_budget_moves()
         return res
+
+    @api.constrains("amount", "state")
+    def _check_positive_amount(self):
+        """A transfer may release a reservation's whole unobligated remainder
+        (ADR-0016, Q5): its cap then rests at 0 — an empty reservation a later
+        transfer can top up again — so a zero cap is allowed while that release
+        posts, or once nothing is reserved on it."""
+        posting = self.env.context.get("budget_ledger_posting")
+        empty = self.filtered(
+            lambda c: (
+                c.state != "draft"
+                and not c.amount
+                and (
+                    posting
+                    or (c.currency_id or self.env.company.currency_id).is_zero(
+                        c.total_reserved
+                    )
+                )
+            )
+        )
+        return super(BudgetCommitment, self - empty)._check_positive_amount()
 
     def _availability_distribution(self):
         """Pool tags are pinned on both sides of the engine (ADR-0016, Q3), so a
@@ -80,20 +109,25 @@ class BudgetCommitment(models.Model):
         return dict(self.analytic_distribution or {})
 
     def _budget_event_lines(self, source=None, move_types=None):
-        """Posted events, read from the ledger: each event owns one posted
-        move stamped with its type and source document."""
+        """Posted events, read from the ledger: each live event owns one posted
+        primary ledger line — in its own move, or inside a transfer's move for
+        a top-up/release."""
         self.ensure_one()
         domain = [
             ("commitment_id", "=", self.id),
-            ("commitment_line_id", "!=", False),
-            ("state", "=", "posted"),
+            ("parent_state", "=", "posted"),
+            ("is_liquidation", "=", False),
+            ("commitment_line_id.state", "=", "posted"),
         ]
         if source:
-            domain += [("res_model", "=", source._name), ("res_id", "=", source.id)]
+            domain += [
+                ("commitment_line_id.res_model", "=", source._name),
+                ("commitment_line_id.res_id", "=", source.id),
+            ]
         if move_types:
-            domain.append(("move_type", "in", list(move_types)))
-        moves = self.env["budget.move"].sudo().search(domain)
-        return moves.commitment_line_id.with_env(self.env)
+            domain.append(("commitment_line_id.move_type", "in", list(move_types)))
+        lines = self.env["budget.move.line"].sudo().search(domain)
+        return lines.commitment_line_id.with_env(self.env)
 
     def _check_ledger_limits(self):
         """reserved ≤ cap, and no bucket overdrawn — read from the ledger."""
@@ -198,7 +232,7 @@ class BudgetCommitment(models.Model):
             )
         )
         event.budget_move_line_id = ledger_line
-        self.sudo().amount += amount
+        self.sudo().with_context(budget_ledger_posting=True).amount += amount
         return event
 
     # ------------------------------------------------------------------
@@ -209,7 +243,7 @@ class BudgetCommitment(models.Model):
         old way, for reconciliation only — never used as a figure."""
         self.ensure_one()
         sums = dict.fromkeys(_BUCKETS, 0.0)
-        for line in self.line_ids.filtered(lambda l: l.state == "posted"):
+        for line in self.line_ids.filtered(lambda line: line.state == "posted"):
             sums[line.move_type] += line.amount
         # The old ledger forbade consuming more than obligated; a consume that
         # liquidated the reserve directly counts as obligated too.
@@ -252,8 +286,8 @@ class BudgetCommitment(models.Model):
         ).sorted("id")
         for commitment in commitments:
             events = commitment.line_ids.filtered(
-                lambda l: l.state == "posted" and not l.budget_move_line_id
-            ).sorted(lambda l: (l.date, l.id))
+                lambda line: line.state == "posted" and not line.budget_move_line_id
+            ).sorted(lambda line: (line.date, line.id))
             for event in events:
                 try:
                     with self.env.cr.savepoint():
