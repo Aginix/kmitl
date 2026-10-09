@@ -7,10 +7,7 @@
         <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form" />
         <field name="arch" type="xml">
             <!-- Editable in every state (ADR-0008). -->
-            <xpath
-                expr="//group[@name='budget']/field[@name='department_analytic_id']"
-                position="after"
-            >
+            <xpath expr="//group[@name='budget']" position="inside">
                 <label for="is_supported_by_other_units" />
                 <div>
                     <field name="is_supported_by_other_units" />
