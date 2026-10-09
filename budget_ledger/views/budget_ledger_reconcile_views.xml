@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="budget_ledger_reconcile_tree_view" model="ir.ui.view">
+        <field name="name">budget.ledger.reconcile.tree</field>
+        <field name="model">budget.ledger.reconcile</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false">
+                <field name="kind" />
+                <field name="metric" />
+                <field name="commitment_id" />
+                <field name="account_fiscal_year_id" />
+                <field name="account_id" />
+                <field name="department_analytic_id" optional="show" />
+                <field name="source_analytic_id" optional="show" />
+                <field name="fund_analytic_id" optional="show" />
+                <field name="activity_analytic_id" optional="show" />
+                <field name="kmitl_project_analytic_id" optional="hide" />
+                <field name="procurement_plan_analytic_id" optional="hide" />
+                <field name="ledger_amount" />
+                <field name="legacy_amount" />
+                <field name="difference" sum="Σ" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="budget_ledger_reconcile_search_view" model="ir.ui.view">
+        <field name="name">budget.ledger.reconcile.search</field>
+        <field name="model">budget.ledger.reconcile</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="commitment_id" />
+                <field name="account_id" />
+                <group expand="1" name="group_by" string="Group By">
+                    <filter string="ประเภท" name="group_kind" context="{'group_by': 'kind'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_budget_ledger_reconcile" model="ir.actions.server">
+        <field name="name">กระทบยอดบัญชีงบประมาณ</field>
+        <field name="model_id" ref="model_budget_ledger_reconcile" />
+        <field name="state">code</field>
+        <field name="code">action = model.action_open_reconciliation()</field>
+        <field name="groups_id" eval="[(4, ref('budget.group_budget_manager'))]" />
+    </record>
+
+    <menuitem
+        id="menu_budget_ledger_reconcile"
+        name="กระทบยอดบัญชีงบประมาณ"
+        parent="budget.budget_config_reporting_menu"
+        action="action_budget_ledger_reconcile"
+        groups="budget.group_budget_manager"
+        sequence="90"
+    />
+</odoo>

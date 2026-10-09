@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="budget_commitment_form_view" model="ir.ui.view">
+        <field name="name">budget.commitment.form.budget_ledger</field>
+        <field name="model">budget.commitment</field>
+        <field name="inherit_id" ref="budget.budget_commitment_form_view" />
+        <field name="arch" type="xml">
+            <page name="lines" position="attributes">
+                <attribute name="string">เหตุการณ์ใบจอง</attribute>
+            </page>
+            <page name="lines" position="after">
+                <page name="ledger" string="บัญชีงบประมาณ">
+                    <field name="ledger_line_ids" readonly="1">
+                        <tree decoration-muted="parent_state != 'posted'" create="false">
+                            <field name="date" />
+                            <field name="move_id" />
+                            <field name="move_type" />
+                            <field name="account_id" />
+                            <field name="activity_analytic_id" optional="show" />
+                            <field name="fund_analytic_id" optional="show" />
+                            <field name="balance" sum="Σ" />
+                            <field name="is_liquidation" optional="hide" />
+                            <field name="parent_state" widget="badge" decoration-success="parent_state == 'posted'" />
+                        </tree>
+                    </field>
+                </page>
+            </page>
+        </field>
+    </record>
+</odoo>
