@@ -8,10 +8,9 @@
     "author": "KMITL",
     "depends": [
         "account",
+        # A DR consumes without obligating first; the budget ledger liquidates
+        # the reservation for it (budget ADR-0016).
         "budget",
-        # A DR consumes without obligating first; the ledger liquidates the
-        # reservation for it (budget ADR-0016).
-        "budget_ledger",
         "account_analytic_kmitl",
         "account_fiscal_year_enhance",
         "base_exception",

@@ -42,15 +42,15 @@
         <field name="model_id" ref="model_budget_ledger_reconcile" />
         <field name="state">code</field>
         <field name="code">action = model.action_open_reconciliation()</field>
-        <field name="groups_id" eval="[(4, ref('budget.group_budget_manager'))]" />
+        <field name="groups_id" eval="[(4, ref('group_budget_manager'))]" />
     </record>
 
     <menuitem
         id="menu_budget_ledger_reconcile"
         name="กระทบยอดบัญชีงบประมาณ"
-        parent="budget.budget_config_reporting_menu"
+        parent="budget_config_reporting_menu"
         action="action_budget_ledger_reconcile"
-        groups="budget.group_budget_manager"
+        groups="group_budget_manager"
         sequence="90"
     />
 </odoo>

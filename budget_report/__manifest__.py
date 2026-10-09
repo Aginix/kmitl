@@ -6,7 +6,7 @@
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["budget_ledger", "web"],
+    "depends": ["budget", "web"],
     "data": [
         "data/actions.xml",
         "security/ir.model.access.csv",

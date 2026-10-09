@@ -12,19 +12,18 @@ class BudgetMove(models.Model):
     def _recompute_project_amounts(self):
         """After posting, cancelling, or resetting a budget.move, recompute
         budget_amount for any kmitl.project whose analytic account appears in
-        the affected lines, then auto-re-sync their commitments if pre-spending.
-        Runs sudo because the poster may not hold kmitl.project read/write access."""
-        project_analytic_ids = self.mapped("line_ids.kmitl_project_analytic_id").ids
+        the affected lines. A commitment's event moves only post usage buckets,
+        which never change budget_amount, so they are skipped; money moved onto
+        a reserved project tops its reservation up in the transfer itself
+        (budget ADR-0016). Runs sudo because the poster may not hold
+        kmitl.project read/write access."""
+        moves = self.filtered(lambda m: not m.commitment_id)
+        project_analytic_ids = moves.mapped("line_ids.kmitl_project_analytic_id").ids
         if not project_analytic_ids:
             return
-        projects = self.env["kmitl.project"].sudo().search(
+        self.env["kmitl.project"].sudo().search(
             [("analytic_account_id", "in", project_analytic_ids)]
-        )
-        if not projects:
-            return
-        projects._compute_budget_amount()
-        for project in projects:
-            project._auto_resync_commitment()
+        )._compute_budget_amount()
 
     def action_post(self):
         res = super().action_post()

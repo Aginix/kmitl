@@ -1120,21 +1120,6 @@ class KmitlProject(models.Model):
             self._release_project_commitment()
             self._reserve_project_commitment()
 
-    def _auto_resync_commitment(self):
-        """Realign the reservation after the allocated amount changed (budget.move
-        post/cancel hook). Safe only while no obligate or consume exists; once
-        spending has started the commitment is left alone to avoid stranding
-        in-flight draws (ADR-0007)."""
-        self.ensure_one()
-        active = self.budget_commitment_ids.filtered(lambda c: c.state != "cancel")[:1]
-        if not active or active.amount == self.budget_amount:
-            return
-        if active.total_obligated or active.total_consumed:
-            return
-        self._release_project_commitment()
-        if self.budget_amount > 0:
-            self._reserve_project_commitment()
-
     @api.depends("key")
     def _compute_budget_target_locked(self):
         for rec in self:

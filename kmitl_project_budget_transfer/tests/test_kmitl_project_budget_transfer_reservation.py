@@ -5,7 +5,7 @@ from odoo.tests.common import TransactionCase, tagged
 
 
 @tagged("post_install", "-at_install")
-class TestKmitlProjectBudgetLedger(TransactionCase):
+class TestKmitlProjectBudgetTransferReservation(TransactionCase):
     """A transfer into a reserved project's coordinate tops its reservation up —
     also once spending has started (budget ADR-0016, Q5)."""
 

@@ -1,12 +1,17 @@
 from odoo import SUPERUSER_ID, api
 
 
-def post_init_hook(cr, registry):
+def migrate(cr, version):
     """Post every existing reservation's history to the budget ledger.
 
-    Reports mismatches (log + ``budget_ledger.backfill_mismatch_commitment_ids``
-    + the reconciliation menu) instead of aborting the install (ADR-0016, Q11).
+    An end-migration: it runs once every module is loaded, so the event moves
+    get what the modules on top of ``budget`` add (e.g. the operating unit).
+
+    Reports mismatches (log + ``budget.ledger_backfill_mismatch_commitment_ids``
+    + the reconciliation menu) instead of aborting the upgrade (ADR-0016, Q11).
     """
+    if not version:
+        return
     env = api.Environment(
         cr,
         SUPERUSER_ID,

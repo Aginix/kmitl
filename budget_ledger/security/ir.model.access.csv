@@ -1,2 +1,0 @@
-id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_budget_ledger_reconcile_manager,budget_ledger_reconcile_manager,model_budget_ledger_reconcile,budget.group_budget_manager,1,1,1,1

@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budgeting",
-    "version": "16.0.2.3.0",
+    "version": "16.0.2.4.0",
     "summary": """ KMITL Budgeting""",
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
@@ -27,6 +27,7 @@
         "wizard/budget_commitment_return_wizard_views.xml",
         "views/budget_menus.xml",
         "views/budget_dashboard_views.xml",
+        "views/budget_ledger_reconcile_views.xml",
         "views/res_config_settings_views.xml",
     ],
     "assets": {

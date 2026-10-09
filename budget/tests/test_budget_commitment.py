@@ -414,9 +414,6 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(c.total_consumed, 80_000)
         self.assertEqual(c.available_to_obligate, 80_000)   # 200k - 120k
         self.assertEqual(c.available_to_consume, 40_000)    # 120k - 80k
-        # Legacy fields
-        self.assertEqual(c.consumed_amount, 80_000)
-        self.assertEqual(c.remaining_amount, 120_000)       # cap 200k - consumed 80k
 
     # ====================================================================
     # 8. Header positive amount constraint
@@ -662,10 +659,8 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(len(ret), 1)
         self.assertEqual(ret.move_type, "reserve")
         self.assertEqual(ret.amount, -50)
-        if "is_liquidation" not in self.env["budget.move.line"]._fields:
-            # core alone: no budget move for คืนจอง (budget_ledger posts one,
-            # ADR-0016)
-            self.assertFalse(ret.budget_move_id)
+        # คืนจอง posts its own reserve move to the budget ledger (ADR-0016)
+        self.assertEqual(ret.budget_move_id.move_type, "reserve")
 
     def test_61_return_inherits_reserve_account_and_dims(self):
         """The return line mirrors the first reserve line's account + dimensions."""

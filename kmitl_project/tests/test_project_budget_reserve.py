@@ -344,29 +344,6 @@ class TestProjectBudgetReserve(TransactionCase):
         # Simulate writing the same distribution again (no-op change) — should not raise.
         project.write({"analytic_distribution": dict(project.analytic_distribution or {})})
 
-    def test_auto_resync_on_allocation_change(self):
-        """After a top-up allocation move, budget_amount rises and if commitment
-        exists it is re-synced to the new amount (pre-spending)."""
-        if "budget.ledger.reconcile" in self.env:
-            self.skipTest(
-                "superseded by the ledger's transfer top-up (budget ADR-0016), "
-                "see kmitl_project_budget_ledger"
-            )
-        project = self._make_project()
-        project.action_confirm()
-        self._allocate(project, 100000.0)
-        self._reserve(project)
-        self.assertAlmostEqual(project.budget_amount, 100000.0)
-        commitment = project.budget_commitment_ids.filtered(lambda c: c.state != "cancel")
-        self.assertAlmostEqual(commitment.amount, 100000.0)
-
-        self._allocate(project, 50000.0)
-
-        project.invalidate_recordset()
-        self.assertAlmostEqual(project.budget_amount, 150000.0)
-        active = project.budget_commitment_ids.filtered(lambda c: c.state != "cancel")
-        self.assertAlmostEqual(active.amount, 150000.0)
-
     def test_isolation_two_projects(self):
         """Two projects sharing the four base dims do not cross-deplete each other."""
         p1 = self._make_project(name="Project 1")

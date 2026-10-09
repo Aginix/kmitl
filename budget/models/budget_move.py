@@ -242,6 +242,8 @@ class BudgetMove(models.Model):
         selection=[
             ("entry", "Budget Entry"),
             ("appropriation", "Budget Appropriation"),
+            ("reserve", "Budget Reservation"),
+            ("obligate", "Budget Obligation"),
             ("consume", "Budget Consumption"),
         ],
         string="Type",
@@ -303,13 +305,20 @@ class BudgetMove(models.Model):
 
     @api.depends(
         "line_ids.balance",
+        "line_ids.move_type",
         "move_type",
     )
     def _compute_amount(self):
+        """Total of the lines in the move's own bucket only (ADR-0016, Q6): a
+        transfer's reservation top-ups and an event's liquidation lines move
+        other buckets and stay out of it, so a transfer still totals 0 and a
+        consume move its consumption."""
         for move in self:
-            # นับทุก line เหมือนกัน ไม่ต้องแยก virtual lines
-            total = sum(move.line_ids.mapped("balance"))
-            move.total_amount = total
+            move.total_amount = sum(
+                move.line_ids.filtered(
+                    lambda line, move_type=move.move_type: line.move_type == move_type
+                ).mapped("balance")
+            )
 
     @api.depends("state", "date")
     def _compute_name(self):

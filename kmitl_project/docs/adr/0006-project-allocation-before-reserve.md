@@ -1,6 +1,6 @@
 # Project budget is allocated into its own dimension before it reserves
 
-> **Amended by [budget ADR-0016](../../../budget/docs/adr/0016-commitment-events-posted-to-budget-ledger.md):** money transferred into the project's coordinate after it has reserved is added to the reservation automatically (`kmitl_project_budget_ledger`), even once spending has started; `_auto_resync_commitment` is disabled.
+> **Amended by [budget ADR-0016](../../../budget/docs/adr/0016-commitment-events-posted-to-budget-ledger.md):** money transferred into the project's coordinate after it has reserved is added to the reservation automatically (`kmitl_project_budget_transfer`), even once spending has started; `_auto_resync_commitment` is removed.
 
 A `kmitl.project` no longer reserves **directly** against a *floating* project pool at
 confirmation. It now passes a **Project Allocation (ปรับเข้าแผน)** step: after the author

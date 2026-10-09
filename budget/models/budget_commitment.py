@@ -1,10 +1,20 @@
+import json
 import logging
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare, formatLang
 
 _logger = logging.getLogger(__name__)
+
+_BUCKETS = ("reserve", "obligate", "consume")
+_TOTAL_FIELDS = (
+    "total_reserved",
+    "total_obligated",
+    "total_consumed",
+    "available_to_obligate",
+    "available_to_consume",
+)
 
 
 class BudgetCommitment(models.Model):
@@ -241,11 +251,11 @@ class BudgetCommitment(models.Model):
     )
     notes = fields.Text(string="Notes")
 
-    # Ledger lines
+    # Commitment events — commands posted to the budget ledger, never summed
     line_ids = fields.One2many(
         comodel_name="budget.commitment.line",
         inverse_name="commitment_id",
-        string="Ledger Lines",
+        string="เหตุการณ์ใบจอง",
         copy=True,
     )
 
@@ -281,20 +291,6 @@ class BudgetCommitment(models.Model):
         currency_field="currency_id",
     )
 
-    # Legacy backward-compat fields
-    consumed_amount = fields.Monetary(
-        string="Consumed Amount",
-        compute="_compute_line_totals",
-        store=True,
-        currency_field="currency_id",
-    )
-    remaining_amount = fields.Monetary(
-        string="Remaining Amount",
-        compute="_compute_line_totals",
-        store=True,
-        currency_field="currency_id",
-    )
-
     # Cross-year carry-over references
     carried_over_from_id = fields.Many2one(
         "budget.commitment",
@@ -316,33 +312,114 @@ class BudgetCommitment(models.Model):
         string="Related Budget Moves",
         readonly=True,
     )
+    # The reservation's sub-ledger in the budget ledger (ADR-0016): every
+    # figure below is read from these lines, never from line_ids.
+    ledger_line_ids = fields.One2many(
+        comodel_name="budget.move.line",
+        inverse_name="commitment_id",
+        string="บัญชีงบประมาณ",
+        readonly=True,
+    )
 
     @api.depends(
-        "line_ids.amount",
-        "line_ids.move_type",
-        "line_ids.state",
+        "ledger_line_ids.balance",
+        "ledger_line_ids.move_type",
+        "ledger_line_ids.parent_state",
         "amount",
     )
     def _compute_line_totals(self):
+        """The negated Σ balance of the posted ledger lines per bucket
+        (ADR-0016): b = reserve, c = obligate, d = consume.
+        ``available_to_obligate`` = b, ``available_to_consume`` = c,
+        ``total_consumed`` = d, ``total_obligated`` = c + d and
+        ``total_reserved`` = b + c + d."""
         for record in self:
-            posted = record.line_ids.filtered(lambda l: l.state == "posted")
-            total_reserved = sum(
-                posted.filtered(lambda l: l.move_type == "reserve").mapped("amount")
-            )
-            total_obligated = sum(
-                posted.filtered(lambda l: l.move_type == "obligate").mapped("amount")
-            )
-            total_consumed = sum(
-                posted.filtered(lambda l: l.move_type == "consume").mapped("amount")
-            )
-            record.total_reserved = total_reserved
-            record.total_obligated = total_obligated
-            record.total_consumed = total_consumed
-            record.available_to_obligate = total_reserved - total_obligated
-            record.available_to_consume = total_obligated - total_consumed
-            # Legacy compat
-            record.consumed_amount = total_consumed
-            record.remaining_amount = record.amount - total_consumed
+            buckets = record._ledger_buckets()
+            reserve, obligate, consume = (-buckets[b] for b in _BUCKETS)
+            record.available_to_obligate = reserve
+            record.available_to_consume = obligate
+            record.total_consumed = consume
+            record.total_obligated = obligate + consume
+            record.total_reserved = reserve + obligate + consume
+
+    def _ledger_buckets(self):
+        """{bucket: Σ posted balance} of this reservation's ledger lines."""
+        self.ensure_one()
+        currency = self.currency_id or self.env.company.currency_id
+        buckets = dict.fromkeys(_BUCKETS, 0.0)
+        for line in self.ledger_line_ids:
+            if line.parent_state == "posted" and line.move_type in buckets:
+                buckets[line.move_type] += line.balance
+        return {key: currency.round(value) for key, value in buckets.items()}
+
+    def _ledger_codes(self):
+        """The reservation's budget codes in liquidation order (ADR-0017): the
+        header's primary code first, then each other reserved code (ถัวจ่าย) in
+        the order it was added."""
+        self.ensure_one()
+        codes = self.account_id
+        for line in self.line_ids:
+            if (
+                line.move_type == "reserve"
+                and line.state == "posted"
+                and not line.is_return
+            ):
+                codes |= line.account_id
+        return codes
+
+    def _ledger_unobligated(self, account):
+        """What ``account``'s code still holds reserved and unobligated (b)."""
+        self.ensure_one()
+        return -sum(
+            line.balance
+            for line in self.ledger_line_ids
+            if line.parent_state == "posted"
+            and line.move_type == "reserve"
+            and line.account_id == account
+        )
+
+    def _check_ledger_limits(self):
+        """reserved ≤ cap, and no bucket overdrawn — read from the ledger."""
+        for commitment in self:
+            rounding = commitment.currency_id.rounding or 0.01
+
+            def over(a, b):
+                return float_compare(a, b, precision_rounding=rounding) > 0
+
+            reserved = commitment.total_reserved
+            obligated = commitment.total_obligated
+            consumed = commitment.total_consumed
+            if commitment.amount and over(reserved, commitment.amount):
+                raise ValidationError(
+                    _(
+                        "Total reserved (%(reserved).2f) exceeds commitment cap (%(cap).2f)"
+                    )
+                    % {"reserved": reserved, "cap": commitment.amount}
+                )
+            if over(obligated, reserved):
+                raise ValidationError(
+                    _(
+                        "Total obligated (%(obligated).2f) exceeds total reserved (%(reserved).2f)"
+                    )
+                    % {"obligated": obligated, "reserved": reserved}
+                )
+            if over(consumed, obligated):
+                raise ValidationError(
+                    _(
+                        "Total consumed (%(consumed).2f) exceeds total obligated (%(obligated).2f)"
+                    )
+                    % {"consumed": consumed, "obligated": obligated}
+                )
+            for label, value in (
+                (_("reserved"), reserved),
+                (_("obligated"), obligated),
+                (_("consumed"), consumed),
+            ):
+                if over(0.0, value):
+                    raise ValidationError(
+                        _("Total %(label)s cannot be negative (%(value).2f).")
+                        % {"label": label, "value": value}
+                    )
 
     def _sync_state(self):
         """Derive the active band (reserved/partial/done) from line totals.
@@ -526,6 +603,9 @@ class BudgetCommitment(models.Model):
                     "budget.commitment"
                 ) or _("New")
             record.state = "reserved"
+            # Post now, before the next one in a batch is checked: the pool
+            # only nets a reservation once its events are in the ledger.
+            record._pending_reserve_lines()._post_budget_moves()
 
     def _create_reserve_line_from_header(self):
         """Synthesize the single reserve line from the header (form-first).
@@ -549,9 +629,8 @@ class BudgetCommitment(models.Model):
     # --- Event seam (ADR-0016) ---
     #
     # Every write to a reservation goes through these three methods instead of
-    # ``budget.commitment.line.create`` / filtering ``line_ids``, so the
-    # ``budget_ledger`` module can post each event to the budget ledger and read
-    # events back from it in one place.
+    # ``budget.commitment.line.create`` / filtering ``line_ids``, so each event
+    # is posted to the budget ledger and read back from it in one place.
 
     def _get_budget_event_target(self, move_type, is_return=False):
         """(budget.account, analytic_distribution) an event posts against.
@@ -622,16 +701,25 @@ class BudgetCommitment(models.Model):
 
     def _budget_event_lines(self, source=None, move_types=None):
         """The posted events of this reservation, optionally of one source
-        document and/or some types."""
+        document and/or some types — read from the ledger: each live event
+        owns one posted primary ledger line, in its own move or inside a
+        transfer's move for a top-up/release."""
         self.ensure_one()
-        return self.line_ids.filtered(
-            lambda l: l.state == "posted"
-            and (not move_types or l.move_type in move_types)
-            and (
-                not source
-                or (l.res_model == source._name and l.res_id == source.id)
-            )
-        )
+        domain = [
+            ("commitment_id", "=", self.id),
+            ("parent_state", "=", "posted"),
+            ("is_liquidation", "=", False),
+            ("commitment_line_id.state", "=", "posted"),
+        ]
+        if source:
+            domain += [
+                ("commitment_line_id.res_model", "=", source._name),
+                ("commitment_line_id.res_id", "=", source.id),
+            ]
+        if move_types:
+            domain.append(("commitment_line_id.move_type", "in", list(move_types)))
+        lines = self.env["budget.move.line"].sudo().search(domain)
+        return lines.commitment_line_id.with_env(self.env)
 
     def _has_budget_event(self, source, move_type):
         """Whether ``source`` already has a posted ``move_type`` event here."""
@@ -691,35 +779,11 @@ class BudgetCommitment(models.Model):
                     }
                 )
 
-    # kmitl_project rides on the reserve line but the project pool is
-    # floating/UNTAGGED (ADR-0007), so availability must be evaluated without it.
-    # procurement_plan is NOT stripped: a plan's source appropriation IS tagged
-    # with its procurement_plan dimension, so the check must keep the tag to match
-    # it (procurement.plan._reserve_plan_commitment carries it in its own
-    # pre-check for the same reason).
-    _POOL_TAG_PLAN_CODES = ("kmitl_project",)
-
     def _availability_distribution(self):
-        """The dimension combination to evaluate Available against: the header
-        distribution with the floating-pool tag (kmitl_project) removed, so a
-        project reservation is checked against its floating (untagged)
-        appropriation pool — matching kmitl.project._reserve_project_commitment,
-        whose pre-check builds analytic_data from the four financial dimensions
-        only. Plan (procurement_plan, tagged appropriation) and standalone
-        reservations are unchanged."""
+        """Pool tags are pinned on both sides of the engine (ADR-0016, Q3), so a
+        reservation is checked at its full coordinate, tag included."""
         self.ensure_one()
-        distribution = dict(self.analytic_distribution or {})
-        if not distribution:
-            return distribution
-        account_ids = [int(k) for k in distribution]
-        tag_accounts = self.env["account.analytic.account"].browse(
-            account_ids
-        ).filtered(
-            lambda a: a.root_plan_id and a.root_plan_id.code in self._POOL_TAG_PLAN_CODES
-        )
-        for acc in tag_accounts:
-            distribution.pop(str(acc.id), None)
-        return distribution
+        return dict(self.analytic_distribution or {})
 
     def action_done(self):
         """Close the commitment"""
@@ -850,7 +914,9 @@ class BudgetCommitment(models.Model):
             "name": _("Related Budget Moves"),
             "res_model": "budget.move",
             "view_mode": "tree,form",
-            "domain": [("commitment_id", "=", self.id)],
+            # Every move carrying this reservation's ledger lines — its own
+            # event moves and the transfers that topped it up.
+            "domain": [("id", "in", self.ledger_line_ids.move_id.ids)],
             "context": {"default_commitment_id": self.id},
         }
 
@@ -858,3 +924,88 @@ class BudgetCommitment(models.Model):
     # the core journey is form-first — the header IS the single reserve line
     # (see _create_reserve_line_from_header). The picker JS component stays as
     # shared infrastructure for the select-only hosts (พ.1 / ใบขออนุมัติ).
+
+    # ------------------------------------------------------------------
+    # Back-fill + reconciliation (ADR-0016, Q11)
+    # ------------------------------------------------------------------
+    def _ledger_legacy_totals(self):
+        """(reserved, obligated, consumed) re-derived from the posted events the
+        old way, for reconciliation only — never used as a figure."""
+        self.ensure_one()
+        sums = dict.fromkeys(_BUCKETS, 0.0)
+        for line in self.line_ids.filtered(lambda line: line.state == "posted"):
+            sums[line.move_type] += line.amount
+        # The old ledger forbade consuming more than obligated; a consume that
+        # liquidated the reserve directly counts as obligated too.
+        return sums["reserve"], max(sums["obligate"], sums["consume"]), sums["consume"]
+
+    def _ledger_mismatches(self):
+        """Reservations whose ledger figures differ from their posted events."""
+        mismatched = self.browse()
+        for commitment in self:
+            rounding = commitment.currency_id.rounding or 0.01
+            legacy = commitment._ledger_legacy_totals()
+            ledger = (
+                commitment.total_reserved,
+                commitment.total_obligated,
+                commitment.total_consumed,
+            )
+            if any(
+                float_compare(a, b, precision_rounding=rounding)
+                for a, b in zip(legacy, ledger)
+            ):
+                mismatched |= commitment
+        return mismatched
+
+    def _ledger_backfill(self):
+        """Post the history of every active reservation to the ledger.
+
+        Per reservation, its posted events are posted in date order; an event
+        that already has its consume move keeps it and gains the liquidation
+        lines. Mismatches are logged and kept in
+        ``budget.ledger_backfill_mismatch_commitment_ids`` — the upgrade never
+        aborts on them (ADR-0016, Q11).
+        """
+        everything = self.search([])
+        # The stored figures still hold the event-based values; recompute them
+        # from the ledger as it fills, so each consume liquidates the right bucket.
+        for fname in _TOTAL_FIELDS:
+            self.env.add_to_compute(self._fields[fname], everything)
+        commitments = everything.filtered(
+            lambda c: c.state not in ("draft", "cancel")
+        ).sorted("id")
+        for commitment in commitments:
+            events = commitment.line_ids.filtered(
+                lambda line: line.state == "posted" and not line.budget_move_line_id
+            ).sorted(lambda line: (line.date, line.id))
+            for event in events:
+                try:
+                    with self.env.cr.savepoint():
+                        event._ledger_backfill_post()
+                except Exception as err:  # report, never abort the upgrade
+                    _logger.warning(
+                        "budget ledger back-fill: event %s of %s not posted: %s",
+                        event.id,
+                        commitment.display_name,
+                        err,
+                    )
+        for fname in _TOTAL_FIELDS:
+            self.env.add_to_compute(self._fields[fname], everything)
+        everything.flush_recordset()
+        mismatched = commitments._ledger_mismatches()
+        if mismatched:
+            _logger.warning(
+                "budget ledger back-fill: %d reservation(s) do not reconcile: %s",
+                len(mismatched),
+                ", ".join(mismatched.mapped("display_name")),
+            )
+        else:
+            _logger.info(
+                "budget ledger back-fill: %d reservation(s) posted and reconciled",
+                len(commitments),
+            )
+        self.env["ir.config_parameter"].sudo().set_param(
+            "budget.ledger_backfill_mismatch_commitment_ids",
+            json.dumps(mismatched.ids),
+        )
+        return mismatched

@@ -67,8 +67,8 @@ class BudgetReportSummary(models.AbstractModel):
             move_line_domain,
             order="date desc",
         )
-        # Reservation usage is posted to the budget ledger (budget_ledger,
-        # ADR-0016), so the move lines above already carry b/c/d.
+        # Reservation usage is posted to the budget ledger (budget ADR-0016),
+        # so the move lines above already carry b/c/d.
         tree = BudgetTree(
             move_lines=move_lines,
             accounts=accounts,

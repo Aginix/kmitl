@@ -11,9 +11,10 @@ We now run the commitment as a **sub-ledger posted to a general ledger**, the wa
 government budget accounting runs encumbrances: **every event on a
 `budget.commitment` posts a `budget.move`**, and every figure is read from
 `budget.move.line`. The `budget.commitment` stays a document; its lines become
-the **event log** (commands), never a source of numbers. Implemented in the new
-`budget_ledger` module (auto-installed with `budget` + `budget_transfer`), with
-thin seams in core `budget` so every writer goes through one entry point.
+the **event log** (commands), never a source of numbers. Implemented in core
+`budget` itself — the old figures summed from `budget.commitment.line` are
+replaced, not overridden — with one seam every writer goes through; the
+transfer top-up/release lives in `budget_transfer`.
 
 ## Decisions
 
@@ -77,15 +78,19 @@ thin seams in core `budget` so every writer goes through one entry point.
    `_cancel_budget_events` and `_has_budget_event`; every writer (mixins,
    controller service, wizards, disbursement, project, plan) calls them instead
    of `budget.commitment.line.create`.
-10. **Module split (Q10).** `budget_ledger` (auto-install) carries the posting,
-    the GL reads, the transfer hooks and the back-fill;
-    `kmitl_project_budget_ledger` / `procurement_plan_budget_ledger` (both
-    auto-install) name the reservation that owns each pool tag.
+10. **No new module (Q10).** Core `budget` carries the posting, the GL reads,
+    the back-fill and the reconciliation report; `budget_transfer` carries the
+    top-up/release; the existing `kmitl_project_budget_transfer` /
+    `procurement_plan_budget_transfer` bridges name the reservation that owns
+    each pool tag. `kmitl.project._auto_resync_commitment` is removed. (First
+    built as a separate `budget_ledger` module overriding core; folded in before
+    release so no figure is computed two ways.)
 11. **Same BM/ sequence; back-fill reports, never aborts (Q11).** Event moves use
-    the existing `budget.move` sequence. The install back-fill posts the history
-    in date order per reservation (re-using each existing consume move and adding
-    its liquidation lines), checks the invariants, logs every mismatch and keeps
-    installing. A reconciliation menu lists what does not match.
+    the existing `budget.move` sequence. The back-fill runs as the `budget`
+    upgrade's post-migration: it posts the history in date order per reservation
+    (re-using each existing consume move and adding its liquidation lines),
+    checks the invariants, logs every mismatch and keeps upgrading. A
+    reconciliation menu lists what does not match.
 
 Assumptions taken without a separate question: the move's fiscal year is always
 the commitment's; a `done` reservation with money left still counts as reserved

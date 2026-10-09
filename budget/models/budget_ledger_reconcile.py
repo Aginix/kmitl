@@ -36,7 +36,9 @@ class BudgetLedgerReconcile(models.TransientModel):
     commitment_id = fields.Many2one("budget.commitment", string="ใบจองงบประมาณ")
     account_fiscal_year_id = fields.Many2one("account.fiscal.year", string="ปีงบประมาณ")
     account_id = fields.Many2one("budget.account", string="รหัสงบประมาณ")
-    department_analytic_id = fields.Many2one("account.analytic.account", string="ส่วนงาน")
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account", string="ส่วนงาน"
+    )
     source_analytic_id = fields.Many2one("account.analytic.account", string="แหล่งเงิน")
     fund_analytic_id = fields.Many2one("account.analytic.account", string="กองทุน")
     activity_analytic_id = fields.Many2one("account.analytic.account", string="กิจกรรม")
@@ -97,8 +99,10 @@ class BudgetLedgerReconcile(models.TransientModel):
     def _coordinate_rows(self):
         def sums(model, domain, field):
             out = {}
-            for grp in self.env[model].sudo().read_group(
-                domain, [field], list(_COORDINATE), lazy=False
+            for grp in (
+                self.env[model]
+                .sudo()
+                .read_group(domain, [field], list(_COORDINATE), lazy=False)
             ):
                 key = tuple((grp.get(f) or [False])[0] for f in _COORDINATE)
                 out[key] = out.get(key, 0.0) + (grp.get(field) or 0.0)

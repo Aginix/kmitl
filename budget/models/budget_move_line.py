@@ -2,9 +2,29 @@ import logging
 from contextlib import ExitStack
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
+
+# A posted ledger line of a commitment event is the figure itself: its amount,
+# budget code and coordinate may not change afterwards — undo the event instead.
+_LEDGER_LOCKED_FIELDS = frozenset(
+    {
+        "balance",
+        "debit",
+        "credit",
+        "account_id",
+        "analytic_distribution",
+        "activity_analytic_id",
+        "department_analytic_id",
+        "fund_analytic_id",
+        "kmitl_project_analytic_id",
+        "procurement_plan_analytic_id",
+        "move_type",
+        "commitment_id",
+        "move_id",
+    }
+)
 
 
 class BudgetMoveLine(models.Model):
@@ -125,7 +145,44 @@ class BudgetMoveLine(models.Model):
     )
     account_fiscal_year_id = fields.Many2one(related="move_id.account_fiscal_year_id", store=True)
     parent_state = fields.Selection(related="move_id.state", store=True)
-    move_type = fields.Selection(related="move_id.move_type", store=True)
+    # The bucket a line moves (ADR-0016, Q4): defaults to the move's type, but
+    # a liquidation line inside an obligate/consume move — or a reservation
+    # top-up inside a transfer move — names its own bucket.
+    move_type = fields.Selection(
+        selection="_selection_move_type",
+        compute="_compute_move_type",
+        store=True,
+        readonly=False,
+        index=True,
+    )
+    commitment_id = fields.Many2one(
+        comodel_name="budget.commitment",
+        string="ใบจองงบประมาณ",
+        index=True,
+        readonly=True,
+        copy=False,
+        ondelete="restrict",
+    )
+    commitment_line_id = fields.Many2one(
+        comodel_name="budget.commitment.line",
+        string="เหตุการณ์ใบจอง",
+        index=True,
+        readonly=True,
+        copy=False,
+        ondelete="set null",
+    )
+    is_liquidation = fields.Boolean(
+        string="ปลดจอง",
+        readonly=True,
+        copy=False,
+        help="Moves money out of the previous bucket as a reservation advances "
+        "(reserve → obligate → consume).",
+    )
+    is_return = fields.Boolean(
+        string="ส่งคืนเงินเหลือจ่าย",
+        readonly=True,
+        copy=False,
+    )
     appropriation_type = fields.Selection(
         related="move_id.appropriation_type", store=True
     )
@@ -303,12 +360,33 @@ class BudgetMoveLine(models.Model):
 
         return lines
 
+    @api.model
+    def _selection_move_type(self):
+        return self.env["budget.move"]._fields["move_type"]._description_selection(
+            self.env
+        )
+
+    @api.depends("move_id.move_type")
+    def _compute_move_type(self):
+        for line in self:
+            line.move_type = line.move_id.move_type
+
     def write(self, vals):
         """
         Update budget move lines.
         """
         if not vals:
             return True
+        if _LEDGER_LOCKED_FIELDS & set(vals) and not self.env.context.get(
+            "budget_ledger_posting"
+        ):
+            if self.filtered(lambda l: l.commitment_id and l.parent_state == "posted"):
+                raise UserError(
+                    _(
+                        "Cannot edit a posted budget ledger line of a commitment. "
+                        "Cancel the commitment event instead."
+                    )
+                )
         vals = self._sanitize_vals(vals)
 
         # Handle tracking

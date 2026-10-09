@@ -128,8 +128,8 @@ class BudgetDashboard(models.AbstractModel):
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("account_id", "in", account_ids),
         ] + dim_leaves
-        # Usage leaves use only fields shared by commitment and ledger lines;
-        # the posted/active-commitment scope is added by _usage_read_group.
+        # Usage leaves on the ledger lines; the posted/commitment scope is
+        # added by _usage_read_group.
         cl_base = [
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("account_id", "in", account_ids),
@@ -1114,7 +1114,7 @@ class BudgetDashboard(models.AbstractModel):
         return out
 
     # ------------------------------------------------------------------
-    # usage seam (budget_ledger re-reads it from budget.move.line, ADR-0016)
+    # usage, read from the budget ledger (ADR-0016)
     # ------------------------------------------------------------------
     @staticmethod
     def _usage_group_key(grp, groupby):
@@ -1130,52 +1130,57 @@ class BudgetDashboard(models.AbstractModel):
                 key.append(value[0] if isinstance(value, (list, tuple)) else value or 0)
         return tuple(key)
 
-    def _usage_read_group(self, domain, groupby):
-        """Usage of active commitments grouped by ``groupby``.
+    def _usage_base_domain(self):
+        return [("parent_state", "=", "posted"), ("commitment_id", "!=", False)]
 
-        ``domain`` may only use fields that commitment lines and ledger lines
-        share (fiscal year, account, the six dimensions, date, commitment).
-        Returns ``{group_key: {"reserve", "obligate", "consume", "returned"}}``
-        with cumulative figures: reserve (net of returns) ⊇ obligate ⊇ consume,
-        so b = reserve − obligate, c = obligate − consume, d = consume, and
-        ``returned`` is the signed Σ of คืนจอง (negative).
+    def _usage_read_group(self, domain, groupby):
+        """Usage of the reservations grouped by ``groupby``, read from their
+        ledger lines.
+
+        ``domain`` may only use fields that ledger lines carry (fiscal year,
+        account, the six dimensions, date, commitment). Each band is the
+        negated Σ balance of its bucket (b = reserve, c = obligate,
+        d = consume), folded back into cumulative figures:
+        ``{group_key: {"reserve", "obligate", "consume", "returned"}}`` with
+        reserve (net of returns) ⊇ obligate ⊇ consume, so b = reserve −
+        obligate, c = obligate − consume, d = consume, and ``returned`` is the
+        signed Σ of คืนจอง (negative).
         """
-        base = [
-            ("state", "=", "posted"),
-            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
-        ]
-        out = {}
-        for grp in self.env["budget.commitment.line"].read_group(
-            base + list(domain),
-            ["amount"],
+        buckets = {}
+        for grp in self.env["budget.move.line"].read_group(
+            self._usage_base_domain() + list(domain),
+            ["balance"],
             list(groupby) + ["move_type", "is_return"],
             lazy=False,
         ):
-            figures = out.setdefault(
+            sums = buckets.setdefault(
                 self._usage_group_key(grp, groupby),
                 dict.fromkeys(("reserve", "obligate", "consume", "returned"), 0.0),
             )
-            amount = grp.get("amount") or 0.0
-            if grp.get("move_type") in figures:
-                figures[grp["move_type"]] += amount
+            balance = grp.get("balance") or 0.0
+            if grp.get("move_type") in ("reserve", "obligate", "consume"):
+                sums[grp["move_type"]] += balance
             if grp.get("is_return"):
-                figures["returned"] += amount
-        return out
+                sums["returned"] += balance
+        return {
+            key: {
+                "reserve": -(sums["reserve"] + sums["obligate"] + sums["consume"]),
+                "obligate": -(sums["obligate"] + sums["consume"]),
+                "consume": -sums["consume"],
+                # คืนจอง posts reserve +X; the figure stays signed negative.
+                "returned": -sums["returned"],
+            }
+            for key, sums in buckets.items()
+        }
 
     def _usage_commitment_ids(self, domain):
-        """Ids of the active commitments with usage matching ``domain``."""
-        return (
-            self.env["budget.commitment.line"]
-            .search(
-                [
-                    ("state", "=", "posted"),
-                    ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
-                ]
-                + list(domain)
-            )
-            .mapped("commitment_id")
-            .ids
+        """Ids of the reservations with ledger usage matching ``domain``."""
+        groups = self.env["budget.move.line"].read_group(
+            self._usage_base_domain() + list(domain),
+            ["commitment_id"],
+            ["commitment_id"],
         )
+        return [grp["commitment_id"][0] for grp in groups if grp.get("commitment_id")]
 
     # ------------------------------------------------------------------
     # helpers

@@ -10,21 +10,20 @@ class BudgetController(models.AbstractModel):
     """Unified budget availability engine (set-based, control-node).
 
     Single source of truth for "available budget" (ADR 0005). Availability for a
-    reservation against ``(budget.account × analytic_distribution)`` is:
-
-        available = current − used
-
+    reservation against ``(budget.account × analytic_distribution)`` is the
+    **Σ balance of every posted budget ledger line** (``budget.move.line``),
     evaluated at the **control node** on every hierarchical axis — the nearest
     budgetable ancestor-or-self that actually carries posted appropriation —
-    with both current and used rolled up over that node's subtree. Usually the
-    control node is the reserved node itself; for coarsely-budgeted lines
-    (งบบุคลากร / งบโครงการ, appropriated at an upper node) it walks up. Direction
-    is one-way: appropriation may sit at or above the reservation, never below.
+    rolled up over that node's subtree. Usually the control node is the
+    reserved node itself; for coarsely-budgeted lines (งบบุคลากร / งบโครงการ,
+    appropriated at an upper node) it walks up. Direction is one-way:
+    appropriation may sit at or above the reservation, never below.
 
-    - ``current`` = Σ posted ``budget.move.line.balance`` (appropriation + entry).
-    - ``used``    = Σ posted ``reserve`` lines of active commitments
-      (reserved/partial/done). obligate/consume are a waterfall *under* reserve
-      (ADR 0001), so they are not subtracted again here.
+    - Appropriations and transfers post positive lines; every reservation,
+      obligation and consumption is posted as negative lines with liquidation
+      (ADR-0016), so one sum is current − used and nothing is read from
+      ``budget.commitment.line``.
+    - The pool tags are pinned on every bucket alike (ADR-0016, Q3).
     - The result is **not floored**: a negative value means over-committed.
 
     Matching is set-based (``read_group`` + ``child_of``) on stored columns, so
@@ -41,8 +40,6 @@ class BudgetController(models.AbstractModel):
 
     # Posted move types that build the appropriated pool (incl. transfers).
     _APPROPRIATION_MOVE_TYPES = ("appropriation", "entry")
-    # Commitment states whose reserve lines still lock budget.
-    _ACTIVE_COMMITMENT_STATES = ("reserved", "partial", "done")
     # Analytic plan code -> stored column on the budget line models. The only
     # place a dimension is named; add a controlled dimension by adding a stored
     # column + one entry here (ADR 0005, G1).
@@ -54,18 +51,6 @@ class BudgetController(models.AbstractModel):
         "kmitl_project": "kmitl_project_analytic_id",
         "procurement_plan": "procurement_plan_analytic_id",
     }
-    # "Ownership tag" dimensions: they identify the document that owns a
-    # reservation (a project / a procurement plan) and ride on its reserve lines,
-    # but the appropriation pool a project draws from is *untagged* (floating,
-    # ADR-0007). So they are pinned absent on the appropriation (current) side
-    # only; on the usage side a floating check must count every reserve drawing
-    # from the pool whatever its owner, else it ignores other documents' reserves
-    # and overstates what is available — letting projects over-reserve the pool.
-    _POOL_TAG_COLUMNS = (
-        "kmitl_project_analytic_id",
-        "procurement_plan_analytic_id",
-    )
-
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
@@ -77,7 +62,8 @@ class BudgetController(models.AbstractModel):
 
         ``budget_account`` may be an id or a ``budget.account`` record;
         ``analytic_distribution`` is the ``{analytic_account_id: percentage}``
-        JSON. Returns ``current − used`` at the control node (not floored).
+        JSON. Returns the Σ balance of the posted ledger at the control node
+        (not floored).
         """
         if not company_id:
             company_id = self.env.company.id
@@ -88,9 +74,7 @@ class BudgetController(models.AbstractModel):
         controls = self._resolve_control_nodes(
             account, dims, fiscal_year_id, company_id
         )
-        current = self._sum_current(controls, dims, fiscal_year_id, company_id)
-        used = self._sum_used(controls, dims, fiscal_year_id, company_id)
-        return current - used
+        return self._sum_available(controls, dims, fiscal_year_id, company_id)
 
     @api.model
     def get_available_budget(self, analytic_data, fiscal_year_id, company_id=None):
@@ -243,69 +227,42 @@ class BudgetController(models.AbstractModel):
             else "="
         )
 
-    def _absent_dim_leaves(self, dims, include_pool_tags=True):
+    def _absent_dim_leaves(self, dims):
         """Require controlled dimensions NOT used by this reservation to be empty.
 
         Without this, a combination that omits a dimension would match
         appropriation/usage carrying *any* value there (cross-dimension leak).
         ``kmitl_project`` and ``procurement_plan`` are mutually exclusive, so the
         unused one is correctly required to be empty.
-
-        ``include_pool_tags=False`` leaves the ownership tags
-        (:attr:`_POOL_TAG_COLUMNS`) unpinned — used on the *usage* side so a
-        floating-pool check counts every reserve drawing from the (untagged)
-        pool whatever document owns it; they stay pinned on the appropriation
-        side. The four real dimensions are pinned either way.
         """
-        skip = () if include_pool_tags else self._POOL_TAG_COLUMNS
         return [
             (column, "=", False)
             for column in self._DIM_COLUMNS.values()
-            if column not in dims and column not in skip
+            if column not in dims
         ]
 
-    def _control_scope(self, controls, dims, include_pool_tags=True):
+    def _control_scope(self, controls, dims):
         """Subtree leaves over the control node on every axis.
 
-        ``child_of`` rolls usage/appropriation up to the control node so sibling
-        draws cannot double-spend a shared pool; flat analytic dimensions fall
-        back to an exact match. Unused dimensions are pinned empty, except the
-        ownership tags when ``include_pool_tags=False`` (see
-        :meth:`_absent_dim_leaves`).
+        ``child_of`` rolls the ledger up to the control node so sibling draws
+        cannot double-spend a shared pool; flat analytic dimensions fall back to
+        an exact match. Unused dimensions are pinned empty.
         """
         dim_op = self._analytic_hier_op()
         leaves = [("account_id", "child_of", controls["account"].id)]
         for column in dims:
             leaves.append((column, dim_op, controls["dims"][column].id))
-        return leaves + self._absent_dim_leaves(
-            dims, include_pool_tags=include_pool_tags
-        )
+        return leaves + self._absent_dim_leaves(dims)
 
-    def _sum_current(self, controls, dims, fiscal_year_id, company_id):
-        """Σ posted appropriation/entry balance over the control-node subtree."""
-        domain = self._appropriation_domain(fiscal_year_id, company_id)
-        domain += self._control_scope(controls, dims)
-        groups = self.env["budget.move.line"].read_group(domain, ["balance"], [])
-        return (groups[0].get("balance") or 0.0) if groups else 0.0
-
-    def _sum_used(self, controls, dims, fiscal_year_id, company_id):
-        """Σ posted reserve amounts of active commitments over the subtree."""
+    def _sum_available(self, controls, dims, fiscal_year_id, company_id):
+        """Σ posted balance of every bucket over the control-node subtree."""
         domain = [
-            ("state", "=", "posted"),
-            ("move_type", "=", "reserve"),
-            ("commitment_id.state", "in", list(self._ACTIVE_COMMITMENT_STATES)),
+            ("parent_state", "=", "posted"),
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("company_id", "=", company_id),
-        ]
-        # Count every reserve drawing from the pool regardless of which project /
-        # plan owns it: the floating appropriation is untagged, so pinning the
-        # ownership tags here would drop other documents' reserves and overstate
-        # availability (the over-reservation bug).
-        domain += self._control_scope(controls, dims, include_pool_tags=False)
-        groups = self.env["budget.commitment.line"].read_group(
-            domain, ["amount"], []
-        )
-        return (groups[0].get("amount") or 0.0) if groups else 0.0
+        ] + self._control_scope(controls, dims)
+        groups = self.env["budget.move.line"].read_group(domain, ["balance"], [])
+        return (groups[0].get("balance") or 0.0) if groups else 0.0
 
     def _format_budget_shortage_message(
         self, analytic_data, available_amount, requested_amount
