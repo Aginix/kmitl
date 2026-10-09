@@ -11,7 +11,16 @@
                 expr="//group[@name='budget']/field[@name='department_analytic_id']"
                 position="after"
             >
-                <field name="is_supported_by_other_units" />
+                <label for="is_supported_by_other_units" />
+                <div>
+                    <field name="is_supported_by_other_units" />
+                    <div>
+                        ติ๊กเมื่อโครงการได้รับการสนับสนุนงบประมาณจากหน่วยงานอื่น
+                        — โครงการจะเปิดให้ทุกหน่วยงานมองเห็น เพื่อให้หน่วยงานผู้สนับสนุนเลือกโครงการนี้ในใบโอนงบประมาณได้
+                        โดยใบโอนต้องระบุ ส่วนงาน/กิจกรรม/กองทุน ของหน่วยงานเจ้าของโครงการ
+                        หากไม่ติ๊ก จะเห็นเฉพาะหน่วยงานเจ้าของโครงการ
+                    </div>
+                </div>
             </xpath>
         </field>
     </record>
