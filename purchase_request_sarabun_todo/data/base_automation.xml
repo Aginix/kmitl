@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="automation_pr_notify_returned" model="base.automation">
+            <field
+                name="name"
+            >พ.1: แจ้งผู้ขอแก้ไขเมื่อถูกตีกลับจากสารบรรณ (returned)</field>
+            <field name="model_id" ref="purchase_request.model_purchase_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'sent')]</field>
+            <field name="filter_domain">[('state', '=', 'returned')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('purchase_request.field_purchase_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">
+xmlid = "purchase_request_sarabun_todo.mail_activity_pr_returned_edit"
+act_type = env.ref(xmlid, raise_if_not_found=False)
+if act_type:
+    for record in records:
+        if not record.requested_by:
+            continue
+        record.activity_ids.filtered(
+            lambda a: a.activity_type_id == act_type
+            and a.user_id.id == record.requested_by.id
+        ).unlink()
+        record.activity_schedule(
+            xmlid,
+            summary="คำขอ พ.1 เลขที่ %s ถูกตีกลับ กรุณาแก้ไขและส่งหนังสือใหม่" % (record.name or ""),
+            user_id=record.requested_by.id,
+        )
+</field>
+        </record>
+
+        <record id="automation_pr_clear_returned" model="base.automation">
+            <field
+                name="name"
+            >พ.1: ล้าง Todo แก้ไขเมื่อออกจากสถานะตีกลับ (returned)</field>
+            <field name="model_id" ref="purchase_request.model_purchase_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'returned')]</field>
+            <field name="filter_domain">[('state', '!=', 'returned')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('purchase_request.field_purchase_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records.activity_unlink(["purchase_request_sarabun_todo.mail_activity_pr_returned_edit"])</field>
+        </record>
+
+        <record id="automation_pr_notify_approved_fyi" model="base.automation">
+            <field
+                name="name"
+            >พ.1: แจ้ง FYI ผู้ขอเมื่อได้รับอนุมัติ (approved)</field>
+            <field name="model_id" ref="purchase_request.model_purchase_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '!=', 'approved')]</field>
+            <field name="filter_domain">[('state', '=', 'approved')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('purchase_request.field_purchase_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">
+xmlid = "purchase_request_sarabun_todo.mail_activity_pr_approved_fyi"
+act_type = env.ref(xmlid, raise_if_not_found=False)
+if act_type:
+    for record in records:
+        if not record.requested_by:
+            continue
+        record.activity_ids.filtered(
+            lambda a: a.activity_type_id == act_type
+            and a.user_id.id == record.requested_by.id
+        ).unlink()
+        record.activity_schedule(
+            xmlid,
+            summary="คำขอ พ.1 เลขที่ %s ได้รับอนุมัติแล้ว" % (record.name or ""),
+            user_id=record.requested_by.id,
+        )
+</field>
+        </record>
+
+        <record id="automation_pr_notify_rejected_fyi" model="base.automation">
+            <field
+                name="name"
+            >พ.1: แจ้ง FYI ผู้ขอเมื่อคำขอถูกปฏิเสธ (rejected)</field>
+            <field name="model_id" ref="purchase_request.model_purchase_request" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '!=', 'rejected')]</field>
+            <field name="filter_domain">[('state', '=', 'rejected')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('purchase_request.field_purchase_request__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">
+xmlid = "purchase_request_sarabun_todo.mail_activity_pr_rejected_fyi"
+act_type = env.ref(xmlid, raise_if_not_found=False)
+if act_type:
+    for record in records:
+        if not record.requested_by:
+            continue
+        record.activity_ids.filtered(
+            lambda a: a.activity_type_id == act_type
+            and a.user_id.id == record.requested_by.id
+        ).unlink()
+        record.activity_schedule(
+            xmlid,
+            summary="คำขอ พ.1 เลขที่ %s ถูกปฏิเสธ" % (record.name or ""),
+            user_id=record.requested_by.id,
+        )
+</field>
+        </record>
+
+    </data>
+</odoo>
