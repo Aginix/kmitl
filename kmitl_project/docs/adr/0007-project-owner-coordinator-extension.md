@@ -1,6 +1,6 @@
 # Project Owners (incl. ผู้ประสานงาน) ship as an install-only extension that widens the base OU rule
 
-The ผู้ประสานงาน (`coordinator_id`) and the rights of a **Project Owner** —
+The ผู้ประสานงาน (`coordinator_ids`, one or more per project) and the rights of a **Project Owner** —
 หัวหน้าโครงการ, ผู้ประสานงาน or the creator — live in two new modules,
 `kmitl_project_coordinator` and its auto-install glue
 `kmitl_project_coordinator_sarabun`. They are not in `kmitl_project` /
@@ -18,7 +18,7 @@ a plain **install**: no existing module is upgraded or bumped.
   (`kmitl_project.kmitl_project_operating_unit_rule`) to let owners in from any OU. This
   survives a later `-u kmitl_project`, because Odoo also upgrades installed dependents
   after the base. An `uninstall_hook` restores the original domain, since the widened
-  one references `coordinator_id`.
+  one references `coordinator_ids`.
 - **The ขออนุมัติ button gate needs both the coordinator and e-Saraban**, so it sits in
   an auto-install glue module. The coordinator module itself stays free of e-Saraban.
 

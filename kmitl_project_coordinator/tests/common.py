@@ -62,7 +62,7 @@ class KmitlProjectCoordinatorCommon(TransactionCase):
                     "account_fiscal_year_id": cls.fiscal_year.id,
                     "operating_unit_id": cls.ou_a.id,
                     "manager_id": cls.manager.id,
-                    "coordinator_id": cls.coordinator.id,
+                    "coordinator_ids": [Command.set(cls.coordinator.ids)],
                 }
             )
             .sudo()

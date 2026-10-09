@@ -2,7 +2,7 @@ from odoo import SUPERUSER_ID, api
 
 # The domain kmitl_project ships for its global OU rule. This module widens it to
 # let a project's owners in from another OU (security/security.xml) and the
-# widened domain references coordinator_id — restore the original on uninstall so
+# widened domain references coordinator_ids — restore the original on uninstall so
 # the rule never points at a dropped column.
 ORIGINAL_OU_RULE_DOMAIN = """[
     '|',

@@ -7,8 +7,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='manager_id']" position="after">
                 <field
-                    name="coordinator_id"
-                    widget="many2one_avatar_user"
+                    name="coordinator_ids"
+                    widget="many2many_avatar_user"
                     options="{'no_create': True}"
                 />
             </xpath>
@@ -22,8 +22,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='department_analytic_id']" position="after">
                 <field
-                    name="coordinator_id"
-                    widget="many2one_avatar_user"
+                    name="coordinator_ids"
+                    widget="many2many_avatar_user"
                     optional="show"
                 />
             </xpath>
@@ -36,13 +36,13 @@
         <field name="inherit_id" ref="kmitl_project.view_kmitl_project_search" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='creating_user_id']" position="after">
-                <field name="coordinator_id" />
+                <field name="coordinator_ids" />
             </xpath>
             <xpath expr="//filter[@name='my_projects']" position="after">
                 <filter
                     name="my_coordinated_projects"
                     string="โครงการที่ฉันประสานงาน"
-                    domain="[('coordinator_id', '=', uid)]"
+                    domain="[('coordinator_ids', 'in', uid)]"
                 />
             </xpath>
         </field>

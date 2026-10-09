@@ -10,6 +10,6 @@ class KmitlProjectCoordinatorPortal(KmitlProjectPortal):
         return expression.OR(
             [
                 super()._get_project_domain(),
-                [("coordinator_id", "=", request.env.user.id)],
+                [("coordinator_ids", "in", request.env.user.id)],
             ]
         )

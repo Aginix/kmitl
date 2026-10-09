@@ -1,3 +1,4 @@
+from odoo import Command
 from odoo.exceptions import AccessError
 from odoo.tests.common import tagged
 
@@ -53,13 +54,22 @@ class TestProjectCoordinator(KmitlProjectCoordinatorCommon):
         self.assertTrue(message)
         self.assertIn(partner, message.notified_partner_ids)
 
-    def test_change_coordinator_subscribes_new_one(self):
-        self.project.coordinator_id = self.stranger
-        self.assertIn(
-            self.stranger.partner_id,
-            self.project.message_follower_ids.partner_id,
+    def test_multiple_coordinators_are_owners_and_followers(self):
+        self.project.coordinator_ids = [Command.link(self.stranger.id)]
+        self.assertEqual(self.project.coordinator_names, "kp_coordinator, kp_stranger")
+        for user in (self.coordinator, self.stranger):
+            self.assertTrue(self.project.with_user(user).is_project_owner, user.login)
+            follower = self.project.message_follower_ids.filtered(
+                lambda f, p=user.partner_id: f.partner_id == p
+            )
+            self.assertIn(self.subtype, follower.subtype_ids, user.login)
+
+    def test_removed_coordinator_loses_ownership_stays_subscribed(self):
+        self.project.coordinator_ids = [Command.set(self.stranger.ids)]
+        self.assertFalse(
+            self.project.with_user(self.coordinator).sudo().is_project_owner
         )
-        # The previous coordinator stays subscribed (Odoo convention).
+        # The removed coordinator stays subscribed (Odoo convention).
         self.assertIn(
             self.coordinator.partner_id,
             self.project.message_follower_ids.partner_id,
@@ -71,7 +81,7 @@ class TestProjectCoordinator(KmitlProjectCoordinatorCommon):
             partner_ids=partner.ids,
             subtype_ids=self.env.ref("mail.mt_comment").ids,
         )
-        self.project.coordinator_id = self.manager_user
+        self.project.coordinator_ids = [Command.link(self.manager_user.id)]
         follower = self.project.message_follower_ids.filtered(
             lambda f: f.partner_id == partner
         )

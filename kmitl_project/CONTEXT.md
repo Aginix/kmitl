@@ -25,7 +25,7 @@ The amount a project actually **received via Project Allocation** — a *compute
 _Avoid_: allocation, cost; the **Project Budget Plan** total (`budget_expense_total`, the project's *ask*, a different quantity — the two are never reconciled automatically)
 
 **Project Coordinator (ผู้ประสานงาน)**:
-The internal user (`coordinator_id`) who coordinates a project day to day. They are told of every **status** change, follow its chatter, and can be swapped at any point in the project's life, because they are a contact, not part of the approved content. One per project. They must be a KMITL Project user.
+An internal user (`coordinator_ids`) who coordinates a project day to day. They are told of every **status** change, follow its chatter, and can be added or removed at any point in the project's life, because they are a contact, not part of the approved content. A project may have several. Each must be a KMITL Project user.
 _Avoid_: Project Manager / หัวหน้าโครงการ (`manager_id`, the employee who leads the project, a different person and field)
 
 **Project Owner (เจ้าของโครงการ)**:

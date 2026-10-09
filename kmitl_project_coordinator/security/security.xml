@@ -11,7 +11,7 @@
                 name="groups"
                 eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
             />
-            <field name="domain_force">[('coordinator_id', '=', user.id)]</field>
+            <field name="domain_force">[('coordinator_ids', 'in', user.id)]</field>
         </record>
 
         <record id="project_plan_coordinator_rule" model="ir.rule">
@@ -23,7 +23,7 @@
             />
             <field
                 name="domain_force"
-            >[('project_id.coordinator_id', '=', user.id)]</field>
+            >[('project_id.coordinator_ids', 'in', user.id)]</field>
         </record>
 
         <record id="project_budget_line_coordinator_rule" model="ir.rule">
@@ -35,7 +35,7 @@
             />
             <field
                 name="domain_force"
-            >[('project_id.coordinator_id', '=', user.id)]</field>
+            >[('project_id.coordinator_ids', 'in', user.id)]</field>
         </record>
 
         <record id="project_target_coordinator_rule" model="ir.rule">
@@ -47,7 +47,7 @@
             />
             <field
                 name="domain_force"
-            >[('project_id.coordinator_id', '=', user.id)]</field>
+            >[('project_id.coordinator_ids', 'in', user.id)]</field>
         </record>
 
         <record id="project_output_coordinator_rule" model="ir.rule">
@@ -59,7 +59,7 @@
             />
             <field
                 name="domain_force"
-            >[('project_id.coordinator_id', '=', user.id)]</field>
+            >[('project_id.coordinator_ids', 'in', user.id)]</field>
         </record>
 
         <record id="project_expected_outcome_coordinator_rule" model="ir.rule">
@@ -71,7 +71,7 @@
             />
             <field
                 name="domain_force"
-            >[('project_id.coordinator_id', '=', user.id)]</field>
+            >[('project_id.coordinator_ids', 'in', user.id)]</field>
         </record>
 
         <!-- Global rules are AND'ed, so no group rule can widen the OU read rule:
@@ -83,7 +83,7 @@
                 ('operating_unit_id', '=', False),
                 ('operating_unit_id', 'in', user.operating_unit_ids.ids),
                 ('manager_id.user_id', '=', user.id),
-                ('coordinator_id', '=', user.id),
+                ('coordinator_ids', 'in', user.id),
                 ('creating_user_id', '=', user.id)
             ]</field>
         </record>
