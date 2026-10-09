@@ -149,6 +149,7 @@
             <xpath expr="//form" position="inside">
                 <field name="hide_create_po_button" invisible="1" />
                 <field name="can_reset_to_draft" invisible="1" />
+                <field name="is_construction" invisible="1" />
             </xpath>
 
             <xpath
@@ -257,15 +258,37 @@
                     string="Purchase Request Details"
                     name="purchase_request_details_group"
                 >
-                    <group>
+                    <!-- ชื่อเรื่อง is composed, never typed (root ADR-0012): the
+                         requester fills the two blanks of ขอให้{ประเภท}{ค่าใช้จ่าย}
+                         and the full title shows read-only underneath. -->
+                    <group name="purchase_request_title_group" colspan="2">
+                        <label for="procurement_type_id" string="ชื่อเรื่อง" />
+                        <div class="o_row">
+                            <span>ขอให้</span>
+                            <field
+                                name="procurement_type_id"
+                                required="1"
+                                attrs="{'readonly': [('is_editable','=', False)]}"
+                                domain="[('is_purchase','=', True)]"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field
+                                name="expense_type"
+                                class="flex-grow-1"
+                                placeholder="ประเภทค่าใช้จ่าย เช่น วัสดุการศึกษาใช้ไป"
+                                attrs="{'readonly': [('is_editable','=', False)], 'required': [('state', '=', 'draft')]}"
+                            />
+                        </div>
                         <field
                             name="title"
-                            required="1"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            string="ชื่อเรื่องเต็ม"
+                            attrs="{'invisible': [('title', '=', False)]}"
                         />
+                    </group>
+                    <group>
                         <field
                             name="description"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            attrs="{'readonly': [('is_editable','=', False)], 'required': [('state', '=', 'draft')]}"
                         />
                         <field
                             name="requested_by"
@@ -306,18 +329,6 @@
                             widget="selection"
                         />
                         <field
-                            name="procurement_type_id"
-                            required="1"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
-                            domain="[('is_purchase','=', True)]"
-                        />
-                        <field
-                            name="procurement_method_id"
-                            required="1"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
-                            widget="radio"
-                        />
-                        <field
                             name="payment_type"
                             required="1"
                             attrs="{'readonly': [('is_editable','=', False)]}"
@@ -328,6 +339,22 @@
                             name="operating_unit_id"
                             widget="selection"
                             groups="operating_unit.group_multi_operating_unit"
+                        />
+                    </group>
+                </group>
+                <!-- The Verifier's own answers (root ADR-0012): hidden from the
+                     requester while drafting, open to the verify group only. -->
+                <group
+                    string="สำหรับเจ้าหน้าที่"
+                    name="procurement_verifier_group"
+                    attrs="{'invisible': [('state', '=', 'draft')]}"
+                >
+                    <group>
+                        <field name="is_verifier_editable" invisible="1" />
+                        <field
+                            name="procurement_method_id"
+                            widget="radio"
+                            attrs="{'readonly': [('is_verifier_editable', '=', False)], 'required': [('is_verifier_editable', '=', True)]}"
                         />
                     </group>
                 </group>
@@ -399,7 +426,11 @@
                         attrs="{'readonly': [('is_editable', '=', False)]}"
                     />
                 </page>
-                <page name="work_supervisor" string="Work Supervisors">
+                <page
+                    name="work_supervisor"
+                    string="Work Supervisors"
+                    attrs="{'invisible': [('is_construction', '=', False)]}"
+                >
                     <field
                         name="work_supervisor_ids"
                         nolabel="1"

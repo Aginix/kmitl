@@ -66,6 +66,7 @@ E2E_CASES = [
     # Group A: fund_0200 + source_2 + activity_06
     {
         "title": "[E2E] ซื้อวัสดุสำนักงาน (จ่ายตรง)",
+        "expense_type": "วัสดุสำนักงาน",
         "description": "จัดซื้อวัสดุสำนักงาน เฉพาะเจาะจง จ่ายตรง",
         "price_unit": 45_000,
         "payment_type": "direct",
@@ -78,6 +79,7 @@ E2E_CASES = [
     },
     {
         "title": "[E2E] เช่าเครื่องถ่ายเอกสาร (ยืมเงิน)",
+        "expense_type": "เครื่องถ่ายเอกสาร",
         "description": "เช่าเครื่องถ่ายเอกสาร เฉพาะเจาะจง ยืมเงิน",
         "price_unit": 72_000,
         "payment_type": "advance",
@@ -90,6 +92,7 @@ E2E_CASES = [
     },
     {
         "title": "[E2E] จ้างปรับปรุงห้องปฏิบัติการ (EGP, E-bidding)",
+        "expense_type": "ปรับปรุงห้องปฏิบัติการ",
         "description": "จ้างก่อสร้างปรับปรุงห้องปฏิบัติการ E-bidding EGP",
         "price_unit": 2_500_000,
         "payment_type": "advance",
@@ -104,6 +107,7 @@ E2E_CASES = [
     # Group B: fund_0100 + source_1 + activity_09
     {
         "title": "[E2E] ซื้อครุภัณฑ์คอมพิวเตอร์ (งบแผ่นดิน, คัดเลือก)",
+        "expense_type": "ครุภัณฑ์คอมพิวเตอร์",
         "description": "จัดซื้อครุภัณฑ์คอมพิวเตอร์ งบแผ่นดิน คัดเลือก EGP",
         "price_unit": 800_000,
         "payment_type": "direct",
@@ -117,6 +121,7 @@ E2E_CASES = [
     },
     {
         "title": "[E2E] จ้างเหมาบริการทำความสะอาด (งบแผ่นดิน)",
+        "expense_type": "ทำความสะอาด",
         "description": "จ้างทำของ/จ้างเหมาบริการ งบแผ่นดิน เฉพาะเจาะจง ใกล้ EGP",
         "price_unit": 95_000,
         "payment_type": "direct",
@@ -129,6 +134,7 @@ E2E_CASES = [
     },
     {
         "title": "[E2E] ซื้อเครื่องมือวิทยาศาสตร์ (งบแผ่นดิน, ประกาศทั่วไป)",
+        "expense_type": "เครื่องมือวิทยาศาสตร์",
         "description": "จัดซื้อเครื่องมือวิทยาศาสตร์ งบแผ่นดิน ประกาศเชิญชวนทั่วไป EGP",
         "price_unit": 3_200_000,
         "payment_type": "advance",
@@ -143,6 +149,7 @@ E2E_CASES = [
     # Group C: fund_0300 + source_2 + activity_00
     {
         "title": "[E2E] จ้างที่ปรึกษาวิจัย (กองทุนวิจัย, จ่ายล่วงหน้า)",
+        "expense_type": "ที่ปรึกษาวิจัย",
         "description": "จ้างทำของ/จ้างเหมาบริการที่ปรึกษาวิจัย กองทุนวิจัย จ่ายล่วงหน้า",
         "price_unit": 85_000,
         "payment_type": "prepaid",
@@ -155,6 +162,7 @@ E2E_CASES = [
     },
     {
         "title": "[E2E] ซื้ออุปกรณ์ห้องปฏิบัติการ (กองทุนวิจัย, EGP)",
+        "expense_type": "อุปกรณ์ห้องปฏิบัติการ",
         "description": "จัดซื้ออุปกรณ์ห้องปฏิบัติการ กองทุนวิจัย EGP จ่ายล่วงหน้า",
         "price_unit": 450_000,
         "payment_type": "prepaid",
@@ -169,6 +177,7 @@ E2E_CASES = [
     # Group D: fund_0400 + source_2 + activity_06
     {
         "title": "[E2E] เช่าเครื่องมือวัด (กองทุนบริการวิชาการ)",
+        "expense_type": "เครื่องมือวัด",
         "description": "เช่าเครื่องมือวัด กองทุนบริการวิชาการ ยืมเงิน",
         "price_unit": 65_000,
         "payment_type": "advance",
@@ -181,6 +190,7 @@ E2E_CASES = [
     },
     {
         "title": "[E2E] จ้างก่อสร้างห้องเรียนอัจฉริยะ (EGP, E-bidding)",
+        "expense_type": "ห้องเรียนอัจฉริยะ",
         "description": "จ้างก่อสร้างห้องเรียนอัจฉริยะ กองทุนบริการวิชาการ E-bidding EGP",
         "price_unit": 5_000_000,
         "payment_type": "direct",
@@ -395,7 +405,7 @@ def _create_pr_with_line(
 
     pr = env["purchase.request"].create(
         {
-            "title": case["title"],
+            "expense_type": case["expense_type"],
             "description": case["description"],
             "account_fiscal_year_id": fiscal_year.id,
             "procurement_type_id": procurement_type.id,

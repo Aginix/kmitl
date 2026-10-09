@@ -132,7 +132,12 @@ class PurchaseRequestApproval(models.Model):
     )
 
     # == Own fields (copied from purchase.request on creation) ==
-    title = fields.Char(string="Title")
+    title = fields.Char(
+        string="Title",
+        compute="_compute_title",
+        store=True,
+    )
+    expense_type = fields.Char(string="Expense Type")
     description = fields.Text(string="Description")
     procurement_type_id = fields.Many2one(
         comodel_name="procurement.type",
@@ -266,6 +271,20 @@ class PurchaseRequestApproval(models.Model):
     )
 
     is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
+
+    @api.depends("procurement_type_id", "expense_type")
+    def _compute_title(self):
+        """ชื่อเรื่อง = รายงานขอ{ประเภทการจัดซื้อ/จ้าง}{ประเภทค่าใช้จ่าย}, from the
+        PA's own copies (root ADR-0012). Same rules as the พ.1 title: the type
+        record, not its name, and a PA without an expense type keeps its title."""
+        for rec in self:
+            if rec.expense_type:
+                rec.title = "รายงานขอ%s%s" % (
+                    rec.procurement_type_id.name or "",
+                    rec.expense_type.strip(),
+                )
+            else:
+                rec.title = rec.title
 
     @api.depends("state")
     def _compute_is_editable(self):

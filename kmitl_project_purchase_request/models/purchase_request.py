@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from odoo import _, api, fields, models
@@ -24,6 +23,23 @@ class PurchaseRequest(models.Model):
         comodel_name="kmitl.project",
         string="โครงการ/กิจกรรม",
         tracking=True,
+        # Pickable once the project's money is reserved (to_send onwards) and
+        # in the request's own fiscal year — Reserve still waits for
+        # in_progress (root ADR-0011). OU scoping comes from the global
+        # kmitl.project rule.
+        domain="[('state', 'in', ('to_send', 'sent', 'in_progress')),"
+        " ('account_fiscal_year_id', '=', account_fiscal_year_id),"
+        " ('budget_account_id.purchase_ok', '=', True),"
+        " ('budget_account_id.product_id', '!=', False)]",
+    )
+    kmitl_project_remaining = fields.Float(
+        string="งบโครงการคงเหลือ",
+        digits="Product Price",
+        compute="_compute_kmitl_project_remaining",
+        help=(
+            "งบประมาณของโครงการ หักใบขอซื้อที่จองงบประมาณแล้ว — ใบนี้ยังไม่ถูกนับ"
+            "จนกว่าจะจองงบประมาณ (ข้อมูลประกอบเท่านั้น, root ADR-0011)"
+        ),
     )
 
     project_analytic_id = fields.Many2one(
@@ -55,26 +71,69 @@ class PurchaseRequest(models.Model):
                 dist[str(rec.project_analytic_id.id)] = 100
             rec.analytic_distribution = dist or False
 
+    @api.depends("kmitl_project_id")
+    def _compute_kmitl_project_remaining(self):
+        for rec in self:
+            project = rec.kmitl_project_id
+            rec.kmitl_project_remaining = (
+                project.budget_amount - project._project_pr_total() if project else 0.0
+            )
+
     def _domain_budget_account_id(self):
         # Standalone PRs must not draw directly on a project budget code — those
         # are reserved through projects (ADR-0007). Project-driven PRs prefill the
         # code (read-only), so the domain never blocks them.
         return super()._domain_budget_account_id() + [("is_project", "=", False)]
 
-    def _reservation_commitment_mode_domain(self):
-        # The project's approval gate rides in the picker itself, so an
-        # ineligible slip is never offered (ADR-0010's precedent: the picker
-        # excludes plan slips that already have an active PR). Needed because
-        # the reservation is minted at the project's to_verify → to_send step —
-        # a project still awaiting its signed หนังสือ therefore holds a live
-        # commitment that must not be spendable yet (kmitl_project ADR-0005).
-        domain = super()._reservation_commitment_mode_domain()
-        if self.budget_selection_mode == "project":
-            domain = domain + [
-                ("account_id.is_project", "=", True),
-                ("kmitl_project_id.state", "=", "in_progress"),
-            ]
-        return domain
+    def _procurement_under_fields(self):
+        return super()._procurement_under_fields() | {"kmitl_project_id"}
+
+    def _prepare_procurement_under_vals(self):
+        """A chosen project brings its budget code, fiscal year and full
+        analytic distribution (4 dims + its own kmitl_project dim), locked —
+        root ADR-0011. Choosing another answer drops the project."""
+        vals = super()._prepare_procurement_under_vals()
+        project = self.kmitl_project_id
+        if project and self.budget_selection_mode in ("normal", "project"):
+            vals.update(
+                {
+                    "budget_selection_mode": "project",
+                    "use_project": True,
+                    "budget_account_id": project.budget_account_id.id,
+                    "account_fiscal_year_id": project.account_fiscal_year_id.id,
+                    "analytic_distribution": project.analytic_distribution or False,
+                }
+            )
+        elif project:
+            vals.update({"kmitl_project_id": False, "use_project": False})
+        elif self.use_project:
+            vals["use_project"] = False
+        return vals
+
+    @api.onchange("budget_selection_mode")
+    def _onchange_budget_selection_mode_project(self):
+        if self.budget_selection_mode != "project":
+            self.kmitl_project_id = False
+
+    @api.onchange("kmitl_project_id")
+    def _onchange_kmitl_project_id(self):
+        """Preview the project's code on the live form; the dimensions are
+        written server-side (see _sync_procurement_under)."""
+        project = self.kmitl_project_id
+        if project:
+            self.budget_account_id = project.budget_account_id.id
+            # ชื่อเรื่อง is composed (root ADR-0012): seed only its expense
+            # blank, and never over the requester's own words.
+            if not self.expense_type:
+                self.expense_type = "วัสดุในโครงการ"
+
+    @api.onchange("account_fiscal_year_id")
+    def _onchange_account_fiscal_year_id_project(self):
+        # The year filters the project dropdown: another year drops the pick.
+        project = self.kmitl_project_id
+        if project and project.account_fiscal_year_id != self.account_fiscal_year_id:
+            self.kmitl_project_id = False
+            self.budget_account_id = False
 
     def _check_drawable_commitment(self, commitment):
         # A project's shared commitment sits on an ``is_project`` budget code this
@@ -88,9 +147,7 @@ class PurchaseRequest(models.Model):
                 super()._domain_budget_account_id()
                 + [("id", "=", commitment.account_id.id)]
             ):
-                raise UserError(
-                    _("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้")
-                )
+                raise UserError(_("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้"))
             return True
         return super()._check_drawable_commitment(commitment)
 
@@ -98,23 +155,10 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         super()._compute_is_budget_editable()
         for rec in self:
-            # Once a พ.1 is attributed to a project its budget is the project's,
-            # in every state — ดึงกลับ recalls the request for editing, it does
-            # not reopen the แหล่งงบประมาณ (ADR-0015). The PR-first draw is
-            # unaffected: ``use_project`` is still False while the slip is being
-            # picked, and is written only by the draw itself.
+            # A project พ.1's code and dims are the project's, in every state:
+            # correcting them means changing the project (root ADR-0011).
             if rec.use_project:
                 rec.is_budget_editable = False
-
-    # No _onchange to prefill from the project on purpose. A project-driven พ.1 is
-    # only ever opened through action_create_purchase_request, which already passes
-    # the whole budget context (fiscal year, budget account, analytic_distribution,
-    # title) as context defaults — and _link_to_project re-writes it server-side on
-    # create. analytic_distribution inherits the core analytic.mixin field whose
-    # compute (_compute_analytic_distribution) is a no-op: re-assigning it inside the
-    # new-record onchange cascade makes Odoo recompute it to False, wiping the
-    # dimension fields on the unsaved form (they reappear only after save). Letting
-    # default_get drive the prefill keeps the value stable and the dimensions visible.
 
     def action_view_kmitl_project(self):
         self.ensure_one()
@@ -129,85 +173,66 @@ class PurchaseRequest(models.Model):
         }
 
     def _enforce_project_budget_cap(self, project):
-        """Raise if this PR would push the project's total drawn amount over
-        its reserved ``budget_amount`` (ADR-0007). Shared by the source-driven
-        create-from-project flow and the PR-first draw-down path."""
-        pr_total = project._project_pr_total()
+        """Raise if drawing this PR would push the project's drawn total over
+        its reserved ``budget_amount`` (ADR-0007). Only PRs that have drawn
+        count — this one is about to (root ADR-0011)."""
+        others = project._project_pr_total(exclude=self)
         this_pr = sum(self.line_ids.mapped("estimated_cost"))
-        if pr_total > project.budget_amount:
+        if others + this_pr > project.budget_amount:
             raise UserError(
-                _(
-                    "ใบขอซื้อนี้ (%s) เกินงบประมาณคงเหลือของโครงการ "
-                    "(คงเหลือ %s จากงบ %s)"
-                )
+                _("ใบขอซื้อนี้ (%s) เกินงบประมาณคงเหลือของโครงการ (คงเหลือ %s จากงบ %s)")
                 % (
                     "{:,.2f}".format(this_pr),
-                    "{:,.2f}".format(project.budget_amount - (pr_total - this_pr)),
+                    "{:,.2f}".format(project.budget_amount - others),
                     "{:,.2f}".format(project.budget_amount),
                 )
             )
 
     def action_reserve_budget(self):
-        """Project-driven PRs draw the project's shared commitment instead of
-        creating their own. Many PRs may share one project commitment, capped at
-        the project's reserved budget_amount (ADR-0007)."""
+        """A project พ.1 names the project, not its ใบจอง (root ADR-0011): find
+        the project's single live commitment and draw it through the base
+        draw-down path, which re-takes code/dims/FY from it. Many PRs may share
+        it, capped at the project's reserved budget_amount (ADR-0007)."""
         self.ensure_one()
-        # A picked ใบจองงบประมาณ (PR-first, incl. one changed after ดึงกลับ) takes
-        # priority: fall through to the base draw so the *chosen* commitment is
-        # drawn, not the project's default one.
-        if (
-            self.use_project
-            and self.kmitl_project_id
-            and not self.reservation_commitment_id
-        ):
-            project = self.kmitl_project_id
-            commitment = project.budget_commitment_ids.filtered(
+        project = self.kmitl_project_id
+        if project:
+            self._check_can_commit_budget()
+            self._check_project_drawable(project)
+            commitment = project.sudo().budget_commitment_ids.filtered(
                 lambda c: c.state in ("reserved", "partial")
             )[:1]
             if not commitment:
-                raise UserError(
-                    _("โครงการยังไม่ได้จองงบประมาณ ไม่สามารถดำเนินการได้")
-                )
-            self._enforce_project_budget_cap(project)
-            self.budget_commitment_id = commitment.id
-            # Same rail as the reserve-new path: จองงบ advances to to_approve
-            # (จองแล้ว รอสร้างหนังสือ) and สร้างหนังสือ is a separate press.
-            # to_approve_allowed is keyed on to_verify_budget, which is exactly
-            # where the record sits when this runs (ADR-0008).
-            self.button_to_approve()
-            return {
-                "type": "ir.actions.act_window",
-                "res_model": "purchase.request",
-                "view_mode": "form",
-                "res_id": self.id,
-                "target": "current",
-                "context": self.env.context,
-            }
+                raise UserError(_("โครงการยังไม่ได้จองงบประมาณ ไม่สามารถดำเนินการได้"))
+            self.reservation_commitment_id = commitment.id
         return super().action_reserve_budget()
 
+    def _check_project_drawable(self, project):
+        """A พ.1 may wait on a project whose หนังสือ is not yet signed, but may
+        draw only once the project is approved and executing (kmitl_project
+        ADR-0005, root ADR-0011)."""
+        if project.state != "in_progress":
+            state = dict(project._fields["state"]._description_selection(self.env)).get(
+                project.state, project.state
+            )
+            raise UserError(
+                _(
+                    "โครงการ %(project)s อยู่สถานะ '%(state)s' — ต้องรอให้โครงการ"
+                    "ได้รับอนุมัติและกำลังดำเนินการก่อน จึงจองงบประมาณได้"
+                )
+                % {"project": project.display_name, "state": state}
+            )
+
     def _action_draw_from_reservation(self):
-        """PR-first draw of a project's shared commitment (as opposed to the
-        source-driven ``kmitl.project`` create-from-project button above):
-        link the project, enforce its budget cap, then run the base draw —
-        which copies the commitment's dims/account/FY onto the PR + lines,
-        validates via the already-overridden ``_check_drawable_commitment``,
-        and advances state. ``kmitl_project_id`` is written first so the cap
-        check counts this PR and so ``_cancel_budget_commitment`` /
-        ``is_budget_editable`` (both keyed on ``use_project``) behave."""
+        """Draw a project's shared commitment: gate on the project's approval,
+        link the project, enforce its budget cap, then run the base draw — which
+        copies the commitment's dims/account/FY onto the PR + lines, validates
+        via the already-overridden ``_check_drawable_commitment``, and advances
+        state. Also the backstop for a slip injected over RPC."""
         project = self.reservation_commitment_id.kmitl_project_id
         if project:
-            # Backstop for the picker domain: a พ.1 may only be raised from an
-            # approved project, and the picker is not the only way in (context
-            # default, RPC) — kmitl_project ADR-0005, budget ADR-0015.
-            if project.state != "in_progress":
-                raise UserError(
-                    _(
-                        "โครงการ %s ยังไม่ได้รับอนุมัติและกำลังดำเนินการ "
-                        "จึงยังใช้ใบจองงบประมาณของโครงการไม่ได้"
-                    )
-                    % project.display_name
-                )
-            self.write({"use_project": True, "kmitl_project_id": project.id})
+            self._check_project_drawable(project)
+            if self.kmitl_project_id != project:
+                self.write({"kmitl_project_id": project.id})
             self._enforce_project_budget_cap(project)
         return super()._action_draw_from_reservation()
 
@@ -227,51 +252,11 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
         commitment = self.budget_commitment_id
         if commitment and commitment.kmitl_project_id:
-            self.budget_commitment_id = False
+            self.write(
+                {"budget_commitment_id": False, "reservation_commitment_id": False}
+            )
             return True
         return super()._cancel_budget_commitment()
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        records = super().create(vals_list)
-        for record in records.filtered(lambda r: r.kmitl_project_id):
-            record._link_to_project()
-        return records
-
-    def _link_to_project(self):
-        """A project-driven PR links the project's already-reserved shared
-        commitment. Unlike a procurement plan, a project may hold many PRs against
-        the one commitment (ADR-0007), so there is no one-active-PR constraint. The
-        PR never advances the project's state: since kmitl_project ADR-0005 a
-        project only reaches ``in_progress`` when its ขออนุมัติ หนังสือ is signed,
-        and a พ.1 can only be raised from there.
-
-        The project's budget context — budget account, fiscal year, the full
-        analytic distribution (4 financial dimensions + the project's own
-        kmitl_project dimension) and the shared commitment — is written here
-        **server-side** so the พ.1 always carries it. The budget fields are locked
-        and the dimension fields are computed from analytic_distribution, so the
-        live-form context/onchange prefill alone is not a guarantee."""
-        self.ensure_one()
-        project = self.kmitl_project_id
-        commitment = project.budget_commitment_ids.filtered(
-            lambda c: c.state in ("reserved", "partial")
-        )[:1]
-        vals = {
-            "use_project": True,
-            "budget_account_id": project.budget_account_id.id,
-            "account_fiscal_year_id": project.account_fiscal_year_id.id,
-            "analytic_distribution": project.analytic_distribution or False,
-        }
-        if commitment:
-            vals["budget_commitment_id"] = commitment.id
-        self.write(vals)
-        # write() does not fire the form's _onchange_analytic_distribution, so push
-        # the project's distribution onto any existing lines explicitly.
-        if self.line_ids and project.analytic_distribution:
-            self.line_ids.write(
-                {"analytic_distribution": project.analytic_distribution}
-            )
 
 
 class KmitlProject(models.Model):
@@ -282,51 +267,28 @@ class KmitlProject(models.Model):
         inverse_name="kmitl_project_id",
         string="ใบขอซื้อ (พ.1)",
     )
-    purchase_request_count = fields.Integer(
-        compute="_compute_purchase_request_count"
-    )
+    purchase_request_count = fields.Integer(compute="_compute_purchase_request_count")
 
     @api.depends("purchase_request_ids")
     def _compute_purchase_request_count(self):
         for record in self:
             record.purchase_request_count = len(record.purchase_request_ids)
 
-    can_create_purchase_request = fields.Boolean(
-        compute="_compute_can_create_purchase_request"
-    )
-
-    @api.depends(
-        "state",
-        "budget_amount",
-        "budget_commitment_ids.state",
-        "purchase_request_ids.state",
-        "purchase_request_ids.line_ids.estimated_cost",
-    )
-    def _compute_can_create_purchase_request(self):
-        """Show the create-PR button once the project is approved and executing
-        (``in_progress`` with an active commitment — kmitl_project ADR-0005) and
-        headroom remains under the reserved amount."""
-        for rec in self:
-            has_commitment = bool(
-                rec.budget_commitment_ids.filtered(
-                    lambda c: c.state in ("reserved", "partial")
-                )
-            )
-            remaining = rec.budget_amount - rec._project_pr_total()
-            rec.can_create_purchase_request = (
-                rec.state == "in_progress" and has_commitment and remaining > 0
-            )
-
-    def _project_pr_total(self):
-        """Total estimated cost already claimed by the project's non-rejected
-        purchase requests."""
+    def _project_pr_total(self, exclude=None):
+        """Total estimated cost of the project's purchase requests that have
+        drawn its money (passed Reserve) — a พ.1 that only names the project
+        does not count yet (root ADR-0011). Cancel/reject detach the commitment,
+        so terminal PRs drop out on their own. sudo: PR record rules would hide
+        other requesters' พ.1."""
         self.ensure_one()
-        return sum(
-            sum(pr.line_ids.mapped("estimated_cost"))
-            for pr in self.purchase_request_ids.filtered(
-                lambda r: r.state != "rejected"
-            )
+        project = self.sudo()
+        commitments = project.budget_commitment_ids
+        drawn = project.purchase_request_ids.filtered(
+            lambda r: r.budget_commitment_id in commitments
         )
+        if exclude:
+            drawn = drawn.filtered(lambda r: r.id not in exclude.ids)
+        return sum(drawn.mapped("line_ids.estimated_cost"))
 
     def action_view_purchase_requests(self):
         self.ensure_one()
@@ -337,44 +299,7 @@ class KmitlProject(models.Model):
             "domain": [("id", "in", self.purchase_request_ids.ids)],
         }
         if len(self.purchase_request_ids) == 1:
-            action.update(
-                {"view_mode": "form", "res_id": self.purchase_request_ids.id}
-            )
+            action.update({"view_mode": "form", "res_id": self.purchase_request_ids.id})
         else:
             action["view_mode"] = "tree,form"
         return action
-
-    def action_create_purchase_request(self):
-        """Create a purchase request (พ.1) from the project, pre-filled from the
-        project's budget context (no procurement method — each PR picks its own).
-        Many PRs may draw the project's single shared commitment, capped at
-        budget_amount (ADR-0007)."""
-        self.ensure_one()
-        commitment = self.budget_commitment_ids.filtered(
-            lambda c: c.state in ("reserved", "partial")
-        )[:1]
-        if self.state != "in_progress" or not commitment:
-            raise UserError(
-                _("สร้างใบขอซื้อได้เฉพาะโครงการที่ได้รับอนุมัติและกำลังดำเนินการเท่านั้น")
-            )
-        if self.budget_amount - self._project_pr_total() <= 0:
-            raise UserError(
-                _("งบประมาณของโครงการถูกจัดสรรให้ใบขอซื้อครบแล้ว")
-            )
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("สร้างใบขอซื้อจากโครงการ"),
-            "res_model": "purchase.request",
-            "view_mode": "form",
-            "target": "current",
-            "context": {
-                "default_use_project": True,
-                "default_budget_selection_mode": "project",
-                "default_kmitl_project_id": self.id,
-                "default_budget_commitment_id": commitment.id,
-                "default_budget_account_id": self.budget_account_id.id,
-                "default_account_fiscal_year_id": self.account_fiscal_year_id.id,
-                "default_analytic_distribution": self.analytic_distribution,
-                "default_title": self.name,
-            },
-        }

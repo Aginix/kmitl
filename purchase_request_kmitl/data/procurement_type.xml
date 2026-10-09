@@ -68,9 +68,17 @@
         <field name="is_purchase">False</field>
         <field name="is_construction">True</field>
     </record>
+    <!-- Each name is a single verb phrase: it goes verbatim into the PR
+         title ขอให้{type}{expense} (root ADR-0012). 007 was จ้างทำของ/จ้างเหมาบริการ. -->
     <record id="procurement_type_007" model="procurement.type">
-        <field name="name">จ้างทำของ/จ้างเหมาบริการ</field>
+        <field name="name">จ้างเหมาบริการ</field>
         <field name="sequence">40</field>
+        <field name="is_purchase">True</field>
+        <field name="is_construction">True</field>
+    </record>
+    <record id="procurement_type_012" model="procurement.type">
+        <field name="name">จ้างทำของ</field>
+        <field name="sequence">45</field>
         <field name="is_purchase">True</field>
         <field name="is_construction">True</field>
     </record>
