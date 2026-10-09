@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -12,6 +12,40 @@ class WorkAcceptance(models.Model):
     def _compute_approval_count(self):
         for wa in self:
             wa.approval_count = 1 if wa.approval_id else 0
+
+    @api.model
+    def default_get(self, fields_list):
+        """Seed WA from พจ.1 (PA) when ``default_approval_id`` is in context."""
+        res = super().default_get(fields_list)
+        approval_id = self.env.context.get('default_approval_id')
+        if not approval_id:
+            return res
+        approval = self.env['purchase.request.approval'].browse(approval_id)
+        if not approval.exists():
+            return res
+        defaults = {
+            'partner_id': approval.partner_id.id,
+            'company_id': approval.company_id.id,
+            'currency_id': approval.currency_id.id,
+            'date_due': approval.approval_date,
+            'wa_tier_validation': True,
+        }
+        wa_lines = []
+        for pa_line in approval.line_ids:
+            vals = approval._prepare_wa_line_vals(pa_line)
+            if not vals:
+                continue
+            wa_lines.append(Command.create(vals))
+        defaults['wa_line_ids'] = wa_lines
+        committees = approval.mapped("work_acceptance_committee_ids")
+        defaults['work_acceptance_committee_ids'] = [
+            (0, 0, approval._prepare_wa_committee_vals(c))
+            for c in committees
+        ]
+        for key, val in defaults.items():
+            if key in fields_list and key not in res:
+                res[key] = val
+        return res
 
     def action_view_approval(self):
         self.ensure_one()
