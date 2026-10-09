@@ -97,6 +97,7 @@
                                 attrs="{'required': [('is_plan_editable', '=', True)], 'readonly': [('is_plan_editable', '=', False)]}" />
                             <field name="owner_id" widget="employee_detail_many2one"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="owner_name" readonly="1" />
 
                             <field name="has_period" invisible="1" />
                             <field name="has_city" invisible="1" />
