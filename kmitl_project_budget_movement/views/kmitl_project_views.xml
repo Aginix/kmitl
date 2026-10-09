@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="view_kmitl_project_form" model="ir.ui.view">
-        <field name="name">kmitl.project.form.funding</field>
+        <field name="name">kmitl.project.form.budget.movement</field>
         <field name="model">kmitl.project</field>
         <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form" />
         <field name="arch" type="xml">
             <data>
-                <div name="button_box" position="inside">
+                <!-- One button for everyone in place of the budget-viewer-only
+                     ledger button (ADR-0007). -->
+                <button name="action_open_budget_move_lines" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </button>
+                <button name="action_open_budget_move_lines" position="after">
                     <button
-                        name="action_open_funding"
+                        name="action_open_budget_movements"
                         type="object"
                         class="oe_stat_button"
-                        icon="fa-money"
+                        icon="fa-exchange"
                         attrs="{'invisible': [('state', '=', 'draft')]}"
-                        groups="kmitl_project.group_kmitl_project_user"
+                        groups="kmitl_project.group_kmitl_project_user,budget.group_budget_viewer"
                     >
                         <field
-                            name="budget_amount"
+                            name="budget_movement_count"
                             widget="statinfo"
-                            string="เงินสนับสนุน"
+                            string="การเคลื่อนไหวงบ"
                         />
                     </button>
-                </div>
+                </button>
                 <xpath
                     expr="//group[@name='budget']/field[@name='budget_amount']"
                     position="after"

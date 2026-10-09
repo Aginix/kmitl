@@ -4,6 +4,11 @@ from odoo import api, fields, models
 class KmitlProject(models.Model):
     _inherit = "kmitl.project"
 
+    budget_movement_count = fields.Integer(
+        string="การเคลื่อนไหวงบ",
+        compute="_compute_budget_movement_count",
+        compute_sudo=True,
+    )
     funding_in_progress = fields.Float(
         string="อยู่ระหว่างดำเนินการ",
         digits="Product Price",
@@ -19,9 +24,17 @@ class KmitlProject(models.Model):
         help="งบประมาณโครงการ − งบประมาณที่ได้รับการจัดสรร − อยู่ระหว่างดำเนินการ",
     )
 
+    def _compute_budget_movement_count(self):
+        groups = self.env["kmitl.project.budget.move.line"].read_group(
+            [("project_id", "in", self._origin.ids)], ["project_id"], ["project_id"]
+        )
+        counts = {g["project_id"][0]: g["project_id_count"] for g in groups}
+        for rec in self:
+            rec.budget_movement_count = counts.get(rec._origin.id, 0)
+
     @api.depends("budget_estimate", "budget_amount")
     def _compute_funding(self):
-        groups = self.env["kmitl.project.funding"].read_group(
+        groups = self.env["kmitl.project.budget.move.line"].read_group(
             [("project_id", "in", self._origin.ids), ("status", "=", "in_progress")],
             ["amount:sum"],
             ["project_id"],
@@ -34,10 +47,10 @@ class KmitlProject(models.Model):
                 0.0,
             )
 
-    def action_open_funding(self):
+    def action_open_budget_movements(self):
         self.ensure_one()
         action = self.env["ir.actions.act_window"]._for_xml_id(
-            "kmitl_project_funding.action_kmitl_project_funding"
+            "kmitl_project_budget_movement.action_kmitl_project_budget_move_line"
         )
         action["domain"] = [("project_id", "=", self.id)]
         return action
