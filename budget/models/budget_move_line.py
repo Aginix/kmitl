@@ -152,6 +152,7 @@ class BudgetMoveLine(models.Model):
         compute="_compute_analytic_distribution",
         store=True,
         readonly=False,
+        index=True,
         domain=[("root_plan_id.code", "=", "kmitl_project")],
     )
     procurement_plan_analytic_id = fields.Many2one(
