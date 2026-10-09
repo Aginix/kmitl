@@ -80,6 +80,10 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="active_sarabun_document_id" string="เลขที่หนังสือ"
+                       filter_domain="[('active_sarabun_document_id.name', 'ilike', self)]"/>
+            </xpath>
             <xpath expr="//filter[@name='state_to_approve']" position="after">
                 <filter
                     name="state_sent"
