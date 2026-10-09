@@ -559,7 +559,9 @@ class TestBudgetCommitment(TransactionCase):
         c2 = self._add_line(c, "consume", 30_000)
         self.assertEqual(c.total_consumed, 50_000)
         self.assertNotEqual(c1.budget_move_id, c2.budget_move_id)
-        self.assertEqual(len(c.budget_move_ids), 2)
+        self.assertEqual(
+            len(c.budget_move_ids.filtered(lambda m: m.move_type == "consume")), 2
+        )
 
     # ====================================================================
     # 14. Phase 1 — state-machine guards & auto-transitions
@@ -660,7 +662,10 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(len(ret), 1)
         self.assertEqual(ret.move_type, "reserve")
         self.assertEqual(ret.amount, -50)
-        self.assertFalse(ret.budget_move_id)  # no GL/budget move for คืนจอง
+        if "is_liquidation" not in self.env["budget.move.line"]._fields:
+            # core alone: no budget move for คืนจอง (budget_ledger posts one,
+            # ADR-0016)
+            self.assertFalse(ret.budget_move_id)
 
     def test_61_return_inherits_reserve_account_and_dims(self):
         """The return line mirrors the first reserve line's account + dimensions."""

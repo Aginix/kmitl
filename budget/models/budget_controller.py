@@ -398,28 +398,16 @@ class BudgetController(models.AbstractModel):
                 )
             )
 
-        # Get first reserve line for analytic info
-        first_reserve = commitment.line_ids.filtered(
-            lambda l: l.move_type == "reserve" and l.state == "posted"
-        )[:1]
-
-        if not first_reserve:
-            raise UserError(_("No active reserve lines found on commitment."))
-
         consume_amount = (
             amount if amount else commitment.available_to_consume
         )
 
-        consume_line = self.env["budget.commitment.line"].create(
-            {
-                "commitment_id": commitment.id,
-                "move_type": "consume",
-                "account_id": first_reserve.account_id.id,
-                "analytic_distribution": first_reserve.analytic_distribution,
-                "amount": consume_amount,
-                "name": _("Service consumption for %s")
-                % (source_record._name if source_record else "system"),
-            }
+        consume_line = commitment._post_budget_event(
+            "consume",
+            consume_amount,
+            source=source_record,
+            name=_("Service consumption for %s")
+            % (source_record._name if source_record else "system"),
         )
 
         _logger.info(

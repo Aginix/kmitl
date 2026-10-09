@@ -312,22 +312,13 @@ class BudgetMixin(models.AbstractModel):
         if self.budget_commitment_id.state not in ('reserved', 'partial'):
             raise UserError(_('Budget commitment must be in reserved or partial state to consume.'))
 
-        # Add a consume line to the commitment
-        first_reserve = self.budget_commitment_id.line_ids.filtered(
-            lambda l: l.move_type == 'reserve' and l.state == 'posted'
-        )[:1]
-        if not first_reserve:
-            raise UserError(_('No active reserve lines found on commitment.'))
-
         consume_amount = amount if amount else self.budget_commitment_id.available_to_consume
-        consume_line = self.env['budget.commitment.line'].create({
-            'commitment_id': self.budget_commitment_id.id,
-            'move_type': 'consume',
-            'account_id': first_reserve.account_id.id,
-            'analytic_distribution': first_reserve.analytic_distribution,
-            'amount': consume_amount,
-            'name': _('Consumption from %s') % self.display_name,
-        })
+        consume_line = self.budget_commitment_id._post_budget_event(
+            'consume',
+            consume_amount,
+            source=self,
+            name=_('Consumption from %s') % self.display_name,
+        )
 
         _logger.info('Consumed budget %s from commitment %s for %s %s',
                     consume_amount, self.budget_commitment_id.name,

@@ -354,6 +354,17 @@ class BudgetCommitmentLine(models.Model):
             "analytic_distribution": self.analytic_distribution,
         }
 
+    def _post_budget_moves(self):
+        """Post the budget moves behind newly created events.
+
+        Core posts a consume-only move per consume line; ``budget_ledger``
+        replaces this with the full ledger posting of every event (ADR-0016).
+        """
+        for line in self.filtered(
+            lambda l: l.state == "posted" and l.move_type == "consume"
+        ):
+            line._create_budget_move()
+
     def _create_budget_move(self):
         """Create and post a budget.move for a consume line."""
         self.ensure_one()
@@ -394,11 +405,7 @@ class BudgetCommitmentLine(models.Model):
                 )
             )
 
-        # Auto-create budget.move for consume lines
-        for line in lines.filtered(
-            lambda l: l.state == "posted" and l.move_type == "consume"
-        ):
-            line._create_budget_move()
+        lines._post_budget_moves()
 
         # Re-derive the header state band (reserved/partial/done) from the
         # updated line totals.

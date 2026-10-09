@@ -512,9 +512,11 @@ class BudgetCommitment(models.Model):
                 raise UserError(
                     _("กรุณาระบุวงเงินอนุมัติมากกว่า 0 ก่อนจองงบประมาณ")
                 )
-            if record.total_reserved <= 0:
+            # The pending reserve events are the command to reserve (they post to
+            # the ledger only once reserved), so test for them, not for a total.
+            if not record._pending_reserve_lines():
                 record._create_reserve_line_from_header()
-            if record.total_reserved <= 0:
+            if sum(record._pending_reserve_lines().mapped("amount")) <= 0:
                 raise UserError(
                     _("Cannot reserve: no reserve lines found. Add reserve lines first.")
                 )
@@ -535,23 +537,113 @@ class BudgetCommitment(models.Model):
         (project/plan hosts pass ``line_ids`` themselves) untouched.
         """
         self.ensure_one()
-        self.write(
-            {
-                "line_ids": [
-                    (
-                        0,
-                        0,
-                        {
-                            "move_type": "reserve",
-                            "account_id": self.account_id.id,
-                            "amount": self.amount,
-                            "analytic_distribution": self.analytic_distribution,
-                            "name": _("Reservation"),
-                        },
-                    )
-                ]
-            }
+        self._post_budget_event("reserve", self.amount, name=_("Reservation"))
+
+    def _pending_reserve_lines(self):
+        """The posted reserve events of a reservation (its reserve command)."""
+        self.ensure_one()
+        return self.line_ids.filtered(
+            lambda l: l.state == "posted" and l.move_type == "reserve"
         )
+
+    # --- Event seam (ADR-0016) ---
+    #
+    # Every write to a reservation goes through these three methods instead of
+    # ``budget.commitment.line.create`` / filtering ``line_ids``, so the
+    # ``budget_ledger`` module can post each event to the budget ledger and read
+    # events back from it in one place.
+
+    def _get_budget_event_target(self, move_type, is_return=False):
+        """(budget.account, analytic_distribution) an event posts against.
+
+        A reservation is posted on the header; every later event (a return
+        included) lands on the first posted reserve line, the convention the
+        consume flows have always used, so it nets at the original control node
+        (ADR-0009).
+        """
+        self.ensure_one()
+        if move_type != "reserve" or is_return:
+            first_reserve = self.line_ids.filtered(
+                lambda l: l.move_type == "reserve"
+                and l.state == "posted"
+                and not l.is_return
+            )[:1]
+            if not first_reserve:
+                raise UserError(
+                    _("No active reserve line on commitment %s.") % self.name
+                )
+            return first_reserve.account_id, first_reserve.analytic_distribution
+        return self.account_id, self.analytic_distribution
+
+    def _prepare_budget_event_vals(
+        self, move_type, amount, source=None, name=None, is_return=False, date=None
+    ):
+        self.ensure_one()
+        account, distribution = self._get_budget_event_target(
+            move_type, is_return=is_return
+        )
+        vals = {
+            "commitment_id": self.id,
+            "move_type": move_type,
+            "account_id": account.id,
+            "analytic_distribution": distribution,
+            "amount": amount,
+            "is_return": is_return,
+            "name": name,
+        }
+        if date:
+            vals["date"] = date
+        if source:
+            vals["res_model"] = source._name
+            vals["res_id"] = source.id
+        return vals
+
+    def _post_budget_event(
+        self, move_type, amount, *, source=None, name=None, is_return=False, date=None
+    ):
+        """Record one event (reserve / obligate / consume / return) on this
+        reservation and return its ``budget.commitment.line``.
+
+        ``source`` is the document that caused the event (stamped as
+        ``res_model``/``res_id`` so the event can be found and undone per
+        document); a return is a negative ``reserve`` with ``is_return``.
+        """
+        self.ensure_one()
+        return self.env["budget.commitment.line"].create(
+            self._prepare_budget_event_vals(
+                move_type,
+                amount,
+                source=source,
+                name=name,
+                is_return=is_return,
+                date=date,
+            )
+        )
+
+    def _budget_event_lines(self, source=None, move_types=None):
+        """The posted events of this reservation, optionally of one source
+        document and/or some types."""
+        self.ensure_one()
+        return self.line_ids.filtered(
+            lambda l: l.state == "posted"
+            and (not move_types or l.move_type in move_types)
+            and (
+                not source
+                or (l.res_model == source._name and l.res_id == source.id)
+            )
+        )
+
+    def _has_budget_event(self, source, move_type):
+        """Whether ``source`` already has a posted ``move_type`` event here."""
+        self.ensure_one()
+        return bool(self._budget_event_lines(source=source, move_types=(move_type,)))
+
+    def _cancel_budget_events(self, source=None, move_types=None):
+        """Cancel the posted events of ``source`` (all when omitted), leaving
+        other documents' draws on a shared reservation untouched."""
+        self.ensure_one()
+        self._budget_event_lines(source=source, move_types=move_types).action_cancel()
+        return True
 
     def _check_reserve_availability(self):
         """Block reserving more than the control-node Available (ADR-0005).
@@ -577,9 +669,7 @@ class BudgetCommitment(models.Model):
         company_id = self.company_id.id
         rounding = self.currency_id.rounding or 0.01
         avail_distribution = self._availability_distribution()
-        reserve_lines = self.line_ids.filtered(
-            lambda l: l.state == "posted" and l.move_type == "reserve"
-        )
+        reserve_lines = self._pending_reserve_lines()
         per_account = {}
         for line in reserve_lines:
             per_account.setdefault(line.account_id, 0.0)

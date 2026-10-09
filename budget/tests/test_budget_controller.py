@@ -177,6 +177,10 @@ class TestBudgetController(TransactionCase):
         excluded from ``used``, every project would see the full pool and could
         over-reserve it (ADR-0007). Here 100k pool − a 60k tagged reserve = 40k.
         """
+        if "is_liquidation" in self.env["budget.move.line"]._fields:
+            self.skipTest(
+                "budget_ledger pins pool tags on both sides (budget ADR-0016)"
+            )
         Plan = self.env["account.analytic.plan"]
         proj_plan = Plan.search(
             [("code", "=", "kmitl_project")], limit=1
