@@ -103,7 +103,6 @@ class BudgetTree:
         self,
         accounts=None,
         move_lines=None,
-        commitment_lines=None,
         activities=None,
         funds=None,
         sources=None,
@@ -117,7 +116,6 @@ class BudgetTree:
         self.sources = sources
         self.departments = departments
         self.move_lines = move_lines
-        self.commitment_lines = commitment_lines
 
     def _prepare_node(self, record, node_type=None):
         path_ids = record.parent_path.split("/")
@@ -157,10 +155,6 @@ class BudgetTree:
             data["balance"] = line.balance
             data["credit"] = line.credit
             data["debit"] = line.debit
-        elif model == "budget.commitment.line":
-            data["move_type"] = line.move_type
-            data["state"] = line.state
-            data["balance"] = line.amount
 
         return data
 
@@ -218,12 +212,6 @@ class BudgetTree:
             for record in self.move_lines
         )
 
-        # Prepare commitment lines
-        commitment_line_map = dict(
-            (record.id, self._prepare_line(record, model="budget.commitment.line"))
-            for record in self.commitment_lines
-        )
-
         # กรณี 1 มิติ
         if len(dimensions) == 1:
             dim = dimensions[0]
@@ -235,20 +223,14 @@ class BudgetTree:
                 if node_id and node_id in mapped:
                     mapped[node_id].add_line(move_line_map[move_line.id])
 
-            # Add commitment lines
-            for commitment_line in self.commitment_lines:
-                node_id = get_dimension_id(commitment_line, dim)
-                if node_id and node_id in mapped:
-                    mapped[node_id].add_line(commitment_line_map[commitment_line.id])
-
             return [n for n in mapped.values() if n.value["parent_id"] is False]
 
         # กรณีหลายมิติ
         return self._build_multi_dimension_chain(
-            dimensions, get_dimension_id, move_line_map, commitment_line_map
+            dimensions, get_dimension_id, move_line_map
         )
 
-    def _build_multi_dimension_chain(self, dimensions, get_dimension_id, move_line_map, commitment_line_map):
+    def _build_multi_dimension_chain(self, dimensions, get_dimension_id, move_line_map):
         """สร้าง hierarchical tree ที่ถูกต้องสำหรับ multi-dimensions"""
 
         # สร้าง tree สำหรับ dimension แรก (root level)
@@ -277,18 +259,6 @@ class BudgetTree:
                 node_cache,
                 dimension_data,
                 move_line_map[move_line.id]
-            )
-
-        # Process commitment lines
-        for commitment_line in self.commitment_lines:
-            self._add_line_to_tree(
-                commitment_line,
-                dimensions,
-                get_dimension_id,
-                root_nodes,
-                node_cache,
-                dimension_data,
-                commitment_line_map[commitment_line.id]
             )
 
         return [n for n in root_nodes.values() if n.value["parent_id"] is False]

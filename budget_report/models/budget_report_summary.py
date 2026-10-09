@@ -71,7 +71,6 @@ class BudgetReportSummary(models.AbstractModel):
         # ADR-0016), so the move lines above already carry b/c/d.
         tree = BudgetTree(
             move_lines=move_lines,
-            commitment_lines=self.env["budget.commitment.line"],
             accounts=accounts,
             activities=activities,
             departments=departments,
