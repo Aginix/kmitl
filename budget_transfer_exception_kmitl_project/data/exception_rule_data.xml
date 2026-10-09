@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo>
+<odoo noupdate="1">
     <record id="budget_transfer_excep_kmitl_project" model="exception.rule">
         <field name="name">รหัสงบประมาณ/มิติ ไม่ตรงกับโครงการต้นทาง</field>
-        <field name="description">รายการโอนที่ใช้รหัสงบประมาณประเภทโครงการ/กิจกรรม ต้องระบุรหัสงบประมาณ ปีงบประมาณ และมิติทางบัญชี (ส่วนงาน/แหล่งเงิน/กิจกรรม/กองทุน) ให้ตรงกับโครงการ (kmitl.project) ต้นทาง</field>
+        <field
+            name="description"
+        >รายการโอนที่ใช้รหัสงบประมาณประเภทโครงการ/กิจกรรม ต้องระบุรหัสงบประมาณ ปีงบประมาณ และมิติทางบัญชี (ส่วนงาน/แหล่งเงิน/กิจกรรม/กองทุน) ให้ตรงกับโครงการ (kmitl.project) ต้นทาง</field>
         <field name="sequence">10</field>
         <field name="model">budget.transfer</field>
         <field name="exception_type">by_method</field>

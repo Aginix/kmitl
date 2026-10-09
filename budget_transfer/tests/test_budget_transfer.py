@@ -1,3 +1,4 @@
+import contextlib
 from datetime import date
 
 from odoo import Command
@@ -259,7 +260,9 @@ class TestBudgetTransfer(TransactionCase):
         t2.action_submit()
         be2 = str(fy2.date_to.year + 543)
         self.assertTrue(t2.name.startswith(f"BTR/{be2}/"))
-        self.assertNotEqual(be1, be2, "distinct fiscal years must not share a year segment")
+        self.assertNotEqual(
+            be1, be2, "distinct fiscal years must not share a year segment"
+        )
 
     def test_fiscal_year_frozen_after_submit(self):
         # Once confirmed, the fiscal year is frozen (it drives the BTR number).
@@ -374,57 +377,82 @@ class TestBudgetTransfer(TransactionCase):
                 }
             ],
         )
-        with self.assertRaises(ValidationError):
-            transfer.action_submit()
+        self.assertEqual(
+            transfer._get_lines_missing_core_dims(), transfer.from_line_ids
+        )
+        self._assert_not_submittable(transfer)
 
     # ------------------------------------------------------------------
     # Pool-Tag policy (ADR-0009 / ADR-0012)
     # ------------------------------------------------------------------
+    def _assert_not_submittable(self, transfer):
+        # A hard error here, or the (default-on) exception rule's review popup
+        # when budget_transfer_exception is installed — either way no submit.
+        with contextlib.suppress(ValidationError):
+            transfer.action_submit()
+        self.assertEqual(transfer.state, "draft")
+
     def test_supplementary_dims_mutually_exclusive(self):
-        with self.assertRaises(ValidationError):
-            self._transfer(
-                from_lines=[
-                    {
-                        "account_id": self.src.id,
-                        "amount": 1000,
-                        "activity_analytic_id": self.activity.id,
-                        "fund_analytic_id": self.fund.id,
-                        "kmitl_project_analytic_id": self.proj.id,
-                        "procurement_plan_analytic_id": self.proc.id,
-                    }
-                ],
-                to_lines=[
-                    {
-                        "account_id": self.dst.id,
-                        "amount": 1000,
-                        "activity_analytic_id": self.activity.id,
-                        "fund_analytic_id": self.fund.id,
-                    }
-                ],
-            )
+        transfer = self._transfer(
+            from_lines=[
+                {
+                    "account_id": self.src.id,
+                    "amount": 1000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                    "kmitl_project_analytic_id": self.proj.id,
+                    "procurement_plan_analytic_id": self.proc.id,
+                }
+            ],
+            to_lines=[
+                {
+                    "account_id": self.dst.id,
+                    "amount": 1000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                }
+            ],
+        )
+        self.assertEqual(
+            transfer.line_ids._get_lines_with_both_tags(), transfer.from_line_ids
+        )
+        self._assert_not_submittable(transfer)
 
     def test_project_tag_on_non_project_account_raises(self):
         # self.src is a plain expense account (not is_project).
-        with self.assertRaises(ValidationError):
-            self._transfer(
-                from_lines=[
-                    {
-                        "account_id": self.src.id,
-                        "amount": 1000,
-                        "activity_analytic_id": self.activity.id,
-                        "fund_analytic_id": self.fund.id,
-                        "kmitl_project_analytic_id": self.proj.id,
-                    }
-                ],
-                to_lines=[
-                    {
-                        "account_id": self.dst.id,
-                        "amount": 1000,
-                        "activity_analytic_id": self.activity.id,
-                        "fund_analytic_id": self.fund.id,
-                    }
-                ],
-            )
+        transfer = self._transfer(
+            from_lines=[
+                {
+                    "account_id": self.src.id,
+                    "amount": 1000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                    "kmitl_project_analytic_id": self.proj.id,
+                }
+            ],
+            to_lines=[
+                {
+                    "account_id": self.dst.id,
+                    "amount": 1000,
+                    "activity_analytic_id": self.activity.id,
+                    "fund_analytic_id": self.fund.id,
+                }
+            ],
+        )
+        self.assertEqual(
+            transfer.line_ids._get_lines_tag_account_mismatch(),
+            transfer.from_line_ids,
+        )
+        self._assert_not_submittable(transfer)
+
+    def test_duplicate_lines_flagged(self):
+        balanced = self._balanced()
+        transfer = self._transfer(
+            from_lines=balanced["from_lines"] * 2,
+            to_lines=[dict(balanced["to_lines"][0], amount=2000)],
+        )
+        self.assertEqual(len(transfer.line_ids._get_duplicate_lines()), 1)
+        self._assert_not_submittable(transfer)
 
     # ------------------------------------------------------------------
     # Pool-Tag persistence — _sync_transfer_distribution (ADR-0013)
@@ -453,7 +481,9 @@ class TestBudgetTransfer(TransactionCase):
         from_line = transfer.from_line_ids
         from_line._sync_transfer_distribution(tags=[False, self.proc.id])
         dist = from_line.analytic_distribution or {}
-        self.assertIn(str(self.proc.id), dist, "proc pool tag missing from distribution")
+        self.assertIn(
+            str(self.proc.id), dist, "proc pool tag missing from distribution"
+        )
         for acc in (self.activity, self.dept, self.fund, self.source):
             self.assertIn(str(acc.id), dist, f"{acc.name} dropped after proc tag sync")
         self.assertEqual(from_line.procurement_plan_analytic_id, self.proc)

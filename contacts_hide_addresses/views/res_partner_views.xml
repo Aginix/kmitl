@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_form_hide_addresses" model="ir.ui.view">
+        <field name="name">res.partner.form.hide.addresses</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='contact_addresses']" position="attributes">
+                <attribute name="groups">base.group_erp_manager</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

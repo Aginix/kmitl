@@ -16,14 +16,11 @@
             <xpath expr="//field[@name='parent_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//span[@name='address_name']" position="after">
-                <span class="o_form_label o_td_label" name="address_name_kmitl">
-                    <field name="type" invisible="1"/>
-                    <b>Address</b>
-                </span>
-            </xpath>
-            <xpath expr="//span[@name='address_name']" position="attributes">
+            <xpath expr="//field[@name='type']" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//span[@name='address_name']/b" position="replace">
+              <b>Address</b>
             </xpath>
         </field>
     </record>
