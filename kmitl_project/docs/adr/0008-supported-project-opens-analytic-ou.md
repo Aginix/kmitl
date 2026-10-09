@@ -16,8 +16,10 @@ own money into unit A's project. We add a Boolean **มีการสนับ�
    supporter may appear after จองงบ, e.g. a top-up).
 2. **The TO line lands on the project's own coordinate.** The supporting unit types the
    owning unit's ส่วนงาน/กิจกรรม/กองทุน on the TO line; nothing is auto-filled. The
-   budget engine, the computed `budget_amount` (ADR-0006, full-coordinate) and the
-   exception rule `budget_transfer_check_kmitl_project_source` are unchanged.
+   budget engine and the computed `budget_amount` (ADR-0006, full-coordinate) are
+   unchanged; the exception rule `budget_transfer_check_kmitl_project_source` keeps its
+   checks but looks the project up as superuser, since the supporting unit cannot read
+   the owning unit's project under the OU record rule.
 3. **The transfer-line picker narrows progressively** to projects matching the line's
    รหัสงบ, ปีงบ, and the dimensions already set (blank ones don't filter; project state
    doesn't filter, so a cancelled project stays pickable on FROM to pull money back).

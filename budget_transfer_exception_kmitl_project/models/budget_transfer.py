@@ -31,8 +31,12 @@ class BudgetTransfer(models.Model):
             if not tag:
                 continue  # project code without its project dimension tag
 
-            project = self.env["kmitl.project"].search(
-                [("analytic_account_id", "=", tag.id)], limit=1
+            # sudo: a supporting unit (ADR-0008) cannot read the owning unit's
+            # project under the OU record rule — that is not a mismatch.
+            project = (
+                self.env["kmitl.project"]
+                .sudo()
+                .search([("analytic_account_id", "=", tag.id)], limit=1)
             )
             if not project:
                 return True  # no project matches the line's project tag

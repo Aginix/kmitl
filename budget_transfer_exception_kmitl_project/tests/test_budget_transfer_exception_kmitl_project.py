@@ -225,3 +225,36 @@ class TestBudgetTransferExceptionKmitlProject(TransactionCase):
         wizard.action_confirm()
         self.assertEqual(transfer.state, "draft")
         self.assertFalse(transfer.ignore_exception)
+
+    def test_supporting_unit_user_matches_other_unit_project(self):
+        """A user outside the project's operating unit (a supporting unit,
+        ADR-0008) cannot read the project, yet an aligned line still matches."""
+        main_ou = self.env.ref("operating_unit.main_operating_unit")
+        other_ou = self.env["operating.unit"].create(
+            {
+                "name": "TRX Owner OU",
+                "code": "TRXOU",
+                "partner_id": self.env.company.partner_id.id,
+            }
+        )
+        self.project.operating_unit_id = other_ou
+        user = self.env["res.users"].create(
+            {
+                "name": "Supporting Unit User",
+                "login": "trx_supporter",
+                "groups_id": [
+                    Command.link(self.env.ref("budget.group_budget_user").id)
+                ],
+                "operating_unit_ids": [Command.set(main_ou.ids)],
+                "default_operating_unit_id": main_ou.id,
+            }
+        )
+        transfer = self._transfer(
+            {
+                "account_id": self.proj_ba.id,
+                "activity_analytic_id": self.activity.id,
+                "fund_analytic_id": self.fund.id,
+                "kmitl_project_analytic_id": self.proj_tag.id,
+            }
+        )
+        self.assertFalse(transfer.with_user(user)._kmitl_project_source_mismatch())
