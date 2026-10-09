@@ -161,6 +161,8 @@ class BudgetMoveLine(models.Model):
                 continue
             owner = line._ledger_pool_owner()
             if owner:
-                line.available_budget += max(owner.available_to_obligate, 0.0)
+                line.available_budget += max(
+                    owner._ledger_unobligated(line.account_id), 0.0
+                )
                 line.budget_sufficient = line.available_budget >= (line.amount or 0.0)
         return res

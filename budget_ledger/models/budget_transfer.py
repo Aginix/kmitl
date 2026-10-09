@@ -57,10 +57,12 @@ class BudgetTransfer(models.Model):
                 rounding = commitment.currency_id.rounding or 0.01
                 if float_compare(amount, 0.0, precision_rounding=rounding) <= 0:
                     continue
+                # On a ถัวจ่าย slip only this code's share may go (ADR-0017).
+                free_to_release = commitment._ledger_unobligated(line.account_id)
                 if (
                     float_compare(
                         amount,
-                        commitment.available_to_obligate,
+                        free_to_release,
                         precision_rounding=rounding,
                     )
                     > 0
@@ -77,7 +79,7 @@ class BudgetTransfer(models.Model):
                             "name": commitment.display_name,
                             "free": formatLang(
                                 self.env,
-                                commitment.available_to_obligate,
+                                free_to_release,
                                 currency_obj=commitment.currency_id,
                             ),
                         }
@@ -100,7 +102,7 @@ class BudgetTransfer(models.Model):
             if (
                 float_compare(
                     amount,
-                    commitment.available_to_obligate,
+                    commitment._ledger_unobligated(ledger_line.account_id),
                     precision_rounding=rounding,
                 )
                 > 0

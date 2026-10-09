@@ -246,6 +246,33 @@ class TestBudgetLedger(TransactionCase):
         )
         self.assertNotIn(commitment, commitment._ledger_mismatches())
 
+    def test_cross_charge_liquidates_primary_code_first(self):
+        """ถัวจ่าย (ADR-0017): consume draws the primary code first, the
+        return gives back what the next code still holds."""
+        (self.account | self.other).write({"cross_chargeable": True})
+        self._appropriate(100_000)
+        self._appropriate(100_000, account=self.other)
+        commitment = self._draft(100_000)
+        for account, amount in ((self.account, 60_000), (self.other, 40_000)):
+            self.env["budget.commitment.line"].create(
+                {
+                    "commitment_id": commitment.id,
+                    "move_type": "reserve",
+                    "account_id": account.id,
+                    "amount": amount,
+                    "analytic_distribution": commitment.analytic_distribution,
+                }
+            )
+        commitment.action_reserve()
+        commitment._post_budget_event("consume", 70_000)
+        self.env["budget.commitment.return.wizard"].create(
+            {"commitment_id": commitment.id}
+        ).action_confirm()
+        self.assertEqual(commitment.total_consumed, 70_000)
+        self.assertEqual(commitment.available_to_obligate, 0.0)
+        self.assertEqual(self._available(), 40_000)  # primary: 60 spent
+        self.assertEqual(self._available(account=self.other), 90_000)  # 10 spent
+
     def test_batch_reserve_checks_each_against_the_pool(self):
         self._appropriate(100_000)
         batch = self._draft(80_000) | self._draft(80_000)

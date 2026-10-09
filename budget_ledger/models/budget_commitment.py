@@ -67,6 +67,32 @@ class BudgetCommitment(models.Model):
                 buckets[line.move_type] += line.balance
         return {key: currency.round(value) for key, value in buckets.items()}
 
+    def _ledger_codes(self):
+        """The reservation's budget codes in liquidation order (ADR-0017): the
+        header's primary code first, then each other reserved code (ถัวจ่าย) in
+        the order it was added."""
+        self.ensure_one()
+        codes = self.account_id
+        for line in self.line_ids:
+            if (
+                line.move_type == "reserve"
+                and line.state == "posted"
+                and not line.is_return
+            ):
+                codes |= line.account_id
+        return codes
+
+    def _ledger_unobligated(self, account):
+        """What ``account``'s code still holds reserved and unobligated (b)."""
+        self.ensure_one()
+        return -sum(
+            line.balance
+            for line in self.ledger_line_ids
+            if line.parent_state == "posted"
+            and line.move_type == "reserve"
+            and line.account_id == account
+        )
+
     def action_reserve(self):
         """Reserving posts the reserve events written while draft.
 
