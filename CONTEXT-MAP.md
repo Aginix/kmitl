@@ -25,10 +25,10 @@ upfront.
     its lines folded into `budget.move.line`; see budget ADR-0013.
   - **`purchase_request_budget`** + its source bridges `kmitl_project_purchase_request`
     and `purchase_request_procurement_plan` (no own glossary — part of the Budget
-    context): give a ใบขอซื้อ (พ.1) its **แหล่งงบประมาณ** — reserve anew from the
-    ผังงบประมาณ, or draw the reservation of a โครงการ or a แผนจัดซื้อจัดจ้าง. Each
-    bridge owns its own answer; a source-less ใบจองงบประมาณ is not an option here
-    (budget ADR-0015).
+    context): answer a ใบขอซื้อ (พ.1)'s **จัดซื้อภายใต้**: งบประมาณปกติ (reserve
+    anew), or a โครงการ or แผนจัดซื้อจัดจ้าง named by the requester, whose reservation
+    the พ.1 draws at Reserve. Each bridge owns its own answer. A source-less
+    ใบจองงบประมาณ is not an option here (budget ADR-0015, root ADR-0011).
 - [Budget Appropriation Summary](./budget_appropriation_summary/CONTEXT.md) —
   institution-wide roll-up of unit appropriations for one fiscal year × source
   (สรุปภาพรวมสถาบัน gathering รวมเล่มหน่วยงาน), rendering the F-series summary reports
