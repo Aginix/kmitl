@@ -23,7 +23,7 @@
             <xpath expr="//field[@name='department_analytic_id']" position="after">
                 <field
                     name="coordinator_ids"
-                    widget="many2many_avatar_user"
+                    widget="many2many_tags"
                     optional="show"
                 />
             </xpath>
