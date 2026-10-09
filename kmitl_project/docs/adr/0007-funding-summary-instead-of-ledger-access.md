@@ -4,15 +4,16 @@ UAT feedback asked that a project's manager and creator be able to open the
 `budget.move` / `budget.move.line` records of their project — across OUs, because
 Funding Units in other faculties transfer money in. What they actually need to know is
 _which unit has sent how much against the Project Budget Estimate_. We answer that with
-a **Funding Summary**: a read-only SQL-view model (`kmitl.project.funding`, in the
-bridge `kmitl_project_budget_transfer`) with one row per budget move line on the
-project's dimension — every posted appropriation / entry line (e.g. the move an approved
-appropriation produces) plus in-flight transfer lines — (counterpart ส่วนงาน, signed
-amount, status group), guarded by the same own-project / officer rules as
-`kmitl.project` and opened from a smart button; the project form gains computed _in
-progress_ and _shortfall_ figures beside the Estimate. We deliberately **do not** grant
-project users any ACL or record rule on `budget.move` / `budget.move.line`; the ledger
-stat button stays restricted to `budget.group_budget_viewer`.
+a **Funding Summary**: a read-only SQL-view model (`kmitl.project.funding`, in its own
+module `kmitl_project_funding`, an extension of `kmitl_project_budget_transfer`) with
+one row per budget move line on the project's dimension — every posted appropriation /
+entry line (e.g. the move an approved appropriation produces) plus in-flight transfer
+lines — (counterpart ส่วนงาน, signed amount, status group), guarded by the same
+own-project / officer rules as `kmitl.project` and opened from a smart button; the
+project form gains computed _in progress_ and _shortfall_ figures beside the Estimate.
+We deliberately **do not** grant project users any ACL or record rule on `budget.move` /
+`budget.move.line`; the ledger stat button stays restricted to
+`budget.group_budget_viewer`.
 
 ## Considered Options
 
