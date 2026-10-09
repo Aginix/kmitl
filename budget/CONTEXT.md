@@ -101,7 +101,7 @@ One recorded act on a reservation — จองงบ, ผูกพัน, ต�
 _Avoid_: ledger line (that is the `budget.move.line` it posted)
 
 **Liquidation / ปลดจอง**:
-Moving money from one bucket to the next as a reservation advances, so the earlier bucket is not counted twice: an obligation posts `reserve +X` beside `obligate −X`, a consumption posts `obligate +X` beside `consume −X` (or `reserve +X` when nothing is obligated), a return posts `reserve +X` alone. Same idea as encumbrance liquidation in government budget accounting.
+Moving money from one bucket to the next as a reservation advances, so the earlier bucket is not counted twice: an obligation posts `reserve +X` beside `obligate −X`, a consumption posts `obligate +X` beside `consume −X` (or `reserve +X` when nothing is obligated), a return posts `reserve +X` alone. Same idea as encumbrance liquidation in government budget accounting. On a ถัวจ่าย reservation it runs per budget code in order — the primary code first for obligate/consume, the last code first for a return (ADR-0017).
 _Avoid_: reversal (that undoes an event; liquidation is part of a forward event)
 
 **Reservation Top-up (เพิ่มจองอัตโนมัติ)**:
