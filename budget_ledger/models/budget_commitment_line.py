@@ -128,8 +128,9 @@ class BudgetCommitmentLine(models.Model):
         refund goes back to the bucket the source's consumes liquidated.
 
         On a ถัวจ่าย reservation every event but a reserve is split over its
-        budget codes in order (ADR-0017): obligate/consume draw the primary
-        code first, a return/de-obligation/refund gives back the last first.
+        budget codes in order (ADR-0017): obligate/consume and a refund take
+        the primary code first, a return/de-obligation gives back the last
+        first.
         """
         self.ensure_one()
         amount = self.amount
@@ -164,8 +165,9 @@ class BudgetCommitmentLine(models.Model):
             )
             from_reserve = currency.compare_amounts(liquidated, -amount) >= 0
             bucket = "reserve" if from_reserve else "obligate"
+            # A refund goes back to the primary code first (ADR-0017).
             parts = self._ledger_split(
-                -amount, self._ledger_code_held("consume"), reverse=True, sign=-1
+                -amount, self._ledger_code_held("consume"), sign=-1
             )
         return self._ledger_pairs(parts, "consume", bucket)
 

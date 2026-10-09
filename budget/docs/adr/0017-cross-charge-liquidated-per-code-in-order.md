@@ -10,17 +10,22 @@ money at the primary code while the other codes stayed reserved for ever.
 Now the budget ledger (ADR-0016) **splits each event over the reservation's codes in
 order**:
 
-| Event                                    | Order                                              | Each code takes up to                                                                     |
-| ---------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| ผูกพัน (obligate)                        | primary first, then the order the codes were added | its unobligated reserve (b)                                                               |
-| ตัดงบ (consume)                          | primary first                                      | the source document's obligation on that code, or its b when the source obligated nothing |
-| ส่งคืนเงินเหลือจ่าย (return)             | last code first                                    | its b                                                                                     |
-| de-obligation / refund (negative amount) | last code first                                    | what the source holds on that code (obligated / consumed)                                 |
+| Event                             | Order                                              | Each code takes up to                                                                     |
+| --------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| ผูกพัน (obligate)                 | primary first, then the order the codes were added | its unobligated reserve (b)                                                               |
+| ตัดงบ (consume)                   | primary first                                      | the source document's obligation on that code, or its b when the source obligated nothing |
+| ส่งคืนเงินเหลือจ่าย (return)      | last code first                                    | its b                                                                                     |
+| de-obligation (negative obligate) | last code first                                    | what the source has obligated on that code                                                |
+| refund (negative consume)         | primary first                                      | what the source has consumed on that code                                                 |
 
 Each share posts its own pair of ledger lines on its code (for example
 `consume −t / reserve +t` on code B), inside the event's single `budget.move`. Whatever
 no code can take stays on the primary code, so the reservation-wide limits still block
 an overdraw. A reservation with one code posts exactly as before.
+
+A refund (คืนเงิน, a negative consume) is credited to the primary code, which is the
+code the user chose on the header. It moves on to the next codes only when it exceeds
+what the primary code consumed, so no code's consumed figure goes negative.
 
 A transfer release (ADR-0016, Q5) out of a reservation's coordinate may release only
 what **that code** still holds unobligated.

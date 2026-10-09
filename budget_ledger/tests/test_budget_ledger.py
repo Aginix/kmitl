@@ -246,9 +246,8 @@ class TestBudgetLedger(TransactionCase):
         )
         self.assertNotIn(commitment, commitment._ledger_mismatches())
 
-    def test_cross_charge_liquidates_primary_code_first(self):
-        """ถัวจ่าย (ADR-0017): consume draws the primary code first, the
-        return gives back what the next code still holds."""
+    def _cross_charge_reservation(self):
+        """ถัวจ่าย: primary code 60,000 on the header + other code 40,000."""
         (self.account | self.other).write({"cross_chargeable": True})
         self._appropriate(100_000)
         self._appropriate(100_000, account=self.other)
@@ -264,7 +263,26 @@ class TestBudgetLedger(TransactionCase):
                 }
             )
         commitment.action_reserve()
+        return commitment
+
+    def _consumed_per_code(self, commitment):
+        consumed = {}
+        for line in commitment.ledger_line_ids:
+            if line.parent_state == "posted" and line.move_type == "consume":
+                consumed[line.account_id] = (
+                    consumed.get(line.account_id, 0.0) - line.balance
+                )
+        return consumed
+
+    def test_cross_charge_liquidates_primary_code_first(self):
+        """ถัวจ่าย (ADR-0017): consume draws the primary code first, the
+        return gives back what the next code still holds."""
+        commitment = self._cross_charge_reservation()
         commitment._post_budget_event("consume", 70_000)
+        self.assertEqual(
+            self._consumed_per_code(commitment),
+            {self.account: 60_000, self.other: 10_000},
+        )
         self.env["budget.commitment.return.wizard"].create(
             {"commitment_id": commitment.id}
         ).action_confirm()
@@ -272,6 +290,21 @@ class TestBudgetLedger(TransactionCase):
         self.assertEqual(commitment.available_to_obligate, 0.0)
         self.assertEqual(self._available(), 40_000)  # primary: 60 spent
         self.assertEqual(self._available(account=self.other), 90_000)  # 10 spent
+
+    def test_cross_charge_refund_credits_primary_code(self):
+        commitment = self._cross_charge_reservation()
+        commitment._post_budget_event("consume", 70_000)
+        commitment._post_budget_event("consume", -20_000)
+        self.assertEqual(
+            self._consumed_per_code(commitment),
+            {self.account: 40_000, self.other: 10_000},
+        )
+        # beyond what the primary consumed, the refund moves on to the next code
+        commitment._post_budget_event("consume", -45_000)
+        self.assertEqual(
+            self._consumed_per_code(commitment),
+            {self.account: 0.0, self.other: 5_000},
+        )
 
     def test_batch_reserve_checks_each_against_the_pool(self):
         self._appropriate(100_000)
