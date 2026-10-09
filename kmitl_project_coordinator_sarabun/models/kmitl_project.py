@@ -7,8 +7,8 @@ class KmitlProject(models.Model):
 
     can_submit_sarabun = fields.Boolean(
         compute="_compute_can_submit_sarabun",
-        help="ผู้ใช้ปัจจุบันสร้างหนังสือขออนุมัติจัดโครงการได้: หัวหน้าโครงการ "
-        "ผู้ประสานงาน ผู้สร้างโครงการ หรือเจ้าหน้าที่ (Officer)",
+        help="The current user may create the project approval document: the "
+        "project manager, a coordinator, the creator or a project officer.",
     )
 
     @api.depends_context("uid")
@@ -25,8 +25,8 @@ class KmitlProject(models.Model):
         if allowed and not self.can_submit_sarabun:
             raise AccessError(
                 _(
-                    "เฉพาะหัวหน้าโครงการ ผู้ประสานงาน ผู้สร้างโครงการ หรือเจ้าหน้าที่ "
-                    "เท่านั้นที่สร้างหนังสือขออนุมัติจัดโครงการได้"
+                    "Only the project manager, a coordinator, the creator or a "
+                    "project officer can create the project approval document."
                 )
             )
         return allowed

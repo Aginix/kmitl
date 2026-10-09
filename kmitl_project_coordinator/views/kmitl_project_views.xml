@@ -41,7 +41,7 @@
             <xpath expr="//filter[@name='my_projects']" position="after">
                 <filter
                     name="my_coordinated_projects"
-                    string="โครงการที่ฉันประสานงาน"
+                    string="My Coordinated Projects"
                     domain="[('coordinator_ids', 'in', uid)]"
                 />
             </xpath>

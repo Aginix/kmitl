@@ -1,7 +1,7 @@
 {
     "name": "KMITL Project — Coordinator × e-Saraban",
-    "summary": "Only the project's owners (หัวหน้าโครงการ / ผู้ประสานงาน / ผู้สร้าง) "
-    "or project officers may raise the ขออนุมัติจัดโครงการ หนังสือ",
+    "summary": "Only the project's owners (manager, coordinators, creator) "
+    "or project officers may raise the project approval e-Saraban document",
     "version": "16.0.1.0.0",
     "category": "Project",
     "author": "Aginix Technologies",

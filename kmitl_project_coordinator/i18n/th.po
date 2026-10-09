@@ -1,0 +1,103 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* kmitl_project_coordinator
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-09 09:40+0000\n"
+"PO-Revision-Date: 2026-10-09 09:40+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,field_description:kmitl_project_coordinator.field_kmitl_project__coordinator_names
+msgid "Coordinator Names"
+msgstr "ผู้ประสานงาน (ชื่อ)"
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,field_description:kmitl_project_coordinator.field_kmitl_project__coordinator_ids
+msgid "Coordinators"
+msgstr "ผู้ประสานงาน"
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,field_description:kmitl_project_coordinator.field_kmitl_project__is_project_owner
+msgid "Is Project Owner"
+msgstr "เป็นเจ้าของโครงการ"
+
+#. module: kmitl_project_coordinator
+#: model:ir.model,name:kmitl_project_coordinator.model_kmitl_project
+msgid "KMITL Project"
+msgstr "แบบเสนอโครงการ/กิจกรรม"
+
+#. module: kmitl_project_coordinator
+#: model_terms:ir.ui.view,arch_db:kmitl_project_coordinator.view_kmitl_project_search_coordinator
+msgid "My Coordinated Projects"
+msgstr "โครงการที่ฉันประสานงาน"
+
+#. module: kmitl_project_coordinator
+#: model:mail.message.subtype,description:kmitl_project_coordinator.mt_kmitl_project_state
+#: model:mail.message.subtype,name:kmitl_project_coordinator.mt_kmitl_project_state
+msgid "Project Status Changed"
+msgstr "สถานะโครงการเปลี่ยน"
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,help:kmitl_project_coordinator.field_kmitl_project__coordinator_ids
+msgid ""
+"Project coordinators are notified when the project status changes and can "
+"access and edit the project like the project manager."
+msgstr ""
+"ผู้ประสานงานโครงการ ได้รับแจ้งเมื่อสถานะโครงการเปลี่ยน "
+"และเข้าถึง/แก้ไขโครงการได้เช่นเดียวกับหัวหน้าโครงการ"
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,help:kmitl_project_coordinator.field_kmitl_project__is_project_owner
+msgid "The current user is the project manager, a coordinator or the creator."
+msgstr "ผู้ใช้ปัจจุบันเป็นหัวหน้าโครงการ ผู้ประสานงาน หรือผู้สร้างโครงการ"
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,field_description:kmitl_project_coordinator.field_kmitl_project__budget_remaining
+msgid "งบประมาณคงเหลือ"
+msgstr ""
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,field_description:kmitl_project_coordinator.field_kmitl_project__budget_reserved
+msgid "งบประมาณที่จอง"
+msgstr ""
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,help:kmitl_project_coordinator.field_kmitl_project__budget_remaining
+msgid "งบประมาณที่จองไว้ของโครงการ หักด้วยยอดที่เบิกจ่าย (ใช้) ไปแล้ว"
+msgstr ""
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,help:kmitl_project_coordinator.field_kmitl_project__budget_reserved
+msgid "งบประมาณที่จองไว้จากใบจอง (budget.commitment) ที่ยังไม่ถูกยกเลิก"
+msgstr ""
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,field_description:kmitl_project_coordinator.field_kmitl_project__budget_commitment_count
+msgid "จำนวนผูกพันงบประมาณ"
+msgstr ""
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,help:kmitl_project_coordinator.field_kmitl_project__manager_id
+msgid ""
+"พนักงานผู้เป็นหัวหน้า/ผู้จัดการโครงการ; สิทธิ์เข้าถึงของผู้ใช้ผูกผ่าน "
+"manager_id.user_id"
+msgstr ""
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,field_description:kmitl_project_coordinator.field_kmitl_project__budget_move_line_count
+msgid "รายการเคลื่อนไหวงบ"
+msgstr ""
+
+#. module: kmitl_project_coordinator
+#: model:ir.model.fields,field_description:kmitl_project_coordinator.field_kmitl_project__manager_id
+msgid "หัวหน้าโครงการ"
+msgstr ""

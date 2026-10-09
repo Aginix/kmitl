@@ -9,7 +9,7 @@ class KmitlProject(models.Model):
         "kmitl_project_coordinator_rel",
         "project_id",
         "user_id",
-        string="ผู้ประสานงาน",
+        string="Coordinators",
         copy=False,
         domain=lambda self: [
             ("share", "=", False),
@@ -19,8 +19,8 @@ class KmitlProject(models.Model):
                 self.env.ref("kmitl_project.group_kmitl_project_user").id,
             ),
         ],
-        help="ผู้ประสานงานโครงการ ได้รับแจ้งเมื่อสถานะโครงการเปลี่ยน "
-        "และเข้าถึง/แก้ไขโครงการได้เช่นเดียวกับหัวหน้าโครงการ",
+        help="Project coordinators are notified when the project status changes "
+        "and can access and edit the project like the project manager.",
     )
     # หัวหน้าโครงการ reaches the project through the Own rules, which only apply to
     # KMITL Project users — offer only employees whose user can use them (or who
@@ -38,14 +38,14 @@ class KmitlProject(models.Model):
     )
     # Odoo 16 does not track many2many changes — log them through a mirror.
     coordinator_names = fields.Char(
-        string="ผู้ประสานงาน (ชื่อ)",
+        string="Coordinator Names",
         compute="_compute_coordinator_names",
         store=True,
         tracking=True,
     )
     is_project_owner = fields.Boolean(
         compute="_compute_is_project_owner",
-        help="ผู้ใช้ปัจจุบันเป็นหัวหน้าโครงการ ผู้ประสานงาน หรือผู้สร้างโครงการ",
+        help="The current user is the project manager, a coordinator or the creator.",
     )
     # An owner from another OU can open the project, but the budget OU rules hide
     # its commitment / budget moves (stamped with the project's OU) — compute the
