@@ -193,8 +193,6 @@ class PurchaseRequestApproval(models.Model):
     def _prepare_disbursement_request_vals(self):
         return {
             "reference": "purchase.request.approval,%d" % self.id,
-            "partner_id": self.partner_id.id,
-            "partner_type": "multi",
             "line_ids": [
                 Command.create(
                     {
