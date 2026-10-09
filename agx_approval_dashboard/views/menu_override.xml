@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="agx_approval.approval_root_menu" model="ir.ui.menu">
+        <field name="action" ref="agx_approval_dashboard.action_dashboard"/>
+    </record>
+    <record id="agx_approval.approval_new_request_menu" model="ir.ui.menu">
+        <field name="action" ref="agx_approval_dashboard.action_dashboard"/>
+    </record>
+</odoo>
