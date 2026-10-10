@@ -419,11 +419,34 @@ class BudgetCommitment(models.Model):
         )
         return -((groups[0]["balance"] or 0.0) if groups else 0.0)
 
-    def _ledger_default_consume(self):
-        """What a consume with no amount takes: the open obligation, or — when
-        nothing is obligated — the unobligated reserve it then liquidates."""
+    def _ledger_default_consume(self, source=None):
+        """What a consume with no amount takes, by the rule the consume itself
+        follows (``budget.commitment.line._ledger_entries``): the open
+        obligation of ``source`` (of the whole reservation without one) once it
+        has ever obligated, else the unobligated reserve it then liquidates."""
         self.ensure_one()
-        return self.available_to_consume or self.available_to_obligate
+        Line = self.env["budget.move.line"].sudo()
+        domain = [
+            ("commitment_id", "=", self.id),
+            ("parent_state", "=", "posted"),
+            ("move_type", "=", "obligate"),
+        ]
+        if source:
+            domain += [
+                ("commitment_line_id.res_model", "=", source._name),
+                ("commitment_line_id.res_id", "=", source.id),
+            ]
+
+        def held(extra):
+            groups = Line.read_group(domain + extra, ["balance:sum"], [])
+            return -((groups[0]["balance"] or 0.0) if groups else 0.0)
+
+        currency = self.currency_id or self.env.company.currency_id
+        if currency.compare_amounts(
+            held([("commitment_line_id.move_type", "=", "obligate")]), 0.0
+        ) > 0:
+            return max(held([]), 0.0)
+        return self.available_to_obligate
 
     def _check_ledger_limits(self):
         """reserved ≤ cap, and no bucket overdrawn — read from the ledger."""
@@ -803,7 +826,9 @@ class BudgetCommitment(models.Model):
         )
         if allow_negative:
             return
-        controller = self.env["budget.controller"]
+        # The pool is read whole: operating-unit rules must not hide another
+        # unit's draw on a shared pool from the check.
+        controller = self.env["budget.controller"].sudo()
         fy_id = self.account_fiscal_year_id.id
         company_id = self.company_id.id
         rounding = self.currency_id.rounding or 0.01

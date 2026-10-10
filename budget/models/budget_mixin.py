@@ -312,7 +312,7 @@ class BudgetMixin(models.AbstractModel):
         if self.budget_commitment_id.state not in ('reserved', 'partial'):
             raise UserError(_('Budget commitment must be in reserved or partial state to consume.'))
 
-        consume_amount = amount if amount else self.budget_commitment_id._ledger_default_consume()
+        consume_amount = amount if amount else self.budget_commitment_id._ledger_default_consume(self)
         consume_line = self.budget_commitment_id._post_budget_event(
             'consume',
             consume_amount,

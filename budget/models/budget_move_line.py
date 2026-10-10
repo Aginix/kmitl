@@ -364,6 +364,7 @@ class BudgetMoveLine(models.Model):
             )
             container["records"] = lines
 
+        lines._check_no_orphan_usage_on_posted()
         return lines
 
     @api.model
@@ -399,6 +400,8 @@ class BudgetMoveLine(models.Model):
         name its full coordinate and fit the control node's Available — the
         reservation check it skips (ADR-0018). Lines are summed per control
         node, like a reservation's codes."""
+        if self.filtered(lambda l: l.budget_type != "expense"):
+            raise UserError(_("A direct consumption is posted on expense budget only."))
         missing = self.filtered(
             lambda l: not all(l[f] for f in self._DIRECT_CONSUME_REQUIRED_DIMS)
         )
@@ -416,7 +419,9 @@ class BudgetMoveLine(models.Model):
             .get_param("budget.allow_negative", False)
         ):
             return
-        controller = self.env["budget.controller"]
+        # The pool is read whole: operating-unit rules must not hide another
+        # unit's draw on a shared pool from the check.
+        controller = self.env["budget.controller"].sudo()
         pools = {}
         for line in self:
             fy_id = line.move_id.account_fiscal_year_id.id
@@ -454,8 +459,10 @@ class BudgetMoveLine(models.Model):
                 )
 
     def _check_direct_consume_lines_locked(self):
-        """Editing or deleting a posted direct-consumption line is a Budget
-        Manager's act, like posting it (ADR-0018)."""
+        """The lines of a posted direct consumption are the figure itself, like
+        a reservation's ledger lines: they are not edited or deleted in place.
+        A Budget Manager resets the move instead, which re-runs every check
+        when it is posted again (ADR-0018)."""
         if self.env.context.get("budget_ledger_posting"):
             return
         if self.filtered(
@@ -463,7 +470,30 @@ class BudgetMoveLine(models.Model):
             and l.move_type == "consume"
             and not l.commitment_id
         ):
-            self.move_id._check_direct_consume_right()
+            raise UserError(
+                _(
+                    "Cannot change a posted direct consumption (ตัดงบตรง) line. "
+                    "Reset the budget move to draft first."
+                )
+            )
+
+    def _check_no_orphan_usage_on_posted(self):
+        """No reserve/obligate/consume line without a reservation may appear on
+        an already-posted move — by adding a line or re-typing one — which
+        would skip the posting checks (ADR-0016/0018)."""
+        if self.env.context.get("budget_ledger_posting"):
+            return
+        if self.filtered(
+            lambda l: l.parent_state == "posted"
+            and l.move_type in ("reserve", "obligate", "consume")
+            and not l.commitment_id
+        ):
+            raise UserError(
+                _(
+                    "Reservation, obligation and consumption lines cannot be "
+                    "added to a posted budget move. Reset it to draft first."
+                )
+            )
 
     def unlink(self):
         self._check_direct_consume_lines_locked()
@@ -519,6 +549,8 @@ class BudgetMoveLine(models.Model):
 
         # Normal write process
         result = super().write(vals)
+        if {"move_type", "move_id", "commitment_id"} & set(vals):
+            self._check_no_orphan_usage_on_posted()
 
         # Process tracking after write
         if not self.env.context.get("tracking_disable", False) and move_initial_values:

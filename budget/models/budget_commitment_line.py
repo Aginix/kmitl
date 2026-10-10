@@ -428,9 +428,26 @@ class BudgetCommitmentLine(models.Model):
             )
             from_reserve = currency.compare_amounts(obligated, 0.0) <= 0
             bucket = "reserve" if from_reserve else "obligate"
-            parts = self._ledger_split(
-                amount, self._ledger_code_held(bucket, own=not from_reserve)
-            )
+            held = self._ledger_code_held(bucket, own=not from_reserve)
+            if (
+                not from_reserve
+                and self.res_model
+                and currency.compare_amounts(amount, sum(held.values())) > 0
+            ):
+                # On a shared reservation the reservation-wide limits would let
+                # this document eat another one's open obligation.
+                raise ValidationError(
+                    _(
+                        "Consumption %(amount).2f exceeds what %(source)s still "
+                        "has obligated (%(held).2f)."
+                    )
+                    % {
+                        "amount": amount,
+                        "source": self.res_name or self.res_model,
+                        "held": sum(held.values()),
+                    }
+                )
+            parts = self._ledger_split(amount, held)
         else:
             liquidated = -sum(
                 self._ledger_code_held("reserve", liquidated_by="consume").values()

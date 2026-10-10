@@ -367,6 +367,23 @@ class TestBudgetLedger(BudgetLedgerCommon):
         self.assertEqual(commitment.available_to_obligate, 40_000)
         self.assertEqual(self._available(), 0.0)
 
+    def test_consume_past_own_obligation_never_eats_anothers(self):
+        """On a shared reservation, document X consuming past its own
+        obligation is blocked — it must not take document Z's."""
+        self._appropriate(100_000)
+        commitment = self._reserve(100_000)
+        x, z = self.fy, self.account  # any records stand in for documents
+        commitment._post_budget_event("obligate", 10_000, source=x)
+        commitment._post_budget_event("consume", 10_000, source=x)
+        commitment._post_budget_event("obligate", 5_000, source=z)
+        with self.assertRaises(ValidationError), self.env.cr.savepoint():
+            commitment._post_budget_event("consume", 2_000, source=x)
+        commitment._post_budget_event("consume", 5_000, source=z)
+        self.assertEqual(
+            self._buckets(commitment),
+            {"reserve": -85_000, "obligate": 0.0, "consume": -15_000},
+        )
+
     def test_second_consume_beyond_obligation_blocked_without_source(self):
         self._appropriate(100_000)
         commitment = self._reserve(100_000)
@@ -547,12 +564,48 @@ class TestBudgetLedger(BudgetLedgerCommon):
         for action in ("button_cancel", "button_draft"):
             with self.assertRaises(ValidationError), self.env.cr.savepoint():
                 getattr(move.with_user(user), action)()
-        with self.assertRaises(ValidationError), self.env.cr.savepoint():
-            move.line_ids.with_user(user).write({"balance": -1})
+        # posted lines are immutable for everyone: reset the move instead
+        for actor in (user, manager):
+            with self.assertRaises(UserError), self.env.cr.savepoint():
+                move.line_ids.with_user(actor).write({"balance": -1})
         self.assertEqual(self._available(), 90_000)
         move.with_user(manager).button_cancel()
         self.assertEqual(move.state, "cancel")
         self.assertEqual(self._available(), 100_000)
+
+    def test_usage_line_cannot_be_slipped_into_a_posted_move(self):
+        """Adding — or re-typing — a usage line on an already-posted move would
+        skip the posting checks."""
+        appropriation = self._appropriate(100_000)
+        user = self._user("budget.group_budget_user", "ldg_user_slip")
+        for move_type in ("reserve", "obligate", "consume"):
+            with self.assertRaises(UserError), self.env.cr.savepoint():
+                self.env["budget.move.line"].with_user(user).create(
+                    {
+                        "move_id": appropriation.id,
+                        "account_id": self.account.id,
+                        "balance": -10_000,
+                        "move_type": move_type,
+                        "department_analytic_id": self.dept.id,
+                        "activity_analytic_id": self.activity.id,
+                        "fund_analytic_id": self.fund.id,
+                    }
+                )
+        with self.assertRaises(UserError), self.env.cr.savepoint():
+            appropriation.line_ids.with_user(user).write({"move_type": "consume"})
+        self.assertEqual(self._available(), 100_000)
+
+    def test_header_commitment_alone_is_not_a_ledger_move(self):
+        """A draft move that merely names a reservation on its header can be
+        deleted; the header link is not copied on duplicate."""
+        self._appropriate(100_000)
+        commitment = self._reserve(10_000)
+        event_move = commitment.ledger_line_ids.move_id
+        self.assertFalse(event_move.copy().commitment_id)
+        draft = self._usage_move(1_000)
+        draft.write({"state": "draft", "commitment_id": commitment.id})
+        draft.unlink()
+        self.assertFalse(draft.exists())
 
     # ------------------------------------------------------------------
     # engine (Q3)

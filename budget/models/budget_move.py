@@ -297,20 +297,23 @@ class BudgetMove(models.Model):
     )
 
     # Link to budget commitment
+    # Set by the reservation that posts the move (ADR-0016), never by hand.
     commitment_id = fields.Many2one(
         comodel_name="budget.commitment",
         string="Related Commitment",
         help="Budget commitment that this move is consuming from",
         index=True,
         ondelete="set null",
-        states=READONLY_STATES,
+        readonly=True,
+        copy=False,
     )
     commitment_line_id = fields.Many2one(
         comodel_name="budget.commitment.line",
         string="Related Commitment Line",
         index=True,
         ondelete="set null",
-        states=READONLY_STATES,
+        readonly=True,
+        copy=False,
     )
 
     first_account_id = fields.Many2one(
@@ -456,17 +459,21 @@ class BudgetMove(models.Model):
 
     def _is_ledger_move(self):
         """Whether this move carries a commitment's ledger lines (its own
-        event move, or a transfer that topped a reservation up/released it)."""
+        event move, or a transfer that topped a reservation up/released it).
+        Read from the lines: the header link alone does not make a figure."""
         self.ensure_one()
-        return bool(self.commitment_id or self.line_ids.filtered("commitment_id"))
+        return bool(self.line_ids.filtered("commitment_id"))
 
     def _check_ledger_move_locked(self, vals=None):
         if self.env.context.get("budget_ledger_posting"):
             return
         if vals is not None and not _LEDGER_MOVE_LOCKED_FIELDS & set(vals):
             return
+        # Writes are locked once posted; deletion in any state but draft (a
+        # cancelled event move stays as the reservation's audit trail).
         locked = self.filtered(
-            lambda m: (vals is None or m.state == "posted") and m._is_ledger_move()
+            lambda m: (m.state == "posted" if vals is not None else m.state != "draft")
+            and m._is_ledger_move()
         )
         if locked:
             raise UserError(
