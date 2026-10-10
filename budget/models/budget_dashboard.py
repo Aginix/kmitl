@@ -1131,7 +1131,12 @@ class BudgetDashboard(models.AbstractModel):
         return tuple(key)
 
     def _usage_base_domain(self):
-        return [("parent_state", "=", "posted"), ("commitment_id", "!=", False)]
+        # Usage = the reserve/obligate/consume buckets, whether a reservation
+        # posted them or a direct consumption did (ADR-0018).
+        return [
+            ("parent_state", "=", "posted"),
+            ("move_type", "in", list(self._TS_MOVE_TYPES)),
+        ]
 
     def _usage_read_group(self, domain, groupby):
         """Usage of the reservations grouped by ``groupby``, read from their

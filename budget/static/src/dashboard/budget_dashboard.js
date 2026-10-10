@@ -464,7 +464,7 @@ export class BudgetDashboard extends Component {
         // exactly the negated Σ balance of its bucket, so the list totals the cell.
         const domain = [
             ["parent_state", "=", "posted"],
-            ["commitment_id", "!=", false],
+            ["move_type", "in", ["reserve", "obligate", "consume"]],
             ["account_fiscal_year_id", "=", this.state.fiscalYearId],
             ["move_type", "=", moveType],
             ...this._drillLeaves(row),
@@ -482,7 +482,7 @@ export class BudgetDashboard extends Component {
         // audit list shows exactly the returns behind the figure.
         const domain = [
             ["parent_state", "=", "posted"],
-            ["commitment_id", "!=", false],
+            ["move_type", "in", ["reserve", "obligate", "consume"]],
             ["account_fiscal_year_id", "=", this.state.fiscalYearId],
             ["is_return", "=", true],
             ...this._drillLeaves(row),

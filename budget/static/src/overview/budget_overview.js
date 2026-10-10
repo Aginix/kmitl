@@ -349,7 +349,7 @@ export class BudgetOverview extends Component {
         const domain = [
             [section.drill_dim, "=", item.id],
             ["parent_state", "=", "posted"],
-            ["commitment_id", "!=", false],
+            ["move_type", "in", ["reserve", "obligate", "consume"]],
             ["account_fiscal_year_id", "=", this.state.fiscalYearId],
         ];
         if (this.state.sourceId) {

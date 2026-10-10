@@ -437,34 +437,121 @@ class TestBudgetLedger(BudgetLedgerCommon):
         self.assertEqual(move.state, "cancel")
         self.assertEqual(self._available(), 100_000)
 
-    def test_manual_usage_bucket_move_blocked(self):
-        """reserve/obligate/consume moves without a commitment would change
-        availability with no reservation behind them: they cannot be posted."""
-        self._appropriate(100_000)
-        for move_type in ("reserve", "obligate", "consume"):
-            move = self.env["budget.move"].create(
-                {
-                    "move_type": move_type,
-                    "budget_type": "expense",
-                    "account_fiscal_year_id": self.fy.id,
-                    "department_analytic_id": self.dept.id,
-                    "source_analytic_id": self.source.id,
-                    "line_ids": [
-                        Command.create(
+    # ------------------------------------------------------------------
+    # direct consumption — ตัดงบตรง (ADR-0018)
+    # ------------------------------------------------------------------
+    def _user(self, group_xmlid, login):
+        return self.env["res.users"].create(
+            {
+                "name": login,
+                "login": login,
+                "groups_id": [Command.link(self.env.ref(group_xmlid).id)],
+            }
+        )
+
+    def _usage_move(self, amount, move_type="consume", **line):
+        """A manual budget.move in a usage bucket, ready to post (review)."""
+        move = self.env["budget.move"].create(
+            {
+                "move_type": move_type,
+                "budget_type": "expense",
+                "account_fiscal_year_id": self.fy.id,
+                "department_analytic_id": self.dept.id,
+                "source_analytic_id": self.source.id,
+                "line_ids": [
+                    Command.create(
+                        dict(
                             {
                                 "account_id": self.account.id,
-                                "balance": -10_000,
+                                "balance": -amount,
+                                "department_analytic_id": self.dept.id,
                                 "activity_analytic_id": self.activity.id,
                                 "fund_analytic_id": self.fund.id,
-                            }
+                            },
+                            **line,
                         )
-                    ],
-                }
-            )
-            move.action_review()
+                    )
+                ],
+            }
+        )
+        move.action_review()
+        return move
+
+    def test_manual_reserve_obligate_move_blocked_even_for_manager(self):
+        """reserve/obligate lines come from commitment events only."""
+        self._appropriate(100_000)
+        manager = self._user("budget.group_budget_manager", "ldg_mgr_ro")
+        for move_type in ("reserve", "obligate"):
+            move = self._usage_move(10_000, move_type=move_type)
             with self.assertRaises(ValidationError), self.env.cr.savepoint():
-                move.action_post()
+                move.with_user(manager).action_post()
             self.assertEqual(move.state, "review")
+        self.assertEqual(self._available(), 100_000)
+
+    def test_direct_consume_requires_budget_manager(self):
+        self._appropriate(100_000)
+        user = self._user("budget.group_budget_user", "ldg_user_dc")
+        move = self._usage_move(10_000)
+        with self.assertRaises(ValidationError), self.env.cr.savepoint():
+            move.with_user(user).action_post()
+        self.assertEqual(move.state, "review")
+        self.assertEqual(self._available(), 100_000)
+
+    def test_direct_consume_by_manager_draws_the_pool(self):
+        """A Budget Manager consumes without a reservation: the pool, the
+        dashboard's เบิกจ่าย (d) and the reconciliation all agree."""
+        self._appropriate(100_000)
+        manager = self._user("budget.group_budget_manager", "ldg_mgr_dc")
+        move = self._usage_move(10_000)
+        move.with_user(manager).action_post()
+        self.assertEqual(move.state, "posted")
+        self.assertEqual(self._available(), 90_000)
+        row = {
+            r["id"]: r
+            for r in self.env["budget.dashboard"].get_dashboard_data(
+                self.fy.id, self.parent.id
+            )["rows"]
+        }[self.account.id]
+        self.assertEqual(row["consumed"], 10_000)
+        self.assertEqual(row["reserved"], 0.0)
+        self.assertEqual(row["used"], 10_000)
+        self.assertEqual(row["remaining"], 90_000)
+        report = self.env["budget.ledger.reconcile"].action_open_reconciliation()
+        rows = self.env["budget.ledger.reconcile"].search(report["domain"])
+        self.assertFalse(rows.filtered(lambda r: r.account_id == self.account))
+
+    def test_direct_consume_blocked_beyond_available(self):
+        self._appropriate(100_000)
+        self._reserve(60_000)
+        manager = self._user("budget.group_budget_manager", "ldg_mgr_over")
+        move = self._usage_move(50_000)
+        with self.assertRaises(UserError), self.env.cr.savepoint():
+            move.with_user(manager).action_post()
+        self.assertEqual(move.state, "review")
+        self.assertEqual(self._available(), 40_000)
+
+    def test_direct_consume_needs_full_coordinate(self):
+        self._appropriate(100_000)
+        manager = self._user("budget.group_budget_manager", "ldg_mgr_dims")
+        move = self._usage_move(10_000, fund_analytic_id=False)
+        with self.assertRaises(UserError), self.env.cr.savepoint():
+            move.with_user(manager).action_post()
+        self.assertEqual(move.state, "review")
+
+    def test_direct_consume_undone_by_manager_only(self):
+        self._appropriate(100_000)
+        manager = self._user("budget.group_budget_manager", "ldg_mgr_undo")
+        user = self._user("budget.group_budget_user", "ldg_user_undo")
+        move = self._usage_move(10_000)
+        move.with_user(manager).action_post()
+        for action in ("button_cancel", "button_draft"):
+            with self.assertRaises(ValidationError), self.env.cr.savepoint():
+                getattr(move.with_user(user), action)()
+        with self.assertRaises(ValidationError), self.env.cr.savepoint():
+            move.line_ids.with_user(user).write({"balance": -1})
+        self.assertEqual(self._available(), 90_000)
+        move.with_user(manager).button_cancel()
+        self.assertEqual(move.state, "cancel")
         self.assertEqual(self._available(), 100_000)
 
     # ------------------------------------------------------------------

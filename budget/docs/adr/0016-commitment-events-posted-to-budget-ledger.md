@@ -110,8 +110,9 @@ with the commitment's operating unit; project users still do not see the ledger
 - **Ledger moves are locked.** A posted move carrying a reservation's ledger
   lines cannot be reset, cancelled, deleted or re-typed by hand; only the
   commitment event (or the transfer reset) that owns it may
-  (`budget_ledger_posting`). reserve / obligate / consume lines need a
-  `commitment_id`.
+  (`budget_ledger_posting`). reserve / obligate lines need a `commitment_id`;
+  a consume line without one is a Budget Manager's direct consumption
+  ([ADR-0018](./0018-direct-consumption-by-budget-managers.md)).
 - **Transfer reset after a cancelled reservation** also cancels the reversal
   move the cancellation posted for the top-up/release (Q6).
 - **Beneficiary unit sees the ledger.** The `budget_operating_unit` rules on

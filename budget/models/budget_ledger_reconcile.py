@@ -146,10 +146,21 @@ class BudgetLedgerReconcile(models.TransientModel):
             ],
             "amount",
         )
+        # A direct consumption (ตัดงบตรง, ADR-0018) has no reservation; the old
+        # formula never knew it, so it is taken off the old side as posted.
+        direct = sums(
+            "budget.move.line",
+            posted + [("move_type", "=", "consume"), ("commitment_id", "=", False)],
+            "balance",
+        )
         rows = []
-        for key in set(ledger) | set(current) | set(reserved):
+        for key in set(ledger) | set(current) | set(reserved) | set(direct):
             new = ledger.get(key, 0.0)
-            old = current.get(key, 0.0) - reserved.get(key, 0.0)
+            old = (
+                current.get(key, 0.0)
+                - reserved.get(key, 0.0)
+                + direct.get(key, 0.0)
+            )
             if float_is_zero(new - old, precision_digits=2):
                 continue
             rows.append(

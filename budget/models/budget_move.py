@@ -479,32 +479,66 @@ class BudgetMove(models.Model):
             )
 
     def _check_commitment_buckets(self):
-        """reserve / obligate / consume lines are posted by commitment events
-        only (ADR-0016): the availability engine sums every bucket, so a manual
-        line there would move the figures with no reservation behind it.
-        Checked when a move is posted — not as a field constraint, which Odoo
-        also re-runs on recompute outside the posting context."""
+        """reserve / obligate lines are posted by commitment events only
+        (ADR-0016): the availability engine sums every bucket, so a manual line
+        there would move the figures with no reservation behind it. A consume
+        line without a reservation is a **direct consumption** (ตัดงบตรง,
+        ADR-0018): only a Budget Manager may post it, and only within the
+        pool's Available. Checked when a move is posted — not as a field
+        constraint, which Odoo also re-runs on recompute outside the posting
+        context."""
         if self.env.context.get("budget_ledger_posting"):
             return
         orphan = self.line_ids.filtered(
             lambda l: l.move_type in _COMMITMENT_BUCKETS and not l.commitment_id
         )
-        if orphan:
+        if not orphan:
+            return
+        direct = orphan.filtered(lambda l: l.move_type == "consume")
+        if orphan - direct:
             raise ValidationError(
                 _(
-                    "Budget reservation, obligation and consumption lines can "
-                    "only be posted by a budget commitment."
+                    "Budget reservation and obligation lines can only be posted "
+                    "by a budget commitment."
+                )
+            )
+        self._check_direct_consume_right()
+        direct._check_direct_consume()
+
+    def _check_direct_consume_right(self):
+        if not self.env.user.has_group("budget.group_budget_manager"):
+            raise ValidationError(
+                _(
+                    "Only a Budget Manager may post or undo a direct consumption "
+                    "(ตัดงบตรง) — budget consumed without a budget reservation."
                 )
             )
 
+    def _check_direct_consume_locked(self, vals=None):
+        """A posted direct consumption is undone (reset, cancel, delete, edit)
+        by a Budget Manager only, like it was posted."""
+        if self.env.context.get("budget_ledger_posting"):
+            return
+        if vals is not None and not _LEDGER_MOVE_LOCKED_FIELDS & set(vals):
+            return
+        if self.filtered(
+            lambda m: m.state == "posted"
+            and m.line_ids.filtered(
+                lambda l: l.move_type == "consume" and not l.commitment_id
+            )
+        ):
+            self._check_direct_consume_right()
+
     def unlink(self):
         self._check_ledger_move_locked()
+        self._check_direct_consume_locked()
         return super().unlink()
 
     def write(self, vals):
         if not vals:
             return True
         self._check_ledger_move_locked(vals)
+        self._check_direct_consume_locked(vals)
         if vals.get("state") == "posted":
             self._check_commitment_buckets()
         self._sanitize_vals(vals)
