@@ -142,7 +142,8 @@ class TestBudgetDashboard(TransactionCase):
         self.assertEqual(parent["remaining"], 40_000)
 
     def test_consume_move_not_counted_as_budget(self):
-        """The auto-created consume budget.move must not inflate current/initial."""
+        """A commitment's event moves (reserve/obligate/consume buckets) never
+        count as budget: current/initial stay the appropriation."""
         self._post_appropriation(self.child, 100_000, "initial")
         commitment = self._reserve(self.child, 50_000)
         self._add_line(commitment, "obligate", 50_000)

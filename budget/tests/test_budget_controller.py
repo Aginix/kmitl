@@ -128,7 +128,7 @@ class TestBudgetController(TransactionCase):
     # --- tests ---
 
     def test_exact_leaf_availability(self):
-        """Appropriation and reservation at the same leaf: current − used."""
+        """Appropriation and reservation at the same leaf: the ledger's Σ."""
         self._appropriate(self.leaf, 100_000)
         self._reserve(self.leaf, 60_000)
         self.assertEqual(self._available(self.leaf), 40_000)

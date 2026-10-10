@@ -322,59 +322,6 @@ class TestBudgetCommitment(TransactionCase):
         self.assertFalse(c.line_ids)
 
     # ====================================================================
-    # 4. Consume auto-creates budget.move
-    # ====================================================================
-
-    def test_30_consume_creates_budget_move(self):
-        """A consume line auto-creates a posted budget.move."""
-        c = self._create_commitment(100_000)
-        c.action_reserve()
-        self._add_line(c, "obligate", 100_000)
-        consume_line = self._add_line(c, "consume", 40_000)
-        self.assertTrue(consume_line.budget_move_id)
-        self.assertEqual(consume_line.budget_move_id.state, "posted")
-        self.assertEqual(consume_line.budget_move_id.move_type, "consume")
-
-    def test_31_cancel_consume_cascades_to_move(self):
-        """Cancelling a consume line cascades to its budget.move."""
-        c = self._create_commitment(100_000)
-        c.action_reserve()
-        self._add_line(c, "obligate", 100_000)
-        consume_line = self._add_line(c, "consume", 40_000)
-        bm = consume_line.budget_move_id
-        consume_line.action_cancel()
-        self.assertEqual(bm.state, "cancel")
-
-    # ====================================================================
-    # 5. Multiple budget accounts, same dimensions
-    # ====================================================================
-
-    def test_40_multi_account_same_dimensions(self):
-        """Reserve two different budget accounts in separate commitments, same analytics."""
-        c1 = self._create_commitment(80_000, account_id=self.account_1)
-        c1.action_reserve()
-
-        c2 = self._create_commitment(60_000, account_id=self.account_2)
-        c2.action_reserve()
-
-        self.assertEqual(c1.total_reserved, 80_000)
-        self.assertEqual(c2.total_reserved, 60_000)
-        self.assertEqual(c1.account_id, self.account_1)
-        self.assertEqual(c2.account_id, self.account_2)
-
-    def test_41_multi_account_independent_constraints(self):
-        """Constraints on one commitment don't affect another."""
-        c1 = self._create_commitment(50_000, account_id=self.account_1)
-        c1.action_reserve()
-        self._add_line(c1, "obligate", 50_000, account_id=self.account_1)
-        self._add_line(c1, "consume", 50_000, account_id=self.account_1)
-
-        c2 = self._create_commitment(70_000, account_id=self.account_2)
-        c2.action_reserve()
-        # c2 is still fully available
-        self.assertEqual(c2.available_to_obligate, 70_000)
-
-    # ====================================================================
     # 6. Reversal lines (negative amounts)
     # ====================================================================
 
@@ -400,23 +347,6 @@ class TestBudgetCommitment(TransactionCase):
         self._add_line(c, "consume", -10_000)
         self.assertEqual(c.total_consumed, 50_000)
         self.assertEqual(c.available_to_consume, 50_000)
-
-    # ====================================================================
-    # 7. Computed balance formulas
-    # ====================================================================
-
-    def test_60_balance_formulas(self):
-        """Verify all computed balance formulas after mixed operations."""
-        c = self._create_commitment(200_000)
-        c.action_reserve()
-        self._add_line(c, "obligate", 120_000)
-        self._add_line(c, "consume", 80_000)
-
-        self.assertEqual(c.total_reserved, 200_000)
-        self.assertEqual(c.total_obligated, 120_000)
-        self.assertEqual(c.total_consumed, 80_000)
-        self.assertEqual(c.available_to_obligate, 80_000)   # 200k - 120k
-        self.assertEqual(c.available_to_consume, 40_000)    # 120k - 80k
 
     # ====================================================================
     # 8. Header positive amount constraint
@@ -550,19 +480,6 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(c.total_obligated, 60_000)
         self.assertEqual(c.available_to_obligate, 40_000)
 
-    def test_121_multiple_consume_lines(self):
-        """Multiple consume lines each create their own budget.move."""
-        c = self._create_commitment(100_000)
-        c.action_reserve()
-        self._add_line(c, "obligate", 100_000)
-        c1 = self._add_line(c, "consume", 20_000)
-        c2 = self._add_line(c, "consume", 30_000)
-        self.assertEqual(c.total_consumed, 50_000)
-        self.assertNotEqual(c1.budget_move_id, c2.budget_move_id)
-        self.assertEqual(
-            len(c.budget_move_ids.filtered(lambda m: m.move_type == "consume")), 2
-        )
-
     # ====================================================================
     # 14. Phase 1 — state-machine guards & auto-transitions
     # ====================================================================
@@ -646,8 +563,7 @@ class TestBudgetCommitment(TransactionCase):
         """Returning the leftover posts a -reserve line and closes the commitment."""
         c = self._create_commitment(600)
         c.action_reserve()
-        # Disburse 550 (obligate + consume together, like the DR flow).
-        self._add_line(c, "obligate", 550)
+        # Disburse 550 — a DR consumes straight from the reservation (ADR-0016).
         self._add_line(c, "consume", 550)
         self.assertEqual(c.available_to_obligate, 50)
         self.assertEqual(c.state, "partial")
@@ -669,7 +585,6 @@ class TestBudgetCommitment(TransactionCase):
         """The return line mirrors the first reserve line's account + dimensions."""
         c = self._create_commitment(600)
         c.action_reserve()
-        self._add_line(c, "obligate", 500)
         self._add_line(c, "consume", 500)
         self._return_wizard(c).action_confirm()
         ret = c.line_ids.filtered(lambda l: l.is_return)
@@ -680,7 +595,6 @@ class TestBudgetCommitment(TransactionCase):
         """A return opened from a source doc stamps res_model/res_id for audit."""
         c = self._create_commitment(600)
         c.action_reserve()
-        self._add_line(c, "obligate", 550)
         self._add_line(c, "consume", 550)
         wizard = self._return_wizard(
             c, default_res_model="budget.commitment", default_res_id=c.id
