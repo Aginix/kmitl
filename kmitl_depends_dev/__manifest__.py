@@ -35,7 +35,7 @@
                 'purchase_manual_delivery_security', 'purchase_manual_delivery_work_acceptance',
                 'purchase_operating_unit_access_all', 'purchase_order_disbursement',
                 'purchase_order_disbursement_budget', 'web_responsive',
-                'advance_payment_disbursement', 'agx_approval_disbursement',
+                'advance_payment_disbursement', 'advance_payment_contract_pdf', 'agx_approval_disbursement',
                 'disbursement_accounting_kmitl', 'disbursement_finance_kmitl',
                 'disbursement_sarabun', 'purchase_order_disbursement_auto_submit',
                 'purchase_request_approval_disbursement_budget',

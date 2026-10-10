@@ -1,0 +1,219 @@
+<odoo>
+    <!--
+        สัญญาการยืมเงิน (แบบ สค.001) — page 1 of the paper loan contract, signed
+        by hand. Page 2 (the blank รายการส่งใช้เงินยืม ledger) is a static PDF
+        appended in ir.actions.report._render_qweb_pdf_prepare_streams.
+        Values not known yet print as dotted lines, so any state can print.
+    -->
+    <template id="report_advance_payment_contract">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context(lang='th_TH')" />
+                    <!-- The loan officer may print another person's loan;
+                         non-public employee fields need sudo. -->
+                    <t t-set="emp" t-value="o.employee_id.sudo()" />
+                    <t t-set="dots" t-value="'.' * 40" />
+                    <t t-set="long_dots" t-value="'.' * 60" />
+                    <t
+                        t-set="org"
+                        t-value="'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง'"
+                    />
+                    <t
+                        t-set="emp_name"
+                        t-value="' '.join(p for p in (emp.prefix_id.name, emp.name) if p)"
+                    />
+                    <t
+                        t-set="emp_position"
+                        t-value="emp.academic_standing_id.name or emp.job_id.name or emp.job_title"
+                    />
+                    <t
+                        t-set="emp_department"
+                        t-value="(emp.department_id.complete_name or '').replace(' / ', '')"
+                    />
+                    <t
+                        t-set="signer_name"
+                        t-value="emp.academic_standing_title_abbreviation and (emp.academic_standing_title_abbreviation + emp.name) or emp_name"
+                    />
+                    <t t-set="amount_str" t-value="'{:,.2f}'.format(o.loan_amount)" />
+                    <t
+                        t-set="amount_words"
+                        t-value="o.currency_id.amount_to_text(o.loan_amount)"
+                    />
+                    <style>
+                        * { font-family: "THSarabunNew", Arial, sans-serif; }
+                        .page { color: #000; font-size: 15pt; line-height: 1.3; }
+                        .top { width: 100%; border-collapse: collapse; }
+                        .top td { border: none; padding: 0; font-size: 15pt; }
+                        table.form { width: 100%; table-layout: fixed; border-collapse: collapse; border: 1px solid #000; }
+                        table.form td { border: 1px solid #000; padding: 4pt 6pt; vertical-align: top; font-size: 15pt; }
+                        .emblem { height: 44pt; float: left; margin-right: 6pt; }
+                        .title { text-align: center; font-weight: bold; font-size: 17pt; }
+                        .section { text-align: center; font-weight: bold; font-size: 16pt; }
+                        .indent { text-indent: 36pt; }
+                        .justify { text-align: justify; }
+                        .right { text-align: right; }
+                        .center { text-align: center; }
+                        .gap { margin-top: 10pt; }
+                        table.sign { width: 100%; table-layout: fixed; border-collapse: collapse; }
+                        table.sign td { border: none; padding: 0; font-size: 15pt; vertical-align: top; }
+                    </style>
+
+                    <div class="page">
+                        <table class="top">
+                            <tr>
+                                <td
+                                ><!-- "New" / its Thai translation until the first submit -->
+                                    <t
+                                        t-if="o.name and o.name not in ('New', 'ใหม่')"
+                                    >(<t t-out="o.name" />)</t></td>
+                                <td class="right">แบบ สค.001</td>
+                            </tr>
+                        </table>
+
+                        <table class="form">
+                            <!-- 1. Header -->
+                            <tr>
+                                <td style="width: 70%; border-right: 1px solid #000;">
+                                    <img
+                                        class="emblem"
+                                        src="/advance_payment_contract_pdf/static/src/img/kmitl_emblem.png"
+                                    />
+                                    <div class="title">สัญญาการยืมเงิน</div>
+                                    <div style="clear: both; padding-top: 4pt;">
+                                        ยื่นต่อ &#160;&#160;&#160;อธิการบดี <t
+                                            t-out="org"
+                                        />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>เลขที่ <t
+                                            t-out="o.contract_number or dots"
+                                        /></div>
+                                    <div class="center">วันครบกำหนด</div>
+                                    <div class="center"><t
+                                            t-out="o._contract_date_th(o.return_due_date) or dots"
+                                        /></div>
+                                </td>
+                            </tr>
+                            <!-- 2. Borrower + purpose -->
+                            <tr>
+                                <td colspan="2">
+                                    <div class="justify">
+                                        ข้าพเจ้า <t t-out="emp_name or dots" />
+                                        &#160;ตำแหน่ง <t t-out="emp_position or dots" />
+                                        สังกัด <t t-out="emp_department or dots" />
+                                        จังหวัด กรุงเทพมหานคร มีความประสงค์ขอยืมเงินจาก <t
+                                            t-out="org"
+                                        />
+                                    </div>
+                                    <div>เพื่อเป็นค่าใช้จ่ายในการ <t
+                                            t-out="o.loan_reason or dots"
+                                        /> ดังรายละเอียดแนบท้าย</div>
+                                </td>
+                            </tr>
+                            <!-- 3. Amount -->
+                            <tr>
+                                <td colspan="2">
+                                    จำนวนเงิน <t t-out="amount_str" /> บาท (<t
+                                        t-out="amount_words"
+                                    />)
+                                </td>
+                            </tr>
+                            <!-- 4. Contract terms + borrower signature -->
+                            <tr>
+                                <td colspan="2">
+                                    <div
+                                        class="indent justify"
+                                    >ข้าพเจ้าสัญญาว่าจะปฏิบัติตามหลักเกณฑ์ของสถาบันทุกประการ และจะนำหลักฐานการจ่ายเงินที่ถูกต้องพร้อมทั้งเงินเหลือจ่าย (ถ้ามี) ส่งคืนภายในระยะเวลาที่กำหนดไว้คือ ภายใน 15 วัน นับแต่วันที่ดำเนินการตามที่ขออนุมัติยืมเงินเสร็จเรียบร้อย (แต่หากมีเหตุความจำเป็นไม่สามารถส่งคืนได้ ให้ผู้ยืมชี้แจงเหตุผลความจำเป็นเพื่อขอขยายเวลาการคืนเงินยืมได้แต่ต้องไม่เกิน 30 วัน นับแต่วันที่ดำเนินการตามที่ขออนุมัติยืมเงินเสร็จเรียบร้อย) ถ้าข้าพเจ้าไม่ส่งคืนภายในกำหนด ข้าพเจ้ายินยอมให้หักเงินเดือน ค่าจ้าง บำเหน็จ บำนาญ หรือเงินอื่นใดที่ข้าพเจ้าพึงได้รับจากสถาบัน ชดใช้จำนวนเงินที่ยืมไปจนครบถ้วนได้ทันที และในระหว่างชดใช้เงินยืมจะไม่ได้รับอนุมัติในการยืมครั้งต่อไป</div>
+                                    <table class="sign gap">
+                                        <tr>
+                                            <td style="width: 60%;">ลายมือชื่อ<t
+                                                    t-out="long_dots"
+                                                />ผู้ยืม</td>
+                                            <td>วันที่ <t
+                                                    t-out="o._contract_date_th(o.date_submitted) or dots"
+                                                /></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- 5. Proposal (signed by the borrower) -->
+                            <tr>
+                                <td colspan="2">
+                                    <div>เสนอ &#160;อธิการบดี<t t-out="org" /></div>
+                                    <div
+                                        class="indent"
+                                    >ได้ตรวจสอบแล้ว เห็นสมควรอนุมัติให้ยืมตามใบยืมฉบับนี้ได้ จำนวน <t
+                                            t-out="amount_str"
+                                        /> บาท (<t t-out="amount_words" />)</div>
+                                    <table class="sign gap">
+                                        <tr>
+                                            <td style="width: 60%;">ลงชื่อ<t
+                                                    t-out="long_dots"
+                                                /></td>
+                                            <td>วันที่ <t t-out="long_dots" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="center">
+                                                <div><t t-out="signer_name" /></div>
+                                                <div t-if="emp.job_title"><t
+                                                        t-out="emp.job_title"
+                                                    /></div>
+                                            </td>
+                                            <td />
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- 6. Approval -->
+                            <tr>
+                                <td colspan="2">
+                                    <div class="section">คำอนุมัติ</div>
+                                    <div
+                                        class="indent"
+                                    >อนุมัติให้ยืมตามเงื่อนไขข้างต้นได้ เป็นเงิน <t
+                                            t-out="amount_str"
+                                        /> บาท (<t t-out="amount_words" />)</div>
+                                    <table class="sign gap">
+                                        <tr>
+                                            <td style="width: 60%;">ลงชื่อผู้อนุมัติ<t
+                                                    t-out="long_dots"
+                                                /></td>
+                                            <td>วันที่ <t t-out="long_dots" /></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- 7. Receipt (signed by the borrower) -->
+                            <tr>
+                                <td colspan="2">
+                                    <div class="section">ใบรับเงิน</div>
+                                    <div class="indent">ได้รับเงินยืมจำนวน <t
+                                            t-out="amount_str"
+                                        /> บาท (<t t-out="amount_words" />)</div>
+                                    <div>ไปเป็นการถูกต้องแล้ว</div>
+                                    <table class="sign gap">
+                                        <tr>
+                                            <td style="width: 60%;">ลงชื่อ<t
+                                                    t-out="long_dots"
+                                                /> ผู้รับเงิน</td>
+                                            <td>วันที่ <t t-out="long_dots" /></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    โอนเงินวันที่ <t
+                                        t-out="o._contract_date_th(o.effective_date) or long_dots"
+                                    />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

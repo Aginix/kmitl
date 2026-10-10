@@ -38,6 +38,10 @@ _Avoid_: contract number, agreement number
 The formal loan-contract number, assigned only when the disbursement transfer completes on the Effective Date — distinct from the ADV Running Number. Uses a simple running sequence for now; a dedicated override module may customize the format later.
 _Avoid_: ADV number, running number
 
+**Loan Contract Form (แบบ สค.001 / ใบสัญญาการยืมเงิน)**:
+The printed paper contract, signed by hand (`advance_payment_contract_pdf`, header button พิมพ์สัญญา, printable in any state). Page 1 is filled from the agreement; page 2 is the blank รายการส่งใช้เงินยืม ledger for handwriting. Its เลขที่ is the Contract Number, not the ADV Running Number.
+_Avoid_: loan report, contract PDF (bare)
+
 **Effective Date (วันที่มีผลของสัญญา)**:
 The date the disbursement transfer to the borrower completes. At this moment the agreement enters `in_progress` (from `approved`), becomes a formal debt ("ลูกหนี้โดยสมบูรณ์"), and receives its Contract Number.
 _Avoid_: approval date, disbursement request date
