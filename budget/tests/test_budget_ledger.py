@@ -478,6 +478,34 @@ class TestBudgetLedger(BudgetLedgerCommon):
         # the untagged pool ignores the tagged reservation entirely
         self.assertEqual(self._available(), 50_000)
 
+    def test_floating_tagged_reservation_reported(self):
+        """A tagged reservation made against the untagged floating pool
+        (ADR-0007, before the money moved onto the tag) leaves its tag
+        coordinate negative once tags are pinned; the reconciliation names it
+        instead of silently freeing the money on the untagged pool."""
+        self._appropriate(100_000)
+        self.env["ir.config_parameter"].sudo().set_param(
+            "budget.allow_negative", True
+        )
+        floating = self._reserve(60_000, tag=self.tag)
+        self.env["ir.config_parameter"].sudo().set_param(
+            "budget.allow_negative", False
+        )
+        self.assertEqual(self._available(tag=self.tag), -60_000)
+        self.assertEqual(floating._ledger_tag_shortfall(), 60_000)
+        self.assertIn(floating, floating._ledger_mismatches())
+        report = self.env["budget.ledger.reconcile"].action_open_reconciliation()
+        rows = self.env["budget.ledger.reconcile"].search(report["domain"])
+        row = rows.filtered(lambda r: r.commitment_id == floating)
+        self.assertEqual(row.difference, -60_000)
+        self.assertEqual(row.kmitl_project_analytic_id, self.tag)
+
+    def test_funded_tagged_reservation_not_reported(self):
+        self._appropriate(100_000, tag=self.tag)
+        funded = self._reserve(60_000, tag=self.tag)
+        self.assertEqual(funded._ledger_tag_shortfall(), 0.0)
+        self.assertNotIn(funded, funded._ledger_mismatches())
+
     # ------------------------------------------------------------------
     # back-fill + reconciliation (Q11)
     # ------------------------------------------------------------------
