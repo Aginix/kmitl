@@ -206,7 +206,13 @@ class BudgetTransfer(models.Model):
                         "assigned — changing it would make the number inconsistent."
                     )
                 )
-        return super().write(vals)
+        res = super().write(vals)
+        if vals.get("state", "draft") != "draft":
+            # The number is a lazy stored compute that only mints outside
+            # draft: compute it now, or a transfer reset to draft in the same
+            # transaction would never get its number.
+            self.mapped("name")
+        return res
 
     # ------------------------------------------------------------------
     # Computes
