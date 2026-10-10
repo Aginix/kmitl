@@ -344,6 +344,63 @@ class TestProjectBudgetReserve(TransactionCase):
         # Simulate writing the same distribution again (no-op change) — should not raise.
         project.write({"analytic_distribution": dict(project.analytic_distribution or {})})
 
+    def _active_commitment(self, project):
+        return project.budget_commitment_ids.filtered(lambda c: c.state != "cancel")
+
+    def test_direct_allocation_tops_up_reservation(self):
+        """A later allocation posted as a budget.move (not a budget transfer)
+        tops the reservation up by the same amount, even once spending has
+        started (budget ADR-0016, Q5)."""
+        project = self._make_project()
+        project.action_confirm()
+        self._allocate(project, 100000.0)
+        self._reserve(project)
+        commitment = self._active_commitment(project)
+        commitment._post_budget_event("consume", 40000.0)
+
+        move = self._allocate(project, 50000.0)
+
+        project.invalidate_recordset()
+        self.assertAlmostEqual(project.budget_amount, 150000.0)
+        self.assertEqual(self._active_commitment(project), commitment)
+        self.assertAlmostEqual(commitment.amount, 150000.0)
+        self.assertAlmostEqual(commitment.total_reserved, 150000.0)
+        self.assertAlmostEqual(commitment.available_to_obligate, 110000.0)
+        self.assertAlmostEqual(commitment.total_consumed, 40000.0)
+        self.assertTrue(commitment._has_budget_event(move, "reserve"))
+
+    def test_cancelling_allocation_releases_its_top_up(self):
+        project = self._make_project()
+        project.action_confirm()
+        self._allocate(project, 100000.0)
+        self._reserve(project)
+        commitment = self._active_commitment(project)
+        move = self._allocate(project, 50000.0)
+        self.assertAlmostEqual(commitment.total_reserved, 150000.0)
+
+        move.button_cancel()
+
+        project.invalidate_recordset()
+        self.assertAlmostEqual(project.budget_amount, 100000.0)
+        self.assertAlmostEqual(commitment.amount, 100000.0)
+        self.assertAlmostEqual(commitment.total_reserved, 100000.0)
+        self.assertFalse(commitment._has_budget_event(move, "reserve"))
+
+    def test_cancelling_spent_allocation_blocked(self):
+        """The topped-up money is no longer free once spent: the allocation
+        cannot be undone under the reservation."""
+        project = self._make_project()
+        project.action_confirm()
+        self._allocate(project, 100000.0)
+        self._reserve(project)
+        commitment = self._active_commitment(project)
+        move = self._allocate(project, 50000.0)
+        commitment._post_budget_event("consume", 120000.0)
+        with self.assertRaises(UserError), self.env.cr.savepoint():
+            move.button_cancel()
+        self.assertEqual(move.state, "posted")
+        self.assertAlmostEqual(commitment.total_reserved, 150000.0)
+
     def test_isolation_two_projects(self):
         """Two projects sharing the four base dims do not cross-deplete each other."""
         p1 = self._make_project(name="Project 1")
