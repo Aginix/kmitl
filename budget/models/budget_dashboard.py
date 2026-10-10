@@ -22,7 +22,7 @@ class BudgetDashboard(models.AbstractModel):
         adjustment (±)                  current - initial (supplementary + net transfers)
         current    (a) งบปัจจุบัน        posted appropriation + entry move lines (incl. transfers)
         cap        (3) ขอใช้ทั้งหมด      Σ active commitment caps
-        reserved   (b) เงินจอง           Σreserve - Σobligate   (commitment lines)
+        reserved   (b) เงินจอง           Σreserve - Σobligate   (usage, see _usage_read_group)
         obligated  (c) ผูกพัน            Σobligate - Σconsume
         consumed   (d) เบิกจ่าย          Σconsume
         used       (e) รวม              b + c + d  (= Σreserve, net of returns)
@@ -128,9 +128,9 @@ class BudgetDashboard(models.AbstractModel):
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("account_id", "in", account_ids),
         ] + dim_leaves
+        # Usage leaves on the ledger lines; the posted/commitment scope is
+        # added by _usage_read_group.
         cl_base = [
-            ("state", "=", "posted"),
-            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("account_id", "in", account_ids),
         ] + dim_leaves
@@ -143,12 +143,7 @@ class BudgetDashboard(models.AbstractModel):
             ("account_id", "in", account_ids),
         ]
         if dim_leaves:
-            match = (
-                self.env["budget.commitment.line"]
-                .search(cl_base)
-                .mapped("commitment_id")
-            )
-            commit_domain.append(("id", "in", match.ids))
+            commit_domain.append(("id", "in", self._usage_commitment_ids(cl_base)))
 
         # Optional breakdown: nest the budget-account tree under one or more
         # analytic dimensions (ordered, e.g. activities then departments)
@@ -176,20 +171,17 @@ class BudgetDashboard(models.AbstractModel):
             "balance",
         )
 
-        # --- b/c/d from posted commitment lines of active commitments ---
-        by_type = self._sum_by_account_and_type(
-            "budget.commitment.line", cl_base, "amount"
-        )
-        reserved = by_type.get("reserve", {})
-        obligated = by_type.get("obligate", {})
-        consumed = by_type.get("consume", {})
-        # (g) ส่งคืนเงินเหลือจ่าย: the คืนจอง lines (negative reserve, is_return),
-        # summed separately as a memo column. The signed reserve bucket above
-        # already nets these in, so b/e/f need no change — they drop/rise on
-        # their own once a return is posted.
-        returned = self._sum_by_account(
-            "budget.commitment.line", cl_base + [("is_return", "=", True)], "amount"
-        )
+        # --- b/c/d from the usage of active commitments ---
+        usage = self._usage_read_group(cl_base, ["account_id"])
+        reserved, obligated, consumed, returned = {}, {}, {}, {}
+        for (account_id,), figures in usage.items():
+            reserved[account_id] = figures["reserve"]
+            obligated[account_id] = figures["obligate"]
+            consumed[account_id] = figures["consume"]
+            # (g) ส่งคืนเงินเหลือจ่าย: the คืนจอง (negative reserve, is_return),
+            # a memo column. The signed reserve figure already nets these in,
+            # so b/e/f drop/rise on their own once a return is posted.
+            returned[account_id] = figures["returned"]
 
         cap = self._sum_by_account("budget.commitment", commit_domain, "amount")
 
@@ -317,19 +309,19 @@ class BudgetDashboard(models.AbstractModel):
             ),
             "cap": self._cap_facts_by_account_dims(commit_domain, dims),
         }
-        by_type = self._facts_by_account_dims_type(
-            "budget.commitment.line", cl_base, "amount", dims
-        )
-        sources["reserved"] = by_type.get("reserve", {})
-        sources["obligated"] = by_type.get("obligate", {})
-        sources["consumed"] = by_type.get("consume", {})
-        # (g) ส่งคืนเงินเหลือจ่าย: คืนจอง lines (negative reserve, is_return).
-        sources["returned"] = self._facts_by_account_dims(
-            "budget.commitment.line",
-            cl_base + [("is_return", "=", True)],
-            "amount",
-            dims,
-        )
+        # (g) ส่งคืนเงินเหลือจ่าย ("returned"): คืนจอง (negative reserve, is_return).
+        for metric in ("reserved", "obligated", "consumed", "returned"):
+            sources[metric] = {}
+        for key, figures in self._usage_read_group(
+            cl_base, ["account_id", *dims]
+        ).items():
+            if not key[0]:
+                continue
+            fact = (key[0], tuple(key[1:]))
+            sources["reserved"][fact] = figures["reserve"]
+            sources["obligated"][fact] = figures["obligate"]
+            sources["consumed"][fact] = figures["consume"]
+            sources["returned"][fact] = figures["returned"]
 
         # own[(account_id, dim_tuple)] = {metric: value}; 0 in a tuple = untagged
         # at that position. Each read_group group maps to exactly one tuple, so
@@ -542,26 +534,12 @@ class BudgetDashboard(models.AbstractModel):
             out[(account[0], tup)] = grp.get(field) or 0.0
         return out
 
-    def _facts_by_account_dims_type(self, model, domain, field, dims):
-        """{move_type: {(account_id, dim_tuple): Σ field}} for commitment lines."""
-        out = {}
-        for grp in self.env[model].read_group(
-            domain, [field], ["account_id", *dims, "move_type"], lazy=False
-        ):
-            account = grp.get("account_id")
-            move_type = grp.get("move_type")
-            if not (account and move_type):
-                continue
-            tup = tuple((grp.get(d) or [0])[0] for d in dims)
-            out.setdefault(move_type, {})[(account[0], tup)] = grp.get(field) or 0.0
-        return out
-
     def _cap_facts_by_account_dims(self, commit_domain, dims):
         """{(account_id, dim_tuple): Σ cap} per active commitment.
 
         The cap *amount* and *account* come from the commitment header (matching
-        the flat report). The dim *tuple* comes from the commitment's posted
-        ``reserve`` line (stored fields, resolved set-based) so cap co-locates
+        the flat report). The dim *tuple* comes from where the commitment's
+        reservation sits (its usage, resolved set-based) so cap co-locates
         with reserved on the full tuple. A picker-created reservation pins one
         (activity, department, …) tuple; if some externally-created commitment
         ever has reserve lines spanning >1 tuple we log it and keep the last
@@ -572,21 +550,12 @@ class BudgetDashboard(models.AbstractModel):
             return {}
         tup_of = {}
         multi = set()
-        for grp in self.env["budget.commitment.line"].read_group(
-            [
-                ("commitment_id", "in", commitments.ids),
-                ("state", "=", "posted"),
-                ("move_type", "=", "reserve"),
-            ],
-            [],
-            ["commitment_id", *dims],
-            lazy=False,
-        ):
-            commitment = grp.get("commitment_id")
-            if not commitment:
+        for key, figures in self._usage_read_group(
+            [("commitment_id", "in", commitments.ids)], ["commitment_id", *dims]
+        ).items():
+            cid, tup = key[0], tuple(key[1:])
+            if not cid or not figures["reserve"]:
                 continue
-            cid = commitment[0]
-            tup = tuple((grp.get(d) or [0])[0] for d in dims)
             if cid in tup_of:
                 if tup_of[cid] != tup:
                     # Spans >1 tuple (no normal flow does this); pick a stable
@@ -842,10 +811,7 @@ class BudgetDashboard(models.AbstractModel):
         cards.
         """
         cl_dom = [
-            ("state", "=", "posted"),
-            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
             ("account_fiscal_year_id", "=", fiscal_year_id),
-            ("move_type", "in", ("reserve", "consume")),
             (dim_field, "!=", False),
         ]
         if source_id:
@@ -855,15 +821,13 @@ class BudgetDashboard(models.AbstractModel):
             cl_dom.append(dep)
 
         current, used = defaultdict(float), defaultdict(float)
-        for grp in self.env["budget.commitment.line"].read_group(
-            cl_dom, ["amount"], [dim_field, "move_type"], lazy=False
-        ):
-            rec = grp.get(dim_field)
-            move_type = grp.get("move_type")
-            if not rec or not move_type:
+        for (analytic_id,), figures in self._usage_read_group(
+            cl_dom, [dim_field]
+        ).items():
+            if not analytic_id:
                 continue
-            target = current if move_type == "reserve" else used
-            target[rec[0]] += grp.get("amount") or 0.0
+            current[analytic_id] += figures["reserve"]
+            used[analytic_id] += figures["consume"]
 
         ids = set(current) | set(used)
         if not ids:
@@ -905,7 +869,7 @@ class BudgetDashboard(models.AbstractModel):
     def _overview_timeseries(self, fiscal_year_id, source_id, department_ids=None):
         """Monthly จอง / ผูกพัน / เบิกจ่าย flow across the fiscal year.
 
-        Raw ``Σ amount`` of posted reserve/obligate/consume commitment lines,
+        Monthly reserve/obligate/consume usage flow (``_usage_read_group``),
         bucketed by month over the whole fiscal-year span (empty months kept so
         the x-axis is continuous). Same source / department scope as the cards.
         """
@@ -926,27 +890,20 @@ class BudgetDashboard(models.AbstractModel):
         index = {mk: i for i, mk in enumerate(months)}
         series = {mt: [0.0] * len(months) for mt in self._TS_MOVE_TYPES}
 
-        cl_dom = [
-            ("state", "=", "posted"),
-            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
-            ("account_fiscal_year_id", "=", fiscal_year_id),
-        ]
+        cl_dom = [("account_fiscal_year_id", "=", fiscal_year_id)]
         if source_id:
             cl_dom.append(("source_analytic_id", "=", source_id))
         dep = self._department_leaf(department_ids)
         if dep:
             cl_dom.append(dep)
-        for grp in self.env["budget.commitment.line"].read_group(
-            cl_dom, ["amount"], ["date:month", "move_type"], lazy=False
-        ):
-            move_type = grp.get("move_type")
-            rng = (grp.get("__range") or {}).get("date:month") or {}
-            start = rng.get("from")
-            if move_type not in series or not start:
+        for (start,), figures in self._usage_read_group(
+            cl_dom, ["date:month"]
+        ).items():
+            i = index.get((start or "")[:7])
+            if i is None:
                 continue
-            i = index.get(start[:7])
-            if i is not None:
-                series[move_type][i] = grp.get("amount") or 0.0
+            for move_type in self._TS_MOVE_TYPES:
+                series[move_type][i] += figures[move_type]
         # Convert raw monthly flows to cumulative running balances, then net them
         # so ผูกพัน drops to 0 once เบิกจ่าย is posted (even in a later month).
         n = len(months)
@@ -1049,7 +1006,7 @@ class BudgetDashboard(models.AbstractModel):
         """Per-root breakdown over the top-level nodes of one analytic dim.
 
         current comes from posted appropriation/entry move lines; used is the
-        net reservation (``move_type == 'reserve'`` on active commitments).
+        net reservation of active commitments (``_usage_read_group``).
         Both the budget account and the dimension value are rolled up to their
         respective roots (``parent_path[0]``) before accumulation.
         """
@@ -1058,12 +1015,7 @@ class BudgetDashboard(models.AbstractModel):
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("move_type", "in", ("appropriation", "entry")),
         ]
-        cl_dom = [
-            ("state", "=", "posted"),
-            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
-            ("account_fiscal_year_id", "=", fiscal_year_id),
-            ("move_type", "=", "reserve"),
-        ]
+        cl_dom = [("account_fiscal_year_id", "=", fiscal_year_id)]
         if source_id:
             move_dom.append(("source_analytic_id", "=", source_id))
             cl_dom.append(("source_analytic_id", "=", source_id))
@@ -1075,9 +1027,16 @@ class BudgetDashboard(models.AbstractModel):
         cur_groups = self.env["budget.move.line"].read_group(
             move_dom, ["balance"], ["account_id", dim], lazy=False
         )
-        used_groups = self.env["budget.commitment.line"].read_group(
-            cl_dom, ["amount"], ["account_id", dim], lazy=False
-        )
+        used_groups = [
+            {
+                "account_id": [account_id] if account_id else False,
+                dim: [dim_id] if dim_id else False,
+                "amount": figures["reserve"],
+            }
+            for (account_id, dim_id), figures in self._usage_read_group(
+                cl_dom, ["account_id", dim]
+            ).items()
+        ]
 
         all_groups = cur_groups + used_groups
         root_of = self._root_category_map(
@@ -1155,6 +1114,80 @@ class BudgetDashboard(models.AbstractModel):
         return out
 
     # ------------------------------------------------------------------
+    # usage, read from the budget ledger (ADR-0016)
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _usage_group_key(grp, groupby):
+        """Group values as a hashable tuple: a Many2one becomes its id (0 when
+        empty), a ``date:<interval>`` its range start (``YYYY-MM-DD``)."""
+        key = []
+        for field in groupby:
+            if ":" in field:
+                rng = (grp.get("__range") or {}).get(field) or {}
+                key.append(rng.get("from"))
+            else:
+                value = grp.get(field)
+                key.append(value[0] if isinstance(value, (list, tuple)) else value or 0)
+        return tuple(key)
+
+    def _usage_base_domain(self):
+        # Usage = the reserve/obligate/consume buckets, whether a reservation
+        # posted them or a direct consumption did (ADR-0018).
+        return [
+            ("parent_state", "=", "posted"),
+            ("move_type", "in", list(self._TS_MOVE_TYPES)),
+        ]
+
+    def _usage_read_group(self, domain, groupby):
+        """Usage of the reservations grouped by ``groupby``, read from their
+        ledger lines.
+
+        ``domain`` may only use fields that ledger lines carry (fiscal year,
+        account, the six dimensions, date, commitment). Each band is the
+        negated Σ balance of its bucket (b = reserve, c = obligate,
+        d = consume), folded back into cumulative figures:
+        ``{group_key: {"reserve", "obligate", "consume", "returned"}}`` with
+        reserve (net of returns) ⊇ obligate ⊇ consume, so b = reserve −
+        obligate, c = obligate − consume, d = consume, and ``returned`` is the
+        signed Σ of คืนจอง (negative).
+        """
+        buckets = {}
+        for grp in self.env["budget.move.line"].read_group(
+            self._usage_base_domain() + list(domain),
+            ["balance"],
+            list(groupby) + ["move_type", "is_return"],
+            lazy=False,
+        ):
+            sums = buckets.setdefault(
+                self._usage_group_key(grp, groupby),
+                dict.fromkeys(("reserve", "obligate", "consume", "returned"), 0.0),
+            )
+            balance = grp.get("balance") or 0.0
+            if grp.get("move_type") in ("reserve", "obligate", "consume"):
+                sums[grp["move_type"]] += balance
+            if grp.get("is_return"):
+                sums["returned"] += balance
+        return {
+            key: {
+                "reserve": -(sums["reserve"] + sums["obligate"] + sums["consume"]),
+                "obligate": -(sums["obligate"] + sums["consume"]),
+                "consume": -sums["consume"],
+                # คืนจอง posts reserve +X; the figure stays signed negative.
+                "returned": -sums["returned"],
+            }
+            for key, sums in buckets.items()
+        }
+
+    def _usage_commitment_ids(self, domain):
+        """Ids of the reservations with ledger usage matching ``domain``."""
+        groups = self.env["budget.move.line"].read_group(
+            self._usage_base_domain() + list(domain),
+            ["commitment_id"],
+            ["commitment_id"],
+        )
+        return [grp["commitment_id"][0] for grp in groups if grp.get("commitment_id")]
+
+    # ------------------------------------------------------------------
     # helpers
     # ------------------------------------------------------------------
     @staticmethod
@@ -1218,15 +1251,3 @@ class BudgetDashboard(models.AbstractModel):
             if account:
                 result[account[0]] = grp.get(field) or 0.0
         return result
-
-    def _sum_by_account_and_type(self, model, domain, field):
-        out = {}
-        groups = self.env[model].read_group(
-            domain, [field], ["account_id", "move_type"], lazy=False
-        )
-        for grp in groups:
-            account = grp.get("account_id")
-            move_type = grp.get("move_type")
-            if account and move_type:
-                out.setdefault(move_type, {})[account[0]] = grp.get(field) or 0.0
-        return out

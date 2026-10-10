@@ -593,23 +593,11 @@ class BudgetCommitmentMixin(models.AbstractModel):
                 _("Commitment must be in reserved or partial state to obligate.")
             )
 
-        # Get first reserve line for analytic info
-        first_reserve = commitment.line_ids.filtered(
-            lambda l: l.move_type == "reserve" and l.state == "posted"
-        )[:1]
-
-        if not first_reserve:
-            raise UserError(_("No active reserve lines found."))
-
-        self.env["budget.commitment.line"].create(
-            {
-                "commitment_id": commitment.id,
-                "move_type": "obligate",
-                "account_id": first_reserve.account_id.id,
-                "analytic_distribution": first_reserve.analytic_distribution,
-                "amount": commitment.total_reserved,
-                "name": _("Obligation from %s") % self.display_name,
-            }
+        commitment._post_budget_event(
+            "obligate",
+            commitment.total_reserved,
+            source=self,
+            name=_("Obligation from %s") % self.display_name,
         )
         return True
 
@@ -634,26 +622,17 @@ class BudgetCommitmentMixin(models.AbstractModel):
                 _("Can only consume from reserved or partial commitments")
             )
 
-        first_reserve = commitment.line_ids.filtered(
-            lambda l: l.move_type == "reserve" and l.state == "posted"
-        )[:1]
-
-        if not first_reserve:
-            raise UserError(_("No active reserve lines found"))
-
-        consume_line = self.env["budget.commitment.line"].create(
-            {
-                "commitment_id": commitment.id,
-                "move_type": "consume",
-                "account_id": first_reserve.account_id.id,
-                "analytic_distribution": first_reserve.analytic_distribution,
-                "amount": amount,
-                "name": _("Consumption from %s") % self.display_name,
-            }
+        consume_line = commitment._post_budget_event(
+            "consume",
+            amount,
+            source=self,
+            name=_("Consumption from %s") % self.display_name,
         )
 
-        # Auto-close if fully consumed
-        if commitment.available_to_consume <= 0.01:
+        # Auto-close once nothing is left to draw: neither an open obligation
+        # nor unobligated reserve (a consume without an obligation liquidates
+        # the reserve, so the obligation alone is always 0 there).
+        if commitment.available_to_consume + commitment.available_to_obligate <= 0.01:
             commitment.action_done()
 
         return consume_line

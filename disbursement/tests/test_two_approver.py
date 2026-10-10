@@ -14,7 +14,7 @@ _BUDGET_HOOK = "odoo.addons.disbursement.models.disbursement_request." \
 class TestTwoApprover(TransactionCase):
     """The verified request needs two approvals in sequence: the Finance
     Division Director then the Rector-delegated approver. The budget is
-    obligated/consumed only on the second (Rector) approval."""
+    consumed only on the second (Rector) approval."""
 
     @classmethod
     def setUpClass(cls):

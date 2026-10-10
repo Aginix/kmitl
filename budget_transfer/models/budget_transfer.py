@@ -2,6 +2,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_compare, formatLang
 
 _logger = logging.getLogger(__name__)
 
@@ -17,12 +18,13 @@ class BudgetTransfer(models.Model):
     transfer needs on top of a budget move: its own BTR number, a six-state
     approval workflow, a reason, and the requestor/approver trail.
 
-    Business rules (unchanged, ADR-0009): a transfer is a **pure move** — it
-    reserves/releases nothing; a FROM line credits its bucket, a balanced TO line
+    Business rules (ADR-0009): a FROM line credits its bucket, a balanced TO line
     debits its bucket; sources are locked to the header (no cross-source); the
     four core dimensions are required; the two Pool Tags are optional and
     mutually exclusive. The lines are authored directly as ``budget.move.line``
-    (folded, ADR-0013).
+    (folded, ADR-0013). A transfer onto/off the coordinate of a reservation
+    that owns the line's pool tag moves that reservation with it (budget
+    ADR-0016, Q5/Q6).
 
     State lifecycle: draft → submitted → approved → posted, with rejected /
     cancelled and reset-to-draft. ``move_id.state`` follows: draft while the
@@ -204,7 +206,13 @@ class BudgetTransfer(models.Model):
                         "assigned — changing it would make the number inconsistent."
                     )
                 )
-        return super().write(vals)
+        res = super().write(vals)
+        if vals.get("state", "draft") != "draft":
+            # The number is a lazy stored compute that only mints outside
+            # draft: compute it now, or a transfer reset to draft in the same
+            # transaction would never get its number.
+            self.mapped("name")
+        return res
 
     # ------------------------------------------------------------------
     # Computes
@@ -414,15 +422,19 @@ class BudgetTransfer(models.Model):
         """Stamp the FROM/TO lines onto the delegated move and post it.
 
         The move already carries the lines (authored through delegation); this
-        re-stamps debit/credit/balance from each line's amount + direction and
-        drives the move to posted. A transfer is a pure budget move — no
-        commitment is created or touched (ADR-0009).
+        re-stamps debit/credit/balance from each line's amount + direction, adds
+        the top-up / release of the reservations it lands on, and drives the
+        move to posted.
         """
+        commitments = self.env["budget.commitment"]
         for transfer in self:
             transfer.line_ids._apply_direction_amount()
+            commitments |= transfer._apply_pool_reservations()
             transfer.move_id.action_review()
             transfer.move_id.action_post()
         self.write({"state": "posted"})
+        commitments._check_ledger_limits()
+        commitments._sync_state()
 
     def action_cancel(self):
         if "posted" in self.mapped("state"):
@@ -439,6 +451,7 @@ class BudgetTransfer(models.Model):
         Current Budget."""
         is_manager = self.env.user.has_group("budget.group_budget_manager")
         is_admin = self.env.is_admin()
+        commitments = self.env["budget.commitment"]
         for transfer in self:
             if transfer.state in ("posted", "cancelled") and not (
                 is_manager or is_admin
@@ -449,6 +462,8 @@ class BudgetTransfer(models.Model):
                         "transfer to draft."
                     )
                 )
+            if transfer.state == "posted":
+                commitments |= transfer._unwind_pool_reservations()
             if transfer.move_id.state != "draft":
                 transfer.move_id.button_draft()
         self.write(
@@ -458,7 +473,130 @@ class BudgetTransfer(models.Model):
                 "approval_date": False,
             }
         )
+        commitments._check_ledger_limits()
+        commitments._sync_state()
         return True
+
+    # ------------------------------------------------------------------
+    # Reservation top-up / release (budget ADR-0016, Q5/Q6)
+    # ------------------------------------------------------------------
+    def _apply_pool_reservations(self):
+        """A TO line landing on the exact coordinate of an active reservation
+        that owns the line's pool tag adds a ``reserve −X`` top-up to the
+        transfer's own move (the reservation's cap rises by X); a FROM line out
+        of such a coordinate draws the free money there first and releases the
+        rest, never beyond the reservation's unobligated remainder (budget
+        ADR-0016, Q5). Returns the reservations touched."""
+        self.ensure_one()
+        commitments = self.env["budget.commitment"]
+        if self.move_id.line_ids.filtered("commitment_id"):
+            return commitments  # already applied (idempotent re-post)
+        free = {}  # unreserved money left per owner's coordinate
+        for line in self.line_ids.filtered("transfer_direction"):
+            commitment = line._pool_owner()
+            if not commitment:
+                continue
+            amount = line.amount or 0.0
+            if line.transfer_direction == "from":
+                # Free money at the coordinate goes first; only the rest is
+                # released from the reservation.
+                if commitment not in free:
+                    free[commitment] = max(line._free_budget(), 0.0)
+                from_free = min(amount, free[commitment])
+                free[commitment] -= from_free
+                amount -= from_free
+                rounding = commitment.currency_id.rounding or 0.01
+                if float_compare(amount, 0.0, precision_rounding=rounding) <= 0:
+                    continue
+                # On a ถัวจ่าย slip only this code's share may go (ADR-0017).
+                free_to_release = commitment._ledger_unobligated(line.account_id)
+                if (
+                    float_compare(
+                        amount,
+                        free_to_release,
+                        precision_rounding=rounding,
+                    )
+                    > 0
+                ):
+                    raise UserError(
+                        _(
+                            "Cannot transfer %(amount)s out of reservation %(name)s: "
+                            "only %(free)s of it is not yet obligated."
+                        )
+                        % {
+                            "amount": formatLang(
+                                self.env, amount, currency_obj=commitment.currency_id
+                            ),
+                            "name": commitment.display_name,
+                            "free": formatLang(
+                                self.env,
+                                free_to_release,
+                                currency_obj=commitment.currency_id,
+                            ),
+                        }
+                    )
+                amount = -amount
+            commitment._post_transfer_event(line, amount)
+            commitments |= commitment
+        return commitments
+
+    def _unwind_pool_reservations(self):
+        """Remove the top-up / release lines before the move is un-posted;
+        block when a reservation no longer has a top-up free to give back.
+
+        A top-up/release whose event was already cancelled (its reservation was
+        cancelled) has been negated by a reversal move of its own (ADR-0016,
+        Q6): that reversal is cancelled together with the line, so neither is
+        left behind as a phantom reservation."""
+        self.ensure_one()
+        commitments = self.env["budget.commitment"]
+        ledger_lines = self.move_id.line_ids.filtered("commitment_id")
+        for ledger_line in ledger_lines:
+            commitment = ledger_line.commitment_id
+            event = ledger_line.commitment_line_id
+            amount = -ledger_line.balance  # + top-up, − release
+            rounding = commitment.currency_id.rounding or 0.01
+            if event.state == "cancel":
+                reversals = (
+                    self.env["budget.move.line"]
+                    .sudo()
+                    .search(
+                        [
+                            ("commitment_line_id", "=", event.id),
+                            ("parent_state", "=", "posted"),
+                            ("move_id", "!=", self.move_id.id),
+                        ]
+                    )
+                    .move_id
+                )
+                reversals.with_context(budget_ledger_posting=True).button_cancel()
+            elif (
+                float_compare(
+                    amount,
+                    commitment._ledger_unobligated(ledger_line.account_id),
+                    precision_rounding=rounding,
+                )
+                > 0
+            ):
+                raise UserError(
+                    _(
+                        "Cannot reset transfer %(transfer)s: reservation %(name)s "
+                        "has already obligated part of the %(amount)s it received "
+                        "from this transfer."
+                    )
+                    % {
+                        "transfer": self.display_name,
+                        "name": commitment.display_name,
+                        "amount": formatLang(
+                            self.env, amount, currency_obj=commitment.currency_id
+                        ),
+                    }
+                )
+            ledger_line.sudo().with_context(budget_ledger_posting=True).unlink()
+            commitment.sudo().with_context(budget_ledger_posting=True).amount -= amount
+            event.sudo().action_cancel()
+            commitments |= commitment
+        return commitments
 
     # ------------------------------------------------------------------
     # Validation

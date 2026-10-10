@@ -1,5 +1,7 @@
 # Obligate and consume are separate ledger primitives
 
+> **Amended by [ADR-0016](./0016-commitment-events-posted-to-budget-ledger.md):** the waterfall is now posted to the budget ledger as encumbrance liquidation — an obligate posts `reserve +X / obligate −X`, a consume posts `obligate +X / consume −X` — and the bands are read as Σ balance per bucket of `budget.move.line`. A disbursement request now posts a single consume event that liquidates the reserve directly (no obligate).
+
 `budget.commitment` records reserve / obligate / consume as separate `budget.commitment.line` entries (`move_type`). The ledger **supports** posting obligate and consume independently at different times — but that is a capability, not how the current flows behave.
 
 In practice **both** KMITL flows fire obligate + consume **together** in one step: the PO / disbursement flow, and the procurement-plan flow (which obligates+consumes per งวด at each disbursement request — see the clarification below). That is why the dashboard's **"ผูกพัน (c)" column is ~0** for both — both call the same two primitives at the same moment.

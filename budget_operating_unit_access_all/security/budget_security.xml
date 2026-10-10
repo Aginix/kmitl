@@ -8,12 +8,23 @@
 
     <function model="ir.rule" name="write">
         <value
-            eval="[ref('budget_operating_unit.ir_rule_budget_move_allowed_operating_units'),
-                   ref('budget_operating_unit.ir_rule_budget_move_line_allowed_operating_units'),
-                   ref('budget_operating_unit.ir_rule_budget_transfer_allowed_operating_units')]"
+            eval="[ref('budget_operating_unit.ir_rule_budget_transfer_allowed_operating_units')]"
         />
         <value
             eval="{'domain_force': &quot;['|','|',(1, '=', 1) if user.has_group('budget_operating_unit_access_all.group_all_ou_budget') else (0, '=', 1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids)]&quot;}"
+        />
+    </function>
+
+    <!-- Budget moves/lines keep the beneficiary clause under the all-OU
+         override too: a reservation's ledger lines (budget ADR-0016) must stay
+         visible to — and counted for — its Beneficiary Unit (ADR-0011). -->
+    <function model="ir.rule" name="write">
+        <value
+            eval="[ref('budget_operating_unit.ir_rule_budget_move_allowed_operating_units'),
+                   ref('budget_operating_unit.ir_rule_budget_move_line_allowed_operating_units')]"
+        />
+        <value
+            eval="{'domain_force': &quot;['|','|','|',(1, '=', 1) if user.has_group('budget_operating_unit_access_all.group_all_ou_budget') else (0, '=', 1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids),('commitment_id.beneficiary_operating_unit_id','in', user.operating_unit_ids.ids)]&quot;}"
         />
     </function>
 

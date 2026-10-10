@@ -6,6 +6,28 @@ from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
+# A posted move carrying a commitment's ledger lines is the figure itself
+# (ADR-0016): its state, type and coordinate may only change through the
+# commitment event / budget transfer that owns it (``budget_ledger_posting``).
+_LEDGER_MOVE_LOCKED_FIELDS = frozenset(
+    {
+        "state",
+        "move_type",
+        "line_ids",
+        "budget_type",
+        "account_fiscal_year_id",
+        "company_id",
+        "currency_id",
+        "department_analytic_id",
+        "source_analytic_id",
+        "commitment_id",
+        "commitment_line_id",
+    }
+)
+# Buckets that only a commitment event may post (ADR-0016): a manual move in
+# them would change every figure without any reservation behind it.
+_COMMITMENT_BUCKETS = ("reserve", "obligate", "consume")
+
 
 class BudgetMove(models.Model):
     """
@@ -242,6 +264,8 @@ class BudgetMove(models.Model):
         selection=[
             ("entry", "Budget Entry"),
             ("appropriation", "Budget Appropriation"),
+            ("reserve", "Budget Reservation"),
+            ("obligate", "Budget Obligation"),
             ("consume", "Budget Consumption"),
         ],
         string="Type",
@@ -273,20 +297,23 @@ class BudgetMove(models.Model):
     )
 
     # Link to budget commitment
+    # Set by the reservation that posts the move (ADR-0016), never by hand.
     commitment_id = fields.Many2one(
         comodel_name="budget.commitment",
         string="Related Commitment",
         help="Budget commitment that this move is consuming from",
         index=True,
         ondelete="set null",
-        states=READONLY_STATES,
+        readonly=True,
+        copy=False,
     )
     commitment_line_id = fields.Many2one(
         comodel_name="budget.commitment.line",
         string="Related Commitment Line",
         index=True,
         ondelete="set null",
-        states=READONLY_STATES,
+        readonly=True,
+        copy=False,
     )
 
     first_account_id = fields.Many2one(
@@ -303,13 +330,20 @@ class BudgetMove(models.Model):
 
     @api.depends(
         "line_ids.balance",
+        "line_ids.move_type",
         "move_type",
     )
     def _compute_amount(self):
+        """Total of the lines in the move's own bucket only (ADR-0016, Q6): a
+        transfer's reservation top-ups and an event's liquidation lines move
+        other buckets and stay out of it, so a transfer still totals 0 and a
+        consume move its consumption."""
         for move in self:
-            # นับทุก line เหมือนกัน ไม่ต้องแยก virtual lines
-            total = sum(move.line_ids.mapped("balance"))
-            move.total_amount = total
+            move.total_amount = sum(
+                move.line_ids.filtered(
+                    lambda line, move_type=move.move_type: line.move_type == move_type
+                ).mapped("balance")
+            )
 
     @api.depends("state", "date")
     def _compute_name(self):
@@ -423,9 +457,97 @@ class BudgetMove(models.Model):
                 container["records"] = moves | stolen_moves
         return moves
 
+    def _is_ledger_move(self):
+        """Whether this move carries a commitment's ledger lines (its own
+        event move, or a transfer that topped a reservation up/released it).
+        Read from the lines: the header link alone does not make a figure."""
+        self.ensure_one()
+        return bool(self.line_ids.filtered("commitment_id"))
+
+    def _check_ledger_move_locked(self, vals=None):
+        if self.env.context.get("budget_ledger_posting"):
+            return
+        if vals is not None and not _LEDGER_MOVE_LOCKED_FIELDS & set(vals):
+            return
+        # Writes are locked once posted; deletion in any state but draft (a
+        # cancelled event move stays as the reservation's audit trail).
+        locked = self.filtered(
+            lambda m: (m.state == "posted" if vals is not None else m.state != "draft")
+            and m._is_ledger_move()
+        )
+        if locked:
+            raise UserError(
+                _(
+                    "Budget move %s carries a reservation's budget ledger lines: "
+                    "it can only be changed by cancelling the commitment event "
+                    "(or resetting the budget transfer) that posted it."
+                )
+                % ", ".join(locked.mapped("display_name"))
+            )
+
+    def _check_commitment_buckets(self):
+        """reserve / obligate lines are posted by commitment events only
+        (ADR-0016): the availability engine sums every bucket, so a manual line
+        there would move the figures with no reservation behind it. A consume
+        line without a reservation is a **direct consumption** (ตัดงบตรง,
+        ADR-0018): only a Budget Manager may post it, and only within the
+        pool's Available. Checked when a move is posted — not as a field
+        constraint, which Odoo also re-runs on recompute outside the posting
+        context."""
+        if self.env.context.get("budget_ledger_posting"):
+            return
+        orphan = self.line_ids.filtered(
+            lambda l: l.move_type in _COMMITMENT_BUCKETS and not l.commitment_id
+        )
+        if not orphan:
+            return
+        direct = orphan.filtered(lambda l: l.move_type == "consume")
+        if orphan - direct:
+            raise ValidationError(
+                _(
+                    "Budget reservation and obligation lines can only be posted "
+                    "by a budget commitment."
+                )
+            )
+        self._check_direct_consume_right()
+        direct._check_direct_consume()
+
+    def _check_direct_consume_right(self):
+        if not self.env.user.has_group("budget.group_budget_manager"):
+            raise ValidationError(
+                _(
+                    "Only a Budget Manager may post or undo a direct consumption "
+                    "(ตัดงบตรง) — budget consumed without a budget reservation."
+                )
+            )
+
+    def _check_direct_consume_locked(self, vals=None):
+        """A posted direct consumption is undone (reset, cancel, delete, edit)
+        by a Budget Manager only, like it was posted."""
+        if self.env.context.get("budget_ledger_posting"):
+            return
+        if vals is not None and not _LEDGER_MOVE_LOCKED_FIELDS & set(vals):
+            return
+        if self.filtered(
+            lambda m: m.state == "posted"
+            and m.line_ids.filtered(
+                lambda l: l.move_type == "consume" and not l.commitment_id
+            )
+        ):
+            self._check_direct_consume_right()
+
+    def unlink(self):
+        self._check_ledger_move_locked()
+        self._check_direct_consume_locked()
+        return super().unlink()
+
     def write(self, vals):
         if not vals:
             return True
+        self._check_ledger_move_locked(vals)
+        self._check_direct_consume_locked(vals)
+        if vals.get("state") == "posted":
+            self._check_commitment_buckets()
         self._sanitize_vals(vals)
         stolen_moves = self.browse(set(move for move in self._stolen_move(vals)))
         container = {"records": self | stolen_moves}

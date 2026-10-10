@@ -2,12 +2,14 @@
 
 {
     "name": "Disbursement",
-    "version": "16.0.10.0.0",
+    "version": "16.0.10.0.1",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
     "depends": [
         "account",
+        # A DR consumes without obligating first; the budget ledger liquidates
+        # the reservation for it (budget ADR-0016).
         "budget",
         "account_analytic_kmitl",
         "account_fiscal_year_enhance",

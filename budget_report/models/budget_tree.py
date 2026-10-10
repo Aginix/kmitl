@@ -43,48 +43,40 @@ class BudgetNode:
                     total += line["balance"]
         return total
 
+    def _usage(self, bucket):
+        """−Σ balance of this node's ledger lines in a usage bucket (ADR-0016):
+        the reservation's sub-ledger posts reserve/obligate/consume to the
+        budget ledger with liquidation, so each band is its own bucket."""
+        total = 0
+        for line in self.lines:
+            if (
+                line["model"] == "budget.move.line"
+                and line.get("is_usage")
+                and line.get("move_type") == bucket
+            ):
+                total -= line["balance"]
+        return total
+
     def commitment(self):
-        """(b) จองเงิน = sum(reserve) - sum(obligate) — reserved, not yet obligated"""
+        """(b) จองเงิน — reserved, not yet obligated (reserve bucket)"""
         total = 0
         for record in self.children:
             total += record.commitment()
-        reserve_total = 0
-        obligate_total = 0
-        for line in self.lines:
-            if line["model"] == "budget.commitment.line":
-                if line["move_type"] == "reserve":
-                    reserve_total += line["balance"]
-                elif line["move_type"] == "obligate":
-                    obligate_total += line["balance"]
-        total += reserve_total - obligate_total
-        return total
+        return total + self._usage("reserve")
 
     def obligation(self):
-        """(c) ผูกพัน = sum(obligate) - sum(consume) — obligated, not yet consumed"""
+        """(c) ผูกพัน — obligated, not yet consumed (obligate bucket)"""
         total = 0
         for record in self.children:
             total += record.obligation()
-        obligate_total = 0
-        consume_total = 0
-        for line in self.lines:
-            if line["model"] == "budget.commitment.line":
-                if line["move_type"] == "obligate":
-                    obligate_total += line["balance"]
-                elif line["move_type"] == "consume":
-                    consume_total += line["balance"]
-        total += obligate_total - consume_total
-        return total
+        return total + self._usage("obligate")
 
     def expenditure(self):
-        """(d) เบิกจ่ายแล้ว = sum(consume) from commitment lines"""
+        """(d) เบิกจ่ายแล้ว (consume bucket)"""
         total = 0
         for record in self.children:
             total += record.expenditure()
-        for line in self.lines:
-            if line["model"] == "budget.commitment.line":
-                if line["move_type"] == "consume":
-                    total += line["balance"]
-        return total
+        return total + self._usage("consume")
 
     def total_balance(self):
         return self.appropriation() - self.total_expenditure()
@@ -111,7 +103,6 @@ class BudgetTree:
         self,
         accounts=None,
         move_lines=None,
-        commitment_lines=None,
         activities=None,
         funds=None,
         sources=None,
@@ -125,7 +116,6 @@ class BudgetTree:
         self.sources = sources
         self.departments = departments
         self.move_lines = move_lines
-        self.commitment_lines = commitment_lines
 
     def _prepare_node(self, record, node_type=None):
         path_ids = record.parent_path.split("/")
@@ -157,15 +147,16 @@ class BudgetTree:
 
         if model == "budget.move.line":
             data["budget_type"] = line.budget_type
-            data["move_type"] = line.move_id.move_type
+            # The line's own bucket, not the move's event type: a reservation
+            # top-up rides inside a transfer (entry) move.
+            data["move_type"] = line.move_type
+            # Usage buckets — a reservation's lines or a direct consumption
+            # (budget ADR-0018).
+            data["is_usage"] = line.move_type in ("reserve", "obligate", "consume")
             data["state"] = line.parent_state
             data["balance"] = line.balance
             data["credit"] = line.credit
             data["debit"] = line.debit
-        elif model == "budget.commitment.line":
-            data["move_type"] = line.move_type
-            data["state"] = line.state
-            data["balance"] = line.amount
 
         return data
 
@@ -223,12 +214,6 @@ class BudgetTree:
             for record in self.move_lines
         )
 
-        # Prepare commitment lines
-        commitment_line_map = dict(
-            (record.id, self._prepare_line(record, model="budget.commitment.line"))
-            for record in self.commitment_lines
-        )
-
         # กรณี 1 มิติ
         if len(dimensions) == 1:
             dim = dimensions[0]
@@ -240,20 +225,14 @@ class BudgetTree:
                 if node_id and node_id in mapped:
                     mapped[node_id].add_line(move_line_map[move_line.id])
 
-            # Add commitment lines
-            for commitment_line in self.commitment_lines:
-                node_id = get_dimension_id(commitment_line, dim)
-                if node_id and node_id in mapped:
-                    mapped[node_id].add_line(commitment_line_map[commitment_line.id])
-
             return [n for n in mapped.values() if n.value["parent_id"] is False]
 
         # กรณีหลายมิติ
         return self._build_multi_dimension_chain(
-            dimensions, get_dimension_id, move_line_map, commitment_line_map
+            dimensions, get_dimension_id, move_line_map
         )
 
-    def _build_multi_dimension_chain(self, dimensions, get_dimension_id, move_line_map, commitment_line_map):
+    def _build_multi_dimension_chain(self, dimensions, get_dimension_id, move_line_map):
         """สร้าง hierarchical tree ที่ถูกต้องสำหรับ multi-dimensions"""
 
         # สร้าง tree สำหรับ dimension แรก (root level)
@@ -282,18 +261,6 @@ class BudgetTree:
                 node_cache,
                 dimension_data,
                 move_line_map[move_line.id]
-            )
-
-        # Process commitment lines
-        for commitment_line in self.commitment_lines:
-            self._add_line_to_tree(
-                commitment_line,
-                dimensions,
-                get_dimension_id,
-                root_nodes,
-                node_cache,
-                dimension_data,
-                commitment_line_map[commitment_line.id]
             )
 
         return [n for n in root_nodes.values() if n.value["parent_id"] is False]

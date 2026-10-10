@@ -1,5 +1,7 @@
 # Unified budget availability engine, evaluated at the control node
 
+> **Amended by [ADR-0016](./0016-commitment-events-posted-to-budget-ledger.md):** `used` is no longer summed from `budget.commitment.line`; every reservation event is posted to `budget.move.line`, so available = Σ posted balance at the control node. The pool tags are pinned on both sides (no `include_pool_tags=False`).
+
 There were two divergent availability engines: `budget.controller` (per-combination, O(N) Python matching, exact account, floored at 0) and `budget.dashboard` (set-based `read_group` + `parent_path` rollup, not floored). We are **unifying on a single set-based engine** as the one source of truth for "available budget"; `budget.controller`'s `get_available_budget`/`check_budget_availability` become thin wrappers over it (or callers — `budget_commitment_mixin`, `budget_transfer`, `budget_transfer_line` — migrate). One definition of "available" feeds the reservation check, status reports, and KPI sums alike.
 
 **Availability is evaluated at the _control node_.** For a reservation against budgetable account `X`, the control node is the nearest budgetable ancestor-or-self of `X` that carries posted appropriation. `available(X) = Current Budget − Used`, both **rolled up over the control node's subtree** — so two sibling reservations under a shared funded ancestor cannot each spend the parent's money. Direction is one-way: appropriation may sit **at or above** the reservation node, **never below** it.

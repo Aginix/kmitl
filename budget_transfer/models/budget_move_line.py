@@ -246,9 +246,11 @@ class BudgetMoveLine(models.Model):
 
         Only meaningful for a *drawing* line — a FROM line of a non-appropriation
         move. The query distribution is built from the columns so it is correct
-        regardless of the JSON round-trip state.
+        regardless of the JSON round-trip state. Out of a reserved coordinate the
+        line may also draw what the owning reservation still has unobligated:
+        posting takes the free money first and releases only the rest (budget
+        ADR-0016, Q5).
         """
-        controller = self.env["budget.controller"]
         for line in self:
             move = line.move_id
             drawing = (
@@ -270,14 +272,58 @@ class BudgetMoveLine(models.Model):
                 line.available_budget = 0.0
                 line.budget_sufficient = True
                 continue
-            available = controller.get_available(
-                line.account_id,
-                line._transfer_distribution(),
-                move.account_fiscal_year_id.id,
-                line.company_id.id or move.company_id.id,
-            )
+            available = line._free_budget()
+            owner = line._pool_owner()
+            if owner:
+                available += max(owner._ledger_unobligated(line.account_id), 0.0)
             line.available_budget = available
             line.budget_sufficient = available >= (line.amount or 0.0)
+
+    def _free_budget(self):
+        """Unreserved money at this line's coordinate — the engine's Available
+        (reservations are posted to the ledger, budget ADR-0016)."""
+        self.ensure_one()
+        move = self.move_id
+        return self.env["budget.controller"].get_available(
+            self.account_id,
+            self._transfer_distribution(),
+            move.account_fiscal_year_id.id,
+            self.company_id.id or move.company_id.id,
+        )
+
+    # ------------------------------------------------------------------
+    # Pool-tag owner (budget ADR-0016, Q5)
+    # ------------------------------------------------------------------
+    def _get_pool_owner_commitment(self):
+        """Reservations owned by this line's pool tag.
+
+        Empty here; ``kmitl_project_budget_transfer`` /
+        ``procurement_plan_budget_transfer`` return the reservations of the
+        project / plan the tag names.
+        """
+        self.ensure_one()
+        return self.env["budget.commitment"]
+
+    def _pool_owner(self):
+        """The active reservation sitting on exactly this line's coordinate
+        (budget code, every dimension, fiscal year) and owning its pool tag."""
+        self.ensure_one()
+        if not self.account_id or not self.move_id.account_fiscal_year_id:
+            return self.env["budget.commitment"]
+        coordinate = {int(key) for key in self._transfer_distribution()}
+        return (
+            self._get_pool_owner_commitment()
+            .filtered(
+                lambda c: (
+                    c.state in ("reserved", "partial", "done")
+                    and c.account_id == self.account_id
+                    and c.account_fiscal_year_id == self.move_id.account_fiscal_year_id
+                    and {int(key) for key in (c.analytic_distribution or {})}
+                    == coordinate
+                )
+            )
+            .sorted("id")[:1]
+        )
 
     @api.depends("account_id")
     def _compute_account_type_flags(self):

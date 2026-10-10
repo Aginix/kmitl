@@ -54,3 +54,19 @@ class BudgetMoveLine(models.Model):
                     lambda p: p.fund_analytic_id == line.fund_analytic_id
                 )
             line.allowed_procurement_plan_analytic_ids = plans.analytic_account_id
+
+    def _get_pool_owner_commitment(self):
+        """The reservations of the plan a ``procurement_plan`` tag names, so a
+        transfer onto/off its coordinate tops it up / releases it (budget
+        ADR-0016, Q5)."""
+        commitments = super()._get_pool_owner_commitment()
+        if self.procurement_plan_analytic_id:
+            plans = (
+                self.env["procurement.plan"]
+                .sudo()
+                .search(
+                    [("analytic_account_id", "=", self.procurement_plan_analytic_id.id)]
+                )
+            )
+            commitments |= plans.budget_commitment_ids
+        return commitments

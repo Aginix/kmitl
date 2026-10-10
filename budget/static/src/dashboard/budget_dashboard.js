@@ -459,14 +459,12 @@ export class BudgetDashboard extends Component {
     }
 
     drillUsage(row, moveType) {
-        // Each usage column drills into only its own commitment-line type:
-        // เงินจอง → reserve, ผูกพัน → obligate, เบิกจ่าย → consume. Note these
-        // cells are net (e.g. ผูกพัน = Σobligate − Σconsume) while the drill
-        // lists the gross lines of that one stage, so the list total need not
-        // equal the cell — the column header documents the figure.
+        // Each usage column drills into its own budget-ledger bucket (ADR-0016):
+        // เงินจอง → reserve, ผูกพัน → obligate, เบิกจ่าย → consume. A band is
+        // exactly the negated Σ balance of its bucket, so the list totals the cell.
         const domain = [
-            ["state", "=", "posted"],
-            ["commitment_id.state", "in", ["reserved", "partial", "done"]],
+            ["parent_state", "=", "posted"],
+            ["move_type", "in", ["reserve", "obligate", "consume"]],
             ["account_fiscal_year_id", "=", this.state.fiscalYearId],
             ["move_type", "=", moveType],
             ...this._drillLeaves(row),
@@ -474,27 +472,25 @@ export class BudgetDashboard extends Component {
         ];
         this._openDrill(
             `${this._drillName(row)} — ${USAGE_LABELS[moveType]}`,
-            "budget.commitment.line",
+            "budget.move.line",
             domain
         );
     }
 
     drillReturned(row) {
-        // ส่งคืนเงินเหลือจ่าย drills into only the คืนจอง lines (negative
-        // reserve flagged is_return), so the audit list shows exactly the
-        // returns behind the figure and their source documents.
+        // ส่งคืนเงินเหลือจ่าย drills into only the คืนจอง ledger lines, so the
+        // audit list shows exactly the returns behind the figure.
         const domain = [
-            ["state", "=", "posted"],
-            ["commitment_id.state", "in", ["reserved", "partial", "done"]],
+            ["parent_state", "=", "posted"],
+            ["move_type", "in", ["reserve", "obligate", "consume"]],
             ["account_fiscal_year_id", "=", this.state.fiscalYearId],
-            ["move_type", "=", "reserve"],
             ["is_return", "=", true],
             ...this._drillLeaves(row),
             ...this._dimDomain(this._drillExclude),
         ];
         this._openDrill(
             `${this._drillName(row)} — ส่งคืนเงินเหลือจ่าย`,
-            "budget.commitment.line",
+            "budget.move.line",
             domain
         );
     }

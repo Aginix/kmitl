@@ -1,5 +1,7 @@
 # Project budget floats until its project reserves it
 
+> **Amended by [ADR-0016](./0016-commitment-events-posted-to-budget-ledger.md):** a transfer into a reserved project's coordinate now tops its reservation up automatically (and a transfer out releases it), replacing `_auto_resync_commitment`; the reserve-time tag strip is dropped.
+
 For a *project-type* budget code (`budget.account.is_project`), posting the source `budget.appropriation` does **not** reserve and does **not** auto-create any downstream record. The money sits as **floating budget (เงินลอย)** — appropriated pool carrying the four dimensions but no `kmitl_project` dimension. The reservation (`budget.commitment`, the full `budget_amount`) fires later, when a `kmitl.project` drawing on that pool reserves it. From the reserve point onward the project is spent like a procurement plan: one shared commitment drawn down by its purchase requests and disbursements.
 
 > **Reserve trigger revised** by [kmitl_project ADR-0005](../../../kmitl_project/docs/adr/0005-approval-gated-lifecycle-esaraban.md): reservation moved from the old `draft→new` Confirm to the `to_verify→to_send` "จองงบประมาณ" step of the project's e-Saraban approval. The floating-budget model in this ADR is otherwise unchanged.

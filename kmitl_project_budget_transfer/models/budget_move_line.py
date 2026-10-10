@@ -55,3 +55,19 @@ class BudgetMoveLine(models.Model):
                 if line[dim]:
                     projects = projects.filtered(lambda p, d=dim: p[d] == line[d])
             line.allowed_kmitl_project_analytic_ids = projects.analytic_account_id
+
+    def _get_pool_owner_commitment(self):
+        """The reservations of the project a ``kmitl_project`` tag names, so a
+        transfer onto/off its coordinate tops it up / releases it (budget
+        ADR-0016, Q5)."""
+        commitments = super()._get_pool_owner_commitment()
+        if self.kmitl_project_analytic_id:
+            projects = (
+                self.env["kmitl.project"]
+                .sudo()
+                .search(
+                    [("analytic_account_id", "=", self.kmitl_project_analytic_id.id)]
+                )
+            )
+            commitments |= projects.budget_commitment_ids
+        return commitments

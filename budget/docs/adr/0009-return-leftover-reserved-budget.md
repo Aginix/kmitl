@@ -1,5 +1,7 @@
 # Returning leftover reserved budget is one คืนจอง line that does not close the plan
 
+> **Amended by [ADR-0017](./0017-cross-charge-liquidated-per-code-in-order.md):** on a ถัวจ่าย reservation the return (and every obligate/consume) is split per budget code in the ledger — obligate/consume draw the primary code first, a return gives back the last code first.
+
 When actual disbursement comes in under the reservation, the unspent remainder
 (`total_reserved − total_consumed`) is returned to the pool through a manual
 **ส่งคืนเงินเหลือจ่าย** action. Mechanically this is **คืนจอง**: a single

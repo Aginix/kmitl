@@ -18,6 +18,9 @@ class TestBudgetController(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         env = cls.env
+        # These tests reserve without appropriating first; they relied on
+        # kmitl_demo enabling negative budgets, so say so explicitly.
+        env["ir.config_parameter"].sudo().set_param("budget.allow_negative", True)
         cls.fy = env["account.fiscal.year"].search([], limit=1) or env[
             "account.fiscal.year"
         ].create(
@@ -125,7 +128,7 @@ class TestBudgetController(TransactionCase):
     # --- tests ---
 
     def test_exact_leaf_availability(self):
-        """Appropriation and reservation at the same leaf: current − used."""
+        """Appropriation and reservation at the same leaf: the ledger's Σ."""
         self._appropriate(self.leaf, 100_000)
         self._reserve(self.leaf, 60_000)
         self.assertEqual(self._available(self.leaf), 40_000)
@@ -167,34 +170,6 @@ class TestBudgetController(TransactionCase):
         )
         # no fund specified must NOT leak the fund-A appropriation
         self.assertEqual(self._available(self.dimleaf, {}), 0.0)
-
-    def test_floating_pool_counts_tagged_owner_reserves(self):
-        """A floating-pool check (no ownership tag) must count a reserve that
-        DOES carry one (a project's reserve).
-
-        Project appropriation is untagged (kmitl_project absent); a project's
-        reserve carries its kmitl_project tag. If the tagged reserve were
-        excluded from ``used``, every project would see the full pool and could
-        over-reserve it (ADR-0007). Here 100k pool − a 60k tagged reserve = 40k.
-        """
-        Plan = self.env["account.analytic.plan"]
-        proj_plan = Plan.search(
-            [("code", "=", "kmitl_project")], limit=1
-        ) or Plan.create({"name": "Project", "code": "kmitl_project"})
-        project = self.env["account.analytic.account"].create(
-            {"name": "Proj X", "code": "CTRL_PRJ", "plan_id": proj_plan.id}
-        )
-        self._appropriate(self.dimleaf, 100_000, fund=self.fund_a)
-        self._reserve(
-            self.dimleaf,
-            60_000,
-            dist={str(self.fund_a.id): 100.0, str(project.id): 100.0},
-        )
-        # the 4D floating check (fund only, no kmitl_project) still sees the
-        # tagged reserve as used
-        self.assertEqual(
-            self._available(self.dimleaf, {str(self.fund_a.id): 100.0}), 40_000
-        )
 
     def _reserve_multi(self, account_amounts):
         first = account_amounts[0][0]
@@ -246,12 +221,19 @@ class TestBudgetController(TransactionCase):
         # no account_domain -> selectable mirrors budgetable
         self.assertTrue(leaf["budgetable"])
         self.assertTrue(leaf["selectable"])
-        # account_domain narrows selectable
+        # account_domain narrows selectable, and the grid drops the codes
+        # outside it (only pickable codes and their ancestors are listed)
         grid2 = self.env["budget.dashboard"].get_reservation_grid(
             self.fy.id,
             {},
             root_account_id=self.leaf.id,
             account_domain=[("id", "=", self.leaf2.id)],
         )
-        leaf2row = {r["id"]: r for r in grid2["rows"]}[self.leaf.id]
-        self.assertFalse(leaf2row["selectable"])
+        self.assertNotIn(self.leaf.id, {r["id"] for r in grid2["rows"]})
+        grid3 = self.env["budget.dashboard"].get_reservation_grid(
+            self.fy.id,
+            {},
+            root_account_id=self.leaf.id,
+            account_domain=[("id", "=", self.leaf.id)],
+        )
+        self.assertTrue({r["id"]: r for r in grid3["rows"]}[self.leaf.id]["selectable"])

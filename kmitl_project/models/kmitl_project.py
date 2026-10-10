@@ -1047,36 +1047,29 @@ class KmitlProject(models.Model):
                 self.company_id.id,
             )
         dist = dict(self.analytic_distribution or {})
-        commitment = self.env["budget.commitment"].create(
-            {
-                "account_id": self.budget_account_id.id,
-                "amount": self.budget_amount,
-                "analytic_distribution": dist or False,
-                "account_fiscal_year_id": self.account_fiscal_year_id.id,
-                "company_id": self.company_id.id,
-                "operating_unit_id": self.operating_unit_id.id or False,
-                "date": fields.Date.context_today(self),
-                "ref": self.key or self.name,
-                # ชื่อโครงการ = ชื่อใบจอง (shown next to the number wherever a
-                # reservation is offered, so it can be told apart from others).
-                "title": "[%s] %s" % (self.key, self.name) if self.key else self.name,
-                "description": self.name,
-                "kmitl_project_id": self.id,
-                "user_id": self.env.user.id,
-                "line_ids": [
-                    (
-                        0,
-                        0,
-                        {
-                            "move_type": "reserve",
-                            "account_id": self.budget_account_id.id,
-                            "analytic_distribution": dist or False,
-                            "amount": self.budget_amount,
-                            "name": _("Initial reservation"),
-                        },
-                    )
-                ],
-            }
+        Commitment = self.env["budget.commitment"]
+        vals = {
+            "account_id": self.budget_account_id.id,
+            "amount": self.budget_amount,
+            "analytic_distribution": dist or False,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
+            "company_id": self.company_id.id,
+            "date": fields.Date.context_today(self),
+            "ref": self.key or self.name,
+            # ชื่อโครงการ = ชื่อใบจอง (shown next to the number wherever a
+            # reservation is offered, so it can be told apart from others).
+            "title": "[%s] %s" % (self.key, self.name) if self.key else self.name,
+            "description": self.name,
+            "kmitl_project_id": self.id,
+            "user_id": self.env.user.id,
+        }
+        # The reservation's operating unit comes from budget_operating_unit,
+        # which this module does not depend on.
+        if "operating_unit_id" in Commitment._fields:
+            vals["operating_unit_id"] = self.operating_unit_id.id or False
+        commitment = Commitment.create(vals)
+        commitment._post_budget_event(
+            "reserve", self.budget_amount, name=_("Initial reservation")
         )
         commitment.action_reserve()
         self.message_post(
@@ -1128,21 +1121,6 @@ class KmitlProject(models.Model):
             or (active.analytic_distribution or {}) != dist
         ):
             self._release_project_commitment()
-            self._reserve_project_commitment()
-
-    def _auto_resync_commitment(self):
-        """Realign the reservation after the allocated amount changed (budget.move
-        post/cancel hook). Safe only while no obligate or consume exists; once
-        spending has started the commitment is left alone to avoid stranding
-        in-flight draws (ADR-0007)."""
-        self.ensure_one()
-        active = self.budget_commitment_ids.filtered(lambda c: c.state != "cancel")[:1]
-        if not active or active.amount == self.budget_amount:
-            return
-        if active.total_obligated or active.total_consumed:
-            return
-        self._release_project_commitment()
-        if self.budget_amount > 0:
             self._reserve_project_commitment()
 
     @api.depends("key")
