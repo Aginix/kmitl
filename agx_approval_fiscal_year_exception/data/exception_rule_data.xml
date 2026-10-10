@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="excep_fiscal_year_not_current" model="exception.rule">
+        <field name="name">ปีงบประมาณไม่ใช่ปีงบประมาณปัจจุบัน</field>
+        <field
+            name="description"
+        >ต้องเลือกปีงบประมาณให้ตรงกับปีงบประมาณปัจจุบัน (ช่วงวันที่ของปีงบต้องครอบคลุมวันนี้)</field>
+        <field name="sequence">5</field>
+        <field name="model">approval.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self._exception_fiscal_year_not_current():
+    failed = True
+        </field>
+        <field name="is_blocking" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+
+    <!-- The old rule fires at every gate (incl. disbursement) and blocks requests
+         that cross a year boundary; the state-gated rule above replaces it. -->
+    <record id="agx_approval.excep_submit_date_outside_fy" model="exception.rule">
+        <field name="active" eval="False" />
+    </record>
+</odoo>
