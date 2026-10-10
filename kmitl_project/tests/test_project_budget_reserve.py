@@ -76,6 +76,9 @@ class TestProjectBudgetReserve(TransactionCase):
                 "move_type": "appropriation",
                 "budget_type": "expense",
                 "account_fiscal_year_id": self.fiscal_year.id,
+                # an appropriation line takes its ส่วนงาน/แหล่งเงิน from the header
+                "department_analytic_id": self.department.id,
+                "source_analytic_id": self.source.id,
                 "line_ids": [
                     (
                         0,
