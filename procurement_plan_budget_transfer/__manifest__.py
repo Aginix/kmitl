@@ -1,6 +1,6 @@
 {
     "name": "Procurement Plan Budget Transfer",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.1.1",
     "summary": "จองงบประมาณแผนจัดซื้อจัดจ้างอัตโนมัติเมื่อโอนงบเข้าครบตามแผน",
     "author": "Aginix Technologies",
     "website": "https://github.com/Aginix/kmitl",

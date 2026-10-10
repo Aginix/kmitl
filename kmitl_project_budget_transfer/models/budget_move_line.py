@@ -27,20 +27,16 @@ class BudgetMoveLine(models.Model):
         "source_analytic_id",
         "move_id.account_fiscal_year_id",
     )
+    @api.depends_context("transfer_fiscal_year_id")
     def _compute_allowed_kmitl_project_analytic_ids(self):
         Project = self.env["kmitl.project"].sudo()
         for line in self:
             domain = [("analytic_account_id", "!=", False)]
             if line.account_id:
                 domain.append(("budget_account_id", "=", line.account_id.id))
-            if line.move_id.account_fiscal_year_id:
-                domain.append(
-                    (
-                        "account_fiscal_year_id",
-                        "=",
-                        line.move_id.account_fiscal_year_id.id,
-                    )
-                )
+            fiscal_year = line._transfer_fiscal_year()
+            if fiscal_year:
+                domain.append(("account_fiscal_year_id", "=", fiscal_year.id))
             if line.department_analytic_id:
                 domain.append(
                     ("department_analytic_id", "=", line.department_analytic_id.id)

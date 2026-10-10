@@ -116,3 +116,23 @@ class TestKmitlProjectBudgetTransfer(TransactionCase):
         self.assertNotIn(
             self.proj_tag, self._allowed(department_analytic_id=self.dept2.id)
         )
+
+    def test_picker_filters_on_dialog_fiscal_year(self):
+        # A dialog line has no move_id yet — the fiscal year comes from context.
+        other_fy = self.env["account.fiscal.year"].create(
+            {
+                "name": "FY-KPBT-OTHER",
+                "date_from": date(2090, 10, 1),
+                "date_to": date(2091, 9, 30),
+                "company_id": self.env.company.id,
+            }
+        )
+        Line = self.env["budget.move.line"]
+        same = Line.with_context(transfer_fiscal_year_id=self.fy.id).new(
+            {"transfer_direction": "to"}
+        )
+        self.assertIn(self.proj_tag, same.allowed_kmitl_project_analytic_ids)
+        other = Line.with_context(transfer_fiscal_year_id=other_fy.id).new(
+            {"transfer_direction": "to"}
+        )
+        self.assertNotIn(self.proj_tag, other.allowed_kmitl_project_analytic_ids)

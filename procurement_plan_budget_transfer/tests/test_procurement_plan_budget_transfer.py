@@ -193,3 +193,24 @@ class TestProcurementPlanBudgetTransfer(TransactionCase):
             ),
         )
         self.assertNotIn(tag, allowed(account_id=self.src.id))
+
+    def test_picker_filters_on_dialog_fiscal_year(self):
+        # A dialog line has no move_id yet — the fiscal year comes from context.
+        tag = self._make_plan(5000).analytic_account_id
+        other_fy = self.env["account.fiscal.year"].create(
+            {
+                "name": "FY-PPBT-OTHER",
+                "date_from": date(2090, 10, 1),
+                "date_to": date(2091, 9, 30),
+                "company_id": self.env.company.id,
+            }
+        )
+        Line = self.env["budget.move.line"]
+        same = Line.with_context(transfer_fiscal_year_id=self.fy.id).new(
+            {"transfer_direction": "to"}
+        )
+        self.assertIn(tag, same.allowed_procurement_plan_analytic_ids)
+        other = Line.with_context(transfer_fiscal_year_id=other_fy.id).new(
+            {"transfer_direction": "to"}
+        )
+        self.assertNotIn(tag, other.allowed_procurement_plan_analytic_ids)
