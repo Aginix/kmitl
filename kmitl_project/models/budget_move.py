@@ -54,7 +54,13 @@ class BudgetMove(models.Model):
                     and l.move_type == "reserve"
                 ).mapped("balance")
             )
-            gap = project.budget_amount - previous - topped
+            # What this move brought in, net of what it topped up itself — but
+            # never past budget_amount: money the reservation already covers
+            # (e.g. an allocation reset and re-posted) is not reserved twice.
+            gap = min(
+                project.budget_amount - previous - topped,
+                project.budget_amount - commitment.amount,
+            )
             rounding = commitment.currency_id.rounding or 0.01
             if float_compare(gap, 0.0, precision_rounding=rounding) <= 0:
                 continue
@@ -65,6 +71,7 @@ class BudgetMove(models.Model):
                 gap,
                 source=self,
                 name=_("เพิ่มจองจากการจัดสรรงบ %s") % self.display_name,
+                date=self.date,
             )
 
     def _release_project_top_ups(self):
@@ -135,4 +142,11 @@ class BudgetMove(models.Model):
         self._release_project_top_ups()
         res = super().button_draft()
         self._recompute_project_amounts()
+        return res
+
+    def unlink(self):
+        projects = self._allocation_projects()
+        self._release_project_top_ups()
+        res = super().unlink()
+        projects.exists()._compute_budget_amount()
         return res

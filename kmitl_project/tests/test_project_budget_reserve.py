@@ -404,6 +404,35 @@ class TestProjectBudgetReserve(TransactionCase):
         self.assertEqual(move.state, "posted")
         self.assertAlmostEqual(commitment.total_reserved, 150000.0)
 
+    def test_reposting_pre_reserve_allocation_does_not_double(self):
+        """An allocation posted before the reservation, reset and re-posted,
+        brings back money the reservation already covers: no top-up."""
+        project = self._make_project()
+        project.action_confirm()
+        move = self._allocate(project, 100000.0)
+        self._reserve(project)
+        commitment = self._active_commitment(project)
+        move.button_draft()
+        move.action_post()
+        project.invalidate_recordset()
+        self.assertAlmostEqual(project.budget_amount, 100000.0)
+        self.assertAlmostEqual(commitment.amount, 100000.0)
+        self.assertAlmostEqual(commitment.total_reserved, 100000.0)
+
+    def test_deleting_allocation_releases_its_top_up(self):
+        project = self._make_project()
+        project.action_confirm()
+        self._allocate(project, 100000.0)
+        self._reserve(project)
+        commitment = self._active_commitment(project)
+        move = self._allocate(project, 50000.0)
+        self.assertAlmostEqual(commitment.total_reserved, 150000.0)
+        move.unlink()
+        project.invalidate_recordset()
+        self.assertAlmostEqual(project.budget_amount, 100000.0)
+        self.assertAlmostEqual(commitment.amount, 100000.0)
+        self.assertAlmostEqual(commitment.total_reserved, 100000.0)
+
     def test_isolation_two_projects(self):
         """Two projects sharing the four base dims do not cross-deplete each other."""
         p1 = self._make_project(name="Project 1")
