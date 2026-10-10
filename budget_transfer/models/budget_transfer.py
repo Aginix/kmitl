@@ -536,15 +536,35 @@ class BudgetTransfer(models.Model):
 
     def _unwind_pool_reservations(self):
         """Remove the top-up / release lines before the move is un-posted;
-        block when a reservation no longer has a top-up free to give back."""
+        block when a reservation no longer has a top-up free to give back.
+
+        A top-up/release whose event was already cancelled (its reservation was
+        cancelled) has been negated by a reversal move of its own (ADR-0016,
+        Q6): that reversal is cancelled together with the line, so neither is
+        left behind as a phantom reservation."""
         self.ensure_one()
         commitments = self.env["budget.commitment"]
         ledger_lines = self.move_id.line_ids.filtered("commitment_id")
         for ledger_line in ledger_lines:
             commitment = ledger_line.commitment_id
+            event = ledger_line.commitment_line_id
             amount = -ledger_line.balance  # + top-up, − release
             rounding = commitment.currency_id.rounding or 0.01
-            if (
+            if event.state == "cancel":
+                reversals = (
+                    self.env["budget.move.line"]
+                    .sudo()
+                    .search(
+                        [
+                            ("commitment_line_id", "=", event.id),
+                            ("parent_state", "=", "posted"),
+                            ("move_id", "!=", self.move_id.id),
+                        ]
+                    )
+                    .move_id
+                )
+                reversals.with_context(budget_ledger_posting=True).button_cancel()
+            elif (
                 float_compare(
                     amount,
                     commitment._ledger_unobligated(ledger_line.account_id),
@@ -566,8 +586,7 @@ class BudgetTransfer(models.Model):
                         ),
                     }
                 )
-            event = ledger_line.commitment_line_id
-            ledger_line.sudo().unlink()
+            ledger_line.sudo().with_context(budget_ledger_posting=True).unlink()
             commitment.sudo().with_context(budget_ledger_posting=True).amount -= amount
             event.sudo().action_cancel()
             commitments |= commitment

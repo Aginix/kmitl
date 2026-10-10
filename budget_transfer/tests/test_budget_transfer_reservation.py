@@ -198,3 +198,85 @@ class TestBudgetTransferReservation(BudgetLedgerCommon):
             {"reserve": 0.0, "obligate": 0.0, "consume": 0.0},
         )
         self.assertEqual(self._available(tag=self.tag), 80_000)
+
+    def _posted_commitment_lines(self, commitment):
+        return self.env["budget.move.line"].search(
+            [("commitment_id", "=", commitment.id), ("parent_state", "=", "posted")]
+        )
+
+    def test_reset_top_up_after_reservation_cancelled(self):
+        """The cancelled reservation's reversal of the top-up goes with the
+        top-up: no phantom −30,000 is left on the tag (Q6)."""
+        self._appropriate(100_000, account=self.other)
+        self._appropriate(50_000, tag=self.tag)
+        commitment = self._reserve(50_000, tag=self.tag)
+        with self._own_pool(commitment):
+            top_up = self._transfer(
+                {"account_id": self.other.id, "amount": 30_000},
+                {
+                    "account_id": self.account.id,
+                    "amount": 30_000,
+                    "kmitl_project_analytic_id": self.tag.id,
+                },
+            )
+            self._post(top_up)
+            commitment.action_cancel()
+            self.assertEqual(self._available(tag=self.tag), 80_000)
+            top_up.action_reset_to_draft()
+        self.assertEqual(top_up.move_id.state, "draft")
+        self.assertFalse(top_up.move_id.line_ids.filtered("commitment_id"))
+        self.assertFalse(self._posted_commitment_lines(commitment))
+        self.assertEqual(
+            self._buckets(commitment),
+            {"reserve": 0.0, "obligate": 0.0, "consume": 0.0},
+        )
+        self.assertEqual(commitment.amount, 50_000)
+        self.assertEqual(self._available(tag=self.tag), 50_000)
+        self.assertEqual(self._available(account=self.other), 100_000)
+
+    def test_reset_release_after_reservation_cancelled(self):
+        self._appropriate(100_000, account=self.other)
+        self._appropriate(50_000, tag=self.tag)
+        commitment = self._reserve(50_000, tag=self.tag)
+        with self._own_pool(commitment):
+            release = self._transfer(
+                {
+                    "account_id": self.account.id,
+                    "amount": 20_000,
+                    "kmitl_project_analytic_id": self.tag.id,
+                },
+                {"account_id": self.other.id, "amount": 20_000},
+            )
+            self._post(release)
+            self.assertEqual(commitment.amount, 30_000)
+            commitment.action_cancel()
+            self.assertEqual(self._available(tag=self.tag), 30_000)
+            release.action_reset_to_draft()
+        self.assertFalse(self._posted_commitment_lines(commitment))
+        self.assertEqual(commitment.amount, 50_000)
+        self.assertEqual(self._available(tag=self.tag), 50_000)
+        self.assertEqual(self._available(account=self.other), 100_000)
+
+    def test_transfer_move_with_top_up_is_locked(self):
+        """The transfer's move can only leave posted through the transfer's
+        own reset, which unwinds the top-up first."""
+        self._appropriate(100_000, account=self.other)
+        self._appropriate(50_000, tag=self.tag)
+        commitment = self._reserve(50_000, tag=self.tag)
+        with self._own_pool(commitment):
+            top_up = self._transfer(
+                {"account_id": self.other.id, "amount": 30_000},
+                {
+                    "account_id": self.account.id,
+                    "amount": 30_000,
+                    "kmitl_project_analytic_id": self.tag.id,
+                },
+            )
+            self._post(top_up)
+            with self.assertRaises(UserError):
+                top_up.move_id.button_draft()
+            self.assertEqual(commitment.total_reserved, 80_000)
+            top_up.action_reset_to_draft()
+        self.assertEqual(commitment.amount, 50_000)
+        self.assertEqual(commitment.total_reserved, 50_000)
+        self.assertEqual(self._available(tag=self.tag), 0.0)
