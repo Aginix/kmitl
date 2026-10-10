@@ -20,11 +20,18 @@ _LEDGER_LOCKED_FIELDS = frozenset(
         "fund_analytic_id",
         "kmitl_project_analytic_id",
         "procurement_plan_analytic_id",
+        "source_analytic_id",
         "move_type",
         "commitment_id",
+        "commitment_line_id",
+        "is_liquidation",
+        "is_return",
         "move_id",
     }
 )
+# Buckets that only a commitment event may post (ADR-0016): a manual move in
+# them would change every figure without any reservation behind it.
+_COMMITMENT_BUCKETS = ("reserve", "obligate", "consume")
 
 
 class BudgetMoveLine(models.Model):
@@ -370,6 +377,36 @@ class BudgetMoveLine(models.Model):
     def _compute_move_type(self):
         for line in self:
             line.move_type = line.move_id.move_type
+
+    @api.constrains("move_type", "commitment_id")
+    def _check_commitment_bucket(self):
+        """reserve / obligate / consume lines are posted by commitment events
+        only (ADR-0016): the availability engine sums every bucket, so a manual
+        line there would move the figures with no reservation behind it."""
+        if self.env.context.get("budget_ledger_posting"):
+            return
+        orphan = self.filtered(
+            lambda l: l.move_type in _COMMITMENT_BUCKETS and not l.commitment_id
+        )
+        if orphan:
+            raise ValidationError(
+                _(
+                    "Budget reservation, obligation and consumption lines can "
+                    "only be posted by a budget commitment."
+                )
+            )
+
+    def unlink(self):
+        if not self.env.context.get("budget_ledger_posting") and self.filtered(
+            lambda l: l.commitment_id and l.parent_state == "posted"
+        ):
+            raise UserError(
+                _(
+                    "Cannot delete a posted budget ledger line of a commitment. "
+                    "Cancel the commitment event instead."
+                )
+            )
+        return super().unlink()
 
     def write(self, vals):
         """

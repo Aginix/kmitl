@@ -1,4 +1,5 @@
 from datetime import date
+from unittest.mock import patch
 
 from odoo import Command
 from odoo.exceptions import UserError, ValidationError
@@ -73,17 +74,17 @@ class BudgetLedgerCommon(TransactionCase):
     # ------------------------------------------------------------------
     # helpers
     # ------------------------------------------------------------------
-    def _distribution(self, tag=None):
-        accounts = [self.dept, self.source, self.activity, self.fund]
+    def _distribution(self, tag=None, activity=None):
+        accounts = [self.dept, self.source, activity or self.activity, self.fund]
         if tag:
             accounts.append(tag)
         return {str(a.id): 100.0 for a in accounts}
 
-    def _appropriate(self, amount, account=None, tag=None):
+    def _appropriate(self, amount, account=None, tag=None, activity=None):
         line = {
             "account_id": (account or self.account).id,
             "balance": amount,
-            "activity_analytic_id": self.activity.id,
+            "activity_analytic_id": (activity or self.activity).id,
             "fund_analytic_id": self.fund.id,
         }
         if tag:
@@ -103,28 +104,28 @@ class BudgetLedgerCommon(TransactionCase):
         move.action_post()
         return move
 
-    def _reserve(self, amount, tag=None):
-        commitment = self._draft(amount, tag=tag)
+    def _reserve(self, amount, tag=None, account=None, activity=None):
+        commitment = self._draft(amount, tag=tag, account=account, activity=activity)
         commitment.action_reserve()
         return commitment
 
-    def _draft(self, amount, tag=None):
+    def _draft(self, amount, tag=None, account=None, activity=None):
         return self.env["budget.commitment"].create(
             {
                 "date": date.today(),
                 "title": "Ledger commitment",
-                "account_id": self.account.id,
+                "account_id": (account or self.account).id,
                 "amount": amount,
-                "analytic_distribution": self._distribution(tag),
+                "analytic_distribution": self._distribution(tag, activity),
                 "account_fiscal_year_id": self.fy.id,
                 "company_id": self.env.company.id,
                 "currency_id": self.env.company.currency_id.id,
             }
         )
 
-    def _available(self, tag=None, account=None):
+    def _available(self, tag=None, account=None, activity=None):
         return self.controller.get_available(
-            account or self.account, self._distribution(tag), self.fy.id
+            account or self.account, self._distribution(tag, activity), self.fy.id
         )
 
     def _buckets(self, commitment):
@@ -346,6 +347,124 @@ class TestBudgetLedger(BudgetLedgerCommon):
             commitment.ledger_line_ids.write({"balance": -1})
 
     # ------------------------------------------------------------------
+    # consume guard: consumed ≤ obligated per source (Q2)
+    # ------------------------------------------------------------------
+    def test_second_consume_beyond_own_obligation_blocked(self):
+        """Once a source has obligated, a consume past what it obligated is
+        blocked — it must not fall back to liquidating the reserve."""
+        self._appropriate(100_000)
+        commitment = self._reserve(100_000)
+        source = self.fy
+        commitment._post_budget_event("obligate", 60_000, source=source)
+        commitment._post_budget_event("consume", 60_000, source=source)
+        self.assertEqual(
+            self._buckets(commitment),
+            {"reserve": -40_000, "obligate": 0.0, "consume": -60_000},
+        )
+        with self.assertRaises(ValidationError), self.env.cr.savepoint():
+            commitment._post_budget_event("consume", 10_000, source=source)
+        self.assertEqual(commitment.total_consumed, 60_000)
+        self.assertEqual(commitment.available_to_obligate, 40_000)
+        self.assertEqual(self._available(), 0.0)
+
+    def test_second_consume_beyond_obligation_blocked_without_source(self):
+        self._appropriate(100_000)
+        commitment = self._reserve(100_000)
+        commitment._post_budget_event("obligate", 60_000)
+        commitment._post_budget_event("consume", 60_000)
+        with self.assertRaises(ValidationError), self.env.cr.savepoint():
+            commitment._post_budget_event("consume", 1)
+
+    def test_deobligated_source_consumes_from_reserve(self):
+        """A source whose obligation was fully de-obligated is back to
+        'never obligated' and draws on the reserve."""
+        self._appropriate(100_000)
+        commitment = self._reserve(100_000)
+        source = self.fy
+        commitment._post_budget_event("obligate", 30_000, source=source)
+        commitment._post_budget_event("obligate", -30_000, source=source)
+        self.assertEqual(
+            self._buckets(commitment),
+            {"reserve": -100_000, "obligate": 0.0, "consume": 0.0},
+        )
+        commitment._post_budget_event("consume", 20_000, source=source)
+        self.assertEqual(
+            self._buckets(commitment),
+            {"reserve": -80_000, "obligate": 0.0, "consume": -20_000},
+        )
+
+    def test_default_consume_amount(self):
+        """A consume with no amount takes the open obligation, or the
+        unobligated reserve when nothing is obligated."""
+        self._appropriate(100_000)
+        obligated = self._reserve(40_000)
+        obligated._post_budget_event("obligate", 25_000)
+        self.controller.consume_budget(obligated.id)
+        self.assertEqual(
+            self._buckets(obligated),
+            {"reserve": -15_000, "obligate": 0.0, "consume": -25_000},
+        )
+        plain = self._reserve(60_000)
+        self.controller.consume_budget(plain.id)
+        self.assertEqual(
+            self._buckets(plain),
+            {"reserve": 0.0, "obligate": 0.0, "consume": -60_000},
+        )
+        self.assertEqual(plain.state, "done")
+        self.assertEqual(self._available(), 0.0)
+
+    # ------------------------------------------------------------------
+    # ledger moves are locked (Q4/Q8)
+    # ------------------------------------------------------------------
+    def test_event_move_cannot_be_reset_cancelled_or_deleted(self):
+        self._appropriate(100_000)
+        commitment = self._reserve(60_000)
+        move = commitment.ledger_line_ids.move_id
+        for action in (move.button_draft, move.button_cancel, move.unlink):
+            with self.assertRaises(UserError):
+                action()
+        with self.assertRaises(UserError):
+            move.write({"move_type": "entry"})
+        with self.assertRaises(UserError):
+            commitment.ledger_line_ids.unlink()
+        with self.assertRaises(UserError):
+            commitment.ledger_line_ids.write({"source_analytic_id": False})
+        self.assertEqual(move.state, "posted")
+        self.assertEqual(commitment.total_reserved, 60_000)
+        self.assertEqual(self._available(), 40_000)
+        # the commitment's own undo still works
+        commitment.action_cancel()
+        self.assertEqual(move.state, "cancel")
+        self.assertEqual(self._available(), 100_000)
+
+    def test_manual_usage_bucket_move_blocked(self):
+        """reserve/obligate/consume moves without a commitment would change
+        availability with no reservation behind them."""
+        self._appropriate(100_000)
+        for move_type in ("reserve", "obligate", "consume"):
+            with self.assertRaises(ValidationError), self.env.cr.savepoint():
+                self.env["budget.move"].create(
+                    {
+                        "move_type": move_type,
+                        "budget_type": "expense",
+                        "account_fiscal_year_id": self.fy.id,
+                        "department_analytic_id": self.dept.id,
+                        "source_analytic_id": self.source.id,
+                        "line_ids": [
+                            Command.create(
+                                {
+                                    "account_id": self.account.id,
+                                    "balance": -10_000,
+                                    "activity_analytic_id": self.activity.id,
+                                    "fund_analytic_id": self.fund.id,
+                                }
+                            )
+                        ],
+                    }
+                )
+        self.assertEqual(self._available(), 100_000)
+
+    # ------------------------------------------------------------------
     # engine (Q3)
     # ------------------------------------------------------------------
     def test_pool_tags_pinned_symmetrically(self):
@@ -375,6 +494,34 @@ class TestBudgetLedger(BudgetLedgerCommon):
         self.assertEqual(child["remaining"], 40_000)
         self.assertEqual(child["cap"], 60_000)
 
+    def test_floating_tagged_reservation_reported(self):
+        """A tagged reservation made against the untagged floating pool
+        (ADR-0007, before the money moved onto the tag) leaves its tag
+        coordinate negative once tags are pinned; the reconciliation names it
+        instead of silently freeing the money on the untagged pool."""
+        self._appropriate(100_000)
+        self.env["ir.config_parameter"].sudo().set_param(
+            "budget.allow_negative", True
+        )
+        floating = self._reserve(60_000, tag=self.tag)
+        self.env["ir.config_parameter"].sudo().set_param(
+            "budget.allow_negative", False
+        )
+        self.assertEqual(self._available(tag=self.tag), -60_000)
+        self.assertEqual(floating._ledger_tag_shortfall(), 60_000)
+        self.assertIn(floating, floating._ledger_mismatches())
+        report = self.env["budget.ledger.reconcile"].action_open_reconciliation()
+        rows = self.env["budget.ledger.reconcile"].search(report["domain"])
+        row = rows.filtered(lambda r: r.commitment_id == floating)
+        self.assertEqual(row.difference, -60_000)
+        self.assertEqual(row.kmitl_project_analytic_id, self.tag)
+
+    def test_funded_tagged_reservation_not_reported(self):
+        self._appropriate(100_000, tag=self.tag)
+        funded = self._reserve(60_000, tag=self.tag)
+        self.assertEqual(funded._ledger_tag_shortfall(), 0.0)
+        self.assertNotIn(funded, funded._ledger_mismatches())
+
     # ------------------------------------------------------------------
     # back-fill + reconciliation (Q11)
     # ------------------------------------------------------------------
@@ -389,8 +536,10 @@ class TestBudgetLedger(BudgetLedgerCommon):
         commitment.line_ids.write(
             {"budget_move_id": False, "budget_move_line_id": False}
         )
-        moves.unlink()
-        legacy_move = self.env["budget.move"].create(
+        moves.with_context(budget_ledger_posting=True).unlink()
+        legacy_move = self.env["budget.move"].with_context(
+            budget_ledger_posting=True
+        ).create(
             {
                 "date": consume.date,
                 "move_type": "consume",
@@ -435,3 +584,285 @@ class TestBudgetLedger(BudgetLedgerCommon):
         rows = self.env["budget.ledger.reconcile"].search(report["domain"])
         self.assertFalse(rows.filtered(lambda r: r.commitment_id == commitment))
         self.assertFalse(rows.filtered(lambda r: r.account_id == self.account))
+
+    # ------------------------------------------------------------------
+    # back-fill of other histories (Q11)
+    # ------------------------------------------------------------------
+    def _snapshot(self, commitment, accounts):
+        commitment.invalidate_recordset()
+        return (
+            self._buckets(commitment),
+            self._consumed_per_code(commitment),
+            [self._available(account=account) for account in accounts],
+        )
+
+    def _rewind_to_legacy(self, commitment):
+        """Undo the ledger posting of ``commitment`` back to the pre-ledger
+        world: no event moves, each consume event with its old consume-only
+        move on the event's own code."""
+        events = commitment.line_ids.filtered(lambda line: line.state == "posted")
+        moves = commitment.ledger_line_ids.move_id
+        events.write({"budget_move_id": False, "budget_move_line_id": False})
+        moves.with_context(budget_ledger_posting=True).unlink()
+        Move = self.env["budget.move"].with_context(budget_ledger_posting=True)
+        for event in events.filtered(lambda line: line.move_type == "consume"):
+            legacy = Move.create(
+                {
+                    "date": event.date,
+                    "move_type": "consume",
+                    "budget_type": "expense",
+                    "account_fiscal_year_id": self.fy.id,
+                    "department_analytic_id": self.dept.id,
+                    "source_analytic_id": self.source.id,
+                    "line_ids": [
+                        Command.create(
+                            {
+                                "account_id": event.account_id.id,
+                                "balance": -event.amount,
+                                "analytic_distribution": event.analytic_distribution,
+                            }
+                        )
+                    ],
+                }
+            )
+            legacy.action_review()
+            legacy.action_post()
+            event.budget_move_id = legacy
+        commitment.invalidate_recordset()
+        self.assertFalse(commitment.ledger_line_ids.filtered("commitment_line_id"))
+
+    def _backfill(self):
+        return (
+            self.env["budget.commitment"]
+            .with_context(budget_ledger_posting=True)
+            ._ledger_backfill()
+        )
+
+    def test_backfill_return_leftover(self):
+        self._appropriate(100_000)
+        commitment = self._reserve(60_000)
+        commitment._post_budget_event("obligate", 25_000)
+        commitment._post_budget_event("consume", 25_000)
+        self.env["budget.commitment.return.wizard"].create(
+            {"commitment_id": commitment.id}
+        ).action_confirm()
+        before = self._snapshot(commitment, [self.account])
+        self.assertEqual(before[2], [75_000])
+        self._rewind_to_legacy(commitment)
+        self.assertNotIn(commitment, self._backfill())
+        self.assertEqual(self._snapshot(commitment, [self.account]), before)
+        self.assertEqual(commitment.ledger_line_ids.filtered("is_return").balance, 35_000)
+
+    def test_backfill_cross_charge_consume_split(self):
+        commitment = self._cross_charge_reservation()
+        commitment._post_budget_event("consume", 70_000)
+        self.env["budget.commitment.return.wizard"].create(
+            {"commitment_id": commitment.id}
+        ).action_confirm()
+        accounts = [self.account, self.other]
+        before = self._snapshot(commitment, accounts)
+        self.assertEqual(before[1], {self.account: 60_000, self.other: 10_000})
+        self._rewind_to_legacy(commitment)
+        self.assertNotIn(commitment, self._backfill())
+        self.assertEqual(self._snapshot(commitment, accounts), before)
+
+    def test_backfill_legacy_disbursement_obligate_consume_pair(self):
+        """Before ADR-0016 a DR posted obligate + consume of the same amount;
+        a later document consumed straight from the reserve."""
+        self._appropriate(100_000)
+        commitment = self._reserve(60_000)
+        commitment._post_budget_event("obligate", 30_000, source=self.fy)
+        commitment._post_budget_event("consume", 30_000, source=self.fy)
+        commitment._post_budget_event("consume", 10_000, source=self.account)
+        before = self._snapshot(commitment, [self.account])
+        self.assertEqual(
+            before[0], {"reserve": -20_000, "obligate": 0.0, "consume": -40_000}
+        )
+        self._rewind_to_legacy(commitment)
+        self.assertNotIn(commitment, self._backfill())
+        self.assertEqual(self._snapshot(commitment, [self.account]), before)
+
+    def test_backfill_failing_event_reported_not_aborted(self):
+        self._appropriate(100_000)
+        broken = self._reserve(30_000)
+        fine = self._reserve(20_000)
+        self._rewind_to_legacy(broken)
+        self._rewind_to_legacy(fine)
+        Line = type(self.env["budget.commitment.line"])
+        original = Line._ledger_backfill_post
+
+        def post(event):
+            if event.commitment_id == broken:
+                raise UserError("boom")
+            return original(event)
+
+        with patch.object(Line, "_ledger_backfill_post", post):
+            mismatched = self._backfill()
+        self.assertIn(broken, mismatched)
+        self.assertNotIn(fine, mismatched)
+        self.assertEqual(broken.total_reserved, 0.0)
+        self.assertEqual(fine.total_reserved, 20_000)
+        self.assertEqual(self._available(), 80_000)
+
+
+@tagged("post_install", "-at_install")
+class TestBudgetLedgerHierarchy(BudgetLedgerCommon):
+    """Appropriation at a funded ancestor covers the reservations of every
+    descendant from one pool (ADR-0005 control node), on the budget-code axis
+    and on the analytic hierarchy alike."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        BA = cls.env["budget.account"]
+        cls.grand = BA.create(
+            {
+                "code": "LDH00",
+                "name": "Hierarchy Root",
+                "budget_type": "expense",
+                "budgetable": False,
+            }
+        )
+        cls.pool = BA.create(
+            {
+                "code": "LDH10",
+                "name": "Funded Parent",
+                "budget_type": "expense",
+                "budgetable": True,
+                "parent_id": cls.grand.id,
+            }
+        )
+        cls.c1, cls.c2 = (
+            BA.create(
+                {
+                    "code": code,
+                    "name": "Funded Child %s" % code,
+                    "budget_type": "expense",
+                    "budgetable": True,
+                    "cross_chargeable": True,
+                    "parent_id": cls.pool.id,
+                }
+            )
+            for code in ("LDH11", "LDH12")
+        )
+        AA = cls.env["account.analytic.account"]
+        if "parent_id" in AA._fields:
+            cls.act_root = AA.create(
+                {
+                    "name": "Ledger Activity Root",
+                    "code": "LDH_ACT",
+                    "plan_id": cls.activity.plan_id.id,
+                }
+            )
+            cls.act_a1, cls.act_a2 = (
+                AA.create(
+                    {
+                        "name": "Ledger Activity %s" % code,
+                        "code": code,
+                        "plan_id": cls.activity.plan_id.id,
+                        "parent_id": cls.act_root.id,
+                    }
+                )
+                for code in ("LDH_ACT1", "LDH_ACT2")
+            )
+
+    def _dashboard(self):
+        return {
+            row["id"]: row
+            for row in self.env["budget.dashboard"].get_dashboard_data(
+                self.fy.id, self.grand.id
+            )["rows"]
+        }
+
+    def test_parent_pool_shared_by_child_codes(self):
+        self._appropriate(100_000, account=self.pool)
+        r1 = self._reserve(30_000, account=self.c1)
+        self._reserve(50_000, account=self.c2)
+        for account in (self.c1, self.c2, self.pool):
+            self.assertEqual(self._available(account=account), 20_000)
+        # a sibling cannot take more than what the shared pool has left
+        with self.assertRaises(UserError), self.env.cr.savepoint():
+            self._reserve(30_000, account=self.c1)
+        # spending a reservation does not change the pool; returning does
+        r1._post_budget_event("consume", 10_000)
+        self.assertEqual(self._available(account=self.c2), 20_000)
+        self.env["budget.commitment.return.wizard"].create(
+            {"commitment_id": r1.id}
+        ).action_confirm()
+        self.assertEqual(r1.total_reserved, 10_000)
+        self.assertEqual(self._available(account=self.c2), 40_000)
+
+    def test_cross_charge_codes_checked_against_one_parent_pool(self):
+        """ถัวจ่าย codes under the same funded parent are summed against that
+        pool, not each checked against the whole of it."""
+        self._appropriate(100_000, account=self.pool)
+
+        def cross_charge(cap, amounts):
+            commitment = self._draft(cap, account=self.c1)
+            for account, amount in zip((self.c1, self.c2), amounts):
+                self.env["budget.commitment.line"].create(
+                    {
+                        "commitment_id": commitment.id,
+                        "move_type": "reserve",
+                        "account_id": account.id,
+                        "amount": amount,
+                        "analytic_distribution": commitment.analytic_distribution,
+                    }
+                )
+            return commitment
+
+        over = cross_charge(130_000, (70_000, 60_000))
+        with self.assertRaises(UserError):
+            over.action_reserve()
+        self.assertEqual(over.state, "draft")
+        self.assertFalse(over.ledger_line_ids)
+        self.assertEqual(self._available(account=self.pool), 100_000)
+
+        exact = cross_charge(100_000, (60_000, 40_000))
+        exact.action_reserve()
+        self.assertEqual(exact.total_reserved, 100_000)
+        self.assertEqual(self._available(account=self.pool), 0.0)
+
+    def test_dashboard_rolls_ledger_up_to_funded_parent(self):
+        self._appropriate(100_000, account=self.pool)
+        r1 = self._reserve(30_000, account=self.c1)
+        r1._post_budget_event("obligate", 10_000)
+        r2 = self._reserve(50_000, account=self.c2)
+        r2._post_budget_event("consume", 20_000)
+        rows = self._dashboard()
+        c1, c2, pool = rows[self.c1.id], rows[self.c2.id], rows[self.pool.id]
+        self.assertEqual(
+            (c1["reserved"], c1["obligated"], c1["consumed"], c1["used"]),
+            (20_000, 10_000, 0.0, 30_000),
+        )
+        self.assertEqual(
+            (c2["reserved"], c2["obligated"], c2["consumed"], c2["used"]),
+            (30_000, 0.0, 20_000, 50_000),
+        )
+        self.assertEqual(pool["current"], 100_000)
+        self.assertEqual(
+            (pool["reserved"], pool["obligated"], pool["consumed"]),
+            (50_000, 10_000, 20_000),
+        )
+        self.assertEqual(pool["used"], 80_000)
+        self.assertEqual(pool["remaining"], 20_000)
+        self.assertEqual(pool["cap"], 80_000)
+        # the remaining at the pool is exactly what the engine lets a child take
+        self.assertEqual(pool["remaining"], self._available(account=self.c1))
+        grand = rows[self.grand.id]
+        for key in ("current", "reserved", "obligated", "consumed", "remaining"):
+            self.assertEqual(grand[key], pool[key])
+
+    def test_activity_parent_pool_shared_by_child_activities(self):
+        if "parent_id" not in self.env["account.analytic.account"]._fields:
+            self.skipTest("analytic hierarchy (account_analytic_parent) absent")
+        self._appropriate(100_000, activity=self.act_root)
+        self._reserve(60_000, activity=self.act_a1)
+        for activity in (self.act_a1, self.act_a2, self.act_root):
+            self.assertEqual(self._available(activity=activity), 40_000)
+        with self.assertRaises(UserError), self.env.cr.savepoint():
+            self._reserve(50_000, activity=self.act_a2)
+        self._reserve(40_000, activity=self.act_a2)
+        self.assertEqual(self._available(activity=self.act_root), 0.0)
+        # an unrelated activity never sees that pool
+        self.assertEqual(self._available(), 0.0)

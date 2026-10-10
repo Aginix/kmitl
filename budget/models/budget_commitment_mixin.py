@@ -629,8 +629,10 @@ class BudgetCommitmentMixin(models.AbstractModel):
             name=_("Consumption from %s") % self.display_name,
         )
 
-        # Auto-close if fully consumed
-        if commitment.available_to_consume <= 0.01:
+        # Auto-close once nothing is left to draw: neither an open obligation
+        # nor unobligated reserve (a consume without an obligation liquidates
+        # the reserve, so the obligation alone is always 0 there).
+        if commitment.available_to_consume + commitment.available_to_obligate <= 0.01:
             commitment.action_done()
 
         return consume_line

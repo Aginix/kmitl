@@ -6,6 +6,25 @@ from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
+# A posted move carrying a commitment's ledger lines is the figure itself
+# (ADR-0016): its state, type and coordinate may only change through the
+# commitment event / budget transfer that owns it (``budget_ledger_posting``).
+_LEDGER_MOVE_LOCKED_FIELDS = frozenset(
+    {
+        "state",
+        "move_type",
+        "line_ids",
+        "budget_type",
+        "account_fiscal_year_id",
+        "company_id",
+        "currency_id",
+        "department_analytic_id",
+        "source_analytic_id",
+        "commitment_id",
+        "commitment_line_id",
+    }
+)
+
 
 class BudgetMove(models.Model):
     """
@@ -432,9 +451,38 @@ class BudgetMove(models.Model):
                 container["records"] = moves | stolen_moves
         return moves
 
+    def _is_ledger_move(self):
+        """Whether this move carries a commitment's ledger lines (its own
+        event move, or a transfer that topped a reservation up/released it)."""
+        self.ensure_one()
+        return bool(self.commitment_id or self.line_ids.filtered("commitment_id"))
+
+    def _check_ledger_move_locked(self, vals=None):
+        if self.env.context.get("budget_ledger_posting"):
+            return
+        if vals is not None and not _LEDGER_MOVE_LOCKED_FIELDS & set(vals):
+            return
+        locked = self.filtered(
+            lambda m: (vals is None or m.state == "posted") and m._is_ledger_move()
+        )
+        if locked:
+            raise UserError(
+                _(
+                    "Budget move %s carries a reservation's budget ledger lines: "
+                    "it can only be changed by cancelling the commitment event "
+                    "(or resetting the budget transfer) that posted it."
+                )
+                % ", ".join(locked.mapped("display_name"))
+            )
+
+    def unlink(self):
+        self._check_ledger_move_locked()
+        return super().unlink()
+
     def write(self, vals):
         if not vals:
             return True
+        self._check_ledger_move_locked(vals)
         self._sanitize_vals(vals)
         stolen_moves = self.browse(set(move for move in self._stolen_move(vals)))
         container = {"records": self | stolen_moves}

@@ -355,9 +355,7 @@ class BudgetController(models.AbstractModel):
                 )
             )
 
-        consume_amount = (
-            amount if amount else commitment.available_to_consume
-        )
+        consume_amount = amount if amount else commitment._ledger_default_consume()
 
         consume_line = commitment._post_budget_event(
             "consume",

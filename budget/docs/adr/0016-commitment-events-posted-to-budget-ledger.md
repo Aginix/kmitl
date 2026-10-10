@@ -98,6 +98,34 @@ until its leftover is returned; event moves are posted with `sudo()` and stamped
 with the commitment's operating unit; project users still do not see the ledger
 (kmitl_project ADR-0007).
 
+## Review amendments (PR #1473)
+
+- **Reserve check per control node.** `_check_reserve_availability` sums the
+  reserve lines per resolved control node (budget code + every dimension), so
+  the ถัวจ่าย codes under one funded parent are checked against that pool
+  together, not each against all of it.
+- **Consume from the reserve only if the source never obligated.** A source
+  with an obligation (net of de-obligations) always consumes it; a consume past
+  it overdraws the obligate bucket and is blocked, as before.
+- **Ledger moves are locked.** A posted move carrying a reservation's ledger
+  lines cannot be reset, cancelled, deleted or re-typed by hand; only the
+  commitment event (or the transfer reset) that owns it may
+  (`budget_ledger_posting`). reserve / obligate / consume lines need a
+  `commitment_id`.
+- **Transfer reset after a cancelled reservation** also cancels the reversal
+  move the cancellation posted for the top-up/release (Q6).
+- **Beneficiary unit sees the ledger.** The `budget_operating_unit` rules on
+  `budget.move(.line)` keep the `commitment_id.beneficiary_operating_unit_id`
+  clause (ADR-0011), so the engine and the dashboard count a reservation made
+  for a unit by another.
+- **Floating-era tagged reservations are reported.** A tagged reservation whose
+  own tag coordinate is negative (reserved against the untagged pool before
+  Q3) is listed by the back-fill and the reconciliation report.
+- **Direct allocations top a project up too.** `kmitl_project` tops the
+  reservation up when money reaches the project tag through a plain
+  `budget.move` (an appropriation, not a transfer), sourced from that move and
+  undone when it is cancelled or reset.
+
 ## Considered options
 
 - **Keep both models and sum them everywhere** — rejected: it is the status quo;

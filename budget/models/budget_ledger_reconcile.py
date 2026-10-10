@@ -18,8 +18,10 @@ class BudgetLedgerReconcile(models.TransientModel):
     """What the budget ledger and the old two-model formula disagree on.
 
     Two kinds of row (ADR-0016, Q11): a reservation whose ledger figures differ
-    from its posted events, and a (budget code × dimensions) coordinate whose
-    ledger Remaining (Σ balance) differs from the old Current − Σ reserve.
+    from its posted events — or whose own pool-tag coordinate is over-committed
+    (a reservation made against the floating pool) — and a (budget code ×
+    dimensions) coordinate whose ledger Remaining (Σ balance) differs from the
+    old Current − Σ reserve.
     An empty report means the ledger reconciles.
     """
 
@@ -92,6 +94,26 @@ class BudgetLedgerReconcile(models.TransientModel):
                         "ledger_amount": new,
                         "legacy_amount": old,
                         "difference": new - old,
+                    }
+                )
+            shortfall = commitment._ledger_tag_shortfall()
+            if shortfall:
+                rows.append(
+                    {
+                        "kind": "commitment",
+                        "metric": _("คงเหลือ ณ พิกัดโครงการ/แผน (f) ติดลบ"),
+                        "commitment_id": commitment.id,
+                        "account_fiscal_year_id": commitment.account_fiscal_year_id.id,
+                        "account_id": commitment.account_id.id,
+                        "kmitl_project_analytic_id": (
+                            commitment.kmitl_project_analytic_id.id
+                        ),
+                        "procurement_plan_analytic_id": (
+                            commitment.procurement_plan_analytic_id.id
+                        ),
+                        "ledger_amount": -shortfall,
+                        "legacy_amount": 0.0,
+                        "difference": -shortfall,
                     }
                 )
         return rows

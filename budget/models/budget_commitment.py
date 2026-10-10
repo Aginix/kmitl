@@ -333,8 +333,9 @@ class BudgetCommitment(models.Model):
         ``available_to_obligate`` = b, ``available_to_consume`` = c,
         ``total_consumed`` = d, ``total_obligated`` = c + d and
         ``total_reserved`` = b + c + d."""
+        sums = self._ledger_bucket_sums()
         for record in self:
-            buckets = record._ledger_buckets()
+            buckets = sums.get(record._origin.id) or dict.fromkeys(_BUCKETS, 0.0)
             reserve, obligate, consume = (-buckets[b] for b in _BUCKETS)
             record.available_to_obligate = reserve
             record.available_to_consume = obligate
@@ -342,15 +343,45 @@ class BudgetCommitment(models.Model):
             record.total_obligated = obligate + consume
             record.total_reserved = reserve + obligate + consume
 
+    def _ledger_bucket_sums(self):
+        """{commitment id: {bucket: Σ posted balance}} of these reservations'
+        ledger lines, in one grouped query instead of a Python loop over every
+        line on each recompute."""
+        ids = self._origin.ids
+        sums = {cid: dict.fromkeys(_BUCKETS, 0.0) for cid in ids}
+        if not ids:
+            return sums
+        groups = (
+            self.env["budget.move.line"]
+            .sudo()
+            .read_group(
+                [
+                    ("commitment_id", "in", ids),
+                    ("parent_state", "=", "posted"),
+                    ("move_type", "in", list(_BUCKETS)),
+                ],
+                ["balance:sum"],
+                ["commitment_id", "move_type"],
+                lazy=False,
+            )
+        )
+        for group in groups:
+            sums[group["commitment_id"][0]][group["move_type"]] += (
+                group["balance"] or 0.0
+            )
+        for record in self._origin:
+            currency = record.currency_id or self.env.company.currency_id
+            sums[record.id] = {
+                key: currency.round(value) for key, value in sums[record.id].items()
+            }
+        return sums
+
     def _ledger_buckets(self):
         """{bucket: Σ posted balance} of this reservation's ledger lines."""
         self.ensure_one()
-        currency = self.currency_id or self.env.company.currency_id
-        buckets = dict.fromkeys(_BUCKETS, 0.0)
-        for line in self.ledger_line_ids:
-            if line.parent_state == "posted" and line.move_type in buckets:
-                buckets[line.move_type] += line.balance
-        return {key: currency.round(value) for key, value in buckets.items()}
+        return self._ledger_bucket_sums().get(self._origin.id) or dict.fromkeys(
+            _BUCKETS, 0.0
+        )
 
     def _ledger_codes(self):
         """The reservation's budget codes in liquidation order (ADR-0017): the
@@ -368,15 +399,31 @@ class BudgetCommitment(models.Model):
         return codes
 
     def _ledger_unobligated(self, account):
-        """What ``account``'s code still holds reserved and unobligated (b)."""
+        """What ``account``'s code still holds reserved and unobligated (b).
+        Read as sudo: the operating-unit rules must not hide part of a
+        reservation's own ledger from the figure."""
         self.ensure_one()
-        return -sum(
-            line.balance
-            for line in self.ledger_line_ids
-            if line.parent_state == "posted"
-            and line.move_type == "reserve"
-            and line.account_id == account
+        groups = (
+            self.env["budget.move.line"]
+            .sudo()
+            .read_group(
+                [
+                    ("commitment_id", "=", self.id),
+                    ("parent_state", "=", "posted"),
+                    ("move_type", "=", "reserve"),
+                    ("account_id", "=", account.id),
+                ],
+                ["balance:sum"],
+                [],
+            )
         )
+        return -((groups[0]["balance"] or 0.0) if groups else 0.0)
+
+    def _ledger_default_consume(self):
+        """What a consume with no amount takes: the open obligation, or — when
+        nothing is obligated — the unobligated reserve it then liquidates."""
+        self.ensure_one()
+        return self.available_to_consume or self.available_to_obligate
 
     def _check_ledger_limits(self):
         """reserved ≤ cap, and no bucket overdrawn — read from the ledger."""
@@ -737,12 +784,16 @@ class BudgetCommitment(models.Model):
         """Block reserving more than the control-node Available (ADR-0005).
 
         Runs while the commitment is still ``draft`` (so its own reserve lines are
-        not yet counted as ``used``). Skipped when ``budget.allow_negative`` is set.
+        not yet in the ledger). Skipped when ``budget.allow_negative`` is set.
         Availability is evaluated with the **header** dimension combination
         (``analytic_distribution``) — the reserve lines a host mixin builds carry
         only a subset (activity+fund) while the header carries all dimensions —
-        paired with each reserve line's own budget account, so cross-charge lines
-        are each checked against their own pool.
+        paired with each reserve line's own budget account.
+
+        The amounts are summed **per control node**, not per budget code: the
+        codes of a ถัวจ่าย reservation that resolve to the same funded ancestor
+        draw on one pool, so each must not be checked against the whole of it
+        on its own.
         """
         self.ensure_one()
         allow_negative = (
@@ -756,16 +807,23 @@ class BudgetCommitment(models.Model):
         fy_id = self.account_fiscal_year_id.id
         company_id = self.company_id.id
         rounding = self.currency_id.rounding or 0.01
-        avail_distribution = self._availability_distribution()
-        reserve_lines = self._pending_reserve_lines()
-        per_account = {}
-        for line in reserve_lines:
-            per_account.setdefault(line.account_id, 0.0)
-            per_account[line.account_id] += line.amount
-        for account, amount in per_account.items():
-            available = controller.get_available(
-                account, avail_distribution, fy_id, company_id
+        dims = controller._parse_dimensions(self._availability_distribution())
+        pools = {}  # control-node key -> [controls, amount, accounts]
+        for line in self._pending_reserve_lines():
+            controls = controller._resolve_control_nodes(
+                line.account_id, dims, fy_id, company_id
             )
+            key = (
+                controls["account"].id,
+                tuple(sorted((col, rec.id) for col, rec in controls["dims"].items())),
+            )
+            pool = pools.setdefault(
+                key, [controls, 0.0, self.env["budget.account"]]
+            )
+            pool[1] += line.amount
+            pool[2] |= line.account_id
+        for controls, amount, accounts in pools.values():
+            available = controller._sum_available(controls, dims, fy_id, company_id)
             if float_compare(available, amount, precision_rounding=rounding) < 0:
                 raise UserError(
                     _(
@@ -774,7 +832,7 @@ class BudgetCommitment(models.Model):
                     )
                     % {
                         "amount": amount,
-                        "code": account.display_name,
+                        "code": ", ".join(accounts.mapped("display_name")),
                         "available": available,
                     }
                 )
@@ -917,7 +975,8 @@ class BudgetCommitment(models.Model):
             # Every move carrying this reservation's ledger lines — its own
             # event moves and the transfers that topped it up.
             "domain": [("id", "in", self.ledger_line_ids.move_id.ids)],
-            "context": {"default_commitment_id": self.id},
+            # Event moves are posted by the reservation itself, never by hand.
+            "context": {"create": False},
         }
 
     # The reservation picker (amounts mode) on the commitment itself is gone:
@@ -940,7 +999,9 @@ class BudgetCommitment(models.Model):
         return sums["reserve"], max(sums["obligate"], sums["consume"]), sums["consume"]
 
     def _ledger_mismatches(self):
-        """Reservations whose ledger figures differ from their posted events."""
+        """Reservations whose ledger figures differ from their posted events,
+        or whose pool-tag coordinate is over-committed (see
+        :meth:`_ledger_tag_shortfall`)."""
         mismatched = self.browse()
         for commitment in self:
             rounding = commitment.currency_id.rounding or 0.01
@@ -953,9 +1014,40 @@ class BudgetCommitment(models.Model):
             if any(
                 float_compare(a, b, precision_rounding=rounding)
                 for a, b in zip(legacy, ledger)
-            ):
+            ) or commitment._ledger_tag_shortfall():
                 mismatched |= commitment
         return mismatched
+
+    def _ledger_tag_shortfall(self):
+        """How far an active reservation's own pool-tag coordinate (โครงการ /
+        แผนจัดซื้อจัดจ้าง) is over-committed — 0.0 when it is covered or the
+        reservation carries no tag.
+
+        The pool tags are pinned on both sides (ADR-0016, Q3), so a tagged
+        reservation is only covered by money at its tagged coordinate. One made
+        against the untagged floating pool (ADR-0007, before the money was
+        transferred onto the tag) leaves that coordinate negative and frees its
+        amount back on the untagged pool — the per-coordinate comparison cannot
+        see it, so it is reported here."""
+        self.ensure_one()
+        if self.state not in ("reserved", "partial", "done") or not (
+            self.kmitl_project_analytic_id or self.procurement_plan_analytic_id
+        ):
+            return 0.0
+        available = (
+            self.env["budget.controller"]
+            .sudo()
+            .get_available(
+                self.account_id,
+                self._availability_distribution(),
+                self.account_fiscal_year_id.id,
+                self.company_id.id,
+            )
+        )
+        rounding = self.currency_id.rounding or 0.01
+        if float_compare(available, 0.0, precision_rounding=rounding) < 0:
+            return -available
+        return 0.0
 
     def _ledger_backfill(self):
         """Post the history of every active reservation to the ledger.

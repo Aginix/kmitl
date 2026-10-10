@@ -272,9 +272,9 @@ class BudgetCommitmentLine(models.Model):
         transfer's move is reversed with a new move instead of touching the
         transfer (ADR-0016, Q6)."""
         to_cancel = self.filtered(lambda l: l.state != "cancel")
-        to_cancel.budget_move_id.filtered(
-            lambda m: m.state != "cancel"
-        ).sudo().button_cancel()
+        to_cancel.budget_move_id.filtered(lambda m: m.state != "cancel").sudo().with_context(
+            budget_ledger_posting=True
+        ).button_cancel()
         foreign = to_cancel.filtered(
             lambda l: l.budget_move_line_id and not l.budget_move_id
         )
@@ -384,7 +384,7 @@ class BudgetCommitmentLine(models.Model):
         reserve X  → reserve −X
         obligate X → obligate −X, reserve +X
         consume X  → consume −X, obligate +X — or reserve +X when the source
-                     document obligated nothing (so an over-consume of an
+                     document never obligated (so an over-consume of an
                      obligation is still blocked by the limits, as before, and
                      a document never liquidates another document's obligation
                      on a shared reservation)
@@ -417,7 +417,13 @@ class BudgetCommitmentLine(models.Model):
             return self._ledger_pairs(parts, "obligate", "reserve")
         currency = self.currency_id or self.env.company.currency_id
         if amount > 0:
-            obligated = sum(self._ledger_code_held("obligate").values())
+            # Only a source that never obligated (net of de-obligations) draws
+            # on the reserve; once it has, it consumes its obligation — so a
+            # consume beyond what it obligated still overdraws the obligate
+            # bucket and is blocked, rather than quietly eating the reserve.
+            obligated = sum(
+                self._ledger_code_held("obligate", event_type="obligate").values()
+            )
             from_reserve = currency.compare_amounts(obligated, 0.0) <= 0
             bucket = "reserve" if from_reserve else "obligate"
             parts = self._ledger_split(
@@ -463,11 +469,14 @@ class BudgetCommitmentLine(models.Model):
             parts[codes[0]] = parts.get(codes[0], 0.0) + left
         return [(account, sign * part) for account, part in parts.items()]
 
-    def _ledger_code_held(self, bucket, own=True, liquidated_by=None):
+    def _ledger_code_held(
+        self, bucket, own=True, liquidated_by=None, event_type=None
+    ):
         """{budget code: amount held in ``bucket``} (−Σ posted balance) on this
         event's reservation — of this event's source document only when
         ``own`` and the event has one. ``liquidated_by`` keeps only the
-        liquidation lines of that event type."""
+        liquidation lines of that event type; ``event_type`` keeps only the
+        lines posted by events of that type."""
         self.ensure_one()
         domain = [
             ("commitment_id", "=", self.commitment_id.id),
@@ -484,6 +493,8 @@ class BudgetCommitmentLine(models.Model):
                 ("is_liquidation", "=", True),
                 ("commitment_line_id.move_type", "=", liquidated_by),
             ]
+        if event_type:
+            domain.append(("commitment_line_id.move_type", "=", event_type))
         held = {}
         for line in self.env["budget.move.line"].sudo().search(domain):
             held[line.account_id] = held.get(line.account_id, 0.0) - line.balance
