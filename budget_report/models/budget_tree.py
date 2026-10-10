@@ -150,7 +150,9 @@ class BudgetTree:
             # The line's own bucket, not the move's event type: a reservation
             # top-up rides inside a transfer (entry) move.
             data["move_type"] = line.move_type
-            data["is_usage"] = bool(line.commitment_id)
+            # Usage buckets — a reservation's lines or a direct consumption
+            # (budget ADR-0018).
+            data["is_usage"] = line.move_type in ("reserve", "obligate", "consume")
             data["state"] = line.parent_state
             data["balance"] = line.balance
             data["credit"] = line.credit
