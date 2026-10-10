@@ -18,6 +18,9 @@ class TestBudgetController(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         env = cls.env
+        # These tests reserve without appropriating first; they relied on
+        # kmitl_demo enabling negative budgets, so say so explicitly.
+        env["ir.config_parameter"].sudo().set_param("budget.allow_negative", True)
         cls.fy = env["account.fiscal.year"].search([], limit=1) or env[
             "account.fiscal.year"
         ].create(
@@ -167,6 +170,31 @@ class TestBudgetController(TransactionCase):
         )
         # no fund specified must NOT leak the fund-A appropriation
         self.assertEqual(self._available(self.dimleaf, {}), 0.0)
+
+    def _reserve_multi(self, account_amounts):
+        first = account_amounts[0][0]
+        return self.env["budget.commitment"].create(
+            {
+                "date": date.today(),
+                "title": "Test commitment",
+                "account_id": first.id,
+                "amount": sum(amt for _, amt in account_amounts),
+                "account_fiscal_year_id": self.fy.id,
+                "company_id": self.env.company.id,
+                "currency_id": self.env.company.currency_id.id,
+                "line_ids": [
+                    Command.create(
+                        {
+                            "move_type": "reserve",
+                            "account_id": account.id,
+                            "amount": amt,
+                            "name": "Reserve",
+                        }
+                    )
+                    for account, amt in account_amounts
+                ],
+            }
+        )
 
     def test_cross_charge_requires_flag(self):
         """Multiple budget codes in one reservation need cross_chargeable=True."""

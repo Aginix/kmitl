@@ -439,29 +439,32 @@ class TestBudgetLedger(BudgetLedgerCommon):
 
     def test_manual_usage_bucket_move_blocked(self):
         """reserve/obligate/consume moves without a commitment would change
-        availability with no reservation behind them."""
+        availability with no reservation behind them: they cannot be posted."""
         self._appropriate(100_000)
         for move_type in ("reserve", "obligate", "consume"):
+            move = self.env["budget.move"].create(
+                {
+                    "move_type": move_type,
+                    "budget_type": "expense",
+                    "account_fiscal_year_id": self.fy.id,
+                    "department_analytic_id": self.dept.id,
+                    "source_analytic_id": self.source.id,
+                    "line_ids": [
+                        Command.create(
+                            {
+                                "account_id": self.account.id,
+                                "balance": -10_000,
+                                "activity_analytic_id": self.activity.id,
+                                "fund_analytic_id": self.fund.id,
+                            }
+                        )
+                    ],
+                }
+            )
+            move.action_review()
             with self.assertRaises(ValidationError), self.env.cr.savepoint():
-                self.env["budget.move"].create(
-                    {
-                        "move_type": move_type,
-                        "budget_type": "expense",
-                        "account_fiscal_year_id": self.fy.id,
-                        "department_analytic_id": self.dept.id,
-                        "source_analytic_id": self.source.id,
-                        "line_ids": [
-                            Command.create(
-                                {
-                                    "account_id": self.account.id,
-                                    "balance": -10_000,
-                                    "activity_analytic_id": self.activity.id,
-                                    "fund_analytic_id": self.fund.id,
-                                }
-                            )
-                        ],
-                    }
-                )
+                move.action_post()
+            self.assertEqual(move.state, "review")
         self.assertEqual(self._available(), 100_000)
 
     # ------------------------------------------------------------------

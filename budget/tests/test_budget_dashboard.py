@@ -12,6 +12,9 @@ class TestBudgetDashboard(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         env = cls.env
+        # These tests reserve without appropriating first; they relied on
+        # kmitl_demo enabling negative budgets, so say so explicitly.
+        env["ir.config_parameter"].sudo().set_param("budget.allow_negative", True)
         cls.fy = env["account.fiscal.year"].search([], limit=1) or env[
             "account.fiscal.year"
         ].create(

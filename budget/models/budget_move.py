@@ -24,6 +24,9 @@ _LEDGER_MOVE_LOCKED_FIELDS = frozenset(
         "commitment_line_id",
     }
 )
+# Buckets that only a commitment event may post (ADR-0016): a manual move in
+# them would change every figure without any reservation behind it.
+_COMMITMENT_BUCKETS = ("reserve", "obligate", "consume")
 
 
 class BudgetMove(models.Model):
@@ -475,6 +478,25 @@ class BudgetMove(models.Model):
                 % ", ".join(locked.mapped("display_name"))
             )
 
+    def _check_commitment_buckets(self):
+        """reserve / obligate / consume lines are posted by commitment events
+        only (ADR-0016): the availability engine sums every bucket, so a manual
+        line there would move the figures with no reservation behind it.
+        Checked when a move is posted — not as a field constraint, which Odoo
+        also re-runs on recompute outside the posting context."""
+        if self.env.context.get("budget_ledger_posting"):
+            return
+        orphan = self.line_ids.filtered(
+            lambda l: l.move_type in _COMMITMENT_BUCKETS and not l.commitment_id
+        )
+        if orphan:
+            raise ValidationError(
+                _(
+                    "Budget reservation, obligation and consumption lines can "
+                    "only be posted by a budget commitment."
+                )
+            )
+
     def unlink(self):
         self._check_ledger_move_locked()
         return super().unlink()
@@ -483,6 +505,8 @@ class BudgetMove(models.Model):
         if not vals:
             return True
         self._check_ledger_move_locked(vals)
+        if vals.get("state") == "posted":
+            self._check_commitment_buckets()
         self._sanitize_vals(vals)
         stolen_moves = self.browse(set(move for move in self._stolen_move(vals)))
         container = {"records": self | stolen_moves}

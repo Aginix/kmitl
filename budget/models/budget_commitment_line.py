@@ -278,9 +278,11 @@ class BudgetCommitmentLine(models.Model):
         foreign = to_cancel.filtered(
             lambda l: l.budget_move_line_id and not l.budget_move_id
         )
-        to_cancel.write({"state": "cancel"})
+        # Reverse the foreign lines before the state change re-checks the
+        # limits, so the check never sees a half-cancelled ledger.
         for line in foreign:
             line._post_ledger_reversal()
+        to_cancel.write({"state": "cancel"})
         to_cancel._check_commitment_limits()
         # Re-derive header state band (e.g. partial -> reserved once every
         # obligate/consume line is cancelled).
