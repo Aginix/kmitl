@@ -1,6 +1,6 @@
 {
     "name": "KMITL Project Budget Transfer",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "summary": """ Filter the transfer-line project picker by dimensions and open
     supported projects to other units """,
     "category": "KMITL/Budgeting",

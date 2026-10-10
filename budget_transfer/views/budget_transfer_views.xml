@@ -86,7 +86,7 @@
                             <group>
                                 <separator string="Transfer FROM (Source)"/>
                                 <field name="from_line_ids" nolabel="1" colspan="2"
-                                       context="{'default_transfer_direction': 'from', 'default_department_analytic_id': department_analytic_id}"
+                                       context="{'default_transfer_direction': 'from', 'default_department_analytic_id': department_analytic_id, 'transfer_fiscal_year_id': account_fiscal_year_id}"
                                        attrs="{'readonly': [('can_edit', '=', False)]}">
                                     <!-- Non-editable tree: a click opens the line editor dialog. -->
                                     <tree decoration-danger="not budget_sufficient" create="1" delete="1">
@@ -142,7 +142,7 @@
                                 </field>
                                 <separator string="Transfer TO (Destination)"/>
                                 <field name="to_line_ids" nolabel="1" colspan="2"
-                                       context="{'default_transfer_direction': 'to', 'default_department_analytic_id': department_analytic_id}"
+                                       context="{'default_transfer_direction': 'to', 'default_department_analytic_id': department_analytic_id, 'transfer_fiscal_year_id': account_fiscal_year_id}"
                                        attrs="{'readonly': [('can_edit', '=', False)]}">
                                     <!-- Non-editable tree: a click opens the line editor dialog. -->
                                     <tree decoration-success="1" create="1" delete="1">

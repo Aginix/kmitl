@@ -26,20 +26,16 @@ class BudgetMoveLine(models.Model):
         "source_analytic_id",
         "move_id.account_fiscal_year_id",
     )
+    @api.depends_context("transfer_fiscal_year_id")
     def _compute_allowed_procurement_plan_analytic_ids(self):
         Plan = self.env["procurement.plan"].sudo()
         for line in self:
             domain = [("analytic_account_id", "!=", False)]
             if line.account_id:
                 domain.append(("budget_account_id", "=", line.account_id.id))
-            if line.move_id.account_fiscal_year_id:
-                domain.append(
-                    (
-                        "account_fiscal_year_id",
-                        "=",
-                        line.move_id.account_fiscal_year_id.id,
-                    )
-                )
+            fiscal_year = line._transfer_fiscal_year()
+            if fiscal_year:
+                domain.append(("account_fiscal_year_id", "=", fiscal_year.id))
             for dim in (
                 "department_analytic_id",
                 "activity_analytic_id",
