@@ -221,12 +221,19 @@ class TestBudgetController(TransactionCase):
         # no account_domain -> selectable mirrors budgetable
         self.assertTrue(leaf["budgetable"])
         self.assertTrue(leaf["selectable"])
-        # account_domain narrows selectable
+        # account_domain narrows selectable, and the grid drops the codes
+        # outside it (only pickable codes and their ancestors are listed)
         grid2 = self.env["budget.dashboard"].get_reservation_grid(
             self.fy.id,
             {},
             root_account_id=self.leaf.id,
             account_domain=[("id", "=", self.leaf2.id)],
         )
-        leaf2row = {r["id"]: r for r in grid2["rows"]}[self.leaf.id]
-        self.assertFalse(leaf2row["selectable"])
+        self.assertNotIn(self.leaf.id, {r["id"] for r in grid2["rows"]})
+        grid3 = self.env["budget.dashboard"].get_reservation_grid(
+            self.fy.id,
+            {},
+            root_account_id=self.leaf.id,
+            account_domain=[("id", "=", self.leaf.id)],
+        )
+        self.assertTrue({r["id"]: r for r in grid3["rows"]}[self.leaf.id]["selectable"])
