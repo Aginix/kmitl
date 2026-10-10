@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo noupdate="0">
+    <!-- A reservation's ledger moves (budget ADR-0016) are stamped with its
+         owning unit; the beneficiary clause keeps them visible — and counted by
+         the availability engine and the dashboard — for the Beneficiary Unit,
+         as the commitment lines were before (ADR-0011). -->
     <record id="ir_rule_budget_move_allowed_operating_units" model="ir.rule">
         <field name="model_id" ref="budget.model_budget_move" />
         <field name="domain_force">
-            ['|', ('operating_unit_id','=',False),
-            ('operating_unit_id','in',user.operating_unit_ids.ids)]
+            ['|', '|', ('operating_unit_id','=',False),
+            ('operating_unit_id','in',user.operating_unit_ids.ids),
+            ('commitment_id.beneficiary_operating_unit_id','in',user.operating_unit_ids.ids)]
         </field>
         <field name="name">budget move from allowed operating units</field>
         <field name="global" eval="True" />
@@ -17,8 +22,9 @@
     <record id="ir_rule_budget_move_line_allowed_operating_units" model="ir.rule">
         <field name="model_id" ref="budget.model_budget_move_line" />
         <field name="domain_force">
-            ['|', ('operating_unit_id','=',False),
-            ('operating_unit_id','in',user.operating_unit_ids.ids)]
+            ['|', '|', ('operating_unit_id','=',False),
+            ('operating_unit_id','in',user.operating_unit_ids.ids),
+            ('commitment_id.beneficiary_operating_unit_id','in',user.operating_unit_ids.ids)]
         </field>
         <field name="name">budget move line from allowed operating units</field>
         <field name="global" eval="True" />
