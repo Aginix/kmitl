@@ -1047,24 +1047,27 @@ class KmitlProject(models.Model):
                 self.company_id.id,
             )
         dist = dict(self.analytic_distribution or {})
-        commitment = self.env["budget.commitment"].create(
-            {
-                "account_id": self.budget_account_id.id,
-                "amount": self.budget_amount,
-                "analytic_distribution": dist or False,
-                "account_fiscal_year_id": self.account_fiscal_year_id.id,
-                "company_id": self.company_id.id,
-                "operating_unit_id": self.operating_unit_id.id or False,
-                "date": fields.Date.context_today(self),
-                "ref": self.key or self.name,
-                # ชื่อโครงการ = ชื่อใบจอง (shown next to the number wherever a
-                # reservation is offered, so it can be told apart from others).
-                "title": "[%s] %s" % (self.key, self.name) if self.key else self.name,
-                "description": self.name,
-                "kmitl_project_id": self.id,
-                "user_id": self.env.user.id,
-            }
-        )
+        Commitment = self.env["budget.commitment"]
+        vals = {
+            "account_id": self.budget_account_id.id,
+            "amount": self.budget_amount,
+            "analytic_distribution": dist or False,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
+            "company_id": self.company_id.id,
+            "date": fields.Date.context_today(self),
+            "ref": self.key or self.name,
+            # ชื่อโครงการ = ชื่อใบจอง (shown next to the number wherever a
+            # reservation is offered, so it can be told apart from others).
+            "title": "[%s] %s" % (self.key, self.name) if self.key else self.name,
+            "description": self.name,
+            "kmitl_project_id": self.id,
+            "user_id": self.env.user.id,
+        }
+        # The reservation's operating unit comes from budget_operating_unit,
+        # which this module does not depend on.
+        if "operating_unit_id" in Commitment._fields:
+            vals["operating_unit_id"] = self.operating_unit_id.id or False
+        commitment = Commitment.create(vals)
         commitment._post_budget_event(
             "reserve", self.budget_amount, name=_("Initial reservation")
         )
