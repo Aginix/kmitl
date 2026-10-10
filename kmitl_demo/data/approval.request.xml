@@ -18,9 +18,8 @@
             <field name="date_end" eval="'2025-04-17'" />
             <field name="country_id" ref="base.jp" />
             <field name="description">International conference attendance in Tokyo, Japan</field>
-            <field name="participant_ids" eval="[
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_011')}),
-            ]" />
+            <field name="external_participant_count">1</field>
+            <field name="external_participant_note">ดร.สมชาย วิชาการ</field>
             <field
                 name="line_ids"
                 model="base"
@@ -51,9 +50,8 @@
             <field name="date_end" eval="'2025-04-04'" />
             <field name="city">Chiang Mai</field>
             <field name="description">Field survey for renewable energy research project</field>
-            <field name="participant_ids" eval="[
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_015')}),
-            ]" />
+            <field name="external_participant_count">1</field>
+            <field name="external_participant_note">นายอนุชา ฝึกอบรม</field>
             <field
                 name="line_ids"
                 model="base"
@@ -81,9 +79,8 @@
             <field name="user_id" ref="kmitl_demo.user_demo_008" />
             <field name="date" eval="'2025-03-22'" />
             <field name="description">Operational support payment for technical consultant</field>
-            <field name="participant_ids" eval="[
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_013')}),
-            ]" />
+            <field name="external_participant_count">1</field>
+            <field name="external_participant_note">ผศ.ดร.สมหญิง วิจัย</field>
             <field
                 name="line_ids"
                 model="base"
@@ -103,9 +100,8 @@
             <field name="user_id" ref="kmitl_demo.user_demo_010" />
             <field name="date" eval="'2025-04-01'" />
             <field name="description">Master of ceremonies fee for the annual award ceremony</field>
-            <field name="participant_ids" eval="[
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_014')}),
-            ]" />
+            <field name="external_participant_count">1</field>
+            <field name="external_participant_note">นางสาววิภา ที่ปรึกษา</field>
             <field
                 name="line_ids"
                 model="base"
@@ -128,9 +124,8 @@
             <field name="date_end" eval="'2025-05-20'" />
             <field name="country_id" ref="base.de" />
             <field name="description">Research collaboration visit to Technical University of Munich</field>
-            <field name="participant_ids" eval="[
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_017')}),
-            ]" />
+            <field name="external_participant_count">1</field>
+            <field name="external_participant_note">ดร.วีระ วิศวกร</field>
             <field
                 name="line_ids"
                 model="base"
@@ -168,11 +163,8 @@
             <field name="date_start" eval="'2025-04-15'" />
             <field name="date_end" eval="'2025-04-15'" />
             <field name="description">Quarterly faculty committee meeting allowances</field>
-            <field name="participant_ids" eval="[
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_011')}),
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_012')}),
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_013')}),
-            ]" />
+            <field name="external_participant_count">3</field>
+            <field name="external_participant_note">ดร.สมชาย วิชาการ, นายประสิทธิ์ เทคโนโลยี, ผศ.ดร.สมหญิง วิจัย</field>
             <field
                 name="line_ids"
                 model="base"
@@ -195,12 +187,8 @@
             <field name="date_end" eval="'2025-05-07'" />
             <field name="city">Phuket</field>
             <field name="description">Coastal engineering survey team mobilization</field>
-            <field name="participant_ids" eval="[
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_014')}),
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_015')}),
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_016')}),
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_017')}),
-            ]" />
+            <field name="external_participant_count">4</field>
+            <field name="external_participant_note">นางสาววิภา ที่ปรึกษา, นายอนุชา ฝึกอบรม, นางพิมพ์ใจ ออกแบบ, ดร.วีระ วิศวกร</field>
             <field
                 name="line_ids"
                 model="base"
@@ -222,13 +210,8 @@
             <field name="date_start" eval="'2025-04-25'" />
             <field name="date_end" eval="'2025-04-25'" />
             <field name="description">Curriculum review workshop attendance and meals</field>
-            <field name="participant_ids" eval="[
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_011')}),
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_012')}),
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_013')}),
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_014')}),
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_015')}),
-            ]" />
+            <field name="external_participant_count">5</field>
+            <field name="external_participant_note">ดร.สมชาย วิชาการ, นายประสิทธิ์ เทคโนโลยี, ผศ.ดร.สมหญิง วิจัย, นางสาววิภา ที่ปรึกษา, นายอนุชา ฝึกอบรม</field>
             <field
                 name="line_ids"
                 model="base"
@@ -248,10 +231,8 @@
             <field name="user_id" ref="kmitl_demo.user_demo_010" />
             <field name="date" eval="'2025-04-18'" />
             <field name="description">Opening ceremony hosting fees for two emcees</field>
-            <field name="participant_ids" eval="[
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_018')}),
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_019')}),
-            ]" />
+            <field name="external_participant_count">2</field>
+            <field name="external_participant_note">นายสุรชัย ช่างซ่อม, นางสาวนภา โปรแกรมเมอร์</field>
             <field
                 name="line_ids"
                 model="base"
@@ -273,11 +254,8 @@
             <field name="date_start" eval="'2025-05-10'" />
             <field name="date_end" eval="'2025-05-10'" />
             <field name="description">External speakers and meal expenses for staff training day</field>
-            <field name="participant_ids" eval="[
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_012')}),
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_014')}),
-                (0, 0, {'partner_id': ref('kmitl_demo.vendor_demo_020')}),
-            ]" />
+            <field name="external_participant_count">3</field>
+            <field name="external_participant_note">นายประสิทธิ์ เทคโนโลยี, นางสาววิภา ที่ปรึกษา, นายธนา นักบัญชี</field>
             <field
                 name="line_ids"
                 model="base"
