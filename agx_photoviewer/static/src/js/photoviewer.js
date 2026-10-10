@@ -10,7 +10,11 @@ import {registry} from "@web/core/registry";
  * entries here: {match(attachment) => bool, render(attachment, page)}.
  * `render` replaces the content of `page` (which shows a spinner until
  * then); it may return a promise. An attachment is a plain
- * {id, name, mimetype, accessToken} object.
+ * {id, name, mimetype, accessToken} object. A renderer matching an image
+ * takes it over from the native stage. Optional hooks:
+ * `leave(attachment, page)` runs when the viewer moves away from the file or
+ * closes; `decorateThumbnail(attachment, thumbnail)` may add to its button
+ * in the thumbnail strip.
  */
 export const photoviewerRenderers = registry.category("agx_photoviewer.renderers");
 
@@ -90,7 +94,7 @@ function createThumbnails(viewer) {
         },
         {passive: false}
     );
-    viewer.images.forEach(({attachment}, index) => {
+    viewer.images.forEach(({attachment, renderer}, index) => {
         const thumbnail = document.createElement("button");
         thumbnail.type = "button";
         thumbnail.className = "o_agx_photoviewer_thumbnail";
@@ -113,6 +117,7 @@ function createThumbnails(viewer) {
             icon.title = attachment.name || "";
             thumbnail.append(icon);
         }
+        renderer?.decorateThumbnail?.(attachment, thumbnail);
         strip.append(thumbnail);
     });
     return strip;
@@ -123,6 +128,7 @@ function createThumbnails(viewer) {
  * into a container placed below the header by their renderer.
  */
 function showItem(viewer, state) {
+    leaveItem(state);
     const item = viewer.images[viewer.index];
     const modal = viewer.$photoviewer;
     if (!state.container) {
@@ -190,6 +196,7 @@ function showItem(viewer, state) {
     page.className = "o_agx_photoviewer_page";
     page.innerHTML = '<i class="fa fa-spin fa-spinner fa-2x m-auto"></i>';
     state.container.replaceChildren(page);
+    state.current = {item, page};
     Promise.resolve(item.renderer.render(item.attachment, page)).catch((error) => {
         console.error(error);
         page.innerHTML = `<div class="m-auto text-center p-3">${escape(
@@ -199,17 +206,31 @@ function showItem(viewer, state) {
 }
 
 /**
+ * Run the `leave` hook of the file the viewer is moving away from.
+ */
+function leaveItem(state) {
+    if (state.current) {
+        const {item, page} = state.current;
+        state.current = null;
+        item.renderer.leave?.(item.attachment, page);
+    }
+}
+
+/**
  * Open `current` in the viewer, navigating through the `attachments` in order.
  */
 export function openPhotoViewer(attachments, current) {
-    const items = attachments.map((attachment) => ({
-        src: isImage(attachment) ? getUrl(attachment) : "",
-        title: escape(attachment.name || ""),
-        attachment,
-        renderer: isImage(attachment)
-            ? null
-            : getRenderer(attachment) || unsupportedRenderer,
-    }));
+    const items = attachments.map((attachment) => {
+        const renderer =
+            getRenderer(attachment) ||
+            (isImage(attachment) ? null : unsupportedRenderer);
+        return {
+            src: renderer ? "" : getUrl(attachment),
+            title: escape(attachment.name || ""),
+            attachment,
+            renderer,
+        };
+    });
     const hasFiles = items.some((item) => item.renderer);
     const state = {hasFiles};
     return new window.PhotoViewer(items, {
@@ -230,6 +251,9 @@ export function openPhotoViewer(attachments, current) {
         callbacks: {
             beforeChange(viewer) {
                 showItem(viewer, state);
+            },
+            closed() {
+                leaveItem(state);
             },
         },
     });

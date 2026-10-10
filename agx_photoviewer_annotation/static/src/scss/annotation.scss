@@ -1,0 +1,174 @@
+// Count of annotations on an attachment (form widget, chatter, thumbnails).
+.o_agx_annotation_badge {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    z-index: 1;
+    padding: 0 4px;
+    font-size: 11px;
+    line-height: 16px;
+    color: #fff;
+    white-space: nowrap;
+    pointer-events: none;
+    background: #e53935;
+    border-radius: 8px;
+}
+
+.o_AttachmentCard_image,
+.o_agx_photoviewer_thumbnail {
+    position: relative;
+}
+
+// Viewer: toolbar above the stacked pages.
+.o_agx_annotation {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: #e9ecef;
+}
+
+.o_agx_annotation_toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    padding: 4px 6px;
+    background: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+
+    .btn.active {
+        color: #fff;
+        background: $o-brand-primary;
+    }
+}
+
+.o_agx_annotation_tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+.o_agx_annotation_color {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+
+    &.active {
+        box-shadow: 0 0 0 2px #000;
+    }
+}
+
+.o_agx_annotation_zoom {
+    min-width: 3em;
+    font-size: 12px;
+    text-align: center;
+}
+
+.o_agx_annotation_scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 12px;
+    overflow: auto;
+}
+
+.o_agx_annotation_sheet {
+    position: relative;
+    margin: 0 auto 12px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.o_agx_annotation_source,
+.o_agx_annotation_layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.o_agx_annotation_source {
+    user-select: none;
+}
+
+// Marks only catch the pointer when a tool needs them; comment pins always
+// open their text.
+.o_agx_annotation_layer {
+    pointer-events: none;
+
+    .o_agx_annotation_highlight {
+        mix-blend-mode: multiply;
+    }
+
+    .o_agx_annotation_pin {
+        pointer-events: all;
+        cursor: pointer;
+
+        // The author drags their own pin to move it.
+        &.o_agx_annotation_own {
+            cursor: move;
+            touch-action: none;
+        }
+
+        text {
+            font-family: sans-serif;
+            font-weight: bold;
+            fill: #fff;
+        }
+    }
+}
+
+.o_agx_annotation_tool_draw .o_agx_annotation_layer {
+    pointer-events: all;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.o_agx_annotation_tool_eraser .o_agx_annotation_layer .o_agx_annotation_own {
+    pointer-events: visiblePainted;
+    cursor: pointer;
+
+    &:hover {
+        opacity: 0.5;
+    }
+}
+
+.o_agx_annotation_popover {
+    position: absolute;
+    z-index: 2;
+    width: 240px;
+    margin: 12px 0 0 12px;
+    padding: 6px 8px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+
+    &.o_agx_annotation_popover_left {
+        margin-left: -12px;
+        transform: translateX(-100%);
+    }
+}
+
+.o_agx_annotation_popover_meta {
+    font-size: 11px;
+    color: #6c757d;
+}
+
+.o_agx_annotation_popover_text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.o_agx_annotation_popover_actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
