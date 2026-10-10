@@ -137,7 +137,9 @@ class BudgetController(models.AbstractModel):
         result = {}
         if not analytic_distribution:
             return result
-        analytic = self.env["account.analytic.account"]
+        # Which plan a value belongs to is metadata: a budget user without
+        # accounting rights cannot read account.analytic.plan.
+        analytic = self.env["account.analytic.account"].sudo()
         for raw_id in analytic_distribution:
             account = analytic.browse(int(raw_id)).exists()
             if not account:
