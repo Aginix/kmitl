@@ -7,7 +7,7 @@
     "maintainers": ["nopparuts"],
     "license": "LGPL-3",
     "category": "Human Resources",
-    "depends": ["base", "hr"],
+    "depends": ["hr"],
     "data": ["views/hr_employee_view.xml"],
     "application": False,
 }
