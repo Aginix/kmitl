@@ -4,6 +4,15 @@ The engine that walks a signed ใบขอเบิก (disbursement request) t
 offices' work stations. Think of the request as a hospital **route slip**: it is
 issued at the counter (the requester's side) and then travels between stations.
 
+> **The engine is not meant to stay here.** Nothing in it is about disbursement — a
+> station, a route and a step describe any document that is worked on by one office
+> after another, and the binding to the request is five places (the three action
+> overrides, the model name in two computes, and the views, report and menu that point
+> at `disbursement`). It is to be lifted into a generic base module, on the shape of
+> `base_tier_validation`, and renamed **work center**. ADR-0002 and ADR-0005 are the
+> engine's own decisions and move with it; ADR-0001, ADR-0003 and ADR-0004 are about
+> this disbursement's shape and stay. Not scheduled here.
+
 ## Language
 
 **Work Station** (สถานีงาน):
@@ -49,7 +58,12 @@ _Avoid_: Capability module, integration.
 **Station queue** (คิวงาน):
 A list view of the requests whose `station_code` is that station's — a worklist is a
 list view, not a screen of its own. Each station module adds its own menu entry under
-**Work Queues**; **Proceed** on a selection runs `action_act_batch()`.
+Disbursement ▸ **Work Queues**, in route order, so the whole route reads in one place;
+a station whose work belongs to another office points a second menu at the same action
+from that office's app (Accounting for billing and clearing, Finance for the payment
+run). **Work Queues** carries no group of its own — each entry is gated on the station's
+group, and Odoo hides a parent whose children are all invisible.
+**Proceed** on a selection runs `action_act_batch()`.
 
 ## Boundary
 
