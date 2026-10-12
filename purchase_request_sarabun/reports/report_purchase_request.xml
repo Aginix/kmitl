@@ -17,7 +17,7 @@
                     .table-bordered,
                     .table-bordered > :not(caption) > *,
                     .table-bordered > :not(caption) > * > * {
-                        border-color: #000;
+                        border: 1px solid #000 !important;
                     }
                     p,
                     span,
