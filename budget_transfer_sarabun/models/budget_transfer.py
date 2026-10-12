@@ -46,10 +46,13 @@ class BudgetTransfer(models.Model):
 
     # --- hooks ---------------------------------------------------------
     def _get_sarabun_document_type(self):
-        return self.env.ref(
-            "budget_transfer_sarabun.document_type_budget_transfer",
-            raise_if_not_found=False,
-        ) or super()._get_sarabun_document_type()
+        return (
+            self.env.ref(
+                "budget_transfer_sarabun.document_type_budget_transfer",
+                raise_if_not_found=False,
+            )
+            or super()._get_sarabun_document_type()
+        )
 
     def _sarabun_submit_guard(self):
         self.ensure_one()
@@ -57,9 +60,7 @@ class BudgetTransfer(models.Model):
 
     def _get_sarabun_subject(self):
         self.ensure_one()
-        return _(
-            "ขออนุมัติโอน เปลี่ยนแปลง %(src)s ประจำปีงบประมาณ พ.ศ. %(fy)s %(dept)s"
-        ) % {
+        return _("ขออนุมัติโอน เปลี่ยนแปลง %(src)s ประจำปีงบประมาณ พ.ศ. %(fy)s %(dept)s") % {
             "src": self._sarabun_dim_name(self.source_analytic_id),
             "fy": self.account_fiscal_year_id.name or "",
             "dept": self._sarabun_dim_name(self.department_analytic_id),
@@ -112,23 +113,38 @@ class BudgetTransfer(models.Model):
 
     def _attach_transfer_pdf_enclosure(self, document):
         self.ensure_one()
-        pdf, _dummy = self.env["ir.actions.report"].sudo()._render_qweb_pdf(
-            "budget_transfer_pdf.action_report_budget_transfer", self.ids,
+        pdf, _dummy = (
+            self.env["ir.actions.report"]
+            .sudo()
+            ._render_qweb_pdf(
+                "budget_transfer_pdf.action_report_budget_transfer",
+                self.ids,
+            )
         )
-        attachment = self.env["ir.attachment"].sudo().create(
-            {
-                "name": "%s.pdf" % ((self.name or "budget-transfer").replace("/", "-")),
-                "type": "binary",
-                "datas": base64.b64encode(pdf),
-                "mimetype": "application/pdf",
-                "res_model": "sarabun.document",
-                "res_id": document.id,
-            }
+        attachment = (
+            self.env["ir.attachment"]
+            .sudo()
+            .create(
+                {
+                    "name": "%s.pdf"
+                    % ((self.name or "budget-transfer").replace("/", "-")),
+                    "type": "binary",
+                    "datas": base64.b64encode(pdf),
+                    "mimetype": "application/pdf",
+                    "res_model": "sarabun.document",
+                    "res_id": document.id,
+                }
+            )
         )
         document.sudo().write({"enclosure_attachment_ids": [(4, attachment.id)]})
 
     # --- lifecycle callbacks ------------------------------------------
     def _on_sarabun_circulating(self, document):
+        if self.state == "returned":
+            # The lines may have been revised while returned — re-check them
+            # before the letter goes back out (the line policies are checked
+            # at ยืนยัน, not as constraints).
+            self._validate_transfer_data()
         if self.state in ("submitted", "returned"):
             # The transfer's own date field is hidden (ADR-0014 follow-up) —
             # it now tracks the letter's ลงวันที่ (re-stamped on every send),

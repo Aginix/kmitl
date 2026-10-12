@@ -25,19 +25,14 @@
             <field name="procurement_method_id" position="attributes">
                 <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
             </field>
-            <field name="payment_type" position="attributes">
-                <!-- Base view hard-codes readonly="1"; override to dynamic attrs. -->
-                <attribute name="readonly">0</attribute>
-                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
-            </field>
             <field name="partner_id" position="attributes">
                 <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
             </field>
             <field name="vat_included" position="attributes">
-                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
+                <attribute name="attrs">{'readonly': ['|', '&amp;', ('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False), ('payment_type', '!=', 'direct')]}</attribute>
             </field>
             <field name="tax_id" position="attributes">
-                <attribute name="attrs">{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
+                <attribute name="attrs">{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': ['|', '&amp;', ('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False), ('payment_type', '!=', 'direct')]}</attribute>
             </field>
 
             <!-- One2many container: open up in (draft) or (to_approve/approved + godmode) -->

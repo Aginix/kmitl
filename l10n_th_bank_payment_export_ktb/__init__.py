@@ -1,4 +1,4 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from . import models
-from . import templates
+from . import models as models
+from . import templates as templates

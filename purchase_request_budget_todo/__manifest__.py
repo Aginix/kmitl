@@ -1,6 +1,6 @@
 {
     "name": "Purchase Request Budget Todo",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
@@ -9,8 +9,10 @@
         "base_automation",
         "budget_role",
         "mail_activity_todo_role_unit",
+        "purchase_request_budget",
     ],
     "data": [
+        "security/res_users_role.xml",
         "data/mail_activity_type.xml",
         "data/base_automation.xml",
     ],

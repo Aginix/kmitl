@@ -27,7 +27,7 @@ class AccountPayment(models.Model):
         # Outbound advance-payment disbursement: transfer completed → the loan
         # becomes a formal debt and moves to in_progress (ADR-0001).
         for payment in self.filtered(
-            lambda p: p.advance_payment_id.state == "waiting_transfer"
+            lambda p: p.advance_payment_id.state == "approved"
         ):
             payment.advance_payment_id.write({"disbursement_state": "paid"})
             payment.advance_payment_id.action_start(payment=payment)

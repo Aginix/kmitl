@@ -67,7 +67,7 @@
                     decoration-danger="billing_status == 'cancel'"
                 />
             </xpath>
-            <xpath expr="//group[1]" position="before">
+            <xpath expr="//div[@name='approval_title']" position="before">
                 <h2>Purchase Request Approval Form</h2>
                 <field name="use_purchase_order" invisible="1" />
             </xpath>
@@ -150,7 +150,7 @@
                 <field name="billing_status" optional="show" />
             </xpath>
 
-            <xpath expr="//field[@name='department_id']" position="after">
+            <xpath expr="//field[@name='requesting_department_id']" position="after">
                 <field name="display_purchase_order" optional="show" />
             </xpath>
         </field>

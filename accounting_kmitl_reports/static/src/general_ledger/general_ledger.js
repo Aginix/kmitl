@@ -79,6 +79,7 @@ export class GeneralLedger extends Component {
             opening: _t("Opening Balance"),
             carried: _t("Carried Forward"),
             date: _t("Date"),
+            journal: _t("Journal"),
             issue: _t("Issue"),
             remark: _t("Remark"),
             debit: _t("Debit"),

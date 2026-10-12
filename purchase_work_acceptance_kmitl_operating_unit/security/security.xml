@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Final rewrite of the WA OU rule domains. Runs after
+         purchase_work_acceptance_operating_unit_access_all so this is the
+         last writer. Keeps the group bypass and OU match from _access_all
+         and ORs in a committee-member bypass scoped to WAs in review or
+         already accepted (same shape as advance_payment ADR-0020). -->
+
+    <function model="ir.rule" name="write">
+        <value
+            eval="[ref('purchase_work_acceptance_operating_unit.ir_rule_work_acceptance_operating_units')]"
+        />
+        <value
+            eval="{'domain_force': &quot;['|','|','|',(1,'=',1) if user.has_group('purchase_work_acceptance_operating_unit_access_all.group_all_ou_work_acceptance') else (0,'=',1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids),'&amp;',('work_acceptance_committee_ids.employee_id.user_id','=',user.id),('state','in',['in_review','accept'])]&quot;}"
+        />
+    </function>
+
+    <function model="ir.rule" name="write">
+        <value
+            eval="[ref('purchase_work_acceptance_operating_unit.ir_rule_work_acceptance_line_allowed_operating_units')]"
+        />
+        <value
+            eval="{'domain_force': &quot;['|','|','|',(1,'=',1) if user.has_group('purchase_work_acceptance_operating_unit_access_all.group_all_ou_work_acceptance') else (0,'=',1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids),'&amp;',('wa_id.work_acceptance_committee_ids.employee_id.user_id','=',user.id),('wa_id.state','in',['in_review','accept'])]&quot;}"
+        />
+    </function>
+</odoo>

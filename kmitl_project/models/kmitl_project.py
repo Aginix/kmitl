@@ -864,7 +864,9 @@ class KmitlProject(models.Model):
 
     @api.model
     def _create_analytic_account_from_values(self, values):
-        return self.env["account.analytic.account"].create(
+        # System-minted dimension: project users have no create ACL on analytic
+        # accounts, so mint it as superuser (company/OU context is kept).
+        return self.env["account.analytic.account"].sudo().create(
             {
                 "name": values.get("name", _("Unknown Analytic Account")),
                 "code": values.get("code"),
@@ -974,7 +976,7 @@ class KmitlProject(models.Model):
         if vals.get("name"):
             for rec in self:
                 if rec.analytic_account_id and rec.analytic_account_id.name != rec.name:
-                    rec.analytic_account_id.name = rec.name
+                    rec.analytic_account_id.sudo().name = rec.name
         return res
 
     def _ensure_analytic_account(self):

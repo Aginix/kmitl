@@ -11,6 +11,8 @@ Three loose ends left by ADR-0013's To-Do and by ADR-0014's borrower retype.
 **`loan_verifier_id` gets a configurable default.** Settings carries
 `advance_payment.default_loan_verifier_id` (a `res.users` `config_parameter` many2one, domained on the loan-officer group). `_default_loan_verifier_id` prefers it and falls back to the previous behaviour — the sole real officer, root/admin excluded. A stale setting (user deleted, archived, or dropped from the group) is ignored rather than fed to the field and rejected by its own domain.
 
+The two sets are deliberately different, and conflating them was a bug. A **configured** user is checked against `_loan_officer_group_members()` — plain membership of the officer group, exactly what the field's own domain accepts. The root/admin-excluded `_loan_officer_candidates()` answers only "is there exactly one officer?" for the fallback; validating the configured user against it silently discarded a deliberate choice of admin, whom the Settings picker offers because admin is a standing member of the group. The symptom was a configured default that simply never appeared on the form. This is the same shape ADR-0017 already got right for `approver_id`.
+
 **`bank_id` fills itself in from the borrower.** `_onchange_employee_id` no longer just clears a mismatched account; it re-points `bank_id` at the new borrower's **first** `res.partner.bank` (in that model's own order) via `_default_bank_id()`. Because the web client's initial onchange pass runs every onchange method, a borrower drafting for themselves also gets their account filled from the start.
 
 ## Why

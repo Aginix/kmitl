@@ -248,7 +248,7 @@ def _create_dr_pr_with_line(
 ):
     """Create a PR (with line and committees) for the disbursement-flow demo.
 
-    Differs from `_create_pr_with_line` in that budget_account / dept / department /
+    Differs from `_create_pr_with_line` in that budget_account / dept /
     operating_unit are read from the case dict (varied per case), and
     procurement_method is locked to procurement_specific to keep is_egp=False.
     """
@@ -256,7 +256,6 @@ def _create_dr_pr_with_line(
     fund = env.ref(case["fund"])
     source = env.ref(case["source"])
     dept = env.ref(case["dept"])
-    department = env.ref(case["department"])
     operating_unit = env.ref(case["operating_unit"])
     budget_account = env.ref(case["budget_account"])
     vendor = env.ref(case["vendor"])
@@ -266,11 +265,7 @@ def _create_dr_pr_with_line(
     # prepaid (สำรองจ่าย) requires an internal-employee partner; use the
     # admin employee's work contact instead of the external vendor.
     payment_type = case["payment_type"]
-    partner = (
-        admin_employee.work_contact_id
-        if payment_type == "prepaid"
-        else vendor
-    )
+    partner = admin_employee.work_contact_id if payment_type == "prepaid" else vendor
 
     if payment_type == "prepaid" and not partner.partner_type_id.is_internal:
         partner.partner_type_id = env.ref("partner_type_kmitl.partner_type_employee")
@@ -286,7 +281,7 @@ def _create_dr_pr_with_line(
             "requested_by": admin_user.id,
             "partner_id": partner.id,
             "user_id": admin_user.id,
-            "department_id": department.id,
+            "requesting_department_id": dept.id,
             "operating_unit_id": operating_unit.id,
             "budget_account_id": budget_account.id,
             "activity_analytic_id": activity.id,
@@ -750,9 +745,11 @@ def _create_asset_demo(env):
 def _post_depreciation(asset, today, all_lines=False):
     """Post depreciation journal entries for an asset's due lines."""
     lines = asset.depreciation_line_ids.filtered(
-        lambda l: l.type == "depreciate" and not l.move_check and not l.init_entry
+        lambda line: (
+            line.type == "depreciate" and not line.move_check and not line.init_entry
+        )
     ).sorted("line_date")
     if not all_lines:
-        lines = lines.filtered(lambda l: l.line_date and l.line_date <= today)
+        lines = lines.filtered(lambda line: line.line_date and line.line_date <= today)
     if lines:
         lines.create_move()

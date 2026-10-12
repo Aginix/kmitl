@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_kmitl_project_form_coordinator" model="ir.ui.view">
+        <field name="name">view.kmitl.project.form.coordinator</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='manager_id']" position="after">
+                <field
+                    name="coordinator_ids"
+                    widget="many2many_avatar_user"
+                    options="{'no_create': True}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_kmitl_project_tree_coordinator" model="ir.ui.view">
+        <field name="name">view.kmitl.project.tree.coordinator</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_analytic_id']" position="after">
+                <field
+                    name="coordinator_ids"
+                    widget="many2many_tags"
+                    optional="show"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_kmitl_project_search_coordinator" model="ir.ui.view">
+        <field name="name">view.kmitl.project.search.coordinator</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='creating_user_id']" position="after">
+                <field name="coordinator_ids" />
+            </xpath>
+            <xpath expr="//filter[@name='my_projects']" position="after">
+                <filter
+                    name="my_coordinated_projects"
+                    string="My Coordinated Projects"
+                    domain="[('coordinator_ids', 'in', uid)]"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

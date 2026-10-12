@@ -37,7 +37,9 @@ class ApprovalRequest(models.Model):
             "name": self.category_id.name,
             "src": self._sarabun_dim_name(self.source_analytic_id),
             "fy": self.account_fiscal_year_id.name or "",
-            "dept": self._sarabun_dim_name(self.department_analytic_id),
+            "dept": self._sarabun_dim_name(
+                self.requesting_department_id or self.department_analytic_id
+            ),
         }
 
     @staticmethod

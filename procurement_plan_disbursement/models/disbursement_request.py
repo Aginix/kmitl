@@ -40,7 +40,14 @@ class DisbursementRequest(models.Model):
 
     def _inverse_procurement_plan_analytic(self):
         for rec in self:
-            rec._update_analytic_distribution("procurement_plan")
+            account_ids = [int(a) for a in rec.analytic_distribution or {}]
+            accounts = self.env["account.analytic.account"].browse(account_ids)
+            distribution = {
+                str(a.id): 100 for a in accounts if a.plan_id.code != "procurement_plan"
+            }
+            if rec.procurement_plan_analytic_id:
+                distribution[str(rec.procurement_plan_analytic_id.id)] = 100
+            rec.analytic_distribution = distribution if distribution else False
 
     # For procurement-plan expenses the line product is not chosen by hand — it
     # is the product bound to the budget account (budget_product). Hand both to

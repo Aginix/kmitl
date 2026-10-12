@@ -1,7 +1,5 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from collections import defaultdict
-
 from odoo import _, api, models
 from odoo.tools import format_date
 from odoo.tools.float_utils import float_is_zero
@@ -30,72 +28,11 @@ class TrialBalanceReportKmitl(models.AbstractModel):
     _inherit = "accounting_kmitl_reports.dimension.filter.mixin"
 
     # ------------------------------------------------------------------
-    # Move-line domains
-    #
-    # KMITL dimensions live in ``account.move.line.analytic_distribution``
-    # (a JSON of {analytic_account_id: percentage}); the mixin turns the
-    # selection into domain leaves that are appended to every aggregation.
-    # ------------------------------------------------------------------
-    @api.model
-    def _kmitl_common_ml_domain(
-        self, company_id, journal_ids, partner_ids, only_posted
-    ):
-        """The leaves shared by the opening-balance and period aggregations."""
-        domain = [("company_id", "=", company_id)]
-        if journal_ids:
-            domain.append(("journal_id", "in", journal_ids))
-        if partner_ids:
-            domain.append(("partner_id", "in", partner_ids))
-        if only_posted:
-            domain.append(("move_id.state", "=", "posted"))
-        else:
-            domain.append(("move_id.state", "in", ["posted", "draft"]))
-        return domain
-
-    @api.model
-    def _kmitl_accounts(self, company_id, account_ids, include_initial_balance=None):
-        """The accounts to report on, optionally restricted to the
-        balance-sheet ones (``include_initial_balance``) or the P&L ones."""
-        domain = [("company_id", "=", company_id)]
-        if account_ids:
-            domain.append(("id", "in", account_ids))
-        if include_initial_balance is not None:
-            domain.append(("include_initial_balance", "=", include_initial_balance))
-        return self.env["account.account"].search(domain)
-
-    # ------------------------------------------------------------------
     # Compute
+    #
+    # The move-line domains and the opening-balance aggregation are shared
+    # with the General Ledger -- see ``dimension.filter.mixin``.
     # ------------------------------------------------------------------
-    @api.model
-    def _kmitl_opening_balances(
-        self, company_id, account_ids, common_domain, date_from, fy_start_date
-    ):
-        """``{account_id: opening balance}`` as of ``date_from``.
-
-        Read in two passes because profit & loss accounts restart every
-        fiscal year: balance-sheet accounts (``include_initial_balance``)
-        accumulate every entry before ``date_from``, P&L accounts only the
-        entries since ``fy_start_date``.
-        """
-        opening = defaultdict(float)
-        for include_initial_balance in (True, False):
-            accounts = self._kmitl_accounts(
-                company_id, account_ids, include_initial_balance
-            )
-            if not accounts:
-                continue
-            domain = common_domain + [
-                ("account_id", "in", accounts.ids),
-                ("date", "<", date_from),
-            ]
-            if not include_initial_balance:
-                domain.append(("date", ">=", fy_start_date))
-            for group in self.env["account.move.line"].read_group(
-                domain, ["balance"], ["account_id"]
-            ):
-                opening[group["account_id"][0]] += group["balance"] or 0.0
-        return opening
-
     @api.model
     def _kmitl_account_totals(self, options, company):
         """``{account_id: {initial_balance, debit, credit, ending_balance}}``
@@ -389,9 +326,7 @@ class TrialBalanceXlsxKmitl(models.AbstractModel):
         sheet.merge_range(row_top, 1, row_top, 3, _("Opening"), head)
         sheet.merge_range(row_top, 4, row_top, 6, _("During Period"), head)
         sheet.merge_range(row_top, 7, row_top, 9, _("Ending"), head)
-        for i, label in enumerate(
-            [_("Debit"), _("Credit"), _("Balance")] * 3, start=1
-        ):
+        for i, label in enumerate([_("Debit"), _("Credit"), _("Balance")] * 3, start=1):
             sheet.write(row_top + 1, i, label, head)
 
         def write_amounts(row_idx, values, fmt, blank_zero=True):
@@ -404,9 +339,7 @@ class TrialBalanceXlsxKmitl(models.AbstractModel):
         r = row_top + 2
         for row in rows:
             sheet.write(r, 0, "%s - %s" % (row["code"], row["name"]), cell)
-            write_amounts(
-                r, [row[k] for group in self._COLUMNS for k in group], num
-            )
+            write_amounts(r, [row[k] for group in self._COLUMNS for k in group], num)
             r += 1
 
         sheet.write(r, 0, _("Total"), num_bold)
@@ -461,7 +394,6 @@ class TrialBalanceCsvKmitl(models.AbstractModel):
         ]
         for row in result["rows"]:
             rows.append(
-                [row["code"], row["name"]]
-                + [self._csv_num(row[k]) for k in self._COLS]
+                [row["code"], row["name"]] + [self._csv_num(row[k]) for k in self._COLS]
             )
         return rows

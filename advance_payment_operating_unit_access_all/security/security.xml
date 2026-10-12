@@ -7,12 +7,29 @@
 
     <function model="ir.rule" name="write">
         <value
-            eval="[ref('advance_payment_operating_unit.ir_rule_advance_payment_allowed_operating_units'),
-                   ref('advance_payment_operating_unit.ir_rule_advance_payment_usage_line_allowed_operating_units'),
-                   ref('advance_payment_operating_unit.ir_rule_advance_payment_return_line_allowed_operating_units')]"
+            eval="[ref('advance_payment_operating_unit.ir_rule_advance_payment_usage_line_allowed_operating_units')]"
         />
         <value
             eval="{'domain_force': &quot;['|','|',(1, '=', 1) if user.has_group('advance_payment_operating_unit_access_all.group_all_ou_advance_payment') else (0, '=', 1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids)]&quot;}"
+        />
+    </function>
+
+    <!-- The request and return-line rules keep the named endorser ORed in
+         (advance_payment_operating_unit, advance_payment ADR-0020). -->
+    <function model="ir.rule" name="write">
+        <value
+            eval="[ref('advance_payment_operating_unit.ir_rule_advance_payment_allowed_operating_units')]"
+        />
+        <value
+            eval="{'domain_force': &quot;['|','|','|',(1, '=', 1) if user.has_group('advance_payment_operating_unit_access_all.group_all_ou_advance_payment') else (0, '=', 1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids),'&amp;',('endorser_id','=',user.id),('state','!=','draft')]&quot;}"
+        />
+    </function>
+    <function model="ir.rule" name="write">
+        <value
+            eval="[ref('advance_payment_operating_unit.ir_rule_advance_payment_return_line_allowed_operating_units')]"
+        />
+        <value
+            eval="{'domain_force': &quot;['|','|','|',(1, '=', 1) if user.has_group('advance_payment_operating_unit_access_all.group_all_ou_advance_payment') else (0, '=', 1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids),'&amp;',('agreement_id.endorser_id','=',user.id),('agreement_id.state','!=','draft')]&quot;}"
         />
     </function>
 </odoo>

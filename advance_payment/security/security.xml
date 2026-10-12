@@ -46,6 +46,46 @@
         <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('user_id', '=', user.id)]</field>
     </record>
 
+    <!-- Whoever is named endorser_id can always open and act on the request,
+         whatever advance-payment tier they hold — none at all included — so a
+         supervisor who never borrows is not stranded with a To-Do they cannot
+         open (ADR-0020). On base.group_user, not own-only: group rules OR
+         together, so this only ever widens access. Read/write only (endorse
+         writes state and posts); draft is excluded on purpose — endorser_id
+         is prefilled in draft, and an unsubmitted draft must stay private. -->
+    <record id="advance_payment_endorser_rule" model="ir.rule">
+        <field name="name">Advance Payment: Endorser sees requests they endorse</field>
+        <field name="model_id" ref="model_advance_payment"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('endorser_id', '=', user.id), ('state', '!=', 'draft')]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- The form embeds return_line_ids, so the endorser needs to read those
+         too. A group rule on base.group_user would otherwise also restrict
+         every advance-payment tier (they all imply it, and return lines had
+         no rule before), hence the explicit unrestricted own-only rule. -->
+    <record id="advance_payment_return_line_endorser_rule" model="ir.rule">
+        <field name="name">Advance Payment Return Line: Endorser reads lines of requests they endorse</field>
+        <field name="model_id" ref="model_advance_payment_return_line"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('agreement_id.endorser_id', '=', user.id), ('agreement_id.state', '!=', 'draft')]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="advance_payment_return_line_own_only_rule" model="ir.rule">
+        <field name="name">Advance Payment Return Line: Own-only tier and above unrestricted</field>
+        <field name="model_id" ref="model_advance_payment_return_line"/>
+        <field name="groups" eval="[(4, ref('group_advance_payment_own_only'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
     <record id="advance_payment_user_rule" model="ir.rule">
         <field name="name">Advance Payment: User sees all</field>
         <field name="model_id" ref="model_advance_payment"/>

@@ -44,4 +44,20 @@
         <field name="active" eval="True"/>
     </record>
 
+    <record id="excep_missing_manager" model="exception.rule">
+        <field name="name">ไม่ได้ระบุผู้บังคับบัญชา</field>
+        <field name="description">กรุณาระบุผู้บังคับบัญชาผู้เห็นชอบก่อนส่งคำขอ (ปกติระบบเติมให้จากผู้บังคับบัญชาของผู้ยืม หากไม่มีให้เลือกเอง)</field>
+        <field name="sequence">32</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <!-- Checks endorser_id, not employee_id.parent_id: the endorser is
+             pickable now, so a borrower with no hr.employee manager can still
+             name one and proceed. Scoped to the states before endorsement —
+             past to_endorse the endorser is already named, so this must not
+             block the loan officer's own corrections in to_verify. -->
+        <field name="domain">['&amp;', ('state', 'in', ['draft', 'to_endorse']), ('endorser_id', '=', False)]</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+
 </odoo>

@@ -2,6 +2,8 @@
 
 import io
 
+from reportlab.pdfgen import canvas
+
 from odoo import _, models
 from odoo.tools.pdf import PdfFileReader, PdfFileWriter, to_pdf_stream
 
@@ -11,6 +13,33 @@ SEPARATOR_REPORT = "receipt_kmitl_attachment_viewer.action_report_receipt_kmitl_
 # receipt with dozens of unsupported attachments pushes its separator past
 # one page, breaking the index-based page matching in _build_attachments_pdf.
 MAX_SKIPPED_LISTED = 8
+
+
+def _make_receipt_stamp(width, height, text):
+    """Build a single-page PDF stamp sized (width, height) containing the
+    receipt number at the top-right corner over a white pill, ready to be
+    merged onto an attachment page via PageObject.mergePage()."""
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=(width, height))
+    label = "%s" % text
+    font_name, font_size = "Helvetica-Bold", 10
+    text_width = c.stringWidth(label, font_name, font_size)
+    pad_x, pad_y = 6, 4
+    right_margin, top_margin = 18, 18
+    box_w = text_width + pad_x * 2
+    box_h = font_size + pad_y * 2
+    box_x = width - right_margin - box_w
+    box_y = height - top_margin - box_h
+    c.setFillColorRGB(1, 1, 1)
+    c.setStrokeColorRGB(0.12, 0.18, 0.24)
+    c.setLineWidth(0.6)
+    c.roundRect(box_x, box_y, box_w, box_h, 3, stroke=1, fill=1)
+    c.setFillColorRGB(0.12, 0.18, 0.24)
+    c.setFont(font_name, font_size)
+    c.drawRightString(width - right_margin - pad_x, box_y + pad_y, label)
+    c.save()
+    buf.seek(0)
+    return PdfFileReader(buf, strict=False).getPage(0)
 
 
 class ReceiptRemittance(models.Model):
@@ -90,8 +119,19 @@ class ReceiptRemittance(models.Model):
                 stream.seek(0)
                 attachment_reader = PdfFileReader(stream, strict=False)
                 readers.append(attachment_reader)
-                for page in range(attachment_reader.getNumPages()):
-                    writer.addPage(attachment_reader.getPage(page))
+                for page_index in range(attachment_reader.getNumPages()):
+                    page = attachment_reader.getPage(page_index)
+                    # Stamp each attachment page with the receipt number so a
+                    # loose page can always be traced back to its receipt.
+                    # Stamp is sized to the page's own mediaBox so it lands
+                    # in the visible top-right corner regardless of page size.
+                    stamp = _make_receipt_stamp(
+                        float(page.mediaBox.getWidth()),
+                        float(page.mediaBox.getHeight()),
+                        receipt.name or "",
+                    )
+                    page.mergePage(stamp)
+                    writer.addPage(page)
 
         buffer = io.BytesIO()
         writer.write(buffer)

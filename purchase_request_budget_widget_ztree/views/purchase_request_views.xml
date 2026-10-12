@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">purchase.request.form.budget.ztree</field>
+        <field name="model">purchase.request</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_budget.view_purchase_request_form"
+        />
+        <field name="arch" type="xml">
+            <!-- Budget dimensions, scoped to the Budget Details group.
+                 budget_account_id keeps its dynamic budget_account_domain
+                 (ztree_select evaluates the field domain at RPC time). -->
+            <xpath
+                expr="//group[@name='budget_details']/field[@name='budget_account_id']"
+                position="attributes"
+            >
+                <attribute name="widget">ztree_select</attribute>
+                <attribute
+                    name="options"
+                >{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '2', 'order': 'code', 'ztree_name_format': '[{code}] {name}'}</attribute>
+            </xpath>
+            <xpath
+                expr="//group[@name='budget_details']/field[@name='activity_analytic_id']"
+                position="attributes"
+            >
+                <attribute name="widget">ztree_select</attribute>
+                <attribute
+                    name="options"
+                >{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '2', 'order': 'code', 'ztree_name_format': '[{code}] {name}'}</attribute>
+            </xpath>
+            <xpath
+                expr="//group[@name='budget_details']/field[@name='department_analytic_id']"
+                position="attributes"
+            >
+                <attribute name="widget">ztree_select</attribute>
+                <attribute
+                    name="options"
+                >{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '2', 'order': 'code', 'ztree_name_format': '[{code}] {name}'}</attribute>
+            </xpath>
+            <xpath
+                expr="//group[@name='budget_details']/field[@name='fund_analytic_id']"
+                position="attributes"
+            >
+                <attribute name="widget">ztree_select</attribute>
+                <attribute
+                    name="options"
+                >{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '2', 'order': 'code', 'ztree_name_format': '[{code}] {name}'}</attribute>
+            </xpath>
+            <xpath
+                expr="//group[@name='budget_details']/field[@name='source_analytic_id']"
+                position="attributes"
+            >
+                <attribute name="widget">ztree_select</attribute>
+                <attribute
+                    name="options"
+                >{'no_create': True, 'no_open': True, 'ztree_parent_key': 'parent_id', 'ztree_expend_level': '2', 'order': 'code', 'ztree_name_format': '[{code}] {name}'}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

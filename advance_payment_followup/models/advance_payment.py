@@ -6,9 +6,9 @@ from odoo import _, api, fields, models
 _logger = logging.getLogger(__name__)
 
 # States in which a loan is a live debt the borrower still holds — the debt
-# starts at effective_date (waiting_transfer is pre-debt, done/cancel are
+# starts at effective_date (approved is pre-debt, done/cancel are
 # closed). Countdown, followup list and digest all key off this set.
-DEBTOR_STATES = ("in_progress", "to_verify_report", "to_reconcile")
+DEBTOR_STATES = ("in_progress", "reported", "to_reconcile")
 
 # Generic "To Do" activity type — matched together with its summary so a
 # weekly re-run of the digest cron never piles up duplicate reminders on the

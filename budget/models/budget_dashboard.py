@@ -65,8 +65,18 @@ class BudgetDashboard(models.AbstractModel):
     # Monthly time-series move types (จอง / ผูกพัน / เบิกจ่าย) + Thai month labels.
     _TS_MOVE_TYPES = ("reserve", "obligate", "consume")
     _THAI_MONTH_ABBR = (
-        "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
-        "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.",
+        "ม.ค.",
+        "ก.พ.",
+        "มี.ค.",
+        "เม.ย.",
+        "พ.ค.",
+        "มิ.ย.",
+        "ก.ค.",
+        "ส.ค.",
+        "ก.ย.",
+        "ต.ค.",
+        "พ.ย.",
+        "ธ.ค.",
     )
 
     @api.model
@@ -133,8 +143,10 @@ class BudgetDashboard(models.AbstractModel):
             ("account_id", "in", account_ids),
         ]
         if dim_leaves:
-            match = self.env["budget.commitment.line"].search(cl_base).mapped(
-                "commitment_id"
+            match = (
+                self.env["budget.commitment.line"]
+                .search(cl_base)
+                .mapped("commitment_id")
             )
             commit_domain.append(("id", "in", match.ids))
 
@@ -325,9 +337,7 @@ class BudgetDashboard(models.AbstractModel):
         own = {}
         for metric in keys:
             for (acc_id, tup), val in sources[metric].items():
-                own.setdefault(
-                    (acc_id, tup), dict.fromkeys(keys, 0.0)
-                )[metric] = val
+                own.setdefault((acc_id, tup), dict.fromkeys(keys, 0.0))[metric] = val
         # Index by full tuple so emit_account_tree need not rescan all facts.
         own_by_tuple = defaultdict(dict)
         for (acc_id, tup), vals in own.items():
@@ -339,14 +349,12 @@ class BudgetDashboard(models.AbstractModel):
         n = len(dims)
 
         # Full tuples and every prefix present, for O(1) "has deeper content".
-        present_prefixes = {
-            tup[:k] for (_a, tup) in own for k in range(1, n + 1)
-        }
+        present_prefixes = {tup[:k] for (_a, tup) in own for k in range(1, n + 1)}
 
         # Per-position analytic hierarchy (paths/parent/children/rec) over the
         # dim values that actually appear at that position (+ their ancestors).
         present_by_pos = [set() for _ in range(n)]
-        for (_a, tup) in own:
+        for _a, tup in own:
             for i, value in enumerate(tup):
                 if value:
                     present_by_pos[i].add(value)
@@ -356,9 +364,7 @@ class BudgetDashboard(models.AbstractModel):
             union = set()
             for rec in Analytic.browse(list(present_ids)):
                 path = [
-                    int(x)
-                    for x in (rec.parent_path or "").strip("/").split("/")
-                    if x
+                    int(x) for x in (rec.parent_path or "").strip("/").split("/") if x
                 ]
                 paths[rec.id] = path or [rec.id]
                 union.update(paths[rec.id])
@@ -409,9 +415,7 @@ class BudgetDashboard(models.AbstractModel):
             roots = []
             for acc_id in rolled:
                 pid = acc_by_id[acc_id].parent_id.id
-                (children[pid] if pid in rolled else roots).append(
-                    acc_by_id[acc_id]
-                )
+                (children[pid] if pid in rolled else roots).append(acc_by_id[acc_id])
             roots.sort(key=self._root_sort_key)
             for kids in children.values():
                 kids.sort(key=lambda a: a.code or "")
@@ -602,9 +606,9 @@ class BudgetDashboard(models.AbstractModel):
         zero = tuple(0 for _ in dims)
         out = defaultdict(float)
         for commitment in commitments:
-            out[
-                (commitment.account_id.id, tup_of.get(commitment.id, zero))
-            ] += commitment.amount
+            out[(commitment.account_id.id, tup_of.get(commitment.id, zero))] += (
+                commitment.amount
+            )
         return out
 
     def _root_sort_key(self, account):
@@ -651,9 +655,7 @@ class BudgetDashboard(models.AbstractModel):
         rows = data.get("rows", [])
         selectable_ids = None
         if account_domain:
-            selectable_ids = set(
-                self.env["budget.account"].search(account_domain).ids
-            )
+            selectable_ids = set(self.env["budget.account"].search(account_domain).ids)
         # Only account rows map to a budget.account; activity (breakdown) group
         # rows are display-only and can never be picked.
         accounts = {
@@ -813,7 +815,11 @@ class BudgetDashboard(models.AbstractModel):
         if not department_ids:
             return None
         has_tree = "parent_id" in self.env["account.analytic.account"]._fields
-        return ("department_analytic_id", "child_of" if has_tree else "in", department_ids)
+        return (
+            "department_analytic_id",
+            "child_of" if has_tree else "in",
+            department_ids,
+        )
 
     def _dim_section_items(
         self, dim_field, fiscal_year_id, source_id, department_ids=None, limit=8
@@ -941,11 +947,20 @@ class BudgetDashboard(models.AbstractModel):
             i = index.get(start[:7])
             if i is not None:
                 series[move_type][i] = grp.get("amount") or 0.0
+        # Convert raw monthly flows to cumulative running balances, then net them
+        # so ผูกพัน drops to 0 once เบิกจ่าย is posted (even in a later month).
+        n = len(months)
+        r_cum, o_cum, c_cum = [0.0] * n, [0.0] * n, [0.0] * n
+        for i in range(n):
+            prev = i - 1
+            r_cum[i] = (r_cum[prev] if i > 0 else 0.0) + series["reserve"][i]
+            o_cum[i] = (o_cum[prev] if i > 0 else 0.0) + series["obligate"][i]
+            c_cum[i] = (c_cum[prev] if i > 0 else 0.0) + series["consume"][i]
         return {
             "labels": labels,
-            "reserve": series["reserve"],
-            "obligate": series["obligate"],
-            "consume": series["consume"],
+            "reserve": [max(0.0, r_cum[i] - o_cum[i]) for i in range(n)],
+            "obligate": [max(0.0, o_cum[i] - c_cum[i]) for i in range(n)],
+            "consume": list(c_cum),
         }
 
     def _recent_movements(self, fiscal_year_id):
@@ -1007,9 +1022,7 @@ class BudgetDashboard(models.AbstractModel):
             ],
         }
 
-    def _attach_breakdowns(
-        self, cards, fiscal_year_id, source_id, department_ids=None
-    ):
+    def _attach_breakdowns(self, cards, fiscal_year_id, source_id, department_ids=None):
         """Attach top-level fund & activity breakdowns to each category card.
 
         For every root category we show how its current budget (a) and usage
@@ -1070,9 +1083,7 @@ class BudgetDashboard(models.AbstractModel):
         root_of = self._root_category_map(
             {g["account_id"][0] for g in all_groups if g.get("account_id")}
         )
-        top_of = self._top_level_map(
-            {g[dim][0] for g in all_groups if g.get(dim)}
-        )
+        top_of = self._top_level_map({g[dim][0] for g in all_groups if g.get(dim)})
 
         current = defaultdict(lambda: defaultdict(float))
         used = defaultdict(lambda: defaultdict(float))
@@ -1094,7 +1105,11 @@ class BudgetDashboard(models.AbstractModel):
                 target[root][top] += grp.get(field) or 0.0
 
         top_ids = {
-            tid for buckets in (current, used) for d in buckets.values() for tid in d if tid
+            tid
+            for buckets in (current, used)
+            for d in buckets.values()
+            for tid in d
+            if tid
         }
         info = {
             a.id: (a.code, a.name)
@@ -1188,17 +1203,13 @@ class BudgetDashboard(models.AbstractModel):
         if root_account_id:
             root = Account.browse(root_account_id)
             if root.exists():
-                domain.append(
-                    ("parent_path", "=like", (root.parent_path or "") + "%")
-                )
+                domain.append(("parent_path", "=like", (root.parent_path or "") + "%"))
         return Account.search(domain, order="code")
 
     @staticmethod
     def _ancestor_ids(account):
         """ids along parent_path, root-first, including the account itself."""
-        return [
-            int(x) for x in (account.parent_path or "").strip("/").split("/") if x
-        ]
+        return [int(x) for x in (account.parent_path or "").strip("/").split("/") if x]
 
     def _sum_by_account(self, model, domain, field):
         result = {}

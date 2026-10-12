@@ -37,10 +37,13 @@ export class ReceiptSummaryReport extends Component {
             empty: _t("No receipts for the selected criteria."),
             date: _t("Date"),
             number: _t("Receipt No."),
+            customerName: _t("Customer Name"),
             description: _t("Description"),
             amount: _t("Amount"),
+            paymentType: _t("Payment Type"),
             dimensions: _t("Analytic Dimensions"),
             note: _t("Note"),
+            issuedBy: _t("Issued By"),
             total: _t("Total"),
             grandTotal: _t("Grand Total"),
             departments: _t("Departments"),
@@ -130,16 +133,6 @@ export class ReceiptSummaryReport extends Component {
             this.state[key] = selected;
             this.load();
         }
-    }
-
-    openReceipt(row) {
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            res_model: "kmitl.receipt",
-            res_id: row.id,
-            views: [[false, "form"]],
-            target: "current",
-        });
     }
 
     format(value) {

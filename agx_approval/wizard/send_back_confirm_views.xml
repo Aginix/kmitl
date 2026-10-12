@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="approval_request_send_back_confirm_view_form" model="ir.ui.view">
+        <field name="name">approval.request.send.back.confirm.form</field>
+        <field name="model">approval.request.send.back.confirm</field>
+        <field name="arch" type="xml">
+            <form string="ตีกลับคำขอ">
+                <field name="request_id" invisible="1"/>
+                <div class="alert alert-warning" role="alert">
+                    ตีกลับคำขอไปยังขั้นตอนก่อนหน้า
+                    — กรุณากรอกเหตุผล เหตุผลจะแสดงพร้อมกับการเปลี่ยนสถานะใน chatter
+                </div>
+                <group>
+                    <field name="reason" placeholder="ระบุเหตุผลที่ตีกลับ (บังคับ)"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="ยืนยันตีกลับ" type="object" class="btn-primary"/>
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

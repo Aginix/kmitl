@@ -163,7 +163,10 @@ class AdvancePayment(models.Model):
     )
     def _compute_exceeds_ar_headroom(self):
         for rec in self:
-            ar = rec.approval_request_id
+            # sudo: a technical flag the exception rule reads — it must not
+            # AccessError for an endorser with no approval.request access
+            # (advance_payment_endorser_rule, advance_payment ADR-0020).
+            ar = rec.approval_request_id.sudo()
             if not ar:
                 rec.exceeds_ar_headroom = False
                 continue

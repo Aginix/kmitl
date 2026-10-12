@@ -5,11 +5,11 @@
         <record id="automation_notify_reserve_budget" model="base.automation">
             <field
                 name="name"
-            >คำขออนุมัติ: แจ้งเจ้าหน้าที่จองงบประมาณเมื่อเข้าสถานะรอตรวจสอบ/จองงบประมาณ</field>
+            >คำขออนุมัติ: แจ้งเจ้าหน้าที่จองงบประมาณเมื่อเข้าสถานะรอยืนยันงบประมาณ</field>
             <field name="model_id" ref="agx_approval.model_approval_request" />
             <field name="trigger">on_write</field>
-            <field name="filter_pre_domain">[('state', '!=', 'to_verify')]</field>
-            <field name="filter_domain">[('state', '=', 'to_verify')]</field>
+            <field name="filter_pre_domain">[('state', '!=', 'to_commit')]</field>
+            <field name="filter_domain">[('state', '=', 'to_commit')]</field>
             <field
                 name="trigger_field_ids"
                 eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"
@@ -24,7 +24,7 @@ if role:
             continue
         record.activity_schedule(
             "agx_approval_budget_todo.mail_activity_reserve_budget",
-            summary="คำขออนุมัติเลขที่ %s รอตรวจสอบและจองงบประมาณ" % (record.name or ""),
+            summary="คำขออนุมัติเลขที่ %s รอยืนยันงบประมาณ" % (record.name or ""),
             responsible_role_id=role.id,
             operating_unit_id=ou.id,
         )
@@ -34,11 +34,11 @@ if role:
         <record id="automation_clear_reserve_budget" model="base.automation">
             <field
                 name="name"
-            >คำขออนุมัติ: ล้าง Todo จองงบประมาณเมื่อออกจากสถานะรอตรวจสอบ/จองงบประมาณ</field>
+            >คำขออนุมัติ: ล้าง Todo จองงบประมาณเมื่อออกจากสถานะรอยืนยันงบประมาณ</field>
             <field name="model_id" ref="agx_approval.model_approval_request" />
             <field name="trigger">on_write</field>
-            <field name="filter_pre_domain">[('state', '=', 'to_verify')]</field>
-            <field name="filter_domain">[('state', '!=', 'to_verify')]</field>
+            <field name="filter_pre_domain">[('state', '=', 'to_commit')]</field>
+            <field name="filter_domain">[('state', '!=', 'to_commit')]</field>
             <field
                 name="trigger_field_ids"
                 eval="[(6, 0, [ref('agx_approval.field_approval_request__state')])]"

@@ -11,6 +11,12 @@
             <xpath expr="//field[@name='payment_type']" position="after">
                 <field name="procurement_method_id" states="draft" />
             </xpath>
+            <xpath
+                expr="//group[@name='information_section']//field[@name='payment_type']"
+                position="after"
+            >
+                <field name="requesting_department_id" readonly="1" />
+            </xpath>
         </field>
     </record>
 </odoo>

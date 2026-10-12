@@ -78,7 +78,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_asset_subcomponent_kmitl.field_account_asset_subcomponent__name
 #: model_terms:ir.ui.view,arch_db:account_asset_subcomponent_kmitl.view_account_asset_subcomponent_search
 msgid "Name"
-msgstr ""
+msgstr "ส่วนประกอบครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_subcomponent_kmitl
 #: model_terms:ir.ui.view,arch_db:account_asset_subcomponent_kmitl.view_account_asset_subcomponent_form

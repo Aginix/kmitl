@@ -1,6 +1,6 @@
 {
     "name": "Aginix Construction",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "Construction",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

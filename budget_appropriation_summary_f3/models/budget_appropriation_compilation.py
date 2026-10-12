@@ -31,8 +31,9 @@ class BudgetAppropriationCompilation(models.Model):
         """
         self.ensure_one()
         is_budget_source = self.source_analytic_id.code in BUDGET_SOURCE_CODES
+        revenue_gov = sum(self._get_f3_gov_revenue_lines().mapped("balance"))
         revenue_rows = self._get_f3_revenue_rows()
-        revenue_total = sum(r["amount"] for r in revenue_rows)
+        revenue_total = revenue_gov + sum(r["amount"] for r in revenue_rows)
         revenue_deduct = sum(
             a.amount_deduct for a in self.revenue_appropriation_ids
         )
@@ -43,6 +44,7 @@ class BudgetAppropriationCompilation(models.Model):
         )
         return {
             "is_budget_source": is_budget_source,
+            "revenue_gov": revenue_gov,
             "revenue_rows": revenue_rows,
             "revenue_total": revenue_total,
             "revenue_deduct": revenue_deduct,
@@ -51,12 +53,21 @@ class BudgetAppropriationCompilation(models.Model):
             "expenditure_total": expenditure_total,
         }
 
+    def _get_f3_gov_revenue_lines(self):
+        """Revenue lines from government budget sources (row 1 of F3-P)."""
+        return self.revenue_appropriation_ids.mapped("line_ids").filtered(
+            lambda line: line.source_analytic_id.code in BUDGET_SOURCE_CODES
+        )
+
     def _get_f3_revenue_rows(self):
-        """Revenue summary grouped by top-level budget account.
+        """Institute revenue summary grouped by top-level budget account.
 
         Only includes accounts matching REVENUE_CODES, displayed in that order.
         """
-        lines = self.revenue_appropriation_ids.mapped("line_ids")
+        lines = (
+            self.revenue_appropriation_ids.mapped("line_ids")
+            - self._get_f3_gov_revenue_lines()
+        )
         if not lines:
             return []
 

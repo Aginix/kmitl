@@ -12,6 +12,12 @@
         action="action_advance_payment_my"
         sequence="10"/>
 
+    <menuitem id="menu_advance_payment_to_endorse"
+        name="รอฉันเห็นชอบ"
+        parent="menu_advance_payment_root"
+        action="action_advance_payment_to_endorse"
+        sequence="15"/>
+
     <menuitem id="menu_advance_payment_all"
         name="สัญญาเงินยืมทั้งหมด"
         parent="menu_advance_payment_root"

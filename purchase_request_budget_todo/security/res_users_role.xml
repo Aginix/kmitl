@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- จองงบประมาณ พ.1 — the role the reserve-budget Todo is routed to (∩ OU).
+         Grants ผู้จองงบประมาณ พ.1, so whoever gets the Todo can press Reserve;
+         the generic budget_role.role_budget_commitment no longer can (root
+         ADR-0010). -->
+    <record id="role_pr_budget_commit" model="res.users.role">
+        <field name="name">จองงบประมาณ พ.1</field>
+        <field
+            name="implied_ids"
+            eval="[(4, ref('purchase_request_budget.group_purchase_request_budget_commit'))]"
+        />
+    </record>
+</odoo>

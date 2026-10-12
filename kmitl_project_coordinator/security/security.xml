@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="0">
+        <!-- The coordinator joins หัวหน้าโครงการ and the creator as a project owner.
+             Group rules are OR'ed, so these sit beside kmitl_project's Own rules
+             without touching them. -->
+        <record id="kmitl_project_coordinator_rule" model="ir.rule">
+            <field name="name">KMITL Project User: Coordinated Projects</field>
+            <field name="model_id" ref="kmitl_project.model_kmitl_project" />
+            <field
+                name="groups"
+                eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+            />
+            <field name="domain_force">[('coordinator_ids', 'in', user.id)]</field>
+        </record>
+
+        <record id="project_plan_coordinator_rule" model="ir.rule">
+            <field name="name">Project Plan: Coordinator Access</field>
+            <field name="model_id" ref="kmitl_project.model_project_plan" />
+            <field
+                name="groups"
+                eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+            />
+            <field
+                name="domain_force"
+            >[('project_id.coordinator_ids', 'in', user.id)]</field>
+        </record>
+
+        <record id="project_budget_line_coordinator_rule" model="ir.rule">
+            <field name="name">Project Budget Line: Coordinator Access</field>
+            <field name="model_id" ref="kmitl_project.model_project_budget_line" />
+            <field
+                name="groups"
+                eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+            />
+            <field
+                name="domain_force"
+            >[('project_id.coordinator_ids', 'in', user.id)]</field>
+        </record>
+
+        <record id="project_target_coordinator_rule" model="ir.rule">
+            <field name="name">Project Target: Coordinator Access</field>
+            <field name="model_id" ref="kmitl_project.model_project_target" />
+            <field
+                name="groups"
+                eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+            />
+            <field
+                name="domain_force"
+            >[('project_id.coordinator_ids', 'in', user.id)]</field>
+        </record>
+
+        <record id="project_output_coordinator_rule" model="ir.rule">
+            <field name="name">Project Output: Coordinator Access</field>
+            <field name="model_id" ref="kmitl_project.model_project_output" />
+            <field
+                name="groups"
+                eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+            />
+            <field
+                name="domain_force"
+            >[('project_id.coordinator_ids', 'in', user.id)]</field>
+        </record>
+
+        <record id="project_expected_outcome_coordinator_rule" model="ir.rule">
+            <field name="name">Project Expected Outcome: Coordinator Access</field>
+            <field name="model_id" ref="kmitl_project.model_project_expected_outcome" />
+            <field
+                name="groups"
+                eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+            />
+            <field
+                name="domain_force"
+            >[('project_id.coordinator_ids', 'in', user.id)]</field>
+        </record>
+
+        <!-- Global rules are AND'ed, so no group rule can widen the OU read rule:
+             rewrite it to let a project's owners in from another OU. Restored by
+             the uninstall hook (hooks.py). -->
+        <record id="kmitl_project.kmitl_project_operating_unit_rule" model="ir.rule">
+            <field name="domain_force">[
+                '|', '|', '|', '|',
+                ('operating_unit_id', '=', False),
+                ('operating_unit_id', 'in', user.operating_unit_ids.ids),
+                ('manager_id.user_id', '=', user.id),
+                ('coordinator_ids', 'in', user.id),
+                ('creating_user_id', '=', user.id)
+            ]</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,27 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* agx_photoviewer
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: agx_photoviewer
+#. odoo-javascript
+#: code:addons/agx_photoviewer/static/src/js/photoviewer.js:0
+#, python-format
+msgid "Preview is not supported for file type %s"
+msgstr "ไม่รองรับการแสดงผล ประเภทไฟล์ %s"
+
+#. module: agx_photoviewer
+#. odoo-javascript
+#: code:addons/agx_photoviewer/static/src/js/photoviewer.js:0
+#, python-format
+msgid "This file cannot be previewed."
+msgstr "ไม่สามารถแสดงตัวอย่างไฟล์นี้ได้"

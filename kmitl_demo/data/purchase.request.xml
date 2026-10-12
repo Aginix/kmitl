@@ -19,7 +19,7 @@
         <field name="requested_by" ref="kmitl_demo.user_demo_008" />
         <field name="partner_id" ref="kmitl_demo.vendor_demo_014" />
         <field name="user_id" ref="kmitl_demo.user_demo_008" />
-        <field name="department_id" ref="kmitl_demo.01" />
+        <field name="requesting_department_id" ref="account_analytic_kmitl.dept_01" />
         <field name="budget_account_id" ref="budget.budget_account_5101020008" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01" />
@@ -109,7 +109,7 @@
         <field name="requested_by" ref="kmitl_demo.user_demo_008" />
         <field name="partner_id" ref="kmitl_demo.vendor_demo_014" />
         <field name="user_id" ref="kmitl_demo.user_demo_008" />
-        <field name="department_id" ref="kmitl_demo.01" />
+        <field name="requesting_department_id" ref="account_analytic_kmitl.dept_01" />
         <field name="budget_account_id" ref="budget.budget_account_5101020008" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01" />
@@ -203,7 +203,7 @@
             search="[('user_ids', '=', ref('kmitl_demo.user_demo_014'))]"
         />
         <field name="user_id" ref="kmitl_demo.user_demo_014" />
-        <field name="department_id" ref="kmitl_demo.06" />
+        <field name="requesting_department_id" ref="account_analytic_kmitl.dept_06" />
         <field name="budget_account_id" ref="budget.budget_account_5101020011" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
@@ -286,7 +286,7 @@
         <field name="requested_by" ref="kmitl_demo.user_demo_014" />
         <field name="partner_id" ref="kmitl_demo.vendor_demo_013" />
         <field name="user_id" ref="kmitl_demo.user_demo_014" />
-        <field name="department_id" ref="kmitl_demo.06" />
+        <field name="requesting_department_id" ref="account_analytic_kmitl.dept_06" />
         <field name="budget_account_id" ref="budget.budget_account_5101020011" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
@@ -370,7 +370,7 @@
         <field name="requested_by" ref="kmitl_demo.user_demo_006" />
         <field name="partner_id" ref="kmitl_demo.vendor_demo_012" />
         <field name="user_id" ref="kmitl_demo.user_demo_006" />
-        <field name="department_id" ref="kmitl_demo.05" />
+        <field name="requesting_department_id" ref="account_analytic_kmitl.dept_05" />
         <field name="budget_account_id" ref="budget.budget_account_5101020016" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
@@ -465,7 +465,7 @@
             search="[('user_ids', '=', ref('kmitl_demo.user_demo_006'))]"
         />
         <field name="user_id" ref="kmitl_demo.user_demo_006" />
-        <field name="department_id" ref="kmitl_demo.05" />
+        <field name="requesting_department_id" ref="account_analytic_kmitl.dept_05" />
         <field name="budget_account_id" ref="budget.budget_account_5101020016" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
@@ -559,7 +559,7 @@
         <field name="requested_by" ref="kmitl_demo.user_demo_011" />
         <field name="partner_id" ref="kmitl_demo.vendor_demo_013" />
         <field name="user_id" ref="kmitl_demo.user_demo_011" />
-        <field name="department_id" ref="kmitl_demo.04" />
+        <field name="requesting_department_id" ref="account_analytic_kmitl.dept_04" />
         <field name="budget_account_id" ref="budget.budget_account_5101020014" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04" />
@@ -650,7 +650,7 @@
         <field name="requested_by" ref="kmitl_demo.user_demo_011" />
         <field name="partner_id" ref="kmitl_demo.vendor_demo_013" />
         <field name="user_id" ref="kmitl_demo.user_demo_011" />
-        <field name="department_id" ref="kmitl_demo.04" />
+        <field name="requesting_department_id" ref="account_analytic_kmitl.dept_04" />
         <field name="budget_account_id" ref="budget.budget_account_5101020014" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04" />
@@ -744,7 +744,7 @@
             search="[('user_ids', '=', ref('kmitl_demo.user_demo_009'))]"
         />
         <field name="user_id" ref="kmitl_demo.user_demo_009" />
-        <field name="department_id" ref="kmitl_demo.02" />
+        <field name="requesting_department_id" ref="account_analytic_kmitl.dept_02" />
         <field name="budget_account_id" ref="budget.budget_account_5101020023" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02" />
@@ -838,7 +838,7 @@
         <field name="requested_by" ref="kmitl_demo.user_demo_009" />
         <field name="partner_id" ref="kmitl_demo.vendor_demo_011" />
         <field name="user_id" ref="kmitl_demo.user_demo_009" />
-        <field name="department_id" ref="kmitl_demo.02" />
+        <field name="requesting_department_id" ref="account_analytic_kmitl.dept_02" />
         <field name="budget_account_id" ref="budget.budget_account_5101020023" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02" />

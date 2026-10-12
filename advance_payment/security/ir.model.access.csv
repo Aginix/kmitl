@@ -10,3 +10,6 @@ access_advance_payment_exception_confirm,advance.payment.exception.confirm,model
 access_advance_payment_return_line_user,advance.payment.return.line user,model_advance_payment_return_line,group_advance_payment_own_only,1,1,1,0
 access_advance_payment_return_line_manager,advance.payment.return.line manager,model_advance_payment_return_line,group_advance_payment_manager,1,1,1,1
 access_advance_payment_cancel_wizard,advance.payment.cancel.wizard,model_advance_payment_cancel_wizard,group_advance_payment_manager,1,1,1,1
+access_advance_payment_endorser,advance.payment endorser,model_advance_payment,base.group_user,1,1,0,0
+access_advance_payment_loan_type_endorser,advance.payment.loan.type endorser,model_advance_payment_loan_type,base.group_user,1,0,0,0
+access_advance_payment_return_line_endorser,advance.payment.return.line endorser,model_advance_payment_return_line,base.group_user,1,0,0,0

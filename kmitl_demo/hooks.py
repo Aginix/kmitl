@@ -338,9 +338,7 @@ def _process_sarabun_approve(env, origin_record, admin_user, department):
     # Sarabun person targets are hr.employee now — resolve (or create) admin's.
     admin_employee = env["hr.employee"].search(
         [("user_id", "=", admin_user.id)], limit=1
-    ) or env["hr.employee"].create(
-        {"name": admin_user.name, "user_id": admin_user.id}
-    )
+    ) or env["hr.employee"].create({"name": admin_user.name, "user_id": admin_user.id})
     env["sarabun.routing.step"].create(
         {
             "document_id": doc.id,
@@ -406,7 +404,7 @@ def _create_pr_with_line(
             "requested_by": admin_user.id,
             "partner_id": vendor.id,
             "user_id": admin_user.id,
-            "department_id": department.id,
+            "requesting_department_id": dept.id,
             "operating_unit_id": operating_unit.id,
             "budget_account_id": budget_account.id,
             "activity_analytic_id": activity.id,

@@ -27,19 +27,19 @@
                         <div class="text-center mb-2">
                             <t t-if="asset.state == 'open'">
                                 <span class="badge bg-success px-3 py-2 fs-6">
-                                    <span t-field="asset.state" />
+                                    กำลังใช้งาน
                                 </span>
                             </t>
 
                             <t t-elif="asset.state == 'close'">
                                 <span class="badge bg-dark px-3 py-2 fs-6">
-                                    <span t-field="asset.state" />
+                                    ปิด
                                 </span>
                             </t>
 
                             <t t-elif="asset.state == 'removed'">
                                 <span class="badge bg-danger px-3 py-2 fs-6">
-                                    <span t-field="asset.state" />
+                                    จำหน่ายแล้ว
                                 </span>
                             </t>
                         </div>
@@ -58,14 +58,11 @@
 
                         <table class="table mt-4">
                             <tbody>
+
                                 <tr>
-                                    <td class="text-start" width="35%">
-                                        หมายเลขประจำเครื่อง (S/N)
-                                    </td>
+                                    <td class="text-start">วันที่ได้มา</td>
                                     <th class="text-end">
-                                        <t t-esc="asset.asset_model or '-'" />
-                                        /
-                                        <t t-esc="asset.asset_brand or '-'" />
+                                        <t t-esc="asset.date_start or '-'" />
                                     </th>
                                 </tr>
 
@@ -76,21 +73,23 @@
                                     </th>
                                 </tr>
 
-                                <tr>
-                                    <td class="text-start">ชื่อโครงการ</td>
-                                    <th class="text-end">
-                                        <t t-esc="asset.purchase_id.contract_name" />
-                                    </th>
-                                </tr>
+                                <t t-if="asset.purchase_id">
+                                    <tr>
+                                        <td class="text-start">ชื่อโครงการ</td>
+                                        <th class="text-end">
+                                            <t t-esc="asset.purchase_id.contract_name" />
+                                        </th>
+                                    </tr>
 
-                                <tr>
-                                    <td class="text-start">เลขที่สัญญา</td>
-                                    <th class="text-end">
-                                        <t
-                                            t-esc="asset.purchase_id.contract_number or '0.00'"
-                                        />
-                                    </th>
-                                </tr>
+                                    <tr>
+                                        <td class="text-start">เลขที่สัญญา</td>
+                                        <th class="text-end">
+                                            <t
+                                                t-esc="asset.purchase_id.contract_number or '0.00'"
+                                            />
+                                        </th>
+                                    </tr>
+                                </t>
 
                                 <tr>
                                     <td class="text-start">ระยะเวลารับประกัน</td>
