@@ -83,7 +83,7 @@
                 expr="//group[@name='purchase_request_details_group']"
                 position="before"
             >
-                <group name="procurement_under_group">
+                <group name="procurement_under_group" string="ข้อมูลงบประมาณและวิธีการ">
                     <group>
                         <field name="is_procurement_under_editable" invisible="1" />
                         <field
