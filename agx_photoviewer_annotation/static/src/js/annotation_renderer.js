@@ -49,12 +49,12 @@ const isPdf = (attachment) => attachment.mimetype === "application/pdf";
 const rpcBus = new EventBus();
 let rpcId = 0;
 
-function call(method, ...args) {
+function call(method, args, context = {}) {
     return jsonrpc({bus: rpcBus}, rpcId++, `/web/dataset/call_kw/${MODEL}/${method}`, {
         model: MODEL,
         method,
         args,
-        kwargs: {context: session.user_context},
+        kwargs: {context: {...session.user_context, ...context}},
     });
 }
 
@@ -66,12 +66,15 @@ function svgElement(tag, attributes = {}) {
     return element;
 }
 
-function htmlElement(tag, className = "", text = "") {
+export function htmlElement(tag, className = "", text = "") {
     const element = document.createElement(tag);
     element.className = className;
     element.textContent = text;
     return element;
 }
+
+// The annotation each drawn shape stands for.
+const shapeAnnotations = new WeakMap();
 
 const round = (value) => Math.round(value * 100000) / 100000;
 const clamp = (value) => Math.min(Math.max(value, 0), 1);
@@ -106,7 +109,7 @@ function decorateThumbnail(attachment, thumbnail) {
             const ids = [...pendingCounts];
             pendingCounts = null;
             // A badge is not worth an error dialog.
-            const counts = await call("annotation_counts", ids).catch(() => ({}));
+            const counts = await call("annotation_counts", [ids]).catch(() => ({}));
             for (const id of ids) {
                 setBadge(id, counts[id] || 0);
             }
@@ -119,7 +122,7 @@ function decorateThumbnail(attachment, thumbnail) {
 // Editor of the annotation layer of one opened file
 // --------------------------------------------------------------------------
 
-class AnnotationEditor {
+export class AnnotationEditor {
     constructor(attachment, page) {
         this.attachment = attachment;
         this.page = page;
@@ -131,12 +134,14 @@ class AnnotationEditor {
         this.zoom = 1;
         this.undoStack = [];
         this.session = {added: new Set(), changed: new Set(), removed: 0};
+        // Tags every call of this visit (see the Session note).
+        this.sessionKey = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
         this.popover = null;
     }
 
     async start() {
         const [data] = await Promise.all([
-            call("annotation_load", this.attachment.id),
+            this.call("annotation_load", this.attachment.id),
             this.loadSource(),
         ]);
         if (this.left) {
@@ -187,6 +192,9 @@ class AnnotationEditor {
         this.root = htmlElement("div", "o_agx_annotation");
         this.toolbar = this.buildToolbar();
         this.scroll = htmlElement("div", "o_agx_annotation_scroll");
+        // Row holding the pages; extensions may add a side panel to it.
+        this.body = htmlElement("div", "o_agx_annotation_body");
+        this.body.append(this.scroll);
         this.root.append(this.toolbar);
         const outdated = this.annotations.some(
             (annotation) => annotation.checksum && annotation.checksum !== this.checksum
@@ -202,7 +210,7 @@ class AnnotationEditor {
                 )
             );
         }
-        this.root.append(this.scroll);
+        this.root.append(this.body);
         // Drawing, typing and scrolling here must not drag the modal or
         // trigger the viewer's shortcuts.
         for (const type of ["mousedown", "touchstart"]) {
@@ -445,16 +453,27 @@ class AnnotationEditor {
 
     // ------------------------------------------------------------ drawing
 
+    /**
+     * Annotations drawn on the pages: the live layer, unless an extension
+     * shows another state of it.
+     */
+    visibleAnnotations() {
+        return this.annotations;
+    }
+
     redraw() {
-        const comments = this.annotations
-            .filter((annotation) => annotation.kind === "comment")
-            .sort((a, b) => a.page - b.page || a.id - b.id);
-        const numbers = new Map(
-            comments.map((comment, index) => [comment.id, index + 1])
+        const annotations = this.visibleAnnotations();
+        // A comment drawn twice (e.g. before and after a change) keeps one number.
+        const commentIds = new Set(
+            annotations
+                .filter((annotation) => annotation.kind === "comment")
+                .sort((a, b) => a.page - b.page || a.id - b.id)
+                .map((comment) => comment.id)
         );
+        const numbers = new Map([...commentIds].map((id, index) => [id, index + 1]));
         for (const sheet of this.sheets) {
             sheet.layer.replaceChildren(
-                ...this.annotations
+                ...annotations
                     .filter((annotation) => annotation.page === sheet.number)
                     .map((annotation) => this.shape(annotation, sheet, numbers))
             );
@@ -474,6 +493,7 @@ class AnnotationEditor {
             "data-id": annotation.id || "",
         });
         group.classList.toggle("o_agx_annotation_own", Boolean(annotation.is_own));
+        shapeAnnotations.set(group, annotation);
         const stroke = {
             stroke: color,
             fill: "none",
@@ -588,8 +608,9 @@ class AnnotationEditor {
 
     onPointerDown(ev, sheet) {
         const target = ev.target.closest(".o_agx_annotation_shape");
-        const annotation =
-            target && this.annotations.find((a) => String(a.id) === target.dataset.id);
+        const shown = target && shapeAnnotations.get(target);
+        // A mark still being saved cannot be picked yet.
+        const annotation = shown?.id ? shown : undefined;
         if (annotation?.kind === "comment") {
             ev.preventDefault();
             if (annotation.is_own && annotation.id && ev.button === 0) {
@@ -812,12 +833,16 @@ class AnnotationEditor {
 
     // ------------------------------------------------------------ storage
 
+    call(method, ...args) {
+        return call(method, args, {annotation_session: this.sessionKey});
+    }
+
     async add(values) {
         const draft = {...values, is_own: true};
         this.annotations.push(draft);
         this.redraw();
         try {
-            const saved = await call("annotation_save", {
+            const saved = await this.call("annotation_save", {
                 attachment_id: this.attachment.id,
                 page: values.page,
                 kind: values.kind,
@@ -837,7 +862,10 @@ class AnnotationEditor {
     }
 
     async update(annotation, values) {
-        const saved = await call("annotation_save", {id: annotation.id, ...values});
+        const saved = await this.call("annotation_save", {
+            id: annotation.id,
+            ...values,
+        });
         Object.assign(annotation, saved);
         if (!this.session.added.has(annotation.id)) {
             this.session.changed.add(annotation.id);
@@ -846,7 +874,7 @@ class AnnotationEditor {
     }
 
     async remove(annotation) {
-        await call("annotation_delete", annotation.id);
+        await this.call("annotation_delete", annotation.id);
         this.annotations.splice(this.annotations.indexOf(annotation), 1);
         this.undoStack = this.undoStack.filter((a) => a !== annotation);
         if (this.session.added.has(annotation.id)) {
@@ -879,7 +907,7 @@ class AnnotationEditor {
                         a.kind === "comment" && (added.has(a.id) || changed.has(a.id))
                 )
                 .map((a) => a.id);
-            call(
+            this.call(
                 "annotation_session_note",
                 this.attachment.id,
                 {added: added.size, changed: changed.size, removed},
