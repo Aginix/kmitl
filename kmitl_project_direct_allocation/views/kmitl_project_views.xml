@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_kmitl_project_form" model="ir.ui.view">
+        <field name="name">kmitl.project.form.direct.allocation</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form" />
+        <field name="arch" type="xml">
+            <!-- งานแผน allocates from floating + reserves in one step (ADR-0009). -->
+            <xpath expr="//button[@name='action_reserve_budget']" position="after">
+                <button
+                    string="จัดสรรและจองงบประมาณ"
+                    name="action_direct_allocation"
+                    type="object"
+                    class="oe_highlight"
+                    groups="budget.group_budget_user"
+                    attrs="{'invisible': [('state', '!=', 'to_verify')]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

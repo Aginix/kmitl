@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_kmitl_project_direct_allocation_form" model="ir.ui.view">
+        <field name="name">kmitl.project.direct.allocation.form</field>
+        <field name="model">kmitl.project.direct.allocation</field>
+        <field name="arch" type="xml">
+            <form string="จัดสรรและจองงบประมาณ">
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        ใช้สำหรับโครงการที่ได้รับอนุมัติงบประมาณพร้อมเงินลอยแล้วตอนประมาณการรายจ่าย
+                        — ระบบจะโอนเงินลอยเข้ามิติโครงการ (ไม่ผ่านขั้นตอนอนุมัติใบโอน) และจองงบประมาณให้ทันที
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id" force_save="1" />
+                            <field name="budget_account_id" />
+                            <field name="account_fiscal_year_id" />
+                            <field name="analytic_account_id" string="มิติโครงการ" />
+                        </group>
+                        <group>
+                            <field name="department_analytic_id" />
+                            <field name="source_analytic_id" />
+                            <field name="activity_analytic_id" />
+                            <field name="fund_analytic_id" />
+                        </group>
+                        <group>
+                            <field name="budget_amount" string="จัดสรรแล้ว" />
+                            <field name="amount" />
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button
+                        name="action_confirm"
+                        type="object"
+                        string="ยืนยันจัดสรรและจองงบประมาณ"
+                        class="btn-primary"
+                    />
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
