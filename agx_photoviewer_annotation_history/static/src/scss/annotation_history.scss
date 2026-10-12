@@ -1,0 +1,75 @@
+// Side panel listing the Changes, newest first.
+.o_agx_annotation_history {
+    flex: 0 0 240px;
+    overflow-y: auto;
+    font-size: 12px;
+    background: #fff;
+    border-left: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.o_agx_annotation_history_title {
+    padding: 6px 8px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.o_agx_annotation_history_item {
+    display: block;
+    width: 100%;
+    padding: 6px 8px;
+    text-align: left;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+    &:hover {
+        background: #f1f3f5;
+    }
+
+    &.active {
+        background: rgba($o-brand-primary, 0.12);
+        box-shadow: inset 3px 0 0 $o-brand-primary;
+    }
+}
+
+.o_agx_annotation_history_counts {
+    display: flex;
+    gap: 6px;
+}
+
+.o_agx_annotation_history_empty {
+    padding: 6px 8px;
+    color: #6c757d;
+}
+
+// Marks of the Change being viewed.
+.o_agx_annotation_layer {
+    .o_agx_annotation_history_added {
+        filter: drop-shadow(0 0 3px #43a047);
+    }
+
+    .o_agx_annotation_history_changed {
+        filter: drop-shadow(0 0 3px #fb8c00);
+    }
+
+    // Where a changed mark was before, and the marks the Change removed.
+    .o_agx_annotation_history_before,
+    .o_agx_annotation_history_removed {
+        opacity: 0.4;
+
+        polyline,
+        path,
+        rect {
+            stroke-dasharray: 8 6;
+        }
+    }
+
+    .o_agx_annotation_history_removed {
+        filter: drop-shadow(0 0 3px #e53935);
+    }
+}
+
+// A past state is read-only.
+.o_agx_annotation_history_mode .o_agx_annotation_scroll {
+    background: #fdf6e3;
+}

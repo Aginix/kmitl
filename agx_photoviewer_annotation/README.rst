@@ -19,6 +19,8 @@ an image or a PDF inside the photo viewer of ``agx_photoviewer``.
 * Attachments with annotations show a ``✎ n`` badge in ``many2many_binary``
   fields, the chatter and the viewer's thumbnail strip.
 
+See ``agx_photoviewer_annotation_history`` to browse the past changes of a file.
+
 PDF pages are drawn with the pdf.js library of ``web`` instead of its viewer
 (``docs/adr/0002``): text search, the sidebar and printing from the viewer are
 not available for PDFs while this module is installed.
