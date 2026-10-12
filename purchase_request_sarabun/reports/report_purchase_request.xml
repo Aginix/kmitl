@@ -14,6 +14,11 @@
                     table.budget tr td:first-child {
                         width: 30%;
                     }
+                    .table-bordered,
+                    .table-bordered > :not(caption) > *,
+                    .table-bordered > :not(caption) > * > * {
+                        border-color: #000;
+                    }
                     p,
                     span,
                     div {
