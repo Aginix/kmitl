@@ -407,6 +407,12 @@ class SarabunDocument(models.Model):
             doc._ensure_originator_step()
         return docs
 
+    def write(self, vals):
+        res = super().write(vals)
+        if "routing_step_ids" in vals:
+            self._normalize_routing_step_order()
+        return res
+
     # === Computes ===
     @api.depends("state")
     def _compute_state_flags(self):
