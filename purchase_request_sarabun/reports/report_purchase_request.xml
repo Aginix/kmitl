@@ -277,7 +277,7 @@
     </record>
 
     <template id="report_purchase_request_budget">
-        <table class="table table-bordered border table-sm budget">
+        <table class="table table-bordered table-sm budget">
             <tbody>
                 <tr class="o_field_budget_commitment_id">
                     <td>เลขที่ใบจองงบประมาณ</td>
