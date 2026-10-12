@@ -137,6 +137,11 @@ export class AnnotationEditor {
         // Tags every call of this visit (see the Session note).
         this.sessionKey = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
         this.popover = null;
+        // The pointer annotating right now: {type, cancel()}.
+        this.pointer = null;
+        // Fingers on the pages while annotating; two scroll and zoom.
+        this.touches = new Map();
+        this.gesture = null;
     }
 
     async start() {
@@ -228,6 +233,16 @@ export class AnnotationEditor {
             },
             {capture: true}
         );
+        for (const type of [
+            "pointerdown",
+            "pointermove",
+            "pointerup",
+            "pointercancel",
+        ]) {
+            this.scroll.addEventListener(type, (ev) => this.onTouch(ev), {
+                capture: true,
+            });
+        }
 
         this.observer = new IntersectionObserver(
             (entries) => {
@@ -430,19 +445,23 @@ export class AnnotationEditor {
     }
 
     stepZoom(step) {
-        const index = ZOOMS.indexOf(this.zoom) + step;
-        if (index >= 0 && index < ZOOMS.length) {
-            this.zoom = ZOOMS[index];
+        // Pinching leaves the zoom between steps.
+        const zooms = step > 0 ? ZOOMS : [...ZOOMS].reverse();
+        const zoom = zooms.find((value) => (value - this.zoom) * step > 0.001);
+        if (zoom) {
+            this.zoom = zoom;
             this.applyZoom();
         }
     }
 
-    applyZoom() {
+    applyZoom(render = true) {
         for (const sheet of this.sheets) {
             sheet.element.style.width = `${this.zoom * 100}%`;
         }
         this.zoomLabel.textContent = `${Math.round(this.zoom * 100)}%`;
-        this.renderVisibleSheets();
+        if (render) {
+            this.renderVisibleSheets();
+        }
     }
 
     export() {
@@ -607,16 +626,19 @@ export class AnnotationEditor {
     }
 
     onPointerDown(ev, sheet) {
+        if (this.gesture || this.pointer) {
+            return;
+        }
         const target = ev.target.closest(".o_agx_annotation_shape");
         const shown = target && shapeAnnotations.get(target);
         // A mark still being saved cannot be picked yet.
         const annotation = shown?.id ? shown : undefined;
         if (annotation?.kind === "comment") {
             ev.preventDefault();
-            if (annotation.is_own && annotation.id && ev.button === 0) {
+            if (annotation.is_own && ev.button === 0) {
                 this.dragComment(ev, sheet, annotation, target);
             } else {
-                this.openComment(sheet, annotation);
+                this.onTap(ev, () => this.openComment(sheet, annotation));
             }
             return;
         }
@@ -625,7 +647,7 @@ export class AnnotationEditor {
         }
         if (this.tool === "eraser") {
             if (annotation?.is_own) {
-                this.remove(annotation);
+                this.onTap(ev, () => this.remove(annotation));
             }
             return;
         }
@@ -637,22 +659,29 @@ export class AnnotationEditor {
         const [x, y] = this.point(ev, sheet);
         const base = {page: sheet.number, kind: this.tool, color: this.color};
         if (this.tool === "check" || this.tool === "cross") {
-            this.add({...base, geometry: {x, y, size: STAMP_SIZE}});
+            this.onTap(ev, () =>
+                this.add({...base, geometry: {x, y, size: STAMP_SIZE}})
+            );
             return;
         }
         if (this.tool === "comment") {
-            this.openComment(sheet, {
-                ...base,
-                geometry: {x, y},
-                text: "",
-                is_own: true,
-            });
+            this.onTap(ev, () =>
+                this.openComment(sheet, {
+                    ...base,
+                    geometry: {x, y},
+                    text: "",
+                    is_own: true,
+                })
+            );
             return;
         }
         // Pen, highlight and rectangle follow the pointer until it is released.
         const draft = {...base, geometry: {}, is_own: true};
         const points = [[x, y]];
         const update = (moveEv) => {
+            if (moveEv.pointerId !== ev.pointerId) {
+                return;
+            }
             const [mx, my] = this.point(moveEv, sheet);
             if (this.tool === "pen") {
                 const [lx, ly] = points[points.length - 1];
@@ -675,11 +704,18 @@ export class AnnotationEditor {
         let draftShape = svgElement("g");
         sheet.layer.append(draftShape);
         sheet.layer.setPointerCapture(ev.pointerId);
-        const finish = () => {
+        const stop = (commit) => {
             sheet.layer.removeEventListener("pointermove", update);
             sheet.layer.removeEventListener("pointerup", finish);
             sheet.layer.removeEventListener("pointercancel", finish);
+            if (sheet.layer.hasPointerCapture(ev.pointerId)) {
+                sheet.layer.releasePointerCapture(ev.pointerId);
+            }
+            this.pointer = null;
             draftShape.remove();
+            if (!commit) {
+                return;
+            }
             const {geometry} = draft;
             const valid =
                 this.tool === "pen"
@@ -689,9 +725,128 @@ export class AnnotationEditor {
                 this.add({...base, geometry});
             }
         };
+        const finish = (upEv) => {
+            if (upEv.pointerId === ev.pointerId) {
+                stop(upEv.type === "pointerup");
+            }
+        };
+        this.pointer = {type: ev.pointerType, cancel: () => stop(false)};
         sheet.layer.addEventListener("pointermove", update);
         sheet.layer.addEventListener("pointerup", finish);
         sheet.layer.addEventListener("pointercancel", finish);
+    }
+
+    // ------------------------------------------------------------ touch
+
+    /**
+     * Run `action` once the touch `ev` is lifted without becoming a
+     * two-finger gesture; a mouse or a stylus acts at once.
+     */
+    onTap(ev, action) {
+        if (ev.pointerType !== "touch") {
+            action();
+            return;
+        }
+        const stop = () => {
+            window.removeEventListener("pointerup", finish);
+            window.removeEventListener("pointercancel", finish);
+            this.pointer = null;
+        };
+        const finish = (upEv) => {
+            if (upEv.pointerId === ev.pointerId) {
+                stop();
+                if (upEv.type === "pointerup") {
+                    action();
+                }
+            }
+        };
+        this.pointer = {type: "touch", cancel: stop};
+        window.addEventListener("pointerup", finish);
+        window.addEventListener("pointercancel", finish);
+    }
+
+    /**
+     * While annotating, the pages take no native gesture: one finger draws,
+     * two scroll and pinch-zoom them. Runs before the pages see the event.
+     */
+    onTouch(ev) {
+        if (ev.pointerType !== "touch") {
+            return;
+        }
+        const position = {x: ev.clientX, y: ev.clientY};
+        if (ev.type === "pointerdown") {
+            if (!this.drawing) {
+                return;
+            }
+            if (this.pointer && this.pointer.type !== "touch") {
+                // A palm resting on the screen while a stylus draws.
+                ev.stopPropagation();
+                return;
+            }
+            this.touches.set(ev.pointerId, position);
+            if (this.touches.size === 2 && !this.gesture) {
+                // The first finger was not drawing after all.
+                this.pointer?.cancel();
+                this.startGesture();
+            }
+            if (this.gesture) {
+                ev.stopPropagation();
+            }
+            return;
+        }
+        if (!this.touches.has(ev.pointerId)) {
+            return;
+        }
+        if (ev.type === "pointermove") {
+            this.touches.set(ev.pointerId, position);
+            if (this.gesture?.active) {
+                this.moveGesture();
+            }
+            return;
+        }
+        this.touches.delete(ev.pointerId);
+        if (this.gesture?.active && this.touches.size < 2) {
+            // The finger left on the screen draws nothing until lifted.
+            this.gesture.active = false;
+            this.renderVisibleSheets();
+        }
+        if (!this.touches.size) {
+            this.gesture = null;
+        }
+    }
+
+    startGesture() {
+        const [a, b] = this.touches.values();
+        this.gesture = {
+            active: true,
+            zoom: this.zoom,
+            distance: Math.hypot(a.x - b.x, a.y - b.y) || 1,
+            middle: {x: (a.x + b.x) / 2, y: (a.y + b.y) / 2},
+            scrollLeft: this.scroll.scrollLeft,
+            scrollTop: this.scroll.scrollTop,
+        };
+    }
+
+    moveGesture() {
+        const gesture = this.gesture;
+        const [a, b] = this.touches.values();
+        const distance = Math.hypot(a.x - b.x, a.y - b.y);
+        const zoom = Math.min(
+            Math.max((gesture.zoom * distance) / gesture.distance, ZOOMS[0]),
+            ZOOMS[ZOOMS.length - 1]
+        );
+        const ratio = zoom / gesture.zoom;
+        const rect = this.scroll.getBoundingClientRect();
+        this.zoom = zoom;
+        // Rendered once the fingers are lifted.
+        this.applyZoom(false);
+        // Keep the point that was between the fingers between them.
+        this.scroll.scrollLeft =
+            (gesture.scrollLeft + gesture.middle.x - rect.left) * ratio -
+            ((a.x + b.x) / 2 - rect.left);
+        this.scroll.scrollTop =
+            (gesture.scrollTop + gesture.middle.y - rect.top) * ratio -
+            ((a.y + b.y) / 2 - rect.top);
     }
 
     // ------------------------------------------------------------ comments
@@ -705,6 +860,9 @@ export class AnnotationEditor {
         const {x, y} = annotation.geometry;
         let geometry = null;
         const move = (moveEv) => {
+            if (moveEv.pointerId !== ev.pointerId) {
+                return;
+            }
             const [mx, my] = this.point(moveEv, sheet);
             if (!geometry && Math.hypot(mx - startX, my - startY) < 0.005) {
                 return;
@@ -720,10 +878,21 @@ export class AnnotationEditor {
                 })`
             );
         };
-        const finish = () => {
+        const stop = () => {
             window.removeEventListener("pointermove", move);
             window.removeEventListener("pointerup", finish);
             window.removeEventListener("pointercancel", finish);
+            this.pointer = null;
+        };
+        const finish = (upEv) => {
+            if (upEv.pointerId !== ev.pointerId) {
+                return;
+            }
+            stop();
+            if (upEv.type === "pointercancel") {
+                pin.removeAttribute("transform");
+                return;
+            }
             if (!geometry) {
                 this.openComment(sheet, annotation);
                 return;
@@ -732,6 +901,13 @@ export class AnnotationEditor {
                 this.redraw();
                 throw error;
             });
+        };
+        this.pointer = {
+            type: ev.pointerType,
+            cancel: () => {
+                stop();
+                pin.removeAttribute("transform");
+            },
         };
         window.addEventListener("pointermove", move);
         window.addEventListener("pointerup", finish);
