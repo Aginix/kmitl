@@ -7,7 +7,9 @@ an image or a PDF inside the photo viewer of ``agx_photoviewer``.
 
 * Opening an image or a PDF shows its pages with every annotation on top; the
   **Annotate** button opens the tools: pen, ✓ / ✗ stamps, highlight,
-  rectangle, comment, eraser (own marks), colours and undo.
+  rectangle, comment, eraser (own marks), colours and undo. On a touch screen
+  one finger annotates and two fingers scroll and pinch-zoom the pages; a palm
+  resting on the screen while a stylus draws is ignored.
 * Each mark is saved as soon as it is drawn, in ``ir.attachment.annotation``;
   the file itself is never modified (``docs/adr/0001``). Everyone who can read
   the attachment sees all marks and may add some; only the author changes or
