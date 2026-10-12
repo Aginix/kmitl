@@ -302,77 +302,56 @@ class BudgetMoveLine(models.Model):
             if (line.amount or 0.0) <= 0:
                 raise ValidationError(_("Transfer amount must be greater than zero"))
 
-    @api.constrains(
-        "transfer_direction",
-        "kmitl_project_analytic_id",
-        "procurement_plan_analytic_id",
-    )
-    def _check_supplementary_dims_exclusive(self):
-        for line in self.filtered("transfer_direction"):
-            if line.kmitl_project_analytic_id and line.procurement_plan_analytic_id:
-                raise ValidationError(
-                    _(
-                        "Each line may carry only one supplementary dimension — "
-                        "KMITL Project or Procurement Plan, not both."
-                    )
-                )
+    # ------------------------------------------------------------------
+    # Transfer-line policies (ADR-0009 / ADR-0012) — checked on the transfer at
+    # ยืนยัน (``budget.transfer._validate_line_policies``), not as constraints,
+    # so ``budget_transfer_exception`` can switch each on/off as an
+    # ``exception.rule``. Each returns the offending lines.
+    # ------------------------------------------------------------------
+    def _get_lines_with_both_tags(self):
+        """Each line may carry only one Pool Tag — KMITL Project or
+        Procurement Plan, not both."""
+        return self.filtered(
+            lambda line: (
+                line.transfer_direction
+                and line.kmitl_project_analytic_id
+                and line.procurement_plan_analytic_id
+            )
+        )
 
-    @api.constrains(
-        "transfer_direction",
-        "kmitl_project_analytic_id",
-        "procurement_plan_analytic_id",
-        "account_id",
-    )
-    def _check_supplementary_dims_match_account(self):
-        account_model = self.env["budget.account"]
-        has_proc = "procurement_plan" in account_model._fields
-        for line in self.filtered("transfer_direction"):
-            account = line.account_id
-            if not account:
-                continue
-            if line.kmitl_project_analytic_id and not (
-                "is_project" in account._fields and account.is_project
-            ):
-                raise ValidationError(
-                    _(
-                        "The Project/Activity dimension may only be used with "
-                        "project-type budget accounts (is_project)."
+    def _get_lines_tag_account_mismatch(self):
+        """A Pool Tag may only be used with its budget-account type: the
+        project tag with ``is_project``, the procurement tag with
+        ``procurement_plan`` accounts."""
+        return self.filtered(
+            lambda line: (
+                line.transfer_direction
+                and line.account_id
+                and (
+                    (line.kmitl_project_analytic_id and not line.account_is_project)
+                    or (
+                        line.procurement_plan_analytic_id
+                        and not line.account_is_procurement
                     )
                 )
-            if line.procurement_plan_analytic_id and not (
-                has_proc and account.procurement_plan
-            ):
-                raise ValidationError(
-                    _(
-                        "The Procurement Plan dimension may only be used with "
-                        "procurement-plan-type budget accounts."
-                    )
-                )
+            )
+        )
 
-    @api.constrains("transfer_direction", "account_id", "analytic_distribution")
-    def _check_transfer_duplicate_lines(self):
-        # Compare dimensions from the columns, not the stored JSON: on create this
-        # runs inside super().create(), before _sync_transfer_distribution has
-        # written analytic_distribution, so every new line's JSON is still empty.
+    def _get_duplicate_lines(self):
+        """Each (direction, budget account, distribution) must be unique within
+        the move. Compared from the columns, not the stored JSON."""
+        seen = set()
+        duplicates = self.browse()
         for line in self.filtered("transfer_direction"):
             if not line.account_id:
                 continue
-            siblings = self.search(
-                [
-                    ("move_id", "=", line.move_id.id),
-                    ("transfer_direction", "=", line.transfer_direction),
-                    ("account_id", "=", line.account_id.id),
-                    ("id", "!=", line.id),
-                ]
+            key = (
+                line.move_id.id,
+                line.transfer_direction,
+                line.account_id.id,
+                frozenset(line._transfer_distribution()),
             )
-            distribution = line._transfer_distribution()
-            if any(
-                sibling._transfer_distribution() == distribution for sibling in siblings
-            ):
-                raise ValidationError(
-                    _(
-                        "Duplicate transfer line found. Each combination of "
-                        "direction, budget account and analytic distribution must "
-                        "be unique."
-                    )
-                )
+            if key in seen:
+                duplicates |= line
+            seen.add(key)
+        return duplicates

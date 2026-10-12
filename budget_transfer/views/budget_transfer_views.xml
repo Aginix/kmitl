@@ -113,12 +113,12 @@
                                             <field name="budget_sufficient" invisible="1"/>
                                             <group>
                                                 <group string="Budget Account / Dimensions">
+                                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
                                                     <field name="account_id" required="1"
                                                            options="{'no_create': True, 'no_open': True}"
                                                            domain="[('budget_type', '=', parent.budget_type)]"
                                                            placeholder="Select source budget account..."/>
-                                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
-                                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
                                                     <field name="kmitl_project_analytic_id" options="{'no_create': True, 'no_open': True}"
                                                            attrs="{'invisible': [('account_is_project', '=', False)]}"/>
                                                     <field name="procurement_plan_analytic_id" options="{'no_create': True, 'no_open': True}"
@@ -164,13 +164,13 @@
                                             <field name="currency_id" invisible="1"/>
                                             <group>
                                                 <group string="Budget Account / Dimensions">
+                                                    <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
                                                     <field name="account_id" required="1"
                                                            options="{'no_create': True, 'no_open': True}"
                                                            domain="[('budget_type', '=', parent.budget_type)]"
                                                            placeholder="Select destination budget account..."/>
-                                                    <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
-                                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
-                                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
                                                     <field name="kmitl_project_analytic_id" options="{'no_create': True, 'no_open': True}"
                                                            attrs="{'invisible': [('account_is_project', '=', False)]}"/>
                                                     <field name="procurement_plan_analytic_id" options="{'no_create': True, 'no_open': True}"

@@ -196,9 +196,7 @@ class BudgetTransfer(models.Model):
         """
         if "account_fiscal_year_id" in vals:
             placeholders = {"New", _("New")}
-            numbered = self.filtered(
-                lambda t: t.name and t.name not in placeholders
-            )
+            numbered = self.filtered(lambda t: t.name and t.name not in placeholders)
             if numbered:
                 raise UserError(
                     _(
@@ -292,12 +290,8 @@ class BudgetTransfer(models.Model):
             # back (owner/admin) or revive a cancelled one (manager/admin) —
             # neither unwinds a live budget entry, so no confirmation needed.
             transfer.show_reset_button = (
-                transfer.state == "submitted"
-                and (transfer.user_id == user or is_admin)
-            ) or (
-                transfer.state == "cancelled"
-                and (is_manager or is_admin)
-            )
+                transfer.state == "submitted" and (transfer.user_id == user or is_admin)
+            ) or (transfer.state == "cancelled" and (is_manager or is_admin))
             # Resetting a *posted* transfer reverses a recorded budget entry —
             # manager/admin only, and gated behind a confirmation in the view.
             transfer.show_reset_posted_button = transfer.state == "posted" and (
@@ -366,8 +360,7 @@ class BudgetTransfer(models.Model):
     # ------------------------------------------------------------------
     def action_submit(self):
         if not (
-            self.env.user.has_group("budget.group_budget_user")
-            or self.env.is_admin()
+            self.env.user.has_group("budget.group_budget_user") or self.env.is_admin()
         ):
             raise UserError(_("Only Budget Users can submit transfers"))
         self._validate_transfer_data()
@@ -380,16 +373,12 @@ class BudgetTransfer(models.Model):
         separate Post click). Records the approver, re-checks availability, then
         posts the delegated move."""
         is_admin = self.env.is_admin()
-        if not (
-            self.env.user.has_group("budget.group_budget_manager") or is_admin
-        ):
+        if not (self.env.user.has_group("budget.group_budget_manager") or is_admin):
             raise UserError(_("Only Budget Managers can approve transfers"))
         if not is_admin:
             for transfer in self:
                 if transfer.user_id == self.env.user:
-                    raise UserError(
-                        _("You cannot approve your own budget transfer.")
-                    )
+                    raise UserError(_("You cannot approve your own budget transfer."))
         self.invalidate_recordset(
             ["has_sufficient_budget", "budget_validation_message"]
         )
@@ -484,9 +473,7 @@ class BudgetTransfer(models.Model):
         from_lines = self.line_ids.filtered(
             lambda line: line.transfer_direction == "from"
         )
-        to_lines = self.line_ids.filtered(
-            lambda line: line.transfer_direction == "to"
-        )
+        to_lines = self.line_ids.filtered(lambda line: line.transfer_direction == "to")
         if not from_lines:
             raise ValidationError(
                 _("Please add at least one source line (Transfer FROM)")
@@ -496,29 +483,8 @@ class BudgetTransfer(models.Model):
                 _("Please add at least one destination line (Transfer TO)")
             )
 
-        # Every line must carry the four core dimensions (ADR-0009).
-        core_dims = [
-            ("department_analytic_id", "Department"),
-            ("source_analytic_id", "Source"),
-            ("activity_analytic_id", "Activity"),
-            ("fund_analytic_id", "Fund"),
-        ]
-        for line in self.line_ids:
-            missing = [label for fname, label in core_dims if not line[fname]]
-            if missing:
-                raise ValidationError(
-                    _(
-                        "All lines must specify all 4 core dimensions (Department / Source / Activity / Fund).\n"
-                        "Line %(account)s (%(direction)s) is missing: %(missing)s"
-                    )
-                    % {
-                        "account": line.account_id.display_name or "-",
-                        "direction": "Transfer Out"
-                        if line.transfer_direction == "from"
-                        else "Transfer In",
-                        "missing": ", ".join(missing),
-                    }
-                )
+        self._validate_core_dimensions()
+        self._validate_line_policies()
 
         # Source is locked to the header — no cross-source transfers (ADR-0009).
         cross_source = self.line_ids.filtered(
@@ -544,6 +510,76 @@ class BudgetTransfer(models.Model):
         if from_amount <= 0:
             raise ValidationError(_("Transfer amount must be greater than zero"))
 
+    # Business-policy checks — unlike the structural checks above, these may be
+    # switched on/off: ``budget_transfer_exception`` turns each into an
+    # ``exception.rule`` and skips the hard check here.
+    _TRANSFER_CORE_DIMS = (
+        ("department_analytic_id", "Department"),
+        ("source_analytic_id", "Source"),
+        ("activity_analytic_id", "Activity"),
+        ("fund_analytic_id", "Fund"),
+    )
+
+    def _get_lines_missing_core_dims(self):
+        self.ensure_one()
+        return self.line_ids.filtered(
+            lambda line: not all(line[fname] for fname, _l in self._TRANSFER_CORE_DIMS)
+        )
+
+    def _validate_core_dimensions(self):
+        """Every line must carry the four core dimensions (ADR-0009)."""
+        line = self._get_lines_missing_core_dims()[:1]
+        if line:
+            missing = [
+                label for fname, label in self._TRANSFER_CORE_DIMS if not line[fname]
+            ]
+            raise ValidationError(
+                _(
+                    "All lines must specify all 4 core dimensions (Department / Source / Activity / Fund).\n"
+                    "Line %(account)s (%(direction)s) is missing: %(missing)s"
+                )
+                % {
+                    "account": line.account_id.display_name or "-",
+                    "direction": "Transfer Out"
+                    if line.transfer_direction == "from"
+                    else "Transfer In",
+                    "missing": ", ".join(missing),
+                }
+            )
+
+    def _validate_line_policies(self):
+        """Pool-Tag and uniqueness policies on the lines (ADR-0009 / ADR-0012)."""
+        lines = self.line_ids
+        if lines._get_lines_with_both_tags():
+            raise ValidationError(
+                _(
+                    "Each line may carry only one supplementary dimension — "
+                    "KMITL Project or Procurement Plan, not both."
+                )
+            )
+        for line in lines._get_lines_tag_account_mismatch():
+            if line.kmitl_project_analytic_id and not line.account_is_project:
+                raise ValidationError(
+                    _(
+                        "The Project/Activity dimension may only be used with "
+                        "project-type budget accounts (is_project)."
+                    )
+                )
+            raise ValidationError(
+                _(
+                    "The Procurement Plan dimension may only be used with "
+                    "procurement-plan-type budget accounts."
+                )
+            )
+        if lines._get_duplicate_lines():
+            raise ValidationError(
+                _(
+                    "Duplicate transfer line found. Each combination of "
+                    "direction, budget account and analytic distribution must "
+                    "be unique."
+                )
+            )
+
     def _validate_budget_availability(self):
         self.ensure_one()
         if not self.has_sufficient_budget:
@@ -564,4 +600,3 @@ class BudgetTransfer(models.Model):
             "view_mode": "form",
             "target": "current",
         }
-

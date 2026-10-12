@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo>
+<odoo noupdate="1">
     <record id="budget_transfer_excep_procurement_plan" model="exception.rule">
         <field name="name">รหัสงบประมาณ/มิติ ไม่ตรงกับแผนจัดซื้อจัดจ้างต้นทาง</field>
-        <field name="description">รายการโอนที่ใช้รหัสงบประมาณประเภทแผนจัดซื้อจัดจ้าง ต้องระบุรหัสงบประมาณ ปีงบประมาณ และมิติทางบัญชี (ส่วนงาน/แหล่งเงิน/กิจกรรม/กองทุน) ให้ตรงกับแผนจัดซื้อจัดจ้าง (procurement.plan) ต้นทาง</field>
+        <field
+            name="description"
+        >รายการโอนที่ใช้รหัสงบประมาณประเภทแผนจัดซื้อจัดจ้าง ต้องระบุรหัสงบประมาณ ปีงบประมาณ และมิติทางบัญชี (ส่วนงาน/แหล่งเงิน/กิจกรรม/กองทุน) ให้ตรงกับแผนจัดซื้อจัดจ้าง (procurement.plan) ต้นทาง</field>
         <field name="sequence">20</field>
         <field name="model">budget.transfer</field>
         <field name="exception_type">by_method</field>

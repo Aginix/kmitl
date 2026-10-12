@@ -1,0 +1,46 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* kmitl_project_coordinator_sarabun
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-09 09:40+0000\n"
+"PO-Revision-Date: 2026-10-09 09:40+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: kmitl_project_coordinator_sarabun
+#: model:ir.model.fields,field_description:kmitl_project_coordinator_sarabun.field_kmitl_project__can_submit_sarabun
+msgid "Can Submit Sarabun"
+msgstr "สร้างหนังสือขออนุมัติได้"
+
+#. module: kmitl_project_coordinator_sarabun
+#: model:ir.model,name:kmitl_project_coordinator_sarabun.model_kmitl_project
+msgid "KMITL Project"
+msgstr "แบบเสนอโครงการ/กิจกรรม"
+
+#. module: kmitl_project_coordinator_sarabun
+#. odoo-python
+#: code:addons/kmitl_project_coordinator_sarabun/models/kmitl_project.py:0
+#, python-format
+msgid ""
+"Only the project manager, a coordinator, the creator or a project officer "
+"can create the project approval document."
+msgstr ""
+"เฉพาะหัวหน้าโครงการ ผู้ประสานงาน ผู้สร้างโครงการ หรือเจ้าหน้าที่ "
+"เท่านั้นที่สร้างหนังสือขออนุมัติจัดโครงการได้"
+
+#. module: kmitl_project_coordinator_sarabun
+#: model:ir.model.fields,help:kmitl_project_coordinator_sarabun.field_kmitl_project__can_submit_sarabun
+msgid ""
+"The current user may create the project approval document: the project "
+"manager, a coordinator, the creator or a project officer."
+msgstr ""
+"ผู้ใช้ปัจจุบันสร้างหนังสือขออนุมัติจัดโครงการได้: หัวหน้าโครงการ "
+"ผู้ประสานงาน ผู้สร้างโครงการ หรือเจ้าหน้าที่ (Officer)"
