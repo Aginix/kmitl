@@ -27,10 +27,10 @@ sub-categories, not catalog entries.
 - `name` is required at the row level; a picked item overwrites it (onchange), after
   which it stays freely editable. Confirmation validates amount, not the source of the
   name.
-- An expense line's `category_id` is set **directly on the line** (an editable picker
-  column, `optional="show"`), defaulted from the section's "add line" button, or copied
-  from a picked item — so a free-text line can be categorised even with an empty catalog
-  (no chicken-and-egg with the section headers).
+- An expense line's `category_id` is stored **directly on the line** (not derived from
+  the item): pre-set by the section's add buttons, or copied from a picked item — so a
+  free-text line can be categorised even with an empty catalog (no chicken-and-egg with
+  the section headers).
 - The OWL expense table groups purely on the category path (`category_parent_path` /
   `category_complete_name`), independent of `budget_item_id`, so free-text and
   catalog-backed lines nest identically.
