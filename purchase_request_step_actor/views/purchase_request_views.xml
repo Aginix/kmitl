@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_purchase_request_form_step_actor" model="ir.ui.view">
+        <field name="name">view.purchase.request.form (Step Actor)</field>
+        <field name="model">purchase.request</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_budget.view_purchase_request_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="after">
+                <div
+                    class="alert alert-info mb-2"
+                    role="alert"
+                    attrs="{'invisible': [('state', 'not in', ('to_verify', 'to_verify_budget'))]}"
+                >
+                    <i class="fa fa-users me-1" />
+                    <span
+                        attrs="{'invisible': [('state', '!=', 'to_verify')]}"
+                    >ผู้มีสิทธิ์ตรวจสอบข้อมูล:</span>
+                    <span
+                        attrs="{'invisible': [('state', '!=', 'to_verify_budget')]}"
+                    >ผู้มีสิทธิ์ยืนยัน/จองงบประมาณ:</span>
+                    <field
+                        name="step_actor_ids"
+                        widget="many2many_avatar_user"
+                        nolabel="1"
+                        readonly="1"
+                        class="d-inline"
+                    />
+                    <span
+                        attrs="{'invisible': [('step_actor_ids', '!=', [])]}"
+                    >ยังไม่มีผู้มีสิทธิ์ในหน่วยงานนี้ — โปรดติดต่อผู้ดูแลระบบ</span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
