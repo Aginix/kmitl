@@ -28,6 +28,34 @@ _Avoid_: shared / co-owned project (the project still belongs to one unit and it
 The amount a project actually **received via Project Allocation** — a *computed* mirror of Current Budget (a) at the project's own dimension (the net of every posted budget move carrying its `kmitl_project` dim), so it always reads the current, real figure and is never typed by hand. Reserved as one shared `budget.commitment` at the **จองงบ step** (state `to_verify → to_send`, *before* the ขออนุมัติ หนังสือ is sent) and **released if the approval is rejected**; drawn down by the project's purchase requests and disbursements. Reads 0 (shown as "ยังไม่ได้รับการจัดสรรงบประมาณ") until งานแผน allocates. See [budget » Reserve / Floating Budget](../budget/CONTEXT.md).
 _Avoid_: allocation, cost; the **Project Budget Plan** total (`budget_expense_total`, the project's *ask*, a different quantity — the two are never reconciled automatically)
 
+**Project Coordinator (ผู้ประสานงาน)**:
+An internal user (`coordinator_ids`) who coordinates a project day to day. They are told of every **status** change, follow its chatter, and can be added or removed at any point in the project's life, because they are a contact, not part of the approved content; a removed coordinator also stops following it (unless still an owner). A project may have several. Each must be a KMITL Project user.
+_Avoid_: Project Manager / หัวหน้าโครงการ (`manager_id`, the employee who leads the project, a different person and field)
+
+**Project Owner (เจ้าของโครงการ)**:
+Any of a project's หัวหน้าโครงการ, **Project Coordinator** or creator. A Project Owner has the project as **Own Project**: they read and edit it and all its tabs (still subject to each state's field locks), see it whatever their operating unit, and may raise its **Project Approval** หนังสือ. Project officers (Officer/Manager) may do all of this for every project in their own operating units. See [ADR-0008](./docs/adr/0008-project-owner-coordinator-extension.md).
+_Avoid_: "Responsible" (the label of the creator field `creating_user_id`) as a synonym for owner
+
+**Project Budget Estimate (งบประมาณโครงการ, `budget_estimate`)**:
+The amount the project's author **sets out to raise** ("ตั้งเงินไว้ 1 ล้าน") — a hand-typed target, the yardstick against which the money actually received from Funding Units is tracked. Never moves money and is never reserved.
+_Avoid_: Project Budget (that is the received, computed `budget_amount`); budget plan total
+
+**Funding Unit (ส่วนงานต้นทาง)**:
+The ส่วนงาน (`departments` dimension) on the **FROM side** of a transfer that moves money into a project's dimension — i.e. who the money came from. Each Funding Unit sends its support in **its own transfer**, so one transfer has exactly one Funding Unit. The transfer's OU (who keyed it, e.g. งานแผน on a unit's behalf) and the TO side's ส่วนงาน (always the project's own) never identify it.
+_Avoid_: OU / operating unit (the operator, not the funder); beneficiary unit (budget's reservation term, ADR-0011)
+
+**Project Budget Movements (การเคลื่อนไหวงบประมาณโครงการ)**:
+The project's read-only list of every budget movement on its dimension, one row per movement line, each with a **Movement Kind**, a **Movement Status**, a signed amount (in positive, out negative), the **Funding Unit** on transfer rows and the source document on ตัดงบ rows. Reservations (จองงบ/ผูกพัน) are not movements and are not listed. Posted allocation, transfer and budget-entry rows net to the **Project Budget**. Readable without any budget rights by every **Project Owner** (from any operating unit) and by project officers. See [ADR-0007](./docs/adr/0007-project-budget-movements-instead-of-ledger-access.md).
+_Avoid_: Funding Summary / เงินสนับสนุนที่ได้รับ (the earlier, inflow-only version of this list); budget move / ledger (this is a project-level view, not access to `budget.move`)
+
+**Movement Kind (ประเภทการเคลื่อนไหว)**:
+What a movement did to the project's money: **จัดสรร** (an appropriation), **รับโอนเข้า** / **โอนออก** (the TO / FROM side of a transfer), **บันทึกงบประมาณ** (a budget entry keyed directly by budget staff, not via a transfer) or **ตัดงบ** (consumption by a purchase request, disbursement or other spending document).
+_Avoid_: ปรับปรุงงบ / adjustment for a budget entry (budget's Adjustment also covers transfers)
+
+**Movement Status (สถานะการเคลื่อนไหว)**:
+Whether a movement has taken effect: **ผ่านแล้ว** (posted), **อยู่ระหว่างดำเนินการ** (a transfer submitted, in e-Saraban or returned — not yet counted in the Project Budget; only transfers have this status), **ต่างปีงบประมาณ** (it carries the project's dimension in another fiscal year, e.g. carried-over เงินกันเหลื่อมปี and its spending — legitimate, but outside the project's year) or **พิกัดไม่ตรงกับโครงการ** (off-target: in the project's year, but its รหัสงบ or a base dimension misses the project's coordinate — likely mis-keyed). The last two count in no total yet stay visible. Draft, rejected and cancelled movements are not listed.
+_Avoid_: received (only inflows are "received"; ตัดงบ rows are posted, not received)
+
 **Project Number (เลขที่รันโครงการ, `key`)**:
 A sequential running number that identifies a Project. Minted once, when the project is **submitted to งานแผน** (`draft→to_verify`, ส่งเข้าแผน — the moment its analytic account is created and its budget target is locked, ahead of the allocation), and stable for the project's life — a later reset-to-draft never re-issues or clears it. Stamped with the project's **fiscal year** (`account_fiscal_year_id`), which stays freely editable while the project is a first draft and is frozen once a Project Number exists. Reused as the `code` of the project's analytic account.
 _Avoid_: Project Code (รหัสโครงการ) — a distinct approval-time identifier, **not yet implemented**; do not conflate it with the Project Number even though both currently share the `key` field.
