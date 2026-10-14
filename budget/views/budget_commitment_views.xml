@@ -62,7 +62,8 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object"
-                            name="action_view_budget_moves" icon="fa-money">
+                            name="action_view_budget_moves" icon="fa-money"
+                            groups="budget.group_budget_viewer">
                             <field string="Budget Moves" name="budget_move_ids" widget="statinfo"/>
                         </button>
                     </div>
