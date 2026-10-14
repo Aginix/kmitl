@@ -135,10 +135,15 @@ class TestPoolTagRows(TransactionCase):
         self._reserve(self.tagged_code, 20_000, self.dist)
         self._appropriate(self.plain_code, 50_000)
 
-    def _items(self, breakdown=None, tag_fields=("kmitl_project_analytic_id",)):
-        return self.env["budget.dashboard"].get_pool_tag_rows(
-            self.fy.id, self.parent.id, {}, breakdown, list(tag_fields)
+    def _rows(self, breakdown=None, pool_tag_rows=True):
+        return (
+            self.env["budget.dashboard"]
+            .with_context(pool_tag_rows=pool_tag_rows)
+            .get_dashboard_data(self.fy.id, self.parent.id, {}, breakdown)["rows"]
         )
+
+    def _items(self, breakdown=None):
+        return [r for r in self._rows(breakdown) if r["row_type"] == "pool_tag"]
 
     # --- tests ---
 
@@ -161,18 +166,32 @@ class TestPoolTagRows(TransactionCase):
         self.assertEqual(residual["current"], 100_000)
         self.assertEqual(residual["used"], 0)
 
+    def test_items_spliced_under_code_row(self):
+        self._setup_money()
+        rows = self._rows()
+        idx = next(
+            i
+            for i, r in enumerate(rows)
+            if r["row_type"] == "account" and r["account_id"] == self.tagged_code.id
+        )
+        code_row = rows[idx]
+        self.assertTrue(code_row["has_children"])
+        self.assertTrue(code_row["pool_tag_leaf"], "leaf code: caret from items")
+        for item in rows[idx + 1 : idx + 3]:
+            self.assertEqual(item["row_type"], "pool_tag")
+            self.assertEqual(item["parent_key"], code_row["key"])
+            self.assertEqual(item["level"], code_row["level"] + 1)
+
     def test_items_reconcile_with_code_row(self):
         self._setup_money()
         for breakdown in (None, ["activity_analytic_id"]):
-            rows = self.env["budget.dashboard"].get_dashboard_data(
-                self.fy.id, self.parent.id, {}, breakdown
-            )["rows"]
+            rows = self._rows(breakdown)
             code_row = next(
                 r
                 for r in rows
                 if r["row_type"] == "account" and r["account_id"] == self.tagged_code.id
             )
-            items = self._items(breakdown)
+            items = [r for r in rows if r["row_type"] == "pool_tag"]
             for key in _VALUE_KEYS:
                 self.assertAlmostEqual(
                     sum(item[key] for item in items),
@@ -180,13 +199,29 @@ class TestPoolTagRows(TransactionCase):
                     msg="%s (breakdown=%s)" % (key, breakdown),
                 )
 
-    def test_no_tag_enabled_returns_nothing(self):
+    def test_code_rows_unchanged_by_items(self):
         self._setup_money()
-        self.assertEqual(self._items(tag_fields=()), [])
+        for breakdown in (None, ["activity_analytic_id"]):
+            plain = self._rows(breakdown, pool_tag_rows=False)
+            with_items = [
+                r for r in self._rows(breakdown) if r["row_type"] != "pool_tag"
+            ]
+            self.assertEqual(len(plain), len(with_items))
+            for a, b in zip(plain, with_items):
+                self.assertEqual(a["key"], b["key"])
+                for key in _VALUE_KEYS:
+                    self.assertAlmostEqual(a[key], b[key], msg=key)
+
+    def test_no_items_without_context(self):
+        self._setup_money()
+        rows = self._rows(pool_tag_rows=False)
+        self.assertFalse([r for r in rows if r["row_type"] == "pool_tag"])
 
     def test_reservation_grid_has_no_items(self):
         self._setup_money()
-        rows = self.env["budget.dashboard"].get_reservation_grid(
-            self.fy.id, {}, self.parent.id
-        )["rows"]
+        rows = (
+            self.env["budget.dashboard"]
+            .with_context(pool_tag_rows=True)
+            .get_reservation_grid(self.fy.id, {}, self.parent.id)["rows"]
+        )
         self.assertFalse([r for r in rows if r.get("row_type") == "pool_tag"])

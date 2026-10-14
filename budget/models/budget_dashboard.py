@@ -107,46 +107,17 @@ class BudgetDashboard(models.AbstractModel):
 
         # Optional breakdown: nest the budget-account tree under one or more
         # analytic dimensions (ordered, e.g. activities then departments)
-        # instead of using the account tree as the sole row axis.
-        dims = self._normalize_breakdown(breakdown)
+        # instead of using the account tree as the sole row axis. Extensions
+        # may group by extra fields too (see _dashboard_extra_fields); the core
+        # rows see those facts collapsed back onto the breakdown tuple.
+        dims = self._normalize_breakdown(breakdown) or []
+        extra = self._dashboard_extra_fields()
+        facts = self._dashboard_sources(dims + extra, move_base, cl_base, commit_domain)
+        sources = self._collapse_facts(facts, len(dims)) if extra else facts
         if dims:
-            rows = self._breakdown_rows(
-                dims, accounts, account_ids, move_base, cl_base, commit_domain
-            )
+            rows = self._breakdown_rows(dims, accounts, account_ids, sources)
+            rows = self._dashboard_extra_rows(rows, facts, dims)
             return {"rows": rows, "currency_id": currency_id, "hier_op": hier_op}
-
-        # --- (a) current pool and (1) initial, from posted move lines ---
-        current = self._sum_by_account(
-            "budget.move.line",
-            move_base + [("move_type", "in", ("appropriation", "entry"))],
-            "balance",
-        )
-        initial = self._sum_by_account(
-            "budget.move.line",
-            move_base
-            + [
-                ("move_type", "=", "appropriation"),
-                ("appropriation_type", "=", "initial"),
-            ],
-            "balance",
-        )
-
-        # --- b/c/d from posted commitment lines of active commitments ---
-        by_type = self._sum_by_account_and_type(
-            "budget.commitment.line", cl_base, "amount"
-        )
-        reserved = by_type.get("reserve", {})
-        obligated = by_type.get("obligate", {})
-        consumed = by_type.get("consume", {})
-        # (g) ส่งคืนเงินเหลือจ่าย: the คืนจอง lines (negative reserve, is_return),
-        # summed separately as a memo column. The signed reserve bucket above
-        # already nets these in, so b/e/f need no change — they drop/rise on
-        # their own once a return is posted.
-        returned = self._sum_by_account(
-            "budget.commitment.line", cl_base + [("is_return", "=", True)], "amount"
-        )
-
-        cap = self._sum_by_account("budget.commitment", commit_domain, "amount")
 
         # --- roll own values up the subtree via parent_path ---
         keys = (
@@ -158,18 +129,9 @@ class BudgetDashboard(models.AbstractModel):
             "consumed",
             "returned",
         )
-        sources = {
-            "initial": initial,
-            "current": current,
-            "cap": cap,
-            "reserved": reserved,
-            "obligated": obligated,
-            "consumed": consumed,
-            "returned": returned,
-        }
         rolled = {aid: dict.fromkeys(keys, 0.0) for aid in account_ids}
         for acc in accounts:
-            own = {k: sources[k].get(acc.id, 0.0) for k in keys}
+            own = {k: sources[k].get((acc.id, ()), 0.0) for k in keys}
             if not any(own.values()):
                 continue
             for aid in self._ancestor_ids(acc):
@@ -207,6 +169,7 @@ class BudgetDashboard(models.AbstractModel):
             rows.append(self._make_row(acc, rolled[acc.id], level, bool(kids)))
             for child in reversed(kids):
                 stack.append((child, level + 1))
+        rows = self._dashboard_extra_rows(rows, facts, dims)
         return {"rows": rows, "currency_id": currency_id, "hier_op": hier_op}
 
     def _dashboard_domains(self, fiscal_year_id, account_ids, filters):
@@ -284,9 +247,7 @@ class BudgetDashboard(models.AbstractModel):
         dims = [d for d in breakdown if d]
         return dims or None
 
-    def _breakdown_rows(
-        self, dims, accounts, account_ids, move_base, cl_base, commit_domain
-    ):
+    def _breakdown_rows(self, dims, accounts, account_ids, sources):
         """Rows for an N-dimension breakdown nested over the budget-account tree.
 
         ``dims`` is an ordered list of analytic dimension fields, e.g.
@@ -309,39 +270,6 @@ class BudgetDashboard(models.AbstractModel):
             "obligated",
             "consumed",
             "returned",
-        )
-
-        sources = {
-            "current": self._facts_by_account_dims(
-                "budget.move.line",
-                move_base + [("move_type", "in", ("appropriation", "entry"))],
-                "balance",
-                dims,
-            ),
-            "initial": self._facts_by_account_dims(
-                "budget.move.line",
-                move_base
-                + [
-                    ("move_type", "=", "appropriation"),
-                    ("appropriation_type", "=", "initial"),
-                ],
-                "balance",
-                dims,
-            ),
-            "cap": self._cap_facts_by_account_dims(commit_domain, dims),
-        }
-        by_type = self._facts_by_account_dims_type(
-            "budget.commitment.line", cl_base, "amount", dims
-        )
-        sources["reserved"] = by_type.get("reserve", {})
-        sources["obligated"] = by_type.get("obligate", {})
-        sources["consumed"] = by_type.get("consume", {})
-        # (g) ส่งคืนเงินเหลือจ่าย: คืนจอง lines (negative reserve, is_return).
-        sources["returned"] = self._facts_by_account_dims(
-            "budget.commitment.line",
-            cl_base + [("is_return", "=", True)],
-            "amount",
-            dims,
         )
 
         # own[(account_id, dim_tuple)] = {metric: value}; 0 in a tuple = untagged
@@ -536,6 +464,70 @@ class BudgetDashboard(models.AbstractModel):
                 emit_node(0, level, base_parent)
 
         emit_level((), 0, 0)
+        return rows
+
+    def _dashboard_sources(self, dims, move_base, cl_base, commit_domain):
+        """{metric: {(account_id, dim_tuple): value}} for every column source.
+
+        ``dims`` may be empty (flat report: every tuple is ``()``).
+        """
+        sources = {
+            "current": self._facts_by_account_dims(
+                "budget.move.line",
+                move_base + [("move_type", "in", ("appropriation", "entry"))],
+                "balance",
+                dims,
+            ),
+            "initial": self._facts_by_account_dims(
+                "budget.move.line",
+                move_base
+                + [
+                    ("move_type", "=", "appropriation"),
+                    ("appropriation_type", "=", "initial"),
+                ],
+                "balance",
+                dims,
+            ),
+            "cap": self._cap_facts_by_account_dims(commit_domain, dims),
+        }
+        by_type = self._facts_by_account_dims_type(
+            "budget.commitment.line", cl_base, "amount", dims
+        )
+        sources["reserved"] = by_type.get("reserve", {})
+        sources["obligated"] = by_type.get("obligate", {})
+        sources["consumed"] = by_type.get("consume", {})
+        # (g) ส่งคืนเงินเหลือจ่าย: คืนจอง lines (negative reserve, is_return).
+        sources["returned"] = self._facts_by_account_dims(
+            "budget.commitment.line",
+            cl_base + [("is_return", "=", True)],
+            "amount",
+            dims,
+        )
+        return sources
+
+    @staticmethod
+    def _collapse_facts(facts, n):
+        """Sum ``facts`` over the tuple positions past the first ``n``."""
+        out = {}
+        for metric, values in facts.items():
+            collapsed = defaultdict(float)
+            for (acc_id, tup), val in values.items():
+                collapsed[(acc_id, tup[:n])] += val
+            out[metric] = dict(collapsed)
+        return out
+
+    def _dashboard_extra_fields(self):
+        """Extra stored fields to group the column sources by (none in core).
+
+        Extensions append fields here and read them back, per (account,
+        breakdown tuple + extra values), in :meth:`_dashboard_extra_rows`; the
+        core rows always see the facts collapsed onto the breakdown tuple.
+        """
+        return []
+
+    def _dashboard_extra_rows(self, rows, facts, dims):
+        """Hook to add rows built from the full ``facts`` (see
+        :meth:`_dashboard_extra_fields`). Core: rows unchanged."""
         return rows
 
     def _facts_by_account_dims(self, model, domain, field, dims):
@@ -1223,23 +1215,3 @@ class BudgetDashboard(models.AbstractModel):
     def _ancestor_ids(account):
         """ids along parent_path, root-first, including the account itself."""
         return [int(x) for x in (account.parent_path or "").strip("/").split("/") if x]
-
-    def _sum_by_account(self, model, domain, field):
-        result = {}
-        for grp in self.env[model].read_group(domain, [field], ["account_id"]):
-            account = grp.get("account_id")
-            if account:
-                result[account[0]] = grp.get(field) or 0.0
-        return result
-
-    def _sum_by_account_and_type(self, model, domain, field):
-        out = {}
-        groups = self.env[model].read_group(
-            domain, [field], ["account_id", "move_type"], lazy=False
-        )
-        for grp in groups:
-            account = grp.get("account_id")
-            move_type = grp.get("move_type")
-            if account and move_type:
-                out.setdefault(move_type, {})[account[0]] = grp.get(field) or 0.0
-        return out

@@ -149,6 +149,12 @@ export class BudgetDashboard extends Component {
         return filters;
     }
 
+    // Extra RPC context for get_dashboard_data (extension hook, e.g. to ask
+    // for extra row types).
+    get dashboardContext() {
+        return {};
+    }
+
     // The enabled breakdown dimensions in fixed nesting order (outer to inner).
     get breakdownList() {
         return this.breakdownOrder
@@ -172,7 +178,8 @@ export class BudgetDashboard extends Component {
                     this.state.rootAccountId || false,
                     this.effectiveFilters,
                     breakdown.length ? breakdown : false,
-                ]
+                ],
+                { context: this.dashboardContext }
             );
             this.state.rows = data.rows || [];
             this.state.hierOp = data.hier_op || "=";
