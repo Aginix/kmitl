@@ -290,8 +290,8 @@
         <table class="table table-bordered border table-sm budget">
             <thead>
                 <tr class="o_field_budget_commitment_id">
-                    <th class="fw-normal">เลขที่ใบจองงบประมาณ</th>
-                    <th class="fw-normal">
+                    <th class="fw-normal text-start align-top">เลขที่ใบจองงบประมาณ</th>
+                    <th class="fw-normal text-start align-top">
                         <span t-field="o.budget_commitment_id" />
                     </th>
                 </tr>
