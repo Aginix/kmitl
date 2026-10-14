@@ -409,9 +409,26 @@ class SarabunDocument(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if "routing_step_ids" in vals:
+        if self._routing_step_vals_resequenced(vals):
             self._normalize_routing_step_order()
         return res
+
+    @staticmethod
+    def _routing_step_vals_resequenced(vals):
+        """True iff ``vals`` carry a user-driven ``order`` UPDATE on
+        ``routing_step_ids`` — the drag-handle resequence. Engine writes
+        assign the o2m wholesale (CREATE commands) or edit unrelated fields
+        (verb/target UPDATEs without ``order``); neither path should trip
+        the renumber, which would otherwise collapse Parallel Stages (steps
+        sharing one ``order``) into sequential ones."""
+        for cmd in vals.get("routing_step_ids") or ():
+            if (
+                isinstance(cmd, (list, tuple)) and len(cmd) >= 3
+                and cmd[0] == 1 and isinstance(cmd[2], dict)
+                and "order" in cmd[2]
+            ):
+                return True
+        return False
 
     # === Computes ===
     @api.depends("state")
@@ -967,18 +984,35 @@ class SarabunDocument(models.Model):
             step.order = step.order + 1
 
     def _normalize_routing_step_order(self):
-        """Renumber routing_step_ids as 1..N in current visual order, originator
-        always at 1. Called after any user-driven ``order`` write (drag-handle
-        resequence) so gaps, duplicates, or a client that dropped the originator
-        away from first are all repaired in one pass. sudo() to bypass the step
+        """Renumber routing_step_ids as 1..M across *distinct* ``order`` values —
+        steps sharing one ``order`` form a Parallel Stage and keep sharing one
+        (new) ``order`` afterwards. The originator always lands on 1, alone.
+        Called after any user-driven ``order`` write (drag-handle resequence or
+        modal edit) so gaps and originator-dropped-away-from-first are repaired
+        in one pass without collapsing parallel stages. sudo() bypasses the step
         write guard (which would loop back here otherwise)."""
         for doc in self:
             steps = doc.routing_step_ids.sorted(key=lambda s: (s.order, s.id))
             originator = steps.filtered("is_originator")
-            ordered = list(originator) + list(steps - originator)
-            for i, step in enumerate(ordered, start=1):
-                if step.order != i:
-                    step.sudo().write({"order": i})
+            others = steps - originator
+            # Group non-originator steps by their current order to keep parallel
+            # stages grouped. ``others`` is already sorted by (order, id) so a
+            # single pass preserves the visual ordering.
+            new_order = 2  # originator takes 1
+            prev_order = None
+            remap = {}  # old-order → new-order (shared by all steps in that stage)
+            for step in others:
+                if step.order != prev_order:
+                    remap[step.order] = new_order
+                    new_order += 1
+                    prev_order = step.order
+            for step in originator:
+                if step.order != 1:
+                    step.sudo().write({"order": 1})
+            for step in others:
+                target = remap[step.order]
+                if step.order != target:
+                    step.sudo().write({"order": target})
 
     def _stage_complete(self, order):
         """A stage is passed when every gating step in it is positively done.

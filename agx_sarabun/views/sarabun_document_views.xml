@@ -216,7 +216,9 @@
                                     <field name="is_originator" invisible="1"/>
                                     <group>
                                         <group name="step_what">
-                                            <field name="order" string="ลำดับ" readonly="1" force_save="1"/>
+                                            <field name="order" string="ลำดับ"
+                                                   attrs="{'readonly': [('is_originator', '=', True)]}"
+                                                   help="Steps sharing the same ลำดับ run in parallel (Stage)."/>
                                             <field name="verb" widget="selection" />
                                         </group>
                                         <group>
