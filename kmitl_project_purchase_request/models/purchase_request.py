@@ -85,6 +85,19 @@ class PurchaseRequest(models.Model):
         # code (read-only), so the domain never blocks them.
         return super()._domain_budget_account_id() + [("is_project", "=", False)]
 
+    def write(self, vals):
+        # Mirror _onchange_budget_selection_mode_project server-side: a bare
+        # write of budget_selection_mode != 'project' with kmitl_project_id still
+        # set would otherwise re-enter the project branch in
+        # _prepare_procurement_under_vals and silently revert the mode.
+        if (
+            "budget_selection_mode" in vals
+            and vals["budget_selection_mode"] != "project"
+            and "kmitl_project_id" not in vals
+        ):
+            vals = dict(vals, kmitl_project_id=False)
+        return super().write(vals)
+
     def _procurement_under_fields(self):
         return super()._procurement_under_fields() | {"kmitl_project_id"}
 
