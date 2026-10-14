@@ -229,8 +229,8 @@ class PurchaseRequest(models.Model):
         project = self.reservation_commitment_id.kmitl_project_id
         if project:
             self._check_project_drawable(project)
-            if self.kmitl_project_id != project:
-                self.write({"kmitl_project_id": project.id})
+            if self.kmitl_project_id != project or self.budget_selection_mode != "project":
+                self.write({"budget_selection_mode": "project", "kmitl_project_id": project.id})
             self._enforce_project_budget_cap(project)
         return super()._action_draw_from_reservation()
 

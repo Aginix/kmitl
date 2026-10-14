@@ -273,8 +273,8 @@ class PurchaseRequest(models.Model):
                     % plan.display_name
                 )
             self._check_one_active_pr(plan)
-            if self.procurement_plan_id != plan:
-                self.write({"procurement_plan_id": plan.id})
+            if self.procurement_plan_id != plan or self.budget_selection_mode != "procurement_plan":
+                self.write({"budget_selection_mode": "procurement_plan", "procurement_plan_id": plan.id})
             if plan.state == "verified":
                 # The budget committer holds no write on procurement.plan.
                 plan.sudo().action_in_progress()

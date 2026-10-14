@@ -97,11 +97,15 @@
             <xpath expr="//field[@name='budget_selection_mode']" position="before">
                 <xpath expr="//field[@name='account_fiscal_year_id']" position="move" />
             </xpath>
-            <!-- A project/plan imposes its year: it is locked with the pick. -->
+            <!-- A project/plan imposes its year: it is locked with the pick.
+                 Also merges the sequence module's fiscal_year_locked condition
+                 (purchase_request_sequence_kmitl) so both locks survive when
+                 both modules are installed — position="attributes" replaces the
+                 whole attrs, so the last view applied wins (root ADR-0011). -->
             <xpath expr="//field[@name='account_fiscal_year_id']" position="attributes">
                 <attribute
                     name="attrs"
-                >{'readonly': ['|', ('is_editable', '=', False), '&amp;', ('budget_selection_mode', '!=', 'normal'), ('is_procurement_under_editable', '=', False)]}</attribute>
+                >{'readonly': ['|', ('fiscal_year_locked', '=', True), '|', ('is_editable', '=', False), '&amp;', ('budget_selection_mode', '!=', 'normal'), ('is_procurement_under_editable', '=', False)]}</attribute>
             </xpath>
             <xpath expr="//notebook" position="before">
                 <field name="product_id" invisible="1" />
