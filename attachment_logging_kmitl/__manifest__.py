@@ -8,6 +8,9 @@
     "development_status": "Beta",
     "category": "Hidden/Tools",
     "depends": ["attachment_logging"],
+    "data": [
+        "data/ir_config_parameter.xml",
+    ],
     "assets": {
         "web.assets_backend": [
             "attachment_logging_kmitl/static/src/**/*",
