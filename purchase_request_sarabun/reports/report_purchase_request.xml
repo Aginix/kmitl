@@ -99,6 +99,16 @@
          rendered live so numbers always match the reserved commitment. Expects
          `o` (a purchase.request) in context. -->
     <template id="report_purchase_request_body">
+        <!-- Bootstrap's `.table > :not(:first-child)` paints a 2px solid
+             separator between thead and tbody, which reads heavier than the
+             surrounding 1px cell borders. Flatten it so every line in both
+             tables renders at the same intensity. Lives inside the body so
+             it travels with the fragment under the Sarabun layout too. -->
+        <style>
+            .table > :not(:first-child) {
+                border-top-width: 1px !important;
+            }
+        </style>
         <div class="my-4" />
         <div class="row my-2">
             <div class="col">ขอให้จัดหาพัสดุ ดังตารางต่อไปนี้</div>
