@@ -52,6 +52,8 @@ class KmitlProject(models.Model):
     # budget figures as sudo so they don't read 0.
     budget_reserved = fields.Float(compute_sudo=True)
     budget_remaining = fields.Float(compute_sudo=True)
+    budget_consumed = fields.Float(compute_sudo=True)
+    budget_consumed_percent = fields.Float(compute_sudo=True)
     budget_commitment_count = fields.Integer(compute_sudo=True)
     budget_move_line_count = fields.Integer(compute_sudo=True)
 

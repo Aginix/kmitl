@@ -37,6 +37,11 @@
                 <field name="project_type"/>
                 <field name="manager_id" widget="many2one_avatar_employee" optional="show"/>
                 <field name="department_analytic_id" optional="show" />
+                <field name="budget_estimate" optional="show" sum="ตั้งไว้" />
+                <field name="budget_amount" optional="show" sum="ได้รับจัดสรร" />
+                <field name="budget_reserved" optional="show" sum="จอง" />
+                <field name="budget_consumed" optional="show" sum="เบิกจ่าย" />
+                <field name="budget_remaining" optional="show" sum="คงเหลือ" />
                 <field name="operating_unit_id" optional="hide" groups="operating_unit.group_multi_operating_unit" />
                 <field name="state" widget="badge"
                     decoration-info="state in ('to_verify', 'to_send', 'sent')"
@@ -108,6 +113,42 @@
                             <field name="name" placeholder="Project Name..."/>
                         </h2>
                     </div>
+                    <div name="budget_summary" class="row g-2 mb-3" attrs="{'invisible': [('id', '=', False)]}">
+                        <div class="col">
+                            <div class="border rounded p-2 h-100">
+                                <div class="text-muted small">งบประมาณที่ตั้งไว้</div>
+                                <field name="budget_estimate" class="fw-bold fs-5" readonly="1"/>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="border rounded p-2 h-100">
+                                <div class="text-muted small">ได้รับการจัดสรร (โอนเข้าแล้ว)</div>
+                                <field name="budget_amount" class="fw-bold fs-5"/>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="border rounded p-2 h-100">
+                                <div class="text-muted small">จองงบประมาณ</div>
+                                <field name="budget_reserved" class="fw-bold fs-5"/>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="border rounded p-2 h-100">
+                                <div class="text-muted small">เบิกจ่ายแล้ว</div>
+                                <field name="budget_consumed" class="fw-bold fs-5"/>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="border rounded p-2 h-100">
+                                <div class="text-muted small">คงเหลือ</div>
+                                <field name="budget_remaining" class="fw-bold fs-5" decoration-danger="budget_remaining &lt; 0"/>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <span class="text-muted small">เบิกจ่ายแล้วเทียบกับงบที่จอง</span>
+                            <field name="budget_consumed_percent" widget="progressbar"/>
+                        </div>
+                    </div>
                     <group>
                         <group>
                             <field name="id" invisible="1"/>
@@ -147,6 +188,8 @@
                                 <field name="nesdc_plan_id" />
                                 <field name="kmitl_plan_id" />
                             </group>
+                        </page>
+                        <page name="budget" string="งบประมาณ">
                             <group name="budget" string="งบประมาณ">
                                 <div attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('budget_amount', '>', 0)]}"
                                      class="alert alert-warning" role="alert" colspan="2">
@@ -159,9 +202,6 @@
                                 <field name="fund_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="department_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'returned'))]}" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="budget_estimate" />
-                                <field name="budget_amount" />
-                                <field name="budget_reserved" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
-                                <field name="budget_remaining" attrs="{'invisible': [('state', 'in', ('draft', 'to_verify'))]}"/>
                                 <field name="analytic_account_id" invisible="1" />
                                 <field name="analytic_distribution" invisible="1" />
                             </group>
