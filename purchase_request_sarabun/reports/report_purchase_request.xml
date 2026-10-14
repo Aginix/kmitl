@@ -104,11 +104,29 @@
              surrounding 1px cell borders. Flatten it so every line in both
              tables renders at the same intensity. Scope the rule to
              `.table-bordered` so the Sarabun header layout's unbordered
-             tables aren't picked up. Lives inside the body so it travels
-             with the fragment under the Sarabun layout too. -->
+             tables aren't picked up.
+
+             Also force the Sarabun `.doc-title` header area to be truly
+             border-free: the layout's own `.doc-title td { border: none }`
+             doesn't stop wkhtmltopdf emitting zero-size fill rectangles for
+             each cell edge, which some viewers (e.g. Chrome's PDF viewer)
+             rasterise as 1-pixel lines even though macOS Preview drops them.
+             Collapse the table and set width 0 on every cell to make the
+             header area truly borderless across every viewer.
+
+             Lives inside the body so it travels with the fragment under
+             the Sarabun layout too. -->
         <style>
             .table-bordered > :not(:first-child) {
                 border-top-width: 1px !important;
+            }
+            .doc-title,
+            .doc-title table,
+            .doc-title tr,
+            .doc-title td,
+            .doc-title th {
+                border: 0 none !important;
+                border-collapse: collapse !important;
             }
         </style>
         <div class="my-4" />
