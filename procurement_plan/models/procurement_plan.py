@@ -115,7 +115,9 @@ class ProcurementPlan(models.Model):
         tracking=True,
     )
     payment_ids = fields.One2many(
-        comodel_name="procurement.plan.payment", inverse_name="procurement_plan_id", copy=True
+        comodel_name="procurement.plan.payment",
+        inverse_name="procurement_plan_id",
+        copy=True,
     )
     user_id = fields.Many2one(
         string="User",
@@ -149,7 +151,12 @@ class ProcurementPlan(models.Model):
     @api.depends("state")
     def _compute_can_edit_description(self):
         for record in self:
-            record.can_edit_description = record.state in ("draft", "to_verify", "verified", "in_progress")
+            record.can_edit_description = record.state in (
+                "draft",
+                "to_verify",
+                "verified",
+                "in_progress",
+            )
 
     analytic_account_id = fields.Many2one(
         "account.analytic.account",
@@ -186,6 +193,13 @@ class ProcurementPlan(models.Model):
         return super().copy(default)
 
     def unlink(self):
+        if any(plan.state != "cancel" for plan in self):
+            raise UserError(
+                _(
+                    "Only cancelled procurement plans can be deleted. "
+                    "Please cancel it first."
+                )
+            )
         # Delete the empty related analytic account
         analytic_accounts_to_delete = self.env["account.analytic.account"]
         for record in self:
@@ -239,12 +253,15 @@ class ProcurementPlan(models.Model):
                 # to the fiscal year's end date — its Gregorian year + 543 is the
                 # BE fiscal-year number (e.g. FY 2570 ends 2027 → 2570).
                 fiscal_date = record.account_fiscal_year_id.date_to
-                record.name = self.env["ir.sequence"].with_context(
-                    ir_sequence_date=fiscal_date
-                ).next_by_code(
-                    "procurement.plan",
-                    sequence_date=fiscal_date,
-                ) or "/"
+                record.name = (
+                    self.env["ir.sequence"]
+                    .with_context(ir_sequence_date=fiscal_date)
+                    .next_by_code(
+                        "procurement.plan",
+                        sequence_date=fiscal_date,
+                    )
+                    or "/"
+                )
         self.write({"state": "to_verify"})
         for record in self:
             if not record.analytic_account_id:
@@ -292,9 +309,7 @@ class ProcurementPlan(models.Model):
         self.write({"state": "cancel"})
         # Archive the plan's analytic dimension so a cancelled plan's account
         # stops showing up as a selectable มิติ; action_reset_to_draft revives it.
-        self.analytic_account_id.filtered(lambda a: a.active).write(
-            {"active": False}
-        )
+        self.analytic_account_id.filtered(lambda a: a.active).write({"active": False})
 
     def _on_cancel(self):
         """No-op hook. Budget layer releases an untouched reservation here."""
