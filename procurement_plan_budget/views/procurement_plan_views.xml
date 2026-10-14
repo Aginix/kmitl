@@ -28,7 +28,7 @@
                         <span class="o_stat_text">Budget Commitment</span>
                     </div>
                 </button>
-                <button name="action_open_budget_move_lines" type="object" class="oe_stat_button" icon="fa-exchange">
+                <button name="action_open_budget_move_lines" type="object" class="oe_stat_button" icon="fa-exchange" groups="budget.group_budget_viewer">
                     <field name="budget_move_line_count" widget="statinfo" string="Budget Move" />
                 </button>
             </div>
