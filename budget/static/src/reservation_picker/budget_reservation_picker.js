@@ -145,13 +145,15 @@ export class BudgetReservationPicker extends BudgetDashboard {
     }
 
     onNarrowInput(args) {
-        this.state.narrowLabel = (args && args.inputValue) || "";
+        const text = (args && args.inputValue) || "";
         // Typing drops the prior pick: the reservation must use only a code
-        // chosen from the dropdown, never stale text-vs-code mismatch.
-        if (this.state.narrowAccount) {
+        // chosen from the dropdown, never stale text-vs-code mismatch. A late
+        // debounced input after a pick carries the picked label: keep the pick.
+        if (this.state.narrowAccount && text !== this.state.narrowLabel) {
             this.state.narrowAccount = false;
             this._refreshAvailability();
         }
+        this.state.narrowLabel = text;
     }
 
     onNarrowSelect(option) {
