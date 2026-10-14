@@ -86,6 +86,7 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.state.narrowAccount = false;
         this.state.narrowLabel = "";
         this.state.availabilityLine = false;
+        this.availabilitySeq = (this.availabilitySeq || 0) + 1; // drop in-flight
         if (!this.state.fiscalYearId) {
             this.state.rows = [];
             return;
@@ -145,7 +146,9 @@ export class BudgetReservationPicker extends BudgetDashboard {
 
     onNarrowInput(args) {
         this.state.narrowLabel = (args && args.inputValue) || "";
-        if (!this.state.narrowLabel) {
+        // Typing drops the prior pick: the reservation must use only a code
+        // chosen from the dropdown, never stale text-vs-code mismatch.
+        if (this.state.narrowAccount) {
             this.state.narrowAccount = false;
             this._refreshAvailability();
         }
@@ -160,11 +163,15 @@ export class BudgetReservationPicker extends BudgetDashboard {
     // Fetch the engine Available + resolved pool for the final selection and
     // show it on the footer line. Best-effort: any error just clears the line.
     async _refreshAvailability() {
+        // Only the latest call may write the line: a slower earlier response
+        // must not overwrite the figure for the current selection.
+        const seq = (this.availabilitySeq = (this.availabilitySeq || 0) + 1);
         const sel = this.selections;
         if (!this.selectMode || sel.length !== 1) {
             this.state.availabilityLine = false;
             return;
         }
+        let line = false;
         try {
             const detail = await this.orm.call(
                 "budget.controller",
@@ -172,12 +179,15 @@ export class BudgetReservationPicker extends BudgetDashboard {
                 [sel[0].account_id, this.selectedDistribution, this.state.fiscalYearId]
             );
             const pool = detail.pool;
-            this.state.availabilityLine = {
+            line = {
                 available: detail.available,
                 poolCode: pool ? pool.account.code : false,
             };
         } catch {
-            this.state.availabilityLine = false;
+            line = false;
+        }
+        if (seq === this.availabilitySeq) {
+            this.state.availabilityLine = line;
         }
     }
 
