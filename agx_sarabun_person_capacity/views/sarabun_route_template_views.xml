@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        In the Route-Template editable tree, position_id is now also editable in
+        person mode (optional capacity label). The tree view keeps a single column
+        for position_id — the dynamic-label trick used on the Document form would
+        add a second column, which clutters the tree. The Document form still
+        enforces the holder-only domain at send time; a template author may pre-fill
+        with any Position they intend as the signing capacity.
+    -->
+    <record id="view_sarabun_route_template_form_person_capacity" model="ir.ui.view">
+        <field name="name">sarabun.route.template.form.person.capacity</field>
+        <field name="model">sarabun.route.template</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_route_template_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='position_id']" position="attributes">
+                <attribute name="attrs">{'required': [('target_mode', '=', 'position')], 'readonly': [('target_mode', 'not in', ('position', 'person'))]}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

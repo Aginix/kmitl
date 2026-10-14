@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Add a second instance of position_id in the Routing-Step dialog form,
+        shown only in person mode as the optional signing capacity. The original
+        position_id instance (invisible unless position mode) is untouched, so
+        position-mode behaviour is unchanged if this add-on is uninstalled.
+    -->
+    <record id="view_sarabun_document_form_person_capacity" model="ir.ui.view">
+        <field name="name">sarabun.document.form.person.capacity</field>
+        <field name="model">sarabun.document</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='routing_step_ids']/form/group[@name='step_who']/field[@name='employee_id']" position="after">
+                <field name="position_id"
+                       string="ลงนามในฐานะ (Capacity)"
+                       colspan="2"
+                       attrs="{'invisible': [('target_mode', '!=', 'person')], 'readonly': [('is_originator', '=', True)]}"
+                       domain="[('holder_ids', 'in', employee_id)]"
+                       options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

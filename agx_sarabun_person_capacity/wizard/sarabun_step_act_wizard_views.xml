@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Act-on-step wizard — expose target_position_id in person mode as an optional
+        signing capacity (held by the pinned person). The original position-mode
+        instance stays untouched, so uninstalling this add-on restores the pre-change
+        wizard exactly.
+    -->
+    <record id="view_sarabun_step_act_wizard_form_person_capacity" model="ir.ui.view">
+        <field name="name">sarabun.step.act.wizard.form.person.capacity</field>
+        <field name="model">sarabun.step.act.wizard</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_step_act_wizard_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='target_employee_id']" position="after">
+                <field name="target_position_id"
+                       string="ลงนามในฐานะ (Capacity)"
+                       attrs="{'invisible': [('target_mode', '!=', 'person')]}"
+                       domain="[('holder_ids', 'in', target_employee_id)]"
+                       options="{'no_open': True, 'no_create': True, 'no_edit': True}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
