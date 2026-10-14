@@ -99,20 +99,6 @@
          rendered live so numbers always match the reserved commitment. Expects
          `o` (a purchase.request) in context. -->
     <template id="report_purchase_request_body">
-        <!-- Border styling kept inside the body so it travels with the fragment
-             when the Sarabun bridge renders it under its own basic_layout
-             (where the parent report's <style> block is not included). -->
-        <style>
-            .table-bordered {
-                border-collapse: separate !important;
-                border-spacing: 0 !important;
-            }
-            .table-bordered,
-            .table-bordered > :not(caption) > *,
-            .table-bordered > :not(caption) > * > * {
-                border: 1px solid #000 !important;
-            }
-        </style>
         <div class="my-4" />
         <div class="row my-2">
             <div class="col">ขอให้จัดหาพัสดุ ดังตารางต่อไปนี้</div>
@@ -291,14 +277,16 @@
     </record>
 
     <template id="report_purchase_request_budget">
-        <table class="table table-bordered table-sm budget">
-            <tbody>
+        <table class="table table-bordered border table-sm budget">
+            <thead>
                 <tr class="o_field_budget_commitment_id">
-                    <td>เลขที่ใบจองงบประมาณ</td>
-                    <td>
+                    <th class="fw-normal">เลขที่ใบจองงบประมาณ</th>
+                    <th class="fw-normal">
                         <span t-field="o.budget_commitment_id" />
-                    </td>
+                    </th>
                 </tr>
+            </thead>
+            <tbody>
                 <tr class="o_field_budget_account_id">
                     <td>รหัสงบประมาณค่าใช้จ่าย</td>
                     <td>
