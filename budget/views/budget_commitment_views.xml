@@ -117,7 +117,7 @@
                     </group>
 
                     <notebook>
-                        <page name="lines" string="Ledger Lines">
+                        <page name="lines" string="เหตุการณ์ใบจอง">
                             <field name="line_ids" readonly="1">
                                 <tree decoration-muted="state == 'cancel'" create="false">
                                     <field name="date"/>
@@ -141,6 +141,21 @@
                                     <button name="action_cancel" type="object"
                                         icon="fa-times" title="Cancel Line"
                                         attrs="{'invisible': [('state', '=', 'cancel')]}"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="ledger" string="บัญชีงบประมาณ">
+                            <field name="ledger_line_ids" readonly="1">
+                                <tree decoration-muted="parent_state != 'posted'" create="false">
+                                    <field name="date" />
+                                    <field name="move_id" />
+                                    <field name="move_type" />
+                                    <field name="account_id" />
+                                    <field name="activity_analytic_id" optional="show" />
+                                    <field name="fund_analytic_id" optional="show" />
+                                    <field name="balance" sum="Σ" />
+                                    <field name="is_liquidation" optional="hide" />
+                                    <field name="parent_state" widget="badge" decoration-success="parent_state == 'posted'" />
                                 </tree>
                             </field>
                         </page>

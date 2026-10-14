@@ -97,7 +97,8 @@ class TestKmitlProjectBudgetTransfer(TransactionCase):
     # ------------------------------------------------------------------
     def _allowed(self, **vals):
         line = self.env["budget.move.line"].new(dict(vals, transfer_direction="to"))
-        return line.allowed_kmitl_project_analytic_ids
+        # a new record's x2many holds NewIds; compare the real records
+        return line.allowed_kmitl_project_analytic_ids._origin
 
     def test_picker_blank_dimensions_do_not_filter(self):
         self.assertIn(self.proj_tag, self._allowed())

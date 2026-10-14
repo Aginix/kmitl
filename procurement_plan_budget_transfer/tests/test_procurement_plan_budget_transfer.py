@@ -180,7 +180,8 @@ class TestProcurementPlanBudgetTransfer(TransactionCase):
 
         def allowed(**vals):
             line = Line.new(dict(vals, transfer_direction="to"))
-            return line.allowed_procurement_plan_analytic_ids
+            # a new record's x2many holds NewIds; compare the real records
+            return line.allowed_procurement_plan_analytic_ids._origin
 
         self.assertIn(tag, allowed())  # blank dimensions do not filter
         self.assertIn(
