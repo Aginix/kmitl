@@ -63,15 +63,24 @@ patch(BudgetDashboard.prototype, "budget_dashboard_pool_tag.BudgetDashboard", {
     },
 
     get visibleRows() {
-        // Search also matches item (project / plan) code or name.
+        // Search also matches item (project / plan) code or name, and a
+        // matched budget code keeps its items.
         const query = (this.state.accountSearch || "").trim().toLowerCase();
+        const matches = (row) =>
+            (row.code || "").toLowerCase().includes(query) ||
+            (row.name || "").toLowerCase().includes(query);
+        const byKey = query ? this.rowsByKey : {};
         const rows = query
-            ? this._rowsWithAncestors(
-                  (row) =>
-                      (row.row_type === "account" || row.row_type === "pool_tag") &&
-                      ((row.code || "").toLowerCase().includes(query) ||
-                          (row.name || "").toLowerCase().includes(query))
-              )
+            ? this._rowsWithAncestors((row) => {
+                  if (row.row_type === "account") {
+                      return matches(row);
+                  }
+                  if (row.row_type !== "pool_tag") {
+                      return false;
+                  }
+                  const code = byKey[row.parent_key];
+                  return matches(row) || Boolean(code && matches(code));
+              })
             : this._super();
         return this.state.showPoolTags
             ? rows
