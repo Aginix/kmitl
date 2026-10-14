@@ -181,14 +181,6 @@
                         </group>
                     </group>
                     <notebook>
-                        <page name="strategic" string="ความสอดคล้องแผนยุทธศาสตร์">
-                            <group>
-                                <field name="national_strategy_id" />
-                                <field name="master_plan_id" />
-                                <field name="nesdc_plan_id" />
-                                <field name="kmitl_plan_id" />
-                            </group>
-                        </page>
                         <page name="budget" string="งบประมาณ">
                             <group name="budget" string="งบประมาณ">
                                 <div attrs="{'invisible': ['|', ('state', '!=', 'to_verify'), ('budget_amount', '>', 0)]}"
@@ -204,6 +196,14 @@
                                 <field name="budget_estimate" />
                                 <field name="analytic_account_id" invisible="1" />
                                 <field name="analytic_distribution" invisible="1" />
+                            </group>
+                        </page>
+                        <page name="strategic" string="ความสอดคล้องแผนยุทธศาสตร์">
+                            <group>
+                                <field name="national_strategy_id" />
+                                <field name="master_plan_id" />
+                                <field name="nesdc_plan_id" />
+                                <field name="kmitl_plan_id" />
                             </group>
                         </page>
                         <page name="introduction" string="รายละเอียดโครงการ/กิจกรรม">
