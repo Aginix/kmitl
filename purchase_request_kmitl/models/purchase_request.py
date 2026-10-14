@@ -202,6 +202,16 @@ class PurchaseRequest(models.Model):
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
     can_reset_to_draft = fields.Boolean(compute="_compute_can_reset_to_draft")
 
+    def copy(self, default=None):
+        # title is a stored compute (copy=False by default), and when the source
+        # has no expense_type to compose from, _compute_title falls through to a
+        # self-assign that would read False from the new record's cache and
+        # blank the legacy title. Carry it over so the compute's no-op path
+        # finds the original wording.
+        default = dict(default or {})
+        default.setdefault("title", self.title)
+        return super().copy(default)
+
     @api.depends("procurement_type_id", "expense_type")
     def _compute_title(self):
         """ชื่อเรื่อง = ขอให้{ประเภทการจัดซื้อ/จ้าง}{ประเภทค่าใช้จ่าย}, never typed
