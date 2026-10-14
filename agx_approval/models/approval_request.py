@@ -446,7 +446,9 @@ class ApprovalRequest(models.Model):
         """
         domain = super()._reservation_account_domain() + self._domain_budget_account_id()
         if self.category_id.budget_account_id:
-            domain += [("id", "=", self.category_id.budget_account_id.id)]
+            # child_of, not =: the category pins a budget *branch*, so a
+            # reservation may name any descendant of the funded code (ADR-0016).
+            domain += [("id", "child_of", self.category_id.budget_account_id.id)]
         return domain
 
     def _get_commitment_title(self):
