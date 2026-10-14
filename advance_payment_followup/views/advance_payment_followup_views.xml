@@ -12,6 +12,7 @@
                 <field name="name"/>
                 <field name="contract_number"/>
                 <field name="employee_id"/>
+                <field name="employee_name" optional="hide"/>
                 <field name="loan_verifier_id"/>
                 <field name="loan_amount"/>
                 <field name="amount_remaining"/>
