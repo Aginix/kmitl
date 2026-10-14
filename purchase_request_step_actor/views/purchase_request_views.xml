@@ -29,6 +29,7 @@
                         class="d-inline"
                     />
                     <span
+                        class="ms-1"
                         attrs="{'invisible': [('step_actor_ids', '!=', [])]}"
                     >ยังไม่มีผู้มีสิทธิ์ในหน่วยงานนี้ — โปรดติดต่อผู้ดูแลระบบ</span>
                 </div>
