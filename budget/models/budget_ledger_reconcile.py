@@ -74,8 +74,8 @@ class BudgetLedgerReconcile(models.TransientModel):
         commitments = Commitment.search([("state", "!=", "draft")])
         rows = []
         labels = (_("ยอดจองงบ"), _("ยอดผูกพัน"), _("ยอดตัดงบ"))
-        for commitment in commitments._ledger_mismatches():
-            legacy = commitment._ledger_legacy_totals()
+        details = commitments._ledger_mismatch_details()
+        for commitment, (legacy, shortfall) in details.items():
             ledger = (
                 commitment.total_reserved,
                 commitment.total_obligated,
@@ -96,7 +96,6 @@ class BudgetLedgerReconcile(models.TransientModel):
                         "difference": new - old,
                     }
                 )
-            shortfall = commitment._ledger_tag_shortfall()
             if shortfall:
                 rows.append(
                     {

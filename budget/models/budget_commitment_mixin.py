@@ -593,9 +593,11 @@ class BudgetCommitmentMixin(models.AbstractModel):
                 _("Commitment must be in reserved or partial state to obligate.")
             )
 
+        # Only what is still unobligated: total_reserved also counts what has
+        # been obligated or consumed (b + c + d, ADR-0017).
         commitment._post_budget_event(
             "obligate",
-            commitment.total_reserved,
+            commitment.available_to_obligate,
             source=self,
             name=_("Obligation from %s") % self.display_name,
         )

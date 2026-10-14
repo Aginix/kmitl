@@ -210,9 +210,6 @@ class ProcurementPlan(models.Model):
         commitment = self.env["budget.commitment"].create(
             self._prepare_plan_commitment_vals()
         )
-        commitment._post_budget_event(
-            "reserve", self.total_price, name=_("Initial reservation")
-        )
         commitment.action_reserve()
         self.message_post(
             body=_("จองงบประมาณ %s จำนวน %s")

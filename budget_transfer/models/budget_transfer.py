@@ -492,6 +492,7 @@ class BudgetTransfer(models.Model):
         if self.move_id.line_ids.filtered("commitment_id"):
             return commitments  # already applied (idempotent re-post)
         free = {}  # unreserved money left per owner's coordinate
+        released = {}  # already released by this transfer, per reservation code
         for line in self.line_ids.filtered("transfer_direction"):
             commitment = line._pool_owner()
             if not commitment:
@@ -509,7 +510,12 @@ class BudgetTransfer(models.Model):
                 if float_compare(amount, 0.0, precision_rounding=rounding) <= 0:
                     continue
                 # On a ถัวจ่าย slip only this code's share may go (ADR-0018).
-                free_to_release = commitment._ledger_unobligated(line.account_id)
+                # The ledger only holds posted lines: deduct what earlier FROM
+                # lines of this transfer already release.
+                key = (commitment, line.account_id)
+                free_to_release = commitment._ledger_unobligated(
+                    line.account_id
+                ) - released.get(key, 0.0)
                 if (
                     float_compare(
                         amount,
@@ -535,6 +541,7 @@ class BudgetTransfer(models.Model):
                             ),
                         }
                     )
+                released[key] = released.get(key, 0.0) + amount
                 amount = -amount
             commitment._post_transfer_event(line, amount)
             commitments |= commitment

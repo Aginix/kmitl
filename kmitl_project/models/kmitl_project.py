@@ -1170,9 +1170,6 @@ class KmitlProject(models.Model):
         if "operating_unit_id" in Commitment._fields:
             vals["operating_unit_id"] = self.operating_unit_id.id or False
         commitment = Commitment.create(vals)
-        commitment._post_budget_event(
-            "reserve", self.budget_amount, name=_("Initial reservation")
-        )
         commitment.action_reserve()
         self.message_post(
             body=_("จองงบประมาณ %s จำนวน %s บาท")

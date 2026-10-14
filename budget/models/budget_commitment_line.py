@@ -116,6 +116,7 @@ class BudgetCommitmentLine(models.Model):
         string="Budget Move",
         readonly=True,
         index=True,
+        copy=False,
         ondelete="set null",
     )
     budget_move_line_id = fields.Many2one(
@@ -336,6 +337,15 @@ class BudgetCommitmentLine(models.Model):
 
     def _prepare_ledger_move_vals(self):
         self.ensure_one()
+        return dict(
+            self._prepare_ledger_move_header_vals(),
+            line_ids=[
+                Command.create(vals) for vals in self._prepare_ledger_line_vals()
+            ],
+        )
+
+    def _prepare_ledger_move_header_vals(self):
+        self.ensure_one()
         commitment = self.commitment_id
         vals = {
             "date": self.date,
@@ -350,9 +360,6 @@ class BudgetCommitmentLine(models.Model):
             "currency_id": commitment.currency_id.id,
             "commitment_id": commitment.id,
             "commitment_line_id": self.id,
-            "line_ids": [
-                Command.create(vals) for vals in self._prepare_ledger_line_vals()
-            ],
         }
         move_fields = self.env["budget.move"]._fields
         if (
@@ -524,7 +531,9 @@ class BudgetCommitmentLine(models.Model):
         for every plan the line does not carry (a host's reserve line often
         carries only activity + fund; the header carries the rest)."""
         self.ensure_one()
-        Analytic = self.env["account.analytic.account"]
+        # sudo: the plan is unreadable outside the accounting groups, and every
+        # event posting (e.g. a DR approver's) passes through here.
+        Analytic = self.env["account.analytic.account"].sudo()
         distribution = dict(self.analytic_distribution or {})
         plans = {
             account.root_plan_id.code
@@ -585,7 +594,7 @@ class BudgetCommitmentLine(models.Model):
         # The header is not stamped as the event: the reversal undoes an
         # event, it is not one.
         vals = dict(
-            self._prepare_ledger_move_vals(),
+            self._prepare_ledger_move_header_vals(),
             commitment_line_id=False,
             date=fields.Date.context_today(self),
             note=_("ยกเลิก: %s") % (self.name or ""),

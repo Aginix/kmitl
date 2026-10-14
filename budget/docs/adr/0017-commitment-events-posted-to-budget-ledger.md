@@ -87,7 +87,7 @@ transfer top-up/release lives in `budget_transfer`.
     release so no figure is computed two ways.)
 11. **Same BM/ sequence; back-fill reports, never aborts (Q11).** Event moves use
     the existing `budget.move` sequence. The back-fill runs as the `budget`
-    upgrade's post-migration: it posts the history in date order per reservation
+    upgrade's post-migration: it posts the history in creation order per reservation
     (re-using each existing consume move and adding its liquidation lines),
     checks the invariants, logs every mismatch and keeps upgrading. A
     reconciliation menu lists what does not match.

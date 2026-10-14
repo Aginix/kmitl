@@ -83,8 +83,8 @@ class KmitlProjectBudgetMoveLine(models.Model):
                     m.date AS date,
                     l.account_fiscal_year_id AS account_fiscal_year_id,
                     CASE
-                        WHEN m.move_type = 'appropriation' THEN 'appropriation'
-                        WHEN m.move_type = 'consume' THEN 'consume'
+                        WHEN l.move_type = 'appropriation' THEN 'appropriation'
+                        WHEN l.move_type = 'consume' THEN 'consume'
                         WHEN l.transfer_direction = 'to' THEN 'transfer_in'
                         WHEN l.transfer_direction = 'from' THEN 'transfer_out'
                         ELSE 'entry'
@@ -131,7 +131,10 @@ class KmitlProjectBudgetMoveLine(models.Model):
                 JOIN kmitl_project p
                     ON p.analytic_account_id = l.kmitl_project_analytic_id
                 LEFT JOIN budget_transfer t ON t.move_id = m.id
-                WHERE m.move_type IN ('appropriation', 'entry', 'consume')
+                -- The line's own bucket, not the move's (budget ADR-0017):
+                -- skips a consume's liquidation and a transfer's reservation
+                -- top-up/release lines.
+                WHERE l.move_type IN ('appropriation', 'entry', 'consume')
                     AND (
                         m.state = 'posted'
                         OR t.state IN ('submitted', 'sent', 'returned')

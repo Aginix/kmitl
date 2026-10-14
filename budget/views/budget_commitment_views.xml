@@ -144,7 +144,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page name="ledger" string="บัญชีงบประมาณ">
+                        <page name="ledger" string="บัญชีงบประมาณ" groups="budget.group_budget_viewer">
                             <field name="ledger_line_ids" readonly="1">
                                 <tree decoration-muted="parent_state != 'posted'" create="false">
                                     <field name="date" />

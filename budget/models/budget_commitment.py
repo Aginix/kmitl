@@ -256,7 +256,9 @@ class BudgetCommitment(models.Model):
         comodel_name="budget.commitment.line",
         inverse_name="commitment_id",
         string="เหตุการณ์ใบจอง",
-        copy=True,
+        # A duplicate starts as a fresh draft: action_reserve re-builds its
+        # reserve event from the header (ADR-0017).
+        copy=False,
     )
 
     # Computed balances from lines
@@ -1034,18 +1036,52 @@ class BudgetCommitment(models.Model):
         """(reserved, obligated, consumed) re-derived from the posted events the
         old way, for reconciliation only — never used as a figure."""
         self.ensure_one()
+        currency = self.currency_id or self.env.company.currency_id
         sums = dict.fromkeys(_BUCKETS, 0.0)
-        for line in self.line_ids.filtered(lambda line: line.state == "posted"):
+        # Per source document, like the ledger routes a consume
+        # (budget.commitment.line._ledger_entries): net obligated, and net
+        # consumed straight from the reserve.
+        obligated, from_reserve = {}, {}
+
+        def held(bucket, source):
+            return bucket.get(source, 0.0) if source else sum(bucket.values())
+
+        for line in self.line_ids.filtered(lambda line: line.state == "posted").sorted(
+            "id"
+        ):
             sums[line.move_type] += line.amount
-        # The old ledger forbade consuming more than obligated; a consume that
-        # liquidated the reserve directly counts as obligated too.
-        return sums["reserve"], max(sums["obligate"], sums["consume"]), sums["consume"]
+            source = line.res_model and (line.res_model, line.res_id)
+            if line.move_type == "obligate":
+                obligated[source] = obligated.get(source, 0.0) + line.amount
+            elif line.move_type == "consume":
+                if line.amount > 0:
+                    drew = currency.compare_amounts(held(obligated, source), 0.0) <= 0
+                else:
+                    drew = (
+                        currency.compare_amounts(
+                            held(from_reserve, source), -line.amount
+                        )
+                        >= 0
+                    )
+                if drew:
+                    from_reserve[source] = from_reserve.get(source, 0.0) + line.amount
+        # A consume that liquidated the reserve directly counts as obligated too.
+        return (
+            sums["reserve"],
+            sums["obligate"] + sum(from_reserve.values()),
+            sums["consume"],
+        )
 
     def _ledger_mismatches(self):
         """Reservations whose ledger figures differ from their posted events,
         or whose pool-tag coordinate is over-committed (see
         :meth:`_ledger_tag_shortfall`)."""
-        mismatched = self.browse()
+        return self.browse([c.id for c in self._ledger_mismatch_details()])
+
+    def _ledger_mismatch_details(self):
+        """{reservation: (legacy totals, tag shortfall)} of the reservations
+        that do not reconcile — each figure computed once."""
+        details = {}
         for commitment in self:
             rounding = commitment.currency_id.rounding or 0.01
             legacy = commitment._ledger_legacy_totals()
@@ -1054,12 +1090,13 @@ class BudgetCommitment(models.Model):
                 commitment.total_obligated,
                 commitment.total_consumed,
             )
-            if any(
+            shortfall = commitment._ledger_tag_shortfall()
+            if shortfall or any(
                 float_compare(a, b, precision_rounding=rounding)
                 for a, b in zip(legacy, ledger)
-            ) or commitment._ledger_tag_shortfall():
-                mismatched |= commitment
-        return mismatched
+            ):
+                details[commitment] = (legacy, shortfall)
+        return details
 
     def _ledger_tag_shortfall(self):
         """How far an active reservation's own pool-tag coordinate (โครงการ /
@@ -1099,7 +1136,8 @@ class BudgetCommitment(models.Model):
     def _ledger_backfill(self):
         """Post the history of every active reservation to the ledger.
 
-        Per reservation, its posted events are posted in date order; an event
+        Per reservation, its posted events are posted in creation order — the
+        editable ``date`` may precede the reserve an event liquidates; an event
         that already has its consume move keeps it and gains the liquidation
         lines. Mismatches are logged and kept in
         ``budget.ledger_backfill_mismatch_commitment_ids`` — the upgrade never
@@ -1116,7 +1154,7 @@ class BudgetCommitment(models.Model):
         for commitment in commitments:
             events = commitment.line_ids.filtered(
                 lambda line: line.state == "posted" and not line.budget_move_line_id
-            ).sorted(lambda line: (line.date, line.id))
+            ).sorted("id")
             for event in events:
                 try:
                     with self.env.cr.savepoint():
