@@ -771,17 +771,6 @@ class BudgetDashboard(models.AbstractModel):
         )
         return sources
 
-    @staticmethod
-    def _collapse_facts(facts, n):
-        """Sum ``facts`` over the tuple positions past the first ``n``."""
-        out = {}
-        for metric, values in facts.items():
-            collapsed = defaultdict(float)
-            for (acc_id, tup), val in values.items():
-                collapsed[(acc_id, tup[:n])] += val
-            out[metric] = dict(collapsed)
-        return out
-
     def _dashboard_extra_fields(self):
         """Extra stored fields to group the column sources by (none in core).
 
