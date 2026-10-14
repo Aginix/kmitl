@@ -96,6 +96,20 @@ class PurchaseRequest(models.Model):
             new.line_ids.write({"analytic_distribution": False})
         return new
 
+    def write(self, vals):
+        # Mirror _onchange_budget_selection_mode_procurement_plan server-side:
+        # a bare write of budget_selection_mode != 'procurement_plan' with
+        # procurement_plan_id still set would otherwise re-enter the plan
+        # branch in _prepare_procurement_under_vals and silently revert the
+        # mode (and may re-raise the 1 แผน = 1 พ.1 check on unrelated writes).
+        if (
+            "budget_selection_mode" in vals
+            and vals["budget_selection_mode"] != "procurement_plan"
+            and "procurement_plan_id" not in vals
+        ):
+            vals = dict(vals, procurement_plan_id=False)
+        return super().write(vals)
+
     def _procurement_under_fields(self):
         return super()._procurement_under_fields() | {"procurement_plan_id"}
 
@@ -308,7 +322,11 @@ class PurchaseRequest(models.Model):
         )
         if active_others:
             raise UserError(
-                _("แผนจัดซื้อจัดจ้าง %s มีใบขอซื้อที่ยังดำเนินการอยู่แล้ว (1 แผน ต่อ 1 ใบขอซื้อ)")
+                _(
+                    "แผนจัดซื้อจัดจ้าง %s มีใบขอซื้อที่ยังดำเนินการอยู่แล้ว "
+                    "(1 แผน ต่อ 1 ใบขอซื้อ) — อาจมีผู้ใช้อื่นหยิบแผนนี้ไปแล้ว "
+                    "กรุณารีเฟรชหน้าเพื่อดูรายการแผนล่าสุด"
+                )
                 % plan.display_name
             )
 
