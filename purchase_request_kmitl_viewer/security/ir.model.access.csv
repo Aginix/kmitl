@@ -1,0 +1,4 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_procurement_type_viewer,procurement type viewer,purchase_request_kmitl.model_procurement_type,purchase_viewer.group_purchase_viewer,1,0,0,0
+access_procurement_method_viewer,procurement method viewer,purchase_request_kmitl.model_procurement_method,purchase_viewer.group_purchase_viewer,1,0,0,0
+access_procurement_committee_viewer,procurement committee viewer,purchase_request_kmitl.model_procurement_committee,purchase_viewer.group_purchase_viewer,1,0,0,0

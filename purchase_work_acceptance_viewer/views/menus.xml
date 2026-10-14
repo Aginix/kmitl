@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="purchase_work_acceptance_kmitl.menu_purchase_work_acceptance" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('purchase_viewer.group_purchase_viewer'))]"/>
+    </record>
+</odoo>
