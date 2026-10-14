@@ -1,9 +1,9 @@
 /** @odoo-module **/
 
-import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
-import { Component, onWillStart, useState } from "@odoo/owl";
-import { EChart } from "./echart";
+import {registry} from "@web/core/registry";
+import {useService} from "@web/core/utils/hooks";
+import {Component, onWillStart, useState} from "@odoo/owl";
+import {EChart} from "./echart";
 
 // แหล่งเงิน is a single, mandatory scope (mirrors the detail report so the
 // card figures equal what the drill-down shows). Defaults to source code "2".
@@ -74,7 +74,7 @@ export class BudgetOverview extends Component {
             totals: {},
             sections: [],
             timeseries: {},
-            recent: { commitment: [], move: [], transfer: [] },
+            recent: {commitment: [], move: [], transfer: []},
             loading: false,
         });
         onWillStart(this.onWillStart.bind(this));
@@ -85,15 +85,20 @@ export class BudgetOverview extends Component {
             "account.fiscal.year",
             [],
             ["id", "name", "date_from", "date_to"],
-            { order: "date_from desc" }
+            {order: "date_from desc"}
         );
         this.sources = await this.orm.searchRead(
             "account.analytic.account",
             [["root_plan_id.code", "=", "sources"]],
             ["id", "display_name", "code"],
-            { order: "code" }
+            {order: "code"}
         );
-        const today = new Date().toISOString().slice(0, 10);
+        const d = new Date();
+        const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+            2,
+            "0"
+        )}-${String(d.getDate()).padStart(2, "0")}`;
+
         const covering = this.fiscalYears.find(
             (fy) => fy.date_from <= today && fy.date_to >= today
         );
@@ -135,7 +140,7 @@ export class BudgetOverview extends Component {
             this.state.sections = data.sections || [];
             this.state.timeseries = data.timeseries || {};
             this.state.hierOp = data.hier_op || "=";
-            this.state.recent = data.recent || { commitment: [], move: [], transfer: [] };
+            this.state.recent = data.recent || {commitment: [], move: [], transfer: []};
         } finally {
             this.state.loading = false;
         }
@@ -397,22 +402,22 @@ export class BudgetOverview extends Component {
             name,
             type: "bar",
             stack: "usage",
-            emphasis: { focus: "series" },
-            itemStyle: { color },
+            emphasis: {focus: "series"},
+            itemStyle: {color},
             data: data || [],
         });
         return {
             tooltip: {
                 trigger: "axis",
-                axisPointer: { type: "shadow" },
+                axisPointer: {type: "shadow"},
                 valueFormatter: (v) => this.format(v),
             },
-            legend: { data: ["จอง", "ผูกพัน", "เบิกจ่าย"], bottom: 0 },
-            grid: { left: 8, right: 16, top: 16, bottom: 40, containLabel: true },
-            xAxis: { type: "category", data: ts.labels || [] },
+            legend: {data: ["จอง", "ผูกพัน", "เบิกจ่าย"], bottom: 0},
+            grid: {left: 8, right: 16, top: 16, bottom: 40, containLabel: true},
+            xAxis: {type: "category", data: ts.labels || []},
             yAxis: {
                 type: "value",
-                axisLabel: { formatter: (v) => this._compactNumber(v) },
+                axisLabel: {formatter: (v) => this._compactNumber(v)},
             },
             series: [
                 bar("จอง", ts.reserve, "#3b82f6"),
@@ -438,6 +443,6 @@ export class BudgetOverview extends Component {
 }
 
 BudgetOverview.template = "budget.BudgetOverview";
-BudgetOverview.components = { EChart };
+BudgetOverview.components = {EChart};
 
 registry.category("actions").add("budget_overview", BudgetOverview);
