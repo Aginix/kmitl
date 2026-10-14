@@ -610,6 +610,10 @@ class PurchaseRequestApproval(models.Model):
         default = dict(default or {})
         self.ensure_one()
         default.update({"state": "draft", "name": "/"})
+        # title is a stored compute (copy=False) whose fallback branch
+        # self-assigns from the new record's cache (= False) and blanks a
+        # legacy title. Carry it so the fallback finds the original.
+        default.setdefault("title", self.title)
         return super().copy(default)
 
     @api.model_create_multi
