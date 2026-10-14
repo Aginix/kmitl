@@ -176,3 +176,67 @@ li.nav-item.cursor-pointer .nav-link.active {
     padding-top: 10px;
     border-radius: 4px 4px 0 0;
 }
+
+// Smart buttons — match the notebook's accent language so these feel
+// obviously clickable: tinted base, deeper hover with a lift, colored
+// icon + left-stripe to signal action.
+.oe_button_box {
+    .oe_stat_button {
+        background-color: #{"rgb(from var(--odoo) r g b / 0.08)"};
+        border: 1px solid #{"rgb(from var(--odoo) r g b / 0.25)"};
+        border-left: 3px solid var(--odoo);
+        border-radius: 4px;
+        color: var(--odoo-color-darkest);
+        margin: 2px 4px 2px 0;
+        padding: 4px 8px;
+        transition: background-color 0.15s ease,
+                    border-color 0.15s ease,
+                    transform 0.15s ease,
+                    box-shadow 0.15s ease;
+
+        > .o_button_icon,
+        > .fa,
+        > .fa-stack {
+            color: var(--odoo);
+            transition: color 0.15s ease, transform 0.15s ease;
+        }
+
+        .o_stat_info .o_stat_value {
+            color: var(--odoo-color-darkest);
+            font-weight: 700;
+        }
+
+        .o_stat_info .o_stat_text {
+            color: var(--odoo-color-darkest);
+            opacity: 0.75;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: #{"rgb(from var(--odoo) r g b / 0.7)"};
+            border-color: var(--odoo);
+            color: var(--white);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px -4px #{"rgb(from var(--odoo) r g b / 0.55)"};
+
+            > .o_button_icon,
+            > .fa,
+            > .fa-stack {
+                color: var(--white);
+                transform: scale(1.05);
+            }
+
+            .o_stat_info .o_stat_value,
+            .o_stat_info .o_stat_text {
+                color: var(--white);
+                opacity: 1;
+            }
+        }
+
+        &:active {
+            transform: translateY(0);
+            box-shadow: none;
+            background-color: var(--odoo);
+        }
+    }
+}
