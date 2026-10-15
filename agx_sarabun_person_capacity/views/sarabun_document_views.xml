@@ -19,6 +19,14 @@
                        domain="[('holder_ids', 'in', employee_id)]"
                        options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
             </xpath>
+            <!-- Show the capacity ตำแหน่ง on the Route tree too, so the reviewer sees
+                 "ส่งถึง นาย ก. ในฐานะรองประธาน" at a glance (optional="show" so users
+                 can hide it if the column list gets busy). In position mode this
+                 column duplicates เป้าหมาย; in person mode it is the only place the
+                 capacity shows. -->
+            <xpath expr="//field[@name='routing_step_ids']/tree/field[@name='target_name']" position="after">
+                <field name="position_id" string="ลงนามในฐานะ" optional="show"/>
+            </xpath>
         </field>
     </record>
 </odoo>
