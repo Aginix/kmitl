@@ -12,15 +12,15 @@ class TestP2Engine(SarabunCommon):
     def test_acknowledge_step_never_blocks_completion(self):
         """An acknowledge step in a stage doesn't stop the gating step completing it."""
         doc = self._make_doc()
-        self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
         ack = self._add_step(doc, order=10, verb="acknowledge", target_mode="person",
                              user=self.user_b)
         doc.action_send()
         self.assertTrue(doc.is_circulating)
         self.assertEqual(self.env["sarabun.routing.step"].browse(ack.id).state, "active")
-        endorse = doc.routing_step_ids.filtered(lambda s: s.verb == self._verb("endorse"))
+        sign = doc.routing_step_ids.filtered(lambda s: s.verb == self._verb("sign_approve"))
         with self.mute_pdf():
-            self._act(endorse, "complete", self.user_a)
+            self._act(sign, "complete", self.user_a)
         self.assertTrue(doc.is_completed)  # acknowledge still pending, did not block
 
     def test_sequential_stages_advance_in_order(self):
@@ -85,6 +85,7 @@ class TestP2Engine(SarabunCommon):
         """เกษียนสั่งการ completes this step and INSERTS the next one at order+1."""
         doc = self._make_doc()
         step = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc.action_send()
         before = len(doc.routing_step_ids)
         self._act(step, "direct", self.user_a, note="มอบ ผอ. ดำเนินการ",
@@ -104,6 +105,7 @@ class TestP2Engine(SarabunCommon):
         """มอบหมาย reassigns THIS step to another actor; the step stays active."""
         doc = self._make_doc()
         step = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc.action_send()
         before = len(doc.routing_step_ids)
         self._act(step, "delegate", self.user_a, note="มอบ ก ดำเนินการแทน",
@@ -117,6 +119,7 @@ class TestP2Engine(SarabunCommon):
         """Delegate ≠ Direct: one reassigns in place, the other inserts a step."""
         doc_d = self._make_doc()
         s_d = self._add_step(doc_d, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc_d, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc_d.action_send()
         n0 = len(doc_d.routing_step_ids)
         self._act(s_d, "delegate", self.user_a, target_mode="person", employee_id=self.emp_b.id)
@@ -125,6 +128,7 @@ class TestP2Engine(SarabunCommon):
 
         doc_i = self._make_doc()
         s_i = self._add_step(doc_i, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc_i, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc_i.action_send()
         m0 = len(doc_i.routing_step_ids)
         self._act(s_i, "direct", self.user_a, target_mode="person", employee_id=self.emp_b.id)
@@ -136,6 +140,7 @@ class TestP2Engine(SarabunCommon):
         """ตีกลับ (sender_restart) sends the doc back and bumps the attempt."""
         doc = self._make_doc()
         step = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc.action_send()
         self.assertEqual(doc.attempt_seq, 1)
         self._act(step, "return", self.user_a, note="แก้เนื้อหา",
