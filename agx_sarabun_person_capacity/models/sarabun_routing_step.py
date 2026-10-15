@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Person-mode capacity label — clear ``position_id`` when the mode or the pinned
-person changes, so the capacity never carries over from a different context.
+"""Person-mode capacity label — keep the step's three target fields in a clean
+state when the user flips mode or re-picks the person.
 
 The core engine already reads ``self.position_id`` as the signing capacity
 (``_resolve_capacity`` / ``_signature_snapshot_vals``), so no engine changes are
@@ -13,13 +13,16 @@ class SarabunRoutingStep(models.Model):
     _inherit = "sarabun.routing.step"
 
     @api.onchange("target_mode")
-    def _onchange_target_mode_clear_capacity(self):
-        """A Position resolver (position mode) and a capacity label (person mode)
-        have different valid sets — a stale value from one mode must not survive
-        a switch into the other."""
+    def _onchange_target_mode_reset_targets(self):
+        """Wipe every target field when the mode flips — a leftover employee from a
+        prior person-mode edit, or a stale position from a prior position-mode edit,
+        would otherwise ride along silently into the new mode (shown by the stored
+        FK but hidden under the new mode's attrs) and get snapshotted at send."""
         if self.is_originator:
             return
         self.position_id = False
+        self.employee_id = False
+        self.department_id = False
 
     @api.onchange("employee_id")
     def _onchange_employee_clear_capacity(self):

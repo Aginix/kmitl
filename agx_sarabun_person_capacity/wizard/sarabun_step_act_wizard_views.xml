@@ -6,6 +6,10 @@
         the Document form (duplicating the field node makes the position-mode
         dropdown collapse to zero rows — the second node's domain leaks back onto
         the first).
+
+        Person-mode UX mirrors the Document form: pick บุคลากร first, then ตำแหน่ง
+        appears beneath — target_position_id is moved under target_employee_id and
+        its invisibility rule hides it in person mode until an employee is picked.
     -->
     <record id="view_sarabun_step_act_wizard_form_person_capacity" model="ir.ui.view">
         <field name="name">sarabun.step.act.wizard.form.person.capacity</field>
@@ -13,8 +17,11 @@
         <field name="inherit_id" ref="agx_sarabun.view_sarabun_step_act_wizard_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='target_position_id']" position="attributes">
-                <attribute name="attrs">{'invisible': [('target_mode', 'not in', ('position', 'person'))]}</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('target_mode', 'not in', ('position', 'person')), '&amp;', ('target_mode', '=', 'person'), ('target_employee_id', '=', False)]}</attribute>
                 <attribute name="domain">[('holder_ids', 'in', [target_employee_id])] if target_mode == 'person' and target_employee_id else []</attribute>
+            </xpath>
+            <xpath expr="//field[@name='target_employee_id']" position="after">
+                <field name="target_position_id" position="move"/>
             </xpath>
         </field>
     </record>

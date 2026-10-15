@@ -2,16 +2,15 @@
 <odoo>
     <!--
         Teach the base position_id to also appear in person mode as an optional
-        signing capacity, WITHOUT duplicating the field node. The earlier version
-        added a second <field name="position_id"> for the person-mode branch; that
-        made the base position-mode dropdown collapse to zero options (both nodes
-        share the same widget registration, so the inserted node's holder-filter
-        domain leaked back onto the original). Single node + a target_mode-aware
-        ternary domain is the robust fix.
+        signing capacity. Single-node + a target_mode-aware ternary domain avoids
+        the duplicate-field dropdown-leak (both nodes share the same widget
+        registration).
 
-        Position mode: domain is empty — identical to the pre-add-on behaviour
-        (full list of positions). Person mode: domain filters to the pinned
-        person's current holdings only (optional pick; nothing enforced).
+        Person-mode UX: pick the บุคลากร first, then the capacity ตำแหน่ง appears
+        beneath — so position_id is moved below employee_id in the field order,
+        and its invisibility rule has an extra guard that hides it in person mode
+        until an employee is picked. Position mode: shows with the full dropdown
+        exactly as before. Unit mode: hidden.
     -->
     <record id="view_sarabun_document_form_person_capacity" model="ir.ui.view">
         <field name="name">sarabun.document.form.person.capacity</field>
@@ -19,8 +18,18 @@
         <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='routing_step_ids']/form/group[@name='step_who']/field[@name='position_id']" position="attributes">
-                <attribute name="attrs">{'invisible': [('target_mode', 'not in', ('position', 'person'))], 'required': [('target_mode', '=', 'position')], 'readonly': [('is_originator', '=', True)]}</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('target_mode', 'not in', ('position', 'person')), '&amp;', ('target_mode', '=', 'person'), ('employee_id', '=', False)], 'required': [('target_mode', '=', 'position')], 'readonly': [('is_originator', '=', True)]}</attribute>
                 <attribute name="domain">[('holder_ids', 'in', [employee_id])] if target_mode == 'person' and employee_id else []</attribute>
+            </xpath>
+            <!--
+                Move position_id to render AFTER employee_id so the person-mode
+                sequence reads top-to-bottom: Target Mode → บุคลากร → ตำแหน่ง.
+                Position mode is unaffected (employee_id is invisible so its row
+                collapses — position_id visually sits right under target_mode as
+                before).
+            -->
+            <xpath expr="//field[@name='routing_step_ids']/form/group[@name='step_who']/field[@name='employee_id']" position="after">
+                <field name="position_id" position="move"/>
             </xpath>
             <!--
                 Show the capacity ตำแหน่ง on the Route tree too (optional="show"
