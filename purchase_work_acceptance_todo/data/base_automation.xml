@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="automation_notify_wa_review_requested" model="base.automation">
+            <field
+                name="name"
+            >ใบตรวจรับ: แจ้งผู้ตรวจสอบเมื่อ tier review ถูกสร้าง</field>
+            <field name="model_id" ref="base_tier_validation.model_tier_review" />
+            <field name="trigger">on_create</field>
+            <field
+                name="filter_domain"
+            >[('model', '=', 'work.acceptance'), ('status', '=', 'pending')]</field>
+            <field name="state">code</field>
+            <field name="code">
+for review in records:
+    wa = env["work.acceptance"].browse(review.res_id)
+    if not wa.exists():
+        continue
+    for user in review.reviewer_ids:
+        wa.activity_schedule(
+            "purchase_work_acceptance_todo.mail_activity_wa_review_requested",
+            summary="Work acceptance %s awaits your review" % (wa.name or ""),
+            user_id=user.id,
+        )
+</field>
+        </record>
+
+        <record id="automation_clear_wa_review_on_tier_resolved" model="base.automation">
+            <field
+                name="name"
+            >ใบตรวจรับ: ล้าง Todo ของผู้ตรวจสอบเมื่อ tier review ถูกรับรอง/ปฏิเสธ</field>
+            <field name="model_id" ref="base_tier_validation.model_tier_review" />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('status', '=', 'pending')]</field>
+            <field
+                name="filter_domain"
+            >[('status', '!=', 'pending'), ('model', '=', 'work.acceptance')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('base_tier_validation.field_tier_review__status')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">
+act_type = env.ref(
+    "purchase_work_acceptance_todo.mail_activity_wa_review_requested",
+    raise_if_not_found=False,
+)
+if act_type:
+    for review in records:
+        if not review.done_by:
+            continue
+        wa = env["work.acceptance"].browse(review.res_id)
+        if wa.exists():
+            wa.activity_feedback(
+                ["purchase_work_acceptance_todo.mail_activity_wa_review_requested"],
+                user_id=review.done_by.id,
+            )
+</field>
+        </record>
+
+        <record id="automation_clear_wa_review_on_state_exit" model="base.automation">
+            <field
+                name="name"
+            >ใบตรวจรับ: ล้าง Todo ตรวจสอบทั้งหมดเมื่อออกจากสถานะรอตรวจสอบ (in_review)</field>
+            <field
+                name="model_id"
+                ref="purchase_work_acceptance.model_work_acceptance"
+            />
+            <field name="trigger">on_write</field>
+            <field name="filter_pre_domain">[('state', '=', 'in_review')]</field>
+            <field name="filter_domain">[('state', '!=', 'in_review')]</field>
+            <field
+                name="trigger_field_ids"
+                eval="[(6, 0, [ref('purchase_work_acceptance.field_work_acceptance__state')])]"
+            />
+            <field name="state">code</field>
+            <field name="code">records.activity_unlink(["purchase_work_acceptance_todo.mail_activity_wa_review_requested"])</field>
+        </record>
+
+    </data>
+</odoo>
