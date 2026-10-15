@@ -61,6 +61,19 @@ class ReceiptKmitl(models.Model):
         tracking=True,
         copy=False,
     )
+    # What the receipt takes in. Only the base kind ships here; an add-on that
+    # receipts something other than revenue contributes its own through
+    # selection_add, and the running number, the remittance it may join and the
+    # printed title all follow from it. See CONTEXT.md and ADR-0005.
+    receipt_kind = fields.Selection(
+        [("revenue", "Revenue")],
+        string="Receipt Kind",
+        default="revenue",
+        required=True,
+        index=True,
+        readonly=True,
+        copy=True,
+    )
     date = fields.Date(
         required=True,
         default=fields.Date.context_today,
@@ -338,9 +351,21 @@ class ReceiptKmitl(models.Model):
             {int(d.parent_path.split("/", 1)[0]) for d in self.department_analytic_id}
         )
 
+    def _report_title(self):
+        """Thai and English headings printed on the official form.
+
+        A receipt kind that is a different document prints a different title,
+        so an add-on kind overrides this rather than editing the template.
+        """
+        self.ensure_one()
+        # Not translated: both lines print side by side on every copy,
+        # whatever language the user is in.
+        return "ใบเสร็จรับเงิน", "OFFICIAL RECEIPT"
+
     def _prepare_remittance_vals(self, receipts):
         return {
             "department_analytic_id": receipts._get_root_departments().id,
+            "receipt_kind": receipts[:1].receipt_kind,
             "receipt_ids": [(6, 0, receipts.ids)],
         }
 
@@ -359,6 +384,11 @@ class ReceiptKmitl(models.Model):
             raise UserError(
                 _("Selected receipts belong to different departments. "
                   "Please select receipts from the same department.")
+            )
+        if len(set(receipts.mapped("receipt_kind"))) > 1:
+            raise UserError(
+                _("Selected receipts are of different kinds. A remittance "
+                  "covers one kind of receipt only.")
             )
         remittance = self.env["kmitl.receipt.remittance"].create(
             self._prepare_remittance_vals(receipts)
@@ -519,17 +549,31 @@ class ReceiptKmitl(models.Model):
         self.ensure_one()
         return self._get_fiscal_year_be(self.date)
 
+    def _receipt_sequence_vals(self, fy_be):
+        """Sequence identity for this receipt's kind, per fiscal year.
+
+        Each kind keeps its own running number: a kind is a different document
+        with its own letterhead, so one register has to explain every number in
+        it. An add-on kind overrides this and returns its own code/prefix.
+        """
+        self.ensure_one()
+        return {
+            "code": "kmitl.receipt.%s" % fy_be,
+            "name": "Receipt FY%s" % fy_be,
+            "prefix": "RC/%s/" % fy_be,
+        }
+
     def _get_receipt_sequence(self):
         fy_be = self._get_fy_be()
-        seq_code = "kmitl.receipt.%s" % fy_be
+        vals = self._receipt_sequence_vals(fy_be)
         IrSeq = self.env["ir.sequence"].sudo()
-        seq = IrSeq.search([("code", "=", seq_code)], limit=1)
+        seq = IrSeq.search([("code", "=", vals["code"])], limit=1)
         if not seq:
             seq = IrSeq.create(
                 {
-                    "name": "Receipt FY%s" % fy_be,
-                    "code": seq_code,
-                    "prefix": "RC/%s/" % fy_be,
+                    "name": vals["name"],
+                    "code": vals["code"],
+                    "prefix": vals["prefix"],
                     "padding": 4,
                     "implementation": "no_gap",
                     "company_id": False,
@@ -548,7 +592,7 @@ class ReceiptKmitl(models.Model):
             for line in rec.line_ids:
                 if not line.account_id:
                     raise ValidationError(
-                        _("Line '%s' has no income account.") % (line.name or "")
+                        _("Line '%s' has no account.") % (line.name or "")
                     )
             if rec.amount_total <= 0:
                 raise ValidationError(
