@@ -1,7 +1,9 @@
 {
     "name": "Purchase Guarantee Account Payment",
-    "version": "16.0.1.0.0",
-    "summary": "Create payments from purchase guarantees",
+    "version": "16.0.2.0.0",
+    "summary": "DEPRECATED - old payment route for purchase guarantees, kept so "
+    "existing payments stay reachable. New receipts are issued by "
+    "purchase_guarantee_receipt_kmitl.",
     "category": "Accounting/Payments",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",

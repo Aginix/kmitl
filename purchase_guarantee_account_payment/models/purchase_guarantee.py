@@ -65,6 +65,23 @@ class PurchaseGuarantee(models.Model):
         return vals
 
     def action_create_payment(self):
+        """Deprecated — a guarantee is received by issuing a receipt.
+
+        The button is gone from the form; this refuses rather than quietly
+        working, because a payment raised here books the same deposit liability
+        with no numbered receipt behind it, and nothing would ever reconcile the
+        two routes against each other.
+        """
+        self.ensure_one()
+        raise UserError(
+            _(
+                "Guarantee money is received by issuing a guarantee receipt, "
+                "not by creating a payment. Use the Issue Guarantee Receipt "
+                "button."
+            )
+        )
+
+    def _action_create_payment_legacy(self):
         self.ensure_one()
 
         if self.has_active_payment:

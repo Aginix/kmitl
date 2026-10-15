@@ -44,6 +44,7 @@ export class ReceiptReport extends Component {
             grandTotal: 0,
             dateFrom: false,
             dateTo: false,
+            receiptKind: "",
             groupBy: "date",
             groupBy2: "",
             showAdvanced: false,
@@ -63,6 +64,7 @@ export class ReceiptReport extends Component {
             empty: _t("No receipts for the selected criteria."),
             dateFrom: _t("Received From"),
             dateTo: _t("Received To"),
+            receiptKind: _t("Receipt Kind"),
             groupBy: _t("Group By"),
             groupBy2: _t("Then By"),
             none: _t("None"),
@@ -95,9 +97,10 @@ export class ReceiptReport extends Component {
         const lastDay = new Date(year, month + 1, 0).getDate();
         this.state.dateFrom = `${year}-${pad(month + 1)}-01`;
         this.state.dateTo = `${year}-${pad(month + 1)}-${pad(lastDay)}`;
-        [this.axes, this.state.columns] = await Promise.all([
+        [this.axes, this.state.columns, this.receiptKinds] = await Promise.all([
             this.orm.call(REPORT_MODEL, "get_group_axes", []),
             this.orm.call(REPORT_MODEL, "get_columns", []),
+            this.orm.call(REPORT_MODEL, "get_receipt_kinds", []),
         ]);
         await this.load();
     }
@@ -115,6 +118,7 @@ export class ReceiptReport extends Component {
                 funds: this.state.funds.map((r) => r.id),
                 activities: this.state.activities.map((r) => r.id),
             },
+            receipt_kind: this.state.receiptKind || false,
             method_ids: this.state.methods.map((r) => r.id),
             partner_ids: this.state.partners.map((r) => r.id),
             department_ids: this.state.issuingDepartments.map((r) => r.id),
@@ -145,6 +149,11 @@ export class ReceiptReport extends Component {
 
     onDateToChange(ev) {
         this.state.dateTo = ev.target.value || false;
+        this.load();
+    }
+
+    onReceiptKindChange(ev) {
+        this.state.receiptKind = ev.target.value;
         this.load();
     }
 
