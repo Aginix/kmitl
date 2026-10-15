@@ -189,9 +189,6 @@ class TestBudgetTransferSarabun(TransactionCase):
         self.assertEqual(transfer.state, "sent")
         # A circulating (sent) transfer is locked for editing.
         self.assertFalse(transfer.can_edit)
-        # The transfer's own date is hidden and now tracks the letter's
-        # ลงวันที่ (stamped at send), not the draft/confirm date.
-        self.assertEqual(transfer.date, document.date)
 
     def test_completion_auto_posts_and_stamps_approver(self):
         transfer = self._submitted_transfer()
@@ -205,6 +202,9 @@ class TestBudgetTransferSarabun(TransactionCase):
         self.assertEqual(transfer.move_id.state, "posted")
         self.assertEqual(transfer.approver_id, self.approver_user)
         self.assertTrue(transfer.approval_date)
+        # The transfer's hidden date tracks the letter's ลงวันที่ (issuing sign).
+        self.assertTrue(document.date)
+        self.assertEqual(transfer.date, document.date)
 
     def test_rejected_never_posts_and_cancels_move(self):
         transfer = self._submitted_transfer()

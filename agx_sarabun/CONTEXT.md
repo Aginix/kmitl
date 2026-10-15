@@ -125,8 +125,8 @@ The act of assigning a Document its official running number from a sequence. It 
 _Avoid_: numbering (reserve "register" for the official, audited act); assuming the number waits for the last step of the Route (it runs at the issuing sign — ADR-0017); an interim/provisional number during the route (there is none — the เรื่อง identifies it)
 
 **ลงวันที่ (Document date, `date`)**:
-The official date printed on the หนังสือ header beside ที่. It is the date the **number is issued** — stamped together with ที่ at the ลงนามในใบปะหน้า sign ([ADR-0017](./docs/adr/0017-register-number-at-issuing-sign.md)), so ที่ and ลงวันที่ always share one ปีงบ. Until then it shows the ส่ง date (provisional); a numbered หนังสือ re-sent after ตีกลับ keeps its ลงวันที่. Owner-adjustable in a later phase.
-_Avoid_: the create/draft timestamp; the ส่ง date or the completion date as the official ลงวันที่ (both superseded — ADR-0017)
+The official date printed on the หนังสือ header beside ที่. It is the date the **number is issued** — stamped together with ที่ at the ลงนามในใบปะหน้า sign ([ADR-0017](./docs/adr/0017-register-number-at-issuing-sign.md)), so ที่ and ลงวันที่ always share one ปีงบ. **Empty until then** — an unnumbered หนังสือ shows no date, just as ที่ shows `/`; a numbered หนังสือ re-sent after ตีกลับ keeps its ลงวันที่. Owner-adjustable in a later phase.
+_Avoid_: the create/draft timestamp; a provisional date before the number (there is none); the ส่ง date or the completion date as ลงวันที่ (both superseded — ADR-0017); a separate "issue date" field (ลงวันที่ *is* it)
 
 ### Signing & record
 

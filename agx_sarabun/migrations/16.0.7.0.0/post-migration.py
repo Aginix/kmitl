@@ -24,6 +24,9 @@ def migrate(cr, version):
     ADR-0010; under ADR-0017 it should carry its number now, so those are numbered
     in the order they were signed. Returned/draft ones are numbered at their next
     issuing sign.
+
+    ลงวันที่ now exists only together with ที่, so every still-unnumbered หนังสือ has
+    its (provisional send / create-draft) date cleared.
     """
     env = api.Environment(cr, SUPERUSER_ID, {})
     verb = env.ref("agx_sarabun.verb_sign_approve", raise_if_not_found=False)
@@ -32,6 +35,7 @@ def migrate(cr, version):
     verb.issues_number = True
     _swap_unsendable_approve_steps(env, verb)
     _backfill_signed_numbers(env)
+    _clear_unnumbered_dates(env)
 
 
 def _swap_unsendable_approve_steps(env, verb):
@@ -127,3 +131,13 @@ def _backfill_signed_numbers(env):
             body="ออกเลขที่หนังสือย้อนหลัง (ลงนามในใบปะหน้าแล้วก่อนอัปเกรด — ADR-0017)"
         )
         _logger.info("Backfilled register number %s on %s", doc.name, doc)
+
+
+def _clear_unnumbered_dates(env):
+    env["sarabun.document"].flush_model()
+    env.cr.execute(
+        "UPDATE sarabun_document SET date = NULL "
+        "WHERE register_number_id IS NULL AND date IS NOT NULL"
+    )
+    _logger.info("Cleared ลงวันที่ on %s unnumbered documents", env.cr.rowcount)
+    env["sarabun.document"].invalidate_model(["date"])

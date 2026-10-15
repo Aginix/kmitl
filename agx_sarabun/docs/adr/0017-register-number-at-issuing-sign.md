@@ -36,8 +36,11 @@ and the number must not wait for those later steps.
   after a ตีกลับ past the issuing sign) is exempt — a resume Route may legitimately no
   longer contain the issuing step — and its re-send keeps its เล่มทะเบียน and ลงวันที่.
 - **ลงวันที่ is stamped with the number**, at the issuing sign, so ที่ and ลงวันที่ always
-  share one ปีงบ (the counter is bucketed on the same day). The ส่ง stamp of ADR-0010 is
-  only provisional until then.
+  share one ปีงบ (the counter is bucketed on the same day). It is **empty until then**
+  (no default, not required), just as ที่ stays `/`; ส่ง no longer stamps it (supersedes
+  ADR-0010's send-date rule). No separate "issue date" field — the ledger's `used_date`
+  already records the moment. Lists that need a date for unnumbered drafts use
+  `create_date`.
 - The templates that used only อนุมัติ (`kmitl_project_sarabun`,
   `budget_transfer_sarabun`) now use ลงนามในใบปะหน้า.
 
@@ -65,6 +68,7 @@ and the number must not wait for those later steps.
   อนุมัติ step of any unnumbered draft/returned หนังสือ — and the last อนุมัติ line of any
   Route Template — lacking an issuing step into ลงนามในใบปะหน้า, so Routes seeded before
   the change (and admin-built templates) can still be sent. Only the last one, so the
-  number still runs at the final sign, as it did under ADR-0010.
+  number still runs at the final sign, as it did under ADR-0010. Finally it clears
+  ลงวันที่ on every still-unnumbered หนังสือ.
 - Completing the issuing step by **เกษียนสั่งการ** (sign and forward) issues the number
   too — every positive disposition counts, not only ดำเนินการ.

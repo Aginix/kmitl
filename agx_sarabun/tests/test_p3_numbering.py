@@ -212,14 +212,15 @@ class TestP3Numbering(SarabunCommon):
         self.assertEqual(doc.date, date(2020, 1, 1))  # not re-stamped at re-send
 
     def test_date_stamped_at_issuing_sign(self):
-        """ลงวันที่ is the day the number is issued, not the ส่ง day."""
+        """ลงวันที่ is empty until the number is issued, then that day."""
         doc = self._make_doc()
+        self.assertFalse(doc.date)
         self._add_step(doc, order=10, verb="endorse", user=self.user_a)
         self._add_step(doc, order=20, verb="sign_approve", user=self.user_b)
         doc.action_send()
-        doc.date = date(2020, 1, 1)  # stand-in for an earlier ส่ง day
+        self.assertFalse(doc.date)  # sent, still unnumbered
         self._sign(doc, "endorse", self.user_a)
-        self.assertEqual(doc.date, date(2020, 1, 1))
+        self.assertFalse(doc.date)
         self._sign(doc, "sign_approve", self.user_b)
         self.assertEqual(doc.date, fields.Date.context_today(doc))
 

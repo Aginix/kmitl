@@ -72,12 +72,11 @@ class SarabunDocument(models.Model):
     subject = fields.Text(string="เรื่อง (Subject)", required=True, tracking=True)
     date = fields.Date(
         string="วันที่ (Document Date)",
-        required=True,
-        default=fields.Date.context_today,
+        copy=False,
         tracking=True,
-        help="ลงวันที่ — the หนังสือ's official date, printed beside ที่. It is the "
-        "date the number is issued (the ลงนามในใบปะหน้า sign — ADR-0017); until then "
-        "it shows the ส่ง date, never the create-draft date. Owner-editable is a "
+        help="ลงวันที่ — the หนังสือ's official date, printed beside ที่. Stamped "
+        "together with the number at the issuing (ลงนามในใบปะหน้า) sign and empty "
+        "until then, like ที่ stays '/' (ADR-0017). Owner-editable is a "
         "later phase; kept read-only in the form for now.",
     )
     addressee_prefix_id = fields.Many2one(
@@ -751,8 +750,7 @@ class SarabunDocument(models.Model):
                     "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
                 ))
             # A หนังสือ already numbered (re-sent after a ตีกลับ past the issuing sign)
-            # keeps its number, book and ลงวันที่ — none of the checks/stamps below
-            # apply to it (ADR-0017).
+            # keeps its number and book — neither check below applies (ADR-0017).
             numbered = bool(doc.register_number_id)
             if not numbered and not doc.routing_step_ids.filtered("verb.issues_number"):
                 raise UserError(_(
@@ -764,10 +762,6 @@ class SarabunDocument(models.Model):
             if not numbered:
                 doc.sequence_id = doc._resolve_sequence()
             doc._sign_originator_step()  # ส่ง = ลงนามของผู้จัดทำ (auto)
-            # Provisional ลงวันที่ = the ส่ง date, not the create-draft date; the
-            # official one is stamped with the number at the issuing sign (ADR-0017).
-            if not numbered:
-                doc.date = fields.Date.context_today(doc)
             doc.state = "circulating"
             doc.message_post(body=_("Document sent for routing."))
             doc._call_origin("_on_sarabun_circulating", doc)
