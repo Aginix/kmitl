@@ -147,8 +147,9 @@ class BudgetTransfer(models.Model):
             self._validate_transfer_data()
         if self.state in ("submitted", "returned"):
             # The transfer's own date field is hidden (ADR-0014 follow-up) —
-            # it now tracks the letter's ลงวันที่ (re-stamped on every send),
-            # not the moment the transfer was submitted in draft.
+            # it now tracks the letter's ลงวันที่ (provisional at send, final at
+            # the issuing sign — agx_sarabun ADR-0017), not the moment the
+            # transfer was submitted in draft.
             self.write({"state": "sent", "date": document.date})
         return super()._on_sarabun_circulating(document)
 
@@ -156,6 +157,7 @@ class BudgetTransfer(models.Model):
         # ADR-0014: trust the confirm-time check, do NOT re-validate
         # availability — the reservation window is a known, accepted race
         # until transfers go through a budget reservation (deferred).
+        self.date = document.date  # final ลงวันที่, stamped with the number
         self._post_transfer()  # sets state='posted'
         final = document._signature_steps()[-1:]
         self.write(

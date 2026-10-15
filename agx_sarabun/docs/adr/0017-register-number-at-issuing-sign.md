@@ -32,7 +32,12 @@ and the number must not wait for those later steps.
   second issuing signer — or a re-sign after ตีกลับ — reuses the number.
 - **Every Route must contain an issuing step**, checked at ส่ง next to the gating check,
   so a หนังสือ can never complete unnumbered. `_complete_document()` keeps its
-  (now idempotent) call as a safety net.
+  (now idempotent) call as a safety net. A หนังสือ that is **already numbered** (re-sent
+  after a ตีกลับ past the issuing sign) is exempt — a resume Route may legitimately no
+  longer contain the issuing step — and its re-send keeps its เล่มทะเบียน and ลงวันที่.
+- **ลงวันที่ is stamped with the number**, at the issuing sign, so ที่ and ลงวันที่ always
+  share one ปีงบ (the counter is bucketed on the same day). The ส่ง stamp of ADR-0010 is
+  only provisional until then.
 - The templates that used only อนุมัติ (`kmitl_project_sarabun`,
   `budget_transfer_sarabun`) now use ลงนามในใบปะหน้า.
 
@@ -47,16 +52,19 @@ and the number must not wait for those later steps.
   same number (as Reset does — ADR-0011).
 - Since the built-in issuing verb is also `is_signature`, a numbered หนังสือ is already
   past the ยกเลิกการส่ง window on the normal path.
-- **The counter's ปีงบ comes from the issuing sign** instead of completion; the
-  "never straddles a fiscal-year boundary" assumption of ADR-0010 still covers it.
+- **The counter's ปีงบ and ลงวันที่ both come from the issuing sign** instead of
+  completion / ส่ง, so they coincide by construction.
 - Register order = order of the issuing signs, not of completion.
 - The verb data is `noupdate`, so the flag reaches existing databases through the
   `16.0.7.0.0` post-migration. The same migration **backfills** the number on every
   `circulating` หนังสือ already past its ใบปะหน้า sign, in sign order (they take the
   next counters, after any number issued since). Returned/draft ones get theirs at
   the next issuing sign; anything that fails to resolve a register is logged and
-  still numbered at completion. The same migration turns the waiting อนุมัติ steps of
-  any draft/returned หนังสือ lacking an issuing step into ลงนามในใบปะหน้า, so Routes
-  seeded before the change can still be sent.
+  still numbered at completion; a backfilled หนังสือ is dated on the upgrade day, the
+  day its number is actually issued. The same migration turns the **last** waiting
+  อนุมัติ step of any unnumbered draft/returned หนังสือ — and the last อนุมัติ line of any
+  Route Template — lacking an issuing step into ลงนามในใบปะหน้า, so Routes seeded before
+  the change (and admin-built templates) can still be sent. Only the last one, so the
+  number still runs at the final sign, as it did under ADR-0010.
 - Completing the issuing step by **เกษียนสั่งการ** (sign and forward) issues the number
   too — every positive disposition counts, not only ดำเนินการ.

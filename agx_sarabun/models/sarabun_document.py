@@ -76,9 +76,8 @@ class SarabunDocument(models.Model):
         default=fields.Date.context_today,
         tracking=True,
         help="ลงวันที่ — the หนังสือ's official date, printed beside ที่. It is the "
-        "date it is ส่ง (issued into circulation), (re)stamped at action_send "
-        "(ADR-0010), NOT the create-draft date — so a draft held over ปีงบประมาณ "
-        "year-end is dated in the new year when actually sent. Owner-editable is a "
+        "date the number is issued (the ลงนามในใบปะหน้า sign — ADR-0017); until then "
+        "it shows the ส่ง date, never the create-draft date. Owner-editable is a "
         "later phase; kept read-only in the form for now.",
     )
     addressee_prefix_id = fields.Many2one(
@@ -751,20 +750,24 @@ class SarabunDocument(models.Model):
                 raise UserError(_(
                     "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
                 ))
-            if not doc.routing_step_ids.filtered("verb.issues_number"):
+            # A หนังสือ already numbered (re-sent after a ตีกลับ past the issuing sign)
+            # keeps its number, book and ลงวันที่ — none of the checks/stamps below
+            # apply to it (ADR-0017).
+            numbered = bool(doc.register_number_id)
+            if not numbered and not doc.routing_step_ids.filtered("verb.issues_number"):
                 raise UserError(_(
                     "เส้นทางต้องมีขั้นตอนที่ออกเลขที่หนังสือ (เช่น ลงนามในใบปะหน้า) ก่อนส่ง"
                 ))
             # P3: fail fast if no register resolves, and PIN the resolved เล่มทะเบียน
             # so a later config change can't move the หนังสือ to another book between
             # ส่ง and ลงทะเบียน (which runs at the issuing sign — ADR-0017/0011).
-            doc.sequence_id = doc._resolve_sequence()
+            if not numbered:
+                doc.sequence_id = doc._resolve_sequence()
             doc._sign_originator_step()  # ส่ง = ลงนามของผู้จัดทำ (auto)
-            # ลงวันที่ = the ส่ง (issue) date, not the create-draft date (ADR-0010): a
-            # draft held over from the old ปีงบประมาณ is dated when it is actually sent
-            # in the new one, so ที่ and ลงวันที่ stay in the same fiscal year (a หนังสือ
-            # never straddles the year boundary). Re-stamped on each re-send.
-            doc.date = fields.Date.context_today(doc)
+            # Provisional ลงวันที่ = the ส่ง date, not the create-draft date; the
+            # official one is stamped with the number at the issuing sign (ADR-0017).
+            if not numbered:
+                doc.date = fields.Date.context_today(doc)
             doc.state = "circulating"
             doc.message_post(body=_("Document sent for routing."))
             doc._call_origin("_on_sarabun_circulating", doc)
@@ -1202,6 +1205,9 @@ class SarabunDocument(models.Model):
             number = seq.allocate(self)
         self.register_number_id = number
         self.name = number.register_number
+        # ลงวันที่ = the day the number is issued (the ลงนามในใบปะหน้า sign), so ที่ and
+        # ลงวันที่ share one ปีงบ — the counter is bucketed on the same day (ADR-0017).
+        self.date = fields.Date.context_today(self)
 
     def _void_register(self, reason):
         """Void the register number as a permanent gap (เลขยกเลิก) — never reissued.

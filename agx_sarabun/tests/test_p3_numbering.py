@@ -2,6 +2,7 @@
 """P3 — numbering / register: per-(unit×type) isolation, atomic allocate, voids, fiscal year."""
 from datetime import date
 
+from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged
 
@@ -186,6 +187,41 @@ class TestP3Numbering(SarabunCommon):
         self._sign(doc, "sign_approve", self.user_a)
         self.assertEqual(doc.register_number_id, number)
         self.assertEqual(number.state, "used")
+
+    def test_resend_numbered_without_issuing_step(self):
+        """ตีกลับ→resume past the issuing sign leaves no issuing step in the new
+        attempt; the numbered หนังสือ can still be re-sent and keeps its number,
+        book and ลงวันที่."""
+        doc = self._make_doc()
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        self._add_step(doc, order=20, verb="endorse", user=self.user_b)
+        self._add_step(doc, order=30, verb="approve", user=self.user_a)
+        doc.action_send()
+        self._sign(doc, "sign_approve", self.user_a)
+        self._sign(doc, "endorse", self.user_b)
+        number, book = doc.register_number_id, doc.sequence_id
+        resume = doc.routing_step_ids.filtered(lambda s: s.verb == self._verb("endorse"))
+        self._act(self._active_step(doc), "return", self.user_a, note="แก้ไข",
+                  destination="resume_step", resume_step_id=resume.id)
+        self.assertFalse(doc.routing_step_ids.filtered("verb.issues_number"))
+        doc.date = date(2020, 1, 1)
+        doc.action_send()
+        self.assertTrue(doc.is_circulating)
+        self.assertEqual(doc.register_number_id, number)
+        self.assertEqual(doc.sequence_id, book)
+        self.assertEqual(doc.date, date(2020, 1, 1))  # not re-stamped at re-send
+
+    def test_date_stamped_at_issuing_sign(self):
+        """ลงวันที่ is the day the number is issued, not the ส่ง day."""
+        doc = self._make_doc()
+        self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc, order=20, verb="sign_approve", user=self.user_b)
+        doc.action_send()
+        doc.date = date(2020, 1, 1)  # stand-in for an earlier ส่ง day
+        self._sign(doc, "endorse", self.user_a)
+        self.assertEqual(doc.date, date(2020, 1, 1))
+        self._sign(doc, "sign_approve", self.user_b)
+        self.assertEqual(doc.date, fields.Date.context_today(doc))
 
     # ------------------------------------------------ เล่มทะเบียน (ADR-0012)
     def _second_register(self):
