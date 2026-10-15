@@ -43,7 +43,7 @@ class TestSupportingDocs(TransactionCase):
         cls.plain_user = new_test_user(
             cls.env,
             login="wa_plain_user",
-            groups="base.group_user",
+            groups="base.group_user,purchase_work_acceptance_kmitl.group_process_wa",
         )
 
     def _attach_supporting(self):
