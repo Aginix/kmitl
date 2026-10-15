@@ -218,9 +218,29 @@ class PurchaseRequest(models.Model):
         }
 
     def button_approved(self):
-        res = super().button_approved()
-        self._activity_awaiting_approval_creation()
-
+        # is_egp=True → in_egp (no PA); is_egp=False → approved + auto-PA
+        # (เหมือน flow เดิมของ _transition_after_sarabun_approve: ถ้ามี PA
+        # ค้างใน pending_pr ให้ปลุก, ไม่งั้นสร้างใหม่)
+        egp_recs = self.filtered("is_egp")
+        non_egp_recs = self - egp_recs
+        if egp_recs:
+            egp_recs._apply_sarabun_approve_metadata()
+            egp_recs.write({"state": "in_egp", "egp_status": "waiting"})
+        res = None
+        if non_egp_recs:
+            res = super(PurchaseRequest, non_egp_recs).button_approved()
+            for rec in non_egp_recs:
+                existing = self.env["purchase.request.approval"].search(
+                    [("request_id", "=", rec.id), ("state", "!=", "cancelled")],
+                    limit=1,
+                )
+                if existing:
+                    if existing.state == "pending_pr":
+                        vals = rec._prepare_approval_sync_vals()
+                        vals["state"] = "draft"
+                        existing.write(vals)
+                else:
+                    rec.button_create_approval()
         return res
 
     def _activity_awaiting_approval_creation(self):
