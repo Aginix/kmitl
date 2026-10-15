@@ -364,7 +364,31 @@ class BudgetMove(models.Model):
         self.write({"state": "review"})
 
     def action_post(self):
+        self._check_pool_nesting_on_post()
         self.write({"state": "posted"})
+
+    def _check_pool_nesting_on_post(self):
+        """Reject posting an appropriation/entry that would nest budget pools.
+
+        Pools never nest (ADR-0016): the funded coordinate a reservation draws
+        from must be unique. Only expense appropriation/entry moves build pools,
+        so consume/revenue moves are skipped. Fixtures may pass
+        ``skip_pool_nesting_check`` in the context to seed legacy overlaps.
+        """
+        if self.env.context.get("skip_pool_nesting_check"):
+            return
+        controller = self.env["budget.controller"]
+        for move in self:
+            if move.move_type not in controller._APPROPRIATION_MOVE_TYPES:
+                continue
+            if move.budget_type != "expense":
+                continue
+            candidates = controller._lines_to_candidates(move.line_ids)
+            controller._check_pool_nesting(
+                candidates,
+                move.account_fiscal_year_id.id,
+                move.company_id.id,
+            )
 
     def button_cancel(self):
         self.write({"state": "cancel"})

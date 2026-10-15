@@ -187,6 +187,20 @@ class BudgetMoveLine(models.Model):
                 distribution[str(account.id)] = 100.0
         return distribution
 
+    def _transfer_fiscal_year(self):
+        """The transfer header's fiscal year as seen by the line dialog.
+
+        A line added in the dialog has no ``move_id`` yet: the o2m is inherited
+        onto ``budget.transfer`` (``_inherits``) without an inverse, so the
+        client sends no parent values. The form passes the header's fiscal year
+        through the o2m context instead; ``move_id`` covers server-side use.
+        """
+        self.ensure_one()
+        fiscal_year_id = self.env.context.get("transfer_fiscal_year_id")
+        if fiscal_year_id:
+            return self.env["account.fiscal.year"].browse(fiscal_year_id)
+        return self.move_id.account_fiscal_year_id
+
     # ------------------------------------------------------------------
     # Direction ↔ debit/credit/balance
     # ------------------------------------------------------------------
