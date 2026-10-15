@@ -2,6 +2,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.misc import formatLang
 
 _logger = logging.getLogger(__name__)
 
@@ -626,3 +627,54 @@ class BudgetTransfer(models.Model):
             "view_mode": "form",
             "target": "current",
         }
+
+    def _render_linked_record_table(self, model_name, analytic_field, empty_message):
+        """Render the records this transfer's lines point at through
+        ``analytic_field`` (a kmitl.project / procurement.plan dimension) as an
+        HTML table — one row per record × direction, amounts summed.
+
+        Built as superuser so every row shows even to a user who cannot read the
+        record (only name-level data is exposed); each name links to the
+        record's form in a new tab, where the normal access rules apply again.
+        """
+        self.ensure_one()
+        amounts = {}
+        for direction, lines in (
+            ("from", self.from_line_ids),
+            ("to", self.to_line_ids),
+        ):
+            for line in lines.filtered(analytic_field):
+                key = (line[analytic_field].id, direction)
+                amounts[key] = amounts.get(key, 0.0) + line.amount
+        Model = self.env[model_name].sudo()
+        analytics = self.env["account.analytic.account"].sudo()
+        records = {
+            rec.analytic_account_id.id: rec
+            for rec in Model.search(
+                [("analytic_account_id", "in", [key[0] for key in amounts])]
+            )
+        }
+        states = dict(Model._fields["state"]._description_selection(self.env))
+        directions = {"from": _("โอนออก"), "to": _("โอนเข้า")}
+        rows = []
+        for (analytic_id, direction), amount in amounts.items():
+            rec = records.get(analytic_id, Model)
+            rows.append(
+                {
+                    "name": rec.display_name
+                    or analytics.browse(analytic_id).display_name,
+                    "url": rec
+                    and f"/web#id={rec.id}&model={model_name}&view_type=form",
+                    "department": rec.department_analytic_id.display_name,
+                    "fiscal_year": rec.account_fiscal_year_id.name,
+                    "state": states.get(rec.state),
+                    "direction": directions[direction],
+                    "amount": formatLang(
+                        self.env, amount, currency_obj=self.currency_id
+                    ),
+                }
+            )
+        return self.env["ir.qweb"]._render(
+            "budget_transfer.linked_record_table",
+            {"rows": rows, "empty_message": empty_message},
+        )

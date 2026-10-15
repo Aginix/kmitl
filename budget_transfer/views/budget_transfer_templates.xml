@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Records a transfer touches through one dimension; rendered as superuser by
+         budget.transfer._render_linked_record_table. Names open in a new tab. -->
+    <template id="linked_record_table">
+        <p t-if="not rows" class="text-muted" t-esc="empty_message" />
+        <table t-else="" class="table table-sm table-hover">
+            <thead>
+                <tr>
+                    <th>ชื่อ</th>
+                    <th>ส่วนงาน</th>
+                    <th>ปีงบประมาณ</th>
+                    <th>สถานะ</th>
+                    <th>ทิศทาง</th>
+                    <th class="text-end">จำนวนเงินในใบโอนนี้</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr t-foreach="rows" t-as="row">
+                    <td>
+                        <a
+                            t-if="row['url']"
+                            t-att-href="row['url']"
+                            target="_blank"
+                            t-esc="row['name']"
+                        />
+                        <span t-else="" t-esc="row['name']" />
+                    </td>
+                    <td t-esc="row['department']" />
+                    <td t-esc="row['fiscal_year']" />
+                    <td t-esc="row['state']" />
+                    <td t-esc="row['direction']" />
+                    <td class="text-end" t-esc="row['amount']" />
+                </tr>
+            </tbody>
+        </table>
+    </template>
+
+</odoo>

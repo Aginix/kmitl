@@ -35,6 +35,12 @@
             >
                 <field name="allowed_procurement_plan_analytic_ids" invisible="1" />
             </xpath>
+            <!-- Every linked record, even unreadable ones (rendered as superuser); names open in a new tab. -->
+            <xpath expr="//notebook/page[@name='transfer_lines']" position="after">
+                <page name="procurement_plans" string="แผนจัดซื้อจัดจ้าง">
+                    <field name="procurement_plan_table" nolabel="1" readonly="1" />
+                </page>
+            </xpath>
         </field>
     </record>
 

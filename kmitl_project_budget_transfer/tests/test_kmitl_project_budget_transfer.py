@@ -136,3 +136,45 @@ class TestKmitlProjectBudgetTransfer(TransactionCase):
             {"transfer_direction": "to"}
         )
         self.assertNotIn(self.proj_tag, other.allowed_kmitl_project_analytic_ids)
+
+    # ------------------------------------------------------------------
+    # โครงการ/กิจกรรม page on the transfer
+    # ------------------------------------------------------------------
+    def test_project_table_lists_project_to_any_user(self):
+        # Rendered as superuser: a plain user still sees the row and its link.
+        user = self.env["res.users"].create(
+            {
+                "name": "KPBT Plain",
+                "login": "kpbt_plain",
+                "groups_id": [(6, 0, self.env.ref("base.group_user").ids)],
+            }
+        )
+        transfer = (
+            self.env["budget.transfer"]
+            .with_user(user)
+            .new(
+                {
+                    "to_line_ids": [
+                        (
+                            0,
+                            0,
+                            {
+                                "transfer_direction": "to",
+                                "account_id": self.proj_ba.id,
+                                "kmitl_project_analytic_id": self.proj_tag.id,
+                                "amount": 1000.0,
+                            },
+                        )
+                    ],
+                }
+            )
+        )
+        html = transfer.kmitl_project_table
+        self.assertIn("KPBT Project", html)
+        self.assertIn("id=%s&amp;model=kmitl.project" % self.project.id, html)
+        self.assertIn('target="_blank"', html)
+        self.assertIn("โอนเข้า", html)
+
+    def test_project_table_empty_message(self):
+        transfer = self.env["budget.transfer"].new({})
+        self.assertIn("ไม่มีโครงการ/กิจกรรมในใบโอนนี้", transfer.kmitl_project_table)
