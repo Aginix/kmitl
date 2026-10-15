@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     "name": "e-Sarabun",
     "summary": "Electronic Correspondence Management System (สารบรรณอิเล็กทรอนิกส์)",
