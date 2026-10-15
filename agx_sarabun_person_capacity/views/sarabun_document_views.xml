@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!--
         Teach the base position_id to also appear in person mode as an optional
@@ -15,11 +15,18 @@
     <record id="view_sarabun_document_form_person_capacity" model="ir.ui.view">
         <field name="name">sarabun.document.form.person.capacity</field>
         <field name="model">sarabun.document</field>
-        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form"/>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='routing_step_ids']/form/group[@name='step_who']/field[@name='position_id']" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', ('target_mode', 'not in', ('position', 'person')), '&amp;', ('target_mode', '=', 'person'), ('employee_id', '=', False)], 'required': [('target_mode', '=', 'position')], 'readonly': [('is_originator', '=', True)]}</attribute>
-                <attribute name="domain">[('holder_ids', 'in', [employee_id])] if target_mode == 'person' and employee_id else []</attribute>
+            <xpath
+                expr="//field[@name='routing_step_ids']/form/group[@name='step_who']/field[@name='position_id']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', '|', ('target_mode', 'not in', ('position', 'person')), ('is_originator', '=', True), '&amp;', ('target_mode', '=', 'person'), ('employee_id', '=', False)], 'required': [('target_mode', '=', 'position')], 'readonly': [('is_originator', '=', True)]}</attribute>
+                <attribute
+                    name="domain"
+                >[('holder_ids', 'in', [employee_id])] if target_mode == 'person' and employee_id else []</attribute>
             </xpath>
             <!--
                 Move position_id to render AFTER employee_id so the person-mode
@@ -28,8 +35,14 @@
                 collapses — position_id visually sits right under target_mode as
                 before).
             -->
-            <xpath expr="//field[@name='routing_step_ids']/form/group[@name='step_who']/field[@name='employee_id']" position="after">
-                <field name="position_id" position="move"/>
+            <xpath
+                expr="//field[@name='routing_step_ids']/form/group[@name='step_who']/field[@name='employee_id']"
+                position="after"
+            >
+                <xpath
+                    expr="//field[@name='routing_step_ids']/form/group[@name='step_who']/field[@name='position_id']"
+                    position="move"
+                />
             </xpath>
             <!--
                 Show the capacity ตำแหน่ง on the Route tree too (optional="show"
@@ -37,8 +50,11 @@
                 mode this column duplicates เป้าหมาย; in person mode it is the
                 only place the capacity shows at a glance.
             -->
-            <xpath expr="//field[@name='routing_step_ids']/tree/field[@name='target_name']" position="after">
-                <field name="position_id" string="ลงนามในฐานะ" optional="show"/>
+            <xpath
+                expr="//field[@name='routing_step_ids']/tree/field[@name='target_name']"
+                position="after"
+            >
+                <field name="position_id" string="ลงนามในฐานะ" optional="show" />
             </xpath>
         </field>
     </record>

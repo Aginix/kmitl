@@ -3,7 +3,8 @@ state when the user flips mode or re-picks the person.
 
 The core engine already reads ``self.position_id`` as the signing capacity
 (``_resolve_capacity`` / ``_signature_snapshot_vals``), so no engine changes are
-needed; this add-on only teaches the view surface to surface + clean the value.
+needed; this add-on surfaces + cleans the value, and guards (at send and at
+signing) that the pinned person actually holds it.
 """
 
 from odoo import _, api, models
@@ -33,24 +34,32 @@ class SarabunRoutingStep(models.Model):
             return
         self.position_id = False
 
-    def _resolve_capacity(self, signed_as_position_id):
-        """Person mode: the capacity is only a label picked client-side (template
-        lines aren't filtered, holdings change) — refuse to sign under a title the
-        pinned person doesn't hold rather than print it on the official document."""
-        capacity = super()._resolve_capacity(signed_as_position_id)
-        if (
-            self.target_mode == "person"
-            and capacity
-            and self.employee_id not in capacity._current_holder_employees()
-        ):
-            raise UserError(
-                _(
-                    "%(person)s does not hold the position %(position)s — "
-                    "update the step's signing capacity (ลงนามในฐานะ)."
+    def _check_person_capacity(self):
+        """A person-mode capacity is only a label filtered client-side — template
+        lines are unfiltered and holdings change — so refuse a capacity the pinned
+        person doesn't hold rather than print it on the official document."""
+        for step in self:
+            if (
+                step.target_mode == "person"
+                and step.position_id
+                and step.employee_id
+                not in step.position_id.sudo()._current_holder_employees()
+            ):
+                raise UserError(
+                    _(
+                        "Step %(order)s: %(person)s does not hold the position "
+                        "%(position)s — fix the signing capacity (ตำแหน่ง) on the "
+                        "route (ตีกลับ first if the document is already circulating)."
+                    )
+                    % {
+                        "order": step.order,
+                        "person": step.employee_id.display_name,
+                        "position": step.position_id.display_name,
+                    }
                 )
-                % {
-                    "person": self.employee_id.display_name,
-                    "position": capacity.display_name,
-                }
-            )
-        return capacity
+
+    def _signature_snapshot_vals(self, actor, capacity=False):
+        # Covers every verb that prints a title (show_signature), not only the
+        # is_signature ones _resolve_capacity validates.
+        self._check_person_capacity()
+        return super()._signature_snapshot_vals(actor, capacity)
