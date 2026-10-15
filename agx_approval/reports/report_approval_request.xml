@@ -123,7 +123,7 @@
         <p>
             <span class="oe-tabs" style="width: 40px;">	</span>
             ข้าพเจ้าผู้ขออนุมัติ
-            <u><strong><span t-field="o.owner_id" /></strong></u>
+            <u><strong><span t-field="o.owner_name" /></strong></u>
             <span class="oe-tabs" style="width: 40px;">	</span>
             <span>สังกัด</span>
             <u><strong><span t-field="o.owner_id.department_id" /></strong></u>
