@@ -3,8 +3,8 @@
     <!-- Built-in routing verbs (ADR-0008). noupdate so admin relabels survive
          upgrades; the engine references these by xmlid and by the three behaviour
          flags: gating (คุมคิว) / show_signature (แสดงลายเซ็น) / is_signature
-         (ลายเซ็นเชิงอำนาจ — closes the recall window). Invariant: is_signature ⇒
-         show_signature. -->
+         (ลายเซ็นเชิงอำนาจ — closes the recall window), plus issues_number
+         (ออกเลขที่หนังสือ — ADR-0017). Invariant: is_signature ⇒ show_signature. -->
     <data noupdate="1">
         <!-- ผู้จัดทำที่ลงนาม — the drafter signs at send. show_signature so it renders
              in the signature block; NOT is_signature (an originator signature is not an
@@ -108,7 +108,8 @@
 
         <!-- ลงนามในใบปะหน้า / เอกสารเพื่อลงนาม — the authoritative signature that issues
              the หนังสือ (ส่งออก), in the step's Position capacity. Gating + show_signature
-             + is_signature (closes the recall window). -->
+             + is_signature (closes the recall window) + issues_number (the
+             หนังสือ is numbered when this step is signed — ADR-0017). -->
         <record id="verb_sign_approve" model="sarabun.verb">
             <field name="name">ลงนามในใบปะหน้า/เอกสารเพื่อลงนาม</field>
             <field name="sequence">30</field>
@@ -116,6 +117,7 @@
             <field name="gating" eval="True"/>
             <field name="show_signature" eval="True"/>
             <field name="is_signature" eval="True"/>
+            <field name="issues_number" eval="True"/>
         </record>
 
         <!-- อนุมัติ / อนุญาต / เห็นชอบและลงนามกำกับ — an approving authority's decision and

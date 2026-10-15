@@ -51,6 +51,7 @@ class TestP6Adapter(SarabunCommon):
         """ตีกลับ invokes _on_sarabun_returned(doc, step)."""
         origin, doc = self._origin_doc()
         step = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc.action_send()
         self._act(step, "return", self.user_a, destination="sender_restart")
         self.assertEqual(origin.returned_count, 1)

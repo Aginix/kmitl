@@ -513,6 +513,10 @@ class SarabunRoutingStep(models.Model):
     def _do_complete(self, actor, note, signed_as_position_id=False):
         capacity = self._resolve_capacity(signed_as_position_id)
         self._stamp(actor, note, "complete", capacity)
+        # ลงทะเบียน runs at the first number-issuing act (ADR-0017) — typically the
+        # ลงนามในใบปะหน้า sign — not at completion; idempotent for later issuers.
+        if self.verb.issues_number:
+            self.document_id._assign_register_number()
         self.document_id._advance_stage()
 
     def _do_direct(self, actor, note, vals):

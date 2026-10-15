@@ -42,8 +42,8 @@ class SarabunDocument(models.Model):
         tracking=True,
         index="trigram",
         help="Official registered number (running number only — no ปีงบ in the number; "
-        "the year lives on ลงวันที่). Assigned only when the final approver signs — "
-        "completion (ADR-0010); stays '/' while draft/circulating.",
+        "the year lives on ลงวันที่). Assigned when the number-issuing step "
+        "(ลงนามในใบปะหน้า) is signed (ADR-0017); stays '/' until then.",
     )
 
     # === Classification (kind / type) ===
@@ -337,7 +337,7 @@ class SarabunDocument(models.Model):
         string="Register Number",
         readonly=True,
         copy=False,
-        help="The register ledger row assigned by ลงทะเบียน at completion (ADR-0010).",
+        help="The register ledger row assigned by ลงทะเบียน at the issuing sign (ADR-0017).",
     )
     numbering_mode = fields.Selection(
         selection=[
@@ -632,7 +632,7 @@ class SarabunDocument(models.Model):
     # === Display ===
     def name_get(self):
         # หนังสือ is identified by its official number — which is "/" until
-        # ลงทะเบียน runs at completion (ADR-0010), then becomes the assigned code.
+        # ลงทะเบียน runs at the issuing sign (ADR-0017), then becomes the assigned code.
         # Consumers that want the เรื่อง should read ``subject`` explicitly instead
         # of parsing it out of display_name.
         return [(record.id, record.name) for record in self]
@@ -733,9 +733,10 @@ class SarabunDocument(models.Model):
     def action_send(self):
         """draft|returned → circulating: ensure the ผู้จัดทำ step, seed the approver
         chain (if needed), auto-sign the originator (ส่ง = ลงนามผู้จัดทำ), activate
-        stage 1. The official number is NOT assigned here — ลงทะเบียน now runs only
-        when the final approver signs (see ``_complete_document``); send merely
-        verifies a register resolves so the route can't strand at completion."""
+        stage 1. The official number is NOT assigned here — ลงทะเบียน runs when the
+        number-issuing step (ลงนามในใบปะหน้า) is signed (ADR-0017); send merely
+        verifies the route has such a step and a register resolves, so the route
+        can't strand without a number."""
         for doc in self:
             if doc.state not in ("draft", "returned"):
                 raise UserError(_("Only draft or returned documents can be sent."))
@@ -750,9 +751,13 @@ class SarabunDocument(models.Model):
                 raise UserError(_(
                     "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
                 ))
+            if not doc.routing_step_ids.filtered("verb.issues_number"):
+                raise UserError(_(
+                    "เส้นทางต้องมีขั้นตอนที่ออกเลขที่หนังสือ (เช่น ลงนามในใบปะหน้า) ก่อนส่ง"
+                ))
             # P3: fail fast if no register resolves, and PIN the resolved เล่มทะเบียน
             # so a later config change can't move the หนังสือ to another book between
-            # ส่ง and ลงทะเบียน (which runs at completion — ADR-0010/0011).
+            # ส่ง and ลงทะเบียน (which runs at the issuing sign — ADR-0017/0011).
             doc.sequence_id = doc._resolve_sequence()
             doc._sign_originator_step()  # ส่ง = ลงนามของผู้จัดทำ (auto)
             # ลงวันที่ = the ส่ง (issue) date, not the create-draft date (ADR-0010): a
@@ -993,8 +998,9 @@ class SarabunDocument(models.Model):
             return
         self.state = "completed"
         self.routing_step_ids._clear_activities()  # clear any remaining to-dos
-        # ลงทะเบียน happens HERE — the number runs only once the final ลงนาม/อนุมัติ is
-        # in (ADR-0010). Must precede the freeze so the frozen PDF carries the number.
+        # ลงทะเบียน normally already ran at the issuing sign (ADR-0017); this
+        # idempotent call is a safety net. Must precede the freeze so the frozen PDF
+        # carries the number.
         self._assign_register_number()
         self._freeze_signed_copy()  # P5
         self.message_post(body=_("All routing completed. Document is now complete."))
@@ -1170,9 +1176,11 @@ class SarabunDocument(models.Model):
 
     def _assign_register_number(self):
         """ลงทะเบียน — the distinct Register seam (phase-2 clerk gate lands here).
-        Called at completion (ADR-0010): the number runs only once the final
-        ลงนาม/อนุมัติ is in, so a document that is rejected/cancelled mid-route never
-        consumes a number. Idempotent (guarded on ``register_number_id``).
+        Called when a number-issuing step is completed (ADR-0017 — typically the
+        ลงนามในใบปะหน้า sign), with ``_complete_document`` as a safety net, so a
+        document rejected/cancelled before that sign never consumes a number.
+        Idempotent (guarded on ``register_number_id``): the first issuer wins and a
+        re-sign after ตีกลับ reuses the number.
 
         NOTE: do not rename back to ``_register`` — that name is reserved by
         Odoo's ORM (BaseModel._register, the registry-visibility flag) and gets
@@ -1198,9 +1206,9 @@ class SarabunDocument(models.Model):
     def _void_register(self, reason):
         """Void the register number as a permanent gap (เลขยกเลิก) — never reissued.
 
-        Since ADR-0010 the number is assigned at completion, so reject/cancel (both
-        pre-completion) find no number to void — this is a guarded no-op on the normal
-        path, kept for the ledger's reserved/manual paths and belt-and-braces."""
+        Since ADR-0017 the number is assigned at the issuing sign, so a ปฏิเสธ by a
+        later step voids it; before that sign there is nothing to void (guarded
+        no-op)."""
         self.ensure_one()
         if self.register_number_id:
             self.register_number_id.write({
