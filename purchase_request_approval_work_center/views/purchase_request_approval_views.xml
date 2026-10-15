@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- No attrs on purpose: the work center stays editable in every state. -->
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name">purchase.request.approval.form (work center)</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_form"
+        />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//group[@name='main_info']/field[@name='requesting_department_id']"
+                position="after"
+            >
+                <field name="work_center_id" options="{'no_create': True}" />
+                <field name="work_center_manual" invisible="1" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_approval_tree" model="ir.ui.view">
+        <field name="name">purchase.request.approval.tree (work center)</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_tree"
+        />
+        <field name="arch" type="xml">
+            <field name="requesting_department_id" position="after">
+                <field name="work_center_id" optional="show" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_approval_search" model="ir.ui.view">
+        <field name="name">purchase.request.approval.search (work center)</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_search"
+        />
+        <field name="arch" type="xml">
+            <filter name="filter_by_dept" position="after">
+                <filter
+                    name="my_work_centers"
+                    string="งานในศูนย์งานของฉัน"
+                    domain="[('work_center_id.member_ids', 'in', [uid])]"
+                />
+                <filter
+                    name="no_work_center"
+                    string="ยังไม่มีศูนย์งาน"
+                    domain="[('work_center_id', '=', False)]"
+                />
+            </filter>
+            <filter name="group_by_department_id" position="after">
+                <filter
+                    name="group_work_center"
+                    string="ศูนย์งาน"
+                    context="{'group_by': 'work_center_id'}"
+                />
+            </filter>
+            <searchpanel position="before">
+                <field name="work_center_id" />
+            </searchpanel>
+        </field>
+    </record>
+
+</odoo>

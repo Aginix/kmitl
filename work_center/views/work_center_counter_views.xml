@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="work_center_counter_view_tree" model="ir.ui.view">
+        <field name="name">work.center.counter.tree</field>
+        <field name="model">work.center.counter</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="area_id" />
+                <field name="model_id" />
+                <field name="domain" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="work_center_counter_view_form" model="ir.ui.view">
+        <field name="name">work.center.counter.form</field>
+        <field name="model">work.center.counter</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="area_id" options="{'no_create': True}" />
+                        <field name="area_model_ids" invisible="1" />
+                        <field name="model_id" options="{'no_create': True}" />
+                        <field name="model_name" invisible="1" />
+                        <field name="sequence" />
+                        <field name="color" widget="color_picker" />
+                    </group>
+                    <field
+                        name="domain"
+                        widget="domain"
+                        options="{'model': 'model_name', 'in_dialog': True}"
+                        attrs="{'invisible': [('model_name', '=', False)]}"
+                    />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="work_center_counter_action" model="ir.actions.act_window">
+        <field name="name">ตัวนับบนการ์ดศูนย์งาน</field>
+        <field name="res_model">work.center.counter</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

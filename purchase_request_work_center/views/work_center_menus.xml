@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="action_work_center_overview" model="ir.actions.act_window">
+        <field name="name">ศูนย์งาน</field>
+        <field name="res_model">work.center</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="view_id" ref="work_center.work_center_view_kanban" />
+        <field
+            name="domain"
+            eval="[('area_id', '=', ref('work_center_area_procurement'))]"
+        />
+        <field
+            name="context"
+            eval="{'search_default_my_work_centers': 1, 'default_area_id': ref('work_center_area_procurement')}"
+        />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No work center yet</p>
+            <p>
+                A ศูนย์งาน owns and follows the พ.1 / พจ.1 its routing rules
+                give it. Remove the "ศูนย์งานของฉัน" filter to see them all.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_work_center_config" model="ir.actions.act_window">
+        <field name="name">ตั้งค่าศูนย์งาน</field>
+        <field name="res_model">work.center</field>
+        <field name="view_mode">tree,form</field>
+        <field
+            name="domain"
+            eval="[('area_id', '=', ref('work_center_area_procurement'))]"
+        />
+        <field
+            name="context"
+            eval="{'default_area_id': ref('work_center_area_procurement')}"
+        />
+    </record>
+
+    <record id="action_work_center_rule" model="ir.actions.act_window">
+        <field name="name">กฎการจัดเข้าศูนย์งาน</field>
+        <field name="res_model">work.center.rule</field>
+        <field name="view_mode">tree,form</field>
+        <field
+            name="domain"
+            eval="[('work_center_id.area_id', '=', ref('work_center_area_procurement'))]"
+        />
+        <field name="context">{'search_default_group_model': 1}</field>
+    </record>
+
+    <record id="action_work_center_counter" model="ir.actions.act_window">
+        <field name="name">ตัวนับบนการ์ด</field>
+        <field name="res_model">work.center.counter</field>
+        <field name="view_mode">tree,form</field>
+        <field
+            name="domain"
+            eval="[('area_id', '=', ref('work_center_area_procurement'))]"
+        />
+        <field
+            name="context"
+            eval="{'default_area_id': ref('work_center_area_procurement')}"
+        />
+    </record>
+
+    <menuitem
+        id="menu_work_center_root"
+        name="ศูนย์งาน"
+        parent="purchase.menu_purchase_root"
+        sequence="0"
+        groups="purchase_request.group_purchase_request_user,work_center.group_work_center_manager"
+    />
+    <menuitem
+        id="menu_work_center_overview"
+        name="ภาพรวมศูนย์งาน"
+        parent="menu_work_center_root"
+        action="action_work_center_overview"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_work_center_config"
+        name="ตั้งค่าศูนย์งาน"
+        parent="menu_work_center_root"
+        action="action_work_center_config"
+        sequence="20"
+        groups="work_center.group_work_center_manager"
+    />
+    <menuitem
+        id="menu_work_center_rule"
+        parent="menu_work_center_root"
+        action="action_work_center_rule"
+        sequence="30"
+        groups="work_center.group_work_center_manager"
+    />
+    <menuitem
+        id="menu_work_center_counter"
+        parent="menu_work_center_root"
+        action="action_work_center_counter"
+        sequence="40"
+        groups="work_center.group_work_center_manager"
+    />
+
+</odoo>
