@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Person-mode capacity label — keep the step's three target fields in a clean
 state when the user flips mode or re-picks the person.
 
@@ -6,7 +5,9 @@ The core engine already reads ``self.position_id`` as the signing capacity
 (``_resolve_capacity`` / ``_signature_snapshot_vals``), so no engine changes are
 needed; this add-on only teaches the view surface to surface + clean the value.
 """
-from odoo import api, models
+
+from odoo import _, api, models
+from odoo.exceptions import UserError
 
 
 class SarabunRoutingStep(models.Model):
@@ -31,3 +32,25 @@ class SarabunRoutingStep(models.Model):
         if self.target_mode != "person" or self.is_originator:
             return
         self.position_id = False
+
+    def _resolve_capacity(self, signed_as_position_id):
+        """Person mode: the capacity is only a label picked client-side (template
+        lines aren't filtered, holdings change) — refuse to sign under a title the
+        pinned person doesn't hold rather than print it on the official document."""
+        capacity = super()._resolve_capacity(signed_as_position_id)
+        if (
+            self.target_mode == "person"
+            and capacity
+            and self.employee_id not in capacity._current_holder_employees()
+        ):
+            raise UserError(
+                _(
+                    "%(person)s does not hold the position %(position)s — "
+                    "update the step's signing capacity (ลงนามในฐานะ)."
+                )
+                % {
+                    "person": self.employee_id.display_name,
+                    "position": capacity.display_name,
+                }
+            )
+        return capacity
