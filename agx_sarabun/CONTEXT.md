@@ -107,7 +107,7 @@ _Avoid_: equating Reset with ดึงกลับ (Reset is admin-only, works *
 ### Concurrency
 
 **Stage**:
-The set of Routing Steps sharing one `order` — they run **in parallel**. The Route advances to the next Stage when every *gating* step (เห็นชอบ / ลงนาม-อนุมัติ) in the current Stage is positively completed. Sequential routing is just stages of one step each.
+The set of Routing Steps sharing one `order` — they run **in parallel**. The Route advances to the next Stage as soon as **any one** *gating* step (เห็นชอบ / ลงนาม-อนุมัติ) in the current Stage is positively completed; the Stage's other gating steps are then `skipped` and their to-dos cleared. Sequential routing is just stages of one step each.
 _Avoid_: level, round
 
 **สำเนาเรียน (CC / for-info)**:
@@ -115,8 +115,8 @@ A non-gating รับทราบ step — often parallel and at the final stag
 _Avoid_: a separate copy/recipient list
 
 **First-to-act (quorum)**:
-When a step targets a Position or ธุรการหน่วยงาน held by several people, the **first holder to act completes it** on the group's behalf. "Everyone must act" is expressed as several parallel steps instead, never as a quorum rule on one step. A single ปฏิเสธ within a co-approval Stage rejects the whole Document immediately.
-_Avoid_: all-must-approve quorum on a single step
+When a step targets a Position or ธุรการหน่วยงาน held by several people, the **first holder to act completes it** on the group's behalf. The same rule holds across a Stage: the first gating step positively completed passes the whole Stage (UAT 2026-10). "Everyone must act" is expressed as consecutive Stages instead. A single ปฏิเสธ within a Stage rejects the whole Document immediately.
+_Avoid_: all-must-approve quorum on a single step or Stage
 
 ### Numbering
 
