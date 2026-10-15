@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        Act-on-step wizard — expose target_position_id in person mode as an optional
+        signing capacity, via the same single-node + ternary-domain pattern used on
+        the Document form (duplicating the field node makes the position-mode
+        dropdown collapse to zero rows — the second node's domain leaks back onto
+        the first).
+
+        Person-mode UX mirrors the Document form: pick บุคลากร first, then ตำแหน่ง
+        appears beneath — target_position_id is moved under target_employee_id and
+        its invisibility rule hides it in person mode until an employee is picked.
+    -->
+    <record id="view_sarabun_step_act_wizard_form_person_capacity" model="ir.ui.view">
+        <field name="name">sarabun.step.act.wizard.form.person.capacity</field>
+        <field name="model">sarabun.step.act.wizard</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_step_act_wizard_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='target_position_id']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('target_mode', 'not in', ('position', 'person')), '&amp;', ('target_mode', '=', 'person'), ('target_employee_id', '=', False)]}</attribute>
+                <attribute
+                    name="domain"
+                >[('holder_ids', 'in', [target_employee_id])] if target_mode == 'person' and target_employee_id else []</attribute>
+            </xpath>
+            <xpath expr="//field[@name='target_employee_id']" position="after">
+                <field name="target_position_id" position="move" />
+            </xpath>
+            <!--
+                A person-mode step carrying a capacity must be signed in exactly
+                that capacity (_resolve_capacity) — lock the picker like position
+                mode so the signer can't pick another holding and hit the error.
+            -->
+            <xpath expr="//field[@name='step_target_mode']" position="after">
+                <field name="step_position_id" invisible="1" />
+            </xpath>
+            <xpath expr="//field[@name='signed_as_position_id']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': ['|', ('step_target_mode', '=', 'position'), ('step_position_id', '!=', False)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
