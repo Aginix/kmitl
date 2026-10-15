@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Deprecated route. The Create Payment button is gone: a guarantee is
+         received by issuing a receipt (purchase_guarantee_receipt_kmitl), which
+         books the same deposit liability and leaves a numbered document behind.
+         The stat button stays so the payments raised the old way remain
+         reachable from the guarantee they belong to. -->
     <record id="view_purchase_guarantee_form" model="ir.ui.view">
         <field name="name">purchase.guarantee.form.account.payment</field>
         <field name="model">purchase.guarantee</field>
@@ -8,17 +13,7 @@
             ref="purchase_guarantee_kmitl.view_purchase_guarantee_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='state']" position="before">
-                <field name="has_active_payment" invisible="1"/>
-                <button
-                    name="action_create_payment"
-                    string="Create Payment"
-                    type="object"
-                    class="btn-primary"
-                    attrs="{'invisible': [('has_active_payment', '=', True)]}"
-                />
-            </xpath>
-            <xpath expr="//button[@name='action_view_purchase_order']" position="after">
+            <xpath expr="//div[@name='button_box']" position="inside">
                 <button
                     name="action_view_payments"
                     type="object"

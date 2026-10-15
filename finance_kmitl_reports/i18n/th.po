@@ -742,3 +742,13 @@ msgstr "เลขที่อ้างอิงผู้ขาย"
 #, python-format
 msgid "Voucher No."
 msgstr "เลขที่ใบสำคัญจ่าย"
+
+#. module: finance_kmitl_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/finance_kmitl_reports/models/receipt_report.py:0
+#: code:addons/finance_kmitl_reports/static/src/receipt_report/receipt_report.js:0
+#, python-format
+msgid "Receipt Kind"
+msgstr "ประเภทใบเสร็จ"
+
