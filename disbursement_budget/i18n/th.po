@@ -79,3 +79,29 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:disbursement_budget.view_disbursement_request_form
 msgid "Are you sure you want to approve? This will obligate and consume the budget."
 msgstr "ยืนยันการอนุมัติ? จะทำการผูกพันและตัดงบประมาณตามยอดรวมของใบขอเบิกนี้"
+
+#. module: disbursement_budget
+#: model:ir.model.fields,field_description:disbursement_budget.field_disbursement_request__is_non_budget
+#: model_terms:ir.ui.view,arch_db:disbursement_budget.view_disbursement_request_form
+#: model_terms:ir.ui.view,arch_db:disbursement_budget.view_disbursement_request_tree
+msgid "No Budget Consumed"
+msgstr "ไม่ใช้งบประมาณ"
+
+#. module: disbursement_budget
+#: model:ir.model.fields,help:disbursement_budget.field_disbursement_request__is_non_budget
+msgid ""
+"This request consumes no budget, so approving it posts no consumption. Set by"
+" the kind of document the request was raised from."
+msgstr ""
+"ใบขอเบิกนี้ไม่ใช้งบประมาณ การอนุมัติจึงไม่ตัดยอดงบใด ๆ "
+"ค่านี้กำหนดโดยชนิดเอกสารต้นทางที่ตั้งเบิก"
+
+#. module: disbursement_budget
+#. odoo-python
+#: code:addons/disbursement_budget/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Approved without consuming any budget: the money is not the institute's to "
+"spend."
+msgstr "อนุมัติโดยไม่ตัดงบประมาณ เนื่องจากเงินก้อนนี้ไม่ใช่เงินของสถาบัน"
+
