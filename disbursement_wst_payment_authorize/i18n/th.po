@@ -116,3 +116,8 @@ msgstr "ที่ฉันอนุมัติ"
 #, python-format
 msgid "error"
 msgstr "ข้อผิดพลาด"
+
+#. module: disbursement_wst_payment_authorize
+#: model:ir.ui.menu,name:disbursement_wst_payment_authorize.menu_disbursement_queue_payment_authorize
+msgid "Awaiting Payment Authorization"
+msgstr "รออนุมัติเบิกจ่าย"

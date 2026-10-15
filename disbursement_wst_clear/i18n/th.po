@@ -94,3 +94,8 @@ msgstr "ส่งอนุมัติที่เลือก"
 #: model_terms:ir.ui.view,arch_db:disbursement_wst_clear.view_disbursement_request_search_inherit_clear
 msgid "To Book"
 msgstr "รอบันทึกบัญชี"
+
+#. module: disbursement_wst_clear
+#: model:ir.ui.menu,name:disbursement_wst_clear.menu_disbursement_queue_clear
+msgid "Awaiting Clearing"
+msgstr "รอล้างหนี้"

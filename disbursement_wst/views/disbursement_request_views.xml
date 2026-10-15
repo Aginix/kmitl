@@ -76,8 +76,14 @@
         <field name="code">action = records.action_act_batch()</field>
     </record>
 
-    <!-- Work queues: one entry per station, added by each station module. -->
-    <menuitem id="menu_disbursement_stations" name="Work Queues" parent="disbursement.menu_disbursement_root" sequence="30" groups="disbursement.group_disbursement_user" />
+    <!-- Work queues: one entry per station, added by each station module, so the
+         whole route is readable in one place whatever app the work itself lives
+         in. No group of its own: a station is held by whoever its module says,
+         and three of them are offices outside the disbursement hierarchy — a
+         group here would hide their own queue from them. Odoo drops a parent
+         whose children are all invisible, so a user holding no station sees no
+         Work Queues at all. -->
+    <menuitem id="menu_disbursement_stations" name="Work Queues" parent="disbursement.menu_disbursement_root" sequence="30" />
 
     <!-- ============================================================
          Signature block (บล็อกลายเซ็น) — disbursement ADR-0002.

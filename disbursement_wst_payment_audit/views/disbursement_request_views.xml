@@ -59,6 +59,10 @@
 
     <menuitem id="menu_dr_audit_queue" name="Audit Disbursements" parent="finance_kmitl.menu_finance_payment_out" action="action_dr_audit_queue" sequence="20" groups="group_disbursement_payment_auditor" />
 
+    <!-- The same queue under Disbursement ▸ Work Queues: the office works
+         it from its own app, the route reads in one place. -->
+    <menuitem id="menu_disbursement_queue_payment_audit" name="Awaiting Payment Audit" parent="disbursement_wst.menu_disbursement_stations" action="action_dr_audit_queue" sequence="50" groups="group_disbursement_payment_auditor" />
+
     <record id="view_disbursement_request_search_inherit_payment_audit" model="ir.ui.view">
         <field name="name">disbursement.request.search.inherit.payment.audit</field>
         <field name="model">disbursement.request</field>

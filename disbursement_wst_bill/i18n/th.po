@@ -68,3 +68,8 @@ msgid ""
 msgstr ""
 "ไม่สามารถสร้างใบตั้งหนี้ใหม่ได้: มีใบตั้งหนี้ %s ที่ยังดำเนินการอยู่ "
 "กรุณายกเลิกก่อนสร้างใบใหม่"
+
+#. module: disbursement_wst_bill
+#: model:ir.ui.menu,name:disbursement_wst_bill.menu_disbursement_queue_bill
+msgid "Awaiting Billing"
+msgstr "รอตั้งหนี้"

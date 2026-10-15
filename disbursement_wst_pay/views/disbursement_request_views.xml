@@ -20,6 +20,10 @@
 
     <menuitem id="menu_dr_pay_queue" name="Pay Disbursements" parent="finance_kmitl.menu_finance_payment_out" action="action_dr_pay_queue" sequence="25" groups="group_disbursement_payment_finance" />
 
+    <!-- The same queue under Disbursement ▸ Work Queues: the office works
+         it from its own app, the route reads in one place. -->
+    <menuitem id="menu_disbursement_queue_pay" name="Awaiting Payment" parent="disbursement_wst.menu_disbursement_stations" action="action_dr_pay_queue" sequence="70" groups="group_disbursement_payment_finance" />
+
     <record id="view_disbursement_request_search_inherit_pay" model="ir.ui.view">
         <field name="name">disbursement.request.search.inherit.pay</field>
         <field name="model">disbursement.request</field>

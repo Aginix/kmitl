@@ -114,3 +114,8 @@ msgstr "ยืนยันจ่ายสำเร็จ"
 #: model_terms:ir.ui.view,arch_db:disbursement_wst_pay.view_disbursement_request_form_inherit_pay
 msgid "Confirm the bank has successfully paid every item?"
 msgstr "ยืนยันว่าธนาคารจ่ายเงินสำเร็จครบทุกรายการแล้ว?"
+
+#. module: disbursement_wst_pay
+#: model:ir.ui.menu,name:disbursement_wst_pay.menu_disbursement_queue_pay
+msgid "Awaiting Payment"
+msgstr "รอจ่ายเงิน"

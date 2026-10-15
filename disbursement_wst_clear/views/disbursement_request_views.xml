@@ -42,6 +42,10 @@
 
     <menuitem id="menu_dr_book_queue" name="Book Disbursement Payments" parent="accounting_kmitl.menu_accounting_root" action="action_dr_book_queue" sequence="23" groups="accounting_kmitl.group_accounting_kmitl_user" />
 
+    <!-- The same queue under Disbursement ▸ Work Queues: the office works
+         it from its own app, the route reads in one place. -->
+    <menuitem id="menu_disbursement_queue_clear" name="Awaiting Clearing" parent="disbursement_wst.menu_disbursement_stations" action="action_dr_book_queue" sequence="80" groups="accounting_kmitl.group_accounting_kmitl_user" />
+
     <record id="view_disbursement_request_search_inherit_clear" model="ir.ui.view">
         <field name="name">disbursement.request.search.inherit.clear</field>
         <field name="model">disbursement.request</field>

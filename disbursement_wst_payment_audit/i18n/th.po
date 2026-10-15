@@ -73,3 +73,8 @@ msgid ""
 msgstr ""
 "กรุณาเลือกเรื่องที่จ่ายก่อนตรวจสอบ "
 "เพราะเป็นตัวกำหนดว่าผู้รับแต่ละรายจะจ่ายจากหัวจ่ายใด"
+
+#. module: disbursement_wst_payment_audit
+#: model:ir.ui.menu,name:disbursement_wst_payment_audit.menu_disbursement_queue_payment_audit
+msgid "Awaiting Payment Audit"
+msgstr "รอตรวจสอบการเบิกจ่าย"

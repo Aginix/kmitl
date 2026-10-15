@@ -51,6 +51,10 @@
 
     <menuitem id="menu_dr_authorize_queue" name="Authorize Disbursements" parent="menu_finance_approver" action="action_dr_authorize_queue" sequence="10" groups="group_disbursement_payment_authorizer" />
 
+    <!-- The same queue under Disbursement ▸ Work Queues: the office works
+         it from its own app, the route reads in one place. -->
+    <menuitem id="menu_disbursement_queue_payment_authorize" name="Awaiting Payment Authorization" parent="disbursement_wst.menu_disbursement_stations" action="action_dr_authorize_queue" sequence="60" groups="group_disbursement_payment_authorizer" />
+
     <!-- The authorizer's own history: every request that has been through this
          station, so it stays here after it is paid and cleared. -->
     <record id="action_disbursement_payment_authorized" model="ir.actions.act_window">
