@@ -557,7 +557,7 @@ def _dr_commitment(dr):
 
 
 def _approve_dr(dr):
-    """Link the reserved commitment and drive the DR through its route."""
+    """Link the reserved commitment and drive the DR draft -> approved."""
     if dr.state != "draft":
         return
     commitment = _dr_commitment(dr)
@@ -570,10 +570,11 @@ def _approve_dr(dr):
     dr.ignore_exception = True
     dr.action_submit()
     dr.action_sign()
-    # Walk the route: verification and the two approvers (the last commits the
-    # budget), up to the billing station, which completes when the bills post.
-    while dr.current_step_id and dr.station_code != "bill":
-        dr.current_step_id.act()
+    dr.action_validate()
+    # Two approvers sign off before the budget is committed: the Finance
+    # Division Director first, then the Rector-delegated approver.
+    dr.action_approve_finance()
+    dr.action_approve()
 
 
 def _bill_dr(dr, wht_tax=None):

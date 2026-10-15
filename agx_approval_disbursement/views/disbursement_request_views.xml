@@ -8,6 +8,9 @@
             ref="disbursement.view_disbursement_request_form"
         />
         <field name="arch" type="xml">
+            <!-- The "returned to source" banner and the hide-Return-when-returned
+                 behaviour are now generic (base disbursement view + assignment
+                 view, keyed on returned_to_source). -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="approval_request_id" invisible="1" />
                 <button

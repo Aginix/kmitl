@@ -29,6 +29,11 @@ class DisbursementRequest(models.Model):
             else:
                 rec.purchase_request_approval_id = False
 
+    def _get_return_source(self):
+        """A PRA-linked DR returns to its purchase request approval for
+        correction."""
+        return self.purchase_request_approval_id or super()._get_return_source()
+
     def action_view_purchase_approval(self):
         self.ensure_one()
         if not self.purchase_request_approval_id:

@@ -19,6 +19,12 @@ class DisbursementRequest(models.Model):
         ondelete={'approval.request': 'set null'},
     )
 
+    def _get_return_source(self):
+        """An approval-request-linked DR returns to its approval request for
+        correction (see disbursement.return.source.mixin / the generic
+        _action_return_for_edit dispatcher)."""
+        return self.approval_request_id or super()._get_return_source()
+
     def action_view_approval_request(self):
         self.ensure_one()
         if not self.approval_request_id:

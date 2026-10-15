@@ -1,14 +1,9 @@
 from odoo import _, api, fields, models
 
-
-def _is_pending(dr):
-    """Not cancelled and no budget committed yet."""
-    return dr.state != "cancel" and not dr.budget_consumed_amount
-
-
-def _is_done(dr):
-    """Budget committed (``budget_consumed_amount`` is core's, and stored)."""
-    return dr.budget_consumed_amount > 0
+# States before the approval decision (still pending).
+DISBURSEMENT_PENDING_STATES = ("draft", "submitted", "signed", "verified")
+# States at or after approval (money committed or already paid out).
+DISBURSEMENT_DONE_STATES = ("approved", "payment_authorized", "paid", "cleared")
 
 
 class ProcurementPlan(models.Model):
@@ -22,7 +17,7 @@ class ProcurementPlan(models.Model):
         string="ใบขอเบิก",
         compute="_compute_disbursement_requests",
     )
-    # Pre-approval disbursements — no budget committed yet.
+    # Pre-approval disbursements — drafted/submitted but not yet approved.
     disbursement_pending_count = fields.Integer(
         string="จำนวนใบขอเบิก (รอดำเนินการ)",
         compute="_compute_disbursement_requests",
@@ -32,7 +27,7 @@ class ProcurementPlan(models.Model):
         compute="_compute_disbursement_requests",
         currency_field="currency_id",
     )
-    # Post-approval disbursements — budget committed, whatever station they are at.
+    # Post-approval disbursements — approved, authorized, paid, or cleared.
     disbursement_done_count = fields.Integer(
         string="จำนวนใบขอเบิก (อนุมัติแล้ว)",
         compute="_compute_disbursement_requests",
@@ -56,8 +51,8 @@ class ProcurementPlan(models.Model):
             # disbursement.request read access — the check fires on click-through.
             drs = rec.payment_ids.mapped("disbursement_request_id").sudo()
             rec.disbursement_request_ids = drs
-            pending = drs.filtered(_is_pending)
-            done = drs.filtered(_is_done)
+            pending = drs.filtered(lambda dr: dr.state in DISBURSEMENT_PENDING_STATES)
+            done = drs.filtered(lambda dr: dr.state in DISBURSEMENT_DONE_STATES)
             rec.disbursement_pending_count = len(pending)
             rec.disbursement_pending_amount = sum(pending.mapped("amount_total"))
             rec.disbursement_done_count = len(done)
@@ -70,7 +65,9 @@ class ProcurementPlan(models.Model):
 
     def action_view_pending_disbursement_requests(self):
         self.ensure_one()
-        pending = self.disbursement_request_ids.filtered(_is_pending)
+        pending = self.disbursement_request_ids.filtered(
+            lambda dr: dr.state in DISBURSEMENT_PENDING_STATES
+        )
         return {
             "name": _("ใบขอเบิก (รอดำเนินการ)"),
             "type": "ir.actions.act_window",
@@ -81,7 +78,9 @@ class ProcurementPlan(models.Model):
 
     def action_view_done_disbursement_requests(self):
         self.ensure_one()
-        done = self.disbursement_request_ids.filtered(_is_done)
+        done = self.disbursement_request_ids.filtered(
+            lambda dr: dr.state in DISBURSEMENT_DONE_STATES
+        )
         return {
             "name": _("ใบขอเบิก (อนุมัติแล้ว)"),
             "type": "ir.actions.act_window",

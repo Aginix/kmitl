@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="disbursement_return_request_wizard_form" model="ir.ui.view">
+        <field name="name">disbursement.return.request.wizard.form</field>
+        <field name="model">disbursement.return.request.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Return for Correction">
+                <field name="request_id" invisible="1" />
+                <field name="mode" invisible="1" />
+                <group>
+                    <field name="reason" placeholder="Reason for returning this request…" />
+                </group>
+                <footer>
+                    <button name="action_return" type="object" string="Return" class="btn-primary" />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

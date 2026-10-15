@@ -19,8 +19,10 @@ MANAGER_GROUP = "disbursement.group_disbursement_manager"
 class DisbursementRequest(models.Model):
     """Officer-assignment layer on the DR.
 
-    ``action_sign`` auto-assigns a responsible officer by rule, and the
-    verification station's completion closes the assignment activity.
+    Loaded after the core return / return-to-source layers so its overrides sit
+    on top of the MRO: ``_verification_officer`` routes the core return To-Dos
+    to the assigned officer, and ``action_sign`` / ``action_resubmit_verification``
+    auto-assign a responsible officer by rule.
     """
 
     _inherit = "disbursement.request"
@@ -32,8 +34,8 @@ class DisbursementRequest(models.Model):
         tracking=True,
         index=True,
     )
-    # Not added to READONLY_STATES on purpose: it must stay writable while the
-    # request is under verification, which is exactly when officers are assigned.
+    # Not added to READONLY_STATES on purpose: it must stay writable at the
+    # ``signed`` state, which is exactly where officers are assigned.
     assignment_can_assign_me = fields.Boolean(
         compute="_compute_assignment_can_assign_me",
     )
@@ -62,6 +64,12 @@ class DisbursementRequest(models.Model):
     def _compute_assignment_can_assign_me(self):
         for rec in self:
             rec.assignment_can_assign_me = rec._assignment_can_claim()
+
+    # -- verification officer hook ---------------------------------------
+    def _verification_officer(self):
+        """Route the core return To-Dos to the assigned officer when set."""
+        self.ensure_one()
+        return self.assigned_to or self.user_id
 
     # -- activity bookkeeping --------------------------------------------
     def _assignment_activity_summary(self):
@@ -151,7 +159,7 @@ class DisbursementRequest(models.Model):
         head who may not read rules) still routes correctly.
         """
         Rule = self.env["disbursement.assignment.rule"].sudo()
-        for rec in self.filtered(lambda r: r._is_under_verification()):
+        for rec in self.filtered(lambda r: r.state == "signed"):
             if not rec.assigned_to:
                 rule = Rule._find_for_request(rec)
                 if not rule:
@@ -166,10 +174,10 @@ class DisbursementRequest(models.Model):
         self._assignment_auto_assign()
         return res
 
-    def _station_complete(self, code):
-        super()._station_complete(code)
-        if code == "verify":
-            self._assignment_close_activity()
+    def action_validate(self):
+        res = super().action_validate()
+        self._assignment_close_activity()
+        return res
 
     def action_draft(self):
         res = super().action_draft()
@@ -179,4 +187,9 @@ class DisbursementRequest(models.Model):
     def action_cancel(self):
         res = super().action_cancel()
         self._assignment_close_activity()
+        return res
+
+    def action_resubmit_verification(self):
+        res = super().action_resubmit_verification()
+        self._assignment_auto_assign()
         return res
