@@ -389,6 +389,19 @@ class DisbursementRequest(models.Model):
         compute="_compute_is_budget_account_product_expense",
     )
 
+    # Almost every DR cuts budget at the Rector-delegated approval — see ADR-0003
+    # for the exception. A bridge that raises this flag is saying the money is
+    # not the institute's to spend (returning someone's own security deposit,
+    # say), so there is nothing to obligate. Visible rather than silent: the
+    # approver has to know their signature did not move any budget.
+    is_non_budget = fields.Boolean(
+        string="No Budget Consumed",
+        compute="_compute_is_non_budget",
+        store=True,
+        help="This request consumes no budget, so approving it obligates "
+        "nothing. Set by the kind of document the request was raised from.",
+    )
+
     budget_consumed_amount = fields.Monetary(
         string="Budget Consumed",
         currency_field="currency_id",
@@ -786,6 +799,14 @@ class DisbursementRequest(models.Model):
     def _compute_is_budget_account_product_expense(self):
         for rec in self:
             rec.is_budget_account_product_expense = False
+
+    # A bridge overriding this declares the dependency it actually reads; Odoo
+    # merges @api.depends across every class in the MRO, so this base one holds
+    # on top of it.
+    @api.depends("budget_commitment_id")
+    def _compute_is_non_budget(self):
+        for rec in self:
+            rec.is_non_budget = False
 
     def _budget_account_line_product(self):
         """Product every line must carry, or an empty recordset when the user
@@ -1186,6 +1207,15 @@ class DisbursementRequest(models.Model):
         consume line for the DR amount, leaving the BC open for other DRs.
         """
         self.ensure_one()
+        if self.is_non_budget:
+            self.message_post(
+                body=_(
+                    "Approved without obligating any budget: this request "
+                    "consumes none."
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+            return
         # Idempotent: a request returned to verification (approved -> signed)
         # keeps its obligation, so re-approving must not double-cut the budget.
         if self._has_own_budget_obligation():

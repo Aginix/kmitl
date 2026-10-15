@@ -30,8 +30,19 @@ _Avoid_: Manager approval, Verify.
 The **second/final** approval, performed by the approver holding the Rector's
 delegated authority. Recorded in `rector_approver_id`. Belongs to
 `disbursement.group_disbursement_rector_delegate`. This approval — and only this
-one — obligates and consumes the budget.
+one — obligates and consumes the budget, unless the request is **No Budget
+Consumed** (see below), in which case there is nothing to obligate and the
+approval only authorises the payment.
 _Avoid_: Director approval (ambiguous), Second approval (state it by role).
+
+**No Budget Consumed** (ไม่ใช้งบประมาณ):
+A request whose money is not the institute's to spend, so approving it
+obligates nothing (`is_non_budget`). Set by the kind of document the request
+was raised from, never by hand — returning a supplier's own security deposit is
+the first case. Shown on the form and in the approver's queue precisely because
+the approver has to know their signature moved no budget. See ADR-0003.
+_Avoid_: Off-budget, นอกงบประมาณ (that names a *source of funds*, not the
+absence of one).
 
 **Reject** (ตีกลับ):
 Either approver's action, during their turn, that returns the pending approval

@@ -24,6 +24,7 @@
                 <field name="pipeline_status" invisible="1" />
                 <field name="main_exception_id" />
                 <field name="budget_commitment_id" optional="hide" />
+                <field name="is_non_budget" optional="hide" />
                 <field name="department_analytic_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
             </tree>
@@ -127,6 +128,7 @@
                             <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
                             <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
                             <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
+                            <field name="is_non_budget" readonly="1" attrs="{'invisible': [('is_non_budget', '=', False)]}" />
                             <field name="budget_account_id" invisible="1" />
                             <!-- Loaded (hidden) so the line list can hide the
                                  product column via parent. -->
