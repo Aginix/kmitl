@@ -105,8 +105,13 @@
                 * { font-family: "THSarabunNew", Arial, sans-serif; }
                 .page { color: #000; font-size: 15pt; line-height: 1.25; }
                 h3 { font-size: 26pt; margin: 0; font-weight: bold; }
-                .doc-title td {
-                    border: none;
+                .doc-title,
+                .doc-title table,
+                .doc-title tr,
+                .doc-title td,
+                .doc-title th {
+                    border-style: hidden !important;
+                    border-width: 0 !important;
                 }
                 .doc-title table {
                     width: 100%;

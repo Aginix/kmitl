@@ -1,29 +1,4 @@
 <odoo>
-    <!-- Suppress the hairline borders that wkhtmltopdf emits for every cell
-         edge of the Sarabun `.doc-title` header's raw <table>s. The layout's
-         own `.doc-title td { border: none }` isn't enough — wkhtmltopdf still
-         emits zero-size fill rectangles that Chrome's PDF viewer rasterises
-         as 1px lines. `border-style: hidden` wins over `none` in CSS table
-         border-conflict resolution and makes wkhtmltopdf skip the emissions
-         entirely. Injected into the Sarabun layout's own <style> so the fix
-         ships with every rendering of our พ.1 — the stand-alone PDF, the
-         Sarabun official PDF, and the Sarabun HTML preview. -->
-    <template
-        id="agx_sarabun_doc_title_borderless"
-        inherit_id="agx_sarabun.sarabun_document_layout"
-    >
-        <xpath expr="//style" position="inside">
-            .doc-title,
-            .doc-title table,
-            .doc-title tr,
-            .doc-title td,
-            .doc-title th {
-                border-style: hidden !important;
-                border-width: 0 !important;
-            }
-        </xpath>
-    </template>
-
     <template
         id="report_purchase_request_kmitl"
         inherit_id="purchase_request.report_purchase_request"
