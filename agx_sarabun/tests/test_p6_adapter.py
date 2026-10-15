@@ -51,6 +51,7 @@ class TestP6Adapter(SarabunCommon):
         """ตีกลับ invokes _on_sarabun_returned(doc, step)."""
         origin, doc = self._origin_doc()
         step = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc.action_send()
         self._act(step, "return", self.user_a, destination="sender_restart")
         self.assertEqual(origin.returned_count, 1)
@@ -125,6 +126,7 @@ class TestP6Adapter(SarabunCommon):
         # a returned doc, by contrast, stays live (revised in place, not re-created)
         origin2, doc2 = self._origin_doc(self.Origin.create({"name": "PR2", "test_department_id": self.dept.id}))
         step2 = self._add_step(doc2, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc2, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc2.action_send()
         self._act(step2, "return", self.user_a, destination="sender_restart")
         self.assertTrue(doc2.is_returned)

@@ -44,6 +44,13 @@ class SarabunVerb(models.Model):
         "validation and the Recall guard (a signed document cannot be recalled). "
         "Implies แสดงลายเซ็น (ADR-0008); does not by itself gate the chain.",
     )
+    issues_number = fields.Boolean(
+        string="ออกเลขที่หนังสือ (Issues number)",
+        help="Completing a step with this verb runs ลงทะเบียน: the หนังสือ gets its "
+        "official number at that moment (the first such step wins). Every route must "
+        "contain one. Independent of the other flags, so a non-signing ธุรการ verb may "
+        "issue the number too (ADR-0017).",
+    )
 
     @api.onchange("is_signature")
     def _onchange_is_signature(self):

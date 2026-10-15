@@ -474,6 +474,11 @@ class SarabunRoutingStep(models.Model):
             if self.verb.show_signature:
                 vals.update(self._signature_snapshot_vals(actor, signed_as_position))
         self.write(vals)
+        # ลงทะเบียน runs at the first number-issuing act (ADR-0017) — typically the
+        # ลงนามในใบปะหน้า sign, whether ดำเนินการ or เกษียนสั่งการ — not at completion;
+        # idempotent for later issuers.
+        if disposition in POSITIVE_DISPOSITIONS and self.verb.issues_number:
+            self.document_id._assign_register_number()
         self._clear_activities()
 
     def _signature_snapshot_vals(self, actor, capacity=False):
