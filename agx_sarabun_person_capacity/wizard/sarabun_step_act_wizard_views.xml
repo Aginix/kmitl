@@ -2,21 +2,19 @@
 <odoo>
     <!--
         Act-on-step wizard — expose target_position_id in person mode as an optional
-        signing capacity (held by the pinned person). The original position-mode
-        instance stays untouched, so uninstalling this add-on restores the pre-change
-        wizard exactly.
+        signing capacity, via the same single-node + ternary-domain pattern used on
+        the Document form (duplicating the field node makes the position-mode
+        dropdown collapse to zero rows — the second node's domain leaks back onto
+        the first).
     -->
     <record id="view_sarabun_step_act_wizard_form_person_capacity" model="ir.ui.view">
         <field name="name">sarabun.step.act.wizard.form.person.capacity</field>
         <field name="model">sarabun.step.act.wizard</field>
         <field name="inherit_id" ref="agx_sarabun.view_sarabun_step_act_wizard_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='target_employee_id']" position="after">
-                <field name="target_position_id"
-                       string="ลงนามในฐานะ (Capacity)"
-                       attrs="{'invisible': [('target_mode', '!=', 'person')]}"
-                       domain="[('holder_ids', 'in', target_employee_id)]"
-                       options="{'no_open': True, 'no_create': True, 'no_edit': True}"/>
+            <xpath expr="//field[@name='target_position_id']" position="attributes">
+                <attribute name="attrs">{'invisible': [('target_mode', 'not in', ('position', 'person'))]}</attribute>
+                <attribute name="domain">[('holder_ids', 'in', [target_employee_id])] if target_mode == 'person' and target_employee_id else []</attribute>
             </xpath>
         </field>
     </record>
