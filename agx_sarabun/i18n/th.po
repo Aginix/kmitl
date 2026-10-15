@@ -6,16 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 16:06+0000\n"
-"PO-Revision-Date: 2026-09-10 23:11+0700\n"
+"POT-Creation-Date: 2026-10-15 12:55+0000\n"
+"PO-Revision-Date: 2026-10-15 12:55+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.9\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
 
 #. module: agx_sarabun
 #. odoo-python
@@ -39,13 +37,6 @@ msgid "%s (สำเนา)"
 msgstr ""
 
 #. module: agx_sarabun
-#. odoo-python
-#: code:addons/agx_sarabun/models/sarabun_document.py:0
-#, python-format
-msgid "(ยังไม่มีเรื่อง)"
-msgstr ""
-
-#. module: agx_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
 msgid "<span class=\"o_stat_text\">Origin</span>"
 msgstr ""
@@ -57,10 +48,10 @@ msgid ""
 "                        pass; <strong>แสดงลายเซ็น (Show signature)</strong> renders a\n"
 "                        signature block on the official document (leave it off for\n"
 "                        ตรวจสอบ / พิจารณา / ส่งต่อ — name in the Route only);\n"
-"                        <strong>ลายเซ็นเชิงอำนาจ (Authoritative sign)</strong> also "
-"blocks\n"
-"                        Recall and always shows. The built-in verbs are referenced by "
-"the\n"
+"                        <strong>ลายเซ็นเชิงอำนาจ (Authoritative sign)</strong> also blocks\n"
+"                        Recall and always shows; <strong>ออกเลขที่หนังสือ (Issues\n"
+"                        number)</strong> gives the หนังสือ its official number when the\n"
+"                        step is completed. The built-in verbs are referenced by the\n"
 "                        engine via their XML id — relabel freely, but don't delete them."
 msgstr ""
 
@@ -97,13 +88,14 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_verb__gating
 msgid ""
-"A gating verb must be positively completed for its Stage to pass. Non-gating verbs "
-"(e.g. รับทราบ) never block advancement."
+"A gating verb must be positively completed for its Stage to pass. Non-gating"
+" verbs (e.g. รับทราบ) never block advancement."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__for_info
-msgid "A non-gating acknowledge step (CC). Never blocks advancement/completion."
+msgid ""
+"A non-gating acknowledge step (CC). Never blocks advancement/completion."
 msgstr ""
 
 #. module: agx_sarabun
@@ -173,6 +165,7 @@ msgstr "ดำเนินการโดย"
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_needaction
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__message_needaction
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__message_needaction
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_needaction
 msgid "Action Needed"
 msgstr ""
@@ -191,6 +184,7 @@ msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_ids
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__activity_ids
 msgid "Activities"
 msgstr ""
 
@@ -201,16 +195,19 @@ msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_exception_decoration
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__activity_exception_decoration
 msgid "Activity Exception Decoration"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_state
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__activity_state
 msgid "Activity State"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_type_icon
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__activity_type_icon
 msgid "Activity Type Icon"
 msgstr ""
 
@@ -223,7 +220,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
-msgid "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
+msgid ""
+"Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
 msgstr ""
 
 #. module: agx_sarabun
@@ -259,6 +257,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_attachment_count
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__message_attachment_count
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__message_attachment_count
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_attachment_count
 msgid "Attachment Count"
 msgstr ""
@@ -322,7 +321,9 @@ msgstr "ยกเลิกผ่านหนังสือ (ยกเลิก�
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__signed_as_position_id
-msgid "Capacity signed in — validated against the step's target Position (ADR-0003)."
+msgid ""
+"Capacity signed in — validated against the step's target Position "
+"(ADR-0003)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -346,10 +347,19 @@ msgid "Completed"
 msgstr "เสร็จสิ้นแล้ว"
 
 #. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_verb__issues_number
+msgid ""
+"Completing a step with this verb runs ลงทะเบียน: the หนังสือ gets its "
+"official number at that moment (the first such step wins). Every route must "
+"contain one. Independent of the other flags, so a non-signing ธุรการ verb "
+"may issue the number too (ADR-0017)."
+msgstr ""
+
+#. module: agx_sarabun
 #: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document
 msgid ""
-"Compose a document, then route it through the approval chain (routing engine arrives in "
-"P2)."
+"Compose a document, then route it through the approval chain (routing engine"
+" arrives in P2)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -432,9 +442,10 @@ msgstr "สร้างเมื่อ"
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_position__holder_ids
 msgid ""
-"Current holder(s) of this post (HR personnel). Multi-holder is resolved first-to-act. "
-"Interim รักษาการ/มอบอำนาจ: add the acting person here temporarily (the acting-assignment "
-"model is phase-2). Only personnel with a linked user account can actually act."
+"Current holder(s) of this post (HR personnel). Multi-holder is resolved "
+"first-to-act. Interim รักษาการ/มอบอำนาจ: add the acting person here "
+"temporarily (the acting-assignment model is phase-2). Only personnel with a "
+"linked user account can actually act."
 msgstr ""
 
 #. module: agx_sarabun
@@ -445,8 +456,8 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__next_line_order
 msgid ""
-"Default ลำดับ for the next seed line — max(existing) + 1 so new lines auto-increment "
-"instead of always starting at 1 (fed to line_ids' context)."
+"Default ลำดับ for the next seed line — max(existing) + 1 so new lines auto-"
+"increment instead of always starting at 1 (fed to line_ids' context)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -468,7 +479,6 @@ msgstr "สังกัด"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__description
-#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__description
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_type_form
 msgid "Description"
 msgstr "รายละเอียด"
@@ -576,11 +586,6 @@ msgid "Documents"
 msgstr "เอกสาร"
 
 #. module: agx_sarabun
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_document
-msgid "Outgoing Documents"
-msgstr "หนังสือออก"
-
-#. module: agx_sarabun
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__state__done
 msgid "Done"
 msgstr "เสร็จสิ้น"
@@ -603,30 +608,33 @@ msgstr ""
 #. module: agx_sarabun
 #: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_inbox
 msgid ""
-"Every หนังสือ routed to you appears here once its step reaches you, and stays after you "
-"act."
+"Every หนังสือ routed to you appears here once its step reaches you, and "
+"stays after you act."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__reached_user_ids
 msgid ""
-"Everyone the หนังสือ has ever reached — the union of sarabun.step.recipient holders "
-"across ACTIVE and ARCHIVED steps. The read-visibility key (ADR-0013): being involved is "
-"a property of the หนังสือ, not of the current attempt, so read persists after completion "
-"and across ตีกลับ / ดึงกลับ / Reset. It only grows — a recipient row is never removed — "
-"matching the permanent per-person reach ledger of the Incoming box."
+"Everyone the หนังสือ has ever reached — the union of sarabun.step.recipient "
+"holders across ACTIVE and ARCHIVED steps. The read-visibility key "
+"(ADR-0013): being involved is a property of the หนังสือ, not of the current "
+"attempt, so read persists after completion and across ตีกลับ / ดึงกลับ / "
+"Reset. It only grows — a recipient row is never removed — matching the "
+"permanent per-person reach ledger of the Incoming box."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__enclosure_attachment_ids
 msgid ""
-"Files enclosed with the หนังสือ, managed through the attachments widget (just the files — "
-"no caption or ordering). Listed by filename under สิ่งที่ส่งมาด้วย on the printed document."
+"Files enclosed with the หนังสือ, managed through the attachments widget "
+"(just the files — no caption or ordering). Listed by filename under "
+"สิ่งที่ส่งมาด้วย on the printed document."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_follower_ids
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__message_follower_ids
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__message_follower_ids
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_follower_ids
 msgid "Followers"
 msgstr ""
@@ -634,12 +642,14 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_partner_ids
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__message_partner_ids
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__message_partner_ids
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_partner_ids
 msgid "Followers (Partners)"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__activity_type_icon
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
@@ -667,8 +677,8 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__attempt_seq
 msgid ""
-"Generation counter bumped on each re-send so prior attempts survive as history "
-"(ADR-0002 §3.4)."
+"Generation counter bumped on each re-send so prior attempts survive as "
+"history (ADR-0002 §3.4)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -684,6 +694,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__has_message
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__has_message
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__has_message
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__has_message
 msgid "Has Message"
 msgstr ""
@@ -696,8 +707,8 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__strongest_verb_id
 msgid ""
-"Highest-ranked verb positively completed so far. Drives the Recall window (Recall "
-"blocked once a signing step has occurred — ADR-0002)."
+"Highest-ranked verb positively completed so far. Drives the Recall window "
+"(Recall blocked once a signing step has occurred — ADR-0002)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -712,7 +723,8 @@ msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_mixin__sarabun_state_label
-msgid "Human-readable status of the current หนังสือ (state + routing progress)."
+msgid ""
+"Human-readable status of the current หนังสือ (state + routing progress)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -737,17 +749,20 @@ msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_exception_icon
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__activity_exception_icon
 msgid "Icon"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__activity_exception_icon
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__activity_exception_icon
 msgid "Icon to indicate an exception activity."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__message_needaction
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_position__message_needaction
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__message_needaction
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr ""
@@ -757,6 +772,8 @@ msgstr ""
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__message_has_sms_error
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_position__message_has_error
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_position__message_has_sms_error
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__message_has_error
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__message_has_sms_error
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__message_has_error
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
@@ -766,6 +783,12 @@ msgstr ""
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__signed_pdf
 msgid "Immutable PDF frozen at completion (cover sheet + origin body merged)."
 msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_document_inbox
+#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_inbox
+msgid "Inbox"
+msgstr "หนังสือเข้า"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__inserted_by_step_id
@@ -800,6 +823,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_is_follower
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__message_is_follower
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__message_is_follower
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_is_follower
 msgid "Is Follower"
 msgstr ""
@@ -908,6 +932,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_main_attachment_id
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__message_main_attachment_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__message_main_attachment_id
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_main_attachment_id
 msgid "Main Attachment"
 msgstr ""
@@ -920,9 +945,9 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_verb__is_signature
 msgid ""
-"Marks ลงนาม-อนุมัติ — the authoritative approval-sign: drives capacity validation and the "
-"Recall guard (a signed document cannot be recalled). Implies แสดงลายเซ็น (ADR-0008); "
-"does not by itself gate the chain."
+"Marks ลงนาม-อนุมัติ — the authoritative approval-sign: drives capacity "
+"validation and the Recall guard (a signed document cannot be recalled). "
+"Implies แสดงลายเซ็น (ADR-0008); does not by itself gate the chain."
 msgstr ""
 
 #. module: agx_sarabun
@@ -933,6 +958,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_has_error
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__message_has_error
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__message_has_error
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_has_error
 msgid "Message Delivery error"
 msgstr ""
@@ -940,12 +966,22 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_ids
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__message_ids
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__message_ids
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_ids
 msgid "Messages"
 msgstr ""
 
 #. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__type_allow_manual
+msgid ""
+"Mirror of the type's สร้างด้วยตนเองได้ flag, for the form's attrs: an "
+"origin-only type is locked on the หนังสือ so a drafter cannot swap the "
+"classification it was spawned with."
+msgstr ""
+
+#. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__my_activity_date_deadline
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr ""
 
@@ -974,21 +1010,25 @@ msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_calendar_event_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_date_deadline
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_summary
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__activity_summary
 msgid "Next Activity Summary"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_type_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__activity_type_id
 msgid "Next Activity Type"
 msgstr ""
 
@@ -1011,21 +1051,26 @@ msgstr ""
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__verb
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_step_act_wizard__step_verb
 msgid ""
-"No default on purpose — the user must read the choices and pick the การดำเนินการ "
-"deliberately, so a step is never sent with an unintended verb."
+"No default on purpose — the user must read the choices and pick the "
+"การดำเนินการ deliberately, so a step is never sent with an unintended verb."
 msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_outgoing
+msgid "No outgoing documents found"
+msgstr "ไม่พบเอกสารส่งออก"
 
 #. module: agx_sarabun
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_document_mixin.py:0
 #, python-format
 msgid "No reason provided"
-msgstr ""
+msgstr "ไม่มีเหตุผลที่ระบุ"
 
 #. module: agx_sarabun
 #: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_inbox
 msgid "No หนังสือ has reached you yet"
-msgstr ""
+msgstr "ยังไม่มีหนังสือส่งถึงคุณ"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template_line__for_info
@@ -1040,6 +1085,7 @@ msgstr "หมายเหตุ"
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_needaction_counter
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__message_needaction_counter
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__message_needaction_counter
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""
@@ -1047,6 +1093,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_has_error_counter
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__message_has_error_counter
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__message_has_error_counter
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_has_error_counter
 msgid "Number of errors"
 msgstr ""
@@ -1054,6 +1101,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__message_needaction_counter
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_position__message_needaction_counter
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__message_needaction_counter
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr ""
@@ -1061,6 +1109,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__message_has_error_counter
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_position__message_has_error_counter
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__message_has_error_counter
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr ""
@@ -1078,9 +1127,9 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__name
 msgid ""
-"Official registered number (running number only — no ปีงบ in the number; the year lives "
-"on ลงวันที่). Assigned only when the final approver signs — completion (ADR-0010); stays "
-"'/' while draft/circulating."
+"Official registered number (running number only — no ปีงบ in the number; the"
+" year lives on ลงวันที่). Assigned when the number-issuing step "
+"(ลงนามในใบปะหน้า) is signed (ADR-0017); stays '/' until then."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1095,11 +1144,13 @@ msgstr ""
 #: code:addons/agx_sarabun/wizard/sarabun_step_act_wizard.py:0
 #, python-format
 msgid ""
-"Only a gating step (เห็นชอบ / ลงนาม-อนุมัติ) can be ตีกลับ (returned) or ปฏิเสธ (rejected)."
+"Only a gating step (เห็นชอบ / ลงนาม-อนุมัติ) can be ตีกลับ (returned) or "
+"ปฏิเสธ (rejected)."
 msgstr ""
 
 #. module: agx_sarabun
 #. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #: code:addons/agx_sarabun/wizard/sarabun_send_wizard.py:0
 #, python-format
@@ -1111,8 +1162,8 @@ msgstr ""
 #: code:addons/agx_sarabun/models/sarabun_routing_step.py:0
 #, python-format
 msgid ""
-"Only the actor of a gating step (เห็นชอบ / ลงนาม-อนุมัติ) may ตีกลับ (return) or ปฏิเสธ "
-"(reject)."
+"Only the actor of a gating step (เห็นชอบ / ลงนาม-อนุมัติ) may ตีกลับ "
+"(return) or ปฏิเสธ (reject)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1135,8 +1186,8 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__route_template_id
 msgid ""
-"Optional template that seeds the steps at send. Not authoritative once seeded — the "
-"Route lives on the document."
+"Optional template that seeds the steps at send. Not authoritative once "
+"seeded — the Route lives on the document."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1166,10 +1217,16 @@ msgid "Origin Reference"
 msgstr "อ้างอิงเอกสารต้นทาง"
 
 #. module: agx_sarabun
+#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_document_outgoing
+#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_document
+msgid "Outgoing Documents"
+msgstr "หนังสือออก"
+
+#. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__sender_user_id
 msgid ""
-"Owner of the เรื่อง. Never copied — a duplicate belongs to whoever made it (falls back to "
-"the default = current user)."
+"Owner of the เรื่อง. Never copied — a duplicate belongs to whoever made it "
+"(falls back to the default = current user)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1186,9 +1243,9 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_hr_department__sarabun_officer_ids
 msgid ""
-"Personnel who act for this unit's document office (ธุรการหน่วยงาน) when a routing step "
-"targets the department (ธุรการหน่วยงาน mode). May be more than one (first-to-act). Only "
-"personnel with a linked user can act."
+"Personnel who act for this unit's document office (ธุรการหน่วยงาน) when a "
+"routing step targets the department (ธุรการหน่วยงาน mode). May be more than "
+"one (first-to-act). Only personnel with a linked user can act."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1238,8 +1295,8 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__condition_domain
 msgid ""
-"Python domain evaluated against the origin record, e.g. [('amount_total', '>=', "
-"100000)]. Empty = match all."
+"Python domain evaluated against the origin record, e.g. [('amount_total', "
+"'>=', 100000)]. Empty = match all."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1305,24 +1362,24 @@ msgstr "ถูกปฏิเสธ (ปิดเรื่อง) โดย %(ac
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_verb__show_signature
 msgid ""
-"Render a signature block (image + name + position + date + note) on the official "
-"document. Independent of gating; non-signing verbs (ตรวจสอบ / พิจารณา / ส่งต่อ, a non-"
-"signing ผู้จัดทำ) leave no mark on the letter. An authoritative sign (is_signature) always "
-"shows — ADR-0008."
+"Render a signature block (image + name + position + date + note) on the "
+"official document. Independent of gating; non-signing verbs (ตรวจสอบ / "
+"พิจารณา / ส่งต่อ, a non-signing ผู้จัดทำ) leave no mark on the letter. An "
+"authoritative sign (is_signature) always shows — ADR-0008."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__suffix
 msgid ""
-"Rendered after the counter. trim=False so a leading space/separator survives the web-"
-"client trim."
+"Rendered after the counter. trim=False so a leading space/separator survives"
+" the web-client trim."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__prefix
 msgid ""
-"Rendered, not stored on the number (e.g. 'อว 6801.1/'). trim=False so a trailing space/"
-"separator survives the web-client trim."
+"Rendered, not stored on the number (e.g. 'อว 6801.1/'). trim=False so a "
+"trailing space/separator survives the web-client trim."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1358,12 +1415,13 @@ msgstr "เลือกจากเลขที่จองไว้"
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__actor_user_ids
 msgid ""
-"Resolved holder-set, written when the step becomes active. Multi-holder = first-to-act-"
-"wins. Never recomputed after activation."
+"Resolved holder-set, written when the step becomes active. Multi-holder = "
+"first-to-act-wins. Never recomputed after activation."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_user_id
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__activity_user_id
 msgid "Responsible User"
 msgstr "ผู้รับผิดชอบ"
 
@@ -1401,7 +1459,6 @@ msgstr "แม่แบบเส้นทางเอกสาร"
 
 #. module: agx_sarabun
 #: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_route_template
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_route_template
 msgid "Route Templates"
 msgstr "แม่แบบเส้นทางเอกสาร"
 
@@ -1428,6 +1485,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__message_has_sms_error
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__message_has_sms_error
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__message_has_sms_error
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr ""
@@ -1481,6 +1539,7 @@ msgstr "หนังสือ"
 
 #. module: agx_sarabun
 #. odoo-javascript
+#: code:addons/agx_sarabun/static/src/xml/sarabun_pdf_preview.xml:0
 #: code:addons/agx_sarabun/static/src/xml/sarabun_pdf_preview.xml:0
 #, python-format
 msgid "Sarabun Preview"
@@ -1680,8 +1739,8 @@ msgstr "ขั้นตอน"
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__sent_date
 msgid ""
-"Stamped when the step is acted/forwarded (ส่งต่อ). In v1 acting auto-sends, so it equals "
-"วันที่ลงนาม; a future sign-then-manual-send sets it separately."
+"Stamped when the step is acted/forwarded (ส่งต่อ). In v1 acting auto-sends, "
+"so it equals วันที่ลงนาม; a future sign-then-manual-send sets it separately."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1703,6 +1762,7 @@ msgstr "สถานะ"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__activity_state
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__activity_state
 msgid ""
 "Status based on activities\n"
 "Overdue: Due date is already passed\n"
@@ -1744,8 +1804,8 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_verb__rank
 msgid ""
-"Strength ordering for the Recall guard (strongest verb done). Higher = stronger; ลงนาม-"
-"อนุมัติ is the strongest."
+"Strength ordering for the Recall guard (strongest verb done). Higher = "
+"stronger; ลงนาม-อนุมัติ is the strongest."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1808,30 +1868,32 @@ msgstr "แม่แบบ"
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__content
 msgid ""
-"The body of the หนังสือ. For a composed memo/circular this IS the letter body; for a "
-"from_record document it is an optional covering note rendered above the origin's "
-"report. Full regulation บันทึกข้อความ layout is phase-2 — v1 is free rich text."
+"The body of the หนังสือ. For a composed memo/circular this IS the letter "
+"body; for a from_record document it is an optional covering note rendered "
+"above the origin's report. Full regulation บันทึกข้อความ layout is phase-2 —"
+" v1 is free rich text."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__addressee
 msgid ""
-"The ceremonial recipient on the หนังสือ header — its own field, separate from the routing "
-"actors. Manual or origin-set."
+"The ceremonial recipient on the หนังสือ header — its own field, separate "
+"from the routing actors. Manual or origin-set."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_mixin__active_sarabun_document_id
 msgid ""
-"The current live Document (most recent non-terminal one); others are superseded "
-"(rejected → duplicated). Replaces per-consumer main_sarabun_document_id."
+"The current live Document (most recent non-terminal one); others are "
+"superseded (rejected → duplicated). Replaces per-consumer "
+"main_sarabun_document_id."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__my_active_step_id
 msgid ""
-"The current user's *active* step (drives the 'Act on My Step' button). Empty once they "
-"have acted."
+"The current user's *active* step (drives the 'Act on My Step' button). Empty"
+" once they have acted."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1844,14 +1906,15 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__sequence_department_ids
 msgid ""
-"The document's sender department and all its ancestor departments — used as domain to "
-"show inherited register books in the dropdown."
+"The document's sender department and all its ancestor departments — used as "
+"domain to show inherited register books in the dropdown."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__kind
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_type__kind
-msgid "The fixed behaviour axis. v1 emphasis is from_record (origin-driven e-flow)."
+msgid ""
+"The fixed behaviour axis. v1 emphasis is from_record (origin-driven e-flow)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1862,14 +1925,16 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__is_originator
 msgid ""
-"The mandatory first step = the ผู้จัดทำ/ผู้ส่ง, auto-signed at send. Cannot be deleted, and "
-"only its verb may be changed; excluded from has_signed / strongest_verb (an originator "
-"signature is not an approval)."
+"The mandatory first step = the ผู้จัดทำ/ผู้ส่ง, auto-signed at send. Cannot "
+"be deleted, and only its verb may be changed; excluded from has_signed / "
+"strongest_verb (an originator signature is not an approval)."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__register_number_id
-msgid "The register ledger row assigned by ลงทะเบียน at completion (ADR-0010)."
+msgid ""
+"The register ledger row assigned by ลงทะเบียน at the issuing sign "
+"(ADR-0017)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1882,9 +1947,10 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__my_reaching_step_id
 msgid ""
-"The step by which this หนังสือ reached the current user — their active step, or (once "
-"they have acted) their most recent completed step. Backs the incoming-box columns (read "
-"status / received / verb) so they stay populated after the user has acted."
+"The step by which this หนังสือ reached the current user — their active step,"
+" or (once they have acted) their most recent completed step. Backs the "
+"incoming-box columns (read status / received / verb) so they stay populated "
+"after the user has acted."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1898,7 +1964,9 @@ msgstr ""
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_routing_step.py:0
 #, python-format
-msgid "The ผู้จัดทำ/ผู้ส่ง step is fixed — only its การดำเนินการ (verb) may be changed."
+msgid ""
+"The ผู้จัดทำ/ผู้ส่ง step is fixed — only its การดำเนินการ (verb) may be "
+"changed."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1906,8 +1974,15 @@ msgstr ""
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
 msgid ""
-"This document has been signed; withdrawal now requires issuing a cancellation หนังสือ, "
-"not ดึงกลับ / ยกเลิกการส่ง."
+"This document has been signed; withdrawal now requires issuing a "
+"cancellation หนังสือ, not ดึงกลับ / ยกเลิกการส่ง."
+msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_document_outgoing
+msgid ""
+"This list shows every documents you have sent, including those that have "
+"been recalled or rejected."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1920,18 +1995,19 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__can_withdraw
 msgid ""
-"True only for the sender (or a manager) while the หนังสือ may still be ดึงกลับ / ยกเลิกการส่ง "
-"— mirrors _check_sender_withdraw_allowed so a mere recipient never sees the withdraw "
-"button."
+"True only for the sender (or a manager) while the หนังสือ may still be "
+"ดึงกลับ / ยกเลิกการส่ง — mirrors _check_sender_withdraw_allowed so a mere "
+"recipient never sees the withdraw button."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_mixin__sarabun_has_live_document
 msgid ""
-"True while a non-terminal Document exists (draft/circulating/completed/returned). Gate "
-"the 'create หนังสือ' button on this — NOT on sarabun_document_count — so a fresh one can "
-"be issued after a terminal outcome (rejected/cancelled), while a returned doc is "
-"revised in place."
+"True while a non-terminal Document exists "
+"(draft/circulating/completed/returned). Gate the 'create หนังสือ' button on "
+"this — NOT on sarabun_document_count — so a fresh one can be issued after a "
+"terminal outcome (rejected/cancelled), while a returned doc is revised in "
+"place."
 msgstr ""
 
 #. module: agx_sarabun
@@ -1945,7 +2021,13 @@ msgid "Type"
 msgstr ""
 
 #. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__type_allow_manual
+msgid "Type Allows Manual"
+msgstr ""
+
+#. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__activity_exception_decoration
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr ""
 
@@ -2027,6 +2109,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__website_message_ids
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_position__website_message_ids
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__website_message_ids
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_routing_step__website_message_ids
 msgid "Website Messages"
 msgstr ""
@@ -2034,6 +2117,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__website_message_ids
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_position__website_message_ids
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__website_message_ids
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__website_message_ids
 msgid "Website communication history"
 msgstr ""
@@ -2041,15 +2125,15 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__my_action_verb_id
 msgid ""
-"What the current user was asked to do on the step that reached them (may already be a "
-"completed step)."
+"What the current user was asked to do on the step that reached them (may "
+"already be a completed step)."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__my_received_date
 msgid ""
-"When the step that reached the current user was received by them (per-person; may "
-"differ from the step's activation under delegation)."
+"When the step that reached the current user was received by them (per-"
+"person; may differ from the step's activation under delegation)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -2063,6 +2147,17 @@ msgid "When this step was first opened — the earliest recipient read."
 msgstr ""
 
 #. module: agx_sarabun
+#: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_type__allow_manual
+msgid ""
+"Whether a user may compose a หนังสือ of this type by hand from the Documents"
+" form. Defaults from the kind — a from_record type must be spawned by its "
+"origin record (OFF), while memo / circular are hand-composed (ON) — but is "
+"overridable, so an admin can retire a composed type from manual use without "
+"changing its kind. Off-types are hidden from the manual-create type dropdown"
+" and refused a manual (origin-less) หนังสือ (see sarabun.document)."
+msgstr ""
+
+#. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__my_read_state
 msgid "Whether the current user has opened this หนังสือ — tracked per person."
 msgstr ""
@@ -2070,17 +2165,18 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__include_content
 msgid ""
-"Whether the เนื้อหา body is written on this หนังสือ. A composed (no-source) document always "
-"has it; a from_record document defaults to OFF (its origin report is the body) but may "
-"opt in to add a covering note above the origin's report."
+"Whether the เนื้อหา body is written on this หนังสือ. A composed (no-source) "
+"document always has it; a from_record document defaults to OFF (its origin "
+"report is the body) but may opt in to add a covering note above the origin's"
+" report."
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__preview_holder_ids
 msgid ""
-"Who would act on this step right now — the position's holder(s) or the unit's "
-"ธุรการหน่วยงาน. May be more than one (first-to-act). This is a live preview; the actual "
-"actors are snapshotted when the step activates."
+"Who would act on this step right now — the position's holder(s) or the "
+"unit's ธุรการหน่วยงาน. May be more than one (first-to-act). This is a live "
+"preview; the actual actors are snapshotted when the step activates."
 msgstr ""
 
 #. module: agx_sarabun
@@ -2143,8 +2239,8 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__numbering_mode
 msgid ""
-"from_record always registers automatically; reserved (a pre-reserved number) is for "
-"manual compose (memo/circular)."
+"from_record always registers automatically; reserved (a pre-reserved number)"
+" is for manual compose (memo/circular)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -2152,8 +2248,8 @@ msgstr ""
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
 msgid ""
-"from_record documents register automatically; reserved numbering is for manual compose "
-"only."
+"from_record documents register automatically; reserved numbering is for "
+"manual compose only."
 msgstr ""
 
 #. module: agx_sarabun
@@ -2165,16 +2261,6 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_act_wizard__destination__resume_step
 msgid "กลับไปขั้นที่เลือก (Resume from step)"
 msgstr ""
-
-#. module: agx_sarabun
-#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_inbox
-msgid "Inbox"
-msgstr "หนังสือเข้า"
-
-#. module: agx_sarabun
-#: model:ir.actions.act_window,name:agx_sarabun.action_sarabun_document_inbox
-msgid "กล่องหนังสือเข้า (Incoming)"
-msgstr "เอกสาร"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recall_wizard__mode
@@ -2293,6 +2379,11 @@ msgid "ตัวอย่างเอกสาร (Preview)"
 msgstr ""
 
 #. module: agx_sarabun
+#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_settings
+msgid "ตั้งค่าใช้งาน"
+msgstr ""
+
+#. module: agx_sarabun
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_route_template_line__target_mode__position
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_step__target_mode__position
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_step_act_wizard__target_mode__position
@@ -2307,22 +2398,25 @@ msgstr ""
 #. module: agx_sarabun
 #: model_terms:ir.actions.act_window,help:agx_sarabun.action_sarabun_department_officer
 msgid ""
-"ติ๊ก \"หน่วยงานธุรการ\" ให้หน่วยงานที่รับ-ส่งสารบรรณ แล้วระบุผู้ที่ทำหน้าที่ธุรการ เพื่อให้เส้นทางเอกสารแบบ "
-"\"ธุรการหน่วยงาน\" ส่งถึงบุคคลเหล่านี้"
+"ติ๊ก \"หน่วยงานธุรการ\" ให้หน่วยงานที่รับ-ส่งสารบรรณ "
+"แล้วระบุผู้ที่ทำหน้าที่ธุรการ เพื่อให้เส้นทางเอกสารแบบ \"ธุรการหน่วยงาน\" "
+"ส่งถึงบุคคลเหล่านี้"
 msgstr ""
 
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_hr_department__is_sarabun_office
 msgid ""
-"ติ๊กหากหน่วยงานนี้ทำหน้าที่ธุรการ (รับ-ส่งสารบรรณ). เฉพาะหน่วยงานที่ติ๊ก เท่านั้นจึงจะถูกเลือกเป็นเป้าหมาย "
-"'ธุรการหน่วยงาน' ในเส้นทางเอกสารได้ — หน่วยงานที่ไม่ติ๊กจะไม่แสดงในตัวเลือก routing ธุรการหน่วยงาน."
+"ติ๊กหากหน่วยงานนี้ทำหน้าที่ธุรการ (รับ-ส่งสารบรรณ). เฉพาะหน่วยงานที่ติ๊ก "
+"เท่านั้นจึงจะถูกเลือกเป็นเป้าหมาย 'ธุรการหน่วยงาน' ในเส้นทางเอกสารได้ — "
+"หน่วยงานที่ไม่ติ๊กจะไม่แสดงในตัวเลือก routing ธุรการหน่วยงาน."
 msgstr ""
 
 #. module: agx_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_department_officer_form
 msgid ""
-"ติ๊กหากหน่วยงานนี้ทำหน้าที่ธุรการ (รับ-ส่งสารบรรณ). เฉพาะหน่วยงานที่ติ๊กเท่านั้นจึงจะเลือกเป็นเป้าหมาย "
-"'ธุรการหน่วยงาน' ในเส้นทางเอกสารได้"
+"ติ๊กหากหน่วยงานนี้ทำหน้าที่ธุรการ (รับ-ส่งสารบรรณ). "
+"เฉพาะหน่วยงานที่ติ๊กเท่านั้นจึงจะเลือกเป็นเป้าหมาย 'ธุรการหน่วยงาน' "
+"ในเส้นทางเอกสารได้"
 msgstr ""
 
 #. module: agx_sarabun
@@ -2413,6 +2507,15 @@ msgid "ปฏิเสธ (Rejected)"
 msgstr ""
 
 #. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid ""
+"ประเภทหนังสือ '%(type)s' ต้องสร้างจากเอกสารต้นทางเท่านั้น ไม่สามารถสร้างด้วยตนเองจากหน้าฟอร์มได้\n"
+"Document type '%(type)s' can only be created from a source record, not composed manually."
+msgstr ""
+
+#. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_number__fiscal_year
 msgid "ปี (พ.ศ.)"
 msgstr ""
@@ -2443,7 +2546,8 @@ msgstr ""
 #. module: agx_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_department_officer_form
 msgid ""
-"ผู้ที่ทำหน้าที่ธุรการของหน่วยงานนี้ เมื่อเส้นทางเอกสารระบุเป้าหมายเป็น 'ธุรการหน่วยงาน' (อาจมีมากกว่า 1 คน)"
+"ผู้ที่ทำหน้าที่ธุรการของหน่วยงานนี้ เมื่อเส้นทางเอกสารระบุเป้าหมายเป็น "
+"'ธุรการหน่วยงาน' (อาจมีมากกว่า 1 คน)"
 msgstr ""
 
 #. module: agx_sarabun
@@ -2478,7 +2582,8 @@ msgstr ""
 
 #. module: agx_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
-msgid "พิมพ์ชื่อหน่วยงานหรือเบอร์ต่อ (ถ้ามี) แล้วระบบจะแสดงข้อความต่อท้ายส่วนราชการ"
+msgid ""
+"พิมพ์ชื่อหน่วยงานหรือเบอร์ต่อ (ถ้ามี) แล้วระบบจะแสดงข้อความต่อท้ายส่วนราชการ"
 msgstr ""
 
 #. module: agx_sarabun
@@ -2602,6 +2707,16 @@ msgid "รับทราบและลงนาม"
 msgstr ""
 
 #. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_route_template__description
+msgid "รายละเอียด/คำอธิบาย"
+msgstr "รายละเอียด"
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_route_template_form
+msgid "รายละเอียดหรือคำอธิบายแม่แบบเส้นทาง..."
+msgstr ""
+
+#. module: agx_sarabun
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__approval_request__sarabun_state__draft
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__budget_transfer__sarabun_state__draft
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__disbursement_request__sarabun_state__draft
@@ -2631,10 +2746,10 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__date
 msgid ""
-"ลงวันที่ — the หนังสือ's official date, printed beside ที่. It is the date it is ส่ง (issued "
-"into circulation), (re)stamped at action_send (ADR-0010), NOT the create-draft date — "
-"so a draft held over ปีงบประมาณ year-end is dated in the new year when actually sent. "
-"Owner-editable is a later phase; kept read-only in the form for now."
+"ลงวันที่ — the หนังสือ's official date, printed beside ที่. Stamped together"
+" with the number at the issuing (ลงนามในใบปะหน้า) sign and empty until then,"
+" like ที่ stays '/' (ADR-0017). Owner-editable is a later phase; kept read-"
+"only in the form for now."
 msgstr ""
 
 #. module: agx_sarabun
@@ -2643,8 +2758,7 @@ msgstr ""
 #, python-format
 msgid ""
 "ลบได้เฉพาะหนังสือที่เป็นร่าง หรือที่ยกเลิกการส่งแล้วเท่านั้น กรุณายกเลิกการส่งก่อนลบ\n"
-"Only a draft or a cancelled document can be deleted. Cancel the send (ยกเลิกการส่ง) "
-"first.\n"
+"Only a draft or a cancelled document can be deleted. Cancel the send (ยกเลิกการส่ง) first.\n"
 "\n"
 "Documents: %s"
 msgstr ""
@@ -2737,6 +2851,11 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_mixin__sarabun_state
 msgid "สถานะหนังสือ (Sarabun Status)"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_type__allow_manual
+msgid "สร้างด้วยตนเองได้ (Allow Manual Creation)"
 msgstr ""
 
 #. module: agx_sarabun
@@ -2833,8 +2952,9 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document_sequence__sender_department_id
 msgid ""
-"หน่วยงานเจ้าของเล่มทะเบียนนี้ — หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน; หนังสือจะเลือกว่าจะออกเลขจากเล่มใด "
-"(ค่าเริ่มต้น = เล่มทะเบียนหลักของหน่วยงาน)."
+"หน่วยงานเจ้าของเล่มทะเบียนนี้ — หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน; "
+"หนังสือจะเลือกว่าจะออกเลขจากเล่มใด (ค่าเริ่มต้น = "
+"เล่มทะเบียนหลักของหน่วยงาน)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -2850,6 +2970,11 @@ msgstr ""
 #. module: agx_sarabun
 #: model:sarabun.verb,name:agx_sarabun.verb_approve
 msgid "อนุมัติ/อนุญาต/เห็นชอบและลงนามกำกับ"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_verb__issues_number
+msgid "ออกเลขที่หนังสือ (Issues number)"
 msgstr ""
 
 #. module: agx_sarabun
@@ -2927,7 +3052,8 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template_line__department_id
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_routing_step__department_id
-msgid "เป้าหมายแบบ ธุรการหน่วยงาน — เลือกได้เฉพาะหน่วยงานที่ตั้งเป็นหน่วยงานธุรการ."
+msgid ""
+"เป้าหมายแบบ ธุรการหน่วยงาน — เลือกได้เฉพาะหน่วยงานที่ตั้งเป็นหน่วยงานธุรการ."
 msgstr ""
 
 #. module: agx_sarabun
@@ -2982,7 +3108,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
-msgid "เล่มทะเบียน '%(book)s' ไม่ใช่ของหน่วยงาน '%(unit)s' หรือหน่วยงานต้นสังกัด."
+msgid ""
+"เล่มทะเบียน '%(book)s' ไม่ใช่ของหน่วยงาน '%(unit)s' หรือหน่วยงานต้นสังกัด."
 msgstr ""
 
 #. module: agx_sarabun
@@ -2993,13 +3120,15 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_document__sequence_id
 msgid ""
-"เล่มทะเบียนที่จะใช้ออกเลขหนังสือฉบับนี้ (ADR-0012) — ตั้งต้นจากเล่มทะเบียนหลัก ของหน่วยงาน เปลี่ยนได้ก่อนส่ง "
-"และถูกตรึงไว้ตอนส่ง."
+"เล่มทะเบียนที่จะใช้ออกเลขหนังสือฉบับนี้ (ADR-0012) — "
+"ตั้งต้นจากเล่มทะเบียนหลัก ของหน่วยงาน เปลี่ยนได้ก่อนส่ง และถูกตรึงไว้ตอนส่ง."
 msgstr ""
 
 #. module: agx_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_department_officer_form
-msgid "เล่มทะเบียนที่หนังสือของหน่วยงานนี้ใช้เป็นค่าเริ่มต้น — ผู้จัดทำเลือกเล่มอื่นได้รายฉบับ"
+msgid ""
+"เล่มทะเบียนที่หนังสือของหน่วยงานนี้ใช้เป็นค่าเริ่มต้น — "
+"ผู้จัดทำเลือกเล่มอื่นได้รายฉบับ"
 msgstr ""
 
 #. module: agx_sarabun
@@ -3010,8 +3139,8 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_hr_department__default_sarabun_sequence_id
 msgid ""
-"เล่มทะเบียนที่ใช้เป็นค่าเริ่มต้นเมื่อสร้างหนังสือของหน่วยงานนี้ เพื่อไม่ต้องเลือกทุกครั้ง "
-"(ผู้จัดทำยังเปลี่ยนเป็นเล่มอื่นได้ก่อนส่ง)."
+"เล่มทะเบียนที่ใช้เป็นค่าเริ่มต้นเมื่อสร้างหนังสือของหน่วยงานนี้ "
+"เพื่อไม่ต้องเลือกทุกครั้ง (ผู้จัดทำยังเปลี่ยนเป็นเล่มอื่นได้ก่อนส่ง)."
 msgstr ""
 
 #. module: agx_sarabun
@@ -3045,6 +3174,18 @@ msgid "เสร็จสิ้น (Completed)"
 msgstr "เสร็จสิ้นแล้ว"
 
 #. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid "เส้นทางต้องมีขั้นตอนที่ออกเลขที่หนังสือ (เช่น ลงนามในใบปะหน้า) ก่อนส่ง"
+msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.ui.menu,name:agx_sarabun.menu_sarabun_route_template
+msgid "เส้นทางเดินเอกสาร"
+msgstr "แม่แบบเส้นทางเอกสาร"
+
+#. module: agx_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
 msgid "เส้นทางเอกสาร (Routing Step)"
 msgstr ""
@@ -3061,7 +3202,8 @@ msgstr "เอกสารต้นทาง (ข้อมูลในระบ�
 
 #. module: agx_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.view_sarabun_document_form
-msgid "แทนที่เส้นทางปัจจุบันทั้งหมดด้วยแม่แบบที่เลือก? (ขั้นตอนที่มีอยู่จะถูกลบ)"
+msgid ""
+"แทนที่เส้นทางปัจจุบันทั้งหมดด้วยแม่แบบที่เลือก? (ขั้นตอนที่มีอยู่จะถูกลบ)"
 msgstr ""
 
 #. module: agx_sarabun
@@ -3077,8 +3219,8 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields,help:agx_sarabun.field_sarabun_route_template__origin_model_id
 msgid ""
-"แหล่งที่มา — the source record's model this template auto-matches (e.g. purchase.request). "
-"Empty = match any source model."
+"แหล่งที่มา — the source record's model this template auto-matches (e.g. "
+"purchase.request). Empty = match any source model."
 msgstr ""
 
 #. module: agx_sarabun
@@ -3096,8 +3238,8 @@ msgstr ""
 #: code:addons/agx_sarabun/models/sarabun_document.py:0
 #, python-format
 msgid ""
-"ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%(unit)s'. (No register configured for unit '%(unit)s'.) "
-"Configure a register before sending."
+"ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%(unit)s'. (No register configured for "
+"unit '%(unit)s'.) Configure a register before sending."
 msgstr ""
 
 #. module: agx_sarabun
@@ -3111,8 +3253,7 @@ msgstr ""
 #, python-format
 msgid ""
 "ไม่สามารถลบหนังสือที่ออกเลขที่แล้วได้ เลขที่ต้องคงคู่กับหนังสือไว้ในทะเบียนเพื่อการตรวจสอบ\n"
-"Cannot delete a document that has already been assigned a register number — the number "
-"must keep its document link for audit.\n"
+"Cannot delete a document that has already been assigned a register number — the number must keep its document link for audit.\n"
 "\n"
 "Documents: %s"
 msgstr ""
