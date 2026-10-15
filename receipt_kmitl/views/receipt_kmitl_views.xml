@@ -10,6 +10,7 @@
                   js_class="receipt_kmitl_dashboard_tree">
                 <field name="name"/>
                 <field name="date"/>
+                <field name="receipt_kind" optional="hide"/>
                 <field name="department_analytic_id" optional="show"/>
                 <field name="user_id" optional="show"/>
                 <field name="customer_name"/>
@@ -84,6 +85,7 @@
                     </div>
                     <group>
                         <group name="header" string="Receipt Info">
+                            <field name="receipt_kind"/>
                             <field name="date"/>
                             <field name="payment_type" widget="radio"/>
                             <field name="payment_method_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
@@ -189,6 +191,8 @@
                 <filter string="Walk-in" name="walkin"
                         domain="[('is_walkin','=',True)]"/>
                 <separator/>
+                <filter string="Revenue" name="kind_revenue" domain="[('receipt_kind','=', 'revenue')]"/>
+                <separator/>
                 <filter string="Cash" name="cash" domain="[('payment_type','=', 'cash')]"/>
                 <filter string="Cheque" name="cheque" domain="[('payment_type','=', 'cheque')]"/>
                 <filter string="Transfer" name="transfer" domain="[('payment_type','=', 'transfer')]"/>
@@ -207,6 +211,7 @@
                 <filter string="Pending Remittance" name="pending_remittance"
                         domain="[('state','=','draft'),('remittance_id','=',False)]"/>
                 <group expand="0" name="group_by" string="Group By">
+                    <filter string="Receipt Kind" name="group_receipt_kind" context="{'group_by':'receipt_kind'}"/>
                     <filter string="Department" name="group_department" context="{'group_by':'department_analytic_id'}"/>
                     <filter string="State" name="group_state" context="{'group_by':'state'}"/>
                     <filter string="Date" name="group_date" context="{'group_by':'date:day'}"/>

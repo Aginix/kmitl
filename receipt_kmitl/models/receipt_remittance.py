@@ -43,6 +43,25 @@ class ReceiptRemittance(models.Model):
         domain=[("root_plan_id.code", "=", "departments"), ("parent_id", "=", False)],
         tracking=True,
     )
+    # The book this remittance belongs to. A remittance covers one kind of
+    # receipt only — the treasury reconciles revenue and money held on deposit
+    # against different ledgers, so mixing them in one submission would make
+    # neither total mean anything. Chosen while draft, then frozen by the
+    # receipts already on it.
+    receipt_kind = fields.Selection(
+        [("revenue", "Revenue")],
+        string="Receipt Kind",
+        default="revenue",
+        required=True,
+        index=True,
+        tracking=True,
+        states={
+            "submitted": [("readonly", True)],
+            "approved": [("readonly", True)],
+            "posted": [("readonly", True)],
+            "cancelled": [("readonly", True)],
+        },
+    )
     receipt_ids = fields.One2many(
         "kmitl.receipt",
         "remittance_id",
@@ -165,6 +184,7 @@ class ReceiptRemittance(models.Model):
         return [
             ("company_id", "=", self.company_id.id),
             ("department_analytic_id", "child_of", self.department_analytic_id.id),
+            ("receipt_kind", "=", self.receipt_kind),
             ("state", "=", "draft"),
             ("remittance_id", "=", False),
             ("date", "<=", self.date),
@@ -188,6 +208,12 @@ class ReceiptRemittance(models.Model):
             if receipt.company_id != self.company_id:
                 raise ValidationError(
                     _("Receipt %s belongs to a different company.")
+                    % receipt.name
+                )
+            if receipt.receipt_kind != self.receipt_kind:
+                raise ValidationError(
+                    _("Receipt %s is not of this remittance's kind. A "
+                      "remittance covers one kind of receipt only.")
                     % receipt.name
                 )
 
