@@ -229,8 +229,10 @@ class SarabunRoutingStep(models.Model):
     # ------------------------------------------------------------ ORM guards
     def write(self, vals):
         """The originator (ผู้จัดทำ/ผู้ส่ง) row is locked — a user may change only its
-        verb. Engine writes (sudo: activation, archive, stamping) pass through."""
-        if not self.env.su and vals and set(vals) - {"verb"}:
+        verb. ``order`` is also allowed so the tree's handle widget can resequence
+        rows around it; the document's write() normalizes order after all O2M
+        commands are processed. Engine writes (sudo) pass through."""
+        if not self.env.su and vals and set(vals) - {"verb", "order"}:
             if self.filtered("is_originator"):
                 raise UserError(_(
                     "The ผู้จัดทำ/ผู้ส่ง step is fixed — only its การดำเนินการ (verb) "

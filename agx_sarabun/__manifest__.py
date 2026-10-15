@@ -45,6 +45,7 @@
         "web.assets_backend": [
             "agx_sarabun/static/src/scss/sarabun_form.scss",
             "agx_sarabun/static/src/js/sarabun_document_form.esm.js",
+            "agx_sarabun/static/src/js/sarabun_routing_step_field.esm.js",
             "agx_sarabun/static/src/js/sarabun_pdf_preview.esm.js",
             "agx_sarabun/static/src/xml/sarabun_pdf_preview.xml",
         ],
