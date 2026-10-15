@@ -279,7 +279,7 @@
                                     <td
                                         class="text-end"
                                         style="width: 25%"
-                                        t-out="'{0:,.2f} ฿'.format(o.amount_before_wht)"
+                                        t-out="'{0:,.2f}'.format(o.amount_before_wht)"
                                     />
                                 </tr>
                                 <tr t-foreach="wht_lines" t-as="line">
@@ -291,19 +291,19 @@
                                     <td class="text-end">
                                         ฐานภาษี <span
                                             class="ms-2"
-                                            t-out="'{0:,.2f} ฿'.format(line.tax_base_amount)"
+                                            t-out="'{0:,.2f}'.format(line.tax_base_amount)"
                                         />
                                     </td>
                                     <td
                                         class="text-end"
-                                        t-out="'{0:,.2f} ฿'.format(abs(line.balance))"
+                                        t-out="'{0:,.2f}'.format(abs(line.balance))"
                                     />
                                 </tr>
                                 <tr t-if="o.amount_wht">
                                     <td class="text-center" colspan="2">รวมภาษีหัก ณ ที่จ่าย</td>
                                     <td
                                         class="text-end"
-                                        t-out="'{0:,.2f} ฿'.format(o.amount_wht)"
+                                        t-out="'{0:,.2f}'.format(o.amount_wht)"
                                     />
                                 </tr>
                                 <tr class="fw-bold">
@@ -315,7 +315,7 @@
                                     <td class="text-center">จำนวนเงินจ่ายสุทธิ</td>
                                     <td
                                         class="text-end"
-                                        t-out="'{0:,.2f} ฿'.format(o.amount)"
+                                        t-out="'{0:,.2f}'.format(o.amount)"
                                     />
                                 </tr>
                             </tbody>
