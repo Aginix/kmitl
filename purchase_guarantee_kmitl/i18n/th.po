@@ -213,3 +213,20 @@ msgstr ""
 #: model:ir.ui.menu,name:purchase_guarantee_kmitl.menu_contract_guarantee
 msgid "หลักประกันสัญญา"
 msgstr ""
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_type__is_monetary
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_type_search
+msgid "Received as Money"
+msgstr "รับเป็นตัวเงิน"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,help:purchase_guarantee_kmitl.field_purchase_guarantee_type__is_monetary
+msgid ""
+"KMITL actually holds the money for this form of guarantee, so it is "
+"receipted and booked to a deposit liability. Forms that are only a promise — "
+"a bank guarantee letter — are recorded without any accounting entry."
+msgstr ""
+"หลักประกันรูปแบบนี้ KMITL ถือตัวเงินไว้จริง จึงต้องออกใบเสร็จและลงบัญชีเป็นเงินรับฝาก "
+"ส่วนรูปแบบที่เป็นเพียงคำมั่น เช่น หนังสือค้ำประกันธนาคาร บันทึกข้อมูลอย่างเดียวโดยไม่ลงบัญชี"
+
