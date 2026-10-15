@@ -127,6 +127,18 @@ class TestP3Numbering(SarabunCommon):
         self.assertEqual(doc.register_number_id, number)
         self.assertEqual(number.counter, 1)  # one number consumed
 
+    def test_number_issued_at_sign_via_direct(self):
+        """Signing ลงนามในใบปะหน้า via เกษียนสั่งการ (sign and forward) issues the
+        number at that sign too."""
+        doc = self._make_doc()
+        step = self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        doc.action_send()
+        self._act(step, "direct", self.user_a, note="เสนอ อธิการบดี",
+                  verb=self._verb("approve").id, target_mode="person",
+                  employee_id=self.emp_b.id)
+        self.assertTrue(doc.register_number_id)
+        self.assertTrue(doc.is_circulating)
+
     def test_send_blocked_without_issuing_step(self):
         """A route with no number-issuing step cannot be sent."""
         doc = self._make_doc()

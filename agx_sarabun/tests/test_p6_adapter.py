@@ -126,6 +126,7 @@ class TestP6Adapter(SarabunCommon):
         # a returned doc, by contrast, stays live (revised in place, not re-created)
         origin2, doc2 = self._origin_doc(self.Origin.create({"name": "PR2", "test_department_id": self.dept.id}))
         step2 = self._add_step(doc2, order=10, verb="endorse", user=self.user_a)
+        self._add_step(doc2, order=20, user=self.user_b)  # ออกเลข (ADR-0017)
         doc2.action_send()
         self._act(step2, "return", self.user_a, destination="sender_restart")
         self.assertTrue(doc2.is_returned)

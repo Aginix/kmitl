@@ -51,4 +51,8 @@ and the number must not wait for those later steps.
   "never straddles a fiscal-year boundary" assumption of ADR-0010 still covers it.
 - Register order = order of the issuing signs, not of completion.
 - The verb data is `noupdate`, so the flag reaches existing databases through the
-  `16.0.7.0.0` post-migration.
+  `16.0.7.0.0` post-migration. The same migration turns the waiting อนุมัติ steps of
+  any draft/returned หนังสือ lacking an issuing step into ลงนามในใบปะหน้า, so Routes
+  seeded before the change can still be sent.
+- Completing the issuing step by **เกษียนสั่งการ** (sign and forward) issues the number
+  too — every positive disposition counts, not only ดำเนินการ.
