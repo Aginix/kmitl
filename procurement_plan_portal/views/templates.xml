@@ -17,6 +17,13 @@
         </nav>
     </template>
 
+    <template id="pp_money" name="Procurement Plans - Money (ล้านบาท / บาท)">
+        <t t-if="abs(amount or 0) &gt;= 1e6"><t t-out="fmt_million(amount)" /><span
+                class="u"
+            >ล้านบาท</span></t>
+        <t t-else=""><t t-out="fmt_amount(amount)" /><span class="u">บาท</span></t>
+    </template>
+
     <template id="pp_source_bar" name="Procurement Plans - Source Bar">
         <t t-set="bar_total" t-value="(gov or 0.0) + (rev or 0.0)" />
         <div t-attf-class="pp-stack #{bar_class or ''}">
@@ -98,8 +105,11 @@
                             <div class="pp-card pp-kpi">
                                 <div class="pp-label">วงเงินรวม</div>
                                 <div class="pp-kpi-v"><t
-                                        t-out="fmt_million(totals['total'])"
-                                    /><span class="u">ล้านบาท</span></div>
+                                        t-call="procurement_plan_portal.pp_money"
+                                    ><t
+                                            t-set="amount"
+                                            t-value="totals['total']"
+                                        /></t></div>
                                 <div class="mt-2">
                                     <t t-call="procurement_plan_portal.pp_source_bar">
                                         <t t-set="gov" t-value="totals['gov']" />
@@ -116,8 +126,11 @@
                                         class="pp-dot gov"
                                     />งบประมาณแผ่นดิน</div>
                                 <div class="pp-kpi-v"><t
-                                        t-out="fmt_million(totals['gov'])"
-                                    /><span class="u">ล้านบาท</span></div>
+                                        t-call="procurement_plan_portal.pp_money"
+                                    ><t
+                                            t-set="amount"
+                                            t-value="totals['gov']"
+                                        /></t></div>
                                 <div class="pp-kpi-meta"><t
                                         t-out="gov_pct"
                                     />% ของวงเงินรวม</div>
@@ -129,8 +142,11 @@
                                         class="pp-dot rev"
                                     />เงินรายได้</div>
                                 <div class="pp-kpi-v"><t
-                                        t-out="fmt_million(totals['rev'])"
-                                    /><span class="u">ล้านบาท</span></div>
+                                        t-call="procurement_plan_portal.pp_money"
+                                    ><t
+                                            t-set="amount"
+                                            t-value="totals['rev']"
+                                        /></t></div>
                                 <div class="pp-kpi-meta"><t
                                         t-out="100 - gov_pct if totals['total'] else 0"
                                     />% ของวงเงินรวม</div>
@@ -151,7 +167,7 @@
                                     <span
                                         t-if="state_counts.get(st[0])"
                                         t-attf-class="s-#{st[0]}"
-                                        t-attf-style="width: #{state_counts.get(st[0]) / totals['count'] * 100}%"
+                                        t-attf-style="width: #{state_counts.get(st[0]) / sum(state_counts.values()) * 100}%"
                                     />
                                 </t>
                             </div>
@@ -305,8 +321,8 @@
                             <div class="pp-card pp-kpi">
                                 <div class="pp-label">วงเงินรวม</div>
                                 <div class="pp-kpi-v"><t
-                                        t-out="fmt_million(all_total)"
-                                    /><span class="u">ล้านบาท</span></div>
+                                        t-call="procurement_plan_portal.pp_money"
+                                    ><t t-set="amount" t-value="all_total" /></t></div>
                                 <div class="mt-2">
                                     <t t-call="procurement_plan_portal.pp_source_bar">
                                         <t t-set="gov" t-value="all_gov_total" />
@@ -316,8 +332,8 @@
                                 </div>
                                 <div class="pp-kpi-meta">
                                     ใช้จริงแล้ว <t
-                                        t-out="fmt_million(all_actual)"
-                                    /> ล้าน
+                                        t-call="procurement_plan_portal.pp_money"
+                                    ><t t-set="amount" t-value="all_actual" /></t>
                                     (<t
                                         t-out="round(all_actual / all_total * 100) if all_total else 0"
                                     />%)

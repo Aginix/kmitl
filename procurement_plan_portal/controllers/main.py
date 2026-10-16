@@ -1,5 +1,5 @@
 import logging
-from datetime import date
+from collections import Counter
 from urllib.parse import urlencode
 
 import pytz
@@ -111,16 +111,17 @@ class ProcurementPlanPortal(http.Controller):
             )
         )
 
-    def _get_source_ids(self):
-        """Return (แผ่นดิน source ids, เงินรายได้ source ids)."""
+    def _get_gov_source_ids(self):
+        """Ids of the แผ่นดิน sources; every other source counts as เงินรายได้."""
         sources_plan = request.env.ref("account_analytic_kmitl.analytic_plan_sources")
-        sources = (
+        return (
             request.env["account.analytic.account"]
             .sudo()
-            .search([("plan_id", "=", sources_plan.id)])
+            .search(
+                [("plan_id", "=", sources_plan.id), ("code", "in", GOV_SOURCE_CODES)]
+            )
+            .ids
         )
-        gov = sources.filtered(lambda s: s.code in GOV_SOURCE_CODES)
-        return gov.ids, (sources - gov).ids
 
     def _plan_domain(self, current_fy, department=None):
         domain = [("state", "in", [s for s, _label in PUBLIC_STATES])]
@@ -145,7 +146,7 @@ class ProcurementPlanPortal(http.Controller):
     def _fiscal_months(self, fiscal_year):
         """The 12 months of the fiscal year, in order, as
         [(month selection key, short label, full label)] with BE years."""
-        start = fiscal_year.date_from or date(date.today().year, 10, 1)
+        start = fiscal_year.date_from
         months = []
         for i in range(12):
             m = (start.month - 1 + i) % 12 + 1
@@ -178,8 +179,10 @@ class ProcurementPlanPortal(http.Controller):
     def overview(self, fiscal_year_id=None, **kw):
         Plan = request.env["procurement.plan"].sudo()
         fiscal_years, current_fy = self._get_fiscal_years(fiscal_year_id)
-        gov_ids, _rev_ids = self._get_source_ids()
-        domain = self._plan_domain(current_fy)
+        gov_ids = self._get_gov_source_ids()
+        domain = self._plan_domain(current_fy) + [
+            ("department_analytic_id", "!=", False)
+        ]
 
         departments_plan = request.env.ref(
             "account_analytic_kmitl.analytic_plan_departments"
@@ -271,7 +274,7 @@ class ProcurementPlanPortal(http.Controller):
             return request.redirect("/procurement-plans")
 
         fiscal_years, current_fy = self._get_fiscal_years(fiscal_year_id)
-        gov_ids, _rev_ids = self._get_source_ids()
+        gov_ids = self._get_gov_source_ids()
         base_domain = self._plan_domain(current_fy, dept)
 
         # Summary (always unfiltered within the department)
@@ -280,11 +283,9 @@ class ProcurementPlanPortal(http.Controller):
         total = sum(all_plans.mapped("total_price"))
         gov_total = sum(gov_plans.mapped("total_price"))
         actual = sum(-p.analytic_account_balance for p in all_plans)
-        methods = {}
-        for plan in all_plans:
-            name = plan.procurement_method_id.name or "ไม่ระบุ"
-            methods[name] = methods.get(name, 0) + 1
-        methods = sorted(methods.items(), key=lambda m: -m[1])
+        methods = Counter(
+            p.procurement_method_id.name or "ไม่ระบุ" for p in all_plans
+        ).most_common()
 
         # Filters
         source = source if source in ("gov", "rev") else "all"
@@ -301,20 +302,26 @@ class ProcurementPlanPortal(http.Controller):
         if state != "all":
             filter_domain += [("state", "=", state)]
 
-        url_args = {
-            k: v
-            for k, v in {
+        def query(**overrides):
+            args = {
                 "fiscal_year_id": current_fy.id,
-                "source": source if source != "all" else None,
-                "state": state if state != "all" else None,
-                "search": search or None,
-            }.items()
-            if v
-        }
+                "source": source,
+                "state": state,
+                "search": search,
+                **overrides,
+            }
+            return {k: v for k, v in args.items() if v and v != "all"}
+
+        def filter_url(**overrides):
+            return "/procurement-plans/%s?%s" % (
+                dept.code,
+                urlencode(query(**overrides)),
+            )
+
         plan_count = Plan.search_count(filter_domain)
         pager = portal_pager(
             url="/procurement-plans/%s" % dept.code,
-            url_args=url_args,
+            url_args=query(),
             total=plan_count,
             page=page,
             step=PLANS_PER_PAGE,
@@ -322,12 +329,6 @@ class ProcurementPlanPortal(http.Controller):
         plans = Plan.search(
             filter_domain, order="name", limit=PLANS_PER_PAGE, offset=pager["offset"]
         )
-
-        def filter_url(**overrides):
-            args = {
-                k: v for k, v in dict(url_args, **overrides).items() if v and v != "all"
-            }
-            return "/procurement-plans/%s?%s" % (dept.code, urlencode(args))
 
         values = self._common_values(fiscal_years, current_fy)
         values.update(
@@ -343,7 +344,7 @@ class ProcurementPlanPortal(http.Controller):
                 "gov_ids": gov_ids,
                 "state_counts": state_counts,
                 "all_plan_count": len(all_plans),
-                "all_state_counts": self._state_counts(base_domain),
+                "all_state_counts": Counter(all_plans.mapped("state")),
                 "all_total": total,
                 "all_gov_total": gov_total,
                 "all_rev_total": total - gov_total,
@@ -377,7 +378,7 @@ class ProcurementPlanPortal(http.Controller):
         fiscal_years, current_fy = self._get_fiscal_years(
             plan.account_fiscal_year_id.id
         )
-        gov_ids, _rev_ids = self._get_source_ids()
+        gov_ids = self._get_gov_source_ids()
         months = self._fiscal_months(plan.account_fiscal_year_id)
         month_index = {m[0]: i for i, m in enumerate(months)}
         # Timeline lanes: a marker on the planned month, and a connector bar
