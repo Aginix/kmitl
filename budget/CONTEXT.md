@@ -19,7 +19,7 @@ On a Budget Reservation, the single OU the reservation is made *for* — the uni
 _Avoid_: owner, funder (that is the Owning Unit)
 
 **Buddy (เจ้าหน้าที่ Buddy)**:
-A central-office officer (เจ้าหน้าที่ส่วนกลาง) who looks after the budget documents of the units (ส่วนงาน, the departments dimension) assigned to them — checking and tidying a unit's data before it goes for approval. A unit may have several buddies and a buddy may cover several units; covering a parent unit covers all its sub-units, and the buddy of the most specific unit is the unit's *primary* buddy. Coverage is keyed on the **department dimension**, not the OU: it says who checks, not who may see.
+A central-office officer (เจ้าหน้าที่ส่วนกลาง) who looks after the budget documents of the units (ส่วนงาน, the departments dimension) assigned to them — checking and tidying a unit's data before it goes for approval. A unit may have several buddies and a buddy may cover several units; covering a parent unit covers all its sub-units, and the buddy of the most specific unit is the unit's *primary* buddy. A coverage row may be narrowed to one document model and a domain on it (the same idea as a Work Center routing rule); without a model it covers every document of the unit. Coverage is keyed on the **department dimension**, not the OU: it says who checks, not who may see.
 _Avoid_: approver (a Buddy verifies data; approval is a separate, later step), coordinator (that is a person attached to one project), OU (the visibility boundary)
 
 **Department (ส่วนงาน, `department_analytic_id`)**:
