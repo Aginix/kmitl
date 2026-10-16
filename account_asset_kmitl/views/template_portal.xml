@@ -60,36 +60,52 @@
                             <tbody>
 
                                 <tr>
-                                    <td class="text-start">วันที่ได้มา</td>
-                                    <th class="text-end">
-                                        <t t-esc="asset.date_start or '-'" />
-                                    </th>
-                                </tr>
-
-                                <tr>
                                     <td class="text-start">ประเภทครุภัณฑ์</td>
                                     <th class="text-end">
                                         <t t-esc="asset.profile_id.name or '-'" />
                                     </th>
                                 </tr>
 
-                                <t t-if="asset.purchase_id">
-                                    <tr>
-                                        <td class="text-start">ชื่อโครงการ</td>
-                                        <th class="text-end">
-                                            <t t-esc="asset.purchase_id.contract_name" />
-                                        </th>
-                                    </tr>
+                                <tr>
+                                    <td class="text-start">ชื่อครุภัณฑ์</td>
+                                    <th class="text-end">
+                                        <t t-esc="asset.name or '-'" />
+                                    </th>
+                                </tr>
 
+                                <t t-if="asset.purchase_id.contract_number">
                                     <tr>
                                         <td class="text-start">เลขที่สัญญา</td>
                                         <th class="text-end">
                                             <t
-                                                t-esc="asset.purchase_id.contract_number or '0.00'"
+                                                t-esc="asset.purchase_id.contract_number"
                                             />
                                         </th>
                                     </tr>
                                 </t>
+
+                                <tr>
+                                    <td class="text-start">วันที่ลงทะเบียน</td>
+                                    <th class="text-end">
+                                        <t t-esc="asset.date_start or '-'" />
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-start">สถานที่ติดตั้ง</td>
+                                    <th class="text-end">
+                                        <t t-esc="asset.location or '-'" />
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-start">ส่วนงาน</td>
+                                    <th class="text-end">
+                                        <t
+                                            t-esc="asset.department_analytic_id.display_name or '-'"
+                                        />
+                                    </th>
+                                </tr>
 
                                 <tr>
                                     <td class="text-start">ระยะเวลารับประกัน</td>
