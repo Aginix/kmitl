@@ -93,9 +93,11 @@ class BudgetTransfer(models.Model):
 
         Only records the base actually moved to ``submitted`` are re-routed,
         so a ``budget_transfer_exception`` popup (which stops short of the
-        base) is left untouched whatever the MRO order.
+        base) is left untouched whatever the MRO order. A transfer that skips
+        review (``_skip_submit_review``) stays ``submitted``.
         """
-        for transfer in self:
+        to_review = self.filtered(lambda t: not t._skip_submit_review())
+        for transfer in to_review:
             if not transfer._get_assignable_buddies():
                 raise UserError(
                     _(
@@ -105,7 +107,7 @@ class BudgetTransfer(models.Model):
                     % (transfer.department_analytic_id.display_name or "-")
                 )
         res = super().action_submit()
-        for transfer in self.filtered(lambda t: t.state == "submitted"):
+        for transfer in to_review.filtered(lambda t: t.state == "submitted"):
             buddy = transfer._get_assignable_buddies()[:1]
             transfer.write(
                 {"state": "to_verify", "verifier_id": buddy.id, "verify_date": False}

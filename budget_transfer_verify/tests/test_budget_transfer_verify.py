@@ -1,4 +1,5 @@
 from datetime import date
+from unittest.mock import patch
 
 from odoo import Command
 from odoo.exceptions import UserError
@@ -146,6 +147,19 @@ class TestBudgetTransferVerify(TransactionCase):
         with self.assertRaises(UserError):
             transfer.action_submit()
         self.assertEqual(transfer.state, "draft")
+
+    def test_transfer_skipping_review_stays_submitted(self):
+        """A transfer that posts without approval (e.g. a Direct Floating
+        Allocation) skips verification — even in a unit with no buddy."""
+        lonely = self.env["account.analytic.account"].create(
+            {"name": "Lonely", "code": "BV_LONE", "plan_id": self.dept.plan_id.id}
+        )
+        transfer = self._transfer(department=lonely)
+        with patch.object(type(transfer), "_skip_submit_review", lambda self: True):
+            transfer.action_submit()
+        self.assertEqual(transfer.state, "submitted")
+        self.assertFalse(transfer.verifier_id)
+        self.assertFalse(self._activities(transfer, VERIFY_ACTIVITY))
 
     def test_requester_buddy_is_not_assigned_to_self(self):
         transfer = self._transfer(user=self.buddy)
