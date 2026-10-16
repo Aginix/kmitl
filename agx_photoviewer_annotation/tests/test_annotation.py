@@ -4,6 +4,7 @@ import io
 from PIL import Image
 from reportlab.pdfgen import canvas
 
+from odoo import fields, models
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 from odoo.tools.pdf import PdfFileReader
@@ -23,6 +24,17 @@ def _png():
     output = io.BytesIO()
     Image.new("RGB", (200, 100), "white").save(output, format="PNG")
     return output.getvalue()
+
+
+class AnnotationHolder(models.Model):
+    """A record with a chatter holding files in a many2many_binary field."""
+
+    _name = "test.annotation.holder"
+    _description = "Test Annotation Holder"
+    _inherit = ["mail.thread"]
+
+    name = fields.Char()
+    attachment_ids = fields.Many2many("ir.attachment")
 
 
 @tagged("post_install", "-at_install")
@@ -122,6 +134,48 @@ class TestAnnotation(TransactionCase):
                 orphan.id, {"added": 1}, []
             )
         )
+
+    def test_session_note_on_unsaved_upload(self):
+        # A file uploaded in a many2many_binary field before its record was
+        # first saved keeps res_id 0; the note goes to the record holding it.
+        AnnotationHolder._build_model(self.registry, self.cr)
+        self.registry.setup_models(self.cr)
+        self.registry.init_models(
+            self.cr,
+            ["test.annotation.holder"],
+            {"module": "agx_photoviewer_annotation"},
+        )
+        self.env["ir.model.access"].create(
+            {
+                "name": "test.annotation.holder user",
+                "model_id": self.env["ir.model"]._get_id("test.annotation.holder"),
+                "group_id": self.env.ref("base.group_user").id,
+                "perm_read": True,
+            }
+        )
+        upload = (
+            self.env["ir.attachment"]
+            .with_user(self.user_a)
+            .create(
+                {
+                    "name": "first.png",
+                    "raw": _png(),
+                    "mimetype": "image/png",
+                    "res_model": "test.annotation.holder",
+                    "res_id": 0,
+                }
+            )
+        )
+        holder = self.env["test.annotation.holder"].create(
+            {"name": "Holder", "attachment_ids": [(6, 0, upload.ids)]}
+        )
+        self.assertTrue(
+            self.Annotation.with_user(self.user_a).annotation_session_note(
+                upload.id, {"added": 1}, []
+            )
+        )
+        self.assertEqual(holder.message_ids[0].author_id, self.user_a.partner_id)
+        self.assertIn("first.png", holder.message_ids[0].body)
 
     def test_cascade_on_attachment_unlink(self):
         saved = self._save(self.user_a)
