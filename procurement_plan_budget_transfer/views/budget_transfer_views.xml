@@ -35,6 +35,29 @@
             >
                 <field name="allowed_procurement_plan_analytic_ids" invisible="1" />
             </xpath>
+            <!-- Lines carrying this dimension; "เปิด" opens the record in a new tab. -->
+            <xpath expr="//notebook/page[@name='transfer_lines']" position="after">
+                <page name="procurement_plans" string="แผนจัดซื้อจัดจ้าง">
+                    <field name="procurement_plan_line_ids" nolabel="1" readonly="1">
+                        <tree>
+                            <field
+                                name="procurement_plan_analytic_id"
+                                string="แผนจัดซื้อจัดจ้าง"
+                            />
+                            <field name="department_analytic_id" />
+                            <field name="transfer_direction" />
+                            <field name="amount" widget="monetary" />
+                            <field name="currency_id" invisible="1" />
+                            <button
+                                name="action_open_procurement_plan"
+                                type="object"
+                                string="เปิด"
+                                icon="fa-external-link"
+                            />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
         </field>
     </record>
 

@@ -214,3 +214,17 @@ class TestProcurementPlanBudgetTransfer(TransactionCase):
             {"transfer_direction": "to"}
         )
         self.assertNotIn(tag, other.allowed_procurement_plan_analytic_ids)
+
+    def test_plan_page_lists_line_and_opens_new_tab(self):
+        plan = self._make_plan(5000)
+        transfer = self._fund_plan_transfer(plan, 5000)
+        line = transfer.procurement_plan_line_ids
+        # Only the TO line carries the plan; the FROM line is left out.
+        self.assertEqual(len(line), 1)
+        self.assertEqual(line.transfer_direction, "to")
+        action = line.action_open_procurement_plan()
+        self.assertEqual(action["target"], "new")
+        self.assertEqual(
+            action["url"],
+            "/web#id=%s&model=procurement.plan&view_type=form" % plan.id,
+        )
