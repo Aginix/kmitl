@@ -27,7 +27,9 @@
                     icon="fa-shopping-cart"
                     string="Purchase Request"
                     class="oe_stat_button"
+                    attrs="{'invisible': [('request_id', '=', False)]}"
                 />
+                <field name="request_id" invisible="1"/>
             </xpath>
             <xpath
                 expr="//button[@name='action_rfq_send' and @states='draft']"
@@ -136,16 +138,15 @@
                     <group>
                         <field
                             name="account_fiscal_year_id"
-                            widget="selection"
-                            readonly="1"
+                            attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}"
                         />
                         <field
                             name="partner_id"
-                            attrs="{'readonly': [('id', '!=', False)]}"
+                            attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}"
                             widget="res_partner_many2one"
                             context="{'res_partner_search_mode': 'supplier', 'show_vat': True}"
                         />
-                        <field name="payment_type" readonly="1" />
+                        <field name="payment_type" attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}" />
                     </group>
                 </group>
 
