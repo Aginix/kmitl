@@ -86,6 +86,14 @@ class PurchaseGuarantee(models.Model):
             "partner_id": self.partner_id.id,
             "date": self.date_guarantee_receive or fields.Date.context_today(self),
             "description": self.guarantee_method_id.name,
+            # Stated outright as well as carried in the JSON. The field is a
+            # stored compute over analytic_distribution, and a stored compute
+            # is only filled after the INSERT — too late for a NOT NULL column.
+            # The form gets away with it because its onchange fills the field
+            # before saving; a programmatic create has to say it. Its inverse
+            # then rebuilds the same distribution, keeping the other five
+            # dimensions. receipt_kmitl's own test factory does the same.
+            "department_analytic_id": self._guarantee_department_analytic().id,
             # Kept in step: an @api.constrains refuses a method whose own type
             # disagrees with the receipt's.
             "payment_type": method.payment_type,
