@@ -65,6 +65,15 @@ class SarabunDocument(models.Model):
 
     _PREVIEW_NOTE_MAX = 120
 
+    def _format_preview_datetime(self, dt):
+        """Serialize a stored (naive UTC) datetime into the user's timezone so
+        the OWL widget displays Thai local time (+07:00) instead of raw UTC."""
+        if not dt:
+            return None
+        return fields.Datetime.context_timestamp(self, dt).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+
     def _build_routing_step_payload(self, step):
         """One step-card dict consumed by the timeline widget. Placed on the
         document so a single entry point owns date formatting, note truncation,
@@ -104,14 +113,8 @@ class SarabunDocument(models.Model):
                 if step.acted_by_id
                 else None
             ),
-            "acted_date": (
-                fields.Datetime.to_string(step.acted_date) if step.acted_date else None
-            ),
-            "activated_date": (
-                fields.Datetime.to_string(step.activated_date)
-                if step.activated_date
-                else None
-            ),
+            "acted_date": self._format_preview_datetime(step.acted_date),
+            "activated_date": self._format_preview_datetime(step.activated_date),
             "note_short": note_short,
             "note_full": note_full or None,
             "is_current": step.state == "active",
