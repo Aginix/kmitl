@@ -125,9 +125,9 @@ msgstr ""
 #: code:addons/purchase_guarantee_receipt_kmitl/models/purchase_guarantee.py:0
 #, python-format
 msgid ""
-"No receipt payment method is configured for this company. Add one in Receipts"
-" > Configuration > Payment Methods."
+"No cash or transfer receipt method is configured for this company. Add one in"
+" Receipts > Configuration > Payment Methods."
 msgstr ""
-"ยังไม่ได้ตั้งค่าวิธีรับเงินของบริษัทนี้ — ตั้งค่าได้ที่ ใบเสร็จรับเงิน > "
-"การตั้งค่า > วิธีรับเงิน"
+"ยังไม่ได้ตั้งค่าวิธีรับเงินแบบเงินสดหรือเงินโอนของบริษัทนี้ — ตั้งค่าได้ที่ "
+"ใบเสร็จรับเงิน > การตั้งค่า > วิธีรับเงิน"
 

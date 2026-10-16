@@ -59,20 +59,34 @@ class PurchaseGuarantee(models.Model):
         )
         return accounts.filtered(lambda a: a.plan_id.code == "departments")[:1]
 
+    # Cash first, then transfer. Never cheque: a cheque receipt is refused
+    # without a cheque number, and that is a fact only the officer holds — the
+    # guarantee does not record how the supplier paid. The two that are left
+    # are exactly what the active guarantee forms cover (เงินสด/เงินโอน).
+    _RECEIPT_PAYMENT_TYPE_PREFERENCE = ("cash", "transfer")
+
     def _guarantee_receipt_payment_method(self):
         """The channel the money is assumed to have come in by.
 
-        A receipt cannot be created without one, and the guarantee does not
-        record how the supplier paid — so the lowest-sequence method is proposed
-        and the officer corrects it on the draft receipt, where both it and the
-        payment type stay editable right up to posting.
+        A receipt cannot be created without one, so a default is proposed and
+        the officer corrects it on the draft receipt, where the method and the
+        payment type stay editable right up to posting — long before the
+        remittance books anything.
         """
         self.ensure_one()
-        return self.env["kmitl.payment.method"].search(
-            [("company_id", "=", self.company_id.id)],
-            order="sequence, name",
-            limit=1,
-        )
+        Method = self.env["kmitl.payment.method"]
+        for payment_type in self._RECEIPT_PAYMENT_TYPE_PREFERENCE:
+            method = Method.search(
+                [
+                    ("company_id", "=", self.company_id.id),
+                    ("payment_type", "=", payment_type),
+                ],
+                order="sequence, name",
+                limit=1,
+            )
+            if method:
+                return method
+        return Method
 
     def _prepare_guarantee_receipt_vals(self):
         self.ensure_one()
@@ -95,9 +109,14 @@ class PurchaseGuarantee(models.Model):
             # dimensions. receipt_kmitl's own test factory does the same.
             "department_analytic_id": self._guarantee_department_analytic().id,
             # Kept in step: an @api.constrains refuses a method whose own type
-            # disagrees with the receipt's.
+            # disagrees with the receipt's, and a transfer with no date.
             "payment_type": method.payment_type,
             "payment_method_id": method.id,
+            "transfer_date": (
+                self.date_guarantee_receive or fields.Date.context_today(self)
+                if method.payment_type == "transfer"
+                else False
+            ),
             "analytic_distribution": self.analytic_distribution,
             "line_ids": [
                 (
@@ -146,8 +165,9 @@ class PurchaseGuarantee(models.Model):
         if not self._guarantee_receipt_payment_method():
             raise UserError(
                 _(
-                    "No receipt payment method is configured for this company. "
-                    "Add one in Receipts > Configuration > Payment Methods."
+                    "No cash or transfer receipt method is configured for this "
+                    "company. Add one in Receipts > Configuration > Payment "
+                    "Methods."
                 )
             )
         if not self._guarantee_department_analytic():
