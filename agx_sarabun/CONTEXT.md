@@ -104,6 +104,19 @@ _Avoid_: released number, reusable number; expecting a gap from a reject/cancel 
 An **admin-only** force-return of a หนังสือ from **any non-draft state** — including `completed`, and even the otherwise-terminal `rejected` / `cancelled` — back to an editable **`draft`**, **keeping its registered number (when it has one) and its original Route**. It exists for the case ดึงกลับ cannot serve: a mistake found *after* the document is signed / completed (typically a typo in an already-fully-approved หนังสือ) that must be corrected and re-sent from the start. It **archives the finished attempt as history** (never overwrites — prior signatures survive on the archived Route), **recreates the Route as it was originally created** (the seeded backbone; runtime เกษียนสั่งการ insertions are *dropped*), **un-freezes** the ฉบับลงนาม (the prior signed PDF is discarded), and **rolls the origin back** so it is treated exactly like a ดึงกลับ. Since [ADR-0017](./docs/adr/0017-register-number-at-issuing-sign.md) any หนังสือ past its ลงนามในใบปะหน้า sign carries a number — it survives the reset and is re-used verbatim at the re-sign (`_assign_register_number` is idempotent); a หนังสือ reset before that sign simply has no number to keep (a voided number is reclaimed). A reason is mandatory (kept in chatter). It is a **deliberately separate, optional capability**, granted **per-user independently of the Manager access level** (a Sarabun Manager need not hold it) — and not every deployment grants it at all.
 _Avoid_: equating Reset with ดึงกลับ (Reset is admin-only, works *after* signing / completion / rejection, and un-freezes); treating `rejected` / `cancelled` as absolutely terminal (Reset is the one admin escape); carrying the prior run's เกษียนสั่งการ insertions into the new Route (Reset restores the original); assuming every reset หนังสือ has a number to keep (only one past the issuing sign does — ADR-0017)
 
+**แก้ไขเส้นทาง (Route edit — admin, ADR-0018)**:
+A **Sarabun Route Editor** (optional `agx_sarabun_route_edit`, an independent checkbox like Reset) edits the Route of a **circulating** หนังสือ in place, to fix a wrong step or follow a change of executive, **without** restarting it.
+- **Waiting steps** may be changed or deleted.
+- An **active step** may only be **re-targeted**: its to-dos move to the new holders. "Deleting" an active step **skips** it, so the holders it reached keep their read.
+- **Done steps are locked**.
+- Added steps are waiting `direct` insertions.
+- Nothing may be placed before the first Stage not yet passed.
+- After each save the Route must still pass the ส่ง checks, and the engine advances at once.
+- After a Position's holder changes, the per-document button **ดึงผู้ดำรงตำแหน่งปัจจุบัน** re-resolves the active Position / unit steps. Waiting steps need nothing, because they resolve at activation.
+- Every edit is logged to the chatter.
+
+_Avoid_: re-targeting a done step (signatures never change); using Reset or ดึงกลับ just to fix a later step (route edit keeps the signatures already given); expecting a Position holder change to move in-flight to-dos by itself (press the button)
+
 ### Concurrency
 
 **Stage**:
