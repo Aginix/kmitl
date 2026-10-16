@@ -161,9 +161,25 @@ class TestBudgetTransferVerify(TransactionCase):
         self.assertFalse(transfer.verifier_id)
         self.assertFalse(self._activities(transfer, VERIFY_ACTIVITY))
 
-    def test_requester_buddy_is_not_assigned_to_self(self):
-        transfer = self._transfer(user=self.buddy)
-        transfer.with_user(self.buddy).action_submit()
+    def test_requester_buddy_is_assigned_to_self(self):
+        transfer = self._transfer(user=self.buddy2)
+        transfer.with_user(self.buddy2).action_submit()
+        self.assertEqual(transfer.verifier_id, self.buddy2, "not the primary")
+
+    def test_buddy_without_access_is_not_assigned(self):
+        """Coverage is keyed on the unit, not the OU: a buddy a record rule
+        hides the transfer from is skipped for the next one."""
+        blind = self.env["res.groups"].create({"name": "BV blind"})
+        self.env["ir.rule"].create(
+            {
+                "name": "BV blind to transfers",
+                "model_id": self.env.ref("budget_transfer.model_budget_transfer").id,
+                "groups": [Command.link(blind.id)],
+                "domain_force": "[('id', '=', 0)]",
+            }
+        )
+        self.buddy.groups_id = [Command.link(blind.id)]
+        transfer = self._submitted_for_verify()
         self.assertEqual(transfer.verifier_id, self.buddy2)
 
     def test_unverified_transfer_cannot_be_approved(self):
@@ -188,11 +204,13 @@ class TestBudgetTransferVerify(TransactionCase):
         with self.assertRaises(UserError):
             transfer.with_user(self.requestor).action_verify()
 
-    def test_buddy_cannot_verify_own_transfer(self):
+    def test_buddy_verifies_own_transfer(self):
         transfer = self._transfer(user=self.buddy)
         transfer.with_user(self.buddy).action_submit()
-        with self.assertRaises(UserError):
-            transfer.with_user(self.buddy).action_verify()
+        self.assertTrue(transfer.with_user(self.buddy).show_verify_button)
+        transfer.with_user(self.buddy).action_verify()
+        self.assertEqual(transfer.state, "submitted")
+        self.assertEqual(transfer.verifier_id, self.buddy)
 
     def test_only_buddy_edits_while_verifying(self):
         transfer = self._submitted_for_verify()
