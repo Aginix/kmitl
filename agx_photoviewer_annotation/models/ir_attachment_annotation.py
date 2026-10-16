@@ -134,6 +134,37 @@ class IrAttachmentAnnotation(models.Model):
             group["attachment_id"][0]: group["attachment_id_count"] for group in groups
         }
 
+    @api.model
+    def _get_note_record(self, attachment):
+        """Return the record (sudo) whose chatter gets the Session note of
+        ``attachment``, or an empty recordset.
+
+        That is the record the file is attached to, or, for a file uploaded
+        in a ``many2many_binary`` field before its record was first saved
+        (``res_id`` 0), the one record of ``res_model`` holding it in such a
+        field, provided the user may read it.
+        """
+        Model = self.env.get(attachment.res_model)
+        if Model is None or not hasattr(Model, "message_post"):
+            return self.env["mail.thread"]
+        if attachment.res_id:
+            return Model.sudo().browse(attachment.res_id).exists()
+        for name, field in Model._fields.items():
+            if not (
+                field.type == "many2many"
+                and field.comodel_name == "ir.attachment"
+                and field.store
+            ):
+                continue
+            records = Model.sudo().search([(name, "in", attachment.ids)], limit=2)
+            if len(records) == 1:
+                record = Model.browse(records.id)
+                if record.check_access_rights(
+                    "read", raise_exception=False
+                ) and record._filter_access_rules("read"):
+                    return records
+        return Model.sudo().browse()
+
     def _format(self):
         return [
             {
@@ -199,16 +230,11 @@ class IrAttachmentAnnotation(models.Model):
     def annotation_session_note(self, attachment_id, counts, comment_ids=()):
         """Post one internal note summarising what the user did on the file.
 
-        Skipped when the attachment is not linked to a record that has a
-        chatter (e.g. a many2many_binary upload with res_id 0).
+        Skipped when no record with a chatter holds the attachment (see
+        ``_get_note_record``).
         """
         attachment = self._get_readable_attachment(attachment_id)
-        if not (attachment.res_model and attachment.res_id):
-            return False
-        Model = self.env.get(attachment.res_model)
-        if Model is None or not hasattr(Model, "message_post"):
-            return False
-        record = Model.sudo().browse(attachment.res_id).exists()
+        record = self._get_note_record(attachment)
         if not record:
             return False
         labels = [
