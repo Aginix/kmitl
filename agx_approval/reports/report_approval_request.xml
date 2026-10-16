@@ -222,51 +222,30 @@
             </table>
         </t>
 
-        <!-- Actual Expense Allocation (per recipient) -->
+        <!-- Actual Expense Allocation -->
         <t t-if="o.allocation_ids">
             <div class="row my-2">
-                <div class="col fw-bolder">ค่าใช้จ่ายจริง (จัดสรรรายผู้รับเงิน)</div>
+                <div class="col fw-bolder">ค่าใช้จ่ายจริง</div>
             </div>
             <t t-set="actual_total" t-value="sum(o.allocation_ids.mapped('amount'))" />
-            <t t-set="global_no" t-value="1" />
-            <t t-foreach="o.allocation_ids.mapped('partner_id')" t-as="recipient">
-                <t t-set="rec_allocs" t-value="o.allocation_ids.filtered(lambda a: a.partner_id == recipient)" />
-                <div class="row mt-3 mb-1">
-                    <div class="col">
-                        <strong>ผู้รับเงิน: <span t-out="recipient.name" /></strong>
-                        <t t-set="rec_bank_alloc" t-value="rec_allocs.filtered('partner_bank_id')[:1]" />
-                        <span t-if="rec_bank_alloc" class="ms-3">ธนาคาร <span t-out="rec_bank_alloc.partner_bank_id.bank_id.name" /></span>
-                        <span t-if="rec_bank_alloc" class="ms-2">เลขที่บัญชี <span t-out="rec_bank_alloc._get_masked_acc_number()" /></span>
-                    </div>
-                </div>
-                <table class="table table-bordered table-sm mb-2">
-                    <thead>
-                        <tr>
-                            <th class="text-center" style="width:8%">ลำดับ</th>
-                            <th class="text-center">รายการ</th>
-                            <th class="text-center">รายละเอียด</th>
-                            <th class="text-center" style="width:14%">ประเภทการจ่าย</th>
-                            <th class="text-end" style="width:20%">จำนวนเงิน</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <t t-foreach="rec_allocs" t-as="alloc">
-                            <tr>
-                                <td class="text-center" t-out="global_no" />
-                                <td t-out="alloc.product_id.name" />
-                                <td t-out="alloc.description" />
-                                <td class="text-center" t-out="alloc.payment_type_label()" />
-                                <td class="text-end" t-out="'{0:,.2f}'.format(alloc.amount)" />
-                            </tr>
-                            <t t-set="global_no" t-value="global_no + 1" />
-                        </t>
-                    </tbody>
-                </table>
-            </t>
             <table class="table table-bordered table-sm mb-4">
-                <tbody>
+                <thead>
                     <tr>
-                        <td colspan="4" class="text-center fw-bolder">
+                        <th class="text-center" style="width:8%">ลำดับ</th>
+                        <th class="text-center">รายการ</th>
+                        <th class="text-center">รายละเอียด</th>
+                        <th class="text-end" style="width:20%">จำนวนเงิน</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="o.allocation_ids" t-as="alloc">
+                        <td class="text-center" t-out="alloc_index + 1" />
+                        <td t-out="alloc.product_id.name" />
+                        <td t-out="alloc.description" />
+                        <td class="text-end" t-out="'{0:,.2f}'.format(alloc.amount)" />
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="text-center fw-bolder">
                             รวมค่าใช้จ่ายจริงทั้งสิ้น
                             <div class="fw-normal">
                                 (<t t-esc="o.currency_id.with_context({'lang': 'th_TH'}).amount_to_text(actual_total)" />)
