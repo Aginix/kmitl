@@ -19,7 +19,6 @@
                         readonly="1"
                         class="oe_inline fw-bold"
                     />
-                    และผ่านรายการทันทีโดยไม่ผ่านกระบวนการขออนุมัติโอนงบประมาณ
                 </div>
             </xpath>
         </field>
