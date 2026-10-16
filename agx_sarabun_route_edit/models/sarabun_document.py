@@ -7,6 +7,8 @@ advancing the engine, and the per-document "re-resolve holders" button used afte
 Position's holder changes. No agx_sarabun core edit beyond these ``_inherit`` hooks.
 """
 
+from itertools import takewhile
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
@@ -32,14 +34,10 @@ class SarabunDocument(models.Model):
     # ------------------------------------------------------------------ guards
     def _is_route_edit(self):
         """True when a step change on this หนังสือ is a USER edit of a circulating
-        Route. Engine writes run sudo (act_on_step, ตีกลับ, Reset) or carry the
-        ``sarabun_route_engine`` context (the sender's ดึงกลับ), so they pass."""
+        Route. Engine writes run sudo (act_on_step, ตีกลับ, Reset, and the sender's
+        ดึงกลับ via ``_recreate_chain_verbatim`` below), so they pass."""
         self.ensure_one()
-        return (
-            not self.env.su
-            and not self.env.context.get("sarabun_route_engine")
-            and self.state == "circulating"
-        )
+        return not self.env.su and self.state == "circulating"
 
     def _check_route_edit_access(self):
         if not self.env.user.has_group(ROUTE_EDIT_GROUP):
@@ -50,44 +48,48 @@ class SarabunDocument(models.Model):
                 )
             )
 
-    def _route_edit_frontier(self):
-        """The first Stage not yet passed. Steps may only be added / moved at or
-        after it — a passed Stage is history."""
+    def _check_route_edit_order(self, order):
+        """A step may only be placed after the last Stage already passed — a passed
+        Stage is history (the current Stage, or a new one before the next, is fine)."""
         self.ensure_one()
         orders = sorted(set(self.routing_step_ids.mapped("order")))
-        for order in orders:
-            if not self._stage_complete(order):
-                return order
-        return orders[-1] if orders else 1
-
-    def _check_route_edit_order(self, order):
-        self.ensure_one()
-        frontier = self._route_edit_frontier()
-        if order < frontier:
+        passed = list(takewhile(self._stage_complete, orders))
+        if passed and order <= passed[-1]:
             raise UserError(
                 _(
-                    "ลำดับ %(order)s has already passed — a step may only be placed at "
-                    "ลำดับ %(frontier)s or later."
+                    "ลำดับ %(order)s has already passed — a step may only be placed "
+                    "after ลำดับ %(passed)s."
                 )
-                % {"order": order, "frontier": frontier}
+                % {"order": order, "passed": passed[-1]}
             )
 
-    def _finalize_route_edit(self):
-        """Validate the edited Route like ``action_send`` does, then let the engine
-        react: activate a step added to the current Stage, or advance when the last
-        pending gating step of the Stage was removed."""
-        for doc in self:
-            live = doc.routing_step_ids.filtered(lambda s: s.state != "skipped")
-            if not live.filtered("gating"):
-                raise UserError(
-                    _(
-                        "The Route must keep at least one gating step (เห็นชอบ or "
-                        "ลงนาม-อนุมัติ)."
-                    )
+    def _check_route_edit_route(self):
+        """The edited Route must still pass what ``action_send`` checks."""
+        self.ensure_one()
+        live = self.routing_step_ids.filtered(lambda s: s.state != "skipped")
+        if not live.filtered("gating"):
+            raise UserError(
+                _(
+                    "The Route must keep at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ)."
                 )
-            if not doc.register_number_id and not live.filtered("verb.issues_number"):
-                raise UserError(_("เส้นทางต้องมีขั้นตอนที่ออกเลขที่หนังสือ (เช่น ลงนามในใบปะหน้า)"))
+            )
+        if not self.register_number_id and not live.filtered("verb.issues_number"):
+            raise UserError(_("เส้นทางต้องมีขั้นตอนที่ออกเลขที่หนังสือ (เช่น ลงนามในใบปะหน้า)"))
+
+    def _finalize_route_edit(self):
+        """Validate the edited Route, then let the engine react: activate a step
+        added to the current Stage, or advance when the last pending gating step of
+        the Stage was removed. Inside a form save (one batch of o2m commands) this
+        waits for the document write to run it once, after every command."""
+        if self.env.context.get("sarabun_route_edit_batch"):
+            return
+        for doc in self:
+            doc._check_route_edit_route()
             doc.sudo()._advance_stage()
+            # A step the edit activated must have somebody who can act on it.
+            doc.routing_step_ids.filtered(
+                lambda s: s.state == "active"
+            )._check_route_edit_actors()
 
     # ------------------------------------------------------------------ ORM
     def write(self, vals):
@@ -104,22 +106,22 @@ class SarabunDocument(models.Model):
         edited._finalize_route_edit()
         return res
 
-    def _route_edit_unfollow(self, users):
-        """Unfollow ``users`` taken off the Route (their to-do subscribed them) once
-        the หนังสือ no longer reaches them — read is already gone with their recipient
-        rows; this stops the chatter notifications too. The sender stays."""
+    def _route_edit_revoke(self, recipients):
+        """Take these recipient rows off the Route: the read they keyed goes with
+        them (ADR-0013). Anyone the หนังสือ no longer reaches is also unfollowed (their
+        to-do subscribed them), so chatter stops notifying them. The sender stays."""
         self.ensure_one()
+        users = recipients.user_id
+        recipients.sudo().unlink()
         gone = users - self.reached_user_ids - self.sender_user_id
         if gone:
             self.sudo().message_unsubscribe(partner_ids=gone.partner_id.ids)
 
     # ------------------------------------------------------------------ engine
-    def action_pull_back(self, reason=None):
-        # ดึงกลับ recreates the Route in the sender's env while still circulating —
-        # an engine write, not a route edit.
-        return super(
-            SarabunDocument, self.with_context(sarabun_route_engine=True)
-        ).action_pull_back(reason=reason)
+    def _recreate_chain_verbatim(self):
+        # The sender's ดึงกลับ recreates the Route in their env while still
+        # circulating — an engine write, not a route edit.
+        return super(SarabunDocument, self.sudo())._recreate_chain_verbatim()
 
     # ------------------------------------------------------------------ actions
     def action_refresh_route_holders(self):
@@ -139,24 +141,15 @@ class SarabunDocument(models.Model):
                 and s.target_mode in ("position", "unit")
             )
         )
-        changes = []
-        for step in steps.sudo():
-            old_users = step.actor_user_ids
-            step._snapshot_holders()
-            if step.actor_user_ids == old_users:
-                continue
-            step._check_route_edit_actors()
-            step._clear_activities()
-            step._schedule_activities()
-            step._route_edit_revoke_former()
-            changes.append(
-                _("%(step)s: %(old)s → %(new)s")
-                % {
-                    "step": step.name,
-                    "old": ", ".join(old_users.mapped("name")) or "-",
-                    "new": ", ".join(step.actor_user_ids.mapped("name")),
-                }
-            )
+        changes = [
+            _("%(step)s: %(old)s → %(new)s")
+            % {
+                "step": step.name,
+                "old": ", ".join(former.mapped("name")) or "-",
+                "new": ", ".join(step.actor_user_ids.mapped("name")),
+            }
+            for step, former in steps._route_edit_reresolve().items()
+        ]
         if changes:
             self.message_post(
                 body=_("Route holders refreshed by %(user)s: %(changes)s")

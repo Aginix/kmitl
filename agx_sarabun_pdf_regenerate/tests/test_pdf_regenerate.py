@@ -47,6 +47,24 @@ class TestSarabunPdfRegenerate(SarabunCommon):
         self.assertEqual(len(copies), 1, "the old copy is replaced, not kept")
         self.assertEqual(base64.b64decode(copies.datas), b"%PDF-1.4 v2")
 
+    def test_regenerate_keeps_freeze_time_and_user_files(self):
+        doc = self._completed_doc()
+        signed_at = doc.signed_at
+        # A user file that happens to share the PDF's name must survive.
+        user_file = self.env["ir.attachment"].create(
+            {
+                "name": doc.signed_pdf_filename,
+                "datas": base64.b64encode(b"%PDF-1.4 user"),
+                "res_model": doc._name,
+                "res_id": doc.id,
+            }
+        )
+        with self._render(b"%PDF-1.4 v2"):
+            doc.with_user(self.manager).action_regenerate_signed_pdf()
+        self.assertEqual(doc.signed_at, signed_at)
+        self.assertTrue(user_file.exists())
+        self.assertEqual(len(self._copies(doc)), 2)
+
     def test_regenerate_requires_manager(self):
         doc = self._completed_doc()
         with self.assertRaises(UserError):

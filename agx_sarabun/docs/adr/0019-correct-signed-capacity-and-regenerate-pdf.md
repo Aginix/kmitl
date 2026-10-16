@@ -49,7 +49,9 @@ the Route Editor too, since that group implies Manager.
 - It re-renders the PDF from current data through the core `_freeze_signed_copy`.
 - It **replaces** the frozen file and its visible attachment copy; the old one is
   deleted, so only one ฉบับลงนาม exists.
-- `signed_at` becomes the regeneration time.
+- `signed_at` (the real freeze time) is kept, because this is a re-render, not a
+  re-sign. The old copy is found by the frozen file's checksum, not its name, so a
+  user file with the same name is never deleted.
 - No chatter entry.
 
 ## Consequences

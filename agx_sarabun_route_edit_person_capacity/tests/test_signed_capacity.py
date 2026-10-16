@@ -94,6 +94,19 @@ class TestSarabunSignedCapacity(SarabunCommon):
         with self.assertRaises(UserError):
             step.with_user(self.editor).action_open_signed_capacity_wizard()
 
+    def test_route_edit_rechecks_capacity(self):
+        """Re-targeting a waiting บุคลากร step to someone who does not hold its
+        capacity is refused at save, not when they come to sign."""
+        doc = self._make_doc(sender=self.user_b)
+        self._add_step(doc, order=10, verb="endorse", user=self.user_b)
+        waiting = self._add_step(doc, order=20, verb="sign_approve", user=self.user_a)
+        waiting.position_id = self.pos
+        doc.action_send()
+        with self.assertRaises(UserError):
+            doc.with_user(self.editor).write(
+                {"routing_step_ids": [(1, waiting.id, {"employee_id": self.emp_b.id})]}
+            )
+
     def test_no_chatter_message(self):
         doc, step = self._signed_step()
         count = len(doc.message_ids)

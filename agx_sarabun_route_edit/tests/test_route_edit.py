@@ -232,6 +232,39 @@ class TestSarabunRouteEdit(SarabunCommon):
         self.assertGreater(len(doc.message_ids), count)
         self.assertIn(self.emp_c.name, doc.message_ids[0].body)
 
+    def test_engine_context_does_not_bypass_guards(self):
+        """No client-settable context switches the guards off (review finding)."""
+        doc = self._circulating_doc()
+        done = self._step(doc, 10)
+        self._act(done, "complete", self.user_b)
+        step = done.with_user(self.user_a).with_context(sarabun_route_engine=True)
+        with self.assertRaises(UserError):
+            step.write({"employee_id": self.emp_c.id})
+
+    def test_added_step_without_actor_raises(self):
+        """Replacing the active step with one nobody can act on would strand the
+        หนังสือ — refused at save."""
+        nobody = self.env["hr.employee"].create({"name": "ไม่มีบัญชีผู้ใช้"})
+        vacant = self.Position.create(
+            {"name": "ตำแหน่งไร้ผู้ใช้", "holder_ids": [(6, 0, nobody.ids)]}
+        )
+        doc = self._circulating_doc()
+        with self.assertRaisesRegex(UserError, "no holder"):
+            self._edit(
+                doc,
+                [
+                    Command.delete(self._step(doc, 10).id),
+                    Command.create(
+                        {
+                            "order": 10,
+                            "verb": self._verb("endorse").id,
+                            "target_mode": "position",
+                            "position_id": vacant.id,
+                        }
+                    ),
+                ],
+            )
+
     def test_pull_back_unaffected(self):
         """The sender's ดึงกลับ recreates the Route while circulating — an engine
         write the guards must let through."""

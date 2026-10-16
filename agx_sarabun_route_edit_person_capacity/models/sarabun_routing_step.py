@@ -88,17 +88,11 @@ class SarabunRoutingStep(models.Model):
         the frozen ``signed_position_name`` the signature block prints."""
         self.ensure_one()
         self._check_signed_capacity_editable()
-        if self.employee_id not in position.sudo()._current_holder_employees():
-            raise UserError(
-                _("%(person)s does not hold the position %(position)s.")
-                % {
-                    "person": self.employee_id.display_name,
-                    "position": position.display_name,
-                }
-            )
         vals = {"position_id": position.id, "signed_position_name": position.name}
         if self.signed_as_position_id:
             vals["signed_as_position_id"] = position.id
         # sudo: a signed step is locked to every user write (and a completed หนังสือ
-        # is read-only); the authority was checked above.
+        # is read-only); the authority was checked above. The person must hold the
+        # new Position — person_capacity's own rule; a raise rolls the write back.
         self.sudo().write(vals)
+        self.sudo()._check_person_capacity()

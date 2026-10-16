@@ -14,7 +14,13 @@
                 name="implied_ids"
                 eval="[(4, ref('agx_sarabun.group_sarabun_manager'))]"
             />
-            <field name="users" eval="[(4, ref('base.user_admin'))]" />
+        </record>
+    </data>
+    <!-- Grant the admin user Route Editor ONCE, at install. noupdate so a later `-u`
+         never silently re-grants it after someone removed it on purpose. -->
+    <data noupdate="1">
+        <record id="base.user_admin" model="res.users">
+            <field name="groups_id" eval="[(4, ref('group_sarabun_route_edit'))]" />
         </record>
     </data>
 </odoo>

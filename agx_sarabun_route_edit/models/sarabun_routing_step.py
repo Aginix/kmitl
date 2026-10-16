@@ -9,7 +9,7 @@ writes pass untouched. What an editor may do:
 * done / skipped / originator step — nothing (signatures never change);
 * add a step — as a waiting ``direct`` insertion (so Reset drops it, ADR-0011).
 
-Steps may only be placed at or after the first Stage not yet passed. A person taken
+Steps may only be placed after the last Stage already passed. A person taken
 off a step loses access to the หนังสือ: their recipient row — the reach ledger that
 keys read (ADR-0013) — is deleted and they are unfollowed, unless another step (or a
 prior attempt) still reaches them or they sent it. Every edit is logged to the
@@ -47,8 +47,8 @@ class SarabunRoutingStep(models.Model):
         )
 
     def _check_route_edit_actors(self):
-        """An active step whose new target resolves to nobody would strand the
-        หนังสือ (personnel without a linked user cannot act — ADR-0005)."""
+        """An active step whose target resolves to nobody would strand the หนังสือ
+        (personnel without a linked user cannot act — ADR-0005)."""
         for step in self:
             if not step.actor_user_ids:
                 raise UserError(
@@ -59,16 +59,29 @@ class SarabunRoutingStep(models.Model):
                     % step.name
                 )
 
-    def _route_edit_revoke_former(self):
-        """Drop the recipient rows of everyone on these steps who is no longer an
-        actor (re-target / holder refresh), revoking the read they keyed."""
-        for step in self:
-            former = step.recipient_ids.filtered(
-                lambda r, step=step: r.user_id not in step.actor_user_ids
+    def _route_edit_reresolve(self):
+        """Re-resolve these active steps to their current target (re-target / holder
+        refresh): re-snapshot the actors, move the to-dos to them and revoke the
+        former holders' access. The engine half of มอบหมาย, without stamping a
+        disposition; runs sudo like the act_on_step transitions. Returns
+        ``{step: former actors}`` for the steps whose actors changed."""
+        changed = {}
+        for step in self.sudo():
+            former = step.actor_user_ids
+            step._snapshot_holders()
+            if step.actor_user_ids != former:
+                changed[step] = former
+        steps = self.sudo().browse([step.id for step in changed])
+        steps._check_route_edit_actors()
+        steps._clear_activities()
+        steps._schedule_activities()
+        for step in steps:
+            step.document_id._route_edit_revoke(
+                step.recipient_ids.filtered(
+                    lambda r, step=step: r.user_id not in step.actor_user_ids
+                )
             )
-            users = former.user_id
-            former.sudo().unlink()
-            step.document_id._route_edit_unfollow(users)
+        return changed
 
     def _check_route_edit_editable(self):
         for step in self:
@@ -78,15 +91,9 @@ class SarabunRoutingStep(models.Model):
                     % step.name
                 )
 
-    @staticmethod
-    def _route_edit_finalize(docs):
-        """Outside a form save (which finalizes once per batch), validate and
-        advance right away."""
-        if docs and not docs.env.context.get("sarabun_route_edit_batch"):
-            docs._finalize_route_edit()
-
-    def _route_edit_log(self, doc, body):
-        doc.message_post(
+    def _route_edit_log(self, body):
+        self.ensure_one()
+        self.document_id.message_post(
             body=_("Route edited by %(user)s — %(body)s")
             % {
                 "user": self.env.user.display_name,
@@ -112,8 +119,8 @@ class SarabunRoutingStep(models.Model):
                 edit_docs |= doc
         steps = super().create(vals_list)
         for step in steps.filtered(lambda s: s.document_id in edit_docs):
-            step._route_edit_log(step.document_id, _("added %s") % step.name)
-        self._route_edit_finalize(edit_docs)
+            step._route_edit_log(_("added %s") % step.name)
+        edit_docs._finalize_route_edit()
         return steps
 
     def write(self, vals):
@@ -134,18 +141,9 @@ class SarabunRoutingStep(models.Model):
         before = {step: step._route_edit_values() for step in edits}
         targets = {step: step._route_edit_target() for step in edits}
         res = super().write(vals)
-        # An active step re-targeted: move its to-dos to the new holders (the
-        # engine half of มอบหมาย, without stamping a disposition). Engine writes run
-        # sudo, like the act_on_step transitions.
-        retargeted = edits.filtered(
+        edits.filtered(
             lambda s: s.state == "active" and s._route_edit_target() != targets[s]
-        ).sudo()
-        retargeted._clear_activities()
-        for step in retargeted:
-            step._snapshot_holders()
-        retargeted._check_route_edit_actors()
-        retargeted._schedule_activities()
-        retargeted._route_edit_revoke_former()
+        )._route_edit_reresolve()
         for step in edits:
             after = step._route_edit_values()
             diff = [
@@ -154,10 +152,8 @@ class SarabunRoutingStep(models.Model):
                 if before[step][label] != value
             ]
             if diff:
-                step._route_edit_log(
-                    step.document_id, "%s: %s" % (step.name, ", ".join(diff))
-                )
-        self._route_edit_finalize(edits.document_id)
+                step._route_edit_log("%s: %s" % (step.name, ", ".join(diff)))
+        edits.document_id._finalize_route_edit()
         return res
 
     def unlink(self):
@@ -168,14 +164,10 @@ class SarabunRoutingStep(models.Model):
         docs._check_route_edit_access()
         edits._check_route_edit_editable()
         for step in edits:
-            step._route_edit_log(step.document_id, _("removed %s") % step.name)
-        # The recipients of a removed (active) step lose their read: drop their
-        # rows explicitly so the reach ledger recomputes, then unfollow them.
-        reached = [(step.document_id, step.recipient_ids.user_id) for step in edits]
+            step._route_edit_log(_("removed %s") % step.name)
+            # Its recipients are taken off the Route: they lose their read.
+            step.document_id._route_edit_revoke(step.recipient_ids)
         edits.sudo()._clear_activities()
-        edits.recipient_ids.sudo().unlink()
         res = super().unlink()
-        for doc, users in reached:
-            doc._route_edit_unfollow(users)
-        self._route_edit_finalize(docs)
+        docs._finalize_route_edit()
         return res

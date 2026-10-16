@@ -111,7 +111,7 @@ A **Sarabun Route Editor** (optional `agx_sarabun_route_edit`, an independent ch
 - **A person taken off a step loses access**, whether by re-target, delete or holder refresh. Their recipient row is deleted and they are unfollowed. They keep access only if another step, a prior attempt, or being the sender still reaches them. This is the one exception to "the reach ledger only grows".
 - **Done steps are locked**.
 - Added steps are waiting `direct` insertions.
-- Nothing may be placed before the first Stage not yet passed.
+- A step may only be placed after the last Stage already passed.
 - After each save the Route must still pass the ส่ง checks, and the engine advances at once.
 - After a Position's holder changes, the per-document button **ดึงผู้ดำรงตำแหน่งปัจจุบัน** re-resolves the active Position / unit steps. Waiting steps need nothing, because they resolve at activation.
 - Every edit is logged to the chatter.

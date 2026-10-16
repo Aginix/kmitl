@@ -50,14 +50,17 @@ the Route list.
   one exception, the capacity label of a signed บุคลากร step, is ADR-0019.)
 - **Added step.** Created `waiting` with `created_by_disposition='direct'`, so a later
   Reset drops it like any runtime insertion (ADR-0011).
-- **Frontier.** Steps may only be added or moved at or after the first Stage not yet
-  passed.
+- **Frontier.** Steps may only be added or moved **after the last Stage already
+  passed**. A passed Stage is history; the current Stage, or a new one placed before
+  the next, is fine.
 - **After each save** the Route is validated the way ส่ง validates it:
   - at least one gating step remains;
   - while unnumbered, a step that issues the number remains (ADR-0017).
   - Then the engine advances: a step added to the current Stage activates at once, and
     removing the Stage's last pending gating step moves the หนังสือ on, completing it if
     nothing is left.
+  - Every step the engine activates must resolve to someone with a user account,
+    otherwise the save is refused (it would strand the หนังสือ).
 - **Holder change.** This is a **manual per-document action**,
   ดึงผู้ดำรงตำแหน่งปัจจุบัน, in the form's Action (⚙) menu. It is a rare admin act,
   not a header button. It re-resolves the active Position / unit-clerk steps to their
@@ -66,9 +69,10 @@ the Route list.
 - **Audit.** Every edit is logged to the document chatter (who, step, field old → new).
   There is no mandatory reason.
 
-The guards apply only to **user** edits. Engine writes are untouched: they run `sudo`
-(act_on_step, ตีกลับ, Reset) or, for the sender's ดึงกลับ, carry the
-`sarabun_route_engine` context.
+The guards apply only to **user** edits. Engine writes are untouched because they run
+`sudo`: act_on_step, ตีกลับ, Reset, and the sender's ดึงกลับ, whose Route recreation
+(`_recreate_chain_verbatim`) the module runs as `sudo`. There is deliberately **no
+context switch** for this, since any RPC client could set one.
 
 ## Considered alternatives
 
