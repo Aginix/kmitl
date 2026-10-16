@@ -52,6 +52,24 @@ class TestP2Engine(SarabunCommon):
         with self.assertRaises(UserError):
             self._act(step, "complete", self.user_b)
 
+    def test_first_to_act_wins_on_parallel_stage(self):
+        """Two gating steps sharing an order: the first to complete passes the Stage,
+        the sibling is skipped and the next Stage activates."""
+        doc = self._make_doc()
+        s1 = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
+        s2 = self._add_step(doc, order=10, verb="endorse", user=self.user_b)
+        s20 = self._add_step(doc, order=20, verb="sign_approve", user=self.user_b)
+        doc.action_send()
+        self._act(s1, "complete", self.user_a)
+        self.assertEqual(s2.state, "skipped")
+        self.assertEqual(s20.state, "active")
+        with self.assertRaises(UserError):
+            self._act(s2, "complete", self.user_b)
+        with self.mute_pdf():
+            self._act(s20, "complete", self.user_b)
+        self.assertTrue(doc.is_completed)
+        self.assertEqual(doc.routing_progress, 100.0)
+
     def test_one_reject_rejects_whole_document(self):
         """One reject in a co-approval stage rejects the document immediately."""
         doc = self._make_doc()

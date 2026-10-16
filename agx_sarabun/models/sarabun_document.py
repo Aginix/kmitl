@@ -613,7 +613,7 @@ class SarabunDocument(models.Model):
             record.pending_ack_count = len(
                 steps.filtered(lambda s: s.state == "active" and not s.gating)
             )
-            gating = steps.filtered("gating")
+            gating = steps.filtered(lambda s: s.gating and s.state != "skipped")
             if gating:
                 done = gating.filtered(
                     lambda s: s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS
@@ -963,30 +963,37 @@ class SarabunDocument(models.Model):
             step.order = step.order + 1
 
     def _stage_complete(self, order):
-        """A stage is passed when every gating step in it is positively done.
-        A stage with no gating step never stalls the Route."""
+        """A stage is passed when any one gating step in it is positively done
+        (first-to-act across the Stage). A stage with no gating step never stalls
+        the Route."""
         self.ensure_one()
         gating = self.routing_step_ids.filtered(lambda s: s.order == order and s.gating)
         if not gating:
             return True
-        return all(
+        return any(
             s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS for s in gating
         )
 
     def _advance_stage(self):
         """Activate stages in order; stop at the first stage with unfinished gating;
-        complete the document when all gating is positively done."""
+        complete the document when every stage is passed."""
         self.ensure_one()
         if self.state != "circulating":
             return
         for order in sorted(set(self.routing_step_ids.mapped("order"))):
-            waiting = self.routing_step_ids.filtered(
-                lambda s: s.order == order and s.state == "waiting"
-            )
+            stage = self.routing_step_ids.filtered(lambda s: s.order == order)
+            waiting = stage.filtered(lambda s: s.state == "waiting")
             if waiting:
                 waiting._activate()
             if not self._stage_complete(order):
                 return  # frontier — wait for this stage's gating steps
+            # The Stage is passed: retire the gating steps nobody acted on.
+            pending = stage.filtered(
+                lambda s: s.gating and s.state in ("waiting", "active")
+            )
+            if pending:
+                pending._clear_activities()
+                pending.write({"state": "skipped"})
         self._complete_document()
 
     def _complete_document(self):

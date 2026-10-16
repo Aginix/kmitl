@@ -42,7 +42,8 @@ class SarabunRoutingStep(models.Model):
     )
     order = fields.Integer(
         string="Stage", default=1,
-        help="Steps sharing one order form a Stage and run in parallel.",
+        help="Steps sharing one order form a Stage and run in parallel; the first "
+        "gating step positively completed passes the Stage.",
     )
 
     # === Verb (การดำเนินการ — configurable master data) ===
