@@ -54,14 +54,6 @@ class BudgetBuddy(models.Model):
         default=lambda self: self.env.company,
     )
 
-    _sql_constraints = [
-        (
-            "user_department_uniq",
-            "unique(user_id, department_analytic_id)",
-            "This buddy already covers this unit.",
-        ),
-    ]
-
     @api.onchange("model_id")
     def _onchange_model_id(self):
         self.domain = "[]"
