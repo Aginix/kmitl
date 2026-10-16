@@ -38,28 +38,24 @@ class BudgetTransfer(models.Model):
         tracking=True,
         readonly=True,
     )
-    buddy_user_ids = fields.Many2many(
-        string="Buddies",
-        comodel_name="res.users",
-        compute="_compute_buddy_user_ids",
-    )
     show_verify_button = fields.Boolean(compute="_compute_button_visibility")
     show_verify_return_button = fields.Boolean(compute="_compute_button_visibility")
 
     # ------------------------------------------------------------------
     # Computes
     # ------------------------------------------------------------------
-    @api.depends("department_analytic_id")
-    def _compute_buddy_user_ids(self):
-        Buddy = self.env["budget.buddy"]
-        for transfer in self:
-            transfer.buddy_user_ids = Buddy._get_buddy_users(
-                transfer.department_analytic_id
-            )
+    def _get_buddies(self):
+        """Buddies covering this transfer (unit + their model/domain rules),
+        primary first. Evaluated on demand: a rule's domain may read any field,
+        so it cannot sit behind a cached compute keyed on the unit alone."""
+        self.ensure_one()
+        return self.env["budget.buddy"]._get_buddy_users(
+            self.department_analytic_id, self
+        )
 
     def _is_covering_buddy(self):
         self.ensure_one()
-        return self.env.user in self.buddy_user_ids
+        return self.env.user in self._get_buddies()
 
     @api.depends("department_analytic_id")
     @api.depends_context("uid")
@@ -126,7 +122,7 @@ class BudgetTransfer(models.Model):
         """Covering buddies, primary first — minus the requester, who may not
         verify their own transfer."""
         self.ensure_one()
-        return self.buddy_user_ids - self.user_id
+        return self._get_buddies() - self.user_id
 
     def _check_can_verify(self):
         is_admin = self.env.is_admin()

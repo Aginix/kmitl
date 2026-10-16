@@ -67,3 +67,25 @@ class TestBudgetBuddy(TransactionCase):
             }
         )
         self.assertFalse(self.Buddy._get_buddy_users(self.parent))
+
+    def test_model_domain_narrows_coverage(self):
+        self.Buddy.create(
+            {
+                "user_id": self.buddy_parent.id,
+                "department_analytic_id": self.parent.id,
+                "model_id": self.env["ir.model"]._get("budget.move").id,
+                "domain": "[('move_type', '=', 'entry')]",
+            }
+        )
+        Move = self.env["budget.move"]
+        entry = Move.new(
+            {"department_analytic_id": self.child.id, "move_type": "entry"}
+        )
+        appropriation = Move.new(
+            {"department_analytic_id": self.child.id, "move_type": "appropriation"}
+        )
+        self.assertEqual(
+            self.Buddy._get_buddy_users(self.child, entry), self.buddy_parent
+        )
+        self.assertFalse(self.Buddy._get_buddy_users(self.child, appropriation))
+        self.assertFalse(self.Buddy._get_buddy_users(self.child))
