@@ -9,7 +9,7 @@
                     <group>
                         <field name="date" />
                         <field name="account_fiscal_year_id" />
-                        <field name="profile_id" required="1" />
+                        <field name="profile_id" />
                         <field name="source_of_asset" required="1" />
                     </group>
                     <group>
