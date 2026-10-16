@@ -43,6 +43,15 @@ class BudgetTransfer(models.Model):
             "rejected": "set default",
         },
     )
+    # The generated แบบ งปม.303 enclosed on the current หนังสือ — re-rendered in
+    # place when the letter is re-sent after ตีกลับ/ดึงกลับ (see
+    # ``_attach_transfer_pdf_enclosure``).
+    sarabun_enclosure_attachment_id = fields.Many2one(
+        comodel_name="ir.attachment",
+        copy=False,
+        ondelete="set null",
+        readonly=True,
+    )
 
     # --- hooks ---------------------------------------------------------
     def _get_sarabun_document_type(self):
@@ -112,6 +121,10 @@ class BudgetTransfer(models.Model):
         return action
 
     def _attach_transfer_pdf_enclosure(self, document):
+        """Render แบบ งปม.303 and enclose it on ``document``. Upsert: when this
+        หนังสือ already carries the generated file (a re-send after ตีกลับ/
+        ดึงกลับ), overwrite its content in place so the signer sees the revised
+        lines; otherwise create and link a new one."""
         self.ensure_one()
         pdf, _dummy = (
             self.env["ir.actions.report"]
@@ -121,6 +134,10 @@ class BudgetTransfer(models.Model):
                 self.ids,
             )
         )
+        existing = self.sarabun_enclosure_attachment_id
+        if existing and existing in document.enclosure_attachment_ids:
+            existing.sudo().write({"datas": base64.b64encode(pdf)})
+            return
         attachment = (
             self.env["ir.attachment"]
             .sudo()
@@ -137,6 +154,7 @@ class BudgetTransfer(models.Model):
             )
         )
         document.sudo().write({"enclosure_attachment_ids": [(4, attachment.id)]})
+        self.sarabun_enclosure_attachment_id = attachment
 
     # --- lifecycle callbacks ------------------------------------------
     def _on_sarabun_circulating(self, document):
@@ -145,6 +163,10 @@ class BudgetTransfer(models.Model):
             # before the letter goes back out (the line policies are checked
             # at ยืนยัน, not as constraints).
             self._validate_transfer_data()
+            # ...and refresh the enclosed แบบ งปม.303 so it reflects the
+            # revision (a render failure blocks the send rather than letting a
+            # stale form go out).
+            self._attach_transfer_pdf_enclosure(document)
         if self.state in ("submitted", "returned"):
             self.state = "sent"
         return super()._on_sarabun_circulating(document)
