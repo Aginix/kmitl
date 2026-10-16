@@ -5,7 +5,7 @@ through the document's o2m commands, like a form save, as the editor.
 """
 
 from odoo import Command
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 from odoo.tests.common import new_test_user, tagged
 
 from odoo.addons.agx_sarabun.tests.common import SarabunCommon
@@ -35,11 +35,11 @@ class TestSarabunRouteEdit(SarabunCommon):
 
     # ------------------------------------------------------------------ helpers
     def _circulating_doc(self):
-        """Sender user_a; stage 10 = endorse by user_a (active after send),
-        stage 20 = sign_approve (issues the number) by user_b (waiting)."""
+        """Sender user_a; stage 10 = endorse by user_b (active after send),
+        stage 20 = sign_approve (issues the number) by user_a (waiting)."""
         doc = self._make_doc(sender=self.user_a)
-        self._add_step(doc, order=10, verb="endorse", user=self.user_a)
-        self._add_step(doc, order=20, verb="sign_approve", user=self.user_b)
+        self._add_step(doc, order=10, verb="endorse", user=self.user_b)
+        self._add_step(doc, order=20, verb="sign_approve", user=self.user_a)
         doc.action_send()
         self.assertEqual(doc.state, "circulating")
         return doc
@@ -58,26 +58,37 @@ class TestSarabunRouteEdit(SarabunCommon):
             .mapped("user_id")
         )
 
+    def _assert_no_access(self, doc, user):
+        """``user`` was taken off the Route: no reach, no read, not a follower."""
+        self.assertNotIn(user, doc.reached_user_ids)
+        self.assertNotIn(user.partner_id, doc.message_partner_ids)
+        with self.assertRaises(AccessError):
+            doc.with_user(user).check_access_rule("read")
+
     # ------------------------------------------------------------------ tests
     def test_retarget_waiting_step(self):
         doc = self._circulating_doc()
         waiting = self._step(doc, 20)
         self._edit(doc, [Command.update(waiting.id, {"employee_id": self.emp_c.id})])
         self.assertEqual(waiting.state, "waiting")
-        self._act(self._step(doc, 10), "complete", self.user_a)
+        self._act(self._step(doc, 10), "complete", self.user_b)
         self.assertEqual(waiting.state, "active")
         self.assertEqual(waiting.actor_user_ids, self.user_c)
 
     def test_retarget_active_step_moves_todo(self):
         doc = self._circulating_doc()
         active = self._step(doc, 10)
-        self.assertEqual(self._activity_users(active), self.user_a)
+        self.assertEqual(self._activity_users(active), self.user_b)
+        self.assertIn(self.user_b, doc.reached_user_ids)
+        self.assertIn(self.user_b.partner_id, doc.message_partner_ids)
         self._edit(doc, [Command.update(active.id, {"employee_id": self.emp_c.id})])
         self.assertEqual(active.state, "active")
         self.assertEqual(active.actor_user_ids, self.user_c)
         self.assertEqual(self._activity_users(active), self.user_c)
-        # The old holder was reached — they keep their read (ADR-0013).
-        self.assertIn(self.user_a, doc.reached_user_ids)
+        self.assertEqual(active.recipient_ids.user_id, self.user_c)
+        # The person taken off the step loses access to the หนังสือ.
+        self._assert_no_access(doc, self.user_b)
+        self.assertIn(self.user_c, doc.reached_user_ids)
         self._act(active, "complete", self.user_c)
         self.assertEqual(active.state, "done")
 
@@ -111,7 +122,7 @@ class TestSarabunRouteEdit(SarabunCommon):
 
     def test_add_step_before_frontier_raises(self):
         doc = self._circulating_doc()
-        self._act(self._step(doc, 10), "complete", self.user_a)
+        self._act(self._step(doc, 10), "complete", self.user_b)
         with self.assertRaises(UserError):
             self._edit(
                 doc,
@@ -127,14 +138,27 @@ class TestSarabunRouteEdit(SarabunCommon):
                 ],
             )
 
-    def test_remove_active_step_skips_and_advances(self):
+    def test_remove_active_step_revokes_and_advances(self):
         doc = self._circulating_doc()
         active = self._step(doc, 10)
         self._edit(doc, [Command.delete(active.id)])
-        self.assertTrue(active.exists())
-        self.assertEqual(active.state, "skipped")
-        self.assertFalse(self._activity_users(active))
+        self.assertFalse(active.exists())
+        self._assert_no_access(doc, self.user_b)
         self.assertEqual(self._step(doc, 20).state, "active")
+
+    def test_removed_user_reached_elsewhere_keeps_access(self):
+        """Taken off one step but still reached through an earlier one — the
+        หนังสือ still involves them, so they keep their read."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=5, verb="endorse", user=self.user_b)
+        self._add_step(doc, order=10, verb="endorse", user=self.user_b)
+        self._add_step(doc, order=20, verb="sign_approve", user=self.user_a)
+        doc.action_send()
+        self._act(self._step(doc, 5), "complete", self.user_b)
+        active = self._step(doc, 10)
+        self._edit(doc, [Command.update(active.id, {"employee_id": self.emp_c.id})])
+        self.assertIn(self.user_b, doc.reached_user_ids)
+        doc.with_user(self.user_b).check_access_rule("read")
 
     def test_remove_waiting_step_deletes(self):
         doc = self._circulating_doc()
@@ -163,7 +187,7 @@ class TestSarabunRouteEdit(SarabunCommon):
     def test_done_step_is_locked(self):
         doc = self._circulating_doc()
         done = self._step(doc, 10)
-        self._act(done, "complete", self.user_a)
+        self._act(done, "complete", self.user_b)
         with self.assertRaises(UserError):
             self._edit(doc, [Command.update(done.id, {"employee_id": self.emp_c.id})])
         with self.assertRaises(UserError):
@@ -181,7 +205,7 @@ class TestSarabunRouteEdit(SarabunCommon):
                 )
 
     def test_refresh_route_holders(self):
-        doc = self._make_doc(sender=self.user_a)
+        doc = self._make_doc(sender=self.user_b)
         self._add_step(
             doc,
             order=10,
@@ -196,6 +220,7 @@ class TestSarabunRouteEdit(SarabunCommon):
         doc.with_user(self.editor).action_refresh_route_holders()
         self.assertEqual(active.actor_user_ids, self.user_c)
         self.assertEqual(self._activity_users(active), self.user_c)
+        self._assert_no_access(doc, self.user_a)
         with self.assertRaises(UserError):
             doc.with_user(self.manager).action_refresh_route_holders()
 

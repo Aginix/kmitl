@@ -10,8 +10,6 @@ Position's holder changes. No agx_sarabun core edit beyond these ``_inherit`` ho
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from odoo.addons.agx_sarabun.models.sarabun_routing_step import POSITIVE_DISPOSITIONS
-
 ROUTE_EDIT_GROUP = "agx_sarabun_route_edit.group_sarabun_route_edit"
 
 
@@ -106,22 +104,16 @@ class SarabunDocument(models.Model):
         edited._finalize_route_edit()
         return res
 
-    # ------------------------------------------------------------------ engine
-    def _stage_complete(self, order):
-        """A step removed from the Route while active is kept as ``skipped`` (its
-        recipients keep their read — ADR-0013), so it must not stall its Stage:
-        the core first-to-act rule, over the gating steps not skipped."""
+    def _route_edit_unfollow(self, users):
+        """Unfollow ``users`` taken off the Route (their to-do subscribed them) once
+        the หนังสือ no longer reaches them — read is already gone with their recipient
+        rows; this stops the chatter notifications too. The sender stays."""
         self.ensure_one()
-        steps = self.routing_step_ids.filtered(lambda s: s.order == order)
-        if not steps.filtered(lambda s: s.state == "skipped"):
-            return super()._stage_complete(order)
-        gating = steps.filtered(lambda s: s.gating and s.state != "skipped")
-        if not gating:
-            return True
-        return any(
-            s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS for s in gating
-        )
+        gone = users - self.reached_user_ids - self.sender_user_id
+        if gone:
+            self.sudo().message_unsubscribe(partner_ids=gone.partner_id.ids)
 
+    # ------------------------------------------------------------------ engine
     def action_pull_back(self, reason=None):
         # ดึงกลับ recreates the Route in the sender's env while still circulating —
         # an engine write, not a route edit.
@@ -133,8 +125,9 @@ class SarabunDocument(models.Model):
     def action_refresh_route_holders(self):
         """ดึงผู้ดำรงตำแหน่งปัจจุบัน — re-resolve the active Position / unit-clerk steps
         to their CURRENT holders (after e.g. a new คณบดี is set on the Position):
-        the old holders' to-dos are cleared and the new holders get them. Waiting
-        steps need nothing — they resolve when they activate."""
+        the old holders' to-dos are cleared, they lose access, and the new holders
+        get the to-dos. Waiting steps need nothing — they resolve when they
+        activate."""
         self.ensure_one()
         self._check_route_edit_access()
         if self.state != "circulating":
@@ -155,6 +148,7 @@ class SarabunDocument(models.Model):
             step._check_route_edit_actors()
             step._clear_activities()
             step._schedule_activities()
+            step._route_edit_revoke_former()
             changes.append(
                 _("%(step)s: %(old)s → %(new)s")
                 % {

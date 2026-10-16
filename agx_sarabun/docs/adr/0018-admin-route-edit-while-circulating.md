@@ -36,9 +36,16 @@ the Route list.
 - **Active step.** Only the **target** may change. Its to-dos are cleared and the new
   holders are snapshotted and get fresh to-dos. This is the engine half of มอบหมาย, with
   no disposition stamped.
-  - "Deleting" an active step **skips** it (`state='skipped'`) instead of deleting it,
-    so the holders it already reached keep their read (ADR-0013).
-  - A skipped step never stalls its Stage.
+  - An active step may also be deleted. Its to-dos are cleared first.
+- **People taken off the Route lose access.** This covers re-targeting an active step,
+  deleting it, and the holder refresh below. For each person removed:
+  - Their recipient row on that step is deleted. That row is the reach ledger that
+    keys read (ADR-0013), so they can no longer open the หนังสือ and it leaves their
+    Incoming box.
+  - They are unfollowed, since their to-do had subscribed them, so chatter stops
+    notifying them.
+  - They keep access only if the หนังสือ still reaches them some other way: another
+    step, a prior attempt, or being its sender. Managers still see everything.
 - **Done / skipped / originator step.** Locked. Signatures are never rewritten.
 - **Added step.** Created `waiting` with `created_by_disposition='direct'`, so a later
   Reset drops it like any runtime insertion (ADR-0011).
@@ -67,17 +74,19 @@ The guards apply only to **user** edits. Engine writes are untouched: they run `
   would need a diff/apply layer. Editing the real rows keeps every extension working.
 - **Auto re-resolve active steps when a Position's holders change.** Rejected for v1.
   One holder edit would silently move every in-flight หนังสือ.
-- **Hard-delete a removed active step.** Rejected. It would cascade away its recipient
-  rows and revoke read from people the หนังสือ already reached.
+- **Keep a removed active step as `skipped`**, so the people it reached keep their
+  read. Rejected: when a route is wrong or an executive changes, the person taken off
+  must not keep seeing the หนังสือ.
 
 ## Consequences
 
 - A circulating Route is no longer frozen for a route editor. It is still frozen for
   everyone else, and the original actors' signed steps are never changed.
-- **A removed active step stays on the Route as `skipped`**, like the gating steps a
-  passed Stage retires (first-to-act). `_stage_complete` ignores skipped steps, so a
-  Stage whose gating steps were all removed passes. The gating progress count already
-  excludes skipped steps.
+- **Refines ADR-0013's "the reach ledger only grows".** An admin route edit is the
+  one place a recipient row is removed. Every other move (ตีกลับ / ดึงกลับ / Reset /
+  มอบหมาย) still keeps it.
+- A removed person's read status on that step (วันที่เปิดอ่าน) is gone with the row.
+  The chatter log of the edit is the remaining audit.
 - **position_id in the step dialog** keeps its own attrs (owned by
   `agx_sarabun_person_capacity` when installed). Changing it on a done step is refused
   by the server guard, not by the form.

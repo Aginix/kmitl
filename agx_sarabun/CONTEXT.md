@@ -107,7 +107,8 @@ _Avoid_: equating Reset with ดึงกลับ (Reset is admin-only, works *
 **แก้ไขเส้นทาง (Route edit — admin, ADR-0018)**:
 A **Sarabun Route Editor** (optional `agx_sarabun_route_edit`, an independent checkbox like Reset) edits the Route of a **circulating** หนังสือ in place, to fix a wrong step or follow a change of executive, **without** restarting it.
 - **Waiting steps** may be changed or deleted.
-- An **active step** may only be **re-targeted**: its to-dos move to the new holders. "Deleting" an active step **skips** it, so the holders it reached keep their read.
+- An **active step** may only be **re-targeted**: its to-dos move to the new holders. An active step may also be deleted.
+- **A person taken off a step loses access**, whether by re-target, delete or holder refresh. Their recipient row is deleted and they are unfollowed. They keep access only if another step, a prior attempt, or being the sender still reaches them. This is the one exception to "the reach ledger only grows".
 - **Done steps are locked**.
 - Added steps are waiting `direct` insertions.
 - Nothing may be placed before the first Stage not yet passed.
@@ -115,7 +116,7 @@ A **Sarabun Route Editor** (optional `agx_sarabun_route_edit`, an independent ch
 - After a Position's holder changes, the per-document button **ดึงผู้ดำรงตำแหน่งปัจจุบัน** re-resolves the active Position / unit steps. Waiting steps need nothing, because they resolve at activation.
 - Every edit is logged to the chatter.
 
-_Avoid_: re-targeting a done step (signatures never change); using Reset or ดึงกลับ just to fix a later step (route edit keeps the signatures already given); expecting a Position holder change to move in-flight to-dos by itself (press the button)
+_Avoid_: re-targeting a done step (signatures never change); leaving a removed person with read access (route edit revokes it); using Reset or ดึงกลับ just to fix a later step (route edit keeps the signatures already given); expecting a Position holder change to move in-flight to-dos by itself (press the button)
 
 ### Concurrency
 

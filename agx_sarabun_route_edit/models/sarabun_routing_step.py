@@ -5,12 +5,15 @@ writes pass untouched. What an editor may do:
 
 * waiting step — change verb / ลำดับ / CC / target, or delete it;
 * active step — change only the target (its to-dos move to the new holders), or
-  "delete" it, which skips it so its recipients keep their read (ADR-0013);
+  delete it;
 * done / skipped / originator step — nothing (signatures never change);
 * add a step — as a waiting ``direct`` insertion (so Reset drops it, ADR-0011).
 
-Steps may only be placed at or after the first Stage not yet passed. Every edit is
-logged to the document chatter.
+Steps may only be placed at or after the first Stage not yet passed. A person taken
+off a step loses access to the หนังสือ: their recipient row — the reach ledger that
+keys read (ADR-0013) — is deleted and they are unfollowed, unless another step (or a
+prior attempt) still reaches them or they sent it. Every edit is logged to the
+document chatter.
 """
 
 from odoo import _, api, models
@@ -55,6 +58,17 @@ class SarabunRoutingStep(models.Model):
                     )
                     % step.name
                 )
+
+    def _route_edit_revoke_former(self):
+        """Drop the recipient rows of everyone on these steps who is no longer an
+        actor (re-target / holder refresh), revoking the read they keyed."""
+        for step in self:
+            former = step.recipient_ids.filtered(
+                lambda r, step=step: r.user_id not in step.actor_user_ids
+            )
+            users = former.user_id
+            former.sudo().unlink()
+            step.document_id._route_edit_unfollow(users)
 
     def _check_route_edit_editable(self):
         for step in self:
@@ -131,6 +145,7 @@ class SarabunRoutingStep(models.Model):
             step._snapshot_holders()
         retargeted._check_route_edit_actors()
         retargeted._schedule_activities()
+        retargeted._route_edit_revoke_former()
         for step in edits:
             after = step._route_edit_values()
             diff = [
@@ -154,11 +169,13 @@ class SarabunRoutingStep(models.Model):
         edits._check_route_edit_editable()
         for step in edits:
             step._route_edit_log(step.document_id, _("removed %s") % step.name)
-        # An active step is skipped, not deleted: its recipient rows are the reach
-        # ledger (ADR-0013) — the holders it already reached keep their read.
-        active = edits.filtered(lambda s: s.state == "active").sudo()
-        active._clear_activities()
-        active.write({"state": "skipped"})
-        res = super(SarabunRoutingStep, self - active).unlink()
+        # The recipients of a removed (active) step lose their read: drop their
+        # rows explicitly so the reach ledger recomputes, then unfollow them.
+        reached = [(step.document_id, step.recipient_ids.user_id) for step in edits]
+        edits.sudo()._clear_activities()
+        edits.recipient_ids.sudo().unlink()
+        res = super().unlink()
+        for doc, users in reached:
+            doc._route_edit_unfollow(users)
         self._route_edit_finalize(docs)
         return res
