@@ -30,7 +30,6 @@
                     <tr class="active">
                         <th>Reference</th>
                         <th>Date</th>
-                        <th>Partner</th>
                         <th class="text-end">Amount</th>
                         <th>State</th>
                     </tr>
@@ -45,9 +44,6 @@
                             </td>
                             <td>
                                 <span t-field="request.date" t-options='{"widget": "date"}'/>
-                            </td>
-                            <td>
-                                <span t-field="request.partner_id"/>
                             </td>
                             <td class="text-end">
                                 <span t-field="request.amount_total" t-options='{"widget": "monetary", "display_currency": request.currency_id}'/>

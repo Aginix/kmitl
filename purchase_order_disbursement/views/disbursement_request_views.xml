@@ -29,7 +29,6 @@
         <field name="arch" type="xml">
             <tree string="Disbursement Requests">
                 <field name="name" optional="show" />
-                <field name="partner_id" optional="show" />
                 <field name="user_id" optional="show" />
                 <field name="date" optional="show" />
                 <field name="ref" optional="show" />

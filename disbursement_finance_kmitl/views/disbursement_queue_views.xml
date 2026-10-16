@@ -51,7 +51,6 @@
                 </header>
                 <field name="name" />
                 <field name="date" />
-                <field name="partner_id" />
                 <field name="user_id" optional="show" />
                 <!-- Shown so the auditor can see which requests are still missing
                      the เรื่องที่จ่าย that gives every payee its paying account —

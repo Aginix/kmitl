@@ -176,7 +176,7 @@ class DisbursementRequestLine(models.Model):
         self.ensure_one()
         return self.env["account.tax"]._convert_to_tax_base_line_dict(
             self,
-            partner=self.partner_id or self.request_id.partner_id,
+            partner=self.partner_id,
             currency=self.request_id.currency_id,
             product=self.product_id,
             taxes=self.tax_ids,
@@ -226,13 +226,10 @@ class DisbursementRequestLine(models.Model):
     # -------------------------------------------------------------------------
     # WHT methods
     # -------------------------------------------------------------------------
-    @api.depends(
-        "partner_id.partner_type_id.wht_tax_id",
-        "request_id.partner_id.partner_type_id.wht_tax_id",
-    )
+    @api.depends("partner_id.partner_type_id.wht_tax_id")
     def _compute_wht_tax_id(self):
         for line in self:
-            partner = line.partner_id or line.request_id.partner_id
+            partner = line.partner_id
             line.wht_tax_id = (
                 partner.partner_type_id.wht_tax_id if partner else False
             )

@@ -154,7 +154,6 @@ class ApprovalRequest(models.Model):
         return {
             "reference": "approval.request,%d" % self.id,
             "approval_request_id": self.id,
-            "partner_type": "multi",
             "payment_type": "direct",
             "line_ids": [
                 Command.create(alloc._prepare_disbursement_request_line_vals())

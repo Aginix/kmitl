@@ -7,8 +7,6 @@
         <field name="arch" type="xml">
             <tree string="Disbursement Requests">
                 <field name="name" />
-                <field name="partner_type" optional="hide" />
-                <field name="partner_id" />
                 <field name="user_id" optional="show" />
                 <field name="date" />
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
@@ -112,12 +110,6 @@
                             <field name="reference_model" invisible="1" />
                             <field name="ref" />
                             <field name="note" />
-                            <!-- Recipients live on the request lines (pay-by-name);
-                                 keep the header partner fields hidden. -->
-                            <field name="partner_type" invisible="1" />
-                            <field name="partner_id" invisible="1" />
-                            <field name="partner_bank_id" invisible="1" />
-                            <field name="is_company" invisible="1" />
                         </group>
                         <group id="budget" name="budget_information" string="Budget Information">
                             <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
@@ -244,7 +236,7 @@
         <field name="arch" type="xml">
             <search string="Disbursement Requests">
                 <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]" />
-                <field name="partner_id" />
+                <field name="line_ids" string="Payee" filter_domain="[('line_ids.partner_id', 'ilike', self)]" />
                 <field name="account_fiscal_year_id" />
                 <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
                 <separator />
@@ -264,7 +256,6 @@
                 <separator />
                 <filter name="date" string="Date" date="date" />
                 <group expand="0" name="group_by" string="Group By">
-                    <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
                     <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}" />
                     <filter string="Source" name="group_source" context="{'group_by': 'source_analytic_id'}" />
                     <filter string="Date" name="date" context="{'group_by': 'date'}" />

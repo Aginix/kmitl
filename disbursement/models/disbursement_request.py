@@ -88,48 +88,6 @@ class DisbursementRequest(models.Model):
         store=True,
     )
 
-    partner_type = fields.Selection(
-        selection=[
-            ("single", "Single Partner"),
-            ("multi", "Multiple Partners"),
-        ],
-        string="Partner Type",
-        default="multi",
-        required=True,
-        tracking=True,
-        states=READONLY_STATES,
-    )
-
-    partner_id = fields.Many2one(
-        comodel_name="res.partner",
-        string="Partner",
-        required=False,
-        compute="_compute_partner_id",
-        store=True,
-        readonly=False,
-        tracking=True,
-        index=True,
-        states=READONLY_STATES,
-    )
-
-    is_company = fields.Boolean(
-        related="partner_id.is_company",
-        string="Is Company",
-        readonly=True,
-    )
-
-    partner_bank_id = fields.Many2one(
-        comodel_name="res.partner.bank",
-        string="Recipient Bank",
-        compute="_compute_partner_bank_id",
-        store=True,
-        readonly=False,
-        tracking=True,
-        states=READONLY_STATES,
-        check_company=True,
-        domain="[('partner_id', '=', partner_id)]",
-    )
-
     date = fields.Date(
         string="Date",
         required=True,
@@ -647,13 +605,14 @@ class DisbursementRequest(models.Model):
             else:
                 rec.reference_model = False
                 rec.reference_model_name = False
-
-    @api.depends("reference")
-    def _compute_partner_id(self):
-        for rec in self:
-            if rec.reference and hasattr(rec.reference, "partner_id"):
-                rec.partner_id = rec.reference.partner_id
-        self._compute_analytic()
+        # Piggybacks here because this is the one stored compute left that
+        # depends on ``reference``: the hook reads the reference document, so
+        # it has to run whenever that changes. Only records without a
+        # distribution yet are filled in -- a distribution passed explicitly
+        # (e.g. the purchase order header one from
+        # ``purchase_order_disbursement_budget``) must win, so that it stays
+        # consistent with the ``budget_commitment_id`` passed alongside it.
+        self.filtered(lambda rec: not rec.analytic_distribution)._compute_analytic()
 
     def _compute_analytic(self):
         """Hook for extension modules to merge analytics from reference document."""
@@ -694,14 +653,6 @@ class DisbursementRequest(models.Model):
                 rec.display_status = "approved"
             else:
                 rec.display_status = rec.pipeline_status
-
-    @api.depends("partner_id", "company_id")
-    def _compute_partner_bank_id(self):
-        for request in self:
-            bank_ids = request.partner_id.bank_ids.filtered(
-                lambda bank: not bank.company_id or bank.company_id == request.company_id
-            )
-            request.partner_bank_id = bank_ids[0] if bank_ids else False
 
     @api.model_create_multi
     def create(self, vals_list):
