@@ -56,13 +56,14 @@ class BudgetMoveLine(models.Model):
     def action_open_kmitl_project(self):
         """Open the line's kmitl.project in a new browser tab.
 
-        Looked up as superuser so the button works on every row; the opened
-        form applies the normal access rules.
+        Looked up as superuser (archived included) so the button works on every
+        row; the opened form applies the normal access rules.
         """
         self.ensure_one()
         record = (
             self.env["kmitl.project"]
             .sudo()
+            .with_context(active_test=False)
             .search(
                 [("analytic_account_id", "=", self.kmitl_project_analytic_id.id)],
                 limit=1,
