@@ -72,7 +72,7 @@
                 <field name="use_purchase_order" invisible="1" />
             </xpath>
             <xpath
-                expr="//group[@name='procurement_info']/field[@name='procurement_type_id']"
+                expr="//group[@name='procurement_info']/field[@name='procurement_method_id']"
                 position="before"
             >
                 <label

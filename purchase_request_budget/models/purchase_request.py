@@ -52,16 +52,20 @@ class PurchaseRequest(models.Model):
     )
     budget_selection_mode = fields.Selection(
         selection=[
-            ("normal", "จองงบใหม่จากผังงบประมาณ"),
+            ("normal", "งบประมาณปกติ (ไม่อยู่ภายใต้โครงการหรือแผน)"),
         ],
-        string="แหล่งงบประมาณ",
+        string="จัดซื้อภายใต้",
         default="normal",
         copy=False,
+        tracking=True,
         help=(
-            "งบของใบขอซื้อนี้มาจากไหน — จองใหม่จากผังงบประมาณ หรือหยิบใบจองงบประมาณ "
-            "ของโครงการ/แผนจัดซื้อจัดจ้างไปใช้ (แต่ละแหล่งเป็นของโมดูลที่เป็นเจ้าของ "
-            "ต้นทางนั้น) ใบจองที่ไม่มีต้นทางใช้กับใบขอซื้อไม่ได้ — budget ADR-0015"
+            "ใบขอซื้อนี้จัดซื้อภายใต้อะไร — งบประมาณปกติ (จองใหม่) หรือโครงการ/กิจกรรม "
+            "หรือแผนจัดซื้อจัดจ้าง (หยิบงบที่ต้นทางจองไว้ไปใช้) ผู้ขอเสนอ ผู้ตรวจสอบยืนยัน "
+            "เปลี่ยนได้จนกว่าจะจองงบประมาณ — root ADR-0011, budget ADR-0015"
         ),
+    )
+    is_procurement_under_editable = fields.Boolean(
+        compute="_compute_is_procurement_under_editable"
     )
     reservation_commitment_id = fields.Many2one(
         "budget.commitment",
@@ -70,9 +74,9 @@ class PurchaseRequest(models.Model):
         copy=False,
         tracking=True,
         help=(
-            "เลือกใบจองงบประมาณที่มีอยู่แล้วเพื่อหยิบไปใช้ (draw down) แทนการจองใหม่ "
-            "— เอกสารจะสืบทอดรหัสงบ/มิติ/ปีงบจากใบจองแบบล็อก และไม่จองซ้ำ. "
-            "ใช้เมื่อเลือกวิธี 'หยิบจากใบจองงบประมาณที่มีอยู่'."
+            "ใบจองของโครงการ/แผนที่ใบขอซื้อหยิบไปใช้ (draw down) แทนการจองใหม่ — "
+            "ระบบหาให้เองตอนจองงบประมาณจากโครงการ/แผนที่จัดซื้อภายใต้ (root ADR-0011) "
+            "เอกสารจะสืบทอดรหัสงบ/มิติ/ปีงบจากใบจองแบบล็อก และไม่จองซ้ำ"
         ),
     )
 
@@ -214,6 +218,7 @@ class PurchaseRequest(models.Model):
 
     @api.depends(
         "state",
+        "budget_selection_mode",
         "budget_commitment_id",
         "budget_commitment_id.state",
     )
@@ -244,6 +249,42 @@ class PurchaseRequest(models.Model):
                 rec.is_budget_editable = can_edit[rec.state]
             else:
                 rec.is_budget_editable = rec.state == "draft"
+            # A project/plan brings its own code, dims and FY: correcting them
+            # means changing the source, never editing a dimension (root
+            # ADR-0011).
+            if rec.budget_selection_mode != "normal":
+                rec.is_budget_editable = False
+
+    @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
+    def _compute_is_procurement_under_editable(self):
+        """Who may change จัดซื้อภายใต้ (root ADR-0011): the owner of each step
+        before Reserve — the requester at draft, ผู้ตรวจสอบ พ.1 at to_verify,
+        ผู้จองงบประมาณ พ.1 at to_verify_budget. Once the request has drawn its
+        money the answer is fixed, and ดึงกลับ does not reopen it (budget
+        ADR-0015)."""
+        user = self.env.user
+        owners = {
+            "draft": True,
+            "to_verify": user.has_group(
+                "purchase_request_kmitl.group_purchase_request_verify"
+            ),
+            "to_verify_budget": user.has_group(
+                "purchase_request_budget.group_purchase_request_budget_commit"
+            ),
+        }
+        for rec in self:
+            rec.is_procurement_under_editable = (
+                owners.get(rec.state, False) and not rec._has_live_commitment()
+            )
+
+    def _has_live_commitment(self):
+        # sudo: a source's commitment may sit under another OU's record rule.
+        self.ensure_one()
+        return self.sudo().budget_commitment_id.state not in (
+            False,
+            "cancel",
+            "draft",
+        )
 
     @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
     def _compute_hide_reserve_budget_button(self):
@@ -369,6 +410,7 @@ class PurchaseRequest(models.Model):
         ``action_reserve_budget`` หลังมี commitment แล้ว
         """
         self._check_can_verify()
+        self._check_verify_complete()
         self._check_can_commit_budget()
         to_budget = self.filtered(lambda r: r.state == "to_verify")
         to_budget._mark_verified()
@@ -450,7 +492,7 @@ class PurchaseRequest(models.Model):
         # Chose a draw-down mode but picked nothing: say so, instead of falling
         # through to reserve-new against the dimensions the mode switch cleared.
         if self.budget_selection_mode != "normal":
-            raise UserError(_("กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"))
+            raise UserError(_("กรุณาระบุโครงการ/กิจกรรม หรือแผนจัดซื้อจัดจ้างที่จัดซื้อภายใต้"))
 
         # ตีกลับ/แก้ไข (ADR-0007) sends the request back through this step with
         # its commitment deliberately left live, and reserving is the only way
@@ -634,7 +676,7 @@ class PurchaseRequest(models.Model):
 
     @api.onchange("budget_selection_mode")
     def _onchange_budget_selection_mode(self):
-        """Start budget selection fresh whenever the แหล่งงบประมาณ changes.
+        """Start budget selection fresh whenever จัดซื้อภายใต้ changes.
 
         ``budget_selection_mode`` is a **UI affordance only** — the server still
         keys draw-down off the presence of ``reservation_commitment_id``
@@ -646,10 +688,9 @@ class PurchaseRequest(models.Model):
 
         Note this also runs on the **first onchange of a new record** (Odoo fires
         every onchange when the client asks with no field name), so it wipes any
-        ``default_budget_account_id`` / ``default_analytic_distribution`` a
-        create-from-source action passed in. Source bridges must therefore write
-        their budget context **server-side** on create rather than relying on
-        those context defaults surviving (ADR-0007).
+        ``default_budget_account_id`` / ``default_analytic_distribution`` passed
+        as context defaults. Source bridges therefore write their budget context
+        **server-side** (``_sync_procurement_under``), never through defaults.
         """
         self.reservation_commitment_id = False
         self.budget_account_id = False
@@ -741,14 +782,84 @@ class PurchaseRequest(models.Model):
         if self.analytic_distribution:
             self.line_ids.update({"analytic_distribution": self.analytic_distribution})
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._sync_procurement_under({})
+        return records
+
     def write(self, vals):
+        under = set(vals) & self._procurement_under_fields()
+        sync = under and not self.env.context.get("procurement_under_sync")
+        if sync:
+            self._check_procurement_under_unlocked(vals, under)
+            sourced_before = {
+                rec.id: rec.budget_selection_mode != "normal" for rec in self
+            }
         result = super().write(vals)
         if "budget_account_id" in vals:
             for rec in self:
                 product = rec.budget_account_id.product_id
                 if product and rec.line_ids:
                     rec.line_ids.write({"product_id": product.id})
+        if sync:
+            self._sync_procurement_under(sourced_before)
         return result
+
+    def _procurement_under_fields(self):
+        """Fields carrying the พ.1's จัดซื้อภายใต้ (root ADR-0011). Each source
+        bridge adds its own source field."""
+        return {"budget_selection_mode"}
+
+    def _prepare_procurement_under_vals(self):
+        """Header values the chosen จัดซื้อภายใต้ imposes on this request.
+
+        งบประมาณปกติ imposes nothing — the verifier enters the code. Each source
+        bridge fills in its source's budget context when chosen, and clears its
+        own source field when another answer is."""
+        self.ensure_one()
+        return {}
+
+    def _check_procurement_under_unlocked(self, vals, names):
+        """จัดซื้อภายใต้ is fixed once the request has drawn money: moving a พ.1
+        to another source after Reserve is a cancel-and-recreate (budget
+        ADR-0015, root ADR-0011). The view's readonly is bypassable over RPC."""
+        if self.env.su:
+            return
+        for rec in self.filtered(lambda r: r._has_live_commitment()):
+            for name in names:
+                field = rec._fields[name]
+                if field.convert_to_write(rec[name], rec) != vals[name]:
+                    raise UserError(
+                        _(
+                            "ใบขอซื้อ %s จองงบประมาณแล้ว เปลี่ยน 'จัดซื้อภายใต้' ไม่ได้ "
+                            "— ต้องยกเลิกแล้วสร้างใบใหม่"
+                        )
+                        % rec.display_name
+                    )
+
+    def _sync_procurement_under(self, sourced_before):
+        """Write the budget context the จัดซื้อภายใต้ imposes, server-side.
+
+        Not in an onchange: the requester's form carries neither the code nor
+        ``analytic_distribution``, and re-assigning ``analytic_distribution`` in
+        an onchange wipes it (its compute is a no-op). Leaving a project/plan
+        clears the code and dimensions it filled."""
+        for rec in self:
+            vals = rec._prepare_procurement_under_vals()
+            if "budget_account_id" not in vals and sourced_before.get(rec.id):
+                vals.update(
+                    {"budget_account_id": False, "analytic_distribution": False}
+                )
+            if not vals:
+                continue
+            rec.with_context(procurement_under_sync=True).write(vals)
+            if "analytic_distribution" in vals and rec.line_ids:
+                rec.line_ids.write(
+                    {"analytic_distribution": vals["analytic_distribution"]}
+                )
+            if vals.get("budget_account_id"):
+                rec._apply_budget_account_product()
 
     @api.onchange("budget_account_id")
     def _onchange_budget_account_id(self):

@@ -132,7 +132,12 @@ class PurchaseRequestApproval(models.Model):
     )
 
     # == Own fields (copied from purchase.request on creation) ==
-    title = fields.Char(string="Title")
+    title = fields.Char(
+        string="Title",
+        compute="_compute_title",
+        store=True,
+    )
+    expense_type = fields.Char(string="Expense Type")
     description = fields.Text(string="Description")
     procurement_type_id = fields.Many2one(
         comodel_name="procurement.type",
@@ -266,6 +271,20 @@ class PurchaseRequestApproval(models.Model):
     )
 
     is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
+
+    @api.depends("procurement_type_id", "expense_type")
+    def _compute_title(self):
+        """ชื่อเรื่อง = รายงานขอ{ประเภทการจัดซื้อ/จ้าง}{ประเภทค่าใช้จ่าย}, from the
+        PA's own copies (root ADR-0012). Same rules as the พ.1 title: the type
+        record, not its name, and a PA without an expense type keeps its title."""
+        for rec in self:
+            if rec.expense_type:
+                rec.title = "รายงานขอ%s%s" % (
+                    rec.procurement_type_id.name or "",
+                    rec.expense_type.strip(),
+                )
+            else:
+                rec.title = rec.title
 
     @api.depends("state")
     def _compute_is_editable(self):
@@ -591,6 +610,10 @@ class PurchaseRequestApproval(models.Model):
         default = dict(default or {})
         self.ensure_one()
         default.update({"state": "draft", "name": "/"})
+        # title is a stored compute (copy=False) whose fallback branch
+        # self-assigns from the new record's cache (= False) and blanks a
+        # legacy title. Carry it so the fallback finds the original.
+        default.setdefault("title", self.title)
         return super().copy(default)
 
     @api.model_create_multi

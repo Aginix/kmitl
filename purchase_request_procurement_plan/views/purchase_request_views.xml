@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <!-- View purchase.request form -->
+    <!-- View purchase.request form - the requester names the plan it is bought
+         under (จัดซื้อภายใต้, root ADR-0011) + link back to it -->
     <record id="view_purchase_request_form_procurement_plan" model="ir.ui.view">
         <field name="name">view.purchase.request.form (Procurement Plan)</field>
         <field name="model">purchase.request</field>
@@ -10,8 +11,16 @@
             ref="purchase_request_budget.view_purchase_request_form"
         />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='budget_selection_mode']" position="after">
+                <field name="procurement_plan_domain" invisible="1" />
+                <field
+                    name="procurement_plan_id"
+                    domain="procurement_plan_domain"
+                    options="{'no_create': True, 'no_open': True}"
+                    attrs="{'invisible': [('budget_selection_mode', '!=', 'procurement_plan')], 'required': [('budget_selection_mode', '=', 'procurement_plan'), ('is_procurement_under_editable', '=', True)], 'readonly': [('is_procurement_under_editable', '=', False)]}"
+                />
+            </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
-                <field name="procurement_plan_id" invisible="1" />
                 <button
                     name="action_view_procurement_plan"
                     type="object"

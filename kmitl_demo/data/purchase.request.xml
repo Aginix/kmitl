@@ -1,7 +1,7 @@
 <odoo>
     <!-- purchase Request 1 -->
     <record id="purchase_request_1" model="purchase.request">
-        <field name="title">โครงการจัดหาบ้านให้น้องแมว</field>
+        <field name="expense_type">โครงการจัดหาบ้านให้น้องแมว</field>
         <field name="description">แมวภายในสถาบันไม่มีที่อยู่</field>
         <field
             name="account_fiscal_year_id"
@@ -91,7 +91,7 @@
 
     <!-- Purchase Request 1 EGP -->
     <record id="purchase_request_1_egp" model="purchase.request">
-        <field name="title">สร้างตึกคณะใหม่ของ สจล.</field>
+        <field name="expense_type">ตึกคณะใหม่ของ สจล.</field>
         <field name="description">ตึกไม่พอเรียน</field>
         <field
             name="account_fiscal_year_id"
@@ -182,7 +182,7 @@
 
     <!-- purchase requst 2 -->
     <record id="purchase_request_2" model="purchase.request">
-        <field name="title">โครงการทำสวนประกวดงานแข่งประกวดประจำอำเภอ</field>
+        <field name="expense_type">โครงการทำสวนประกวดงานแข่งประกวดประจำอำเภอ</field>
         <field name="description">แข่งขันจัดดอกไม้</field>
         <field
             name="account_fiscal_year_id"
@@ -268,7 +268,7 @@
 
     <!-- purchase requst 2 EGP -->
     <record id="purchase_request_2_egp" model="purchase.request">
-        <field name="title">ประกวดกระทงประจำปี และเงินรางวัล</field>
+        <field name="expense_type">ประกวดกระทงประจำปี และเงินรางวัล</field>
         <field name="description">แข่งขันจัดทำกระทง</field>
         <field
             name="account_fiscal_year_id"
@@ -352,7 +352,7 @@
 
     <!-- purchase Request 3 -->
     <record id="purchase_request_3" model="purchase.request">
-        <field name="title">แข่งขันประกอบหุ่นยนต์นานาชาติ</field>
+        <field name="expense_type">แข่งขันประกอบหุ่นยนต์นานาชาติ</field>
         <field name="description">ระดับภาค วิชา AI</field>
         <field
             name="account_fiscal_year_id"
@@ -444,7 +444,7 @@
 
     <!-- purchase Request 3 EGP -->
     <record id="purchase_request_3_egp" model="purchase.request">
-        <field name="title">แข่งขันทำทดลองผสมสาร</field>
+        <field name="expense_type">แข่งขันทำทดลองผสมสาร</field>
         <field name="description">นักวิจัยห้องทดลอง อยากให้มีการแข่งขัน</field>
         <field
             name="account_fiscal_year_id"
@@ -540,7 +540,7 @@
 
     <!-- purchase Request 4 -->
     <record id="purchase_request_4" model="purchase.request">
-        <field name="title">ลาดจอดรถใต้อาคารตึกอธิการ</field>
+        <field name="expense_type">ลาดจอดรถใต้อาคารตึกอธิการ</field>
         <field name="description">ที่จอดรถไม่พอ</field>
         <field
             name="account_fiscal_year_id"
@@ -631,7 +631,7 @@
 
     <!-- purchase Request 4 EGP -->
     <record id="purchase_request_4_egp" model="purchase.request">
-        <field name="title">ลาดจอดฮอฉุกเฉิน</field>
+        <field name="expense_type">ลาดจอดฮอฉุกเฉิน</field>
         <field name="description">ไว้ยามจำเป็น</field>
         <field
             name="account_fiscal_year_id"
@@ -722,7 +722,7 @@
 
     <!-- purchase Request 5 -->
     <record id="purchase_request_5" model="purchase.request">
-        <field name="title">ตู้กรองน้ำขนาดใหญ่</field>
+        <field name="expense_type">ตู้กรองน้ำขนาดใหญ่</field>
         <field name="description">น้ำดื่มไม่เพียงพอ</field>
         <field
             name="account_fiscal_year_id"
@@ -819,7 +819,7 @@
 
     <!-- purchase Request 5 EGP -->
     <record id="purchase_request_5_egp" model="purchase.request">
-        <field name="title">เครื่องปรับอากาศตึกครุ</field>
+        <field name="expense_type">เครื่องปรับอากาศตึกครุ</field>
         <field name="description">อากาศค่อนข้างร้อนมาก</field>
         <field
             name="account_fiscal_year_id"
