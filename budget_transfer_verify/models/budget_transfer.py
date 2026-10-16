@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 VERIFY_ACTIVITY = "budget_transfer_verify.mail_activity_budget_transfer_verify"
 CORRECT_ACTIVITY = "budget_transfer_verify.mail_activity_budget_transfer_correct"
@@ -77,9 +77,7 @@ class BudgetTransfer(models.Model):
         for transfer in self:
             in_verify = transfer.state == "to_verify"
             is_buddy = in_verify and (is_admin or transfer._is_covering_buddy())
-            transfer.show_verify_button = is_buddy and (
-                is_admin or transfer.user_id != user
-            )
+            transfer.show_verify_button = is_buddy
             transfer.show_verify_return_button = is_buddy
             if in_verify:
                 transfer.show_cancel_button = True
@@ -101,7 +99,7 @@ class BudgetTransfer(models.Model):
             if not transfer._get_assignable_buddies():
                 raise UserError(
                     _(
-                        "ส่วนงาน %s ยังไม่มีเจ้าหน้าที่ Buddy (อื่นนอกจากผู้ขอโอน) ดูแล "
+                        "ส่วนงาน %s ยังไม่มีเจ้าหน้าที่ Buddy ที่มีสิทธิ์เข้าถึงใบโอนนี้ดูแล "
                         "กรุณาติดต่อผู้ดูแลระบบงบประมาณ"
                     )
                     % (transfer.department_analytic_id.display_name or "-")
@@ -121,10 +119,22 @@ class BudgetTransfer(models.Model):
         return res
 
     def _get_assignable_buddies(self):
-        """Covering buddies, primary first — minus the requester, who may not
-        verify their own transfer."""
+        """Covering buddies who can read the transfer, primary first — the
+        requester first when they are one (a Buddy verifies their own transfer).
+
+        Coverage is keyed on the unit, not the OU: a buddy the OU rule hides
+        the transfer from could not open the To-Do, so they are skipped.
+        """
         self.ensure_one()
-        return self._get_buddies() - self.user_id
+        buddies = self._get_buddies().filtered(self._buddy_can_read)
+        return (buddies & self.user_id) | buddies
+
+    def _buddy_can_read(self, user):
+        try:
+            self.with_user(user).check_access_rule("read")
+        except AccessError:
+            return False
+        return True
 
     def _check_can_verify(self):
         is_admin = self.env.is_admin()
@@ -145,10 +155,6 @@ class BudgetTransfer(models.Model):
         """ยืนยันตรวจสอบ → ``submitted``. The Buddy may have edited the data,
         so the full confirmation checks run again."""
         self._check_can_verify()
-        if not self.env.is_admin() and self.filtered(
-            lambda t: t.user_id == self.env.user
-        ):
-            raise UserError(_("You cannot verify your own budget transfer."))
         for transfer in self:
             transfer.invalidate_recordset(
                 ["has_sufficient_budget", "budget_validation_message"]
