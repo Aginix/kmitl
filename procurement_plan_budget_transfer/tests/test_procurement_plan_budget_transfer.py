@@ -215,16 +215,16 @@ class TestProcurementPlanBudgetTransfer(TransactionCase):
         )
         self.assertNotIn(tag, other.allowed_procurement_plan_analytic_ids)
 
-    def test_plan_table_lists_funded_plan(self):
+    def test_plan_page_lists_line_and_opens_new_tab(self):
         plan = self._make_plan(5000)
         transfer = self._fund_plan_transfer(plan, 5000)
-        html = transfer.procurement_plan_table
-        self.assertIn("PPT Plan 5000", html)
-        self.assertIn("id=%s&amp;model=procurement.plan" % plan.id, html)
-        self.assertIn('target="_blank"', html)
-        self.assertIn("โอนเข้า", html)
-        self.assertNotIn("โอนออก", html)  # the FROM line carries no plan
-
-    def test_plan_table_empty_message(self):
-        transfer = self.env["budget.transfer"].new({})
-        self.assertIn("ไม่มีแผนจัดซื้อจัดจ้างในใบโอนนี้", transfer.procurement_plan_table)
+        line = transfer.procurement_plan_line_ids
+        # Only the TO line carries the plan; the FROM line is left out.
+        self.assertEqual(len(line), 1)
+        self.assertEqual(line.transfer_direction, "to")
+        action = line.action_open_procurement_plan()
+        self.assertEqual(action["target"], "new")
+        self.assertEqual(
+            action["url"],
+            "/web#id=%s&model=procurement.plan&view_type=form" % plan.id,
+        )

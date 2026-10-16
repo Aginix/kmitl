@@ -140,8 +140,9 @@ class TestKmitlProjectBudgetTransfer(TransactionCase):
     # ------------------------------------------------------------------
     # โครงการ/กิจกรรม page on the transfer
     # ------------------------------------------------------------------
-    def test_project_table_lists_project_to_any_user(self):
-        # Rendered as superuser: a plain user still sees the row and its link.
+    def test_project_page_lists_line_and_opens_new_tab(self):
+        # The open action looks the project up as superuser: a plain user who
+        # cannot read the project still gets the new-tab URL.
         user = self.env["res.users"].create(
             {
                 "name": "KPBT Plain",
@@ -164,17 +165,19 @@ class TestKmitlProjectBudgetTransfer(TransactionCase):
                                 "kmitl_project_analytic_id": self.proj_tag.id,
                                 "amount": 1000.0,
                             },
-                        )
+                        ),
+                        (0, 0, {"transfer_direction": "to", "amount": 5.0}),
                     ],
                 }
             )
         )
-        html = transfer.kmitl_project_table
-        self.assertIn("KPBT Project", html)
-        self.assertIn("id=%s&amp;model=kmitl.project" % self.project.id, html)
-        self.assertIn('target="_blank"', html)
-        self.assertIn("โอนเข้า", html)
-
-    def test_project_table_empty_message(self):
-        transfer = self.env["budget.transfer"].new({})
-        self.assertIn("ไม่มีโครงการ/กิจกรรมในใบโอนนี้", transfer.kmitl_project_table)
+        line = transfer.kmitl_project_line_ids
+        self.assertEqual(len(line), 1)
+        self.assertEqual(line.kmitl_project_analytic_id, self.proj_tag)
+        action = line.action_open_kmitl_project()
+        self.assertEqual(action["type"], "ir.actions.act_url")
+        self.assertEqual(action["target"], "new")
+        self.assertEqual(
+            action["url"],
+            "/web#id=%s&model=kmitl.project&view_type=form" % self.project.id,
+        )

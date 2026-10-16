@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class BudgetMoveLine(models.Model):
@@ -51,3 +52,28 @@ class BudgetMoveLine(models.Model):
                 if line[dim]:
                     projects = projects.filtered(lambda p, d=dim: p[d] == line[d])
             line.allowed_kmitl_project_analytic_ids = projects.analytic_account_id
+
+    def action_open_kmitl_project(self):
+        """Open the line's kmitl.project in a new browser tab.
+
+        Looked up as superuser so the button works on every row; the opened
+        form applies the normal access rules.
+        """
+        self.ensure_one()
+        record = (
+            self.env["kmitl.project"]
+            .sudo()
+            .search(
+                [("analytic_account_id", "=", self.kmitl_project_analytic_id.id)],
+                limit=1,
+            )
+        )
+        if not record:
+            raise UserError(
+                _("ไม่พบรายการที่ผูกกับมิติ %s") % self.kmitl_project_analytic_id.display_name
+            )
+        return {
+            "type": "ir.actions.act_url",
+            "target": "new",
+            "url": f"/web#id={record.id}&model=kmitl.project&view_type=form",
+        }

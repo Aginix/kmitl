@@ -20,25 +20,22 @@ class BudgetTransfer(models.Model):
 
     _inherit = "budget.transfer"
 
-    procurement_plan_table = fields.Html(
+    procurement_plan_line_ids = fields.Many2many(
+        "budget.move.line",
         string="แผนจัดซื้อจัดจ้าง",
-        compute="_compute_procurement_plan_table",
-        sanitize=False,
+        compute="_compute_procurement_plan_line_ids",
+        help="FROM/TO lines that carry a procurement-plan dimension.",
     )
 
     @api.depends(
         "from_line_ids.procurement_plan_analytic_id",
-        "from_line_ids.amount",
         "to_line_ids.procurement_plan_analytic_id",
-        "to_line_ids.amount",
     )
-    def _compute_procurement_plan_table(self):
+    def _compute_procurement_plan_line_ids(self):
         for transfer in self:
-            transfer.procurement_plan_table = transfer._render_linked_record_table(
-                "procurement.plan",
-                "procurement_plan_analytic_id",
-                _("ไม่มีแผนจัดซื้อจัดจ้างในใบโอนนี้"),
-            )
+            transfer.procurement_plan_line_ids = (
+                transfer.from_line_ids | transfer.to_line_ids
+            ).filtered("procurement_plan_analytic_id")
 
     def _post_transfer(self):
         # Reserve only after super() has posted the delegated move and moved the
