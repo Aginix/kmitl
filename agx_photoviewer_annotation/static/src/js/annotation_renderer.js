@@ -41,6 +41,8 @@ const STAMP_STROKE = 0.14;
 const RECT_WIDTH = 0.003;
 const PIN_RADIUS = 0.014;
 const HIGHLIGHT_OPACITY = 0.35;
+// Safari on iPad gives up on canvases above ~16.7 million pixels.
+const MAX_CANVAS_PIXELS = 12e6;
 
 const DRAWING_TOOLS = ["pen", "check", "cross", "highlight", "rect", "comment"];
 
@@ -251,14 +253,20 @@ export class AnnotationEditor {
                     sheet.visible = entry.isIntersecting;
                     if (sheet.visible) {
                         this.renderSheet(sheet);
+                    } else {
+                        this.releaseSheet(sheet);
                     }
                 }
             },
-            {root: this.scroll, rootMargin: "300px"}
+            // Pages a screen away are ready before they scroll in.
+            {root: this.scroll, rootMargin: "100% 0px"}
         );
+        // Scaled as a whole while pinching.
+        this.pages = htmlElement("div", "o_agx_annotation_pages");
+        this.scroll.append(this.pages);
         for (const sheet of this.sheets) {
             this.buildSheet(sheet);
-            this.scroll.append(sheet.element);
+            this.pages.append(sheet.element);
             this.observer.observe(sheet.element);
         }
         let resizeTimer;
@@ -363,7 +371,10 @@ export class AnnotationEditor {
         if (!sheet.pdfPage) {
             return;
         }
-        const width = Math.round(sheet.element.clientWidth * window.devicePixelRatio);
+        const width = Math.min(
+            Math.round(sheet.element.clientWidth * window.devicePixelRatio),
+            Math.floor(Math.sqrt(MAX_CANVAS_PIXELS / sheet.ratio))
+        );
         if (!width || (sheet.renderedWidth && sheet.renderedWidth >= width * 0.95)) {
             return;
         }
@@ -383,6 +394,11 @@ export class AnnotationEditor {
                 canvasContext: canvas.getContext("2d"),
                 viewport,
             }).promise;
+            if (!sheet.visible) {
+                // Scrolled away while rendering.
+                canvas.width = 0;
+                return;
+            }
             sheet.canvas?.remove();
             sheet.canvas = canvas;
             sheet.element.prepend(canvas);
@@ -393,6 +409,19 @@ export class AnnotationEditor {
         if (sheet.pending) {
             sheet.pending = false;
             this.renderSheet(sheet);
+        }
+    }
+
+    /**
+     * Free the canvas of a page out of sight: a tablet cannot keep every
+     * page of a long PDF in memory.
+     */
+    releaseSheet(sheet) {
+        if (sheet.canvas) {
+            sheet.canvas.width = 0;
+            sheet.canvas.remove();
+            sheet.canvas = null;
+            sheet.renderedWidth = 0;
         }
     }
 
@@ -617,8 +646,7 @@ export class AnnotationEditor {
         return group;
     }
 
-    point(ev, sheet) {
-        const rect = sheet.layer.getBoundingClientRect();
+    point(ev, sheet, rect = sheet.layer.getBoundingClientRect()) {
         return [
             round(clamp((ev.clientX - rect.left) / rect.width)),
             round(clamp((ev.clientY - rect.top) / rect.height)),
@@ -676,30 +704,42 @@ export class AnnotationEditor {
             return;
         }
         // Pen, highlight and rectangle follow the pointer until it is released.
+        // The page cannot move meanwhile: measure it once.
+        const rect = sheet.layer.getBoundingClientRect();
         const draft = {...base, geometry: {}, is_own: true};
         const points = [[x, y]];
+        let frame = null;
+        const render = () => {
+            frame = null;
+            const shape = this.shape(draft, sheet, new Map());
+            draftShape.replaceWith(shape);
+            draftShape = shape;
+        };
         const update = (moveEv) => {
             if (moveEv.pointerId !== ev.pointerId) {
                 return;
             }
-            const [mx, my] = this.point(moveEv, sheet);
-            if (this.tool === "pen") {
-                const [lx, ly] = points[points.length - 1];
-                if (Math.hypot(mx - lx, my - ly) > 0.002) {
-                    points.push([mx, my]);
+            // A stylus reports more positions than events.
+            const coalesced = moveEv.getCoalescedEvents?.();
+            for (const pointEv of coalesced?.length ? coalesced : [moveEv]) {
+                const [mx, my] = this.point(pointEv, sheet, rect);
+                if (this.tool === "pen") {
+                    const [lx, ly] = points[points.length - 1];
+                    if (Math.hypot(mx - lx, my - ly) > 0.0015) {
+                        points.push([mx, my]);
+                    }
+                    draft.geometry = {points, width: PEN_WIDTH};
+                } else {
+                    draft.geometry = {
+                        x: Math.min(x, mx),
+                        y: Math.min(y, my),
+                        w: round(Math.abs(mx - x)),
+                        h: round(Math.abs(my - y)),
+                    };
                 }
-                draft.geometry = {points, width: PEN_WIDTH};
-            } else {
-                draft.geometry = {
-                    x: Math.min(x, mx),
-                    y: Math.min(y, my),
-                    w: round(Math.abs(mx - x)),
-                    h: round(Math.abs(my - y)),
-                };
             }
-            const shape = this.shape(draft, sheet, new Map());
-            draftShape.replaceWith(shape);
-            draftShape = shape;
+            // Drawn once per screen refresh, however fast events come.
+            frame ??= requestAnimationFrame(render);
         };
         let draftShape = svgElement("g");
         sheet.layer.append(draftShape);
@@ -712,6 +752,7 @@ export class AnnotationEditor {
                 sheet.layer.releasePointerCapture(ev.pointerId);
             }
             this.pointer = null;
+            cancelAnimationFrame(frame);
             draftShape.remove();
             if (!commit) {
                 return;
@@ -807,46 +848,92 @@ export class AnnotationEditor {
         this.touches.delete(ev.pointerId);
         if (this.gesture?.active && this.touches.size < 2) {
             // The finger left on the screen draws nothing until lifted.
-            this.gesture.active = false;
-            this.renderVisibleSheets();
+            this.endGesture();
         }
         if (!this.touches.size) {
             this.gesture = null;
         }
     }
 
+    /**
+     * Pinching only scales the pages with a transform, which costs no
+     * layout; the zoom itself is applied once the fingers are lifted.
+     */
     startGesture() {
         const [a, b] = this.touches.values();
+        const middle = {x: (a.x + b.x) / 2, y: (a.y + b.y) / 2};
+        const origin = this.pages.getBoundingClientRect();
+        // The point of the page between the fingers stays between them.
+        let anchor = null;
+        let nearest = Infinity;
+        for (const sheet of this.sheets) {
+            const rect = sheet.element.getBoundingClientRect();
+            const distance = Math.max(rect.top - middle.y, middle.y - rect.bottom, 0);
+            if (distance < nearest) {
+                nearest = distance;
+                anchor = {
+                    sheet,
+                    x: (middle.x - rect.left) / rect.width,
+                    y: (middle.y - rect.top) / rect.height,
+                };
+            }
+        }
         this.gesture = {
             active: true,
             zoom: this.zoom,
             distance: Math.hypot(a.x - b.x, a.y - b.y) || 1,
-            middle: {x: (a.x + b.x) / 2, y: (a.y + b.y) / 2},
-            scrollLeft: this.scroll.scrollLeft,
-            scrollTop: this.scroll.scrollTop,
+            middle,
+            last: middle,
+            origin: {x: origin.left, y: origin.top},
+            anchor,
+            frame: null,
         };
+        this.pages.style.willChange = "transform";
     }
 
     moveGesture() {
+        // Two fingers send two events per screen refresh.
+        this.gesture.frame ??= requestAnimationFrame(() => this.frameGesture());
+    }
+
+    frameGesture() {
         const gesture = this.gesture;
+        if (!gesture?.active) {
+            return;
+        }
+        gesture.frame = null;
         const [a, b] = this.touches.values();
         const distance = Math.hypot(a.x - b.x, a.y - b.y);
         const zoom = Math.min(
             Math.max((gesture.zoom * distance) / gesture.distance, ZOOMS[0]),
             ZOOMS[ZOOMS.length - 1]
         );
-        const ratio = zoom / gesture.zoom;
-        const rect = this.scroll.getBoundingClientRect();
+        const scale = zoom / gesture.zoom;
+        const middle = {x: (a.x + b.x) / 2, y: (a.y + b.y) / 2};
+        gesture.last = middle;
         this.zoom = zoom;
-        // Rendered once the fingers are lifted.
+        const x =
+            middle.x - gesture.origin.x - scale * (gesture.middle.x - gesture.origin.x);
+        const y =
+            middle.y - gesture.origin.y - scale * (gesture.middle.y - gesture.origin.y);
+        this.pages.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+        this.zoomLabel.textContent = `${Math.round(zoom * 100)}%`;
+    }
+
+    endGesture() {
+        const gesture = this.gesture;
+        gesture.active = false;
+        cancelAnimationFrame(gesture.frame);
+        this.pages.style.transform = "";
+        this.pages.style.willChange = "";
         this.applyZoom(false);
-        // Keep the point that was between the fingers between them.
-        this.scroll.scrollLeft =
-            (gesture.scrollLeft + gesture.middle.x - rect.left) * ratio -
-            ((a.x + b.x) / 2 - rect.left);
-        this.scroll.scrollTop =
-            (gesture.scrollTop + gesture.middle.y - rect.top) * ratio -
-            ((a.y + b.y) / 2 - rect.top);
+        if (gesture.anchor) {
+            const {sheet, x, y} = gesture.anchor;
+            const rect = sheet.element.getBoundingClientRect();
+            this.scroll.scrollLeft += rect.left + x * rect.width - gesture.last.x;
+            this.scroll.scrollTop += rect.top + y * rect.height - gesture.last.y;
+        }
+        this.renderVisibleSheets();
     }
 
     // ------------------------------------------------------------ comments
@@ -856,14 +943,15 @@ export class AnnotationEditor {
      * that does not move opens it instead.
      */
     dragComment(ev, sheet, annotation, pin) {
-        const [startX, startY] = this.point(ev, sheet);
+        const rect = sheet.layer.getBoundingClientRect();
+        const [startX, startY] = this.point(ev, sheet, rect);
         const {x, y} = annotation.geometry;
         let geometry = null;
         const move = (moveEv) => {
             if (moveEv.pointerId !== ev.pointerId) {
                 return;
             }
-            const [mx, my] = this.point(moveEv, sheet);
+            const [mx, my] = this.point(moveEv, sheet, rect);
             if (!geometry && Math.hypot(mx - startX, my - startY) < 0.005) {
                 return;
             }

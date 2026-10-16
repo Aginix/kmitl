@@ -84,7 +84,21 @@
     overflow: auto;
 }
 
+// While annotating, every gesture on the pages is handled by the editor
+// (one finger draws, two scroll and zoom), whatever tool is active.
+.o_agx_annotation_drawing .o_agx_annotation_scroll {
+    touch-action: none;
+}
+
+.o_agx_annotation_pages {
+    transform-origin: 0 0;
+}
+
 .o_agx_annotation_sheet {
+    // No "save image" menu or text selection on a long press (iPad).
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
     position: relative;
     margin: 0 auto 12px;
     background: #fff;
@@ -147,6 +161,9 @@
 }
 
 .o_agx_annotation_popover {
+    // The page around it is not selectable; the comment is.
+    -webkit-user-select: text;
+    user-select: text;
     position: absolute;
     z-index: 2;
     width: 240px;
