@@ -165,4 +165,4 @@ class AccountAsset(models.Model):
 
     def action_validate_multi_assets(self):
         self._check_can_validate_multi()
-        return self.validate()
+        self.validate()
