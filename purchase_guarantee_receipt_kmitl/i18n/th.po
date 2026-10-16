@@ -131,3 +131,10 @@ msgstr ""
 "ยังไม่ได้ตั้งค่าวิธีรับเงินแบบเงินสดหรือเงินโอนของบริษัทนี้ — ตั้งค่าได้ที่ "
 "ใบเสร็จรับเงิน > การตั้งค่า > วิธีรับเงิน"
 
+#. module: purchase_guarantee_receipt_kmitl
+#. odoo-python
+#: code:addons/purchase_guarantee_receipt_kmitl/models/purchase_guarantee.py:0
+#, python-format
+msgid "Fill in the guarantee amount before issuing its receipt."
+msgstr "กรุณากรอกจำนวนเงินหลักประกันก่อนออกใบเสร็จ"
+

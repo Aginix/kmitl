@@ -122,6 +122,13 @@ class PurchaseGuarantee(models.Model):
                     "cannot be raised."
                 )
             )
+        # Monetary fields ignore a view-level required="1" in Odoo 16, so a
+        # guarantee can be saved with no amount — and a request for nothing
+        # would walk the whole approval chain before anyone noticed.
+        if self.currency_id.is_zero(self.amount) or self.amount < 0:
+            raise UserError(
+                _("Fill in the guarantee amount before raising its return.")
+            )
         if not self.guarantee_method_id.account_id:
             raise UserError(
                 _(

@@ -82,3 +82,11 @@ msgid ""
 msgstr ""
 "ยังไม่ได้ตั้งผังบัญชีให้ประเภทหลักประกัน '%s' — ตั้งค่าได้ที่ จัดซื้อ > "
 "การตั้งค่า > ประเภทหลักประกัน"
+
+#. module: purchase_guarantee_disbursement
+#. odoo-python
+#: code:addons/purchase_guarantee_disbursement/models/purchase_guarantee.py:0
+#, python-format
+msgid "Fill in the guarantee amount before raising its return."
+msgstr "กรุณากรอกจำนวนเงินหลักประกันก่อนตั้งเรื่องคืนเงิน"
+
