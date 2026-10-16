@@ -210,11 +210,11 @@ class TestProcurementPlanBudgetTransfer(TransactionCase):
         same = Line.with_context(transfer_fiscal_year_id=self.fy.id).new(
             {"transfer_direction": "to"}
         )
-        self.assertIn(tag, same.allowed_procurement_plan_analytic_ids)
+        self.assertIn(tag, same.allowed_procurement_plan_analytic_ids._origin)
         other = Line.with_context(transfer_fiscal_year_id=other_fy.id).new(
             {"transfer_direction": "to"}
         )
-        self.assertNotIn(tag, other.allowed_procurement_plan_analytic_ids)
+        self.assertNotIn(tag, other.allowed_procurement_plan_analytic_ids._origin)
 
     def test_plan_page_lists_line_and_opens_new_tab(self):
         plan = self._make_plan(5000)
