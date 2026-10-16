@@ -22,12 +22,16 @@ class ReceiptKmitlLine(models.Model):
         domain="[('property_account_income_id', '!=', False)]",
     )
     name = fields.Char(string="Description", required=True)
+    # Not restricted to income accounts: a receipt may also take in money the
+    # institution owes back — a security deposit lands on a deposit liability
+    # (see the Receipt Kind glossary entry in CONTEXT.md and ADR-0005). The
+    # product's own account is what proposes a sensible one per line.
     account_id = fields.Many2one(
         "account.account",
-        string="Income Account",
+        string="Account",
         required=True,
         check_company=True,
-        domain="[('deprecated', '=', False), ('account_type', '=', 'income'),"
+        domain="[('deprecated', '=', False),"
                " ('company_id', 'in', allowed_company_ids)]",
     )
     company_id = fields.Many2one(

@@ -74,6 +74,26 @@
                             />
                         </div>
                         <div class="col-6 col-md-3 col-lg-2">
+                            <label class="o_form_label" for="finance_rcpt_kind">
+                                <t t-esc="labels.receiptKind" />
+                            </label>
+                            <select
+                                id="finance_rcpt_kind"
+                                class="form-select"
+                                t-on-change="onReceiptKindChange"
+                            >
+                                <option value=""><t t-esc="labels.none" /></option>
+                                <t t-foreach="receiptKinds" t-as="kind" t-key="kind.value">
+                                    <option
+                                        t-att-value="kind.value"
+                                        t-att-selected="state.receiptKind === kind.value"
+                                    >
+                                        <t t-esc="kind.label" />
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-2">
                             <label class="o_form_label" for="finance_rcpt_group_by">
                                 <t t-esc="labels.groupBy" />
                             </label>

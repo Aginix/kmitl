@@ -9,6 +9,7 @@
                   decoration-success="state == 'posted'">
                 <field name="name"/>
                 <field name="date"/>
+                <field name="receipt_kind" optional="hide"/>
                 <field name="department_analytic_id" optional="show"/>
                 <field name="receipt_count" string="Receipt Count" optional="show"/>
                 <field name="amount_total" sum="Total"/>
@@ -103,6 +104,8 @@
                         <group>
                             <field name="date"
                                    attrs="{'readonly': [('state','!=','draft')]}"/>
+                            <field name="receipt_kind"
+                                   attrs="{'readonly': [('state','!=','draft')]}"/>
                             <field name="department_analytic_id"
                                    options="{'no_create': True}"
                                    attrs="{'readonly': [('state','!=','draft')]}"/>
@@ -126,6 +129,7 @@
                     <field name="receipt_ids" widget="many2many"
                            domain="[('state', '=', 'draft'),
                                     ('remittance_id', '=', False),
+                                    ('receipt_kind', '=', receipt_kind),
                                     ('department_analytic_id', 'child_of', department_analytic_id),
                                     ('company_id', '=', company_id)]"
                            attrs="{'readonly': [('state', '!=', 'draft')]}">
@@ -195,6 +199,7 @@
                 <filter string="Journal Created" name="posted" domain="[('state','=','posted')]"/>
                 <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
                 <group expand="0" name="group_by" string="Group By">
+                    <filter string="Receipt Kind" name="group_receipt_kind" context="{'group_by':'receipt_kind'}"/>
                     <filter string="Department" name="group_department" context="{'group_by':'department_analytic_id'}"/>
                     <filter string="State" name="group_state" context="{'group_by':'state'}"/>
                     <filter string="Date" name="group_date" context="{'group_by':'date:month'}"/>

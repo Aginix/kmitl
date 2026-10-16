@@ -34,11 +34,6 @@ msgid "Purchase Guarantee"
 msgstr "หลักประกัน"
 
 #. module: purchase_guarantee_account_payment
-#: model_terms:ir.ui.view,arch_db:purchase_guarantee_account_payment.view_purchase_guarantee_form
-msgid "Create Payment"
-msgstr "สร้างใบส่งเงิน"
-
-#. module: purchase_guarantee_account_payment
 #. odoo-python
 #: code:addons/purchase_guarantee_account_payment/models/purchase_guarantee.py:0
 #, python-format
@@ -51,3 +46,15 @@ msgstr "ไม่สามารถสร้างใบส่งเงินส
 #, python-format
 msgid "This guarantee already has an active payment. A new one cannot be created."
 msgstr "หลักประกันนี้มีใบ Payment ที่ใช้งานอยู่แล้ว ไม่สามารถสร้างใหม่ได้"
+
+#. module: purchase_guarantee_account_payment
+#. odoo-python
+#: code:addons/purchase_guarantee_account_payment/models/purchase_guarantee.py:0
+#, python-format
+msgid ""
+"Guarantee money is received by issuing a guarantee receipt, not by creating "
+"a payment. Use the Issue Guarantee Receipt button."
+msgstr ""
+"การรับเงินหลักประกันทำโดยออกใบเสร็จรับเงินหลักประกัน ไม่ใช่การสร้างใบจ่ายเงิน "
+"กรุณาใช้ปุ่ม ออกใบเสร็จรับเงินหลักประกัน"
+

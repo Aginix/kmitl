@@ -1876,3 +1876,27 @@ msgstr "ใช้งาน"
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signature_image
 msgid "Signature"
 msgstr "ลายเซ็น"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__is_non_budget
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_tree
+msgid "No Budget Consumed"
+msgstr "ไม่ใช้งบประมาณ"
+
+#. module: disbursement
+#: model:ir.model.fields,help:disbursement.field_disbursement_request__is_non_budget
+msgid ""
+"This request consumes no budget, so approving it obligates nothing. Set by "
+"the kind of document the request was raised from."
+msgstr ""
+"ใบขอเบิกนี้ไม่ใช้งบประมาณ การอนุมัติจึงไม่ตัดยอดงบใด ๆ "
+"ค่านี้กำหนดโดยชนิดเอกสารต้นทางที่ตั้งเบิก"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Approved without obligating any budget: this request consumes none."
+msgstr "อนุมัติโดยไม่ตัดงบประมาณ เนื่องจากใบขอเบิกนี้ไม่ใช้งบ"
+

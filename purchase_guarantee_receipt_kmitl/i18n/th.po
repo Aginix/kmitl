@@ -1,0 +1,140 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_guarantee_receipt_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 00:00+0000\n"
+"PO-Revision-Date: 2026-10-15 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_guarantee_receipt_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_receipt_kmitl.field_kmitl_receipt__purchase_guarantee_id
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_receipt_kmitl.view_receipt_kmitl_form
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_receipt_kmitl.view_receipt_kmitl_tree
+msgid "Purchase Guarantee"
+msgstr "หลักประกัน"
+
+#. module: purchase_guarantee_receipt_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_receipt_kmitl.field_purchase_guarantee__receipt_ids
+msgid "Guarantee Receipts"
+msgstr "ใบเสร็จรับเงินหลักประกัน"
+
+#. module: purchase_guarantee_receipt_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_receipt_kmitl.field_purchase_guarantee__receipt_count
+msgid "Receipt Count"
+msgstr "จำนวนใบเสร็จ"
+
+#. module: purchase_guarantee_receipt_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_receipt_kmitl.field_purchase_guarantee__has_active_receipt
+msgid "Has Active Receipt"
+msgstr "มีใบเสร็จที่ใช้งานอยู่"
+
+#. module: purchase_guarantee_receipt_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_receipt_kmitl.field_purchase_guarantee__is_monetary_guarantee
+msgid "Received as Money"
+msgstr "รับเป็นตัวเงิน"
+
+#. module: purchase_guarantee_receipt_kmitl
+#: model:ir.model.fields.selection,name:purchase_guarantee_receipt_kmitl.selection__kmitl_receipt__receipt_kind__guarantee
+#: model:ir.model.fields.selection,name:purchase_guarantee_receipt_kmitl.selection__kmitl_receipt_remittance__receipt_kind__guarantee
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_receipt_kmitl.view_receipt_kmitl_search
+msgid "Guarantee"
+msgstr "หลักประกัน"
+
+#. module: purchase_guarantee_receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_receipt_kmitl.view_purchase_guarantee_form
+msgid "Issue Guarantee Receipt"
+msgstr "ออกใบเสร็จรับเงินหลักประกัน"
+
+#. module: purchase_guarantee_receipt_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_receipt_kmitl.view_purchase_guarantee_form
+msgid "Receipts"
+msgstr "ใบเสร็จ"
+
+#. module: purchase_guarantee_receipt_kmitl
+#: model:product.template,name:purchase_guarantee_receipt_kmitl.product_guarantee
+msgid "เงินหลักประกัน"
+msgstr "เงินหลักประกัน"
+
+#. module: purchase_guarantee_receipt_kmitl
+#. odoo-python
+#: code:addons/purchase_guarantee_receipt_kmitl/models/purchase_guarantee.py:0
+#, python-format
+msgid ""
+"Guarantees held as '%s' are not received as money, so no receipt is issued."
+msgstr "หลักประกันรูปแบบ '%s' ไม่ได้รับเป็นตัวเงิน จึงไม่ต้องออกใบเสร็จ"
+
+#. module: purchase_guarantee_receipt_kmitl
+#. odoo-python
+#: code:addons/purchase_guarantee_receipt_kmitl/models/purchase_guarantee.py:0
+#, python-format
+msgid "This guarantee already has a receipt. A second one cannot be issued."
+msgstr "หลักประกันนี้มีใบเสร็จรับเงินอยู่แล้ว ไม่สามารถออกใบใหม่ได้"
+
+#. module: purchase_guarantee_receipt_kmitl
+#. odoo-python
+#: code:addons/purchase_guarantee_receipt_kmitl/models/purchase_guarantee.py:0
+#, python-format
+msgid ""
+"Guarantee method '%s' has no account yet. Set it in Purchase > Configuration"
+" > Guarantee Method."
+msgstr ""
+"ยังไม่ได้ตั้งผังบัญชีให้ประเภทหลักประกัน '%s' — ตั้งค่าได้ที่ จัดซื้อ > "
+"การตั้งค่า > ประเภทหลักประกัน"
+
+#. module: purchase_guarantee_receipt_kmitl
+#. odoo-python
+#: code:addons/purchase_guarantee_receipt_kmitl/models/purchase_guarantee.py:0
+#, python-format
+msgid ""
+"This guarantee carries no department dimension, so no receipt can be issued "
+"for it. Add one on the source document (purchase request / purchase order) "
+"first."
+msgstr ""
+"หลักประกันนี้ยังไม่มีมิติส่วนงาน จึงออกใบเสร็จไม่ได้ — "
+"กรุณาเติมมิติส่วนงานที่เอกสารต้นทาง (ใบขอให้จัดหา/ใบสั่งซื้อ) ก่อน"
+
+#. module: purchase_guarantee_receipt_kmitl
+#. odoo-python
+#: code:addons/purchase_guarantee_receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "A guarantee receipt must be linked to a purchase guarantee."
+msgstr "ใบเสร็จรับเงินหลักประกันต้องผูกกับหลักประกันเสมอ"
+
+#. module: purchase_guarantee_receipt_kmitl
+#. odoo-python
+#: code:addons/purchase_guarantee_receipt_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid ""
+"Guarantee receipt %s was cancelled. The guarantee is still locked — reset it"
+" to draft if it needs correcting."
+msgstr ""
+"ใบเสร็จรับเงินหลักประกัน %s ถูกยกเลิกแล้ว หลักประกันยังถูกล็อกอยู่ — "
+"กดกลับเป็นฉบับร่างหากต้องการแก้ไข"
+
+#. module: purchase_guarantee_receipt_kmitl
+#. odoo-python
+#: code:addons/purchase_guarantee_receipt_kmitl/models/purchase_guarantee.py:0
+#, python-format
+msgid ""
+"No cash or transfer receipt method is configured for this company. Add one in"
+" Receipts > Configuration > Payment Methods."
+msgstr ""
+"ยังไม่ได้ตั้งค่าวิธีรับเงินแบบเงินสดหรือเงินโอนของบริษัทนี้ — ตั้งค่าได้ที่ "
+"ใบเสร็จรับเงิน > การตั้งค่า > วิธีรับเงิน"
+
+#. module: purchase_guarantee_receipt_kmitl
+#. odoo-python
+#: code:addons/purchase_guarantee_receipt_kmitl/models/purchase_guarantee.py:0
+#, python-format
+msgid "Fill in the guarantee amount before issuing its receipt."
+msgstr "กรุณากรอกจำนวนเงินหลักประกันก่อนออกใบเสร็จ"
+

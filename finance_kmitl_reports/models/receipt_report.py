@@ -13,6 +13,7 @@ CARRIER_MODEL = "finance_kmitl_reports.receipt.report.wizard"
 # _kmitl_domain).
 GROUP_AXES = (
     "date",
+    "receipt_kind",
     "payment_type",
     "payment_method_id",
     "department_analytic_id",
@@ -53,6 +54,7 @@ class ReceiptReport(models.AbstractModel):
     def _kmitl_group_axis_titles(self):
         return {
             "date": _("Receipt Date"),
+            "receipt_kind": _("Receipt Kind"),
             "payment_type": _("Payment Type"),
             "payment_method_id": _("Receiving Method"),
             "department_analytic_id": _("Departments"),
@@ -67,10 +69,19 @@ class ReceiptReport(models.AbstractModel):
         return [{"value": axis, "label": titles[axis]} for axis in GROUP_AXES]
 
     @api.model
+    def get_receipt_kinds(self):
+        """The Receipt Kind picker's options, read off the field itself."""
+        return [
+            {"value": value, "label": label}
+            for value, label in self._kmitl_receipt_kind_labels().items()
+        ]
+
+    @api.model
     def get_columns(self):
         return [
             ("date", _("Receipt Date"), False, 14),
             ("name", _("Receipt No."), False, 18),
+            ("receipt_kind_label", _("Receipt Kind"), False, 14),
             ("payer", _("Payer"), False, 30),
             ("payment_type_label", _("Payment Type"), False, 14),
             ("payment_method", _("Receiving Method"), False, 20),
@@ -89,6 +100,16 @@ class ReceiptReport(models.AbstractModel):
         exactly the duplication this avoids.
         """
         selection = self.env["kmitl.receipt"]._fields["payment_type"]
+        return dict(selection._description_selection(self.env))
+
+    @api.model
+    def _kmitl_receipt_kind_labels(self):
+        """Translated ``{value: label}`` for ``kmitl.receipt.receipt_kind``.
+
+        Read off the field so an add-on kind shows up here without this report
+        knowing it exists.
+        """
+        selection = self.env["kmitl.receipt"]._fields["receipt_kind"]
         return dict(selection._description_selection(self.env))
 
     @api.model
@@ -126,6 +147,8 @@ class ReceiptReport(models.AbstractModel):
             ("date", ">=", options["date_from"]),
             ("date", "<=", options["date_to"]),
         ]
+        if options.get("receipt_kind"):
+            domain.append(("receipt_kind", "=", options["receipt_kind"]))
         domain = self._kmitl_apply_id_filters(domain, options, ID_FILTERS)
         # kmitl.receipt is an analytic.mixin in its own right (it has
         # analytic_distribution_search), so the dimension leaves apply
@@ -133,15 +156,19 @@ class ReceiptReport(models.AbstractModel):
         return domain + self._kmitl_build_dim_leaves(options.get("dims"))
 
     @api.model
-    def _kmitl_row(self, receipt, payment_type_labels):
+    def _kmitl_row(self, receipt, payment_type_labels, receipt_kind_labels=None):
         date = receipt.date
         payment_type_label = payment_type_labels.get(
             receipt.payment_type, receipt.payment_type or ""
+        )
+        receipt_kind_label = (receipt_kind_labels or {}).get(
+            receipt.receipt_kind, receipt.receipt_kind or ""
         )
         row = {
             "id": receipt.id,
             "date": fields.Date.to_string(date) if date else "",
             "name": receipt.name or "/",
+            "receipt_kind_label": receipt_kind_label,
             "payer": receipt.customer_name or receipt.partner_id.display_name or "",
             "payment_type_label": payment_type_label,
             "payment_method": receipt.payment_method_id.display_name or "",
@@ -152,6 +179,7 @@ class ReceiptReport(models.AbstractModel):
         }
         row["_axes"] = {
             "date": (row["date"], row["date"] or NO_VALUE),
+            "receipt_kind": (receipt_kind_label, receipt_kind_label or NO_VALUE),
             "payment_type": (payment_type_label, payment_type_label or NO_VALUE),
             "payment_method_id": self._kmitl_axis(receipt.payment_method_id),
             "department_analytic_id": self._kmitl_axis(
@@ -173,7 +201,10 @@ class ReceiptReport(models.AbstractModel):
             self._kmitl_domain(options), order="date, name"
         )
         labels = self._kmitl_payment_type_labels()
-        rows = [self._kmitl_row(receipt, labels) for receipt in receipts]
+        kind_labels = self._kmitl_receipt_kind_labels()
+        rows = [
+            self._kmitl_row(receipt, labels, kind_labels) for receipt in receipts
+        ]
 
         group_by, group_by_2 = self._kmitl_chosen_axes(options, GROUP_AXES, "date")
         return self._kmitl_group_rows(rows, group_by, group_by_2, "amount_total")
@@ -187,6 +218,15 @@ class ReceiptReport(models.AbstractModel):
                 _("Receipt Date"), options.get("date_from"), options.get("date_to")
             )
         ]
+        if options.get("receipt_kind"):
+            labels = self._kmitl_receipt_kind_labels()
+            lines.append(
+                "%s: %s"
+                % (
+                    _("Receipt Kind"),
+                    labels.get(options["receipt_kind"], options["receipt_kind"]),
+                )
+            )
         for option_key, title, model in (
             ("method_ids", _("Receiving Method"), "kmitl.payment.method"),
             ("partner_ids", _("Payer"), "res.partner"),

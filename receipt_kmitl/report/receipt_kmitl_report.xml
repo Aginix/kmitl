@@ -45,8 +45,9 @@
                       <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 70px;" alt="Logo"/>
                     </div>
                     <div class="col-12 text-center">
-                        <h3 style="margin-bottom: 0;">ใบเสร็จรับเงิน</h3>
-                        <h4 style="margin-top: 0;">OFFICIAL RECEIPT</h4>
+                        <t t-set="titles" t-value="o._report_title()"/>
+                        <h3 style="margin-bottom: 0;" t-esc="titles[0]"/>
+                        <h4 style="margin-top: 0;" t-esc="titles[1]"/>
                         <div>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหาร ลาดกระบัง</div>
                         <div>King Mongkut's Institute of Technology Ladkrabang</div>
                         <div>ถนนฉลองกรุง เขตลาดกระบัง กรุงเทพ 10520</div>

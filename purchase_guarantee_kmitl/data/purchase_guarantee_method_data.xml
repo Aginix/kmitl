@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    NOTE: the deposit-liability account below is matched by KMITL chart-of-accounts
+    code. If the code is absent from the installed chart the field is left empty
+    (graceful no-op) and the treasury office sets it by hand in
+    Purchase > Configuration > Guarantee Method.
+-->
 <odoo>
 
     <record id="l10n_th_gov_purchase_guarantee.advance_payment_guarantee" model="purchase.guarantee.method">
         <field name="name">หลักประกันสัญญา</field>
+        <field name="account_id" search="[('code', '=', '2150000006')]" model="account.account"/>
     </record>
 
     <record id="l10n_th_gov_purchase_guarantee.performance_bond" model="purchase.guarantee.method">

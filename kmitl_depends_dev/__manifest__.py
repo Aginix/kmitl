@@ -67,6 +67,8 @@
         "purchase_guarantee_account_payment",
         "purchase_guarantee_bid_guarantee_kmitl",
         "purchase_guarantee_kmitl",
+        "purchase_guarantee_receipt_kmitl",
+        "purchase_guarantee_disbursement",
         "purchase_manual_delivery_security",
         "purchase_manual_delivery_work_acceptance",
         "purchase_operating_unit_access_all",

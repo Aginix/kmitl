@@ -22,6 +22,19 @@ automatically detaches it — clears `remittance_id` and removes it from the
 remittance's `receipt_ids` in the same write, with a chatter note on both
 records — rather than requiring a manual detach first.
 
+**Receipt Kind** (ประเภทใบเสร็จ):
+What a receipt takes in (`receipt_kind`). *Revenue* (รายได้) is the base kind
+and the only one this module ships; an add-on contributes its own — see the
+**ใบเสร็จรับเงินหลักประกัน** of
+[purchase_guarantee_kmitl](../purchase_guarantee_kmitl/CONTEXT.md), money held
+on deposit rather than earned. A kind is a **different document**: it prints its
+own title and draws from its own `RC`-style register, so one register explains
+every number in it. A **Receipt Remittance covers one kind only** — the treasury
+reconciles the two against different ledgers, so a mixed submission would make
+neither total mean anything.
+_Avoid_: Receipt type (reserved: `payment_type` is the cash/cheque/transfer
+choice), Category.
+
 **Receipt Remittance** (รายงานนำส่งคลัง):
 The document a department submits to remit its confirmed receipts to the central
 treasury (`kmitl.receipt.remittance`). Bundles many receipts (like an HR expense
@@ -82,14 +95,16 @@ method's.
 **Payment Method**:
 A named way money was received (`kmitl.payment.method`) — cash / cheque /
 transfer — carrying the journal used at posting and **two** GL accounts: the
-Cash Account, debited against each revenue line, and the Deposit Bank
+Cash Account, debited against each receipt line, and the Deposit Bank
 Account, used for the Remit to Treasury leg below. Filtered on the receipt
-form by the header's Payment Type.
+form by the header's Payment Type. Shared across every Receipt Kind: a
+guarantee arrives through the same counter and lands in the same bank account
+as revenue does.
 
 **Remit to Treasury (นำเงินส่งคลัง)**:
 The Dr Deposit Bank Account / Cr Cash Account pair, for the receipt's full
 `amount_total`, that every receipt's own journal entry carries alongside its
-per-line revenue legs — the accounting act of moving the cash received into
+per-line legs — the accounting act of moving the cash received into
 the institution's deposit account. Lives inside the receipt's own move, not a
 separate document — see `kmitl.receipt._prepare_deposit_line_vals()`.
 _Avoid_: Bank deposit, ฝากธนาคาร (reserved for the actual bank-deposit slip
