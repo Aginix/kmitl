@@ -157,3 +157,12 @@ class AccountAsset(models.Model):
             "url": url,
             "target": "self",
         }
+
+    def _check_can_validate_multi(self):
+        if any(asset.state != "draft" for asset in self):
+            raise UserError(_("You can confirm draft assets only!"))
+        return True
+
+    def action_validate_multi_assets(self):
+        self._check_can_validate_multi()
+        return self.validate()
