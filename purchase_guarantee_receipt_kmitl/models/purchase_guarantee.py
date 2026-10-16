@@ -154,6 +154,14 @@ class PurchaseGuarantee(models.Model):
                     "be issued."
                 )
             )
+        # Monetary fields ignore a view-level required="1" in Odoo 16, so a
+        # guarantee can legitimately be saved with no amount. Caught here
+        # rather than letting kmitl.receipt refuse a zero total, which names a
+        # document the officer never opened.
+        if self.currency_id.is_zero(self.amount) or self.amount < 0:
+            raise UserError(
+                _("Fill in the guarantee amount before issuing its receipt.")
+            )
         if not self.guarantee_method_id.account_id:
             raise UserError(
                 _(
