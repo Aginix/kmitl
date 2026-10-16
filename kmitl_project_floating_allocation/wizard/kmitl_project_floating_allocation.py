@@ -5,13 +5,6 @@ from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import float_compare
 
-# The four core dimensions of the floating pool.
-_CORE_DIMS = (
-    "department_analytic_id",
-    "source_analytic_id",
-    "fund_analytic_id",
-    "activity_analytic_id",
-)
 # The rows the cards show, in this order; a row without a value is skipped.
 _DIM_ROWS = (
     ("source_analytic_id", "แหล่งเงิน"),
@@ -57,18 +50,7 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
     # --- the floating pool (FROM card) -------------------------------------
     pool_found = fields.Boolean(compute="_compute_pool")
     pool_account_id = fields.Many2one("budget.account", compute="_compute_pool")
-    pool_department_analytic_id = fields.Many2one(
-        "account.analytic.account", compute="_compute_pool"
-    )
-    pool_source_analytic_id = fields.Many2one(
-        "account.analytic.account", compute="_compute_pool"
-    )
-    pool_fund_analytic_id = fields.Many2one(
-        "account.analytic.account", compute="_compute_pool"
-    )
-    pool_activity_analytic_id = fields.Many2one(
-        "account.analytic.account", compute="_compute_pool"
-    )
+    pool_distribution = fields.Json(compute="_compute_pool")
     pool_dims = fields.Char(compute="_compute_pool")
     floating_available = fields.Float(
         digits="Budget Precision", compute="_compute_pool"
@@ -109,10 +91,21 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
             )
         return json.dumps(rows, ensure_ascii=False)
 
+    def _project_dims(self, project):
+        """``{line column: analytic}`` of the project's ``analytic_distribution``,
+        mapped the way the budget engine maps it."""
+        return (
+            self.env["budget.controller"]
+            .sudo()
+            ._parse_dimensions(project.analytic_distribution)
+        )
+
     def _project_floating_distribution(self, project):
         """The project's coordinate without its own project dimension — where its
         floating money waits."""
-        return {str(project[dim].id): 100 for dim in _CORE_DIMS if project[dim]}
+        distribution = dict(project.analytic_distribution or {})
+        distribution.pop(str(project.analytic_account_id.id), None)
+        return distribution
 
     @api.depends("project_id")
     def _compute_pool(self):
@@ -134,28 +127,22 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
                     {
                         "pool_found": False,
                         "pool_account_id": False,
-                        "pool_department_analytic_id": False,
-                        "pool_source_analytic_id": False,
-                        "pool_fund_analytic_id": False,
-                        "pool_activity_analytic_id": False,
+                        "pool_distribution": False,
                         "pool_dims": "[]",
                         "floating_available": 0.0,
                     }
                 )
                 continue
             dims = {
-                dim: Analytic.browse(pool["dims"].get(dim, {}).get("id"))
-                for dim in _CORE_DIMS
+                column: Analytic.browse(info["id"])
+                for column, info in pool["dims"].items()
             }
             account = self.env["budget.account"].browse(pool["account"]["id"])
             wiz.update(
                 {
                     "pool_found": True,
                     "pool_account_id": account.id,
-                    "pool_department_analytic_id": dims["department_analytic_id"].id,
-                    "pool_source_analytic_id": dims["source_analytic_id"].id,
-                    "pool_fund_analytic_id": dims["fund_analytic_id"].id,
-                    "pool_activity_analytic_id": dims["activity_analytic_id"].id,
+                    "pool_distribution": {str(acc.id): 100 for acc in dims.values()},
                     "pool_dims": self._dim_rows(dict(dims, account_id=account)),
                     "floating_available": detail["available"],
                 }
@@ -180,11 +167,10 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
                         filter(None, [project.key, project.name])
                     ),
                     "project_dims": self._dim_rows(
-                        {
-                            **{dim: project[dim] for dim in _CORE_DIMS},
-                            "account_id": project.budget_account_id,
-                            "kmitl_project_analytic_id": project.analytic_account_id,
-                        }
+                        dict(
+                            self._project_dims(project),
+                            account_id=project.budget_account_id,
+                        )
                     ),
                     "project_received": project.budget_amount,
                     "plan_total": project.budget_expense_total,
@@ -234,11 +220,14 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
 
     def _prepare_transfer_vals(self):
         project = self.project_id.sudo()
+        # The header (budget.move) has no analytic_distribution of its own.
+        dims = self._project_dims(project)
+        Analytic = self.env["account.analytic.account"]
         vals = {
             "date": fields.Date.context_today(self),
             "account_fiscal_year_id": project.account_fiscal_year_id.id,
-            "department_analytic_id": project.department_analytic_id.id,
-            "source_analytic_id": project.source_analytic_id.id,
+            "department_analytic_id": dims.get("department_analytic_id", Analytic).id,
+            "source_analytic_id": dims.get("source_analytic_id", Analytic).id,
             "reason": self.note
             or _("จัดสรรงบประมาณจากเงินลอยเข้าโครงการ %s")
             % " ".join(filter(None, [project.key, project.name])),
@@ -250,9 +239,7 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
                         "transfer_direction": "from",
                         "account_id": self.pool_account_id.id,
                         "amount": self.amount,
-                        "department_analytic_id": self.pool_department_analytic_id.id,
-                        "activity_analytic_id": self.pool_activity_analytic_id.id,
-                        "fund_analytic_id": self.pool_fund_analytic_id.id,
+                        "analytic_distribution": self.pool_distribution,
                     }
                 ),
                 Command.create(
@@ -260,10 +247,7 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
                         "transfer_direction": "to",
                         "account_id": project.budget_account_id.id,
                         "amount": self.amount,
-                        "department_analytic_id": project.department_analytic_id.id,
-                        "activity_analytic_id": project.activity_analytic_id.id,
-                        "fund_analytic_id": project.fund_analytic_id.id,
-                        "kmitl_project_analytic_id": project.analytic_account_id.id,
+                        "analytic_distribution": project.analytic_distribution,
                     }
                 ),
             ],
