@@ -1,14 +1,29 @@
+import json
+import re
+
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import float_compare
 
-# The four core dimensions, in the order the cards show them.
+# The four core dimensions of the floating pool.
 _CORE_DIMS = (
     "department_analytic_id",
     "source_analytic_id",
     "fund_analytic_id",
     "activity_analytic_id",
 )
+# The rows the cards show, in this order; a row without a value is skipped.
+_DIM_ROWS = (
+    ("source_analytic_id", "แหล่งเงิน"),
+    ("department_analytic_id", "ส่วนงาน"),
+    ("fund_analytic_id", "กองทุน"),
+    ("activity_analytic_id", "ด้าน/แผนงาน/กิจกรรม"),
+    ("account_id", "รหัสงบประมาณ"),
+    ("kmitl_project_analytic_id", "โครงการ/กิจกรรม"),
+    ("procurement_plan_analytic_id", "แผนจัดซื้อจัดจ้าง"),
+)
+# display_name is "[code] parent / … / leaf" — strip the code prefix.
+_CODE_PREFIX = re.compile(r"^\[[^\]]*\]\s*")
 
 
 class KmitlProjectFloatingAllocation(models.TransientModel):
@@ -34,7 +49,7 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
     note = fields.Char(string="บันทึกช่วยจำ")
     transfer_id = fields.Many2one("budget.transfer", readonly=True)
     # Snapshot for the slip: a pool drained to 0 no longer resolves after posting.
-    posted_pool_label = fields.Char(readonly=True)
+    posted_pool_dims = fields.Char(readonly=True)
     transfer_name = fields.Char(related="transfer_id.name")
     transfer_date = fields.Datetime(related="transfer_id.approval_date")
     transfer_user_id = fields.Many2one(related="transfer_id.approver_id")
@@ -54,14 +69,14 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
     pool_activity_analytic_id = fields.Many2one(
         "account.analytic.account", compute="_compute_pool"
     )
-    pool_label = fields.Char(compute="_compute_pool")
+    pool_dims = fields.Char(compute="_compute_pool")
     floating_available = fields.Float(
         digits="Budget Precision", compute="_compute_pool"
     )
 
     # --- the project (TO card) ---------------------------------------------
     project_label = fields.Char(compute="_compute_project_info")
-    project_coordinate = fields.Char(compute="_compute_project_info")
+    project_dims = fields.Char(compute="_compute_project_info")
     project_received = fields.Float(
         digits="Budget Precision", compute="_compute_project_info"
     )
@@ -74,9 +89,25 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
     )
 
     @staticmethod
-    def _coordinate_label(account, analytics):
-        parts = [a.display_name for a in analytics if a]
-        return " · ".join([account.display_name or ""] + parts)
+    def _dim_rows(values):
+        """JSON rows for the widget: label, code and the complete name split into
+        its ancestors and leaf, in ``_DIM_ROWS`` order."""
+        rows = []
+        for key, label in _DIM_ROWS:
+            record = values.get(key)
+            if not record:
+                continue
+            names = _CODE_PREFIX.sub("", record.display_name or "").split(" / ")
+            rows.append(
+                {
+                    "key": key,
+                    "label": label,
+                    "code": record.code or "",
+                    "path": names[:-1],
+                    "leaf": names[-1],
+                }
+            )
+        return json.dumps(rows, ensure_ascii=False)
 
     def _project_floating_distribution(self, project):
         """The project's coordinate without its own project dimension — where its
@@ -107,7 +138,7 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
                         "pool_source_analytic_id": False,
                         "pool_fund_analytic_id": False,
                         "pool_activity_analytic_id": False,
-                        "pool_label": False,
+                        "pool_dims": "[]",
                         "floating_available": 0.0,
                     }
                 )
@@ -125,7 +156,7 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
                     "pool_source_analytic_id": dims["source_analytic_id"].id,
                     "pool_fund_analytic_id": dims["fund_analytic_id"].id,
                     "pool_activity_analytic_id": dims["activity_analytic_id"].id,
-                    "pool_label": self._coordinate_label(account, dims.values()),
+                    "pool_dims": self._dim_rows(dict(dims, account_id=account)),
                     "floating_available": detail["available"],
                 }
             )
@@ -148,8 +179,12 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
                     "project_label": " ".join(
                         filter(None, [project.key, project.name])
                     ),
-                    "project_coordinate": self._coordinate_label(
-                        project.budget_account_id, [project[d] for d in _CORE_DIMS]
+                    "project_dims": self._dim_rows(
+                        {
+                            **{dim: project[dim] for dim in _CORE_DIMS},
+                            "account_id": project.budget_account_id,
+                            "kmitl_project_analytic_id": project.analytic_account_id,
+                        }
                     ),
                     "project_received": project.budget_amount,
                     "plan_total": project.budget_expense_total,
@@ -177,6 +212,8 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
             raise UserError(
                 _("ไม่พบเงินลอยที่รหัสงบประมาณ/มิติของโครงการนี้ กรุณาทำใบโอนงบประมาณตามขั้นตอนปกติ")
             )
+        if float_compare(self.floating_available, 0.0, precision_digits=2) <= 0:
+            raise UserError(_("เงินลอยสำหรับโครงการนี้ถูกใช้หมดแล้ว"))
         if float_compare(self.amount, self.floating_available, precision_digits=2) > 0:
             raise UserError(
                 _("จำนวนเงินเกินเงินลอยคงเหลือ (%s)")
@@ -242,7 +279,7 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
         project = self.project_id
         project._check_floating_allocation_allowed()
         self._check_amount()
-        pool_label = self.pool_label
+        pool_dims = self.pool_dims
         transfer = self.env["budget.transfer"].create(self._prepare_transfer_vals())
         transfer.action_submit()
         if transfer.state != "submitted":
@@ -269,7 +306,7 @@ class KmitlProjectFloatingAllocation(models.TransientModel):
             {
                 "step": "done",
                 "transfer_id": transfer.id,
-                "posted_pool_label": pool_label,
+                "posted_pool_dims": pool_dims,
             }
         )
         return self._reopen()

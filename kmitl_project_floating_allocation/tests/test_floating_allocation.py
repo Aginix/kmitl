@@ -1,3 +1,4 @@
+import json
 from datetime import date
 
 from odoo import Command
@@ -223,3 +224,47 @@ class TestFloatingAllocation(TransactionCase):
         active = project.budget_commitment_ids.filtered(lambda c: c.state != "cancel")
         self.assertEqual(project.budget_amount, 50000)
         self.assertEqual(active.amount, 50000)
+
+    def test_dimension_rows_follow_the_display_order(self):
+        self._appropriate(10000)
+        project = self._project()
+        wizard = self._wizard(project)
+        self.assertEqual(
+            [row["key"] for row in json.loads(wizard.pool_dims)],
+            [
+                "source_analytic_id",
+                "department_analytic_id",
+                "fund_analytic_id",
+                "activity_analytic_id",
+                "account_id",
+            ],
+        )
+        to_rows = json.loads(wizard.project_dims)
+        self.assertEqual(to_rows[-1]["key"], "kmitl_project_analytic_id")
+        self.assertEqual(to_rows[4]["code"], self.budget_account.code)
+
+    def test_used_up_pool_raises(self):
+        """A pool whose availability is fully reserved still resolves (its
+        appropriation stands) but has nothing left to move."""
+        self._appropriate(10000)
+        project = self._project()
+        Commitment = self.env["budget.commitment"]
+        vals = {
+            "title": "KPFA reservation",
+            "account_id": self.budget_account.id,
+            "amount": 10000,
+            "analytic_distribution": {
+                str(a.id): 100
+                for a in (self.dept, self.source, self.fund, self.activity)
+            },
+            "account_fiscal_year_id": self.fy.id,
+        }
+        if "operating_unit_id" in Commitment._fields:
+            vals["operating_unit_id"] = self.ou.id
+        Commitment.create(vals).action_reserve()
+        wizard = self._wizard(project)
+        self.assertTrue(wizard.pool_found)
+        self.assertEqual(wizard.floating_available, 0)
+        wizard.amount = 1
+        with self.assertRaises(UserError):
+            wizard.action_next()

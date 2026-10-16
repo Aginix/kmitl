@@ -10,16 +10,29 @@ const moneyFormat = new Intl.NumberFormat("th-TH", {
     maximumFractionDigits: 2,
 });
 
+const STEPS = ["กรอกจำนวนเงิน", "ตรวจสอบ", "สำเร็จ"];
+const STEP_INDEX = {input: 0, review: 1, done: 2};
+
+function parseDims(json) {
+    try {
+        return JSON.parse(json || "[]");
+    } catch {
+        return [];
+    }
+}
+
 /**
- * จัดสรรงบประมาณ (งบลอย) — the bank-app style body of the wizard (ADR-0009).
+ * จัดสรรงบประมาณ (งบลอย) — the body of the wizard (ADR-0009).
  *
  * Renders the three steps from the wizard record: ``input`` (FROM the floating
- * pool → TO the project, with the amount typed here and the after-transfer
- * balances recomputed live), ``review`` (a receipt) and ``done`` (the slip).
- * The amount is written back with ``record.update`` so the footer buttons save it.
+ * pool → TO the project, side by side, with the amount typed here and the
+ * after-transfer balances recomputed live), ``review`` (a short summary) and
+ * ``done`` (the slip). The amount is written back with ``record.update`` so the
+ * footer buttons save it.
  */
 export class FloatingAllocationWidget extends Component {
     setup() {
+        this.steps = STEPS;
         const amount = this.props.record.data.amount;
         this.state = useState({raw: amount ? moneyFormat.format(amount) : ""});
     }
@@ -27,8 +40,20 @@ export class FloatingAllocationWidget extends Component {
     get data() {
         return this.props.record.data;
     }
+    get stepIndex() {
+        return STEP_INDEX[this.data.step] || 0;
+    }
     get amount() {
         return this.data.amount || 0;
+    }
+    get fromDims() {
+        return parseDims(this.data.posted_pool_dims || this.data.pool_dims);
+    }
+    get toDims() {
+        return parseDims(this.data.project_dims);
+    }
+    get isExhausted() {
+        return this.data.pool_found && this.data.floating_available <= 0.005;
     }
     get floatingAfter() {
         return this.data.floating_available - this.amount;
@@ -54,6 +79,17 @@ export class FloatingAllocationWidget extends Component {
 
     money(value) {
         return moneyFormat.format(value || 0);
+    }
+
+    /**
+     * "[code] leaf" of the budget code row, for the short summary lines.
+     *
+     * @param {Array} dims rows from the wizard's *_dims JSON
+     * @returns {String}
+     */
+    budgetCode(dims) {
+        const row = dims.find((d) => d.key === "account_id");
+        return row ? `[${row.code}] ${row.leaf}` : "";
     }
 
     onAmountInput(ev) {
