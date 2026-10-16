@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="kmitl_project_floating_allocation.FloatingAllocation" owl="1">
+        <div class="o_kfa">
+            <!-- No floating pool covers the project's coordinate -->
+            <t t-if="!data.pool_found and data.step === 'input'">
+                <div class="o_kfa_empty">
+                    <div class="o_kfa_empty_icon"><i
+                            class="fa fa-folder-open-o"
+                        /></div>
+                    <div class="o_kfa_empty_title">ไม่พบเงินลอยสำหรับโครงการนี้</div>
+                    <div class="o_kfa_empty_text">
+                        ยังไม่มีงบประมาณจัดสรร (เงินลอย) ที่รหัสงบประมาณ/มิติ
+                        <b t-esc="data.project_coordinate" />
+                        กรุณาทำใบโอนงบประมาณตามขั้นตอนปกติ
+                    </div>
+                </div>
+            </t>
+
+            <!-- Step 1: from → to + amount -->
+            <t t-elif="data.step === 'input'">
+                <div class="o_kfa_card o_kfa_card_from">
+                    <div class="o_kfa_card_head">
+                        <span class="o_kfa_chip"><i
+                                class="fa fa-university"
+                            /> จาก</span>
+                        <span>เงินลอย</span>
+                    </div>
+                    <div class="o_kfa_card_title" t-esc="data.pool_label" />
+                    <div class="o_kfa_card_balance">
+                        <span class="o_kfa_caption">คงเหลือ</span>
+                        <span class="o_kfa_money">฿ <t
+                                t-esc="money(data.floating_available)"
+                            /></span>
+                    </div>
+                    <div
+                        t-if="amount"
+                        class="o_kfa_card_after"
+                        t-att-class="{'o_kfa_negative': isOverAvailable}"
+                    >
+                        หลังโอน ฿ <t t-esc="money(floatingAfter)" />
+                    </div>
+                </div>
+
+                <div
+                    class="o_kfa_arrow"
+                    t-att-class="{'o_kfa_arrow_active': amount > 0}"
+                >
+                    <span class="o_kfa_arrow_track"><span
+                            class="o_kfa_arrow_pulse"
+                        /></span>
+                    <span class="o_kfa_arrow_icon"><i class="fa fa-arrow-down" /></span>
+                </div>
+
+                <div class="o_kfa_card o_kfa_card_to">
+                    <div class="o_kfa_card_head">
+                        <span class="o_kfa_chip"><i class="fa fa-flag" /> ไป</span>
+                        <span>โครงการ/กิจกรรม</span>
+                    </div>
+                    <div class="o_kfa_card_title" t-esc="data.project_label" />
+                    <div class="o_kfa_card_sub" t-esc="data.project_coordinate" />
+                    <div class="o_kfa_card_balance">
+                        <span class="o_kfa_caption">ได้รับจัดสรรแล้ว</span>
+                        <span class="o_kfa_money">฿ <t
+                                t-esc="money(data.project_received)"
+                            /></span>
+                    </div>
+                    <div t-if="amount" class="o_kfa_card_after">
+                        หลังโอน ฿ <t t-esc="money(projectAfter)" />
+                    </div>
+                    <div t-if="data.plan_total" class="o_kfa_card_plan">
+                        แผนงบประมาณโครงการ (รวมรายจ่าย) ฿ <t
+                            t-esc="money(data.plan_total)"
+                        />
+                    </div>
+                </div>
+
+                <div
+                    class="o_kfa_amount"
+                    t-att-class="{'o_kfa_amount_invalid': isOverAvailable}"
+                >
+                    <label
+                        class="o_kfa_caption"
+                        for="o_kfa_amount_input"
+                    >จำนวนเงินที่ต้องการจัดสรร</label>
+                    <div class="o_kfa_amount_field">
+                        <span class="o_kfa_currency">฿</span>
+                        <input
+                            id="o_kfa_amount_input"
+                            type="text"
+                            inputmode="decimal"
+                            autocomplete="off"
+                            placeholder="0.00"
+                            t-att-value="state.raw"
+                            t-on-input="onAmountInput"
+                            t-on-blur="onAmountBlur"
+                        />
+                    </div>
+                </div>
+
+                <div t-if="isOverAvailable" class="o_kfa_alert o_kfa_alert_danger">
+                    <i class="fa fa-exclamation-circle" /> จำนวนเงินเกินเงินลอยคงเหลือ
+                </div>
+                <div t-elif="isOverPlan" class="o_kfa_alert o_kfa_alert_warning">
+                    <i
+                        class="fa fa-exclamation-triangle"
+                    /> ยอดหลังโอนเกินแผนงบประมาณโครงการ
+                </div>
+                <div
+                    t-if="data.commitment_status === 'reserved'"
+                    class="o_kfa_alert o_kfa_alert_info"
+                >
+                    <i
+                        class="fa fa-info-circle"
+                    /> โครงการจองงบประมาณแล้ว — ใบจองจะปรับเป็นยอดใหม่อัตโนมัติ
+                </div>
+                <div
+                    t-if="data.commitment_status === 'spending'"
+                    class="o_kfa_alert o_kfa_alert_warning"
+                >
+                    <i
+                        class="fa fa-exclamation-triangle"
+                    /> โครงการเริ่มใช้จ่ายแล้ว — เงินที่จัดสรรเพิ่มจะเข้ามิติโครงการ แต่ใบจองเดิมจะไม่ขยายตามอัตโนมัติ
+                </div>
+            </t>
+
+            <!-- Step 2: review -->
+            <t t-elif="data.step === 'review'">
+                <div class="o_kfa_receipt">
+                    <div class="o_kfa_receipt_head">ตรวจสอบรายการ</div>
+                    <div class="o_kfa_receipt_amount">฿ <t
+                            t-esc="money(amount)"
+                        /></div>
+                    <t
+                        t-call="kmitl_project_floating_allocation.FloatingAllocationRows"
+                    />
+                    <div class="o_kfa_receipt_row" t-if="data.note">
+                        <span class="o_kfa_caption">บันทึกช่วยจำ</span>
+                        <span t-esc="data.note" />
+                    </div>
+                    <div class="o_kfa_receipt_foot">
+                        <i
+                            class="fa fa-bolt"
+                        /> รายการนี้จะบันทึกเป็นใบโอนงบประมาณและผ่านรายการทันที
+                        โดยไม่ผ่านกระบวนการขออนุมัติโอนงบประมาณ
+                    </div>
+                </div>
+            </t>
+
+            <!-- Step 3: the slip -->
+            <t t-elif="data.step === 'done'">
+                <div class="o_kfa_receipt o_kfa_slip">
+                    <div class="o_kfa_success">
+                        <svg viewBox="0 0 52 52" class="o_kfa_check">
+                            <circle
+                                class="o_kfa_check_circle"
+                                cx="26"
+                                cy="26"
+                                r="24"
+                                fill="none"
+                            />
+                            <path
+                                class="o_kfa_check_mark"
+                                fill="none"
+                                d="M14 27 l8 8 l16 -17"
+                            />
+                        </svg>
+                    </div>
+                    <div class="o_kfa_receipt_head">จัดสรรงบประมาณสำเร็จ</div>
+                    <div class="o_kfa_receipt_amount">฿ <t
+                            t-esc="money(amount)"
+                        /></div>
+                    <t
+                        t-call="kmitl_project_floating_allocation.FloatingAllocationRows"
+                    />
+                    <div class="o_kfa_receipt_row">
+                        <span class="o_kfa_caption">เลขที่ใบโอน</span>
+                        <span class="o_kfa_strong" t-esc="data.transfer_name" />
+                    </div>
+                    <div class="o_kfa_receipt_row">
+                        <span class="o_kfa_caption">วันที่/เวลา</span>
+                        <span t-esc="transferDate" />
+                    </div>
+                    <div class="o_kfa_receipt_row">
+                        <span class="o_kfa_caption">ผู้ทำรายการ</span>
+                        <span t-esc="transferUser" />
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+
+    <t t-name="kmitl_project_floating_allocation.FloatingAllocationRows" owl="1">
+        <div class="o_kfa_receipt_row">
+            <span class="o_kfa_caption">จาก (เงินลอย)</span>
+            <span t-esc="data.posted_pool_label or data.pool_label" />
+        </div>
+        <div class="o_kfa_receipt_row">
+            <span class="o_kfa_caption">ไป (โครงการ)</span>
+            <span>
+                <span class="o_kfa_strong" t-esc="data.project_label" />
+                <br />
+                <small t-esc="data.project_coordinate" />
+            </span>
+        </div>
+    </t>
+
+</templates>
