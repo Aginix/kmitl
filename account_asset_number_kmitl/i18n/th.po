@@ -35,8 +35,8 @@ msgid "Department short name is missing."
 msgstr "ไม่มีชื่อย่อของแผนก"
 
 #. module: account_asset_number_kmitl
+#: model:ir.actions.server,name:account_asset_number_kmitl.action_create_asset_number
 #: model_terms:ir.ui.view,arch_db:account_asset_number_kmitl.view_account_asset_form
-#: model_terms:ir.ui.view,arch_db:account_asset_number_kmitl.view_account_asset_tree
 msgid "Get Asset Number"
 msgstr "รับเลขทะเบียนครุภัณฑ์/สินทรัพย์"
 
