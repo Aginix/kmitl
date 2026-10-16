@@ -205,9 +205,7 @@ class TestPaymentWorkflow(TransactionCase):
         self.assertEqual(
             signatures.mapped("step"), ["payment_audit", "payment_authorize"]
         )
-        self.assertEqual(
-            [sig.signed_by_id for sig in signatures], [self.env.user] * 2
-        )
+        self.assertEqual([sig.signed_by_id for sig in signatures], [self.env.user] * 2)
         self.assertTrue(all(signatures.mapped("signed_date")))
         self.assertTrue(all(signatures.mapped("active")))
 
@@ -787,8 +785,12 @@ class TestPaymentWorkflow(TransactionCase):
         prepared = payment.with_context(
             kmitl_preserved_write_off={payment.id: stashed}
         )._prepare_move_line_default_vals()
-        self.assertEqual(prepared[-1]["wht_tax_id"], wht.id)
-        self.assertEqual(prepared[-1]["tax_base_amount"], 1000.0)
+        # Looked up rather than indexed: a module may add write-off lines of
+        # its own after this one (account_payment_wht_counterpart_kmitl does), and the
+        # tax line is no more the last of them than it is the first.
+        wht_vals = [v for v in prepared if v.get("wht_tax_id") == wht.id]
+        self.assertEqual(len(wht_vals), 1)
+        self.assertEqual(wht_vals[0]["tax_base_amount"], 1000.0)
 
     def test_cash_payment_skips_the_bank_export_gate(self):
         request = self._billed_request([self.payee_ktb], self.subject_fixed)
