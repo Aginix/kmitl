@@ -118,6 +118,16 @@ A **Sarabun Route Editor** (optional `agx_sarabun_route_edit`, an independent ch
 
 _Avoid_: re-targeting a done step (signatures never change); leaving a removed person with read access (route edit revokes it); using Reset or ดึงกลับ just to fix a later step (route edit keeps the signatures already given); expecting a Position holder change to move in-flight to-dos by itself (press the button)
 
+**แก้ไขตำแหน่งที่ลงนาม (Correct signed capacity — ADR-0019)**:
+A Sarabun Route Editor may correct the **ตำแหน่ง a signed บุคลากร step was signed in** when it was genuinely wrong, whether the หนังสือ is still circulating or already completed. It uses the ✏️ row button on the Route (optional `agx_sarabun_route_edit_person_capacity`, auto-installed with both route edit and person capacity).
+- Only the capacity changes: the step's capacity label, `signed_as_position_id` and the frozen `signed_position_name`. The **name, signature and date stay as signed**.
+- The new Position must be one the person currently holds.
+- Positive-done, show_signature, non-originator Person steps only.
+- **Not logged to the chatter**, because only route editors may do it.
+- A completed หนังสือ's frozen PDF still shows the old title until it is regenerated (see ฉบับลงนาม).
+
+_Avoid_: changing the signer's name / signature / date (never); correcting a Position-mode step (its capacity *is* its target); expecting the frozen PDF to update by itself
+
 ### Concurrency
 
 **Stage**:
@@ -149,7 +159,7 @@ The mandatory, locked **first Routing Step** — the หนังสือ's ผ
 _Avoid_: assuming the drafter always signs (a non-signing ธุรการ drafter is a first-class case — ADR-0008); counting the originator step as an approval (would block recall); a route that starts with an approver (the ผู้จัดทำ is always first); letting a user delete or re-target it
 
 **ฉบับลงนาม (Signed copy)**:
-The **immutable PDF snapshot** frozen when a Document reaches `completed`. From then on portal/print serve this file, never a live render. Before completion, preview renders live (own report, or a delegated origin report).
+The **immutable PDF snapshot** frozen when a Document reaches `completed`. From then on portal/print serve this file, never a live render. Before completion, preview renders live (own report, or a delegated origin report). A Sarabun Manager may **regenerate** it after a correction (optional `agx_sarabun_pdf_regenerate`, Action menu **สร้างไฟล์ PDF ใหม่** — ADR-0019): it is re-rendered from current data and **replaces** the old file. This is the only way a frozen copy changes.
 _Avoid_: attachment, printout
 
 **Signature block**:

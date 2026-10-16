@@ -5,23 +5,6 @@
         <field name="model">sarabun.document</field>
         <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form" />
         <field name="arch" type="xml">
-            <!-- Re-resolve the active Position / unit steps after a holder change
-                 (ADR-0018). An inherited view cannot carry groups_id, so the gate is a
-                 `groups` attribute on the button; can_edit_route limits it to a
-                 circulating หนังสือ. -->
-            <xpath
-                expr="//header/button[@name='action_duplicate_to_draft']"
-                position="after"
-            >
-                <button
-                    name="action_refresh_route_holders"
-                    type="object"
-                    string="ดึงผู้ดำรงตำแหน่งปัจจุบัน"
-                    groups="agx_sarabun_route_edit.group_sarabun_route_edit"
-                    confirm="ส่งขั้นตอนที่กำลังรอดำเนินการไปยังผู้ดำรงตำแหน่งปัจจุบัน?"
-                    attrs="{'invisible': [('can_edit_route', '=', False)]}"
-                />
-            </xpath>
             <xpath expr="//field[@name='my_active_step_id']" position="after">
                 <field name="can_edit_route" invisible="1" />
             </xpath>
@@ -104,5 +87,22 @@
                 >{'invisible': [('target_mode', '!=', 'unit')], 'required': [('target_mode', '=', 'unit')], 'readonly': ['|', ('is_originator', '=', True), ('state', 'in', ('done', 'skipped'))]}</attribute>
             </xpath>
         </field>
+    </record>
+
+    <!-- Re-resolve the active Position / unit steps after a holder change (ADR-0018).
+         A rare admin act, so it lives in the form's Action (⚙) menu rather than the
+         header; the menu cannot hide by state, so the method refuses a หนังสือ that
+         is not circulating. -->
+    <record id="action_sarabun_document_refresh_route_holders" model="ir.actions.server">
+        <field name="name">ดึงผู้ดำรงตำแหน่งปัจจุบัน</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_document" />
+        <field name="binding_model_id" ref="agx_sarabun.model_sarabun_document" />
+        <field name="binding_view_types">form</field>
+        <field
+            name="groups_id"
+            eval="[(4, ref('agx_sarabun_route_edit.group_sarabun_route_edit'))]"
+        />
+        <field name="state">code</field>
+        <field name="code">action = records.action_refresh_route_holders()</field>
     </record>
 </odoo>

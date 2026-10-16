@@ -157,20 +157,24 @@ class SarabunDocument(models.Model):
                     "new": ", ".join(step.actor_user_ids.mapped("name")),
                 }
             )
-        if not changes:
-            return {
-                "type": "ir.actions.client",
-                "tag": "display_notification",
-                "params": {
-                    "type": "info",
-                    "message": _("The active steps already go to the current holders."),
-                },
-            }
-        self.message_post(
-            body=_("Route holders refreshed by %(user)s: %(changes)s")
-            % {
-                "user": self.env.user.display_name,
-                "changes": "; ".join(changes),
-            }
-        )
-        return True
+        if changes:
+            self.message_post(
+                body=_("Route holders refreshed by %(user)s: %(changes)s")
+                % {
+                    "user": self.env.user.display_name,
+                    "changes": "; ".join(changes),
+                }
+            )
+        # Run from the Action menu: a server action must return an action dict, and
+        # closing through ``next`` makes the form reload the re-resolved Route.
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "type": "success" if changes else "info",
+                "message": _("Route holders refreshed.")
+                if changes
+                else _("The active steps already go to the current holders."),
+                "next": {"type": "ir.actions.act_window_close"},
+            },
+        }

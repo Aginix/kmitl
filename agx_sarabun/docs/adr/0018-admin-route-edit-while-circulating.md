@@ -46,7 +46,8 @@ the Route list.
     notifying them.
   - They keep access only if the หนังสือ still reaches them some other way: another
     step, a prior attempt, or being its sender. Managers still see everything.
-- **Done / skipped / originator step.** Locked. Signatures are never rewritten.
+- **Done / skipped / originator step.** Locked. Signatures are never rewritten. (The
+  one exception, the capacity label of a signed บุคลากร step, is ADR-0019.)
 - **Added step.** Created `waiting` with `created_by_disposition='direct'`, so a later
   Reset drops it like any runtime insertion (ADR-0011).
 - **Frontier.** Steps may only be added or moved at or after the first Stage not yet
@@ -57,9 +58,11 @@ the Route list.
   - Then the engine advances: a step added to the current Stage activates at once, and
     removing the Stage's last pending gating step moves the หนังสือ on, completing it if
     nothing is left.
-- **Holder change.** This is a **manual per-document button**,
-  ดึงผู้ดำรงตำแหน่งปัจจุบัน. It re-resolves the active Position / unit-clerk steps to
-  their current holders. Editing a Position never silently moves in-flight documents.
+- **Holder change.** This is a **manual per-document action**,
+  ดึงผู้ดำรงตำแหน่งปัจจุบัน, in the form's Action (⚙) menu. It is a rare admin act,
+  not a header button. It re-resolves the active Position / unit-clerk steps to their
+  current holders. Editing a Position never silently moves in-flight documents. The
+  menu cannot hide by state, so the action refuses a หนังสือ that is not circulating.
 - **Audit.** Every edit is logged to the document chatter (who, step, field old → new).
   There is no mandatory reason.
 
@@ -89,4 +92,5 @@ The guards apply only to **user** edits. Engine writes are untouched: they run `
   The chatter log of the edit is the remaining audit.
 - **position_id in the step dialog** keeps its own attrs (owned by
   `agx_sarabun_person_capacity` when installed). Changing it on a done step is refused
-  by the server guard, not by the form.
+  by the server guard. With both modules installed, the bridge from ADR-0019 also
+  makes it read-only in the form.
