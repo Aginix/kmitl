@@ -268,6 +268,66 @@ class TestBudgetTransferSarabun(TransactionCase):
             document.with_user(self.requestor).action_send()
         self.assertEqual(transfer.state, "returned")
 
+    def _revise_and_resend(self, transfer, document):
+        """Edit the amounts of a ``returned`` transfer, re-send its หนังสือ, and
+        assert the enclosed แบบ งปม.303 was re-rendered in place while the
+        drafter-owned subject/content were left untouched."""
+        self.assertEqual(transfer.state, "returned")
+        enclosure = transfer.sarabun_enclosure_attachment_id
+        self.assertIn(enclosure, document.enclosure_attachment_ids)
+        enclosures_before = document.enclosure_attachment_ids
+        checksum_before = enclosure.checksum
+        subject_before, content_before = document.subject, document.content
+        transfer.write(
+            {
+                "line_ids": [
+                    Command.update(transfer.from_line_ids.id, {"amount": 600}),
+                    Command.update(transfer.to_line_ids.id, {"amount": 600}),
+                ]
+            }
+        )
+        document.with_user(self.requestor).action_send()
+        self.assertEqual(transfer.state, "sent")
+        self.assertEqual(document.enclosure_attachment_ids, enclosures_before)
+        self.assertEqual(transfer.sarabun_enclosure_attachment_id, enclosure)
+        self.assertNotEqual(
+            enclosure.checksum,
+            checksum_before,
+            "the enclosed งปม.303 must reflect the revised lines",
+        )
+        self.assertEqual(document.subject, subject_before)
+        self.assertEqual(document.content, content_before)
+
+    def test_submit_tracks_generated_enclosure(self):
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        self.assertTrue(transfer.sarabun_enclosure_attachment_id)
+        self.assertIn(
+            transfer.sarabun_enclosure_attachment_id,
+            document.enclosure_attachment_ids,
+        )
+
+    def test_resend_after_return_rerenders_enclosure(self):
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        step = self._gating_step(document)
+        step.act_on_step(
+            "return",
+            {"note": "แก้ยอด", "destination": "sender_restart"},
+            actor=self.approver_user,
+        )
+        transfer.invalidate_recordset()
+        self._revise_and_resend(transfer, document)
+
+    def test_resend_after_pull_back_rerenders_enclosure(self):
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        document.with_user(self.requestor).action_pull_back(reason="แก้ยอด")
+        transfer.invalidate_recordset()
+        self._revise_and_resend(transfer, document)
+
     def test_cancelled_send_falls_back_to_submitted(self):
         transfer = self._submitted_transfer()
         document = self._submit(transfer)
