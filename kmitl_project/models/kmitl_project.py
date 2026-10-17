@@ -1,6 +1,7 @@
 import logging
 import re
 
+from lxml import etree, html as lxml_html
 from markupsafe import Markup, escape
 
 from odoo import models, fields, api, _
@@ -50,9 +51,10 @@ class KmitlProject(models.Model):
         readonly=True,
         states=EDITABLE_STATES,
     )
-    introduction = fields.Text(
+    # Html so authors can lay out paragraphs (Tab = .oe-tabs indent). Odoo 16
+    # cannot track Html fields, hence no tracking=True.
+    introduction = fields.Html(
         string="หลักการและเหตุผล",
-        tracking=True,
         readonly=False,
         states=EDITABLE_STATES,
     )
@@ -869,7 +871,7 @@ class KmitlProject(models.Model):
 
     @api.model
     def _report_thai_distribute(self, text):
-        """Markup for a ``.distribute`` paragraph in the project proposal PDF.
+        """Markup for a ``.distribute`` block in the project proposal PDF.
 
         wkhtmltopdf only stretches justified text at spaces and ignores
         ``text-justify: distribute``, while Thai has no spaces between words.
@@ -877,6 +879,9 @@ class KmitlProject(models.Model):
         with a negative ``word-spacing``) and wrap the real spaces in
         ``span.rs`` to keep their normal width: justify then spreads each line
         across all its words, and lines wrap between words, never inside one.
+
+        ``text`` is plain text (Text/Char) or Markup (an Html field), in which
+        case every text node is segmented and the markup kept as is.
         """
         if not text:
             return ""
@@ -895,20 +900,58 @@ class KmitlProject(models.Model):
         def is_thai(char):
             return "\u0e00" <= char <= "\u0e7f" and char not in "ๆฯ"
 
-        lines = []
-        for line in text.split("\n"):
-            parts = []
-            prev = ""
-            for token in tokenize(line):
+        def runs(line):
+            """Alternating [text, space, text, ...] runs of ``line``, with a
+            space inserted at every Thai word boundary inside the text runs."""
+            out, prev = [""], ""
+            for token in tokenize(line) if line else []:
                 if token.isspace():
-                    parts.append(Markup('<span class="rs">%s</span>') % token)
+                    out += [token, ""]
                     prev = ""
                     continue
                 if prev and is_thai(prev[-1]) and is_thai(token[0]):
-                    parts.append(" ")
-                parts.append(escape(token))
+                    out[-1] += " "
+                out[-1] += token
                 prev = token
-            lines.append(Markup("").join(parts))
+            return out
+
+        def real_space(space, tail):
+            span = etree.Element("span", {"class": "rs"})
+            span.text, span.tail = space, tail
+            return span
+
+        if isinstance(text, Markup):
+            # The editor puts a zero-width space after each Tab; THSarabunNew
+            # has no glyph for it.
+            root = lxml_html.fragment_fromstring(
+                text.replace("\u200b", ""), create_parent="div"
+            )
+            for el in list(root.iter(etree.Element)):
+                parts = runs(el.text)
+                el.text = parts[0]
+                for i in range(1, len(parts), 2):
+                    el.insert(i // 2, real_space(parts[i], parts[i + 1]))
+                if el is not root and el.tail:
+                    parts = runs(el.tail)
+                    el.tail = parts[0]
+                    parent, index = el.getparent(), el.getparent().index(el)
+                    for i in range(1, len(parts), 2):
+                        parent.insert(
+                            index + 1 + i // 2, real_space(parts[i], parts[i + 1])
+                        )
+            return Markup(lxml_html.tostring(root, encoding="unicode")[5:-6])
+
+        lines = []
+        for line in text.split("\n"):
+            parts = runs(line)
+            lines.append(
+                Markup("").join(
+                    Markup('<span class="rs">%s</span>') % part
+                    if i % 2
+                    else escape(part)
+                    for i, part in enumerate(parts)
+                )
+            )
         return Markup("\n").join(lines)
 
     @api.model

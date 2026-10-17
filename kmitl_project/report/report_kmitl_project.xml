@@ -49,9 +49,11 @@
                            kmitl.project._report_thai_distribute: the negative
                            word-spacing cancels the inserted word-boundary spaces
                            (THSarabunNew space = 0.216em); real spaces sit in .rs. */
-                        p.distribute {
+                        .distribute {
                           text-align: justify;
                           word-spacing: -0.216em;
+                        }
+                        p.distribute {
                           /* pre-wrap keeps the space at each wrap point and gives it
                              a share of the stretch, so lines stop short of the right
                              edge; pre-line drops it and keeps the line breaks. */
@@ -59,6 +61,11 @@
                         }
                         .distribute .rs {
                           word-spacing: normal;
+                        }
+                        /* Html editor Tab (web_editor base_style, not in report assets). */
+                        .oe-tabs {
+                          display: inline-block;
+                          width: 40px;
                         }
                         .paragraph {
                           text-indent: 16pt;
@@ -103,8 +110,11 @@
                                 alt="Logo"
                             />
                         </div>
-                        <div style="position: absolute; top: 0px; right: 0px">
+                        <div
+                            style="position: absolute; top: 0px; right: 0px; text-align: right"
+                        >
                             <div>แบบเสนอโครงการ</div>
+                            <div t-if="o.key">รหัสโครงการ <span t-field="o.key" /></div>
                         </div>
                         <div class="oe_structure" />
                         <div style="height: 1px" />
@@ -134,8 +144,9 @@
                           <div class="section">
                             <div class="item-title">2. หลักการและเหตุผล</div>
                             <div class="item-content">
-                              <p
-                                        class="paragraph distribute"
+                              <!-- Html field: authors indent paragraphs with Tab -->
+                              <div
+                                        class="distribute"
                                         t-out="o._report_thai_distribute(o.introduction)"
                                     />
                             </div>
