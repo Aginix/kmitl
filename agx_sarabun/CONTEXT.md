@@ -85,7 +85,7 @@ A Document in flight along its Route. Renamed from the old `sent` to capture "mo
 _Avoid_: sent, in transit
 
 **ตีกลับ (Return)**:
-Send a circulating Document back for revision — available **only to the active actor of a gating step** (see Dispositions). The returner **picks the destination every time**: the **previous stage** (resume — the default), the **original sender** (restart the chain), or **any earlier step** to resume from. Lands the Document in state `returned` (revisable like a draft; the prior chain is **archived as history, never overwritten**). A **reason is required** and kept in the routing history.
+Send a circulating Document back for revision — available **only to the active actor of a gating step** (see Dispositions). The returner **picks the destination every time**: the **previous stage** (resume — the default), the **original sender** (restart the chain), or **any earlier step** to resume from. Lands the Document in state `returned` (revisable like a draft; the prior chain is **archived as history, never overwritten**). A restart recreates the **same เส้นทาง verbatim**, like ดึงกลับ — it is never re-seeded from the template, so the sender does not have to rebuild the route. A **reason is required** and kept in the routing history.
 _Avoid_: reject (Return is recoverable; Reject is terminal); a fixed sender-restart default (the returner chooses each time)
 
 **ดึงกลับ (Recall)**:

@@ -34,8 +34,9 @@ class SarabunDocument(models.Model):
     # ------------------------------------------------------------------ guards
     def _is_route_edit(self):
         """True when a step change on this หนังสือ is a USER edit of a circulating
-        Route. Engine writes run sudo (act_on_step, ตีกลับ, Reset, and the sender's
-        ดึงกลับ via ``_recreate_chain_verbatim`` below), so they pass."""
+        Route. Engine writes run sudo (act_on_step, ตีกลับ, Reset, and the
+        ``_recreate_chain_verbatim`` below — the sender's ดึงกลับ and a ตีกลับ→restart),
+        so they pass."""
         self.ensure_one()
         return not self.env.su and self.state == "circulating"
 
@@ -119,8 +120,8 @@ class SarabunDocument(models.Model):
 
     # ------------------------------------------------------------------ engine
     def _recreate_chain_verbatim(self):
-        # The sender's ดึงกลับ recreates the Route in their env while still
-        # circulating — an engine write, not a route edit.
+        # ดึงกลับ (in the sender's env) and ตีกลับ→restart recreate the Route while
+        # still circulating — an engine write, not a route edit.
         return super(SarabunDocument, self.sudo())._recreate_chain_verbatim()
 
     # ------------------------------------------------------------------ actions
