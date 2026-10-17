@@ -25,7 +25,8 @@ content) and preferably a ``<form>`` (the create / edit dialog)::
            options="{'order_field': 'sequence',
                      'direction': 'horizontal',
                      'title_field': 'name',
-                     'card_fields': ['user_id', 'state']}">
+                     'card_fields': ['user_id', 'state'],
+                     'card_width': '22rem'}">
         <tree decoration-success="state == 'done'">
             <field name="sequence" attrs="{'readonly': [('state', '=', 'done')]}"/>
             <field name="name"/>
@@ -47,6 +48,9 @@ Options (all optional):
 ``card_fields``
     Columns shown on the card body; defaults to every visible column except
     those marked ``optional="hide"``. Empty values are not shown.
+``card_width``
+    Card width: a number of pixels (``320``) or any CSS length (``'22rem'``).
+    Defaults to ``280px``.
 
 A ``readonly`` modifier on the Layer Key column **locks** that line: it cannot
 be dragged, pushed by another drop, or removed from its card. ``decoration-*``

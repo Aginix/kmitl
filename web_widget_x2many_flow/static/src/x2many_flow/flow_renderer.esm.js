@@ -88,6 +88,7 @@ FlowRenderer.props = {
     titleColumn: {type: Object, optional: true},
     columns: Array,
     direction: String,
+    cardWidth: {type: String, optional: true},
     canToggleDirection: Boolean,
     readonly: Boolean,
     canCreate: Boolean,

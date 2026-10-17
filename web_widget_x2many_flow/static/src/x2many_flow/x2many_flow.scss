@@ -1,8 +1,9 @@
 // Flow Diagram: Layers of fixed-width Node cards joined by fork/join connectors.
 // Fixed card width lets the fork/join bus line span exactly from the first to the
-// last card centre without measuring the DOM.
+// last card centre without measuring the DOM. Overridable per view through the
+// `card_width` option (set as --o-flow-card-width on the root).
 
-$o-flow-card-width: 15rem;
+$o-flow-card-width: var(--o-flow-card-width, 280px);
 $o-flow-line: $gray-400;
 $o-flow-stub: 0.75rem;
 $o-flow-gap: 1rem;
@@ -41,7 +42,7 @@ $o-flow-gap: 1rem;
     }
 
     .o_flow_layer_label {
-        font-size: 0.75rem;
+        font-size: $font-size-sm;
         color: $text-muted;
         margin-bottom: 0.25rem;
     }
@@ -163,7 +164,6 @@ $o-flow-gap: 1rem;
 
     .o_flow_node_body {
         padding: 0 0.5rem 0.4rem;
-        font-size: 0.85rem;
     }
 
     .o_flow_node_row {

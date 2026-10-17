@@ -110,6 +110,7 @@ export class X2ManyFlowField extends X2ManyField {
             titleColumn: this.titleColumn,
             columns: this.cardColumns,
             direction: this.direction,
+            cardWidth: this.props.cardWidth,
             canToggleDirection: !this.env.isSmall,
             readonly,
             canCreate: !readonly && Boolean(this.activeActions.create),
@@ -179,6 +180,7 @@ Object.defineProperty(X2ManyFlowField, "props", {
         direction: {type: String, optional: true},
         titleField: {type: String, optional: true},
         cardFields: {type: Array, element: String, optional: true},
+        cardWidth: {type: String, optional: true},
     }),
 });
 X2ManyFlowField.defaultProps = {direction: "vertical"};
@@ -194,6 +196,11 @@ X2ManyFlowField.extractProps = (params) => {
             : undefined,
         titleField: options.title_field,
         cardFields: options.card_fields,
+        // A bare number is pixels; a string is any CSS length ("22rem").
+        cardWidth:
+            typeof options.card_width === "number"
+                ? `${options.card_width}px`
+                : options.card_width,
     };
 };
 
