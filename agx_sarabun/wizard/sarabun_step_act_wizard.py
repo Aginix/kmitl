@@ -25,8 +25,8 @@ class SarabunStepActWizard(models.TransientModel):
     disposition = fields.Selection(
         [
             ("complete", "ดำเนินการ (Complete)"),
-            ("direct", "เกษียนสั่งการ (Direct — insert next)"),
-            ("delegate", "มอบหมาย (Delegate — reassign this step)"),
+            # ("direct", "เกษียนสั่งการ (Direct — insert next)"),
+            # ("delegate", "มอบหมาย (Delegate — reassign this step)"),
             ("return", "ตีกลับ (Return)"),
             ("reject", "ปฏิเสธ (Reject)"),
         ],
