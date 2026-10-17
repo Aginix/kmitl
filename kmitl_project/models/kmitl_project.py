@@ -1,5 +1,8 @@
-# -*- coding: utf-8 -*-
 import logging
+import re
+
+from lxml import etree, html as lxml_html
+from markupsafe import Markup, escape
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
@@ -48,9 +51,10 @@ class KmitlProject(models.Model):
         readonly=True,
         states=EDITABLE_STATES,
     )
-    introduction = fields.Text(
+    # Html so authors can lay out paragraphs (Tab = .oe-tabs indent). Odoo 16
+    # cannot track Html fields, hence no tracking=True.
+    introduction = fields.Html(
         string="หลักการและเหตุผล",
-        tracking=True,
         readonly=False,
         states=EDITABLE_STATES,
     )
@@ -662,10 +666,7 @@ class KmitlProject(models.Model):
         and from ``complete`` (a finished project is not cancellable)."""
         if self.filtered(lambda p: p.state == "sent"):
             raise UserError(
-                _(
-                    "ไม่สามารถยกเลิกโครงการขณะหนังสือกำลังเวียนลงนาม "
-                    "กรุณาดึงกลับหรือยกเลิกการส่งก่อน"
-                )
+                _("ไม่สามารถยกเลิกโครงการขณะหนังสือกำลังเวียนลงนาม กรุณาดึงกลับหรือยกเลิกการส่งก่อน")
             )
         if self.filtered(lambda p: p.state == "complete"):
             raise UserError(_("ไม่สามารถยกเลิกโครงการที่ปิดแล้ว"))
@@ -698,9 +699,7 @@ class KmitlProject(models.Model):
                     "ไม่สามารถยืนยันโครงการได้ "
                     "เนื่องจากมีรายการงบประมาณที่ยังไม่ได้ระบุจำนวนเงิน (ต้องมากกว่า 0):\n%s"
                 )
-                % "\n".join(
-                    "- %s" % (line.name or _("(ไม่ระบุรายการ)")) for line in bad
-                )
+                % "\n".join("- %s" % (line.name or _("(ไม่ระบุรายการ)")) for line in bad)
             )
 
     def _compute_is_editable(self):
@@ -737,7 +736,11 @@ class KmitlProject(models.Model):
                 rec.budget_move_line_count = 0
                 continue
             rec.budget_move_line_count = BML.search_count(
-                ['&', ("kmitl_project_analytic_id", "=", self.analytic_account_id.id), ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id)]
+                [
+                    "&",
+                    ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
+                    ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
+                ]
             )
 
     def action_open_budget_move_lines(self):
@@ -747,7 +750,11 @@ class KmitlProject(models.Model):
             "type": "ir.actions.act_window",
             "res_model": "budget.move.line",
             "view_mode": "tree,form",
-            "domain": ['&', ("kmitl_project_analytic_id", "=", self.analytic_account_id.id), ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id)],
+            "domain": [
+                "&",
+                ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
+                ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
+            ],
         }
 
     @api.depends(
@@ -863,24 +870,119 @@ class KmitlProject(models.Model):
         return rows
 
     @api.model
+    def _report_thai_distribute(self, text):
+        """Markup for a ``.distribute`` block in the project proposal PDF.
+
+        wkhtmltopdf only stretches justified text at spaces and ignores
+        ``text-justify: distribute``, while Thai has no spaces between words.
+        So put a space at every Thai word boundary (the CSS cancels its width
+        with a negative ``word-spacing``) and wrap the real spaces in
+        ``span.rs`` to keep their normal width: justify then spreads each line
+        across all its words, and lines wrap between words, never inside one.
+
+        ``text`` is plain text (Text/Char) or Markup (an Html field), in which
+        case every text node is segmented and the markup kept as is.
+        """
+        if not text:
+            return ""
+        try:
+            from pythainlp.tokenize import word_tokenize
+
+            def tokenize(line):
+                return word_tokenize(line, engine="newmm", keep_whitespace=True)
+
+        except ImportError:
+            _logger.warning("pythainlp is not installed; Thai text not segmented")
+
+            def tokenize(line):
+                return [token for token in re.split(r"(\s+)", line) if token]
+
+        def is_thai(char):
+            return "\u0e00" <= char <= "\u0e7f" and char not in "ๆฯ"
+
+        def runs(line):
+            """Alternating [text, space, text, ...] runs of ``line``, with a
+            space inserted at every Thai word boundary inside the text runs."""
+            out, prev = [""], ""
+            for token in tokenize(line) if line else []:
+                if token.isspace():
+                    out += [token, ""]
+                    prev = ""
+                    continue
+                if prev and is_thai(prev[-1]) and is_thai(token[0]):
+                    out[-1] += " "
+                out[-1] += token
+                prev = token
+            return out
+
+        def real_space(space, tail):
+            span = etree.Element("span", {"class": "rs"})
+            span.text, span.tail = space, tail
+            return span
+
+        if isinstance(text, Markup):
+            # The editor puts a zero-width space after each Tab; THSarabunNew
+            # has no glyph for it.
+            root = lxml_html.fragment_fromstring(
+                text.replace("\u200b", ""), create_parent="div"
+            )
+            for el in list(root.iter(etree.Element)):
+                parts = runs(el.text)
+                el.text = parts[0]
+                for i in range(1, len(parts), 2):
+                    el.insert(i // 2, real_space(parts[i], parts[i + 1]))
+                if el is not root and el.tail:
+                    parts = runs(el.tail)
+                    el.tail = parts[0]
+                    parent, index = el.getparent(), el.getparent().index(el)
+                    for i in range(1, len(parts), 2):
+                        parent.insert(
+                            index + 1 + i // 2, real_space(parts[i], parts[i + 1])
+                        )
+            return Markup(lxml_html.tostring(root, encoding="unicode")[5:-6])
+
+        lines = []
+        for line in text.split("\n"):
+            body = line.lstrip(" \t")
+            # The CSS white-space: pre-line collapses leading spaces: keep the
+            # line's indent as non-breaking spaces.
+            indent = line[: len(line) - len(body)].replace("\t", "    ")
+            parts = (
+                ["", indent.replace(" ", "\xa0")] + runs(body) if indent else runs(body)
+            )
+            lines.append(
+                Markup("").join(
+                    Markup('<span class="rs">%s</span>') % part
+                    if i % 2
+                    else escape(part)
+                    for i, part in enumerate(parts)
+                )
+            )
+        return Markup("\n").join(lines)
+
+    @api.model
     def _create_analytic_account_from_values(self, values):
         # System-minted dimension: project users have no create ACL on analytic
         # accounts, so mint it as superuser (company/OU context is kept).
-        return self.env["account.analytic.account"].sudo().create(
-            {
-                "name": values.get("name", _("Unknown Analytic Account")),
-                "code": values.get("code"),
-                "company_id": self.env.company.id,
-                "plan_id": self.env.ref(
-                    "kmitl_project.analytic_plan_project",
-                    raise_if_not_found=True,
-                ).id,
-                # Scope the project's dimension to the project's operating unit so
-                # it stays visible only to the owning unit (analytic OU access rule).
-                "operating_unit_ids": [(6, 0, self.operating_unit_id.ids)]
-                if self.operating_unit_id
-                else False,
-            }
+        return (
+            self.env["account.analytic.account"]
+            .sudo()
+            .create(
+                {
+                    "name": values.get("name", _("Unknown Analytic Account")),
+                    "code": values.get("code"),
+                    "company_id": self.env.company.id,
+                    "plan_id": self.env.ref(
+                        "kmitl_project.analytic_plan_project",
+                        raise_if_not_found=True,
+                    ).id,
+                    # Scope the project's dimension to the project's operating unit so
+                    # it stays visible only to the owning unit (analytic OU access rule).
+                    "operating_unit_ids": [(6, 0, self.operating_unit_id.ids)]
+                    if self.operating_unit_id
+                    else False,
+                }
+            )
         )
 
     def _ensure_project_number(self):
@@ -900,11 +1002,13 @@ class KmitlProject(models.Model):
         # Gregorian year + 543 is the BE fiscal-year number (e.g. FY 2570 ends
         # 2027 → 2570).
         fiscal_date = self.account_fiscal_year_id.date_to
-        self.key = self.env["ir.sequence"].with_context(
-            ir_sequence_date=fiscal_date
-        ).next_by_code(
-            "kmitl.project",
-            sequence_date=fiscal_date,
+        self.key = (
+            self.env["ir.sequence"]
+            .with_context(ir_sequence_date=fiscal_date)
+            .next_by_code(
+                "kmitl.project",
+                sequence_date=fiscal_date,
+            )
         )
 
     # States in which the accounting target (budget code + budget dimensions)
@@ -930,9 +1034,7 @@ class KmitlProject(models.Model):
                     and rec.account_fiscal_year_id.id != vals["account_fiscal_year_id"]
                 ):
                     raise UserError(
-                        _(
-                            "ไม่สามารถเปลี่ยนปีงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)"
-                        )
+                        _("ไม่สามารถเปลี่ยนปีงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)")
                         % rec.key
                     )
         if "budget_account_id" in vals:
@@ -1097,16 +1199,12 @@ class KmitlProject(models.Model):
             ):
                 if in_use or commitment.total_obligated or commitment.total_consumed:
                     project.message_post(
-                        body=_(
-                            "งบประมาณที่จองไว้ (%s) มีการใช้งานแล้ว จึงไม่ยกเลิกการจอง"
-                        )
+                        body=_("งบประมาณที่จองไว้ (%s) มีการใช้งานแล้ว จึงไม่ยกเลิกการจอง")
                         % commitment.name
                     )
                     continue
                 commitment.action_cancel()
-                project.message_post(
-                    body=_("ยกเลิกการจองงบประมาณ %s") % commitment.name
-                )
+                project.message_post(body=_("ยกเลิกการจองงบประมาณ %s") % commitment.name)
 
     def _resync_project_commitment(self):
         """Re-align the reservation with the current ``budget_amount`` / dimensions
