@@ -22,11 +22,11 @@
                 <div
                     t-foreach="doc._signature_block_steps()"
                     t-as="sig"
-                    style="margin-bottom: 42px;"
+                    style="margin-bottom: 42px; page-break-inside: avoid;"
                 >
                     <div
                         t-if="sig.note"
-                        style="min-width: 300px; max-width: 480px; width: fit-content; margin-left:auto;"
+                        style="min-width: 300px; max-width: 480px; width: -webkit-fit-content; width: fit-content; margin-left:auto;"
                     >
                         <div t-out="sig.note" />
                     </div>
