@@ -1,5 +1,7 @@
-# -*- coding: utf-8 -*-
 import logging
+import re
+
+from markupsafe import Markup, escape
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
@@ -662,10 +664,7 @@ class KmitlProject(models.Model):
         and from ``complete`` (a finished project is not cancellable)."""
         if self.filtered(lambda p: p.state == "sent"):
             raise UserError(
-                _(
-                    "ไม่สามารถยกเลิกโครงการขณะหนังสือกำลังเวียนลงนาม "
-                    "กรุณาดึงกลับหรือยกเลิกการส่งก่อน"
-                )
+                _("ไม่สามารถยกเลิกโครงการขณะหนังสือกำลังเวียนลงนาม กรุณาดึงกลับหรือยกเลิกการส่งก่อน")
             )
         if self.filtered(lambda p: p.state == "complete"):
             raise UserError(_("ไม่สามารถยกเลิกโครงการที่ปิดแล้ว"))
@@ -698,9 +697,7 @@ class KmitlProject(models.Model):
                     "ไม่สามารถยืนยันโครงการได้ "
                     "เนื่องจากมีรายการงบประมาณที่ยังไม่ได้ระบุจำนวนเงิน (ต้องมากกว่า 0):\n%s"
                 )
-                % "\n".join(
-                    "- %s" % (line.name or _("(ไม่ระบุรายการ)")) for line in bad
-                )
+                % "\n".join("- %s" % (line.name or _("(ไม่ระบุรายการ)")) for line in bad)
             )
 
     def _compute_is_editable(self):
@@ -737,7 +734,11 @@ class KmitlProject(models.Model):
                 rec.budget_move_line_count = 0
                 continue
             rec.budget_move_line_count = BML.search_count(
-                ['&', ("kmitl_project_analytic_id", "=", self.analytic_account_id.id), ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id)]
+                [
+                    "&",
+                    ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
+                    ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
+                ]
             )
 
     def action_open_budget_move_lines(self):
@@ -747,7 +748,11 @@ class KmitlProject(models.Model):
             "type": "ir.actions.act_window",
             "res_model": "budget.move.line",
             "view_mode": "tree,form",
-            "domain": ['&', ("kmitl_project_analytic_id", "=", self.analytic_account_id.id), ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id)],
+            "domain": [
+                "&",
+                ("kmitl_project_analytic_id", "=", self.analytic_account_id.id),
+                ("account_fiscal_year_id", "=", self.account_fiscal_year_id.id),
+            ],
         }
 
     @api.depends(
@@ -863,24 +868,72 @@ class KmitlProject(models.Model):
         return rows
 
     @api.model
+    def _report_thai_distribute(self, text):
+        """Markup for a ``.distribute`` paragraph in the project proposal PDF.
+
+        wkhtmltopdf only stretches justified text at spaces and ignores
+        ``text-justify: distribute``, while Thai has no spaces between words.
+        So put a space at every Thai word boundary (the CSS cancels its width
+        with a negative ``word-spacing``) and wrap the real spaces in
+        ``span.rs`` to keep their normal width: justify then spreads each line
+        across all its words, and lines wrap between words, never inside one.
+        """
+        if not text:
+            return ""
+        try:
+            from pythainlp.tokenize import word_tokenize
+
+            def tokenize(line):
+                return word_tokenize(line, engine="newmm", keep_whitespace=True)
+
+        except ImportError:
+            _logger.debug("pythainlp is not installed; Thai text not segmented")
+
+            def tokenize(line):
+                return [token for token in re.split(r"(\s+)", line) if token]
+
+        def is_thai(char):
+            return "\u0e00" <= char <= "\u0e7f" and char not in "ๆฯ"
+
+        lines = []
+        for line in text.split("\n"):
+            parts = []
+            prev = ""
+            for token in tokenize(line):
+                if token.isspace():
+                    parts.append(Markup('<span class="rs">%s</span>') % token)
+                    prev = ""
+                    continue
+                if prev and is_thai(prev[-1]) and is_thai(token[0]):
+                    parts.append(" ")
+                parts.append(escape(token))
+                prev = token
+            lines.append(Markup("").join(parts))
+        return Markup("\n").join(lines)
+
+    @api.model
     def _create_analytic_account_from_values(self, values):
         # System-minted dimension: project users have no create ACL on analytic
         # accounts, so mint it as superuser (company/OU context is kept).
-        return self.env["account.analytic.account"].sudo().create(
-            {
-                "name": values.get("name", _("Unknown Analytic Account")),
-                "code": values.get("code"),
-                "company_id": self.env.company.id,
-                "plan_id": self.env.ref(
-                    "kmitl_project.analytic_plan_project",
-                    raise_if_not_found=True,
-                ).id,
-                # Scope the project's dimension to the project's operating unit so
-                # it stays visible only to the owning unit (analytic OU access rule).
-                "operating_unit_ids": [(6, 0, self.operating_unit_id.ids)]
-                if self.operating_unit_id
-                else False,
-            }
+        return (
+            self.env["account.analytic.account"]
+            .sudo()
+            .create(
+                {
+                    "name": values.get("name", _("Unknown Analytic Account")),
+                    "code": values.get("code"),
+                    "company_id": self.env.company.id,
+                    "plan_id": self.env.ref(
+                        "kmitl_project.analytic_plan_project",
+                        raise_if_not_found=True,
+                    ).id,
+                    # Scope the project's dimension to the project's operating unit so
+                    # it stays visible only to the owning unit (analytic OU access rule).
+                    "operating_unit_ids": [(6, 0, self.operating_unit_id.ids)]
+                    if self.operating_unit_id
+                    else False,
+                }
+            )
         )
 
     def _ensure_project_number(self):
@@ -900,11 +953,13 @@ class KmitlProject(models.Model):
         # Gregorian year + 543 is the BE fiscal-year number (e.g. FY 2570 ends
         # 2027 → 2570).
         fiscal_date = self.account_fiscal_year_id.date_to
-        self.key = self.env["ir.sequence"].with_context(
-            ir_sequence_date=fiscal_date
-        ).next_by_code(
-            "kmitl.project",
-            sequence_date=fiscal_date,
+        self.key = (
+            self.env["ir.sequence"]
+            .with_context(ir_sequence_date=fiscal_date)
+            .next_by_code(
+                "kmitl.project",
+                sequence_date=fiscal_date,
+            )
         )
 
     # States in which the accounting target (budget code + budget dimensions)
@@ -930,9 +985,7 @@ class KmitlProject(models.Model):
                     and rec.account_fiscal_year_id.id != vals["account_fiscal_year_id"]
                 ):
                     raise UserError(
-                        _(
-                            "ไม่สามารถเปลี่ยนปีงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)"
-                        )
+                        _("ไม่สามารถเปลี่ยนปีงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)")
                         % rec.key
                     )
         if "budget_account_id" in vals:
@@ -1097,16 +1150,12 @@ class KmitlProject(models.Model):
             ):
                 if in_use or commitment.total_obligated or commitment.total_consumed:
                     project.message_post(
-                        body=_(
-                            "งบประมาณที่จองไว้ (%s) มีการใช้งานแล้ว จึงไม่ยกเลิกการจอง"
-                        )
+                        body=_("งบประมาณที่จองไว้ (%s) มีการใช้งานแล้ว จึงไม่ยกเลิกการจอง")
                         % commitment.name
                     )
                     continue
                 commitment.action_cancel()
-                project.message_post(
-                    body=_("ยกเลิกการจองงบประมาณ %s") % commitment.name
-                )
+                project.message_post(body=_("ยกเลิกการจองงบประมาณ %s") % commitment.name)
 
     def _resync_project_commitment(self):
         """Re-align the reservation with the current ``budget_amount`` / dimensions
