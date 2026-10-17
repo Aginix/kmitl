@@ -44,7 +44,8 @@ class SarabunRoutingStep(models.Model):
         "sarabun.document", required=True, ondelete="cascade", index=True
     )
     order = fields.Integer(
-        string="Stage", default=1,
+        string="Stage",
+        default=1,
         help="Steps sharing one order form a Stage and run in parallel; the first "
         "gating step positively completed passes the Stage.",
     )
@@ -144,7 +145,11 @@ class SarabunRoutingStep(models.Model):
         readonly=True,
         help="Capacity signed in — validated against the step's target Position (ADR-0003).",
     )
-    note = fields.Text(string="เกษียน (Note)")
+    note = fields.Text(
+        string="Comment / Reason",
+        readonly=True,
+        help="The comment or reason entered when acting on this step.",
+    )
     delegated_to_id = fields.Many2one(
         "hr.employee", string="Delegated To", readonly=True
     )
