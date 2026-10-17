@@ -410,7 +410,74 @@ class TestBudgetTransferSarabun(TransactionCase):
         transfer.invalidate_recordset()
         self.assertEqual(transfer.state, "returned")
         self.assertTrue(transfer.show_cancel_button)
-        self.assertTrue(
+        self.assertFalse(
             transfer.with_user(self.requestor).show_reset_button,
-            "the requestor may pull their own returned transfer back to draft",
+            "only an admin may reset a returned transfer to draft",
         )
+        # show_reset_button has no depends_context — drop the requestor's value
+        transfer.invalidate_recordset(["show_reset_button"])
+        self.assertTrue(transfer.show_reset_button)
+
+    def _returned(self):
+        """A transfer whose หนังสือ was ตีกลับ — both now ``returned``."""
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        self._gating_step(document).act_on_step(
+            "return",
+            {"note": "แก้ยอด", "destination": "sender_restart"},
+            actor=self.approver_user,
+        )
+        transfer.invalidate_recordset()
+        self.assertEqual(transfer.state, "returned")
+        self.assertEqual(document.state, "returned")
+        return transfer, document
+
+    def test_reset_from_returned_requires_admin(self):
+        transfer, _document = self._returned()
+        with self.assertRaises(UserError):
+            transfer.with_user(self.requestor).action_reset_to_draft()
+        self.assertEqual(transfer.state, "returned")
+        transfer.action_reset_to_draft()
+        self.assertEqual(transfer.state, "draft")
+
+    def test_resend_after_admin_reset_rerenders_enclosure(self):
+        # returned → admin reset → edit → ยืนยัน → re-send the SAME หนังสือ: the
+        # enclosed งปม.303 must follow the revision, not keep the old figures.
+        transfer, document = self._returned()
+        enclosure = transfer.sarabun_enclosure_attachment_id
+        enclosures_before = document.enclosure_attachment_ids
+        checksum_before = enclosure.checksum
+        subject_before, content_before = document.subject, document.content
+        transfer.action_reset_to_draft()
+        transfer.write(
+            {
+                "line_ids": [
+                    Command.update(transfer.from_line_ids.id, {"amount": 600}),
+                    Command.update(transfer.to_line_ids.id, {"amount": 600}),
+                ]
+            }
+        )
+        transfer.with_user(self.requestor).action_submit()
+        self.assertEqual(transfer.state, "submitted")
+        document.with_user(self.requestor).action_send()
+        self.assertEqual(transfer.state, "sent")
+        self.assertEqual(document.enclosure_attachment_ids, enclosures_before)
+        self.assertEqual(transfer.sarabun_enclosure_attachment_id, enclosure)
+        self.assertNotEqual(
+            enclosure.checksum,
+            checksum_before,
+            "the enclosed งปม.303 must reflect the revised lines",
+        )
+        self.assertEqual(document.subject, subject_before)
+        self.assertEqual(document.content, content_before)
+
+    def test_send_blocked_while_transfer_draft(self):
+        # The หนังสือ is still `returned` (sendable) after the transfer is reset —
+        # it must not circulate against an unconfirmed transfer.
+        transfer, document = self._returned()
+        transfer.action_reset_to_draft()
+        with self.assertRaises(UserError):
+            document.with_user(self.requestor).action_send()
+        self.assertEqual(document.state, "returned")
+        self.assertEqual(transfer.state, "draft")

@@ -121,9 +121,9 @@ lives here, not in `budget_transfer`:
   (`res_model=sarabun.document`) linked through `enclosure_attachment_ids`
   (สิ่งที่ส่งมาด้วย). The pre-filled `content` remains editable by ธุรการ before send.
   - **Re-send after ตีกลับ/ดึงกลับ re-renders the enclosure, not the wording.** A
-    `returned` transfer is editable, so on re-send (`_on_sarabun_circulating` from
-    `returned`, after `_validate_transfer_data`) งปม.303 is re-rendered and
-    **overwritten in place** on the same attachment, tracked by
+    `returned` transfer is editable, so on **every** send (`_on_sarabun_circulating`,
+    after `_validate_transfer_data` when re-sent from `returned`) งปม.303 is
+    re-rendered and **overwritten in place** on the same attachment, tracked by
     `sarabun_enclosure_attachment_id` (a new หนังสือ after ยกเลิกการส่ง gets a fresh
     file). Overwrite, not archive — a deliberate exception to agx_sarabun ADR-0006's
     archive-not-overwrite: the enclosure is a derived print of the transfer, the
@@ -132,6 +132,11 @@ lives here, not in `budget_transfer`:
     the send rather than letting a stale form go out. `subject`/`content` are **not**
     regenerated — seeded once, owned by ธุรการ, who must revise them by hand if the
     amount/reason changed.
+  - **Reset to Draft from `returned` is admin-only** (button + server guard) — the
+    requestor revises the editable transfer and re-sends instead. After an admin
+    reset the same หนังสือ stays `returned`, so a send is **blocked while the transfer
+    is not `submitted`/`returned`** (draft/cancelled): the letter would otherwise
+    circulate — and on signing post — a transfer that skipped the ยืนยัน checks.
   - subject: `ขออนุมัติโอน เปลี่ยนแปลง {source complete_name} ประจำปีงบประมาณ พ.ศ. {fiscal year} {department complete_name}`
   - body: `ด้วย{department} มีความประสงค์ขออนุมัติโอน เปลี่ยนแปลง {source} ประจำปีงบประมาณ พ.ศ. {fy} จำนวนเงิน {amount} บาท รายละเอียดตามเอกสารแนบ แบบ งปม. 303 เลขที่ {BTR}`
 - **`_get_sarabun_report_action → False`** — the letter uses the default e-Saraban
