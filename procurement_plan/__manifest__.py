@@ -1,6 +1,6 @@
 {
     "name": "Procurement Plan",
-    "version": "16.0.1.3.0",
+    "version": "16.0.1.4.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
@@ -19,6 +19,9 @@
         "views/procurement_plan_views.xml",
         "views/procurement_plan_menus.xml",
         "views/res_config_settings_views.xml",
+        "report/paperformat.xml",
+        "report/procurement_plan_report.xml",
+        "report/report_procurement_plan.xml",
     ],
     "assets": {
         "web.assets_backend": [
