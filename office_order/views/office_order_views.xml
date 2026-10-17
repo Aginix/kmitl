@@ -84,7 +84,7 @@
                                                     <div class="offset-10">
                                                         <div
                                                             class="o_dropdown_kanban dropdown"
-                                                            groups="base.group_user"
+                                                            groups="hr.group_hr_user"
                                                         >
                                                             <a
                                                                 role="button"
