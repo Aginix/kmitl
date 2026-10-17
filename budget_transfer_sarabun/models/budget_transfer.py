@@ -158,6 +158,13 @@ class BudgetTransfer(models.Model):
 
     # --- lifecycle callbacks ------------------------------------------
     def _on_sarabun_circulating(self, document):
+        # The letter may only go out for a confirmed transfer — e.g. one reset
+        # to draft (or cancelled) behind a still-sendable หนังสือ must be
+        # re-confirmed first. Raising rolls the send back.
+        if self.state not in ("submitted", "returned"):
+            raise UserError(
+                _("ใบโอนยังไม่อยู่ในสถานะรอส่งขออนุมัติ กรุณายืนยันข้อมูลใบโอนก่อนส่งหนังสือ")
+            )
         if self.state == "returned":
             # The lines may have been revised while returned — re-check them
             # before the letter goes back out (the line policies are checked
@@ -253,7 +260,9 @@ class BudgetTransfer(models.Model):
                     "or void it before cancelling."
                 )
             )
-        return super().action_cancel()
+        res = super().action_cancel()
+        self._abandon_stale_sarabun_documents()
+        return res
 
     def action_reset_to_draft(self):
         """Block from `sent` (as above); a `rejected` transfer is revived
@@ -273,7 +282,18 @@ class BudgetTransfer(models.Model):
             raise UserError(
                 _("Only Budget Managers can reset a rejected transfer to draft.")
             )
-        return super().action_reset_to_draft()
+        res = super().action_reset_to_draft()
+        self._abandon_stale_sarabun_documents()
+        return res
+
+    def _abandon_stale_sarabun_documents(self):
+        """Discard a ร่าง หนังสือ not yet sent when the transfer is reset to draft
+        or cancelled — its content and enclosed งปม.303 were snapshotted at
+        สร้างหนังสือ, so it is stale; discarding it also re-opens "สร้างหนังสือ"
+        once the transfer is re-confirmed. Only drafts are disposable
+        (sarabun.document.unlink refuses anything else); a returned letter stays
+        and is blocked from re-sending by ``_on_sarabun_circulating``."""
+        self.sarabun_document_ids.filtered(lambda d: d.state == "draft").sudo().unlink()
 
     def _check_no_live_sarabun_document(self):
         """The manual Approve & Post fallback must not run behind a หนังสือ that
