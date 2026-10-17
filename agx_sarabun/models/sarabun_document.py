@@ -774,16 +774,18 @@ class SarabunDocument(models.Model):
             ):
                 doc._seed_route_from_template()
             if not doc.routing_step_ids.filtered("gating"):
-                raise UserError(_(
-                    "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
-                ))
+                raise UserError(
+                    _(
+                        "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
+                    )
+                )
             # A หนังสือ already numbered (re-sent after a ตีกลับ past the issuing sign)
             # keeps its number and book — neither check below applies (ADR-0017).
             numbered = bool(doc.register_number_id)
             if not numbered and not doc.routing_step_ids.filtered("verb.issues_number"):
-                raise UserError(_(
-                    "เส้นทางต้องมีขั้นตอนที่ออกเลขที่หนังสือ (เช่น ลงนามในใบปะหน้า) ก่อนส่ง"
-                ))
+                raise UserError(
+                    _("เส้นทางต้องมีขั้นตอนที่ออกเลขที่หนังสือ (เช่น ลงนามในใบปะหน้า) ก่อนส่ง")
+                )
             # P3: fail fast if no register resolves, and PIN the resolved เล่มทะเบียน
             # so a later config change can't move the หนังสือ to another book between
             # ส่ง and ลงทะเบียน (which runs at the issuing sign — ADR-0017/0011).
@@ -1057,8 +1059,8 @@ class SarabunDocument(models.Model):
 
         Archive-not-overwrite (ADR-0006): the current attempt is ALWAYS frozen as
         history (``active=False``, ``attempt_seq`` bumped) — never reset in place.
-        The new attempt re-seeds either the full template (restart) or just the
-        chosen resume step onward (resume), leaving the prior chain intact."""
+        The new attempt recreates either the whole live เส้นทาง verbatim (restart) or
+        just the chosen resume step onward (resume), leaving the prior chain intact."""
         self.ensure_one()
         self.routing_step_ids._clear_activities()  # drop to-dos before archive
         if destination == "resume_step" and resume_step_id:
@@ -1076,7 +1078,9 @@ class SarabunDocument(models.Model):
             ]
             self._ensure_originator_step()  # resume tail starts above row 1 — re-add it
         else:
-            self._restart_chain()
+            # Restart on the SAME เส้นทาง — never re-seed from the template, which
+            # would wipe the sender's route edits and runtime insertions.
+            self._recreate_chain_verbatim()
         self.state = "returned"
         self.message_post(body=_("Document returned for revision (ตีกลับ)."))
         self._call_origin("_on_sarabun_returned", self, step)
@@ -1106,7 +1110,7 @@ class SarabunDocument(models.Model):
 
     def _restart_chain(self):
         """Archive the current chain and re-seed a fresh waiting one for a restart
-        (ตีกลับ→sender_restart or ดึงกลับ). Prefer the route template; if the
+        (origin-driven, e.g. purchase_request_approval). Prefer the route template; if the
         document has no template — the common from_record / ad-hoc case — recreate
         the just-archived chain's steps so the Route is never left empty (which
         would strand the หนังสือ in ``returned``, unable to re-send)."""
@@ -1124,8 +1128,8 @@ class SarabunDocument(models.Model):
         self._ensure_originator_step()
 
     def _recreate_chain_verbatim(self):
-        """Archive the current attempt and recreate the SAME เส้นทาง exactly (ดึงกลับ —
-        ADR-0006, revised per UAT). Unlike ``_restart_chain`` it NEVER re-seeds from the
+        """Archive the current attempt and recreate the SAME เส้นทาง exactly (ดึงกลับ and
+        ตีกลับ→sender_restart — ADR-0006, revised per UAT). Unlike ``_restart_chain`` it NEVER re-seeds from the
         route template: every live step is recreated in order with its exact target /
         verb / for_info / provenance — including runtime เกษียนสั่งการ ('direct')
         insertions and delegated targets — so a pull-back-and-re-send keeps the identical
