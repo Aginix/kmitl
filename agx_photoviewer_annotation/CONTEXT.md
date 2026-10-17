@@ -15,8 +15,16 @@ replies and no resolved state — discussion belongs in the source record's chat
 _Avoid_: sticky note, remark, thread
 
 **Annotation layer**: All Annotations of one attachment, from every author. Everyone who
-can read the attachment sees the whole layer and may add to it. _Avoid_: overlay
-(implementation word), annotated file
+can read the attachment sees the whole layer and may add to it. Adding to it is
+reviewing the file, not editing the record it belongs to: a record the user cannot edit
+does not stop them, and the layer stays open once the record is done unless it is a
+Locked layer. _Avoid_: overlay (implementation word), annotated file
+
+**Locked layer**: An Annotation layer the record's own module has closed, e.g. once the
+record is done. Nobody adds, changes or removes Annotations on it, their authors
+included; it can still be viewed, its Comments read and the Annotated export
+downloaded. Records are never locked unless their module says so. _Avoid_: frozen,
+read-only layer
 
 **Annotated export**: A PDF built on demand from the original file with its Annotation
 layer drawn on top and the Comments listed on a closing summary page. Downloaded, never
@@ -24,4 +32,4 @@ stored. _Avoid_: annotated copy, flattened file
 
 **Session note**: The single internal note posted on the source record's chatter when a
 user leaves an attachment they annotated, summarising what they added, changed or
-removed. _Avoid_: notification, log
+removed. Posted even when the user may not write on that chatter themselves. _Avoid_: notification, log

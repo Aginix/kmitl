@@ -135,9 +135,9 @@ class IrAttachmentAnnotation(models.Model):
         }
 
     @api.model
-    def _get_note_record(self, attachment):
-        """Return the record (sudo) whose chatter gets the Session note of
-        ``attachment``, or an empty recordset.
+    def _get_holder_record(self, attachment):
+        """Return the record (sudo) ``attachment`` belongs to, or an empty
+        recordset.
 
         That is the record the file is attached to, or, for a file uploaded
         in a ``many2many_binary`` field before its record was first saved
@@ -145,8 +145,8 @@ class IrAttachmentAnnotation(models.Model):
         field, provided the user may read it.
         """
         Model = self.env.get(attachment.res_model)
-        if Model is None or not hasattr(Model, "message_post"):
-            return self.env["mail.thread"]
+        if Model is None:
+            return self.env["base"]
         if attachment.res_id:
             return Model.sudo().browse(attachment.res_id).exists()
         for name, field in Model._fields.items():
@@ -164,6 +164,16 @@ class IrAttachmentAnnotation(models.Model):
                 ) and record._filter_access_rules("read"):
                     return records
         return Model.sudo().browse()
+
+    @api.model
+    def _is_layer_locked(self, attachment):
+        record = self._get_holder_record(attachment)
+        return bool(record) and record._annotation_is_locked()
+
+    @api.model
+    def _check_layer_open(self, attachment):
+        if self._is_layer_locked(attachment):
+            raise UserError(_("Annotations on this file are locked."))
 
     def _format(self):
         return [
@@ -193,6 +203,7 @@ class IrAttachmentAnnotation(models.Model):
         annotations = self.sudo().search([("attachment_id", "=", attachment.id)])
         return {
             "checksum": attachment.checksum,
+            "locked": self._is_layer_locked(attachment),
             "annotations": annotations._format(),
         }
 
@@ -202,9 +213,11 @@ class IrAttachmentAnnotation(models.Model):
         values = {key: vals[key] for key in EDITABLE_FIELDS if key in vals}
         if vals.get("id"):
             annotation = self._get_own_annotation(vals["id"])
+            self._check_layer_open(annotation.attachment_id)
             annotation.write(values)
         else:
             attachment = self._get_readable_attachment(vals.get("attachment_id"))
+            self._check_layer_open(attachment)
             values.update(
                 attachment_id=attachment.id,
                 page=vals.get("page") or 1,
@@ -217,7 +230,9 @@ class IrAttachmentAnnotation(models.Model):
 
     @api.model
     def annotation_delete(self, annotation_id):
-        self._get_own_annotation(annotation_id).unlink()
+        annotation = self._get_own_annotation(annotation_id)
+        self._check_layer_open(annotation.attachment_id)
+        annotation.unlink()
         return True
 
     @api.model
@@ -231,11 +246,11 @@ class IrAttachmentAnnotation(models.Model):
         """Post one internal note summarising what the user did on the file.
 
         Skipped when no record with a chatter holds the attachment (see
-        ``_get_note_record``).
+        ``_get_holder_record``).
         """
         attachment = self._get_readable_attachment(attachment_id)
-        record = self._get_note_record(attachment)
-        if not record:
+        record = self._get_holder_record(attachment)
+        if not (record and hasattr(record, "message_post")):
             return False
         labels = [
             (int(counts.get("added") or 0), _("added %s")),
