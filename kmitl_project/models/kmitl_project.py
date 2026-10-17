@@ -948,7 +948,7 @@ class KmitlProject(models.Model):
             # line's indent as non-breaking spaces.
             indent = line[: len(line) - len(body)].replace("\t", "    ")
             parts = (
-                [indent.replace(" ", "\xa0"), ""] + runs(body) if indent else runs(body)
+                ["", indent.replace(" ", "\xa0")] + runs(body) if indent else runs(body)
             )
             lines.append(
                 Markup("").join(
