@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="web_widget_x2many_flow.X2ManyFlowField" owl="1">
+        <div class="o_field_x2many o_field_x2many_flow">
+            <div t-if="errorMessage" class="alert alert-warning mb-0" role="alert">
+                <t t-esc="errorMessage" />
+            </div>
+            <FlowRenderer t-else="" t-props="flowRendererProps" />
+        </div>
+    </t>
+
+    <t t-name="web_widget_x2many_flow.FlowRenderer" owl="1">
+        <t t-set="flowLayers" t-value="layers" />
+        <div
+            class="o_flow"
+            t-att-class="{
+                o_flow_vertical: props.direction === 'vertical',
+                o_flow_horizontal: props.direction === 'horizontal',
+            }"
+            t-ref="root"
+        >
+            <div class="o_flow_toolbar">
+                <button
+                    t-if="props.canCreate"
+                    type="button"
+                    class="btn btn-secondary btn-sm o_flow_add"
+                    t-on-click="() => props.onAdd(null)"
+                >
+                    <i class="fa fa-plus me-1" />Add
+                </button>
+                <button
+                    t-if="props.canToggleDirection"
+                    type="button"
+                    class="btn btn-light btn-sm ms-auto o_flow_toggle"
+                    title="Switch layout direction"
+                    t-on-click="props.onToggleDirection"
+                >
+                    <i
+                        t-att-class="props.direction === 'vertical' ? 'fa fa-arrows-h' : 'fa fa-arrows-v'"
+                    />
+                </button>
+            </div>
+            <div t-if="!flowLayers.length" class="o_flow_empty text-muted">
+                No items yet
+            </div>
+            <div t-else="" class="o_flow_canvas">
+                <t t-foreach="flowLayers" t-as="layer" t-key="layer.value">
+                    <div
+                        class="o_flow_drop o_flow_gap"
+                        t-att-class="{o_flow_gap_edge: layer_first}"
+                        t-att-data-gap="layer_index"
+                    >
+                        <div t-if="!layer_first" class="o_flow_connector" />
+                    </div>
+                    <div class="o_flow_layer_wrap">
+                        <div
+                            class="o_flow_layer_label"
+                            t-esc="layerLabel(layer_index)"
+                        />
+                        <div class="o_flow_layer_body">
+                            <div
+                                class="o_flow_drop o_flow_layer"
+                                t-att-class="{o_flow_layer_multi: layer.records.length > 1}"
+                                t-att-data-layer="layer.value"
+                            >
+                                <t
+                                    t-foreach="layer.records"
+                                    t-as="record"
+                                    t-key="record.id"
+                                >
+                                    <FlowCard
+                                        record="record"
+                                        archInfo="props.archInfo"
+                                        titleColumn="props.titleColumn"
+                                        columns="props.columns"
+                                        decorations="props.archInfo.decorations or []"
+                                        locked="isLocked(record)"
+                                        draggable="!props.readonly"
+                                        canDelete="props.canDelete and !isLocked(record)"
+                                        onOpen="props.onOpen"
+                                        onDelete="props.onDelete"
+                                    />
+                                </t>
+                            </div>
+                            <button
+                                t-if="props.canCreate"
+                                type="button"
+                                class="btn btn-light btn-sm rounded-circle o_flow_layer_add"
+                                title="Add to this layer"
+                                t-on-click="() => props.onAdd(layer.value)"
+                            >
+                                <i class="fa fa-plus" />
+                            </button>
+                        </div>
+                    </div>
+                </t>
+                <div
+                    class="o_flow_drop o_flow_gap o_flow_gap_edge"
+                    t-att-data-gap="flowLayers.length"
+                />
+            </div>
+        </div>
+    </t>
+
+    <t t-name="web_widget_x2many_flow.FlowCard" owl="1">
+        <div t-att-class="className" t-att-data-id="record.id">
+            <div class="o_flow_node_header">
+                <span
+                    t-if="props.locked and props.draggable"
+                    class="o_flow_lock fa fa-lock"
+                    title="Locked"
+                />
+                <span
+                    t-elif="props.draggable"
+                    class="o_flow_handle fa fa-arrows"
+                    title="Drag to move"
+                />
+                <div class="o_flow_node_title">
+                    <Field
+                        t-if="titleColumn"
+                        name="titleColumn.name"
+                        record="record"
+                        type="titleColumn.widget"
+                        fieldInfo="props.archInfo.fieldNodes[titleColumn.name]"
+                        readonly="true"
+                    />
+                    <t t-else="" t-esc="record.data.display_name" />
+                </div>
+                <button
+                    type="button"
+                    class="btn btn-link btn-sm o_flow_open"
+                    title="Open"
+                    t-on-click="() => props.onOpen(record)"
+                >
+                    <i class="fa fa-cog" />
+                </button>
+                <button
+                    t-if="props.canDelete"
+                    type="button"
+                    class="btn btn-link btn-sm o_flow_delete"
+                    title="Remove"
+                    t-on-click="() => props.onDelete(record)"
+                >
+                    <i class="fa fa-trash" />
+                </button>
+            </div>
+            <div t-if="detailColumns.length" class="o_flow_node_body">
+                <t t-foreach="detailColumns" t-as="column" t-key="column.id">
+                    <div class="o_flow_node_row">
+                        <span class="o_flow_node_label" t-esc="column.label" />
+                        <Field
+                            name="column.name"
+                            record="record"
+                            type="column.widget"
+                            fieldInfo="props.archInfo.fieldNodes[column.name]"
+                            readonly="true"
+                        />
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>
