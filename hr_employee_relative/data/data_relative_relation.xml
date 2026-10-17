@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- hr.employee.relative.relation -->
+    <record model="hr.employee.relative.relation" id="relation_father">
+        <field name="sequence">1</field>
+        <field name="name">Father</field>
+    </record>
+    <record model="hr.employee.relative.relation" id="relation_mother">
+        <field name="sequence">2</field>
+        <field name="name">Mother</field>
+    </record>
+    <record model="hr.employee.relative.relation" id="relation_spouse">
+        <field name="sequence">3</field>
+        <field name="name">Spouse</field>
+    </record>
+    <record model="hr.employee.relative.relation" id="relation_child_1">
+        <field name="sequence">4</field>
+        <field name="name">Child 1</field>
+    </record>
+    <record model="hr.employee.relative.relation" id="relation_child_2">
+        <field name="sequence">5</field>
+        <field name="name">Child 2</field>
+    </record>
+    <record model="hr.employee.relative.relation" id="relation_child_3">
+        <field name="sequence">6</field>
+        <field name="name">Child 3</field>
+    </record>
+    <record model="hr.employee.relative.relation" id="relation_child_4">
+        <field name="sequence">7</field>
+        <field name="name">Child 4</field>
+    </record>
+    <record model="hr.employee.relative.relation" id="relation_significant_other">
+        <field name="sequence">8</field>
+        <field name="name">Significant Other</field>
+    </record>
+</odoo>
