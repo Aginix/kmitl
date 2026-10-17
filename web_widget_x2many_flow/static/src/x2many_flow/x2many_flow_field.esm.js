@@ -169,13 +169,18 @@ export class X2ManyFlowField extends X2ManyField {
 }
 X2ManyFlowField.template = "web_widget_x2many_flow.X2ManyFlowField";
 X2ManyFlowField.components = {...X2ManyField.components, FlowRenderer};
-X2ManyFlowField.props = {
-    ...X2ManyField.props,
-    orderField: {type: String, optional: true},
-    direction: {type: String, optional: true},
-    titleField: {type: String, optional: true},
-    cardFields: {type: Array, element: String, optional: true},
-};
+// Resolved on access, not copied: modules loaded after this one (e.g.
+// web_m2x_options adds `open`) still extend X2ManyField.props/extractProps, and
+// extractProps below forwards their keys — a snapshot would fail props validation.
+Object.defineProperty(X2ManyFlowField, "props", {
+    get: () => ({
+        ...X2ManyField.props,
+        orderField: {type: String, optional: true},
+        direction: {type: String, optional: true},
+        titleField: {type: String, optional: true},
+        cardFields: {type: Array, element: String, optional: true},
+    }),
+});
 X2ManyFlowField.defaultProps = {direction: "vertical"};
 X2ManyFlowField.supportedTypes = ["one2many"];
 X2ManyFlowField.displayName = _lt("Flow Diagram");
