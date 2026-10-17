@@ -308,6 +308,36 @@ class TestBudgetTransferSarabun(TransactionCase):
         with self.assertRaises(UserError):
             transfer.action_reset_to_draft()
 
+    def test_reset_to_draft_discards_draft_letter(self):
+        # The ร่าง หนังสือ snapshotted the old data — reset must discard it so
+        # the re-confirmed transfer issues a fresh one.
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        transfer.with_user(self.requestor).action_reset_to_draft()
+        self.assertEqual(transfer.state, "draft")
+        self.assertFalse(document.exists())
+        transfer.invalidate_recordset()
+        self.assertFalse(transfer.sarabun_has_live_document)
+
+    def test_send_blocked_while_transfer_not_submitted(self):
+        # A returned letter can't be discarded — sending it for a transfer that
+        # was reset to draft must be refused until the transfer is re-confirmed.
+        transfer = self._submitted_transfer()
+        document = self._submit(transfer)
+        document.with_user(self.requestor).action_send()
+        self._gating_step(document).act_on_step(
+            "return",
+            {"note": "ขอข้อมูลเพิ่ม", "destination": "sender_restart"},
+            actor=self.approver_user,
+        )
+        transfer.invalidate_recordset()
+        transfer.with_user(self.requestor).action_reset_to_draft()
+        self.assertEqual(transfer.state, "draft")
+        with self.assertRaises(UserError):
+            document.with_user(self.requestor).action_send()
+        self.assertEqual(transfer.state, "draft")
+        self.assertEqual(document.state, "returned")
+
     def test_reset_to_draft_from_rejected_requires_manager(self):
         manager = new_test_user(
             self.env,
