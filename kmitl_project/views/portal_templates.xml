@@ -292,10 +292,34 @@
                         </div>
                         <div class="card-body">
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">งบประมาณที่ได้รับ</span>
+                                <span class="text-muted">งบประมาณที่ตั้งไว้</span>
+                                <span class="fw-bold">
+                                    <t
+                                        t-out="'{:,.2f}'.format(kmitl_project.budget_estimate)"
+                                    /> บาท
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">ได้รับการจัดสรร (โอนเข้าแล้ว)</span>
                                 <span class="fw-bold">
                                     <t
                                         t-out="'{:,.2f}'.format(kmitl_project.budget_amount)"
+                                    /> บาท
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">จองงบประมาณ</span>
+                                <span class="fw-bold">
+                                    <t
+                                        t-out="'{:,.2f}'.format(kmitl_project.budget_reserved)"
+                                    /> บาท
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">เบิกจ่ายแล้ว</span>
+                                <span class="fw-bold">
+                                    <t
+                                        t-out="'{:,.2f}'.format(kmitl_project.budget_consumed)"
                                     /> บาท
                                 </span>
                             </div>
@@ -308,6 +332,18 @@
                                         t-out="'{:,.2f}'.format(kmitl_project.budget_remaining)"
                                     /> บาท
                                 </span>
+                            </div>
+                            <div class="progress mb-2" style="height: 6px;">
+                                <div
+                                    class="progress-bar bg-success"
+                                    role="progressbar"
+                                    t-attf-style="width: #{min(kmitl_project.budget_consumed_percent, 100)}%;"
+                                />
+                            </div>
+                            <div class="text-muted small text-end mb-2">
+                                เบิกจ่ายแล้ว <t
+                                    t-out="'{:,.0f}'.format(kmitl_project.budget_consumed_percent)"
+                                />% ของงบที่จอง
                             </div>
                             <hr class="my-2" />
                             <div

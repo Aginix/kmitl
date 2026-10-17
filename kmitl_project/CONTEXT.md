@@ -40,9 +40,9 @@ _Avoid_: Project Manager / หัวหน้าโครงการ (`manager_
 Any of a project's หัวหน้าโครงการ, **Project Coordinator** or creator. A Project Owner has the project as **Own Project**: they read and edit it and all its tabs (still subject to each state's field locks), see it whatever their operating unit, and may raise its **Project Approval** หนังสือ. Project officers (Officer/Manager) may do all of this for every project in their own operating units. See [ADR-0008](./docs/adr/0008-project-owner-coordinator-extension.md).
 _Avoid_: "Responsible" (the label of the creator field `creating_user_id`) as a synonym for owner
 
-**Project Budget Estimate (งบประมาณโครงการ, `budget_estimate`)**:
+**Project Budget Estimate (งบประมาณที่ตั้งไว้, `budget_estimate`)**:
 The amount the project's author **sets out to raise** ("ตั้งเงินไว้ 1 ล้าน") — a hand-typed target, the yardstick against which the money actually received from Funding Units is tracked. Never moves money and is never reserved.
-_Avoid_: Project Budget (that is the received, computed `budget_amount`); budget plan total
+_Avoid_: Project Budget (that is the received, computed `budget_amount`); budget plan total; "งบประมาณโครงการ" (its former label — ambiguous with the Project Budget)
 
 **Funding Unit (ส่วนงานต้นทาง)**:
 The ส่วนงาน (`departments` dimension) on the **FROM side** of a transfer that moves money into a project's dimension — i.e. who the money came from. Each Funding Unit sends its support in **its own transfer**, so one transfer has exactly one Funding Unit. The transfer's OU (who keyed it, e.g. งานแผน on a unit's behalf) and the TO side's ส่วนงาน (always the project's own) never identify it.
@@ -63,6 +63,10 @@ _Avoid_: received (only inflows are "received"; ตัดงบ rows are posted,
 **Project Number (เลขที่รันโครงการ, `key`)**:
 A sequential running number that identifies a Project. Minted once, when the project is **submitted to งานแผน** (`draft→to_verify`, ส่งเข้าแผน — the moment its analytic account is created and its budget target is locked, ahead of the allocation), and stable for the project's life — a later reset-to-draft never re-issues or clears it. Stamped with the project's **fiscal year** (`account_fiscal_year_id`), which stays freely editable while the project is a first draft and is frozen once a Project Number exists. Reused as the `code` of the project's analytic account.
 _Avoid_: Project Code (รหัสโครงการ) — a distinct approval-time identifier, **not yet implemented**; do not conflate it with the Project Number even though both currently share the `key` field.
+
+**Project Budget Consumed (งบประมาณที่เบิกจ่ายแล้ว)**:
+What the project has actually **consumed (เบิกจ่าย / ตัดงบ)** from its reservation — the project-scope counterpart of a commitment's เบิกจ่าย. Excludes money only obligated (ผูกพัน) and purchase requests still in progress. Shown with the Project Budget Estimate, Project Budget, reserved amount and Project Budget Remaining as the project's budget summary (ตั้งไว้ → ได้รับจัดสรร → จอง → เบิกจ่าย → คงเหลือ).
+_Avoid_: used / ใช้ไป (could be read as including in-flight purchase requests)
 
 **Project Budget Remaining (งบประมาณคงเหลือ)**:
 A project's reserved `budget_amount` minus what has actually been **consumed (เบิกจ่าย)** from its commitment — the project money still available to spend. It is the project's own reservation-vs-spend, **not** the budget account's disbursement *Remaining (f)*, and **not** the พ.1 planning headroom (`budget_amount − Σ estimated_cost`) that caps how many purchase requests a project may raise.

@@ -449,7 +449,7 @@ class KmitlProject(models.Model):
     )
 
     budget_estimate = fields.Float(
-        string="งบประมาณโครงการ",
+        string="งบประมาณที่ตั้งไว้",
         digits="Product Price",
         tracking=True,
         readonly=True,
@@ -491,6 +491,17 @@ class KmitlProject(models.Model):
         string="งบประมาณคงเหลือ",
         compute="_compute_budget_remaining",
         help="งบประมาณที่จองไว้ของโครงการ หักด้วยยอดที่เบิกจ่าย (ใช้) ไปแล้ว",
+    )
+    budget_consumed = fields.Float(
+        string="งบประมาณที่เบิกจ่ายแล้ว",
+        digits="Product Price",
+        compute="_compute_budget_remaining",
+        help="ยอดที่เบิกจ่าย (ตัดงบ) แล้วจากใบจองของโครงการ",
+    )
+    budget_consumed_percent = fields.Float(
+        string="เบิกจ่ายแล้ว (%)",
+        compute="_compute_budget_remaining",
+        help="ยอดเบิกจ่ายแล้ว เทียบกับงบประมาณที่จอง",
     )
 
     activity_analytic_id = fields.Many2one(
@@ -785,7 +796,11 @@ class KmitlProject(models.Model):
                     lambda c: c.state != "cancel"
                 ).mapped("total_consumed")
             )
+            rec.budget_consumed = used
             rec.budget_remaining = rec.budget_reserved - used
+            rec.budget_consumed_percent = (
+                used / rec.budget_reserved * 100 if rec.budget_reserved else 0.0
+            )
 
     def action_open_budget_commitments(self):
         self.ensure_one()

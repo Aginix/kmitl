@@ -177,8 +177,11 @@ class TestProjectBudgetReserve(TransactionCase):
         project = self._make_project()
         project.action_confirm()
         self._allocate(project, 100000.0)
+        self.assertEqual(project.budget_consumed_percent, 0.0)
         self._reserve(project)
         self.assertAlmostEqual(project.budget_remaining, 100000.0)
+        self.assertEqual(project.budget_consumed, 0.0)
+        self.assertEqual(project.budget_consumed_percent, 0.0)
 
     def test_reserve_is_idempotent(self):
         """Re-running _reserve_project_commitment does not create a second commitment."""
