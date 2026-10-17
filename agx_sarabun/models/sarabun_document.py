@@ -1492,9 +1492,9 @@ class SarabunDocument(models.Model):
         }
 
     def action_open_pdf_preview(self):
-        """Open the official PDF in a preview dialog (ADR-0007) — the draft
-        'ดูตัวอย่างเอกสาร' button, since a draft has no inline preview yet. Sent
-        documents preview inline in the form via the sarabun_pdf_inline widget."""
+        """Open the official PDF in a preview dialog (ADR-0007) — the
+        'ดูตัวอย่างเอกสาร' button, offered in every state (an editable draft /
+        returned หนังสือ has no inline preview; a sent one also previews inline)."""
         self.ensure_one()
         return {
             "type": "ir.actions.client",
