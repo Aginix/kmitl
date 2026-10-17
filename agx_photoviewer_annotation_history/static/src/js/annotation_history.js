@@ -226,7 +226,7 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_annotation_history", {
         if (change) {
             this.setDrawing(false);
         }
-        this.drawButton.disabled = Boolean(change);
+        this.drawButton.disabled = Boolean(change) || this.locked;
         this.root.classList.toggle("o_agx_annotation_history_mode", Boolean(change));
         for (const element of this.historyPanel.querySelectorAll(
             ".o_agx_annotation_history_item"

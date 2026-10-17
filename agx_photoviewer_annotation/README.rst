@@ -14,6 +14,9 @@ an image or a PDF inside the photo viewer of ``agx_photoviewer``.
   the file itself is never modified (``docs/adr/0001``). Everyone who can read
   the attachment sees all marks and may add some; only the author changes or
   removes a mark, and drags their own comment pins to move them.
+* The module of a record may lock the annotations of its files, e.g. once the
+  record is done, by overriding ``_annotation_is_locked`` on its model (never
+  locked by default). A locked layer can still be viewed and exported.
 * **Download with annotations** builds a PDF of the file with the marks drawn
   on it and the comments listed on a last page; nothing is stored.
 * Leaving an annotated file posts one internal note on the chatter of the

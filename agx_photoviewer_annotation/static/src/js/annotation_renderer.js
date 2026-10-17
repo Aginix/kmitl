@@ -157,6 +157,8 @@ export class AnnotationEditor {
             return;
         }
         this.checksum = data.checksum;
+        // A Locked layer is shown, never changed.
+        this.locked = data.locked;
         this.annotations = data.annotations;
         this.buildDom();
         this.redraw();
@@ -214,6 +216,16 @@ export class AnnotationEditor {
                     _t(
                         "This file was replaced after it was annotated: some marks may be misplaced."
                     )
+                )
+            );
+        }
+        if (this.locked) {
+            this.drawButton.disabled = true;
+            this.root.append(
+                htmlElement(
+                    "div",
+                    "o_agx_annotation_locked alert alert-info m-0 py-1 px-2",
+                    _t("Annotations on this file are locked.")
                 )
             );
         }
@@ -663,7 +675,7 @@ export class AnnotationEditor {
         const annotation = shown?.id ? shown : undefined;
         if (annotation?.kind === "comment") {
             ev.preventDefault();
-            if (annotation.is_own && ev.button === 0) {
+            if (annotation.is_own && !this.locked && ev.button === 0) {
                 this.dragComment(ev, sheet, annotation, target);
             } else {
                 this.onTap(ev, () => this.openComment(sheet, annotation));
@@ -1044,7 +1056,7 @@ export class AnnotationEditor {
             ),
             htmlElement("div", "o_agx_annotation_popover_text", annotation.text)
         );
-        if (annotation.is_own) {
+        if (annotation.is_own && !this.locked) {
             const actions = htmlElement("div", "o_agx_annotation_popover_actions");
             const edit = htmlElement("button", "btn btn-sm btn-link p-0", _t("Edit"));
             edit.type = "button";
