@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="work_center_area_procurement" model="work.center.area">
+        <field name="name">งานพัสดุ</field>
+        <field name="code">procurement</field>
+        <field name="sequence">10</field>
+        <field
+            name="model_ids"
+            eval="[(4, ref('purchase_request.model_purchase_request'))]"
+        />
+    </record>
+
+    <!-- Card counters: only states where work is still open. Editable by the
+         work center manager, so not overwritten on upgrade. -->
+    <data noupdate="1">
+        <record id="counter_pr_draft" model="work.center.counter">
+            <field name="name">พ.1 ร่าง/ตีกลับ</field>
+            <field name="area_id" ref="work_center_area_procurement" />
+            <field name="model_id" ref="purchase_request.model_purchase_request" />
+            <field name="domain">[('state', 'in', ['draft', 'returned'])]</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="counter_pr_to_verify" model="work.center.counter">
+            <field name="name">พ.1 รอตรวจสอบ</field>
+            <field name="area_id" ref="work_center_area_procurement" />
+            <field name="model_id" ref="purchase_request.model_purchase_request" />
+            <field name="domain">[('state', '=', 'to_verify')]</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="counter_pr_to_verify_budget" model="work.center.counter">
+            <field name="name">พ.1 รอจองงบประมาณ</field>
+            <field name="area_id" ref="work_center_area_procurement" />
+            <field name="model_id" ref="purchase_request.model_purchase_request" />
+            <field name="domain">[('state', '=', 'to_verify_budget')]</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="counter_pr_to_approve" model="work.center.counter">
+            <field name="name">พ.1 รออนุมัติ</field>
+            <field name="area_id" ref="work_center_area_procurement" />
+            <field name="model_id" ref="purchase_request.model_purchase_request" />
+            <field name="domain">[('state', 'in', ['to_approve', 'sent'])]</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="counter_pr_in_process" model="work.center.counter">
+            <field name="name">พ.1 รอ e-GP / พจ.1</field>
+            <field name="area_id" ref="work_center_area_procurement" />
+            <field name="model_id" ref="purchase_request.model_purchase_request" />
+            <field name="domain">[('state', 'in', ['in_egp', 'in_approval'])]</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="counter_pr_approved" model="work.center.counter">
+            <field name="name">พ.1 อนุมัติแล้ว</field>
+            <field name="area_id" ref="work_center_area_procurement" />
+            <field name="model_id" ref="purchase_request.model_purchase_request" />
+            <field name="domain">[('state', '=', 'approved')]</field>
+            <field name="sequence">60</field>
+        </record>
+    </data>
+
+</odoo>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- No attrs on purpose: the work center stays editable in every state. -->
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">purchase.request.form (work center)</field>
+        <field name="model">purchase.request</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_kmitl.view_purchase_request_form"
+        />
+        <field name="arch" type="xml">
+            <field name="requesting_department_id" position="after">
+                <field name="work_center_id" options="{'no_create': True}" />
+                <field name="work_center_manual" invisible="1" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_tree" model="ir.ui.view">
+        <field name="name">purchase.request.tree (work center)</field>
+        <field name="model">purchase.request</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_kmitl.view_purchase_request_tree"
+        />
+        <field name="arch" type="xml">
+            <field name="requesting_department_id" position="after">
+                <field name="work_center_id" optional="show" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_search" model="ir.ui.view">
+        <field name="name">purchase.request.search (work center)</field>
+        <field name="model">purchase.request</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_kmitl.view_purchase_request_search"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='created_by_me']" position="after">
+                <filter
+                    name="my_work_centers"
+                    string="งานในศูนย์งานของฉัน"
+                    domain="[('work_center_id.member_ids', 'in', [uid])]"
+                />
+                <filter
+                    name="no_work_center"
+                    string="ยังไม่มีศูนย์งาน"
+                    domain="[('work_center_id', '=', False)]"
+                />
+            </xpath>
+            <field name="requesting_department_id" position="after">
+                <field name="work_center_id" />
+            </field>
+            <filter name="group_requesting_department" position="after">
+                <filter
+                    name="group_work_center"
+                    string="ศูนย์งาน"
+                    context="{'group_by': 'work_center_id'}"
+                />
+            </filter>
+        </field>
+    </record>
+
+</odoo>

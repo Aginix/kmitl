@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="work_center_view_tree" model="ir.ui.view">
+        <field name="name">work.center.tree</field>
+        <field name="model">work.center</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="code" optional="show" />
+                <field name="area_id" />
+                <field name="operating_unit_id" />
+                <field name="member_ids" widget="many2many_avatar_user" />
+                <field name="is_unassigned" invisible="1" />
+                <field name="company_id" groups="base.group_multi_company" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="work_center_view_form" model="ir.ui.view">
+        <field name="name">work.center.form</field>
+        <field name="model">work.center</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1>
+                            <field
+                                name="name"
+                                placeholder="เช่น ศูนย์งานภาควิชาไฟฟ้า"
+                            />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="area_id" options="{'no_create': True}" />
+                            <field
+                                name="operating_unit_id"
+                                options="{'no_create': True}"
+                                attrs="{'invisible': [('is_unassigned', '=', True)]}"
+                            />
+                            <field name="code" />
+                        </group>
+                        <group>
+                            <field name="active" invisible="1" />
+                            <field name="is_unassigned" invisible="1" />
+                            <field name="color" widget="color_picker" />
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                                options="{'no_create': True}"
+                            />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page
+                            name="members"
+                            string="Members"
+                            attrs="{'invisible': [('is_unassigned', '=', True)]}"
+                        >
+                            <field name="member_ids" widget="many2many_tags_avatar" />
+                        </page>
+                        <page
+                            name="rules"
+                            string="Routing Rules"
+                            groups="work_center.group_work_center_manager"
+                            attrs="{'invisible': [('is_unassigned', '=', True)]}"
+                        >
+                            <field name="rule_ids">
+                                <tree>
+                                    <field name="sequence" widget="handle" />
+                                    <field name="model_id" />
+                                    <field name="domain" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="work_center_view_search" model="ir.ui.view">
+        <field name="name">work.center.search</field>
+        <field name="model">work.center</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="area_id" />
+                <field name="operating_unit_id" />
+                <field name="member_ids" />
+                <filter
+                    name="my_work_centers"
+                    string="ศูนย์งานของฉัน"
+                    domain="['|', ('member_ids', 'in', [uid]), ('is_unassigned', '=', True)]"
+                />
+                <filter
+                    name="central"
+                    string="ส่วนกลาง"
+                    domain="[('operating_unit_id', '=', False), ('is_unassigned', '=', False)]"
+                />
+                <separator />
+                <filter
+                    name="archived"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_area"
+                        string="Work Area"
+                        context="{'group_by': 'area_id'}"
+                    />
+                    <filter
+                        name="group_operating_unit"
+                        string="Operating Unit"
+                        context="{'group_by': 'operating_unit_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Overview: one card per work center, a configurable list of counters
+         on each (work.center.counter). Each counter row is an object button
+         passing its counter id through the button context. -->
+    <record id="work_center_view_kanban" model="ir.ui.view">
+        <field name="name">work.center.kanban</field>
+        <field name="model">work.center</field>
+        <field name="arch" type="xml">
+            <kanban
+                class="oe_background_grey o_kanban_dashboard o_work_center_kanban"
+                create="0"
+            >
+                <field name="color" />
+                <field name="is_unassigned" />
+                <field name="counter_data" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div
+                            t-attf-class="#{kanban_color(record.color.raw_value)} #{record.is_unassigned.raw_value ? 'border-warning' : ''}"
+                        >
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary">
+                                        <i
+                                            t-if="record.is_unassigned.raw_value"
+                                            class="fa fa-inbox me-1"
+                                            title="ยังไม่มีศูนย์งาน"
+                                        />
+                                        <field name="name" />
+                                    </div>
+                                    <div class="o_secondary text-muted">
+                                        <field name="operating_unit_id" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container o_kanban_card_content">
+                                <div
+                                    class="row"
+                                    t-foreach="record.counter_data.raw_value"
+                                    t-as="counter"
+                                    t-key="counter.id"
+                                >
+                                    <div class="col-9">
+                                        <a
+                                            name="action_open_counter"
+                                            type="object"
+                                            t-att-context="{'work_center_counter_id': counter.id}"
+                                        >
+                                            <t t-esc="counter.name" />
+                                        </a>
+                                    </div>
+                                    <div
+                                        t-attf-class="col-3 text-end #{counter.count ? 'fw-bold' : 'text-muted'}"
+                                    >
+                                        <t t-esc="counter.count" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_work_center_card_footer mt-2 px-3 pb-2">
+                                <field
+                                    name="member_ids"
+                                    widget="many2many_avatar_user"
+                                />
+                                <a
+                                    type="edit"
+                                    class="float-end"
+                                    groups="work_center.group_work_center_manager"
+                                    title="ตั้งค่า"
+                                >
+                                    <i class="fa fa-cog" />
+                                </a>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="work_center_action" model="ir.actions.act_window">
+        <field name="name">ศูนย์งาน</field>
+        <field name="res_model">work.center</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_group_area': 1}</field>
+    </record>
+
+</odoo>
