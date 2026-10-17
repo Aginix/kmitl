@@ -21,3 +21,6 @@ class BudgetTransfer(models.Model):
         copy=False,
         index=True,
     )
+
+    def _skip_submit_review(self):
+        return self.is_floating_allocation or super()._skip_submit_review()

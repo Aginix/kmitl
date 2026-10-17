@@ -358,6 +358,14 @@ class BudgetTransfer(models.Model):
     # ------------------------------------------------------------------
     # Workflow
     # ------------------------------------------------------------------
+    def _skip_submit_review(self):
+        """Hook: True for a transfer that posts straight after ยืนยัน with no
+        approval (e.g. a Direct Floating Allocation). Modules adding a review
+        step between ยืนยัน and approval leave such a transfer in
+        ``submitted``."""
+        self.ensure_one()
+        return False
+
     def action_submit(self):
         if not (
             self.env.user.has_group("budget.group_budget_user") or self.env.is_admin()
