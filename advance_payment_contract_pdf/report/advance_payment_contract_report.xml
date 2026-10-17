@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- No binding_model_id: printed from the form's header button only. -->
+    <record id="action_report_advance_payment_contract" model="ir.actions.report">
+        <field name="name">สัญญาการยืมเงิน</field>
+        <field name="model">advance.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field
+            name="report_name"
+        >advance_payment_contract_pdf.report_advance_payment_contract</field>
+        <field
+            name="report_file"
+        >advance_payment_contract_pdf.report_advance_payment_contract</field>
+        <field
+            name="print_report_name"
+        >'สัญญาการยืมเงิน - %s' % (object.contract_number or object.name)</field>
+        <field name="paperformat_id" ref="paperformat_advance_payment_contract" />
+    </record>
+
+</odoo>
