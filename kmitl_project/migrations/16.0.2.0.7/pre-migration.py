@@ -12,8 +12,8 @@ def migrate(cr, version):
     if not version:
         return
     cr.execute(
-        """SELECT id, introduction FROM kmitl_project
-        WHERE introduction IS NOT NULL AND introduction NOT LIKE '<%'"""
+        # Every value is still plain text: the field was Text until now.
+        "SELECT id, introduction FROM kmitl_project WHERE introduction IS NOT NULL"
     )
     rows = cr.fetchall()
     for project_id, text in rows:

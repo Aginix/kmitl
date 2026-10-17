@@ -892,7 +892,7 @@ class KmitlProject(models.Model):
                 return word_tokenize(line, engine="newmm", keep_whitespace=True)
 
         except ImportError:
-            _logger.debug("pythainlp is not installed; Thai text not segmented")
+            _logger.warning("pythainlp is not installed; Thai text not segmented")
 
             def tokenize(line):
                 return [token for token in re.split(r"(\s+)", line) if token]
@@ -943,7 +943,13 @@ class KmitlProject(models.Model):
 
         lines = []
         for line in text.split("\n"):
-            parts = runs(line)
+            body = line.lstrip(" \t")
+            # The CSS white-space: pre-line collapses leading spaces: keep the
+            # line's indent as non-breaking spaces.
+            indent = line[: len(line) - len(body)].replace("\t", "    ")
+            parts = (
+                [indent.replace(" ", "\xa0"), ""] + runs(body) if indent else runs(body)
+            )
             lines.append(
                 Markup("").join(
                     Markup('<span class="rs">%s</span>') % part
