@@ -61,14 +61,13 @@
                         string="Duplicate to New Draft"
                         attrs="{'invisible': [('state', '!=', 'rejected')]}"
                     />
-                    <!-- A draft has no inline preview → this button opens the preview
-                         dialog. Once sent, the preview is embedded inline (below the
-                         header) and Print opens the raw PDF in a new tab. -->
+                    <!-- Preview dialog in every state (user feedback) — an editable
+                         (draft / returned) หนังสือ has no inline preview, and even a sent
+                         one is easier to check in the dialog than via the PDF download. -->
                     <button
                         name="action_open_pdf_preview"
                         type="object"
                         string="ดูตัวอย่างเอกสาร"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}"
                     />
                     <button
                         name="action_print_report"
