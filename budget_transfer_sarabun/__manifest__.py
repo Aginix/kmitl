@@ -2,7 +2,7 @@
     "name": "KMITL Budget Transfer — e-Saraban Approval",
     "summary": """ Route a Budget Transfer for approval (ขออนุมัติโอนงบประมาณ) """
     """ through e-Saraban """,
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
