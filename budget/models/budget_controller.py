@@ -213,9 +213,7 @@ class BudgetController(models.AbstractModel):
     @staticmethod
     def _self_and_ancestor_ids(record):
         """ids along ``parent_path`` (root-first), including the record itself."""
-        ids = [
-            int(x) for x in (record.parent_path or "").strip("/").split("/") if x
-        ]
+        ids = [int(x) for x in (record.parent_path or "").strip("/").split("/") if x]
         return ids or record.ids
 
     def _appropriation_domain(self, fiscal_year_id, company_id):
@@ -251,9 +249,7 @@ class BudgetController(models.AbstractModel):
         # account and each used dimension may sit at-or-above the reservation;
         # dimensions the reservation does NOT use must be empty, else a pool
         # carrying any value there would leak in (cross-dimension).
-        domain = base + [
-            ("account_id", "in", self._self_and_ancestor_ids(account))
-        ]
+        domain = base + [("account_id", "in", self._self_and_ancestor_ids(account))]
         for column, acc in dims.items():
             domain.append((column, "in", self._self_and_ancestor_ids(acc)))
         domain += self._absent_dim_leaves(dims)
@@ -385,8 +381,8 @@ class BudgetController(models.AbstractModel):
         # sudo: a shared pool may carry reservations from other operating units
         # (ADR-0011/0016). Counting them can only *lower* Available, never leak
         # budget, so the OU fence is dropped on the usage side only.
-        groups = self.env["budget.commitment.line"].sudo().read_group(
-            domain, ["amount"], []
+        groups = (
+            self.env["budget.commitment.line"].sudo().read_group(domain, ["amount"], [])
         )
         return (groups[0].get("amount") or 0.0) if groups else 0.0
 
@@ -414,8 +410,10 @@ class BudgetController(models.AbstractModel):
             ("budget_type", "=", "expense")
         ]
         state = defaultdict(float)
-        for grp in self.env["budget.move.line"].sudo().read_group(
-            domain, ["balance"], ["account_id"] + dim_columns, lazy=False
+        for grp in (
+            self.env["budget.move.line"]
+            .sudo()
+            .read_group(domain, ["balance"], ["account_id"] + dim_columns, lazy=False)
         ):
             account = (grp.get("account_id") or [None])[0]
             if not account:
@@ -478,19 +476,27 @@ class BudgetController(models.AbstractModel):
         rounding = self._pool_rounding(company_id)
         state = self._posted_pool_state(fiscal_year_id, company_id)
         touched = set()
+        # drawn from a code with no money of its own (FROM at an unfunded code)
+        unfunded = set()
         for coord, delta in candidates:
             was_zero = float_is_zero(state[coord], precision_rounding=rounding)
             state[coord] += delta
             # new pool (was zero) or topped up (positive delta): worth checking.
             if delta > 0 or was_zero:
                 touched.add(coord)
+            if delta < 0 and was_zero:
+                unfunded.add(coord)
         nonzero = {
             coord
             for coord, net in state.items()
             if not float_is_zero(net, precision_rounding=rounding)
         }
-        for coord, other in self._nested_pairs(nonzero, touched & nonzero):
-            raise ValidationError(self._pool_nesting_message(coord, other))
+        # unfunded draws first: their conflict is the one the user has to fix
+        coords = sorted(touched & nonzero, key=lambda coord: coord not in unfunded)
+        for coord, other in self._nested_pairs(nonzero, coords):
+            raise ValidationError(
+                self._pool_nesting_message(coord, other, coord in unfunded)
+            )
 
     def scan_pool_overlaps(self, fiscal_year_id, company_id=None):
         """Read-only list of nested (comparable) pool pairs for a fiscal year.
@@ -507,9 +513,7 @@ class BudgetController(models.AbstractModel):
             for coord, net in state.items()
             if not float_is_zero(net, precision_rounding=rounding)
         ]
-        pairs = {
-            tuple(sorted(pair)) for pair in self._nested_pairs(nonzero, nonzero)
-        }
+        pairs = {tuple(sorted(pair)) for pair in self._nested_pairs(nonzero, nonzero)}
         return sorted(pairs)
 
     def _coord_label(self, coord):
@@ -519,26 +523,54 @@ class BudgetController(models.AbstractModel):
         analytic = self.env["account.analytic.account"]
         for column, value in zip(self._DIM_COLUMNS.values(), coord[1:]):
             if value:
+                parts.append("%s=%s" % (column, analytic.browse(value).display_name))
+        return " / ".join(parts)
+
+    def _coord_diff_label(self, coord, other):
+        """Short label of ``coord``: the account plus only the dimensions on
+        which it differs from ``other`` (the axes the user has to fix)."""
+        account = self.env["budget.account"].browse(coord[0])
+        parts = ["[%s] %s" % (account.code, account.name)]
+        analytic = self.env["account.analytic.account"]
+        for value, other_value in zip(coord[1:], other[1:]):
+            if value != other_value:
+                dim = analytic.browse(value or other_value)
                 parts.append(
-                    "%s=%s" % (column, analytic.browse(value).display_name)
+                    "%s: %s"
+                    % (dim.root_plan_id.name, value and dim.display_name or "-")
                 )
         return " / ".join(parts)
 
-    def _pool_nesting_message(self, coord, other):
-        return _(
-            "กองงบประมาณซ้อนกันไม่ได้ (pools may not nest):\n"
-            "- %(a)s\n"
-            "- %(b)s\n"
-            "จัดสรร/โอนงบไปที่รหัสของกองงบเดียว หรือใช้รหัสที่ไม่ทับซ้อนกับกองงบเดิม"
-        ) % {"a": self._coord_label(coord), "b": self._coord_label(other)}
+    def _pool_nesting_message(self, coord, other, unfunded=False):
+        labels = {
+            "a": self._coord_diff_label(coord, other),
+            "b": self._coord_diff_label(other, coord),
+        }
+        if unfunded:
+            return (
+                _(
+                    "โอนออก/ปรับลดงบจากรหัสนี้ไม่ได้ เพราะรหัสนี้ไม่ได้รับจัดสรรงบโดยตรง\n"
+                    "- รหัสที่เลือก: %(a)s\n"
+                    "- งบจัดสรรไว้ที่: %(b)s\n"
+                    "กรุณาเปลี่ยนไปใช้รหัสที่ได้รับจัดสรรงบ"
+                )
+                % labels
+            )
+        return (
+            _(
+                "จัดสรร/โอนงบเข้ารหัสนี้ไม่ได้ เพราะทับซ้อนกับรหัสที่มีงบจัดสรรอยู่แล้ว\n"
+                "- รหัสที่เลือก: %(a)s\n"
+                "- มีงบจัดสรรอยู่แล้วที่: %(b)s\n"
+                "กรุณาจัดสรร/โอนเข้ารหัสที่มีงบอยู่แล้ว หรือเลือกรหัสที่ไม่ทับซ้อนกัน"
+            )
+            % labels
+        )
 
     def _format_budget_shortage_message(
         self, analytic_data, available_amount, requested_amount
     ):
         """Format detailed budget shortage error message"""
-        account = self.env["budget.account"].browse(
-            analytic_data.get("account_id")
-        )
+        account = self.env["budget.account"].browse(analytic_data.get("account_id"))
         activity = self.env["account.analytic.account"].browse(
             analytic_data.get("activity_analytic_id")
         )
@@ -618,22 +650,18 @@ class BudgetController(models.AbstractModel):
 
         if commitment.state not in ["reserved", "partial"]:
             raise UserError(
-                _(
-                    "Budget commitment must be in reserved or partial state to consume."
-                )
+                _("Budget commitment must be in reserved or partial state to consume.")
             )
 
         # Get first reserve line for analytic info
         first_reserve = commitment.line_ids.filtered(
-            lambda l: l.move_type == "reserve" and l.state == "posted"
+            lambda line: line.move_type == "reserve" and line.state == "posted"
         )[:1]
 
         if not first_reserve:
             raise UserError(_("No active reserve lines found on commitment."))
 
-        consume_amount = (
-            amount if amount else commitment.available_to_consume
-        )
+        consume_amount = amount if amount else commitment.available_to_consume
 
         consume_line = self.env["budget.commitment.line"].create(
             {

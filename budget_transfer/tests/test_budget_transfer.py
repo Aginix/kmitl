@@ -231,7 +231,7 @@ class TestBudgetTransfer(TransactionCase):
                 }
             ],
         )
-        with self.assertRaises(ValidationError):
+        with self.assertRaisesRegex(ValidationError, "ไม่ได้รับจัดสรรงบโดยตรง"):
             transfer.action_submit()
 
     # ------------------------------------------------------------------
