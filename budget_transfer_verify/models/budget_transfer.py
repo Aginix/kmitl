@@ -155,6 +155,45 @@ class BudgetTransfer(models.Model):
         domain = self.env["ir.rule"].with_user(user)._compute_domain(self._name)
         return not domain or bool(self.sudo().filtered_domain(domain))
 
+    def write(self, vals):
+        """Changing the verifier while waiting (``to_verify``) hands the
+        verify To-Do over to the new Buddy. Transitions that stamp the
+        verifier together with a new state (ยืนยันตรวจสอบ) are left alone."""
+        reassigned = self.browse()
+        if "verifier_id" in vals and "state" not in vals:
+            reassigned = self.filtered(
+                lambda t: (
+                    t.state == "to_verify" and t.verifier_id.id != vals["verifier_id"]
+                )
+            )
+        res = super().write(vals)
+        reassigned._reassign_verify_activity()
+        return res
+
+    def _reassign_verify_activity(self):
+        activity_type = self.env.ref(VERIFY_ACTIVITY)
+        for transfer in self:
+            buddy = transfer.verifier_id
+            if not buddy:
+                raise UserError(_("กรุณาระบุ Buddy ผู้ตรวจสอบ"))
+            if not transfer._buddy_can_read(buddy):
+                raise UserError(
+                    _("%s ไม่มีสิทธิ์เข้าถึงใบโอนนี้ กรุณาเลือก Buddy ผู้ตรวจสอบคนอื่น") % buddy.name
+                )
+            activities = transfer.activity_ids.filtered(
+                lambda a, t=activity_type: a.activity_type_id == t
+            )
+            if activities:
+                # The editor may not own the To-Do; they already passed the
+                # transfer's write check above.
+                activities.sudo().write({"user_id": buddy.id})
+            else:
+                transfer.activity_schedule(
+                    VERIFY_ACTIVITY,
+                    user_id=buddy.id,
+                    summary=_("ตรวจสอบการโอนงบประมาณ %s") % transfer.name,
+                )
+
     def _check_can_verify(self):
         is_admin = self.env.is_admin()
         for transfer in self:

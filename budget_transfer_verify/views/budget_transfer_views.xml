@@ -41,7 +41,7 @@
                         <field
                             name="verifier_id"
                             options="{'no_create': True}"
-                            attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('state', 'in', ('posted', 'cancelled')), ('verifier_id', '=', False)]}"
+                            attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'submitted'))], 'invisible': [('state', 'in', ('posted', 'cancelled')), ('verifier_id', '=', False)]}"
                         />
                         <field
                             name="verify_date"

@@ -162,6 +162,15 @@ class TestBudgetTransferVerify(TransactionCase):
         transfer.with_user(self.outsider).action_verify()
         self.assertEqual(transfer.state, "submitted")
 
+    def test_changing_verifier_while_waiting_moves_the_todo(self):
+        transfer = self._submitted_for_verify()
+        transfer.verifier_id = self.outsider
+        activity = self._activities(transfer, VERIFY_ACTIVITY)
+        self.assertEqual(activity.user_id, self.outsider, "handed over, not duplicated")
+        transfer.with_user(self.outsider).action_verify()
+        self.assertEqual(transfer.state, "submitted")
+        self.assertEqual(transfer.verifier_id, self.outsider)
+
     def test_verifier_without_access_blocks_confirm(self):
         blind = self.env["res.groups"].create({"name": "BV blind"})
         self.env["ir.rule"].create(
