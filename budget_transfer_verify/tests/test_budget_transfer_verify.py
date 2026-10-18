@@ -60,10 +60,15 @@ class TestBudgetTransferVerify(TransactionCase):
         cls.outsider = new_test_user(env, login="bv_outsider", groups=buddy_groups)
         Buddy = env["budget.buddy"]
         # Primary buddy on the unit itself, a backup via the parent faculty.
-        Buddy.create({"user_id": cls.buddy.id, "department_analytic_id": cls.dept.id})
-        Buddy.create(
-            {"user_id": cls.buddy2.id, "department_analytic_id": cls.faculty.id}
-        )
+        transfer_model = env["ir.model"]._get("budget.transfer")
+        for user, unit in ((cls.buddy, cls.dept), (cls.buddy2, cls.faculty)):
+            Buddy.create(
+                {
+                    "user_id": user.id,
+                    "model_id": transfer_model.id,
+                    "domain": "[('department_analytic_id', 'child_of', %d)]" % unit.id,
+                }
+            )
 
         move = env["budget.move"].create(
             {

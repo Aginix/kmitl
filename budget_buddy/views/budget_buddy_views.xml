@@ -8,8 +8,7 @@
             <tree string="Buddy ดูแลหน่วยงาน">
                 <field name="sequence" widget="handle" />
                 <field name="user_id" options="{'no_create': True}" />
-                <field name="department_analytic_id" options="{'no_create': True}" />
-                <field name="model_id" optional="show" />
+                <field name="model_id" />
                 <field name="domain" optional="show" />
                 <field name="company_id" groups="base.group_multi_company" />
                 <field name="active" widget="boolean_toggle" />
@@ -25,10 +24,6 @@
                 <sheet>
                     <group>
                         <field name="user_id" options="{'no_create': True}" />
-                        <field
-                            name="department_analytic_id"
-                            options="{'no_create': True}"
-                        />
                         <field name="model_id" options="{'no_create': True}" />
                         <field name="model_name" invisible="1" />
                         <field name="sequence" />
@@ -52,7 +47,7 @@
         <field name="arch" type="xml">
             <search string="Buddy ดูแลหน่วยงาน">
                 <field name="user_id" />
-                <field name="department_analytic_id" />
+                <field name="model_id" />
                 <separator />
                 <filter
                     name="inactive"
@@ -66,9 +61,9 @@
                         context="{'group_by': 'user_id'}"
                     />
                     <filter
-                        name="group_by_department"
-                        string="ส่วนงาน"
-                        context="{'group_by': 'department_analytic_id'}"
+                        name="group_by_model"
+                        string="Document Model"
+                        context="{'group_by': 'model_id'}"
                     />
                 </group>
             </search>
@@ -83,8 +78,8 @@
             <p
                 class="o_view_nocontent_smiling_face"
             >กำหนดเจ้าหน้าที่ Buddy ที่ดูแลแต่ละส่วนงาน</p>
-            <p>Buddy ที่ดูแลส่วนงานหลักจะดูแลส่วนงานย่อยทั้งหมดด้วย
-                หากระบุเอกสารและเงื่อนไข Buddy จะดูแลเฉพาะเอกสารที่ตรงเงื่อนไขนั้น</p>
+            <p>ระบุเอกสารและเงื่อนไข Buddy จะดูแลเฉพาะเอกสารที่ตรงเงื่อนไขนั้น
+                เช่น ส่วนงาน "อยู่ภายใต้" (child_of) ส่วนงานหลัก เพื่อดูแลส่วนงานย่อยทั้งหมดด้วย</p>
         </field>
     </record>
 

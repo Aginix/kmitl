@@ -45,13 +45,11 @@ class BudgetTransfer(models.Model):
     # Computes
     # ------------------------------------------------------------------
     def _get_buddies(self):
-        """Buddies covering this transfer (unit + their model/domain rules),
-        primary first. Evaluated on demand: a rule's domain may read any field,
-        so it cannot sit behind a cached compute keyed on the unit alone."""
+        """Buddies whose rows match this transfer, primary first. Evaluated
+        on demand: a row's domain may read any field, so it cannot sit behind
+        a cached compute keyed on the unit alone."""
         self.ensure_one()
-        return self.env["budget.buddy"]._get_buddy_users(
-            self.department_analytic_id, self
-        )
+        return self.env["budget.buddy"]._get_buddy_users(self)
 
     def _is_covering_buddy(self):
         self.ensure_one()
