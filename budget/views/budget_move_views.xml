@@ -75,6 +75,7 @@
                             <field name="source_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="budget_type" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" attrs="{'readonly': [('id', '!=', False)]}" />
                             <field name="move_type" required="1" />
+                            <field name="commitment_id" attrs="{'invisible': [('commitment_id', '=', False)]}" readonly="1" />
                             <field name="appropriation_type" attrs="{'invisible': [('move_type', '!=', 'appropriation')], 'required': [('move_type', '=', 'appropriation')]}" />
                         </group>
                     </group>
@@ -140,6 +141,9 @@
             <tree create="false" edit="false" delete="false" expand="context.get('expand', False)" sample="1">
                 <field name="budget_type" />
                 <field name="move_id" widget="many2onebutton" />
+                <field name="move_type" optional="show" />
+                <field name="commitment_id" optional="show" />
+                <field name="is_liquidation" optional="hide" />
                 <field name="account_fiscal_year_id" />
                 <field name="source_analytic_id" />
                 <field name="department_analytic_id" />
@@ -216,6 +220,12 @@
                 <field name="department_analytic_id" domain="[('root_plan_id.code', '=', 'departments')]" />
                 <field name="fund_analytic_id" domain="[('root_plan_id.code', '=', 'funds')]" />
                 <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
+                <field name="commitment_id" />
+                <separator />
+                <filter string="งบประมาณ (a)" name="bucket_current" domain="[('move_type', 'in', ('appropriation', 'entry'))]" />
+                <filter string="จองงบ" name="bucket_reserve" domain="[('move_type', '=', 'reserve')]" />
+                <filter string="ผูกพัน" name="bucket_obligate" domain="[('move_type', '=', 'obligate')]" />
+                <filter string="เบิกจ่าย" name="bucket_consume" domain="[('move_type', '=', 'consume')]" />
                 <separator />
                 <group expand="1" name="group_by" string="Group By">
                     <filter string="Fiscal Year" name="account_fiscal_year_id" domain="[]" context="{'group_by':'account_fiscal_year_id'}" />
@@ -223,6 +233,8 @@
                     <filter string="Activity" name="activity_analytic_id" domain="[]" context="{'group_by':'activity_analytic_id'}" />
                     <filter string="Fund" name="fund_analytic_id" domain="[]" context="{'group_by':'fund_analytic_id'}" />
                     <filter string="Source" name="source_analytic_id" domain="[]" context="{'group_by':'source_analytic_id'}" />
+                    <filter string="ประเภท" name="group_move_type" context="{'group_by': 'move_type'}" />
+                    <filter string="ใบจองงบประมาณ" name="group_commitment" context="{'group_by': 'commitment_id'}" />
                 </group>
             </search>
         </field>

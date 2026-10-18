@@ -77,3 +77,19 @@ class BudgetMoveLine(models.Model):
             "target": "new",
             "url": f"/web#id={record.id}&model=procurement.plan&view_type=form",
         }
+
+    def _get_pool_owner_commitment(self):
+        """The reservations of the plan a ``procurement_plan`` tag names, so a
+        transfer onto/off its coordinate tops it up / releases it (budget
+        ADR-0017, Q5)."""
+        commitments = super()._get_pool_owner_commitment()
+        if self.procurement_plan_analytic_id:
+            plans = (
+                self.env["procurement.plan"]
+                .sudo()
+                .search(
+                    [("analytic_account_id", "=", self.procurement_plan_analytic_id.id)]
+                )
+            )
+            commitments |= plans.budget_commitment_ids
+        return commitments

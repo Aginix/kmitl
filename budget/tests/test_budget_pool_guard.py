@@ -189,6 +189,9 @@ class TestBudgetPoolGuard(TransactionCase):
         move = self._move(
             [{"account_id": self.child.id, "balance": 20_000}], move_type="consume"
         )
+        # posted as a ledger event: a bare manual consume is a Budget Manager's
+        # direct consumption with its own checks (ADR-0019), not this test's point
+        move = move.with_context(budget_ledger_posting=True)
         move.action_review()
         move.action_post()  # must not raise
         self.assertEqual(move.state, "posted")

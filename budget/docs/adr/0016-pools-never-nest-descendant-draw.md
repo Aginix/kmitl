@@ -34,6 +34,6 @@ With the invariant in place, at most one funded coordinate ever covers a reserva
 ## Known limitations (pre-existing, noted)
 
 - Un-posting a posted move (`button_draft`) can leave reservations with no pool behind them (follow-up: manager-only or shrink check).
-- Tagged reservations are subtracted twice from untagged pools (`_sum_used` leaves tags unpinned).
+- Tagged reservations are subtracted twice from untagged pools (`_sum_used` leaves tags unpinned). **Resolved** by [ADR-0017](./0017-commitment-events-posted-to-budget-ledger.md) (pool tags pinned on both sides).
 - Re-parenting accounts after posting bypasses the guard; the scan detects it.
 - Two conflicting postings at the same instant can race (no lock); the scan detects it.
