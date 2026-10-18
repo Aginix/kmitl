@@ -44,14 +44,6 @@
         <p>รายละเอียดงบประมาณ</p>
         <table border="0" class="budget">
             <tbody>
-                <tr class="o_field_budget_commitment_id">
-                    <td>เลขที่ใบจองงบประมาณ</td>
-                    <td><span t-field="o.budget_commitment_id"/></td>
-                </tr>
-                <tr class="o_field_budget_account_id">
-                    <td>รหัสงบประมาณค่าใช้จ่าย</td>
-                    <td><span t-field="o.budget_account_id"/></td>
-                </tr>
                 <tr class="o_field_source_analytic_id">
                     <td>แหล่งเงิน</td>
                     <td><span t-field="o.source_analytic_id"/></td>

@@ -3,7 +3,8 @@
 The disbursement request (DR, ใบขอเบิก) and the workflow it passes through:
 `draft → submitted → signed → verified → approved`, after which the accounting /
 finance bridges raise bills and payments. At `verified` the request must clear a
-**two-approver step** before it is approved and the budget is committed.
+**two-approver step** before it is approved — and, under **budget control**,
+the budget is consumed.
 
 ## Language
 
@@ -11,6 +12,17 @@ finance bridges raise bills and payments. At `verified` the request must clear a
 The document requesting a disbursement. Always pays a name list (multi-partner);
 one line per payee. Tracked as `disbursement.request`.
 _Avoid_: Payment (that is the downstream document), Voucher.
+
+**Budget control** (การควบคุมงบประมาณ):
+A request linked to a reserved budget commitment (ใบจองงบประมาณ) and a budget
+code (รหัสงบประมาณค่าใช้จ่าย), consumed on the Rector-delegated approval and
+reversed on cancel. Optional — provided by `disbursement_budget` (see ADR 0003).
+_Avoid_: Budget check (that is the availability check inside the budget module).
+
+**Stand-alone request** (ใบขอเบิกแบบอิสระ):
+A DR raised without budget control and without a source document — only the
+request itself, its payees and its financial dimensions.
+_Avoid_: Manual DR, Free DR.
 
 **Verify** (ตรวจสอบ):
 The disbursement officer's check that moves a signed request to `verified`
@@ -30,7 +42,7 @@ _Avoid_: Manager approval, Verify.
 The **second/final** approval, performed by the approver holding the Rector's
 delegated authority. Recorded in `rector_approver_id`. Belongs to
 `disbursement.group_disbursement_rector_delegate`. This approval — and only this
-one — obligates and consumes the budget.
+one — consumes the budget, when the request is under **budget control**.
 _Avoid_: Director approval (ambiguous), Second approval (state it by role).
 
 **Reject** (ตีกลับ):

@@ -6,15 +6,11 @@ from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
 _DR = "disbursement.request"
-_BUDGET_HOOK = "odoo.addons.disbursement.models.disbursement_request." \
-    "DisbursementRequest._action_approve_budget"
 
 
-@tagged("post_install", "-at_install")
-class TestTwoApprover(TransactionCase):
-    """The verified request needs two approvals in sequence: the Finance
-    Division Director then the Rector-delegated approver. The budget is
-    consumed only on the second (Rector) approval."""
+class TwoApproverCommon(TransactionCase):
+    """Approvers, dimensions and a verified-request factory, shared with the
+    disbursement_budget tests."""
 
     @classmethod
     def setUpClass(cls):
@@ -88,6 +84,19 @@ class TestTwoApprover(TransactionCase):
         self.assertEqual(dr.state, "verified")
         return dr
 
+    def _patch_final_approval(self):
+        """Stub the final-approval hook on the registry class, so whatever the
+        installed bridges hang on it (disbursement_budget consumes the budget)
+        is bypassed too."""
+        return patch.object(type(self.DR), "_on_final_approval")
+
+
+@tagged("post_install", "-at_install")
+class TestTwoApprover(TwoApproverCommon):
+    """The verified request needs two approvals in sequence: the Finance
+    Division Director then the Rector-delegated approver. Only the second
+    (Rector) approval fires the final-approval hook."""
+
     def test_validate_opens_finance_step_with_todo(self):
         dr = self._make_verified_dr()
         self.assertEqual(dr.approval_state, "pending_finance")
@@ -102,32 +111,24 @@ class TestTwoApprover(TransactionCase):
 
     def test_full_two_step_approval(self):
         dr = self._make_verified_dr()
-        # Step 1: Finance Director — no budget touched, hands to the Rector.
-        dr.with_user(self.finance).action_approve_finance()
+        # Step 1: Finance Director — no hook fired, hands to the Rector.
+        with self._patch_final_approval() as hook:
+            dr.with_user(self.finance).action_approve_finance()
+        hook.assert_not_called()
         self.assertEqual(dr.approval_state, "pending_rector")
         self.assertEqual(dr.state, "verified")
         self.assertEqual(dr.finance_approver_id, self.finance)
-        self.assertEqual(dr.budget_consumed_amount, 0.0)
         self.assertFalse(self._todos(dr, self.act_finance))
         self.assertIn(self.rector, self._todos(dr, self.act_rector).user_id)
 
-        # Step 2: Rector-delegated approver — budget hook fires here only.
-        with patch(_BUDGET_HOOK) as budget_hook:
+        # Step 2: Rector-delegated approver — the hook fires here only.
+        with self._patch_final_approval() as hook:
             dr.with_user(self.rector).action_approve()
-        budget_hook.assert_called_once()
+        hook.assert_called_once()
         self.assertEqual(dr.state, "approved")
         self.assertEqual(dr.approval_state, "approved")
         self.assertEqual(dr.rector_approver_id, self.rector)
         self.assertFalse(self._todos(dr, self.act_rector))
-
-    def test_budget_attempted_only_at_rector_step(self):
-        """Finance approval must not touch the budget; the Rector step does."""
-        dr = self._make_verified_dr()
-        dr.with_user(self.finance).action_approve_finance()
-        self.assertEqual(dr.budget_consumed_amount, 0.0)
-        # No commitment linked → the Rector step reaches the budget guard.
-        with self.assertRaises(UserError):
-            dr.with_user(self.rector).action_approve()
 
     def test_cannot_skip_finance_step(self):
         dr = self._make_verified_dr()

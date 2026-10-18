@@ -2,7 +2,7 @@
 <odoo>
     <!-- View budget.commitment form -->
     <record id="view_budget_commitment_form_inherit" model="ir.ui.view">
-        <field name="name">view.budget.commitment.form (disbursement)</field>
+        <field name="name">view.budget.commitment.form (disbursement_budget)</field>
         <field name="model">budget.commitment</field>
         <field name="inherit_id" ref="budget.budget_commitment_form_view" />
         <field name="arch" type="xml">

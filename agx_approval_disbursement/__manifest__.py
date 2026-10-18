@@ -1,9 +1,9 @@
 {
     "name": "Aginix Approval Disbursement",
-    "version": "16.0.1.3.2",
+    "version": "16.0.1.3.3",
     "category": "Accounting",
     "author": "KMITL",
-    "depends": ["agx_approval", "disbursement"],
+    "depends": ["agx_approval", "disbursement_budget"],
     "data": [
         "security/ir.model.access.csv",
         "data/mail_activity_type_data.xml",

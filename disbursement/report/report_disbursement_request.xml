@@ -66,23 +66,11 @@
                             </div>
                         </div>
 
-                        <!-- Financial Dimensions (Budget Module) -->
+                        <!-- Financial Dimensions (disbursement_budget adds the budget rows) -->
                         <div class="my-5" />
 
                         <table class="table table-bordered border table-sm budget">
                             <tbody>
-                                <tr class="o_field_budget_commitment_id">
-                                    <td>เลขที่ใบจองงบประมาณ</td>
-                                    <td>
-                                        <span t-field="o.budget_commitment_id" />
-                                    </td>
-                                </tr>
-                                <tr class="o_field_budget_account_id">
-                                    <td>รหัสงบประมาณค่าใช้จ่าย</td>
-                                    <td>
-                                        <span t-field="o.budget_account_id" />
-                                    </td>
-                                </tr>
                                 <tr class="o_field_source_analytic_id">
                                     <td>แหล่งเงิน</td>
                                     <td>

@@ -2,11 +2,11 @@
 {
     "name": "Procurement Plan Disbursement",
     "summary": "Track actual disbursement per procurement-plan installment (งวด)",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.1.1",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "depends": ["procurement_plan_budget", "disbursement", "budget_product"],
+    "depends": ["procurement_plan_budget", "disbursement_budget", "budget_product"],
     "data": [
         "security/ir.model.access.csv",
         "data/exception_rule_data.xml",

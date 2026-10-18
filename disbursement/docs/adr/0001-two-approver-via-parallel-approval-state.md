@@ -36,7 +36,8 @@ notes it "mirrors `disbursement.request.display_status`").
   Todo leaves when cleared via `activity_feedback`.
 - `action_approve` is **repurposed** as the second (Rector) step: it now requires
   `approval_state == 'pending_rector'` and is the single place the budget hook
-  (`_action_approve_budget`) fires. Any code that called `action_approve()` on a
+  (`_action_approve_budget`; since [ADR 0003](0003-budget-split-into-disbursement-budget.md)
+  the core hook `_on_final_approval`, filled in by `disbursement_budget`) fires. Any code that called `action_approve()` on a
   merely-`verified` request must first go through `action_approve_finance()`.
 - The two-approver progress is shown as a **separate `approval_state` status bar**
   on the form (visible only while the request is `verified`), deliberately kept

@@ -6,8 +6,6 @@ from odoo.tests.common import TransactionCase, tagged
 
 _DR = "disbursement.request"
 _SIG = "disbursement.request.signature"
-_BUDGET_HOOK = "odoo.addons.disbursement.models.disbursement_request." \
-    "DisbursementRequest._action_approve_budget"
 
 # A 1x1 transparent PNG — enough to prove an image was captured.
 _PNG_A = (
@@ -120,7 +118,7 @@ class TestSignatureBlock(TransactionCase):
     def _approve_fully(self, dr):
         dr.with_user(self.officer).action_validate()
         dr.with_user(self.finance).action_approve_finance()
-        with patch(_BUDGET_HOOK):
+        with patch.object(type(self.DR), "_on_final_approval"):
             dr.with_user(self.rector).action_approve()
         return dr
 

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
     "name": "KMITL Project Disbursement",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.1.1",
     "category": "KMITL",
     "summary": "Link disbursement requests (ใบขอเบิก) raised under a KMITL project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["kmitl_project", "disbursement", "budget_product"],
+    "depends": ["kmitl_project", "disbursement_budget", "budget_product"],
     "data": [
         "data/exception_rule_data.xml",
         "views/kmitl_project_views.xml",

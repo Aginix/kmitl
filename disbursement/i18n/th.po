@@ -1876,3 +1876,8 @@ msgstr "ใช้งาน"
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request_signature__signature_image
 msgid "Signature"
 msgstr "ลายเซ็น"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Are you sure you want to approve this request?"
+msgstr "ยืนยันการอนุมัติใบขอเบิกนี้?"

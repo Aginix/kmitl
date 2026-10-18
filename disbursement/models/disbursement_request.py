@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 # Two-approver step on the DR: the Finance Division Director (ผอ.กองคลัง)
 # approves first, then the Rector-delegated approver (ผู้ได้รับมอบอำนาจอธิการบดี).
-# The budget is obligated/consumed only on the second (Rector) approval.
+# The final (Rector) approval is the hook disbursement_budget consumes on.
 FINANCE_DIRECTOR_GROUP = "disbursement.group_disbursement_finance_director"
 RECTOR_DELEGATE_GROUP = "disbursement.group_disbursement_rector_delegate"
 # Execution Todos pushed to each approver group so the approval surfaces in the
@@ -29,15 +29,11 @@ class DisbursementRequest(models.Model):
         "mail.thread",
         "mail.activity.mixin",
         "portal.mixin",
-        "budget.commitment.mixin",
         "base.exception",
         # Thai signature date formatting on the printed signature block.
         "thai.date.mixin",
     ]
     _order = "main_exception_id asc, date desc, id desc"
-
-    _commitment_id_field = "budget_commitment_id"
-    _commitment_account_id_field = "budget_account_id"
 
     READONLY_STATES = {
         "submitted": [("readonly", True)],
@@ -356,61 +352,6 @@ class DisbursementRequest(models.Model):
         copy=False,
     )
 
-    # Budget fields
-    budget_commitment_id = fields.Many2one(
-        "budget.commitment",
-        string="Budget Commitment",
-        domain=[("state", "not in", ["draft", "done", "cancel"])],
-        tracking=True,
-        copy=False,
-        index=True,
-        ondelete="restrict",
-        states=READONLY_STATES,
-    )
-
-    budget_account_id = fields.Many2one(
-        "budget.account",
-        string="Budget Account",
-        domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
-        tracking=True,
-        copy=False,
-        index=True,
-        ondelete="restrict",
-        states=READONLY_STATES,
-    )
-
-    # True when the budget code drives the line product itself (see
-    # ``_budget_account_line_product``): the product column is then hidden and
-    # stamped automatically. False for ordinary disbursements, where the user
-    # picks a product per line. Bridges that own such budget codes contribute to
-    # this single flag so the line list has one condition to key on.
-    is_budget_account_product_expense = fields.Boolean(
-        string="Product Derived From Budget Account",
-        compute="_compute_is_budget_account_product_expense",
-    )
-
-    budget_consumed_amount = fields.Monetary(
-        string="Budget Consumed",
-        currency_field="currency_id",
-        copy=False,
-        readonly=True,
-        tracking=True,
-    )
-
-    budget_consumed_date = fields.Datetime(
-        string="Budget Consumed At",
-        copy=False,
-        readonly=True,
-    )
-
-    # Leftover reserved budget still on the linked commitment (reserved −
-    # obligated). Drives the "ส่งคืนเงินเหลือจ่าย" button visibility.
-    budget_available_to_obligate = fields.Monetary(
-        related="budget_commitment_id.available_to_obligate",
-        string="งบจองคงเหลือ",
-        currency_field="currency_id",
-    )
-
     # Analytic dimension fields
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -482,17 +423,6 @@ class DisbursementRequest(models.Model):
         search="_search_date_range_fy",
     )
 
-    # -------------------------------------------------------------------------
-    # Budget commitment methods
-    # -------------------------------------------------------------------------
-    @api.onchange("budget_commitment_id")
-    def _onchange_budget_commitment_id(self):
-        for rec in self:
-            if rec.budget_commitment_id:
-                budget = rec.budget_commitment_id
-                rec.budget_account_id = budget.account_id
-                rec.analytic_distribution = budget.analytic_distribution
-
     @api.constrains("analytic_distribution", "state")
     def _check_analytic_distribution_complete(self):
         required_plan_codes = set(self._analytic_keys.keys())
@@ -542,26 +472,6 @@ class DisbursementRequest(models.Model):
             for field_name in self._analytic_keys.values():
                 rec[field_name] = False
         return super()._compute_analytic_id()
-
-    def _log_budget_commitment_linked(self):
-        self.ensure_one()
-        link = f"/web#id={self.id}&model={self._name}&view_type=form"
-        self.budget_commitment_id.message_post(
-            body=_(
-                'The disbursement request <a href="%(link)s" target="_blank">\'%(name)s\'</a> has been linked to this record.'
-            )
-            % {"name": self.name, "link": link},
-            subtype_xmlid="mail.mt_comment",
-        )
-
-    def _log_budget_commitment_unlinked(self):
-        self.ensure_one()
-        link = f"/web#id={self.id}&model={self._name}&view_type=form"
-        self.budget_commitment_id.message_post(
-            body=_("The disbursement request '%(name)s' has been unlinked.")
-            % {"name": self.name},
-            subtype_xmlid="mail.mt_comment",
-        )
 
     # -------------------------------------------------------------------------
     # Fiscal year methods
@@ -705,7 +615,7 @@ class DisbursementRequest(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create to generate sequence number and log budget commitment.
+        """Override create to generate the sequence number.
 
         The DR name follows the pattern DR/<fy>/<padding> (e.g. DR/69/0001),
         mirroring the per-fiscal-year scheme that purchase_request_sequence_kmitl
@@ -738,85 +648,7 @@ class DisbursementRequest(models.Model):
 
             vals["name"] = Sequence.next_by_code(seq_code) or "/"
 
-        records = super().create(vals_list)
-        for rec in records:
-            if rec.budget_commitment_id:
-                rec._log_budget_commitment_linked()
-        records._fill_budget_account_product_on_lines()
-        return records
-
-    def write(self, values):
-        # Log unlinking if budget_commitment_id is being changed
-        if "budget_commitment_id" in values:
-            for rec in self:
-                # Only log if there's currently a budget commitment and it's being changed
-                if (
-                    rec.budget_commitment_id
-                    and values.get("budget_commitment_id") != rec.budget_commitment_id.id
-                ):
-                    rec._log_budget_commitment_unlinked()
-
-        res = super().write(values)
-
-        # Log linking if budget_commitment_id is set to a value
-        if "budget_commitment_id" in values and values.get("budget_commitment_id"):
-            for rec in self:
-                rec._log_budget_commitment_linked()
-
-        if "budget_account_id" in values or "line_ids" in values:
-            self._fill_budget_account_product_on_lines()
-
-        return res
-
-    # -------------------------------------------------------------------------
-    # Budget-account driven line product
-    # -------------------------------------------------------------------------
-    # Some budget codes carry their own product (budget_product): the line
-    # product is then a mapping of the budget code, not a purchased item, so the
-    # user must not pick it by hand. A bridge that owns such codes raises
-    # ``is_budget_account_product_expense`` and returns the product from
-    # ``_budget_account_line_product``; the stamping itself lives here and runs
-    # at ORM level, so it also lands on requests created programmatically and on
-    # fields the interactive onchange cannot reach (the product column is hidden).
-    # A bridge overriding the compute declares the dependency it actually reads
-    # (its own budget-code flag); Odoo merges ``@api.depends`` across every class
-    # in the MRO that defines the method, so the base dependency below always
-    # holds on top of it.
-    @api.depends("budget_account_id")
-    def _compute_is_budget_account_product_expense(self):
-        for rec in self:
-            rec.is_budget_account_product_expense = False
-
-    def _budget_account_line_product(self):
-        """Product every line must carry, or an empty recordset when the user
-        picks the product by hand. Overridden per budget-code type."""
-        self.ensure_one()
-        return self.env["product.product"]
-
-    def _fill_budget_account_product_on_lines(self):
-        for rec in self:
-            product = rec._budget_account_line_product()
-            if not product:
-                continue
-            account = (
-                product.property_account_expense_id
-                or product.categ_id.property_account_expense_categ_id
-            )
-            for line in rec.line_ids.filtered(lambda l: l.product_id != product):
-                line.product_id = product
-                if not line.name:
-                    line.name = product.display_name
-                # The account follows the product unconditionally, blank
-                # included: budget_product binds the budget code's own GL account
-                # to its product, and the product column is hidden for these
-                # codes — so keeping the previous code's account would silently
-                # book the expense against the wrong account with no way for the
-                # user to correct it. An empty account is visible and fixable.
-                line.account_id = account
-
-    @api.onchange("budget_account_id", "line_ids")
-    def _onchange_fill_budget_account_product(self):
-        self._fill_budget_account_product_on_lines()
+        return super().create(vals_list)
 
     @api.depends(
         "line_ids.price_subtotal",
@@ -936,7 +768,7 @@ class DisbursementRequest(models.Model):
         """First approval: the Finance Division Director (ผอ.กองคลัง).
 
         Records the sign-off and hands over to the Rector-delegated approver.
-        No budget is touched yet — that happens only on the second approval.
+        Nothing downstream fires yet — that happens only on the second approval.
         """
         for record in self:
             if record.state != "verified" or record.approval_state != "pending_finance":
@@ -955,11 +787,12 @@ class DisbursementRequest(models.Model):
         return True
 
     def action_approve(self):
-        """Final approval: the Rector-delegated approver commits the budget.
+        """Final approval by the Rector-delegated approver.
 
         Only reachable once the Finance Director has approved
-        (``approval_state == 'pending_rector'``). This is the single point where
-        the budget is obligated and consumed.
+        (``approval_state == 'pending_rector'``). This is the single point that
+        fires ``_on_final_approval`` — where disbursement_budget consumes the
+        budget.
         """
         for record in self:
             if record.state != "verified" or record.approval_state != "pending_rector":
@@ -967,7 +800,7 @@ class DisbursementRequest(models.Model):
                     _("Only a request awaiting the Rector-delegated approval "
                       "can be approved.")
                 )
-            record._action_approve_budget()
+            record._on_final_approval()
             record.state = "approved"
             record.approval_state = "approved"
             record.rector_approver_id = self.env.user
@@ -1178,96 +1011,17 @@ class DisbursementRequest(models.Model):
             "approval_reject_reason": False,
         })
 
-    def _action_approve_budget(self):
-        """Consume from the pre-linked budget commitment.
-
-        The BC is expected to be set from an upstream process (PR/PO/PA);
-        this method does NOT create a new BC. It posts a single consume event
-        for the DR amount, leaving the BC open for other DRs. With nothing
-        obligated, the ledger liquidates the reservation directly
-        (``reserve +X / consume −X``, budget ADR-0017) — an obligate step
-        would be cancelled out by the consume in the same instant anyway.
-        """
+    # -------------------------------------------------------------------------
+    # Workflow hooks (overridden by disbursement_budget)
+    # -------------------------------------------------------------------------
+    def _on_final_approval(self):
+        """Called by the Rector-delegated approval, before the request turns
+        ``approved``; raising here aborts the approval."""
         self.ensure_one()
-        # Idempotent: a request returned to verification (approved -> signed)
-        # keeps its consumption, so re-approving must not double-cut the budget.
-        if self._has_own_budget_obligation():
-            return
-        commitment = self._check_commitment_obligable()
-        commitment._post_budget_event(
-            "consume",
-            self.amount_total,
-            source=self,
-            name=_("Consumption: %s") % self.name,
-        )
-        self.budget_consumed_amount = self.amount_total
-        self.budget_consumed_date = fields.Datetime.now()
-        self.message_post(
-            body=_("Budget consumed: %(amount)s on commitment %(name)s")
-            % {"amount": self.amount_total, "name": commitment.name},
-            subtype_xmlid="mail.mt_note",
-        )
 
-    def action_return_leftover_budget(self):
-        """Shortcut from the DR to the leftover-return (คืนจอง) confirmation.
-
-        Opens the same ``budget.commitment.return.wizard`` the commitment uses,
-        scoped to this DR's linked commitment, and stamps this DR as the source
-        document on the posted return line. The wizard works on the whole
-        commitment (which may be shared across งวด), returning its full
-        unconsumed remainder — consistent with the manual, no-guard policy.
-        """
+    def _on_cancel(self):
+        """Called per request by ``action_cancel``, before it turns ``cancel``."""
         self.ensure_one()
-        commitment = self.budget_commitment_id
-        if not commitment:
-            raise UserError(_("No budget commitment linked to this request."))
-        return commitment._action_return_leftover_wizard(
-            res_model="disbursement.request", res_id=self.id
-        )
-
-    def _check_commitment_obligable(self):
-        """Validate the linked commitment can absorb this DR's amount."""
-        self.ensure_one()
-        if not self.budget_commitment_id:
-            raise UserError(
-                _("Budget commitment is required before approval. "
-                  "Please link one from the upstream document.")
-            )
-        commitment = self.budget_commitment_id
-        if commitment.state not in ("reserved", "partial"):
-            raise UserError(
-                _("Cannot obligate: commitment %(name)s is in state '%(state)s' "
-                  "(must be 'reserved' or 'partial').")
-                % {"name": commitment.name, "state": commitment.state}
-            )
-        if commitment.available_to_obligate < self.amount_total:
-            raise UserError(
-                _("Insufficient available to obligate on commitment %(name)s. "
-                  "Available: %(available)s, Required: %(required)s")
-                % {
-                    "name": commitment.name,
-                    "available": commitment.available_to_obligate,
-                    "required": self.amount_total,
-                }
-            )
-        return commitment
-
-    def _reverse_own_commitment_lines(self, commitment):
-        """Cancel only the events THIS request posted on a shared commitment
-        (obligate too, for requests approved before ADR-0017), leaving the
-        reservation open for other requests."""
-        self.ensure_one()
-        return commitment._cancel_budget_events(
-            source=self, move_types=("obligate", "consume")
-        )
-
-    def _has_own_budget_obligation(self):
-        """Whether this request already has a posted consume event on its
-        commitment (used to keep _action_approve_budget idempotent across a
-        return-to-verification round trip)."""
-        self.ensure_one()
-        commitment = self.budget_commitment_id
-        return bool(commitment) and commitment._has_budget_event(self, "consume")
 
     def action_cancel(self):
         """Cancel the request.
@@ -1280,48 +1034,8 @@ class DisbursementRequest(models.Model):
                 raise UserError(
                     _("Cannot cancel an already cancelled request.")
                 )
-            commitment = record.budget_commitment_id
-            if commitment:
-                try:
-                    plan_owned = (
-                        "procurement_plan_id" in commitment._fields
-                        and commitment.procurement_plan_id
-                    )
-                    is_shared = (
-                        plan_owned
-                        or len(commitment.disbursement_request_ids) > 1
-                    )
-                    if is_shared:
-                        record._reverse_own_commitment_lines(commitment)
-                        record.message_post(
-                            body=_(
-                                "Reversed this request's lines on shared "
-                                "commitment %s."
-                            )
-                            % commitment.name,
-                            subtype_xmlid="mail.mt_note",
-                        )
-                    else:
-                        record._cancel_budget_commitment()
-                        record.message_post(
-                            body=_("Budget commitment %s cancelled.")
-                            % commitment.name,
-                            subtype_xmlid="mail.mt_note",
-                        )
-                except UserError as e:
-                    record.message_post(
-                        body=_("Warning: %s") % str(e),
-                        subtype_xmlid="mail.mt_note",
-                    )
+            record._on_cancel()
             record.state = "cancel"
-            # A cancelled request no longer has budget obligated/consumed on
-            # its behalf (the lines above already reversed or cancelled the
-            # commitment side); clearing these keeps every reader that
-            # branches on "did this request commit budget" correct without
-            # having to also check state, and hides the leftover-return
-            # button, which depends on budget_consumed_amount.
-            record.budget_consumed_amount = 0.0
-            record.budget_consumed_date = False
         self._reset_approval()
         return True
 
