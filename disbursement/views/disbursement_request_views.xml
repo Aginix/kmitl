@@ -138,8 +138,10 @@
                                     <field name="partner_id" required="1" />
                                     <field name="partner_bank_id" optional="show" />
                                     <field name="product_id" />
-                                    <field name="name" optional="show" />
-                                    <field name="quantity" />
+                                    <!-- Kept loaded: the product onchange fills the
+                                         description and the quantity defaults to 1. -->
+                                    <field name="name" invisible="1" />
+                                    <field name="quantity" invisible="1" />
                                     <field name="price_unit" />
                                     <field name="tax_ids" widget="many2many_tags" />
                                     <field name="wht_tax_id" />

@@ -112,8 +112,39 @@ class DisbursementRequest(models.Model):
             subtype_xmlid="mail.mt_comment",
         )
 
+    @api.onchange("account_fiscal_year_id")
+    def _onchange_fiscal_year_clear_commitment(self):
+        """A commitment of another year can't be consumed by this request
+        (excep_disbursement_fiscal_year_commitment): drop it when the user
+        moves the request to another year."""
+        for rec in self:
+            # Only on an actual year: a new record's first onchange runs this
+            # before the year is filled in, and must not wipe a prefill.
+            fiscal_year = rec.account_fiscal_year_id
+            commitment = rec.budget_commitment_id
+            if fiscal_year and commitment and commitment.account_fiscal_year_id != fiscal_year:
+                rec.budget_commitment_id = False
+
+    @api.onchange("date", "company_id")
+    def _onchange_date_fiscal_year(self):
+        """A linked commitment pins the year; the date must not move it off."""
+        res = super()._onchange_date_fiscal_year()
+        for rec in self.filtered("budget_commitment_id"):
+            rec.account_fiscal_year_id = rec.budget_commitment_id.account_fiscal_year_id
+        return res
+
     @api.model_create_multi
     def create(self, vals_list):
+        # A request raised with a commitment books to its year, not the year of
+        # its date (e.g. an FY69 reservation disbursed in October = FY70).
+        for vals in vals_list:
+            if vals.get("budget_commitment_id") and not vals.get(
+                "account_fiscal_year_id"
+            ):
+                commitment = self.env["budget.commitment"].browse(
+                    vals["budget_commitment_id"]
+                )
+                vals["account_fiscal_year_id"] = commitment.account_fiscal_year_id.id
         records = super().create(vals_list)
         for rec in records:
             if rec.budget_commitment_id:
