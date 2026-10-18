@@ -6,15 +6,15 @@
         <field name="inherit_id" ref="agx_sarabun.view_sarabun_step_act_wizard_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='note']" position="before">
-                <p name="text" class="lead">
-                    และ/หรือพิมพ์ความเห็นเอง (ระบุ)
-                </p>
                 <field
                     name="standard_comment_id"
                     placeholder="----- เลือกความเห็นมาตรฐาน -----"
                     widget="selection"
                     nolabel="1"
                 />
+                <p name="text" class="lead">
+                    และ/หรือพิมพ์ความเห็นเอง (ระบุ)
+                </p>
             </xpath>
         </field>
     </record>
