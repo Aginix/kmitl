@@ -9,7 +9,8 @@ one Layer, joined to the next Layer by a fork/join connector.
 
 * Vertical or horizontal layout, switchable per user (remembered in the browser;
   small screens are always vertical).
-* Drag a card onto a Layer to join it, or between Layers to start a new one.
+* Drag a card (grab it anywhere but its buttons) onto a Layer to join it, or
+  between Layers to start a new one.
   Only the Layers after the drop point are renumbered.
 * ``Add`` creates a line in a new last Layer, ``+`` next to a Layer creates one
   inside it — both open the standard x2many dialog (the sub ``<form>``).

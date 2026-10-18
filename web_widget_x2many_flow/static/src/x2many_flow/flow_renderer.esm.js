@@ -26,8 +26,9 @@ export class FlowRenderer extends Component {
             ref: this.rootRef,
             groups: ".o_flow_drop",
             connectGroups: true,
+            // The whole card is the grip; its buttons and links stay clickable.
             elements: ".o_flow_node:not(.o_flow_locked)",
-            handle: ".o_flow_handle",
+            ignore: "button, a",
             cursor: "grabbing",
             onDragStart: () => this.rootRef.el.classList.add("o_flow_dragging"),
             onGroupEnter: ({group}) => group.classList.add("o_flow_drop_hover"),

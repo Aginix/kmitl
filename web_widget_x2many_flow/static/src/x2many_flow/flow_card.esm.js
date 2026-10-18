@@ -27,6 +27,8 @@ export class FlowCard extends Component {
         const classes = ["o_flow_node", ...this.decorationClasses];
         if (this.props.locked) {
             classes.push("o_flow_locked");
+        } else if (this.props.draggable) {
+            classes.push("o_flow_draggable");
         }
         return classes.join(" ");
     }

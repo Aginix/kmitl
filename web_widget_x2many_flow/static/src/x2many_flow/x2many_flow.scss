@@ -130,6 +130,10 @@ $o-flow-gap: 1rem;
         &.o_flow_locked {
             background: $gray-100;
         }
+        &.o_flow_draggable {
+            cursor: grab;
+            user-select: none;
+        }
     }
 
     .o_flow_node_header {
@@ -138,7 +142,6 @@ $o-flow-gap: 1rem;
         gap: 0.25rem;
         padding: 0.25rem 0.25rem 0.25rem 0.5rem;
         .o_flow_handle {
-            cursor: grab;
             color: $text-muted;
         }
         .o_flow_lock {
