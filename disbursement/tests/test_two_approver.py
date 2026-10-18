@@ -25,7 +25,11 @@ class TwoApproverCommon(TransactionCase):
         cls.source = AAA.create({"name": "Gov", "plan_id": src_plan.id})
         cls.fund = AAA.create({"name": "Fund", "plan_id": fund_plan.id})
         cls.activity = AAA.create({"name": "Act", "plan_id": act_plan.id})
-        cls.partner = cls.env["res.partner"].create({"name": "Vendor"})
+        cls.partner = cls.env["res.partner"].create({
+            "name": "Vendor",
+            # submit is guarded on every payee having an account
+            "bank_ids": [(0, 0, {"acc_number": "1234567890"})],
+        })
         cls.product = cls.env["product.product"].create(
             {"name": "Svc", "type": "service"}
         )
@@ -64,6 +68,7 @@ class TwoApproverCommon(TransactionCase):
 
     def _make_verified_dr(self):
         dr = self.DR.create({
+            "partner_type_id": self.partner.partner_type_id.id,
             "line_ids": [(0, 0, {
                 "product_id": self.product.id,
                 "name": "line",

@@ -10,8 +10,32 @@ the budget is consumed.
 
 **Disbursement Request** (DR, ใบขอเบิก):
 The document requesting a disbursement. Always pays a name list (multi-partner);
-one line per payee. Tracked as `disbursement.request`.
+one line per payee, all of one **payee type**. Tracked as `disbursement.request`.
 _Avoid_: Payment (that is the downstream document), Voucher.
+
+**Payee** (ผู้รับเงิน):
+The partner a request line pays. Payees exist only on the lines — the request
+itself has no partner — and each must have a bank account before the request is
+submitted.
+_Avoid_: Partner of the request, Vendor (only some payees are vendors).
+
+**Payee type** (ประเภทผู้รับเงิน):
+The one partner type (บริษัท / บุคลากรภายใน / นักศึกษา / อื่น ๆ) every payee on a
+request belongs to, chosen on the request. A source document paying several
+types becomes one request per type.
+_Avoid_: Partner type single/multi (the retired header switch).
+
+**Source document** (เอกสารต้นทาง):
+The document a request was raised from — a purchase order, a purchase request
+approval, an approval request — held by the bridge that raised it and printed as
+อ้างอิง. A stand-alone request has none.
+_Avoid_: Reference, Ref (the retired free-text and generic-link fields).
+
+**Fiscal year** (ปีงบประมาณ):
+The year a request books to, chosen on the request (it defaults to the year of
+its date) and the year in its number `DR/<yy>/…`. Under budget control it must
+be the commitment's year.
+_Avoid_: Date range (the year is no longer derived from the date).
 
 **Budget control** (การควบคุมงบประมาณ):
 A request linked to a reserved budget commitment (ใบจองงบประมาณ) and a budget

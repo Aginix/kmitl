@@ -4,7 +4,6 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -67,75 +66,27 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
-    reference = fields.Reference(
-        selection=[],
-        string="Reference Document",
-        states=READONLY_STATES,
-    )
-
-    reference_model = fields.Char(
-        string="Reference Model",
-        compute="_compute_reference_fields",
-        store=True,
-    )
-    reference_model_name = fields.Char(
-        string="Reference Document Type",
-        compute="_compute_reference_fields",
-        store=True,
-    )
-
-    partner_type = fields.Selection(
-        selection=[
-            ("single", "Single Partner"),
-            ("multi", "Multiple Partners"),
-        ],
-        string="Partner Type",
-        default="multi",
+    # Every payee on the lines must be of this type (ประเภทผู้รับเงิน); the
+    # payees themselves live on the lines only.
+    partner_type_id = fields.Many2one(
+        comodel_name="res.partner.type",
+        string="Payee Type",
         required=True,
         tracking=True,
-        states=READONLY_STATES,
-    )
-
-    partner_id = fields.Many2one(
-        comodel_name="res.partner",
-        string="Partner",
-        required=False,
-        compute="_compute_partner_id",
-        store=True,
-        readonly=False,
-        tracking=True,
         index=True,
+        ondelete="restrict",
         states=READONLY_STATES,
     )
 
-    is_company = fields.Boolean(
-        related="partner_id.is_company",
-        string="Is Company",
-        readonly=True,
-    )
-
-    partner_bank_id = fields.Many2one(
-        comodel_name="res.partner.bank",
-        string="Recipient Bank",
-        compute="_compute_partner_bank_id",
-        store=True,
-        readonly=False,
-        tracking=True,
-        states=READONLY_STATES,
-        check_company=True,
-        domain="[('partner_id', '=', partner_id)]",
+    payee_display = fields.Char(
+        string="Payees",
+        compute="_compute_payee_display",
     )
 
     date = fields.Date(
         string="Date",
         required=True,
         default=fields.Date.context_today,
-        tracking=True,
-        states=READONLY_STATES,
-    )
-
-    ref = fields.Char(
-        string="Reference",
         tracking=True,
         states=READONLY_STATES,
     )
@@ -412,15 +363,14 @@ class DisbursementRequest(models.Model):
         "sources": "source_analytic_id",
     }
 
-    # Fiscal year field
+    # Chosen freely (a stand-alone request may book to any year); defaults to
+    # the year of ``date`` and drives the DR/<yy>/ number.
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
         tracking=True,
-        store=True,
         index=True,
-        compute="_compute_date_range_fy",
-        search="_search_date_range_fy",
+        states=READONLY_STATES,
     )
 
     @api.constrains("analytic_distribution", "state")
@@ -476,40 +426,17 @@ class DisbursementRequest(models.Model):
     # -------------------------------------------------------------------------
     # Fiscal year methods
     # -------------------------------------------------------------------------
-    @api.depends("date", "company_id")
-    def _compute_date_range_fy(self):
-        for rec in self:
-            date = fields.Date.to_date(rec.date)
-            company = rec.company_id
-            rec.account_fiscal_year_id = (
-                company and company.find_daterange_fy(date) or False
-            )
-
     @api.model
-    def _search_date_range_fy(self, operator, value):
-        if operator in ("=", "!=", "in", "not in"):
-            date_range_domain = [("id", operator, value)]
-        else:
-            date_range_domain = [("name", operator, value)]
+    def _default_fiscal_year(self, date, company):
+        return company.find_daterange_fy(date) if company else False
 
-        date_ranges = self.env["account.fiscal.year"].search(date_range_domain)
-
-        domain = [("id", "=", -1)]
-        for date_range in date_ranges:
-            domain = expression.OR(
-                [
-                    domain,
-                    [
-                        "&",
-                        ("date", ">=", date_range.date_from),
-                        ("date", "<=", date_range.date_to),
-                        "|",
-                        ("company_id", "=", False),
-                        ("company_id", "=", date_range.company_id.id),
-                    ],
-                ]
+    @api.onchange("date", "company_id")
+    def _onchange_date_fiscal_year(self):
+        """Follow the date by default; the user may still pick another year."""
+        for rec in self:
+            rec.account_fiscal_year_id = rec._default_fiscal_year(
+                fields.Date.to_date(rec.date), rec.company_id
             )
-        return domain
 
     # -------------------------------------------------------------------------
     # Exception methods
@@ -543,30 +470,54 @@ class DisbursementRequest(models.Model):
         return action
 
     # -------------------------------------------------------------------------
-    # Reference fields compute
+    # Payees and source document
     # -------------------------------------------------------------------------
-    @api.depends("reference")
-    def _compute_reference_fields(self):
+    @api.depends("line_ids.partner_id")
+    def _compute_payee_display(self):
+        """First payee, plus how many others: "A +2"."""
         for rec in self:
-            if rec.reference:
-                rec.reference_model = rec.reference._name
-                ir_model = self.env["ir.model"].sudo().search(
-                    [("model", "=", rec.reference._name)], limit=1
-                )
-                rec.reference_model_name = ir_model.name if ir_model else rec.reference._name
-            else:
-                rec.reference_model = False
-                rec.reference_model_name = False
+            partners = rec.line_ids.partner_id
+            rec.payee_display = partners[:1].display_name or ""
+            if len(partners) > 1:
+                rec.payee_display += " +%d" % (len(partners) - 1)
 
-    @api.depends("reference")
-    def _compute_partner_id(self):
-        for rec in self:
-            if rec.reference and hasattr(rec.reference, "partner_id"):
-                rec.partner_id = rec.reference.partner_id
-        self._compute_analytic()
+    @api.onchange("partner_type_id")
+    def _onchange_partner_type_id(self):
+        mismatched = self.line_ids.partner_id.filtered(
+            lambda p: p.partner_type_id != self.partner_type_id
+        )
+        if self.partner_type_id and mismatched:
+            return {
+                "warning": {
+                    "title": _("Payee type changed"),
+                    "message": _(
+                        "These payees are not of type %(type)s and must be "
+                        "changed before submitting: %(names)s"
+                    )
+                    % {
+                        "type": self.partner_type_id.display_name,
+                        "names": ", ".join(mismatched.mapped("display_name")),
+                    },
+                }
+            }
 
-    def _compute_analytic(self):
-        """Hook for extension modules to merge analytics from reference document."""
+    @api.model
+    def _get_payee_type(self, partner):
+        """The type a request paying ``partner`` must carry — for bridges that
+        raise a request from a single-vendor document."""
+        if not partner.partner_type_id:
+            raise UserError(
+                _("Set a payee type on %s before raising a disbursement request.")
+                % partner.display_name
+            )
+        return partner.partner_type_id
+
+    def _get_source_document(self):
+        """The document this request was raised from (PO, PA, AR …), or an
+        empty value for a stand-alone request. Each source bridge overrides it;
+        it feeds the bill reference and the printed อ้างอิง line."""
+        self.ensure_one()
+        return False
 
     # -------------------------------------------------------------------------
     # Computed fields
@@ -605,14 +556,6 @@ class DisbursementRequest(models.Model):
             else:
                 rec.display_status = rec.pipeline_status
 
-    @api.depends("partner_id", "company_id")
-    def _compute_partner_bank_id(self):
-        for request in self:
-            bank_ids = request.partner_id.bank_ids.filtered(
-                lambda bank: not bank.company_id or bank.company_id == request.company_id
-            )
-            request.partner_bank_id = bank_ids[0] if bank_ids else False
-
     @api.model_create_multi
     def create(self, vals_list):
         """Override create to generate the sequence number.
@@ -624,16 +567,22 @@ class DisbursementRequest(models.Model):
         Sequence = self.env["ir.sequence"].sudo()
         Company = self.env["res.company"]
         for vals in vals_list:
-            if vals.get("name") and vals["name"] != "/":
-                continue
-
             date = fields.Date.to_date(
                 vals.get("date") or fields.Date.context_today(self)
             )
             company = Company.browse(
                 vals.get("company_id") or self.env.company.id
             )
-            fy = company.find_daterange_fy(date) if company else False
+            if not vals.get("account_fiscal_year_id"):
+                fy = self._default_fiscal_year(date, company)
+                vals["account_fiscal_year_id"] = fy.id if fy else False
+            if vals.get("name") and vals["name"] != "/":
+                continue
+
+            # The number follows the chosen fiscal year, not the date.
+            fy = self.env["account.fiscal.year"].browse(
+                vals["account_fiscal_year_id"]
+            )
             fy_year = fy.name[-2:] if fy else date.strftime("%y")
 
             seq_code = f"disbursement.request.{fy_year}"

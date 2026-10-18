@@ -53,9 +53,10 @@
                             </div>
                         </div>
 
-                        <div class="row" t-if="o.ref">
+                        <t t-set="source_document" t-value="o._get_source_document()"/>
+                        <div class="row" t-if="source_document">
                             <div class="col">
-                                อ้างอิง                                <span class="ms-2" t-out="o.ref"/>
+                                อ้างอิง                                <span class="ms-2" t-out="source_document.display_name"/>
                             </div>
                         </div>
 

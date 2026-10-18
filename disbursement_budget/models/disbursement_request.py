@@ -88,6 +88,9 @@ class DisbursementRequest(models.Model):
                 budget = rec.budget_commitment_id
                 rec.budget_account_id = budget.account_id
                 rec.analytic_distribution = budget.analytic_distribution
+                # A request draws on its commitment's year only (guarded on
+                # submit by excep_disbursement_fiscal_year_commitment).
+                rec.account_fiscal_year_id = budget.account_fiscal_year_id
 
     def _log_budget_commitment_linked(self):
         self.ensure_one()

@@ -51,11 +51,13 @@ class TestDisbursementAssignment(TransactionCase):
         cls.pt_a = PType.create({"name": "Type A", "company_type": "company"})
         cls.pt_b = PType.create({"name": "Type B", "company_type": "company"})
         Partner = cls.env["res.partner"]
+        # submit is guarded on every payee having an account
+        bank = [(0, 0, {"acc_number": "1234567890"})]
         cls.partner_a = Partner.create(
-            {"name": "Partner A", "partner_type_id": cls.pt_a.id}
+            {"name": "Partner A", "partner_type_id": cls.pt_a.id, "bank_ids": bank}
         )
         cls.partner_b = Partner.create(
-            {"name": "Partner B", "partner_type_id": cls.pt_b.id}
+            {"name": "Partner B", "partner_type_id": cls.pt_b.id, "bank_ids": bank}
         )
 
         cls.product = cls.env["product.product"].create(
@@ -110,6 +112,7 @@ class TestDisbursementAssignment(TransactionCase):
         department = department or self.dept_child
         partners = partners or [partner or self.partner_a]
         vals = {
+            "partner_type_id": partners[0].partner_type_id.id,
             "line_ids": [
                 (
                     0,
@@ -221,15 +224,13 @@ class TestDisbursementAssignment(TransactionCase):
         dr_b = self._make_dr(partner=self.partner_b)
         self.assertEqual(dr_b.assigned_to, self.officer_b)
 
-    def test_mixed_partner_types_match_only_agnostic_rule(self):
-        self.Rule.create(
-            {"user_id": self.officer_a.id, "partner_type_id": self.pt_a.id}
-        )
+    def test_mixed_partner_types_cannot_be_submitted(self):
         self.Rule.create({"user_id": self.officer_b.id})
-        # Lines with different partner types -> no single partner type to key
-        # on, so only the partner-type-agnostic (wildcard) rule matches.
-        dr = self._make_dr(partners=[self.partner_a, self.partner_b])
-        self.assertEqual(dr.assigned_to, self.officer_b)
+        # A request pays one payee type: a line of another type blocks the
+        # submit, so the request never reaches assignment.
+        dr = self._make_dr(partners=[self.partner_a, self.partner_b], sign=False)
+        self.assertEqual(dr.state, "draft")
+        self.assertFalse(dr.assigned_to)
 
     def test_no_rule_leaves_unassigned(self):
         dr = self._make_dr()

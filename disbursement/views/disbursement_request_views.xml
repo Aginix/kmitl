@@ -7,12 +7,11 @@
         <field name="arch" type="xml">
             <tree string="Disbursement Requests">
                 <field name="name" />
-                <field name="partner_type" optional="hide" />
-                <field name="partner_id" />
+                <field name="partner_type_id" optional="show" />
+                <field name="payee_display" />
                 <field name="user_id" optional="show" />
                 <field name="date" />
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
-                <field name="ref" />
                 <field name="amount_total" />
                 <field name="display_status" widget="badge"
                     decoration-info="display_status == 'draft'"
@@ -94,23 +93,13 @@
                         <group id="header_right_group" name="disbursement_information" string="Disbursement Information">
                             <field name="date" />
                             <field name="payment_type" widget="radio" options="{'horizontal': true}" required="1" />
-                            <field name="reference_model_name" readonly="1"
-                                attrs="{'invisible': ['|', ('id', '=', False), ('reference_model_name', '=', False)]}" />
-                            <field name="reference"
-                                attrs="{'readonly': ['|', '|', ('id', '!=', False), ('state', '!=', 'draft'), ('reference_model', '!=', False)]}"
-                                force_save="1" />
-                            <field name="reference_model" invisible="1" />
-                            <field name="ref" />
+                            <!-- Payees live on the lines (pay-by-name); the header
+                                 only fixes which type they must all be. -->
+                            <field name="partner_type_id" options="{'no_create': True, 'no_open': True}" />
                             <field name="note" />
-                            <!-- Recipients live on the request lines (pay-by-name);
-                                 keep the header partner fields hidden. -->
-                            <field name="partner_type" invisible="1" />
-                            <field name="partner_id" invisible="1" />
-                            <field name="partner_bank_id" invisible="1" />
-                            <field name="is_company" invisible="1" />
                         </group>
                         <group id="budget" name="budget_information" string="Budget Information">
-                            <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
+                            <field name="account_fiscal_year_id" required="1" options="{'no_create': True, 'no_open': True}" />
                             <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}" />
                             <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}" />
                             <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}" />
@@ -144,6 +133,8 @@
                             <field name="line_ids" widget="one2many" context="{'default_request_id': active_id}">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
+                                    <!-- No no_open: the user opens the partner from here
+                                         to add a missing bank account. -->
                                     <field name="partner_id" required="1" />
                                     <field name="partner_bank_id" optional="show" />
                                     <field name="product_id" />
@@ -222,8 +213,9 @@
         <field name="model">disbursement.request</field>
         <field name="arch" type="xml">
             <search string="Disbursement Requests">
-                <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]" />
-                <field name="partner_id" />
+                <field name="name" string="Name" />
+                <field name="line_ids" string="Payee" filter_domain="[('line_ids.partner_id', 'ilike', self)]" />
+                <field name="partner_type_id" />
                 <field name="account_fiscal_year_id" />
                 <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
                 <separator />
@@ -243,7 +235,7 @@
                 <separator />
                 <filter name="date" string="Date" date="date" />
                 <group expand="0" name="group_by" string="Group By">
-                    <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
+                    <filter string="Payee Type" name="group_partner_type" context="{'group_by': 'partner_type_id'}" />
                     <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}" />
                     <filter string="Source" name="group_source" context="{'group_by': 'source_analytic_id'}" />
                     <filter string="Date" name="date" context="{'group_by': 'date'}" />
@@ -254,6 +246,7 @@
                      so it is a click rather than something to type. -->
                 <searchpanel>
                     <field name="source_analytic_id" icon="fa-money" select="multi" enable_counters="1" />
+                    <field name="partner_type_id" icon="fa-users" select="multi" enable_counters="1" />
                 </searchpanel>
             </search>
         </field>

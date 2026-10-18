@@ -19,10 +19,11 @@
             วิธีการจ่ายเงิน:
             <u><strong><span t-field="o.payment_type"/></strong></u>
         </p>
-        <p t-if="o.ref">
+        <t t-set="source_document" t-value="o._get_source_document()"/>
+        <p t-if="source_document">
             <span class="oe-tabs" style="width: 40px;">&#9;</span>
             อ้างอิง
-            <u><strong><span t-out="o.ref"/></strong></u>
+            <u><strong><span t-out="source_document.display_name"/></strong></u>
         </p>
     </template>
 

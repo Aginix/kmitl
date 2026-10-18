@@ -1,6 +1,6 @@
 {
     "name": "Aginix Approval Disbursement",
-    "version": "16.0.1.3.3",
+    "version": "16.0.1.4.0",
     "category": "Accounting",
     "author": "KMITL",
     "depends": ["agx_approval", "disbursement_budget"],

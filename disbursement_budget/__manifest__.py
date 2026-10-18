@@ -15,6 +15,7 @@
     ],
     "data": [
         "security/security.xml",
+        "data/exception_rule_data.xml",
         "views/disbursement_request_views.xml",
         "views/budget_commitment_views.xml",
         "report/report_disbursement_request.xml",

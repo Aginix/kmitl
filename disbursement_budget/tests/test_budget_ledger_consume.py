@@ -14,7 +14,11 @@ class TestDisbursementLedgerConsume(BudgetLedgerCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.partner = cls.env["res.partner"].create({"name": "Ledger Vendor"})
+        cls.partner = cls.env["res.partner"].create({
+            "name": "Ledger Vendor",
+            # submit is guarded on every payee having an account
+            "bank_ids": [(0, 0, {"acc_number": "1234567890"})],
+        })
         cls.product = cls.env["product.product"].create(
             {
                 "name": "Ledger Service",
@@ -27,6 +31,7 @@ class TestDisbursementLedgerConsume(BudgetLedgerCommon):
     def _request(self, commitment, amount):
         dr = self.env["disbursement.request"].create(
             {
+                "partner_type_id": self.partner.partner_type_id.id,
                 "line_ids": [
                     (
                         0,

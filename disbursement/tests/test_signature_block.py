@@ -50,7 +50,11 @@ class TestSignatureBlock(TransactionCase):
             "plan_id": cls.env.ref(
                 "account_analytic_kmitl.analytic_plan_activities").id,
         })
-        cls.partner = cls.env["res.partner"].create({"name": "Vendor"})
+        cls.partner = cls.env["res.partner"].create({
+            "name": "Vendor",
+            # submit is guarded on every payee having an account
+            "bank_ids": [(0, 0, {"acc_number": "1234567890"})],
+        })
         cls.product = cls.env["product.product"].create(
             {"name": "Svc", "type": "service"}
         )
@@ -97,6 +101,7 @@ class TestSignatureBlock(TransactionCase):
 
     def _make_signed_dr(self):
         dr = self.DR.create({
+            "partner_type_id": self.partner.partner_type_id.id,
             "line_ids": [(0, 0, {
                 "product_id": self.product.id,
                 "name": "line",
