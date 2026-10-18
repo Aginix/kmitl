@@ -30,9 +30,11 @@ class DisbursementRequestLine(models.Model):
         domain=["|", ("company_id", "=", False), ("company_id", "=", "company_id")],
     )
 
+    # Not required: the column is hidden on the form and filled from the
+    # product, so a line whose product is still unresolved (a budget code with
+    # no bound product, refused on submit by an exception rule) can be saved.
     name = fields.Text(
         string="Description",
-        required=True,
     )
 
     quantity = fields.Float(
