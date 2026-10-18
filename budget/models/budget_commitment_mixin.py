@@ -557,14 +557,13 @@ class BudgetCommitmentMixin(models.AbstractModel):
         return context
 
     def action_view_budget_dashboard(self):
-        """Open ตรวจสอบงบประมาณ for the host's budget code and dimensions in a
-        floating window, so the form stays editable beside it."""
+        """Open ตรวจสอบงบประมาณ for the host's budget code and dimensions."""
         self.ensure_one()
         return {
             "type": "ir.actions.client",
-            "tag": "agx_floating_window",
+            "tag": "budget_dashboard",
+            "target": "new",
             "name": _("ตรวจสอบงบประมาณ"),
-            "params": {"tag": "budget_dashboard"},
             "context": self._budget_dashboard_context(),
         }
 

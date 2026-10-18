@@ -11,7 +11,6 @@
         "account_fiscal_year",
         "mail",
         "l10n_th_base_sequence",
-        "agx_floating_window",
     ],
     "data": [
         "data/budget_journal.xml",
