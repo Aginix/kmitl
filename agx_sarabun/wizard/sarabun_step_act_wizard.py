@@ -88,6 +88,7 @@ class SarabunStepActWizard(models.TransientModel):
             w.needs_target = w.disposition in ("direct", "delegate")
             w.is_return = w.disposition == "return"
 
+    @api.depends("step_id")
     def _compute_sign_date_display(self):
         today = to_bangkok(fields.Datetime.now())
         for w in self:
