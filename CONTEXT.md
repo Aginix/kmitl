@@ -47,6 +47,14 @@ its own — it derives from its parent PR's officer. _Avoid_: Responsible (that'
 creator, `user_id`), Buyer (PO `user_id`), Approver (the PA manager who signs off, a
 different role), Purchase Representative.
 
+**จัดซื้อภายใต้ (of a PR)**: What the PR's purchase is made under: งบประมาณปกติ, a
+โครงการ/กิจกรรม, or a แผนจัดซื้อจัดจ้าง, and which one. The requester proposes it on the
+PR form and the Verifier confirms it. It can change until the PR reserves, and is fixed
+after that. Defined in [budget » จัดซื้อภายใต้](budget/CONTEXT.md). See
+[ADR-0011](docs/adr/0011-requester-chooses-procurement-under.md). _Avoid_:
+แหล่งงบประมาณ (the earlier label); creating a PR from the project or plan form (that path
+was removed).
+
 **ผู้ตรวจสอบ พ.1 (Verifier)**: The ธุรการ who checks a submitted PR at `to_verify`. They
 enter its รหัสงบประมาณ and dimensions, and either press ตรวจสอบ to pass it to the budget
 step or ตีกลับ it to `draft`. After ตรวจสอบ they may ดึงกลับ it from `to_verify_budget`
@@ -155,7 +163,3 @@ flow (real cancels go through `action_recall`).
   PR side. The PA stays orphaned in `pending_pr` unless an admin explicitly cleans it
   up. Acceptable today; a future iteration may auto-cascade PA `pending_pr` →
   `cancelled` when the PR cancels.
-- **A general requester cannot choose a โครงการ/กิจกรรม (`kmitl.project`) on a PR.** A
-  project PR is created only from the project form, which most requesters cannot open.
-  User feedback says requesters should be able to pick the project by name when buying
-  under a project. Deferred.

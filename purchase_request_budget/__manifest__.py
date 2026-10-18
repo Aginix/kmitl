@@ -9,6 +9,7 @@
         "budget",
         "budget_product",
         "purchase_request_kmitl",
+        "purchase_request_sequence_kmitl",
     ],
     "data": [
         "security/security.xml",

@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 {
     "name": "KMITL Project Purchase Request",
     "version": "16.0.1.3.0",
     "category": "KMITL",
-    "summary": "Create purchase requests (พ.1) from a KMITL project's reserved budget",
+    "summary": "Buy a purchase request (พ.1) under a KMITL project's reserved budget",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": ["kmitl_project", "purchase_request_budget", "purchase"],
