@@ -33,8 +33,9 @@ _Avoid_: Reference, Ref (the retired free-text and generic-link fields).
 
 **Fiscal year** (ปีงบประมาณ):
 The year a request books to, chosen on the request (it defaults to the year of
-its date) and the year in its number `DR/<yy>/…`. Under budget control it must
-be the commitment's year.
+its date) and the year in its number `DR/<yy>/…`. Under budget control it
+leads: only that year's commitments can be linked, and changing the year drops
+the linked commitment.
 _Avoid_: Date range (the year is no longer derived from the date).
 
 **Budget control** (การควบคุมงบประมาณ):

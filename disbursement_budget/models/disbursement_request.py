@@ -27,7 +27,9 @@ class DisbursementRequest(models.Model):
     budget_commitment_id = fields.Many2one(
         "budget.commitment",
         string="Budget Commitment",
-        domain=[("state", "not in", ["draft", "done", "cancel"])],
+        # The fiscal year leads: only commitments of the request's year.
+        domain="[('state', 'not in', ['draft', 'done', 'cancel']),"
+        " ('account_fiscal_year_id', '=', account_fiscal_year_id)]",
         tracking=True,
         copy=False,
         index=True,
@@ -88,9 +90,6 @@ class DisbursementRequest(models.Model):
                 budget = rec.budget_commitment_id
                 rec.budget_account_id = budget.account_id
                 rec.analytic_distribution = budget.analytic_distribution
-                # A request draws on its commitment's year only (guarded on
-                # submit by excep_disbursement_fiscal_year_commitment).
-                rec.account_fiscal_year_id = budget.account_fiscal_year_id
 
     def _log_budget_commitment_linked(self):
         self.ensure_one()
@@ -114,24 +113,9 @@ class DisbursementRequest(models.Model):
 
     @api.onchange("account_fiscal_year_id")
     def _onchange_fiscal_year_clear_commitment(self):
-        """A commitment of another year can't be consumed by this request
-        (excep_disbursement_fiscal_year_commitment): drop it when the user
-        moves the request to another year."""
-        for rec in self:
-            # Only on an actual year: a new record's first onchange runs this
-            # before the year is filled in, and must not wipe a prefill.
-            fiscal_year = rec.account_fiscal_year_id
-            commitment = rec.budget_commitment_id
-            if fiscal_year and commitment and commitment.account_fiscal_year_id != fiscal_year:
-                rec.budget_commitment_id = False
-
-    @api.onchange("date", "company_id")
-    def _onchange_date_fiscal_year(self):
-        """A linked commitment pins the year; the date must not move it off."""
-        res = super()._onchange_date_fiscal_year()
-        for rec in self.filtered("budget_commitment_id"):
-            rec.account_fiscal_year_id = rec.budget_commitment_id.account_fiscal_year_id
-        return res
+        """The fiscal year leads: a new year drops the commitment, which must
+        be picked again among that year's (see the field domain)."""
+        self.budget_commitment_id = False
 
     @api.model_create_multi
     def create(self, vals_list):
