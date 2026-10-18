@@ -246,6 +246,11 @@ msgid "Evaluation Committees"
 msgstr "คณะกรรมการพิจารณาผล"
 
 #. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__expense_type
+msgid "Expense Type"
+msgstr "ประเภทค่าใช้จ่าย"
+
+#. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__account_fiscal_year_id
 msgid "Fiscal Year"
 msgstr "ปีงบประมาณ"
