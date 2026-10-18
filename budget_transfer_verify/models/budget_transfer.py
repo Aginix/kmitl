@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import UserError
 
 VERIFY_ACTIVITY = "budget_transfer_verify.mail_activity_budget_transfer_verify"
 CORRECT_ACTIVITY = "budget_transfer_verify.mail_activity_budget_transfer_correct"
@@ -26,11 +26,17 @@ class BudgetTransfer(models.Model):
     verifier_id = fields.Many2one(
         string="Buddy ผู้ตรวจสอบ",
         comodel_name="res.users",
+        compute="_compute_verifier_id",
+        store=True,
+        readonly=False,
         copy=False,
         tracking=True,
-        readonly=True,
-        help="Assigned to the unit's primary Buddy on confirmation, then "
-        "overwritten with whoever actually verifies.",
+        domain=lambda self: [
+            ("groups_id", "in", self.env.ref("budget_buddy.group_budget_buddy").ids)
+        ],
+        help="Defaults (in draft) to the primary Buddy from the Buddy settings; "
+        "the requester may pick another. Overwritten with whoever actually "
+        "verifies.",
     )
     verify_date = fields.Datetime(
         string="วันที่ตรวจสอบ",
@@ -52,10 +58,22 @@ class BudgetTransfer(models.Model):
         return self.env["budget.buddy"]._get_buddy_users(self)
 
     def _is_covering_buddy(self):
+        """The assigned verifier, or any Buddy the settings match."""
         self.ensure_one()
-        return self.env.user in self._get_buddies()
+        user = self.env.user
+        return user == self.verifier_id or user in self._get_buddies()
 
-    @api.depends("department_analytic_id")
+    @api.depends("department_analytic_id", "user_id", "amount")
+    def _compute_verifier_id(self):
+        """Default the verifier from the Buddy settings while in draft; a
+        row's domain may read any field, so the depends cover the usual ones."""
+        for transfer in self:
+            if transfer.state == "draft":
+                transfer.verifier_id = transfer._get_assignable_buddies()[:1]
+            else:
+                transfer.verifier_id = transfer.verifier_id
+
+    @api.depends("department_analytic_id", "verifier_id")
     @api.depends_context("uid")
     def _compute_can_edit(self):
         """In ``to_verify`` only a covering Buddy (or admin) may edit — the
@@ -66,7 +84,7 @@ class BudgetTransfer(models.Model):
             if transfer.state == "to_verify":
                 transfer.can_edit = is_admin or transfer._is_covering_buddy()
 
-    @api.depends("department_analytic_id")
+    @api.depends("department_analytic_id", "verifier_id")
     @api.depends_context("uid")
     def _compute_button_visibility(self):
         super()._compute_button_visibility()
@@ -85,7 +103,7 @@ class BudgetTransfer(models.Model):
     # Workflow
     # ------------------------------------------------------------------
     def action_submit(self):
-        """ยืนยัน → ``to_verify``, assigned to the unit's primary Buddy.
+        """ยืนยัน → ``to_verify``, assigned to the chosen Buddy ผู้ตรวจสอบ.
 
         Only records the base actually moved to ``submitted`` are re-routed,
         so a ``budget_transfer_exception`` popup (which stops short of the
@@ -94,20 +112,23 @@ class BudgetTransfer(models.Model):
         """
         to_review = self.filtered(lambda t: not t._skip_submit_review())
         for transfer in to_review:
-            if not transfer._get_assignable_buddies():
+            if not transfer.verifier_id:
                 raise UserError(
                     _(
-                        "ส่วนงาน %s ยังไม่มีเจ้าหน้าที่ Buddy ที่มีสิทธิ์เข้าถึงใบโอนนี้ดูแล "
-                        "กรุณาติดต่อผู้ดูแลระบบงบประมาณ"
+                        "กรุณาระบุ Buddy ผู้ตรวจสอบ (ส่วนงาน %s ยังไม่มีเจ้าหน้าที่ Buddy "
+                        "ที่มีสิทธิ์เข้าถึงใบโอนนี้ในการตั้งค่า)"
                     )
                     % (transfer.department_analytic_id.display_name or "-")
                 )
+            if not transfer._buddy_can_read(transfer.verifier_id):
+                raise UserError(
+                    _("%s ไม่มีสิทธิ์เข้าถึงใบโอนนี้ กรุณาเลือก Buddy ผู้ตรวจสอบคนอื่น")
+                    % transfer.verifier_id.name
+                )
         res = super().action_submit()
         for transfer in to_review.filtered(lambda t: t.state == "submitted"):
-            buddy = transfer._get_assignable_buddies()[:1]
-            transfer.write(
-                {"state": "to_verify", "verifier_id": buddy.id, "verify_date": False}
-            )
+            buddy = transfer.verifier_id
+            transfer.write({"state": "to_verify", "verify_date": False})
             transfer.activity_feedback([CORRECT_ACTIVITY])
             transfer.activity_schedule(
                 VERIFY_ACTIVITY,
@@ -128,11 +149,11 @@ class BudgetTransfer(models.Model):
         return (buddies & self.user_id) | buddies
 
     def _buddy_can_read(self, user):
-        try:
-            self.with_user(user).check_access_rule("read")
-        except AccessError:
-            return False
-        return True
+        """Whether ``user``'s record rules let them read this transfer —
+        evaluated in memory so it also works on an unsaved record."""
+        self.ensure_one()
+        domain = self.env["ir.rule"].with_user(user)._compute_domain(self._name)
+        return not domain or bool(self.sudo().filtered_domain(domain))
 
     def _check_can_verify(self):
         is_admin = self.env.is_admin()
@@ -145,7 +166,10 @@ class BudgetTransfer(models.Model):
                 continue
             if not transfer._is_covering_buddy():
                 raise UserError(
-                    _("Only a Buddy covering %s can verify this transfer.")
+                    _(
+                        "Only the assigned Buddy or a Buddy covering %s can verify "
+                        "this transfer."
+                    )
                     % transfer.department_analytic_id.display_name
                 )
 
@@ -209,5 +233,6 @@ class BudgetTransfer(models.Model):
     def action_reset_to_draft(self):
         res = super().action_reset_to_draft()
         self.activity_unlink([VERIFY_ACTIVITY])
-        self.write({"verifier_id": False, "verify_date": False})
+        # Keep the verifier: a re-confirmation goes back to the same Buddy.
+        self.write({"verify_date": False})
         return res

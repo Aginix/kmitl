@@ -36,13 +36,17 @@
             </xpath>
 
             <xpath expr="//group[@name='approval_meta']" position="before">
-                <group
-                    name="verify_meta"
-                    attrs="{'invisible': [('verifier_id', '=', False)]}"
-                >
+                <group name="verify_meta">
                     <group>
-                        <field name="verifier_id" />
-                        <field name="verify_date" />
+                        <field
+                            name="verifier_id"
+                            options="{'no_create': True}"
+                            attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('state', 'in', ('posted', 'cancelled')), ('verifier_id', '=', False)]}"
+                        />
+                        <field
+                            name="verify_date"
+                            attrs="{'invisible': [('verify_date', '=', False)]}"
+                        />
                     </group>
                 </group>
             </xpath>

@@ -144,6 +144,41 @@ class TestBudgetTransferVerify(TransactionCase):
         activity = self._activities(transfer, VERIFY_ACTIVITY)
         self.assertEqual(activity.user_id, self.buddy)
 
+    def test_verifier_defaults_in_draft(self):
+        transfer = self._transfer()
+        self.assertEqual(transfer.state, "draft")
+        self.assertEqual(transfer.verifier_id, self.buddy, "primary from settings")
+
+    def test_requester_picks_another_verifier(self):
+        """The settings only give the default: a buddy outside them, once
+        chosen, gets the To-Do and may verify."""
+        transfer = self._transfer()
+        transfer.verifier_id = self.outsider
+        transfer.action_submit()
+        self.assertEqual(transfer.state, "to_verify")
+        self.assertEqual(transfer.verifier_id, self.outsider)
+        activity = self._activities(transfer, VERIFY_ACTIVITY)
+        self.assertEqual(activity.user_id, self.outsider)
+        transfer.with_user(self.outsider).action_verify()
+        self.assertEqual(transfer.state, "submitted")
+
+    def test_verifier_without_access_blocks_confirm(self):
+        blind = self.env["res.groups"].create({"name": "BV blind"})
+        self.env["ir.rule"].create(
+            {
+                "name": "BV blind to transfers",
+                "model_id": self.env.ref("budget_transfer.model_budget_transfer").id,
+                "groups": [Command.link(blind.id)],
+                "domain_force": "[('id', '=', 0)]",
+            }
+        )
+        self.outsider.groups_id = [Command.link(blind.id)]
+        transfer = self._transfer()
+        transfer.verifier_id = self.outsider
+        with self.assertRaises(UserError):
+            transfer.action_submit()
+        self.assertEqual(transfer.state, "draft")
+
     def test_confirm_blocked_without_buddy(self):
         lonely = self.env["account.analytic.account"].create(
             {"name": "Lonely", "code": "BV_LONE", "plan_id": self.dept.plan_id.id}
@@ -255,7 +290,7 @@ class TestBudgetTransferVerify(TransactionCase):
         self.assertTrue(transfer.show_reset_button)
         transfer.action_reset_to_draft()
         self.assertEqual(transfer.state, "draft")
-        self.assertFalse(transfer.verifier_id)
+        self.assertEqual(transfer.verifier_id, self.buddy, "kept for re-confirm")
         self.assertFalse(self._activities(transfer, VERIFY_ACTIVITY))
 
     def test_requester_cancels(self):
