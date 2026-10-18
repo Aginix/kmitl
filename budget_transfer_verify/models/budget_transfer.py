@@ -66,10 +66,14 @@ class BudgetTransfer(models.Model):
     @api.depends("department_analytic_id", "user_id", "amount")
     def _compute_verifier_id(self):
         """Default the verifier from the Buddy settings while in draft; a
-        row's domain may read any field, so the depends cover the usual ones."""
+        row's domain may read any field, so the depends cover the usual ones.
+        A verifier the settings still assign is kept, so editing the lines
+        does not undo the requester's pick."""
         for transfer in self:
             if transfer.state == "draft":
-                transfer.verifier_id = transfer._get_assignable_buddies()[:1]
+                buddies = transfer._get_assignable_buddies()
+                if transfer.verifier_id not in buddies:
+                    transfer.verifier_id = buddies[:1]
             else:
                 transfer.verifier_id = transfer.verifier_id
 
