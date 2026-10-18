@@ -8,29 +8,26 @@
             ref="agx_approval.approval_request_view_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//header" position="after">
-                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;"
-                    attrs="{'invisible': [('is_correction', '=', False)]}">
-                    <p><strong>ตีกลับจากการเบิก:</strong> คำขอนี้ถูกตีกลับจากใบเบิก แก้ไขบัญชีผู้รับเงิน คำอธิบาย หรือหลักฐานการเบิก แล้วกด "ยืนยันการแก้ไข"</p>
-                </div>
-            </xpath>
-            <xpath expr="//header/field[@name='is_correction']" position="after">
+            <xpath expr="//header/button[@name='action_bill']" position="before">
                 <field name="has_active_disbursement" invisible="1" />
-            </xpath>
-            <xpath expr="//header/button[@name='action_bill']" position="attributes">
-                <attribute name="name">action_create_disbursement_request</attribute>
-                <attribute name="groups">disbursement.group_disbursement_user</attribute>
-                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'to_disburse'), ('has_active_disbursement', '=', True)]}</attribute>
-            </xpath>
-            <xpath expr="//header/button[@name='action_cancel']" position="after">
                 <button
-                    name="action_confirm_correction"
-                    string="ยืนยันการแก้ไข"
+                    name="action_create_disbursement_request"
+                    string="สร้างใบขอเบิก"
                     type="object"
                     class="oe_highlight"
-                    groups="agx_approval.group_approval_user"
-                    attrs="{'invisible': [('is_correction', '=', False)]}"
+                    groups="disbursement.group_disbursement_user"
+                    attrs="{'invisible': [('state', '!=', 'to_disburse')]}"
                 />
+            </xpath>
+            <xpath expr="//header/button[@name='action_bill']" position="attributes">
+                <attribute name="string">ตั้งเบิกครบแล้ว</attribute>
+                <attribute name="class">btn btn-secondary</attribute>
+                <attribute name="groups">disbursement.group_disbursement_user</attribute>
+                <attribute name="confirm">ยืนยันว่าตั้งเบิกครบแล้ว? หลังจากนี้จะสร้างใบขอเบิกเพิ่มไม่ได้ (งบที่เหลือคืนจองได้ที่ใบจองงบประมาณ)</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'to_disburse'), ('has_active_disbursement', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_pull_back_from_finance']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'to_disburse'), ('has_active_disbursement', '=', True)]}</attribute>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button
@@ -47,12 +44,16 @@
                     />
                 </button>
             </xpath>
+            <xpath expr="//field[@name='total_actual_amount']" position="after">
+                <field name="disbursed_amount" widget="monetary"
+                    attrs="{'invisible': [('disbursement_request_count', '=', 0)]}" />
+            </xpath>
             <xpath expr="//page[@name='actual_expenses']" position="inside">
                 <group name="attachment_for_disbursement" string="เอกสารแนบสำหรับการเบิก"
-                    attrs="{'invisible': [('state', 'not in', ['approved', 'to_disburse', 'billed', 'returned'])]}">
+                    attrs="{'invisible': [('state', 'not in', ['approved', 'to_disburse', 'billed'])]}">
                     <field name="disbursement_attachment_ids"
                         widget="many2many_binary_disbursement"
-                        attrs="{'readonly': ['&amp;', ('disbursement_request_count', '>', 0), ('is_correction', '=', False)]}">
+                        attrs="{'readonly': [('state', '!=', 'approved')]}">
                     </field>
                 </group>
             </xpath>

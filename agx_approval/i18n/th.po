@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-30 16:58+0000\n"
-"PO-Revision-Date: 2026-09-30 16:58+0000\n"
+"POT-Creation-Date: 2026-10-02 08:43+0000\n"
+"PO-Revision-Date: 2026-10-02 08:43+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -655,11 +655,6 @@ msgid "Is Budget Editable"
 msgstr "แก้ไขงบประมาณได้"
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request__is_correction
-msgid "Is Correction"
-msgstr "เป็นการแก้ไข"
-
-#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_is_follower
 msgid "Is Follower"
 msgstr "เป็นผู้ติดตาม"
@@ -893,11 +888,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 msgid "Period"
 msgstr "ระยะเวลา"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Print Disbursement Voucher Cover"
-msgstr "พิมพ์งบหน้าใบสำคัญคู่จ่าย"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
@@ -1197,11 +1187,6 @@ msgid "กิจกรรม"
 msgstr ""
 
 #. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
-msgid "ขอเบิกเงิน"
-msgstr ""
-
-#. module: agx_approval
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__day_portion__half
 msgid "ครึ่งวัน"
 msgstr ""
@@ -1264,28 +1249,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__allocation_ids
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_finance_submit_confirm__allocation_ids
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_finance_submit_confirm_view_form
-msgid "ค่าใช้จ่ายจริง"
-msgstr ""
-
-#. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_body
-msgid "ค่าใช้จ่ายจริง (จัดสรรรายผู้รับเงิน)"
+msgid "ค่าใช้จ่ายจริง"
 msgstr ""
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_finance_submit_confirm__total_amount
 msgid "งบตามแผน"
-msgstr ""
-
-#. module: agx_approval
-#: model:ir.actions.report,name:agx_approval.action_report_disbursement_voucher
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
-msgid "งบหน้าใบสำคัญคู่จ่าย"
-msgstr ""
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
-msgid "จำนวนที่ถูกหักภาษี"
 msgstr ""
 
 #. module: agx_approval
@@ -1318,31 +1288,9 @@ msgid ""
 msgstr ""
 
 #. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
-msgid "จำนวนเงินที่ขอเบิก"
-msgstr ""
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request__allocation_direct_ids
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request_allocation__payment_type__direct
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "จ่ายตรง"
-msgstr ""
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
-msgid "ฉบับ"
-msgstr ""
-
-#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__partner_id
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_body
 msgid "ชื่อ"
-msgstr ""
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
-msgid "ชื่อผู้ถูกหักภาษี"
 msgstr ""
 
 #. module: agx_approval
@@ -1491,17 +1439,6 @@ msgid "ถึงวันที่"
 msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__bank_id
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_body
-msgid "ธนาคาร"
-msgstr ""
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__partner_bank_id
-msgid "บัญชีธนาคาร"
-msgstr ""
-
-#. module: agx_approval
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request_participant__participant_type__external
 msgid "บุคคลภายนอก"
 msgstr ""
@@ -1524,16 +1461,6 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__partner_type_id
 msgid "ประเภท"
-msgstr ""
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_body
-msgid "ประเภทการจ่าย"
-msgstr ""
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__payment_type
-msgid "ประเภทการจ่ายเงิน"
 msgstr ""
 
 #. module: agx_approval
@@ -1598,16 +1525,6 @@ msgstr ""
 #. module: agx_approval
 #: model:res.groups,name:agx_approval.group_approval_budget_commit
 msgid "ผู้ยืนยันงบประมาณคำขออนุมัติ"
-msgstr ""
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__partner_id
-msgid "ผู้รับเงิน"
-msgstr ""
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_body
-msgid "ผู้รับเงิน:"
 msgstr ""
 
 #. module: agx_approval
@@ -1737,16 +1654,6 @@ msgid "รวมยอดเบิกจริง"
 msgstr ""
 
 #. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
-msgid "รวมเป็นเงินทั้งสิ้น"
-msgstr ""
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
-msgid "รวมใบสำคัญ"
-msgstr ""
-
-#. module: agx_approval
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_finance_submit_confirm__budget_account_id
@@ -1810,7 +1717,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__product_id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__product_id
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_body
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
 msgid "รายการ"
 msgstr "รหัสค่าใช้จ่าย"
 
@@ -1844,6 +1750,7 @@ msgstr ""
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__plan_description
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__description
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__description
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__description
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_body
@@ -1863,11 +1770,6 @@ msgstr ""
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_body
 msgid "ลำดับ"
-msgstr ""
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
-msgid "ลำดับที่"
 msgstr ""
 
 #. module: agx_approval
@@ -1909,13 +1811,6 @@ msgid "วันเดียว"
 msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields,help:agx_approval.field_approval_request_allocation__payment_type
-msgid ""
-"วิธีที่จ่ายเงินของแถวนี้ — จ่ายตรง/สำรองจ่าย จะเข้าใบเบิก (DR); เงินยืม "
-"จะไม่เข้าใบเบิก แต่ไปเคลียร์กับสัญญายืม (ดู ADR-0002)"
-msgstr ""
-
-#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__budget_selection_mode
 msgid "วิธีเลือกงบประมาณ"
 msgstr ""
@@ -1935,20 +1830,6 @@ msgstr ""
 msgid ""
 "สรุปเปรียบเทียบค่าใช้จ่ายตามแผนกับค่าใช้จ่ายจริงแยกตามรายการ "
 "แสดงบนแท็บค่าใช้จ่ายจริงเพื่อไม่ต้องสลับแท็บไปดูแผน"
-msgstr ""
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request__allocation_prepaid_ids
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request_allocation__payment_type__prepaid
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "สำรองจ่าย"
-msgstr ""
-
-#. module: agx_approval
-#. odoo-python
-#: code:addons/agx_approval/models/approval_request_allocation.py:0
-#, python-format
-msgid "สำรองจ่าย/เงินยืม ต้องเลือกผู้รับเงินที่เป็นบุคลากรภายใน"
 msgstr ""
 
 #. module: agx_approval
@@ -2002,11 +1883,6 @@ msgid "หน่วยงานผู้ขอ"
 msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__description
-msgid "หมายเหตุ"
-msgstr ""
-
-#. module: agx_approval
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
@@ -2021,13 +1897,6 @@ msgstr ""
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 msgid "อนุมัติ/บันทึกค่าใช้จ่ายจริง"
-msgstr ""
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request__allocation_advance_ids
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request_allocation__payment_type__advance
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "เงินยืม"
 msgstr ""
 
 #. module: agx_approval
@@ -2068,11 +1937,6 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_finance_submit_confirm__name
 msgid "เลขที่คำขอ"
-msgstr ""
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_body
-msgid "เลขที่บัญชี"
 msgstr ""
 
 #. module: agx_approval

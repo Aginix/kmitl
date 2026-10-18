@@ -25,7 +25,6 @@
         "wizard/finance_confirm_views.xml",
         "wizard/send_back_confirm_views.xml",
         "reports/paperformat_approval_request.xml",
-        "reports/report_disbursement_voucher.xml",
         "views/approval_category_views.xml",
         "views/approval_category_group_views.xml",
         "views/approval_request_views.xml",

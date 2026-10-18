@@ -10,7 +10,6 @@
                     <field name="hide_reserve_budget_button" invisible="1" />
                     <field name="is_plan_editable" invisible="1" />
                     <field name="is_actual_editable" invisible="1" />
-                    <field name="is_correction" invisible="1" />
                     <button name="action_to_verify" string="Submit request" type="object"
                         class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
                     <button name="action_confirm_verify" string="ยืนยันตรวจสอบ" type="object"
@@ -44,9 +43,6 @@
                         groups="agx_approval.group_approval_manager" />
                     <button name="action_bill" string="Submit for Disbursement" type="object"
                         class="oe_highlight" attrs="{'invisible': [('state', '!=', 'to_disburse')]}" />
-                    <button name="%(agx_approval.action_report_disbursement_voucher)d" type="action"
-                        string="Print Disbursement Voucher Cover" class="btn btn-secondary"
-                        attrs="{'invisible': [('state', 'not in', ['to_disburse', 'billed'])]}" />
                     <button name="action_open_pull_back_wizard" string="Pull Back" type="object"
                         class="btn btn-secondary"
                         attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_commit', 'to_send'])]}" />
@@ -259,75 +255,16 @@
                             <group string="เปรียบเทียบแผน / จ่ายจริง" name="plan_actual_comparison">
                                 <field name="plan_actual_comparison_html" nolabel="1" colspan="2" />
                             </group>
-                            <separator string="จ่ายตรง" />
-                            <field name="allocation_direct_ids"
+                            <field name="allocation_ids"
                                 nolabel="1" colspan="2"
-                                context="{'default_payment_type': 'direct'}"
-                                attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
+                                attrs="{'readonly': [('is_actual_editable', '=', False)]}">
                                 <tree editable="bottom">
-                                    <field name="payment_type" invisible="1" force_save="1" />
                                     <field name="allowed_product_ids" invisible="1" />
                                     <field name="sequence" widget="handle" />
                                     <field name="currency_id" invisible="1" />
-                                    <field name="partner_id"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="product_id"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="amount" sum="รวม"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="partner_bank_id"
-                                        options="{'no_create': True, 'no_create_edit': True}"
-                                        attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}" />
-                                    <field name="description"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                </tree>
-                            </field>
-                            <separator string="สำรองจ่าย" />
-                            <field name="allocation_prepaid_ids"
-                                nolabel="1" colspan="2"
-                                context="{'default_payment_type': 'prepaid'}"
-                                attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
-                                <tree editable="bottom">
-                                    <field name="payment_type" invisible="1" force_save="1" />
-                                    <field name="allowed_product_ids" invisible="1" />
-                                    <field name="sequence" widget="handle" />
-                                    <field name="currency_id" invisible="1" />
-                                    <field name="partner_id"
-                                        domain="[('partner_type_id.is_internal', '=', True)]"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="product_id"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="amount" sum="รวม"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="partner_bank_id"
-                                        options="{'no_create': True, 'no_create_edit': True}"
-                                        attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}" />
-                                    <field name="description"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                </tree>
-                            </field>
-                            <separator string="เงินยืม" />
-                            <field name="allocation_advance_ids"
-                                nolabel="1" colspan="2"
-                                context="{'default_payment_type': 'advance'}"
-                                attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
-                                <tree editable="bottom">
-                                    <field name="payment_type" invisible="1" force_save="1" />
-                                    <field name="allowed_product_ids" invisible="1" />
-                                    <field name="sequence" widget="handle" />
-                                    <field name="currency_id" invisible="1" />
-                                    <field name="partner_id"
-                                        domain="[('partner_type_id.is_internal', '=', True)]"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="product_id"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="amount" sum="รวม"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
-                                    <field name="partner_bank_id"
-                                        options="{'no_create': True, 'no_create_edit': True}"
-                                        attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}" />
-                                    <field name="description"
-                                        attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}" />
+                                    <field name="product_id" />
+                                    <field name="description" />
+                                    <field name="amount" sum="รวม" />
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer oe_right">

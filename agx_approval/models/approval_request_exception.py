@@ -44,8 +44,7 @@ class ApprovalRequest(models.Model):
 
         A gate on the *draw*, not a standing invariant: once the slip is drawn
         (``budget_commitment_id`` is that slip) the check goes quiet. Every
-        later ``detect_exceptions()`` — notably agx_approval_disbursement's
-        action_create_disbursement_request — would otherwise re-test the *plan*
+        later ``detect_exceptions()`` would otherwise re-test the *plan*
         total against an availability that legitimately shrank meanwhile (a
         shared project slip drawn by sibling requests), blocking a request whose
         แผน can no longer be edited (is_plan_editable) and whose actual spend may
