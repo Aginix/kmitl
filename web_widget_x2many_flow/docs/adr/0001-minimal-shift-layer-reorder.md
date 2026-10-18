@@ -11,9 +11,11 @@ The rule: a free value in the gap is used as is; otherwise only the Layers **aft
 gap move up by one. Before the first Layer is `first - 1`, after the last is `last + 1`.
 Earlier Layers are never written.
 
-A drop is refused when it would push a Locked Node — and, by the same token, when it
-lands before a first Layer holding a Locked Node: nothing is written to that Layer, but
-it would stop being first (e-Saraban's originator must stay the first step).
+A drop is refused when it would push a Locked Node. A first Layer holding a Locked Node
+is an **Anchored Layer**: nothing may join it, be added to it ("+" is hidden) or be
+placed before it. Nothing is written to it in those cases, but e-Saraban's originator
+must stay first and alone — a gating step that joined it would be passed the moment the
+originator auto-signs at send, without anyone acting on it.
 
 ## Considered options
 

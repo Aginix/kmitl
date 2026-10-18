@@ -109,14 +109,33 @@ msgstr "ฟิลด์ลำดับ %s ต้องเป็นชนิด I
 
 #. module: web_widget_x2many_flow
 #. odoo-javascript
+#: code:addons/web_widget_x2many_flow/static/src/x2many_flow/flow_renderer.esm.js:0
+#, python-format
+msgid ""
+"The first layer holds a locked item: nothing can be placed in or before it."
+msgstr "ชั้นแรกมีรายการที่ล็อกไว้ จึงวางรายการในชั้นนี้หรือก่อนชั้นนี้ไม่ได้"
+
+#. module: web_widget_x2many_flow
+#. odoo-javascript
 #: code:addons/web_widget_x2many_flow/static/src/x2many_flow/x2many_flow_field.esm.js:0
 #, python-format
-msgid "The flow diagram needs a <tree> inside the field."
-msgstr "แผนภาพลำดับต้องมี <tree> อยู่ภายในฟิลด์"
+msgid ""
+"The flow diagram needs a <tree> written inside the field (or mode=\"tree\");"
+" without one, small screens load a kanban instead."
+msgstr ""
+"แผนภาพลำดับต้องมี <tree> เขียนไว้ภายในฟิลด์ (หรือกำหนด mode=\"tree\") "
+"ไม่เช่นนั้นจอเล็กจะโหลดเป็น kanban แทน"
 
 #. module: web_widget_x2many_flow
 #. odoo-javascript
 #: code:addons/web_widget_x2many_flow/static/src/x2many_flow/flow_renderer.esm.js:0
 #, python-format
-msgid "This move would shift a locked item; it was cancelled."
-msgstr "ย้ายไม่ได้ เพราะจะทำให้รายการที่ล็อกไว้เปลี่ยนตำแหน่ง"
+msgid "This item is locked and cannot be moved."
+msgstr "รายการนี้ถูกล็อก ย้ายไม่ได้"
+
+#. module: web_widget_x2many_flow
+#. odoo-javascript
+#: code:addons/web_widget_x2many_flow/static/src/x2many_flow/flow_renderer.esm.js:0
+#, python-format
+msgid "This move would push a locked item; it was cancelled."
+msgstr "ย้ายไม่ได้ เพราะจะทำให้รายการที่ล็อกไว้เปลี่ยนลำดับ"

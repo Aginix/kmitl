@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import {Component, useRef} from "@odoo/owl";
-import {buildLayers, planDrop} from "./layer_utils.esm";
+import {buildLayers, isAnchoredLayer, planDrop} from "./layer_utils.esm";
 import {FlowCard} from "./flow_card.esm";
 import {sprintf} from "@web/core/utils/strings";
 import {useService} from "@web/core/utils/hooks";
@@ -56,6 +56,23 @@ export class FlowRenderer extends Component {
         return this.props.readonly || record.isReadonly(this.props.layerKey);
     }
 
+    isAnchored(layers, index) {
+        return isAnchoredLayer(layers, index, (record) => this.isLocked(record));
+    }
+
+    dropErrorMessage(error) {
+        const messages = {
+            locked: this.env._t("This item is locked and cannot be moved."),
+            shift_locked: this.env._t(
+                "This move would push a locked item; it was cancelled."
+            ),
+            anchored: this.env._t(
+                "The first layer holds a locked item: nothing can be placed in or before it."
+            ),
+        };
+        return messages[error];
+    }
+
     async onDrop({element, parent}) {
         if (!parent) {
             return;
@@ -68,10 +85,7 @@ export class FlowRenderer extends Component {
             this.isLocked(record)
         );
         if (plan.error) {
-            this.notification.add(
-                this.env._t("This move would shift a locked item; it was cancelled."),
-                {type: "warning"}
-            );
+            this.notification.add(this.dropErrorMessage(plan.error), {type: "warning"});
             return;
         }
         if (plan.updates.length) {

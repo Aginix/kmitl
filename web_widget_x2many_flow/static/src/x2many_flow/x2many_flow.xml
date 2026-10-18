@@ -78,14 +78,14 @@
                                         decorations="props.archInfo.decorations or []"
                                         locked="isLocked(record)"
                                         draggable="!props.readonly"
-                                        canDelete="props.canDelete and !isLocked(record)"
+                                        canDelete="props.canDelete"
                                         onOpen="props.onOpen"
                                         onDelete="props.onDelete"
                                     />
                                 </t>
                             </div>
                             <button
-                                t-if="props.canCreate"
+                                t-if="props.canCreate and !isAnchored(flowLayers, layer_index)"
                                 type="button"
                                 class="btn btn-light btn-sm rounded-circle o_flow_layer_add"
                                 title="Add to this layer"
@@ -137,7 +137,7 @@
                     <i class="fa fa-cog" />
                 </button>
                 <button
-                    t-if="props.canDelete"
+                    t-if="props.canDelete and !props.locked"
                     type="button"
                     class="btn btn-link btn-sm o_flow_delete"
                     title="Remove"
@@ -146,8 +146,9 @@
                     <i class="fa fa-trash" />
                 </button>
             </div>
-            <div t-if="detailColumns.length" class="o_flow_node_body">
-                <t t-foreach="detailColumns" t-as="column" t-key="column.id">
+            <t t-set="rows" t-value="detailColumns" />
+            <div t-if="rows.length" class="o_flow_node_body">
+                <t t-foreach="rows" t-as="column" t-key="column.id">
                     <div class="o_flow_node_row">
                         <span class="o_flow_node_label" t-esc="column.label" />
                         <Field

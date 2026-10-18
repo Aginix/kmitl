@@ -2,6 +2,7 @@
 
 import {
     buildLayers,
+    isAnchoredLayer,
     planDrop,
     resolveLayerKey,
 } from "@web_widget_x2many_flow/x2many_flow/layer_utils.esm";
@@ -94,10 +95,19 @@ QUnit.module("web_widget_x2many_flow", {}, () => {
             plan([rec("o", 1), rec("a", 2), rec("b", 3), rec("c", 4)], "c", {gap: 2}, [
                 "b",
             ]).error,
-            "locked"
+            "shift_locked"
         );
-        // A locked first layer keeps its place
-        assert.strictEqual(plan(records, "b", {gap: 0}, ["o"]).error, "locked");
+        // A first layer holding a locked node is anchored: no join, nothing before
+        assert.strictEqual(plan(records, "b", {gap: 0}, ["o"]).error, "anchored");
+        assert.strictEqual(plan(records, "b", {layer: 1}, ["o"]).error, "anchored");
+        assert.ok(
+            isAnchoredLayer(buildLayers(records, "order"), 0, (r) => r.id === "o")
+        );
+        assert.notOk(
+            isAnchoredLayer(buildLayers(records, "order"), 1, (r) => r.id === "o")
+        );
+        // ...but joining a later layer is fine
+        assert.deepEqual(values(plan(records, "b", {layer: 2}, ["o"])), {b: 2});
         assert.deepEqual(values(plan(records, "b", {gap: 1}, ["o"])), {b: 2, a: 3});
     });
 });

@@ -60,6 +60,24 @@ export function buildLayers(records, key) {
 }
 
 /**
+ * An Anchored Layer is a first Layer holding a Locked Node (e.g. e-Saraban's
+ * originator): nothing may join it, be added to it or be placed before it.
+ *
+ * @param {Array} layers as rendered, from buildLayers
+ * @param {Number} index position of the Layer
+ * @param {Function} isLocked record => Boolean
+ * @param {String} [ignoreId] record left out of the check (the one being moved)
+ * @returns {Boolean}
+ */
+export function isAnchoredLayer(layers, index, isLocked, ignoreId) {
+    return (
+        index === 0 &&
+        layers.length > 0 &&
+        layers[0].records.some((r) => r.id !== ignoreId && isLocked(r))
+    );
+}
+
+/**
  * The New Layer half of planDrop: `moved` (out of `origin`) dropped in the gap
  * before `layers[gap]`.
  *
@@ -68,7 +86,7 @@ export function buildLayers(records, key) {
  * @param {Object} moved the dropped record
  * @param {Number} gap gap index
  * @param {Function} isLocked record => Boolean
- * @returns {Object} `{updates: [{record, value}]}` or `{error: "locked"}`
+ * @returns {Object} `{updates: [{record, value}]}` or `{error}`
  */
 function planNewLayer(layers, origin, moved, gap, isLocked) {
     // The Layers left once the moved node is lifted out.
@@ -90,10 +108,9 @@ function planNewLayer(layers, origin, moved, gap, isLocked) {
         return {updates: [{record: moved, value: lo + 1}]};
     }
     if (lo === null) {
-        // Nothing is written to the first Layer, but it stops being first — a
-        // Locked Node there (e.g. a mandatory originator) must keep that place.
-        if (others(after[0]).some(isLocked)) {
-            return {error: "locked"};
+        // Nothing is written to the first Layer, but it stops being first.
+        if (isAnchoredLayer(after, 0, isLocked, moved.id)) {
+            return {error: "anchored"};
         }
         return {updates: [{record: moved, value: hi - 1}]};
     }
@@ -104,7 +121,7 @@ function planNewLayer(layers, origin, moved, gap, isLocked) {
         others(layer).map((record) => ({record, value: layer.value + 1}))
     );
     if (shifted.some(({record}) => isLocked(record))) {
-        return {error: "locked"};
+        return {error: "shift_locked"};
     }
     return {updates: [{record: moved, value: lo + 1}, ...shifted]};
 }
@@ -119,14 +136,15 @@ function planNewLayer(layers, origin, moved, gap, isLocked) {
  *   otherwise only the Layers after the gap move up by one. Before the first
  *   Layer is first - 1, after the last is last + 1. Earlier Layers never move.
  *
- * Refused (`{error: "locked"}`) when the moved node is locked, when a shift would
- * move a locked node, or when it lands before a first Layer holding a locked node.
+ * Refused with `{error}`: "locked" when the moved node is locked, "shift_locked"
+ * when a shift would move a locked node, "anchored" when it would join or land
+ * before an Anchored Layer (isAnchoredLayer).
  *
  * @param {Array} layers as rendered, from buildLayers
  * @param {String} movedId
  * @param {Object} target `{layer: value}` or `{gap: index}`
  * @param {Function} isLocked record => Boolean
- * @returns {Object} `{updates: [{record, value}]}` or `{error: "locked"}`
+ * @returns {Object} `{updates: [{record, value}]}` or `{error}`
  */
 export function planDrop(layers, movedId, target, isLocked) {
     const origin = layers.find((layer) => layer.records.some((r) => r.id === movedId));
@@ -140,6 +158,10 @@ export function planDrop(layers, movedId, target, isLocked) {
     if ("layer" in target) {
         if (target.layer === origin.value) {
             return {updates: []};
+        }
+        const index = layers.findIndex((layer) => layer.value === target.layer);
+        if (isAnchoredLayer(layers, index, isLocked, movedId)) {
+            return {error: "anchored"};
         }
         return {updates: [{record: moved, value: target.layer}]};
     }

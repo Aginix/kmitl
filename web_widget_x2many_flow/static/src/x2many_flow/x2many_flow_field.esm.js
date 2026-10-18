@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import {buildLayers, resolveLayerKey} from "./layer_utils.esm";
-import {onWillStart, useState} from "@odoo/owl";
+import {onWillStart, onWillUpdateProps, useState} from "@odoo/owl";
 import {FlowRenderer} from "./flow_renderer.esm";
 import {X2ManyField} from "@web/views/fields/x2many/x2many_field";
 import {_lt} from "@web/core/l10n/translation";
@@ -42,18 +42,23 @@ export class X2ManyFlowField extends X2ManyField {
             direction: DIRECTIONS.includes(stored) ? stored : this.props.direction,
         });
 
-        // The diagram has no pager: show every line.
-        onWillStart(async () => {
-            if (!this.layerKey.error && this.list.count > this.list.limit) {
-                await this.list.load({limit: this.list.count, offset: 0});
+        // The diagram has no pager: show every line — also when the form moves to
+        // another record (pager, reload), which keeps this component mounted.
+        const loadAll = async (list) => {
+            if (!this.layerKey.error && list.count > list.limit) {
+                await list.load({limit: list.count, offset: 0});
             }
-        });
+        };
+        onWillStart(() => loadAll(this.list));
+        onWillUpdateProps((nextProps) => loadAll(nextProps.value));
     }
 
     get errorMessage() {
         const {error, name} = this.layerKey;
         const messages = {
-            no_tree: this.env._t("The flow diagram needs a <tree> inside the field."),
+            no_tree: this.env._t(
+                'The flow diagram needs a <tree> written inside the field (or mode="tree"); without one, small screens load a kanban instead.'
+            ),
             no_field: this.env._t("No Layer Key field found (%s)."),
             not_numeric: this.env._t(
                 "The Layer Key field %s must be an Integer or a Float."
@@ -75,8 +80,7 @@ export class X2ManyFlowField extends X2ManyField {
         );
     }
 
-    get titleColumn() {
-        const columns = this.visibleColumns;
+    getTitleColumn(columns) {
         const {titleField} = this.props;
         return (
             (titleField && columns.find((column) => column.name === titleField)) ||
@@ -84,9 +88,7 @@ export class X2ManyFlowField extends X2ManyField {
         );
     }
 
-    get cardColumns() {
-        const columns = this.visibleColumns;
-        const title = this.titleColumn;
+    getCardColumns(columns, title) {
         if (this.props.cardFields) {
             return this.props.cardFields
                 .map((name) => columns.find((column) => column.name === name))
@@ -103,12 +105,14 @@ export class X2ManyFlowField extends X2ManyField {
 
     get flowRendererProps() {
         const readonly = Boolean(this.props.readonly);
+        const columns = this.visibleColumns;
+        const titleColumn = this.getTitleColumn(columns);
         return {
             list: this.list,
             archInfo: this.archInfo,
             layerKey: this.layerKey.name,
-            titleColumn: this.titleColumn,
-            columns: this.cardColumns,
+            titleColumn,
+            columns: this.getCardColumns(columns, titleColumn),
             direction: this.direction,
             cardWidth: this.props.cardWidth,
             canToggleDirection: !this.env.isSmall,

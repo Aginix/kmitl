@@ -53,7 +53,13 @@ Options (all optional):
     Defaults to ``280px``.
 
 A ``readonly`` modifier on the Layer Key column **locks** that line: it cannot
-be dragged, pushed by another drop, or removed from its card. ``decoration-*``
-on the ``<tree>`` colours the card's left stripe.
+be dragged, pushed by another drop, or removed from its card. A first Layer
+holding a locked line is **anchored**: nothing can join it, be added to it or
+be placed before it. ``decoration-*`` on the ``<tree>`` colours the card's
+left stripe.
+
+Write the ``<tree>`` inside the field (or set ``mode="tree"``). Without an
+inline tree, Odoo loads a kanban sub-view on small screens and the widget
+shows an error instead of the diagram.
 
 See ``CONTEXT.md`` for the vocabulary and ``docs/adr/`` for design decisions.

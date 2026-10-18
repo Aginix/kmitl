@@ -21,8 +21,10 @@ Layer. _Avoid_: sequence (only one possible field name).
 **Node (โหนด)**: The card of one line.
 
 **Locked Node**: A Node whose Layer Key is readonly for that line; it can neither be
-moved nor be pushed by another move (nor lose its place as first Layer), and cannot be
-removed from its card.
+moved nor be pushed by another move, and cannot be removed from its card.
+
+**Anchored Layer**: A first Layer holding a Locked Node (e-Saraban's originator):
+nothing may join it, be added to it or be placed before it, so it stays first and alone.
 
 **Join**: Dropping a Node onto an existing Layer — it takes that Layer's value.
 
