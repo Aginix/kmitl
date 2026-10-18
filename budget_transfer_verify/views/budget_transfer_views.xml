@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_budget_transfer_form_verify" model="ir.ui.view">
+        <field name="name">budget.transfer.form.verify</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget_transfer.view_budget_transfer_form" />
+        <!-- Applied after budget_transfer_sarabun (default 16), whose
+             statusbar_visible replace would otherwise drop to_verify. -->
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <xpath expr="//button[@name='action_submit']" position="after">
+                <field name="show_verify_button" invisible="1" />
+                <field name="show_verify_return_button" invisible="1" />
+                <button
+                    name="action_verify"
+                    type="object"
+                    string="ยืนยันตรวจสอบ"
+                    class="btn-primary"
+                    attrs="{'invisible': [('show_verify_button', '=', False)]}"
+                />
+                <button
+                    name="action_open_verify_return_wizard"
+                    type="object"
+                    string="ส่งกลับแก้ไข"
+                    attrs="{'invisible': [('show_verify_return_button', '=', False)]}"
+                />
+            </xpath>
+
+            <xpath
+                expr="//field[@name='state'][@widget='statusbar']"
+                position="attributes"
+            >
+                <attribute name="statusbar_visible" add="to_verify" separator="," />
+            </xpath>
+
+            <xpath expr="//group[@name='approval_meta']" position="before">
+                <group name="verify_meta">
+                    <group>
+                        <field
+                            name="verifier_id"
+                            options="{'no_create': True}"
+                            attrs="{'readonly': [('state', 'not in', ('draft', 'to_verify', 'submitted'))], 'invisible': [('state', 'in', ('posted', 'cancelled')), ('verifier_id', '=', False)]}"
+                        />
+                        <field
+                            name="verify_date"
+                            attrs="{'invisible': [('verify_date', '=', False)]}"
+                        />
+                    </group>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_budget_transfer_tree_verify" model="ir.ui.view">
+        <field name="name">budget.transfer.tree.verify</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget_transfer.view_budget_transfer_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute
+                    name="decoration-warning"
+                >state in ('to_verify', 'submitted')</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute
+                    name="decoration-warning"
+                >state in ('to_verify', 'submitted')</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="verifier_id" optional="show" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_budget_transfer_search_verify" model="ir.ui.view">
+        <field name="name">budget.transfer.search.verify</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget_transfer.view_budget_transfer_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='pending_approval']" position="before">
+                <filter
+                    name="to_verify"
+                    string="รอตรวจสอบ"
+                    domain="[('state', '=', 'to_verify')]"
+                />
+                <filter
+                    name="my_verification"
+                    string="รอฉันตรวจสอบ"
+                    domain="[('state', '=', 'to_verify'), ('verifier_id', '=', uid)]"
+                />
+            </xpath>
+            <xpath expr="//filter[@name='group_by_user']" position="after">
+                <filter
+                    name="group_by_verifier"
+                    string="Buddy ผู้ตรวจสอบ"
+                    domain="[]"
+                    context="{'group_by': 'verifier_id'}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

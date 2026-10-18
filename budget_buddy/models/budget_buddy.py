@@ -1,0 +1,84 @@
+from dateutil.relativedelta import relativedelta
+
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
+from odoo.osv import expression
+from odoo.tools.safe_eval import datetime, safe_eval, time
+
+
+class BudgetBuddy(models.Model):
+    """One coverage row: a Buddy (central-office officer) looks after the
+    documents of one model that match a domain — typically a unit (ส่วนงาน)
+    and its sub-units, e.g. ``[('department_analytic_id', 'child_of', 42)]``,
+    optionally narrowed further (e.g. only transfers above a threshold). A
+    document may have several buddies and a buddy may hold several rows."""
+
+    _name = "budget.buddy"
+    _description = "Budget Buddy Coverage"
+    _order = "sequence, id"
+
+    sequence = fields.Integer(default=10)
+    active = fields.Boolean(default=True)
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Buddy",
+        required=True,
+        index=True,
+        domain=lambda self: [
+            ("groups_id", "in", self.env.ref("budget_buddy.group_budget_buddy").ids)
+        ],
+    )
+    model_id = fields.Many2one(
+        comodel_name="ir.model",
+        string="Document Model",
+        required=True,
+        ondelete="cascade",
+    )
+    model_name = fields.Char(related="model_id.model")
+    domain = fields.Char(default="[]", required=True)
+    company_id = fields.Many2one(
+        comodel_name="res.company",
+        required=True,
+        default=lambda self: self.env.company,
+    )
+
+    @api.onchange("model_id")
+    def _onchange_model_id(self):
+        self.domain = "[]"
+
+    @api.constrains("model_id", "domain")
+    def _check_model_domain(self):
+        for row in self:
+            try:
+                expression.expression(row._get_domain(), self.env[row.model_id.model])
+            except Exception as e:
+                raise ValidationError(_("Invalid domain: %s") % e) from e
+
+    def _get_domain(self):
+        self.ensure_one()
+        return safe_eval(
+            self.domain or "[]",
+            {
+                "uid": self.env.uid,
+                "user": self.env.user,
+                "datetime": datetime,
+                "time": time,
+                "relativedelta": relativedelta,
+                "context_today": lambda: fields.Date.context_today(self),
+            },
+        )
+
+    @api.model
+    def _get_buddy_users(self, record):
+        """Return the active buddies whose rows match ``record``, ordered by
+        ``sequence`` (primary first)."""
+        rows = self.sudo().search(
+            [
+                ("active", "=", True),
+                ("user_id.active", "=", True),
+                ("model_id.model", "=", record._name),
+            ]
+        )
+        record = record.sudo()
+        rows = rows.filtered(lambda r: record.filtered_domain(r._get_domain()))
+        return rows.mapped("user_id").sudo(False)
