@@ -211,7 +211,12 @@ class DisbursementRequestLine(models.Model):
     @api.depends("partner_id", "partner_id.bank_ids", "request_id.company_id")
     def _compute_line_partner_bank_id(self):
         for line in self:
-            if line.partner_id:
+            # Only a draft follows the partner's accounts: a submitted or paid
+            # line keeps the account it was checked and paid against even if
+            # the partner's accounts are archived or replaced later.
+            if line.request_id.state not in (False, "draft"):
+                line.partner_bank_id = line.partner_bank_id
+            elif line.partner_id:
                 banks = line.partner_id.bank_ids.filtered(
                     lambda b: not b.company_id
                     or b.company_id == line.request_id.company_id

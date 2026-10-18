@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Guards checked on Submit (blocking), in place of hard field
+    <!-- Guards checked on Submit, in place of hard field
          constraints: they never lock an already-submitted request when a
          partner is re-typed or loses an account later, and the user can open
          the partner from the line to fix it. -->
@@ -21,7 +21,10 @@ if self.partner_id.partner_type_id != self.request_id.partner_type_id:
         <field name="active" eval="True" />
     </record>
 
-    <!-- Payment goes by bank transfer: every payee needs an account. -->
+    <!-- Payment normally goes by bank transfer, so every payee should have an
+         account. Not blocking: a payee paid in cash (disbursement_finance_kmitl
+         cash paying account) needs none, and an exception manager may ignore
+         the rule for that request. -->
     <record id="excep_disbursement_line_partner_bank" model="exception.rule">
         <field name="name">ผู้รับเงินยังไม่มีบัญชีธนาคาร</field>
         <field name="description">มีรายการที่ผู้รับเงินยังไม่มีบัญชีธนาคาร กรุณาเปิดผู้รับเงินจากรายการเพื่อเพิ่มบัญชีธนาคาร</field>
@@ -32,7 +35,7 @@ if self.partner_id.partner_type_id != self.request_id.partner_type_id:
 if self.partner_id and not self.partner_bank_id:
     failed = True
         </field>
-        <field name="is_blocking" eval="True" />
+        <field name="is_blocking" eval="False" />
         <field name="active" eval="True" />
     </record>
 </odoo>

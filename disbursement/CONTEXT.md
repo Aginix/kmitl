@@ -15,8 +15,8 @@ _Avoid_: Payment (that is the downstream document), Voucher.
 
 **Payee** (ผู้รับเงิน):
 The partner a request line pays. Payees exist only on the lines — the request
-itself has no partner — and each must have a bank account before the request is
-submitted.
+itself has no partner — and each needs a bank account before the request is
+submitted, unless it is paid in cash (an exception manager then lets it through).
 _Avoid_: Partner of the request, Vendor (only some payees are vendors).
 
 **Payee type** (ประเภทผู้รับเงิน):

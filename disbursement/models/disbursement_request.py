@@ -432,8 +432,10 @@ class DisbursementRequest(models.Model):
 
     @api.onchange("date", "company_id")
     def _onchange_date_fiscal_year(self):
-        """Follow the date by default; the user may still pick another year."""
-        for rec in self:
+        """Default the year from the date. The year leads once set (it drives
+        the number and, under budget control, the commitment), so a later
+        date edit never moves it."""
+        for rec in self.filtered(lambda r: not r.account_fiscal_year_id):
             rec.account_fiscal_year_id = rec._default_fiscal_year(
                 fields.Date.to_date(rec.date), rec.company_id
             )
@@ -564,7 +566,6 @@ class DisbursementRequest(models.Model):
         mirroring the per-fiscal-year scheme that purchase_request_sequence_kmitl
         uses. A dedicated ir.sequence is created on first use per fiscal year.
         """
-        Sequence = self.env["ir.sequence"].sudo()
         Company = self.env["res.company"]
         for vals in vals_list:
             date = fields.Date.to_date(
@@ -579,25 +580,46 @@ class DisbursementRequest(models.Model):
             if vals.get("name") and vals["name"] != "/":
                 continue
 
-            # The number follows the chosen fiscal year, not the date.
-            fy = self.env["account.fiscal.year"].browse(
-                vals["account_fiscal_year_id"]
+            vals["name"] = self._next_number(
+                self.env["account.fiscal.year"].browse(vals["account_fiscal_year_id"]),
+                date,
             )
-            fy_year = fy.name[-2:] if fy else date.strftime("%y")
-
-            seq_code = f"disbursement.request.{fy_year}"
-            if not Sequence.search([("code", "=", seq_code)], limit=1):
-                Sequence.create({
-                    "name": f"Disbursement Request {fy_year}",
-                    "code": seq_code,
-                    "prefix": f"DR/{fy_year}/",
-                    "padding": 4,
-                    "number_increment": 1,
-                })
-
-            vals["name"] = Sequence.next_by_code(seq_code) or "/"
 
         return super().create(vals_list)
+
+    def write(self, vals):
+        res = super().write(vals)
+        if vals.get("account_fiscal_year_id"):
+            # The number follows the year: a draft moved to another year gets
+            # that year's next number.
+            for rec in self.filtered(lambda r: r.state == "draft"):
+                prefix = rec._number_prefix(rec.account_fiscal_year_id, rec.date)
+                if rec.name.startswith("DR/") and not rec.name.startswith(prefix):
+                    rec.name = rec._next_number(rec.account_fiscal_year_id, rec.date)
+        return res
+
+    @api.model
+    def _number_prefix(self, fiscal_year, date):
+        """DR/<yy>/ of the chosen fiscal year (the date's year without one)."""
+        fy_year = fiscal_year.name[-2:] if fiscal_year else date.strftime("%y")
+        return f"DR/{fy_year}/"
+
+    @api.model
+    def _next_number(self, fiscal_year, date):
+        """Next DR/<yy>/<nnnn>, from a per-year ir.sequence created on first use."""
+        Sequence = self.env["ir.sequence"].sudo()
+        prefix = self._number_prefix(fiscal_year, date)
+        fy_year = prefix.split("/")[1]
+        seq_code = f"disbursement.request.{fy_year}"
+        if not Sequence.search([("code", "=", seq_code)], limit=1):
+            Sequence.create({
+                "name": f"Disbursement Request {fy_year}",
+                "code": seq_code,
+                "prefix": prefix,
+                "padding": 4,
+                "number_increment": 1,
+            })
+        return Sequence.next_by_code(seq_code) or "/"
 
     @api.depends(
         "line_ids.price_subtotal",

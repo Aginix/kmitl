@@ -102,3 +102,44 @@ class TestPayeeType(TwoApproverCommon):
         self.assertEqual(dr.account_fiscal_year_id, fy)
         self.assertTrue(dr.name.startswith("DR/99/"))
         self.assertIn(dr, self.DR.search([("account_fiscal_year_id", "=", fy.id)]))
+
+    def test_missing_bank_can_be_ignored_for_cash(self):
+        """Not blocking: a cash payee needs no account, so the rule may be
+        ignored and the request submitted."""
+        self.partner.bank_ids.unlink()
+        dr = self._draft(self.partner)
+        dr.action_submit()
+        dr.action_ignore_exceptions()
+        dr.action_submit()
+        self.assertEqual(dr.state, "submitted")
+
+    def test_submitted_line_keeps_its_bank(self):
+        dr = self._draft(self.partner)
+        dr.action_submit()
+        bank = dr.line_ids.partner_bank_id
+        self.assertTrue(bank)
+        bank.active = False
+        self.assertEqual(dr.line_ids.partner_bank_id, bank)
+
+    def test_moving_draft_to_another_year_renumbers_it(self):
+        fy = self.env["account.fiscal.year"].create({
+            "name": "2598",
+            "date_from": date(2055, 10, 1),
+            "date_to": date(2056, 9, 30),
+            "company_id": self.env.company.id,
+        })
+        dr = self._draft(self.partner)
+        dr.account_fiscal_year_id = fy
+        self.assertTrue(dr.name.startswith("DR/98/"))
+
+    def test_date_edit_keeps_the_chosen_year(self):
+        fy = self.env["account.fiscal.year"].create({
+            "name": "2597",
+            "date_from": date(2054, 10, 1),
+            "date_to": date(2055, 9, 30),
+            "company_id": self.env.company.id,
+        })
+        dr = self._draft(self.partner, account_fiscal_year_id=fy.id)
+        dr.date = date(2020, 1, 1)
+        dr._onchange_date_fiscal_year()
+        self.assertEqual(dr.account_fiscal_year_id, fy)
