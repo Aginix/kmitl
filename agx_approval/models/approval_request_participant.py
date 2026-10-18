@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class ApprovalRequestParticipant(models.Model):
@@ -21,25 +22,21 @@ class ApprovalRequestParticipant(models.Model):
     )
 
     participant_type = fields.Selection(
-        [("internal", "บุคลากรภายใน"), ("external", "บุคคลภายนอก")],
+        [("internal", "บุคลากรภายใน"), ("student", "นักศึกษา")],
         required=True,
-        default="external",
     )
 
     partner_id = fields.Many2one(
         "res.partner",
         string="ชื่อ",
         required=True,
-        domain="[('partner_type_id', 'in', allowed_partner_type_ids),"
-        " ('partner_type_id.is_internal', '=', participant_type == 'internal')]"
-        " if allowed_partner_type_ids else"
-        " [('partner_type_id.is_internal', '=', participant_type == 'internal')]",
+        domain="[('partner_type_id', 'in', allowed_partner_type_ids)]",
     )
 
     allowed_partner_type_ids = fields.Many2many(
         "res.partner.type",
         string="Allowed Partner Types",
-        related="request_id.category_id.allowed_partner_type_ids",
+        compute="_compute_allowed_partner_type_ids",
     )
 
     partner_type_id = fields.Many2one(
@@ -63,6 +60,41 @@ class ApprovalRequestParticipant(models.Model):
     )
 
     description = fields.Text(string="รายละเอียด")
+
+    @api.depends(
+        "participant_type", "request_id.category_id.allowed_partner_type_ids"
+    )
+    def _compute_allowed_partner_type_ids(self):
+        """The category's partner types (all if it sets none), narrowed to
+        internal types for staff or to the student type for students."""
+        all_types = self.env["res.partner.type"].search([])
+        student = self.env.ref(
+            "partner_type_kmitl.partner_type_student", raise_if_not_found=False
+        )
+        for participant in self:
+            types = (
+                participant.request_id.category_id.allowed_partner_type_ids
+                or all_types
+            )
+            if participant.participant_type == "internal":
+                types = types.filtered("is_internal")
+            else:
+                types = types & student if student else types.browse()
+            participant.allowed_partner_type_ids = types
+
+    @api.constrains("partner_id", "participant_type")
+    def _check_partner_type_allowed(self):
+        for participant in self:
+            if (
+                participant.partner_id.partner_type_id
+                not in participant.allowed_partner_type_ids
+            ):
+                raise ValidationError(
+                    _(
+                        "%(partner)s is not an allowed contact type for this participant.",
+                        partner=participant.partner_id.display_name,
+                    )
+                )
 
     @api.depends("partner_id")
     def _compute_employee_info(self):
