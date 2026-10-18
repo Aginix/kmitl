@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="agx_floating_window.FloatingWindowContainer" owl="1">
+        <div class="o_agx_floating_window_container">
+            <t t-foreach="Object.values(props.windows)" t-as="win" t-key="win.id">
+                <ErrorHandler onError="(error) => this.handleError(error, win)">
+                    <FloatingWindow
+                        window="win"
+                        focus="props.focus"
+                        close="props.close"
+                    />
+                </ErrorHandler>
+            </t>
+        </div>
+    </t>
+
+    <t t-name="agx_floating_window.FloatingWindow" owl="1">
+        <div
+            class="o_agx_floating_window"
+            t-att-class="{o_agx_floating_window_maximized: state.maximized}"
+            t-att-style="style"
+            t-ref="root"
+            tabindex="-1"
+            t-on-pointerdown="onPointerDown"
+            t-on-keydown="onKeydown"
+        >
+            <header
+                class="o_agx_floating_window_header"
+                t-on-pointerdown="onHeaderPointerDown"
+                t-on-dblclick="toggleMaximize"
+            >
+                <span class="o_agx_floating_window_title" t-esc="props.window.title" />
+                <button
+                    type="button"
+                    class="btn btn-link"
+                    title="Maximize"
+                    t-on-click="toggleMaximize"
+                >
+                    <i
+                        t-attf-class="fa {{ state.maximized ? 'fa-compress' : 'fa-expand' }}"
+                    />
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-link"
+                    title="Close"
+                    t-on-click="() => props.close(props.window.id)"
+                >
+                    <i class="fa fa-times" />
+                </button>
+            </header>
+            <main class="o_agx_floating_window_body">
+                <t t-component="props.window.Component" t-props="props.window.props" />
+            </main>
+        </div>
+    </t>
+</templates>

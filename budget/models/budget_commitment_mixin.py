@@ -517,20 +517,35 @@ class BudgetCommitmentMixin(models.AbstractModel):
         :meth:`apply_reservation_selection`.
         """
         self.ensure_one()
+        context = dict(
+            self._budget_dashboard_context(),
+            res_model=self._name,
+            res_id=self.id,
+            select_only=True,
+            account_domain=self._reservation_account_domain(),
+        )
+        return {
+            "type": "ir.actions.client",
+            "tag": "budget_reservation_picker",
+            "target": "new",
+            "name": _("เลือกงบประมาณ"),
+            "context": context,
+        }
+
+    def _budget_dashboard_context(self):
+        """Scope the budget dashboard to the host's fiscal year, budget
+        category (root of its budget account) and dimensions."""
+        self.ensure_one()
         fiscal_year = getattr(self, "account_fiscal_year_id", False)
         account = self._get_commitment_field_value("account_id")
         root = account
         while root and root.parent_id:
             root = root.parent_id
         context = {
-            "res_model": self._name,
-            "res_id": self.id,
-            "select_only": True,
-            "account_domain": self._reservation_account_domain(),
             "default_fiscal_year_id": fiscal_year.id if fiscal_year else False,
             "default_root_account_id": root.id if root else False,
         }
-        # Pre-fill the picker's dimension filter bar from the host's dimensions.
+        # Pre-fill the dashboard's dimension filter bar from the host's dimensions.
         for fname in (
             "department_analytic_id",
             "source_analytic_id",
@@ -539,12 +554,17 @@ class BudgetCommitmentMixin(models.AbstractModel):
         ):
             value = getattr(self, fname, False)
             context["default_" + fname] = value.id if value else False
+        return context
+
+    def action_view_budget_dashboard(self):
+        """Open ตรวจสอบงบประมาณ for the host's budget code and dimensions."""
+        self.ensure_one()
         return {
             "type": "ir.actions.client",
-            "tag": "budget_reservation_picker",
+            "tag": "budget_dashboard",
             "target": "new",
-            "name": _("เลือกงบประมาณ"),
-            "context": context,
+            "name": _("ตรวจสอบงบประมาณ"),
+            "context": self._budget_dashboard_context(),
         }
 
     def apply_reservation_selection(self, selections, dims=None):
