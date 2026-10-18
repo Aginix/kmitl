@@ -73,7 +73,7 @@ class BudgetCommitment(models.Model):
                         if amount > 0
                         else _("ปลดจองจากการโอนงบ %s")
                     )
-                    % transfer_move.display_name,
+                    % source.display_name,
                 }
             )
         )

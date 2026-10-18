@@ -72,6 +72,8 @@ class TestBudgetTransferReservation(BudgetLedgerCommon):
                     "kmitl_project_analytic_id": self.tag.id,
                 },
             )
+            # numbered on leaving draft, as in the real flow
+            top_up.write({"state": "submitted"})
             self._post(top_up)
             self.assertEqual(commitment.amount, 80_000)
             self.assertEqual(commitment.total_reserved, 80_000)
@@ -80,6 +82,8 @@ class TestBudgetTransferReservation(BudgetLedgerCommon):
             topup_line = top_up.move_id.line_ids.filtered("commitment_line_id")
             self.assertEqual(topup_line.move_type, "reserve")
             self.assertEqual(topup_line.balance, -30_000)
+            # the event names the numbered transfer, not its still-unposted move
+            self.assertIn(top_up.name, topup_line.commitment_line_id.name)
             self.assertEqual(top_up.amount, 30_000)
 
             release = self._transfer(
