@@ -194,6 +194,18 @@ msgid "Save"
 msgstr "บันทึก"
 
 #. module: agx_photoviewer_annotation
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation/static/src/js/annotation_renderer.js:0
+msgid "Show the annotations"
+msgstr "แสดงการขีดเขียน"
+
+#. module: agx_photoviewer_annotation
+#. odoo-javascript
+#: code:addons/agx_photoviewer_annotation/static/src/js/annotation_renderer.js:0
+msgid "Show the original"
+msgstr "ดูต้นฉบับ"
+
+#. module: agx_photoviewer_annotation
 #: model:ir.model.fields,field_description:agx_photoviewer_annotation.field_ir_attachment_annotation__text
 msgid "Text"
 msgstr "ข้อความ"

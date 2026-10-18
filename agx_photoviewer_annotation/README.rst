@@ -17,6 +17,8 @@ an image or a PDF inside the photo viewer of ``agx_photoviewer``.
 * The module of a record may lock the annotations of its files, e.g. once the
   record is done, by overriding ``_annotation_is_locked`` on its model (never
   locked by default). A locked layer can still be viewed and exported.
+* The eye button hides every mark to show the file as it was uploaded;
+  annotating is off meanwhile.
 * **Download with annotations** builds a PDF of the file with the marks drawn
   on it and the comments listed on a last page; nothing is stored.
 * Leaving an annotated file posts one internal note on the chatter of the

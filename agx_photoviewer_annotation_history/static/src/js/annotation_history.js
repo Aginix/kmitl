@@ -105,6 +105,11 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_annotation_history", {
         this.body.append(this.historyPanel);
     },
 
+    canAnnotate() {
+        // A past state is read-only.
+        return !this.historyChange && this._super(...arguments);
+    },
+
     visibleAnnotations() {
         return this.historyChange?.annotations || this._super(...arguments);
     },
@@ -223,10 +228,7 @@ patch(AnnotationEditor.prototype, "agx_photoviewer_annotation_history", {
     showChange(change) {
         this.historyChange = change;
         this.closePopover();
-        if (change) {
-            this.setDrawing(false);
-        }
-        this.drawButton.disabled = Boolean(change) || this.locked;
+        this.refreshDrawButton();
         this.root.classList.toggle("o_agx_annotation_history_mode", Boolean(change));
         for (const element of this.historyPanel.querySelectorAll(
             ".o_agx_annotation_history_item"

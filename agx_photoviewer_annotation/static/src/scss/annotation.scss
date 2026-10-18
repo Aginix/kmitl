@@ -145,6 +145,11 @@
     }
 }
 
+// The file as it was uploaded.
+.o_agx_annotation_marks_hidden .o_agx_annotation_layer {
+    visibility: hidden;
+}
+
 .o_agx_annotation_tool_draw .o_agx_annotation_layer {
     pointer-events: all;
     cursor: crosshair;

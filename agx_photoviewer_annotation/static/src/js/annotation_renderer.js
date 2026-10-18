@@ -219,8 +219,8 @@ export class AnnotationEditor {
                 )
             );
         }
+        this.refreshDrawButton();
         if (this.locked) {
-            this.drawButton.disabled = true;
             this.root.append(
                 htmlElement(
                     "div",
@@ -312,6 +312,10 @@ export class AnnotationEditor {
             _t("Annotate")
         );
         toolbar.append(this.drawButton);
+        this.marksButton = button("fa-eye-slash", _t("Show the original"), () =>
+            this.toggleMarks()
+        );
+        toolbar.append(this.marksButton);
 
         this.toolsGroup = htmlElement("div", "o_agx_annotation_tools d-none");
         const tools = [
@@ -446,6 +450,39 @@ export class AnnotationEditor {
     }
 
     // ------------------------------------------------------------ toolbar
+
+    /**
+     * Whether the user may annotate what is shown; extensions add their own
+     * conditions.
+     */
+    canAnnotate() {
+        return !this.locked && !this.marksHidden;
+    }
+
+    refreshDrawButton() {
+        const enabled = this.canAnnotate();
+        if (!enabled && this.drawing) {
+            this.setDrawing(false);
+        }
+        this.drawButton.disabled = !enabled;
+    }
+
+    /**
+     * Hide every mark to see the file as it was uploaded, or show them again.
+     */
+    toggleMarks() {
+        this.marksHidden = !this.marksHidden;
+        this.closePopover();
+        this.root.classList.toggle("o_agx_annotation_marks_hidden", this.marksHidden);
+        this.marksButton.classList.toggle("active", this.marksHidden);
+        this.marksButton.title = this.marksHidden
+            ? _t("Show the annotations")
+            : _t("Show the original");
+        this.marksButton.firstChild.className = `fa ${
+            this.marksHidden ? "fa-eye" : "fa-eye-slash"
+        }`;
+        this.refreshDrawButton();
+    }
 
     setDrawing(drawing) {
         this.drawing = drawing;
