@@ -1,3 +1,12 @@
+// Its own stacking context: windows stack inside it however often they are
+// raised, and never above Odoo's dialogs ($zindex-modal-backdrop).
+.o_agx_floating_window_container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: $zindex-fixed + 5;
+}
+
 .o_agx_floating_window {
     position: fixed;
     display: flex;

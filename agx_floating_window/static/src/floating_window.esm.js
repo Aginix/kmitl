@@ -55,6 +55,10 @@ export class FloatingWindow extends Component {
         const el = this.rootRef.el;
         const startX = ev.clientX - win.left;
         const startY = ev.clientY - win.top;
+        const header = ev.currentTarget;
+        // Capture the pointer so the drag always ends, even when the button is
+        // released outside the browser window.
+        header.setPointerCapture(ev.pointerId);
         el.classList.add("o_agx_floating_window_moving");
         const onMove = (moveEv) => {
             win.left = Math.min(
@@ -66,21 +70,27 @@ export class FloatingWindow extends Component {
                 window.innerHeight - HEADER_GRIP
             );
         };
-        const onUp = () => {
+        const onEnd = () => {
             el.classList.remove("o_agx_floating_window_moving");
-            document.removeEventListener("pointermove", onMove);
-            document.removeEventListener("pointerup", onUp);
+            header.removeEventListener("pointermove", onMove);
+            header.removeEventListener("lostpointercapture", onEnd);
         };
-        document.addEventListener("pointermove", onMove);
-        document.addEventListener("pointerup", onUp);
+        header.addEventListener("pointermove", onMove);
+        header.addEventListener("lostpointercapture", onEnd);
     }
 
     onKeydown(ev) {
-        if (ev.key === "Escape") {
-            // Keep Odoo's hotkeys from also closing a dialog below.
-            ev.stopPropagation();
-            this.props.close(this.props.window.id);
+        // Escape inside the content belongs to it (e.g. closing an autocomplete).
+        if (
+            ev.key !== "Escape" ||
+            ev.defaultPrevented ||
+            ev.target.closest(".o_agx_floating_window_body")
+        ) {
+            return;
         }
+        // Keep Odoo's hotkeys from also closing a dialog below.
+        ev.stopPropagation();
+        this.props.close(this.props.window.id);
     }
 
     toggleMaximize() {
@@ -115,8 +125,9 @@ export const floatingWindowService = {
     start() {
         const windows = reactive({});
         let nextId = 0;
-        // Windows stack above the page and below Odoo's dialogs and popovers.
-        let nextZIndex = 1035;
+        // Stacking order inside the container, which itself sits above the
+        // page and below Odoo's dialogs and popovers.
+        let nextZIndex = 0;
 
         function focus(id) {
             const win = windows[id];
