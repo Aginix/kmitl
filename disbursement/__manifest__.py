@@ -2,15 +2,12 @@
 
 {
     "name": "Disbursement",
-    "version": "16.0.10.0.1",
+    "version": "16.0.12.0.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
     "depends": [
         "account",
-        # A DR consumes without obligating first; the budget ledger liquidates
-        # the reservation for it (budget ADR-0017).
-        "budget",
         "account_analytic_kmitl",
         "account_fiscal_year_enhance",
         "base_exception",
@@ -29,13 +26,13 @@
         "security/ir.model.access.csv",
         "data/sequence.xml",
         "data/mail_activity_type_data.xml",
+        "data/exception_rule_data.xml",
         "wizards/disbursement_exception_confirm.xml",
         "wizards/return_request_wizard_views.xml",
         "wizards/disbursement_reject_wizard_views.xml",
         "views/disbursement_request_views.xml",
         "views/disbursement_approval_queue_views.xml",
         "views/disbursement_return_views.xml",
-        "views/budget_commitment_views.xml",
         "views/exception_rule_views.xml",
         "report/paperformat.xml",
         "report/report_disbursement_request_action.xml",

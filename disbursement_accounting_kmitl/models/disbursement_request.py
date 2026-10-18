@@ -196,13 +196,15 @@ class DisbursementRequest(models.Model):
 
     def _prepare_bill_vals(self, partner, partner_bank, invoice_lines):
         """Prepare values for creating a vendor bill."""
+        # sudo: the bill maker may not read the source (PA / AR record rules)
+        source = self.sudo()._get_source_document()
         return {
             "disbursement_request_id": self.id,
             "partner_id": partner.id,
             "partner_bank_id": partner_bank.id if partner_bank else False,
             "move_type": "in_invoice",
             "invoice_date": self.date,
-            "ref": self.ref,
+            "ref": source.name if source else False,
             "currency_id": self.currency_id.id,
             "company_id": self.company_id.id,
             "invoice_line_ids": invoice_lines,

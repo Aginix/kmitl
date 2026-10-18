@@ -6,8 +6,6 @@ from odoo.tests.common import TransactionCase, tagged
 
 _DR = "disbursement.request"
 _SIG = "disbursement.request.signature"
-_BUDGET_HOOK = "odoo.addons.disbursement.models.disbursement_request." \
-    "DisbursementRequest._action_approve_budget"
 
 # A 1x1 transparent PNG — enough to prove an image was captured.
 _PNG_A = (
@@ -52,7 +50,11 @@ class TestSignatureBlock(TransactionCase):
             "plan_id": cls.env.ref(
                 "account_analytic_kmitl.analytic_plan_activities").id,
         })
-        cls.partner = cls.env["res.partner"].create({"name": "Vendor"})
+        cls.partner = cls.env["res.partner"].create({
+            "name": "Vendor",
+            # submit is guarded on every payee having an account
+            "bank_ids": [(0, 0, {"acc_number": "1234567890"})],
+        })
         cls.product = cls.env["product.product"].create(
             {"name": "Svc", "type": "service"}
         )
@@ -81,6 +83,7 @@ class TestSignatureBlock(TransactionCase):
         user = cls.env["res.users"].with_context(no_reset_password=True).create({
             "name": name,
             "login": login,
+            "email": "%s@example.com" % login,
             "groups_id": [(4, cls.env.ref(group_xmlid).id)],
         })
         cls.env["hr.employee"].create({
@@ -99,6 +102,7 @@ class TestSignatureBlock(TransactionCase):
 
     def _make_signed_dr(self):
         dr = self.DR.create({
+            "partner_type_id": self.partner.partner_type_id.id,
             "line_ids": [(0, 0, {
                 "product_id": self.product.id,
                 "name": "line",
@@ -120,7 +124,7 @@ class TestSignatureBlock(TransactionCase):
     def _approve_fully(self, dr):
         dr.with_user(self.officer).action_validate()
         dr.with_user(self.finance).action_approve_finance()
-        with patch(_BUDGET_HOOK):
+        with patch.object(type(self.DR), "_on_final_approval"):
             dr.with_user(self.rector).action_approve()
         return dr
 
