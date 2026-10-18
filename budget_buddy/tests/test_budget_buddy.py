@@ -45,6 +45,22 @@ class TestBudgetBuddy(TransactionCase):
         self.assertEqual(self.Buddy._get_buddy_users(self.child), self.buddy_parent)
         self.assertFalse(self.Buddy._get_buddy_users(self.other))
 
+    def test_child_of_domain_matches_unsaved_record(self):
+        """A form's onchange works on a new record: child_of must be judged on
+        its in-memory value, not by searching the database."""
+        self._row(
+            self.buddy_parent,
+            "[('parent_id', 'child_of', %d)]" % self.parent.id,
+        )
+        AA = self.env["account.analytic.account"]
+        self.assertEqual(
+            self.Buddy._get_buddy_users(AA.new({"parent_id": self.child.id})),
+            self.buddy_parent,
+        )
+        self.assertFalse(
+            self.Buddy._get_buddy_users(AA.new({"parent_id": self.other.id}))
+        )
+
     def test_sequence_orders_buddies(self):
         self._row(self.buddy_parent, "[('id', 'child_of', %d)]" % self.parent.id)
         self._row(self.buddy_child, "[('id', '=', %d)]" % self.child.id, sequence=1)

@@ -80,5 +80,26 @@ class BudgetBuddy(models.Model):
             ]
         )
         record = record.sudo()
-        rows = rows.filtered(lambda r: record.filtered_domain(r._get_domain()))
+        rows = rows.filtered(
+            lambda r: record.filtered_domain(r._resolve_hierarchy(r._get_domain()))
+        )
         return rows.mapped("user_id").sudo(False)
+
+    def _resolve_hierarchy(self, domain):
+        """Rewrite ``child_of``/``parent_of`` leaves as plain ``in`` leaves.
+
+        ``filtered_domain`` evaluates those operators with a database search
+        on the record's ids, so they never match an unsaved record (a form's
+        onchange) and read the stored values instead of the form's."""
+        self.ensure_one()
+        result = []
+        for leaf in domain:
+            if expression.is_leaf(leaf) and leaf[1] in ("child_of", "parent_of"):
+                path, operator, value = leaf
+                comodel = self.env[self.model_id.model]
+                for fname in path.split("."):
+                    if fname != "id":
+                        comodel = self.env[comodel._fields[fname].comodel_name]
+                leaf = (path, "in", comodel.search([("id", operator, value)]).ids)
+            result.append(leaf)
+        return result

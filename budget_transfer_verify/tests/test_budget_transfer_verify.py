@@ -162,6 +162,22 @@ class TestBudgetTransferVerify(TransactionCase):
         transfer.with_user(self.outsider).action_verify()
         self.assertEqual(transfer.state, "submitted")
 
+    def test_picked_verifier_survives_line_edits(self):
+        transfer = self._transfer()
+        transfer.verifier_id = self.buddy2
+        transfer.line_ids.write({"amount": 2000})
+        self.assertEqual(transfer.amount, 2000)
+        self.assertEqual(transfer.verifier_id, self.buddy2, "not reset to primary")
+
+    def test_verifier_defaults_in_new_form(self):
+        """The default must show on an unsaved transfer (child_of coverage)."""
+        transfer = (
+            self.env["budget.transfer"]
+            .with_user(self.requestor)
+            .new({"department_analytic_id": self.dept.id})
+        )
+        self.assertEqual(transfer.verifier_id, self.buddy)
+
     def test_changing_verifier_while_waiting_moves_the_todo(self):
         transfer = self._submitted_for_verify()
         transfer.verifier_id = self.outsider
