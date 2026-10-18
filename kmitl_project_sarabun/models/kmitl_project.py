@@ -103,8 +103,8 @@ class KmitlProject(models.Model):
         return action
 
     def _sarabun_submit_guard(self):
-        # A project may raise its หนังสือ only once its budget is reserved
-        # (``to_send``). A ตีกลับ/ดึงกลับ หนังสือ is re-sent from the Document
+        # A project may raise its หนังสือ only once its allocated budget is
+        # confirmed (``to_send``; the reservation follows at approval, ADR-0010). A ตีกลับ/ดึงกลับ หนังสือ is re-sent from the Document
         # itself (still live/returned), not created anew — hence to_send only.
         self.ensure_one()
         return self.state == "to_send"
@@ -115,7 +115,8 @@ class KmitlProject(models.Model):
         # หนังสือ that was ตีกลับ/ดึงกลับ (returned → sent).
         if self.state in ("to_send", "returned"):
             # Editing in returned may have changed budget_amount / dimensions —
-            # realign the reservation before the หนังสือ goes back out (ADR-0005).
+            # re-check the plan (and realign a legacy pre-approval reservation)
+            # before the หนังสือ goes back out (ADR-0005).
             if self.state == "returned":
                 self._resync_project_commitment()
             self.state = "sent"
@@ -124,7 +125,9 @@ class KmitlProject(models.Model):
     def _on_sarabun_completed(self, document):
         # หนังสือลงนามครบ → อนุมัติแล้ว = เริ่มดำเนินการทันที (ADR-0005: no idle
         # "approved" state — the project may raise purchase requests / เบิกจ่าย now).
-        self.state = "in_progress"
+        # Reserves the budget too (ADR-0010); runs on origin.sudo() so the signer
+        # needs no budget rights.
+        self._approve_project()
         return super()._on_sarabun_completed(document)
 
     def _on_sarabun_returned(self, document, step):
@@ -140,7 +143,7 @@ class KmitlProject(models.Model):
 
     def _on_sarabun_cancelled(self, document):
         # ยกเลิกการส่ง: only the send is voided — fall back to ``to_send`` keeping
-        # the reservation, ready for a fresh หนังสือ.
+        # the confirmed budget (and any legacy reservation), ready for a fresh หนังสือ.
         self.state = "to_send"
         return super()._on_sarabun_cancelled(document)
 

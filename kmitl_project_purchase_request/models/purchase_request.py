@@ -64,10 +64,10 @@ class PurchaseRequest(models.Model):
     def _reservation_commitment_mode_domain(self):
         # The project's approval gate rides in the picker itself, so an
         # ineligible slip is never offered (ADR-0010's precedent: the picker
-        # excludes plan slips that already have an active PR). Needed because
-        # the reservation is minted at the project's to_verify → to_send step —
-        # a project still awaiting its signed หนังสือ therefore holds a live
-        # commitment that must not be spendable yet (kmitl_project ADR-0005).
+        # excludes plan slips that already have an active PR). The reservation
+        # is now minted at approval (kmitl_project ADR-0010), but legacy
+        # projects reserved at to_verify → to_send may still await their signed
+        # หนังสือ with a live commitment that must not be spendable yet.
         domain = super()._reservation_commitment_mode_domain()
         if self.budget_selection_mode == "project":
             domain = domain + [

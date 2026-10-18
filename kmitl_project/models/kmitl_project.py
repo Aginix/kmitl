@@ -158,7 +158,7 @@ class KmitlProject(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("to_verify", "รอจัดสรรงบประมาณ (ปรับเข้าแผน) และจองงบประมาณ"),
+            ("to_verify", "รอจัดสรรงบประมาณ (ปรับเข้าแผน)"),
             ("to_send", "รอส่งขออนุมัติ"),
             ("sent", "ส่งขออนุมัติแล้ว"),
             ("returned", "ถูกตีกลับ"),
@@ -606,13 +606,13 @@ class KmitlProject(models.Model):
         self.write({"state": "to_verify"})
 
     def action_reserve_budget(self):
-        """``to_verify`` → open the จองงบ confirm wizard. The wizard shows the
-        รหัสงบ, 4 มิติ + มิติโครงการ, and the actual allocated amount; on confirm
-        it reserves the commitment (with the project dimension in the check) and
-        advances to ``to_send``. Gated: raises if no allocation exists yet."""
+        """``to_verify`` → open the ยืนยันงบ confirm wizard. On confirm the
+        allocated budget is accepted and the project advances to ``to_send``; the
+        commitment itself is reserved only when the project is approved
+        (``_approve_project``, ADR-0010). Gated: raises if no allocation exists yet."""
         self.ensure_one()
         if self.state != "to_verify":
-            raise UserError(_("จองงบประมาณได้เฉพาะสถานะรอตรวจสอบ"))
+            raise UserError(_("ยืนยันงบประมาณได้เฉพาะสถานะรอจัดสรรงบประมาณ"))
         if self.budget_amount <= 0:
             raise UserError(
                 _(
@@ -622,7 +622,7 @@ class KmitlProject(models.Model):
             )
         return {
             "type": "ir.actions.act_window",
-            "name": _("จองงบประมาณ"),
+            "name": _("ยืนยันงบประมาณ"),
             "res_model": "kmitl.project.reserve.confirm",
             "view_mode": "form",
             "target": "new",
@@ -637,7 +637,33 @@ class KmitlProject(models.Model):
         self.ensure_one()
         if self.state not in ("to_send", "sent"):
             raise UserError(_("อนุมัติได้เฉพาะคำขอที่ส่งขออนุมัติแล้ว"))
+        self._approve_project()
+
+    def _approve_project(self):
+        """Approval → ``in_progress``, reserving the project's budget now that it
+        may spend (ADR-0010). A failed reservation never blocks the approval: it
+        is rolled back, noted in the chatter, and retried later from
+        ``action_retry_reserve_budget``. Legacy projects reserved before approval
+        are skipped by the idempotent ``_reserve_project_commitment``."""
+        self.ensure_one()
+        try:
+            with self.env.cr.savepoint():
+                self._reserve_project_commitment()
+        except UserError as e:
+            self.message_post(
+                body=_("อนุมัติโครงการแล้ว แต่ยังจองงบประมาณไม่ได้: %s") % e.args[0]
+            )
         self.write({"state": "in_progress"})
+
+    def action_retry_reserve_budget(self):
+        """``in_progress`` without a reservation (the approval-time reserve
+        failed) → reserve again; errors surface to the user this time."""
+        self.ensure_one()
+        if self.state != "in_progress":
+            raise UserError(_("จองงบประมาณได้เฉพาะโครงการที่กำลังดำเนินการ"))
+        if self.budget_commitment_ids.filtered(lambda c: c.state != "cancel"):
+            raise UserError(_("โครงการมีใบจองงบประมาณอยู่แล้ว"))
+        self._reserve_project_commitment()
 
     def action_complete(self):
         """``in_progress`` → ``complete`` (manual; leftover reserved budget is
@@ -685,8 +711,8 @@ class KmitlProject(models.Model):
     def _check_budget_plan_lines(self):
         """Validate the Project Budget Plan before the budget is reserved. Amounts
         may be left blank/zero while drafting, but every line must carry a positive
-        amount before the project reserves its budget (called from
-        ``action_reserve_budget``, and again from ``_resync_project_commitment``
+        amount before the project confirms its budget (called from the ยืนยันงบ
+        wizard, and again from ``_resync_project_commitment``
         because ``returned`` reopens the plan for editing)."""
         self.ensure_one()
         lines = self.expense_line_ids
@@ -1013,7 +1039,8 @@ class KmitlProject(models.Model):
 
     # States in which the accounting target (budget code + budget dimensions)
     # may still be edited: while authoring/revising and BEFORE the budget is
-    # reserved (reservation at จองงบ, to_verify→to_send, pins it). Only the
+    # confirmed (ยืนยันงบ, to_verify→to_send, pins it — the หนังสือ quotes it;
+    # the reservation follows at approval, ADR-0010). Only the
     # fiscal year is frozen for good once the running number is minted, because
     # the number encodes the ปีงบ.
     _BUDGET_TARGET_EDITABLE_STATES = ("draft", "to_verify", "returned")
@@ -1024,9 +1051,9 @@ class KmitlProject(models.Model):
 
         The rest of the budget target (``budget_account_id`` + the four budget
         dimensions in ``analytic_distribution``) stays editable while the project
-        is authored or revised but before its budget is reserved
-        (``_BUDGET_TARGET_EDITABLE_STATES``); once reserved/sent it is pinned so
-        the live commitment is never left pointing at a stale target."""
+        is authored or revised but before its budget is confirmed
+        (``_BUDGET_TARGET_EDITABLE_STATES``); once confirmed/sent it is pinned so
+        the หนังสือ and the commitment are never left pointing at a stale target."""
         if "account_fiscal_year_id" in vals:
             for rec in self:
                 if (
@@ -1116,7 +1143,7 @@ class KmitlProject(models.Model):
 
     def _reserve_project_commitment(self):
         """Reserve one shared budget.commitment for the project's full
-        ``budget_amount`` when its budget is reserved (``to_verify``->``to_send``), drawing from the
+        ``budget_amount`` when the project is approved (``_approve_project``, ADR-0010), drawing from the
         floating project-code pool (ADR-0007). Idempotent: skips when an active
         (non-cancelled) commitment already exists. Blocks on insufficient budget
         unless ``budget.allow_negative`` is set. The project's purchase requests and
@@ -1163,7 +1190,9 @@ class KmitlProject(models.Model):
             "title": "[%s] %s" % (self.key, self.name) if self.key else self.name,
             "description": self.name,
             "kmitl_project_id": self.id,
-            "user_id": self.env.user.id,
+            # Under the หนังสือ callback env.user is the last signer (sudo);
+            # the reservation belongs to whoever authored the project.
+            "user_id": (self.creating_user_id or self.env.user).id,
         }
         # The reservation's operating unit comes from budget_operating_unit,
         # which this module does not depend on.

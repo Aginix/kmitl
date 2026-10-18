@@ -218,7 +218,8 @@ class TestFloatingAllocation(TransactionCase):
         self.env["kmitl.project.reserve.confirm"].create(
             {"project_id": project.id}
         ).action_confirm()
-        self.assertEqual(project.state, "to_send")
+        project.action_approve()  # reserves (kmitl_project ADR-0010)
+        self.assertEqual(project.state, "in_progress")
 
         self._allocate(project, 20000)
         active = project.budget_commitment_ids.filtered(lambda c: c.state != "cancel")
