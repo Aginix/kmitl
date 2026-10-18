@@ -1,5 +1,7 @@
 # Project budget is allocated into its own dimension before it reserves
 
+> **Amended by [ADR-0010](./0010-project-reserves-on-approval.md):** the project reserves its allocation when it is approved, not at `to_verify → to_send`.
+
 > **Amended by [budget ADR-0017](../../../budget/docs/adr/0017-commitment-events-posted-to-budget-ledger.md):** money transferred into the project's coordinate after it has reserved is added to the reservation automatically (`kmitl_project_budget_transfer`), even once spending has started; `_auto_resync_commitment` is removed.
 
 A `kmitl.project` no longer reserves **directly** against a *floating* project pool at
