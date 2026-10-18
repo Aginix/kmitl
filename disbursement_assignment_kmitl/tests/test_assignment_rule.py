@@ -73,6 +73,7 @@ class TestDisbursementAssignment(TransactionCase):
             {
                 "name": "Officer A",
                 "login": "dr_officer_a",
+                "email": "dr_officer_a@example.com",
                 "groups_id": [(6, 0, [g_officer.id])],
             }
         )
@@ -80,6 +81,7 @@ class TestDisbursementAssignment(TransactionCase):
             {
                 "name": "Officer B",
                 "login": "dr_officer_b",
+                "email": "dr_officer_b@example.com",
                 "groups_id": [(6, 0, [g_officer.id])],
             }
         )
@@ -87,6 +89,7 @@ class TestDisbursementAssignment(TransactionCase):
             {
                 "name": "DR Manager",
                 "login": "dr_manager",
+                "email": "dr_manager@example.com",
                 "groups_id": [(6, 0, [g_manager.id])],
             }
         )
@@ -94,6 +97,7 @@ class TestDisbursementAssignment(TransactionCase):
             {
                 "name": "Outsider",
                 "login": "dr_outsider",
+                "email": "dr_outsider@example.com",
                 "groups_id": [(6, 0, [g_user.id])],
             }
         )

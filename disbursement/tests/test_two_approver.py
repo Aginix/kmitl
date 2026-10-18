@@ -37,6 +37,7 @@ class TwoApproverCommon(TransactionCase):
         cls.finance = users.create({
             "name": "Finance Director",
             "login": "ta_finance",
+            "email": "ta_finance@example.com",
             "groups_id": [
                 (4, cls.env.ref(
                     "disbursement.group_disbursement_finance_director").id)
@@ -45,6 +46,7 @@ class TwoApproverCommon(TransactionCase):
         cls.rector = users.create({
             "name": "Rector Delegate",
             "login": "ta_rector",
+            "email": "ta_rector@example.com",
             "groups_id": [
                 (4, cls.env.ref(
                     "disbursement.group_disbursement_rector_delegate").id)
@@ -53,6 +55,7 @@ class TwoApproverCommon(TransactionCase):
         cls.officer = users.create({
             "name": "Officer",
             "login": "ta_officer",
+            "email": "ta_officer@example.com",
             "groups_id": [
                 (4, cls.env.ref("disbursement.group_disbursement_officer").id)
             ],

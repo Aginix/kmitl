@@ -36,6 +36,7 @@ class TestReturnToVerification(TransactionCase):
             {
                 "name": "Mgr",
                 "login": "rv_mgr",
+                "email": "rv_mgr@example.com",
                 "groups_id": [
                     (4, cls.env.ref("disbursement.group_disbursement_manager").id)
                 ],

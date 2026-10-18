@@ -83,6 +83,7 @@ class TestSignatureBlock(TransactionCase):
         user = cls.env["res.users"].with_context(no_reset_password=True).create({
             "name": name,
             "login": login,
+            "email": "%s@example.com" % login,
             "groups_id": [(4, cls.env.ref(group_xmlid).id)],
         })
         cls.env["hr.employee"].create({
