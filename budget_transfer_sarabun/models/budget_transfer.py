@@ -158,17 +158,22 @@ class BudgetTransfer(models.Model):
 
     # --- lifecycle callbacks ------------------------------------------
     def _on_sarabun_circulating(self, document):
+        # A หนังสือ left `returned` stays sendable even after its transfer was
+        # reset to draft or cancelled — block it, or the letter would circulate
+        # (and on signing post) a transfer that skipped the ยืนยัน checks.
+        if self.state not in ("submitted", "returned"):
+            raise UserError(_("Confirm the budget transfer before sending its หนังสือ."))
         if self.state == "returned":
             # The lines may have been revised while returned — re-check them
             # before the letter goes back out (the line policies are checked
             # at ยืนยัน, not as constraints).
             self._validate_transfer_data()
-            # ...and refresh the enclosed แบบ งปม.303 so it reflects the
-            # revision (a render failure blocks the send rather than letting a
-            # stale form go out).
-            self._attach_transfer_pdf_enclosure(document)
-        if self.state in ("submitted", "returned"):
-            self.state = "sent"
+        # Refresh the enclosed แบบ งปม.303 on every send so it reflects the
+        # transfer as sent — incl. a re-send after an admin reset + re-confirm
+        # (a render failure blocks the send rather than letting a stale form
+        # go out).
+        self._attach_transfer_pdf_enclosure(document)
+        self.state = "sent"
         return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):
@@ -220,16 +225,16 @@ class BudgetTransfer(models.Model):
         base itself never reaches, so its own compute leaves every button
         hidden for them. `sent` intentionally stays all-hidden here too:
         deal with the live letter (ดึงกลับ/ยกเลิกการส่ง), not the transfer
-        form's own buttons."""
+        form's own buttons. Reset to Draft from `returned` is admin-only — the
+        transfer is already editable there, so the requestor revises and
+        re-sends instead."""
         super()._compute_button_visibility()
         is_manager = self.env.user.has_group("budget.group_budget_manager")
         is_admin = self.env.is_admin()
         for transfer in self:
             if transfer.state == "returned":
                 transfer.show_cancel_button = True
-                transfer.show_reset_button = (
-                    transfer.user_id == self.env.user or is_admin
-                )
+                transfer.show_reset_button = is_admin
             elif transfer.state == "rejected":
                 transfer.show_reset_button = is_manager or is_admin
             # Manual approve fallback — only a manager/admin, and only while the
@@ -254,8 +259,9 @@ class BudgetTransfer(models.Model):
         return super().action_cancel()
 
     def action_reset_to_draft(self):
-        """Block from `sent` (as above); a `rejected` transfer is revived
-        by a manager/admin only, mirroring the base's `cancelled` gate."""
+        """Block from `sent` (as above); a `returned` transfer is reset by an
+        admin only, and a `rejected` one is revived by a manager/admin only,
+        mirroring the base's `cancelled` gate."""
         if self.filtered(lambda t: t.state == "sent"):
             raise UserError(
                 _(
@@ -265,6 +271,10 @@ class BudgetTransfer(models.Model):
             )
         is_manager = self.env.user.has_group("budget.group_budget_manager")
         is_admin = self.env.is_admin()
+        if self.filtered(lambda t: t.state == "returned") and not is_admin:
+            raise UserError(
+                _("Only administrators can reset a returned transfer to draft.")
+            )
         if self.filtered(lambda t: t.state == "rejected") and not (
             is_manager or is_admin
         ):
