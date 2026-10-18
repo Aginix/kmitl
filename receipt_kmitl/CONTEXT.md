@@ -63,6 +63,16 @@ in the form.
 The default partner used on a receipt when no specific customer is named.
 _Avoid_: Anonymous, cash customer
 
+**Debt-settling receipt** (ใบเสร็จตัดหนี้):
+A receipt raised from an invoice (`kmitl.receipt.invoice_id`, added by the add-on
+`invoice_kmitl`) rather than typed at the counter. It follows exactly the route of every
+other receipt — draft, remittance, approval, posting — and differs in one leg of its entry:
+the per-line credit goes to the customer's **receivable** account instead of the line's
+revenue account, and is reconciled against the invoice's own receivable entry. It always
+collects the invoice's full amount, and its payer is the invoice's customer, never the
+walk-in. See `invoice_kmitl`
+[ADR-0002](../invoice_kmitl/docs/adr/0002-a-receipt-may-now-settle-an-invoice.md).
+
 **Payment Type** (ประเภทการชำระเงิน):
 The 3-way choice — cash / cheque / transfer — selected first on the receipt
 header (`kmitl.receipt.payment_type`), before the specific `payment_method_id`

@@ -41,7 +41,7 @@ A partner-level listing, as of a chosen date, of each open (unreconciled) residu
 _Avoid_: aging, overdue report
 
 **Accounting dimension on ageing (มิติทางบัญชีในรายงานอายุ)**:
-Because the receivable/payable control line carries no `analytic_distribution`, a dimension filter on the ageing reports works at the **move** level: it keeps only the residuals whose invoice contains a line matching the selected dimensions — not the control line itself.
+A dimension filter on the ageing reports works at the **move** level, whether or not the receivable/payable control line carries an `analytic_distribution` itself: it keeps only the residuals whose invoice contains a line matching the selected dimensions — not the control line. (It usually does carry one: `accounting_kmitl` copies the header's distribution onto every line, so an invoice raised by `invoice_kmitl` has a control line with the four dimensions. The ageing reports do not care; the Trial Balance and General Ledger, which filter move lines directly, do.)
 _Avoid_: line-level filter
 
 **Cash Flow Statement (งบกระแสเงินสด)**:

@@ -1,0 +1,882 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* invoice_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 00:00+0000\n"
+"PO-Revision-Date: 2026-10-16 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__move_count
+msgid "# Entries"
+msgstr "# ใบตั้งหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__invoice_count
+msgid "# Invoices"
+msgstr "# ใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "A submission must be filed under a top-level department."
+msgstr "รายงานนำส่งต้องจัดทำภายใต้ส่วนงานระดับบนสุด"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_form
+msgid "Accept"
+msgstr "ตรวจรับ"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields.selection,name:invoice_kmitl.selection__kmitl_invoice__state__accepted
+#: model:ir.model.fields.selection,name:invoice_kmitl.selection__kmitl_invoice_submission__state__accepted
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_search
+msgid "Accepted"
+msgstr "ตรวจรับแล้ว"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__accepted_by
+msgid "Accepted By"
+msgstr "ตรวจรับโดย"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__accepted_date
+msgid "Accepted On"
+msgstr "ตรวจรับเมื่อ"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__payment_state
+msgid "Accounting Payment Status"
+msgstr "สถานะการชำระเงินทางบัญชี"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__activity_analytic_id
+msgid "Activity"
+msgstr "ด้าน/แผนงาน/กิจกรรม"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Add at least one invoice."
+msgstr "ต้องมีอย่างน้อย 1 ใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Add at least one line."
+msgstr "ต้องมีอย่างน้อย 1 รายการ"
+
+#. module: invoice_kmitl
+#: model:ir.actions.act_window,name:invoice_kmitl.action_invoice_kmitl
+#: model:ir.ui.menu,name:invoice_kmitl.menu_invoice_kmitl_all_invoices
+msgid "All Invoices"
+msgstr "ใบแจ้งหนี้ทั้งหมด"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_line__amount
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__amount_residual
+msgid "Amount Due (Accounting)"
+msgstr "ยอดคงเหลือทางบัญชี"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+msgid "Analytic Dimensions"
+msgstr "มิติบัญชี"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__approver_id
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_search
+msgid "Approver"
+msgstr "ผู้อนุมัติ"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Automatic reconciliation skipped: %s"
+msgstr "ข้ามการตัดลูกหนี้อัตโนมัติ: %s"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Can only pull invoices on draft submissions."
+msgstr "ดึงใบแจ้งหนี้ได้เฉพาะรายงานนำส่งที่เป็นร่าง"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_form
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_reject_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+msgid "Cancel Invoice"
+msgstr "ยกเลิกใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+msgid "Cancel this issued invoice? Its receivable entry is deleted, or reversed by a credit note if accounting has posted it."
+msgstr "ยกเลิกใบแจ้งหนี้ที่ออกแล้วใช่หรือไม่ ใบตั้งหนี้จะถูกลบ หรือกลับรายการด้วยใบลดหนี้หากห้องบัญชีลงบัญชีแล้ว"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields.selection,name:invoice_kmitl.selection__kmitl_invoice__state__cancelled
+#: model:ir.model.fields.selection,name:invoice_kmitl.selection__kmitl_invoice_submission__state__cancelled
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_search
+msgid "Cancelled"
+msgstr "ยกเลิกแล้ว"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Cancelled and removed from submission %s."
+msgstr "ยกเลิกและนำออกจากรายงานนำส่ง %s แล้ว"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Cannot reset to draft from this state."
+msgstr "ไม่สามารถกลับเป็นร่างจากสถานะนี้ได้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__company_id
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_line__company_id
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__company_id
+msgid "Company"
+msgstr "บริษัท"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_reject_form
+msgid "Confirm Reject"
+msgstr "ยืนยันการปฏิเสธ"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__user_id
+msgid "Created By"
+msgstr "สร้างโดย"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__refund_move_id
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+msgid "Credit Note"
+msgstr "ใบลดหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.ui.menu,name:invoice_kmitl.menu_receivable_credit_notes
+msgid "Credit Notes"
+msgstr "ใบลดหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__currency_id
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_line__currency_id
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__currency_id
+msgid "Currency"
+msgstr "สกุลเงิน"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__partner_id
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+msgid "Customer"
+msgstr "ลูกค้า"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__date
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_search
+msgid "Date"
+msgstr "วันที่"
+
+#. module: invoice_kmitl
+#: model:ir.actions.act_window,name:invoice_kmitl.action_debtor_register
+#: model:ir.ui.menu,name:invoice_kmitl.menu_invoice_kmitl_debtor_register
+msgid "Debtor Register"
+msgstr "ทะเบียนคุมลูกหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__department_analytic_id
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_search
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_line__name
+msgid "Description"
+msgstr "รายละเอียด"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields.selection,name:invoice_kmitl.selection__kmitl_invoice__state__draft
+#: model:ir.model.fields.selection,name:invoice_kmitl.selection__kmitl_invoice_submission__state__draft
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_search
+msgid "Draft"
+msgstr "ร่าง"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__date_due
+msgid "Due Date"
+msgstr "วันครบกำหนดชำระ"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+msgid "Due Month"
+msgstr "เดือนที่ครบกำหนด"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Entry %s is awaiting approval in accounting. Ask them to reset it to draft first."
+msgstr "รายการ %s กำลังรอห้องบัญชีอนุมัติ กรุณาให้ห้องบัญชีรีเซ็ตเป็นฉบับร่างก่อน"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__fund_analytic_id
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+msgid "Fund"
+msgstr "กองทุน"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_search
+msgid "Group By"
+msgstr "จัดกลุ่มตาม"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_line__account_id
+msgid "Income Account"
+msgstr "บัญชีรายได้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_line__invoice_id
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_receipt__invoice_id
+#: model:ir.actions.report,name:invoice_kmitl.action_report_invoice_kmitl
+msgid "Invoice"
+msgstr "ใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Invoice %(invoice)s is not in '%(state)s' state."
+msgstr "ใบแจ้งหนี้ %(invoice)s ไม่ได้อยู่ในสถานะ '%(state)s'"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Invoice %(invoice)s is paid. Cancel its receipt %(receipt)s first."
+msgstr "ใบแจ้งหนี้ %(invoice)s ชำระแล้ว กรุณายกเลิกใบเสร็จรับเงิน %(receipt)s ก่อน"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Invoice %s belongs to a different company."
+msgstr "ใบแจ้งหนี้ %s อยู่คนละบริษัท"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Invoice %s cannot be cancelled in its current state."
+msgstr "ไม่สามารถยกเลิกใบแจ้งหนี้ %s ในสถานะปัจจุบันได้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Invoice %s does not belong to this department's subtree."
+msgstr "ใบแจ้งหนี้ %s ไม่อยู่ภายใต้ส่วนงานของรายงานนำส่งนี้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Invoice %s has no receivable entry."
+msgstr "ใบแจ้งหนี้ %s ยังไม่มีใบตั้งหนี้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Invoice %s is issued again; this receipt no longer settles it."
+msgstr "ใบแจ้งหนี้ %s กลับเป็นสถานะออกแล้ว ใบเสร็จรับเงินนี้ไม่ได้ตัดหนี้ใบแจ้งหนี้นั้นอีกต่อไป"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Invoice %s was cancelled and removed from this submission."
+msgstr "ใบแจ้งหนี้ %s ถูกยกเลิกและนำออกจากรายงานนำส่งนี้แล้ว"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_tree
+msgid "Invoice Count"
+msgstr "จำนวนใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__date
+msgid "Invoice Date"
+msgstr "วันที่ใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.module.category,name:invoice_kmitl.module_category_invoice_kmitl
+msgid "Invoice KMITL"
+msgstr "ใบแจ้งหนี้ สจล."
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+msgid "Invoice Month"
+msgstr "เดือนที่ออกใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__name
+msgid "Invoice Number"
+msgstr "เลขที่ใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__submission_id
+msgid "Invoice Submission"
+msgstr "รายงานนำส่งใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Invoice submission %s awaiting acceptance"
+msgstr "รายงานนำส่งใบแจ้งหนี้ %s รอตรวจรับ"
+
+#. module: invoice_kmitl
+#: model:mail.activity.type,name:invoice_kmitl.mail_activity_type_submission_approval
+msgid "Invoice Submission Approval"
+msgstr "อนุมัติรายงานนำส่งใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.actions.act_window,name:invoice_kmitl.action_invoice_submission
+#: model:ir.ui.menu,name:invoice_kmitl.menu_invoice_kmitl_submissions
+msgid "Invoice Submissions"
+msgstr "รายงานนำส่งใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__invoice_ids
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_pivot
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_form
+#: model:ir.ui.menu,name:invoice_kmitl.menu_invoice_kmitl_root
+#: model:ir.ui.menu,name:invoice_kmitl.menu_invoice_kmitl_invoices
+#, python-format
+msgid "Invoices"
+msgstr "ใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Invoices %s are already in accounting's hands or paid. Cancel them one by one instead."
+msgstr "ใบแจ้งหนี้ %s อยู่ในขั้นตอนของห้องบัญชีแล้วหรือชำระแล้ว กรุณายกเลิกทีละใบแทน"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields.selection,name:invoice_kmitl.selection__kmitl_invoice__state__issued
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+msgid "Issued"
+msgstr "ส่งตั้งลูกหนี้แล้ว"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__user_id
+msgid "Issued By"
+msgstr "ออกโดย"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__department_analytic_id
+msgid "Issuing Department"
+msgstr "ส่วนงานที่ออกใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_account_move__kmitl_invoice_id
+#: model:ir.model,name:invoice_kmitl.model_kmitl_invoice
+msgid "KMITL Invoice"
+msgstr "ใบแจ้งหนี้ สจล."
+
+#. module: invoice_kmitl
+#: model:ir.model,name:invoice_kmitl.model_kmitl_invoice_line
+msgid "KMITL Invoice Line"
+msgstr "รายการใบแจ้งหนี้ สจล."
+
+#. module: invoice_kmitl
+#: model:ir.model,name:invoice_kmitl.model_kmitl_invoice_submission
+msgid "KMITL Invoice Submission"
+msgstr "รายงานนำส่งใบแจ้งหนี้ สจล."
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__kmitl_project_analytic_id
+msgid "KMITL Project"
+msgstr "โครงการ/กิจกรรม"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Line '%s' has no income account."
+msgstr "รายการ '%s' ไม่มีบัญชีรายได้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__line_ids
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+msgid "Lines"
+msgstr "รายการ"
+
+#. module: invoice_kmitl
+#: model:res.groups,name:invoice_kmitl.group_invoice_kmitl_manager
+msgid "Manager"
+msgstr "ผู้จัดการ"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+#: model:ir.actions.act_window,name:invoice_kmitl.action_invoice_kmitl_my
+#: model:ir.ui.menu,name:invoice_kmitl.menu_invoice_kmitl_my_invoices
+msgid "My Invoices"
+msgstr "ใบแจ้งหนี้ของฉัน"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_search
+msgid "My Submissions"
+msgstr "รายงานนำส่งของฉัน"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "No cash payment method is configured."
+msgstr "ยังไม่ได้ตั้งค่าวิธีรับชำระแบบเงินสด"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "No pending invoices found for this department."
+msgstr "ไม่พบใบแจ้งหนี้ที่รอนำส่งของส่วนงานนี้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__note
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__note
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_form
+msgid "Notes"
+msgstr "หมายเหตุ"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Nothing to reconcile yet: the invoice entry and the entry settling it must both be posted."
+msgstr "ยังไม่มีรายการให้ตัดลูกหนี้ ใบตั้งหนี้และรายการที่ใช้ตัดหนี้ต้องลงบัญชีแล้วทั้งสองรายการ"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Only accepted submissions can be sent to accounting."
+msgstr "ส่งห้องบัญชีได้เฉพาะรายงานนำส่งที่ตรวจรับแล้ว"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Only an issued invoice can be paid."
+msgstr "รับชำระได้เฉพาะใบแจ้งหนี้ที่ออกแล้ว"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Only draft or cancelled submissions can be deleted."
+msgstr "ลบได้เฉพาะรายงานนำส่งที่เป็นร่างหรือยกเลิกแล้ว"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Only draft submissions can be submitted."
+msgstr "นำส่งได้เฉพาะรายงานนำส่งที่เป็นร่าง"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Only managers can reset a submission sent to accounting."
+msgstr "เฉพาะผู้จัดการเท่านั้นที่รีเซ็ตรายงานนำส่งที่ส่งห้องบัญชีแล้วได้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Only submitted submissions can be accepted."
+msgstr "ตรวจรับได้เฉพาะรายงานนำส่งที่นำส่งแล้ว"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#: code:addons/invoice_kmitl/wizard/invoice_submission_reject.py:0
+#, python-format
+msgid "Only submitted submissions can be rejected."
+msgstr "ปฏิเสธได้เฉพาะรายงานนำส่งที่นำส่งแล้ว"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Only the assigned approver can act on this submission."
+msgstr "เฉพาะผู้อนุมัติที่ได้รับมอบหมายเท่านั้นที่ดำเนินการกับรายงานนำส่งนี้ได้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Only the treasury office can cancel an issued invoice."
+msgstr "เฉพาะกองคลังเท่านั้นที่ยกเลิกใบแจ้งหนี้ที่ออกแล้วได้"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+msgid "Overdue"
+msgstr "เกินกำหนด"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields.selection,name:invoice_kmitl.selection__kmitl_invoice__state__paid
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+msgid "Paid"
+msgstr "ชำระแล้ว"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Partner '%s' has no receivable account. Set its partner type first."
+msgstr "คู่ค้า '%s' ไม่มีบัญชีลูกหนี้ กรุณากำหนดประเภทคู่ค้าก่อน"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Payment of invoice %s"
+msgstr "ชำระเงินตามใบแจ้งหนี้ %s"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Please set an approver before submitting."
+msgstr "กรุณาระบุผู้อนุมัติก่อนนำส่ง"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_reject_form
+msgid "Please specify the rejection reason"
+msgstr "กรุณาระบุเหตุผลที่ปฏิเสธ"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+msgid "Print"
+msgstr "พิมพ์"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__procurement_plan_analytic_id
+msgid "Procurement Plan"
+msgstr "แผนจัดซื้อจัดจ้าง"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_line__product_id
+msgid "Product"
+msgstr "สินค้า"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_form
+msgid "Pull Pending Invoices"
+msgstr "ดึงใบแจ้งหนี้ที่รอนำส่ง"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_line__quantity
+msgid "Quantity"
+msgstr "จำนวน"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission_reject__reason
+msgid "Reason"
+msgstr "เหตุผล"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__receipt_id
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+msgid "Receipt"
+msgstr "ใบเสร็จรับเงิน"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Receipt %(receipt)s must collect the full amount of invoice %(invoice)s (%(amount)s)."
+msgstr "ใบเสร็จรับเงิน %(receipt)s ต้องรับชำระเต็มจำนวนของใบแจ้งหนี้ %(invoice)s (%(amount)s)"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/receipt_kmitl.py:0
+#, python-format
+msgid "Receipt %s was cancelled; the invoice is issued again."
+msgstr "ใบเสร็จรับเงิน %s ถูกยกเลิก ใบแจ้งหนี้กลับเป็นสถานะออกแล้ว"
+
+#. module: invoice_kmitl
+#: model:ir.actions.act_window,name:invoice_kmitl.action_receivable_clearing_moves
+#: model:ir.ui.menu,name:invoice_kmitl.menu_receivable_clearing_moves
+msgid "Receivable Clearing Entries"
+msgstr "ใบล้างลูกหนี้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_form
+#, python-format
+msgid "Receivable Entries"
+msgstr "ใบตั้งหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__move_id
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+msgid "Receivable Entry"
+msgstr "ใบตั้งหนี้"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+msgid "Receive Payment"
+msgstr "รับชำระเงิน"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+msgid "Reconcile"
+msgstr "ตัดลูกหนี้"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_form
+msgid "Reject"
+msgstr "ปฏิเสธ"
+
+#. module: invoice_kmitl
+#: model:ir.model,name:invoice_kmitl.model_kmitl_invoice_submission_reject
+msgid "Reject Invoice Submission"
+msgstr "ปฏิเสธรายงานนำส่งใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_reject_form
+msgid "Reject Submission"
+msgstr "ปฏิเสธรายงานนำส่ง"
+
+#. module: invoice_kmitl
+#: model:ir.ui.menu,name:invoice_kmitl.menu_invoice_kmitl_reports
+msgid "Reports"
+msgstr "รายงาน"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_form
+msgid "Reset to Draft"
+msgstr "กลับเป็นร่าง"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "Reversal of: %s"
+msgstr "กลับรายการ: %s"
+
+#. module: invoice_kmitl
+#: model:mail.activity.type,summary:invoice_kmitl.mail_activity_type_submission_approval
+msgid "Review and accept invoice submission"
+msgstr "ตรวจสอบและตรวจรับรายงานนำส่งใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_form
+msgid "Send to Accounting"
+msgstr "ส่งห้องบัญชี"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields.selection,name:invoice_kmitl.selection__kmitl_invoice_submission__state__done
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_search
+msgid "Sent to Accounting"
+msgstr "ส่งห้องบัญชีแล้ว"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_line__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Some invoices on this submission are not accessible to you and cannot be sent to accounting."
+msgstr "ใบแจ้งหนี้บางใบในรายงานนำส่งนี้คุณไม่มีสิทธิ์เข้าถึง จึงส่งห้องบัญชีไม่ได้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__source_analytic_id
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+msgid "Source"
+msgstr "แหล่งเงิน"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__state
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__state
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_search
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission_reject__submission_id
+msgid "Submission"
+msgstr "รายงานนำส่ง"
+
+#. module: invoice_kmitl
+#: model:res.groups,name:invoice_kmitl.group_invoice_kmitl_approver
+msgid "Submission Approver"
+msgstr "ผู้อนุมัติรายงานนำส่งใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__name
+msgid "Submission Number"
+msgstr "เลขที่รายงานนำส่ง"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/wizard/invoice_submission_reject.py:0
+#, python-format
+msgid "Submission rejected by %(user)s.<br/>Reason: %(reason)s"
+msgstr "รายงานนำส่งถูกปฏิเสธโดย %(user)s<br/>เหตุผล: %(reason)s"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_submission.py:0
+#, python-format
+msgid "Submissions sent to accounting cannot be cancelled."
+msgstr "ไม่สามารถยกเลิกรายงานนำส่งที่ส่งห้องบัญชีแล้วได้"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_form
+msgid "Submit to Treasury"
+msgstr "ส่งให้กองคลัง"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields.selection,name:invoice_kmitl.selection__kmitl_invoice__state__submitted
+#: model:ir.model.fields.selection,name:invoice_kmitl.selection__kmitl_invoice_submission__state__submitted
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_search
+msgid "Submitted"
+msgstr "นำส่งแล้ว"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,help:invoice_kmitl.field_kmitl_invoice__refund_move_id
+msgid "The credit note that reverses the receivable entry when the invoice is cancelled after the accounting office posted it."
+msgstr "ใบลดหนี้ที่กลับรายการใบตั้งหนี้ เมื่อยกเลิกใบแจ้งหนี้หลังจากห้องบัญชีลงบัญชีแล้ว"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,help:invoice_kmitl.field_kmitl_invoice__move_id
+msgid "The customer invoice (ใบตั้งหนี้) the accounting office books for this invoice."
+msgstr "ใบตั้งหนี้ที่ห้องบัญชีบันทึกจากใบแจ้งหนี้นี้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "The due date cannot be earlier than the invoice date."
+msgstr "วันครบกำหนดชำระต้องไม่ก่อนวันที่ใบแจ้งหนี้"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,help:invoice_kmitl.field_account_move__kmitl_invoice_id
+msgid "The invoice this entry raises, settles or reverses."
+msgstr "ใบแจ้งหนี้ที่รายการบัญชีนี้ตั้งหนี้ ตัดหนี้ หรือกลับรายการ"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,help:invoice_kmitl.field_kmitl_receipt__invoice_id
+msgid "The invoice this receipt settles. Its entry credits the customer's receivable account instead of revenue."
+msgstr "ใบแจ้งหนี้ที่ใบเสร็จรับเงินนี้ตัดหนี้ รายการบัญชีจะเครดิตบัญชีลูกหนี้ของลูกค้าแทนบัญชีรายได้"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "The invoice total must be greater than zero."
+msgstr "ยอดรวมใบแจ้งหนี้ต้องมากกว่าศูนย์"
+
+#. module: invoice_kmitl
+#. odoo-python
+#: code:addons/invoice_kmitl/models/invoice_kmitl.py:0
+#, python-format
+msgid "The receivable entry of invoice %s was deleted or cancelled in accounting, so there is nothing to settle. Ask the treasury office to cancel the invoice and issue a new one."
+msgstr "ใบตั้งหนี้ของใบแจ้งหนี้ %s ถูกลบหรือยกเลิกในห้องบัญชีแล้ว จึงไม่มีรายการให้ตัดหนี้ กรุณาแจ้งกองคลังให้ยกเลิกใบแจ้งหนี้นี้แล้วออกใบใหม่"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_receipt_kmitl_form
+msgid "This receipt settles an invoice: the Income Account column only records where the revenue comes from, and the amount is credited to the customer's receivable account."
+msgstr "ใบเสร็จรับเงินนี้ตัดหนี้ใบแจ้งหนี้ คอลัมน์บัญชีรายได้ใช้บอกที่มาของรายได้เท่านั้น ยอดเงินจะถูกเครดิตเข้าบัญชีลูกหนี้ของลูกค้า"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__amount_total
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_submission__amount_total
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_debtor_register_tree
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_tree
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_tree
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_submission_form
+msgid "Total"
+msgstr "รวม"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice_line__price_unit
+msgid "Unit Price"
+msgstr "ราคาต่อหน่วย"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_search
+msgid "Unpaid"
+msgstr "ยังไม่ชำระ"
+
+#. module: invoice_kmitl
+#: model:res.groups,name:invoice_kmitl.group_invoice_kmitl_user
+msgid "User"
+msgstr "ผู้ใช้"
+
+#. module: invoice_kmitl
+#: model:ir.module.category,description:invoice_kmitl.module_category_invoice_kmitl
+msgid "User groups for KMITL invoice management"
+msgstr "กลุ่มผู้ใช้สำหรับการจัดการใบแจ้งหนี้ สจล."
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+msgid "View Submission"
+msgstr "ดูรายงานนำส่ง"
+
+#. module: invoice_kmitl
+#: model:res.groups,name:invoice_kmitl.group_invoice_kmitl_viewer
+msgid "Viewer"
+msgstr "ผู้ดู"
+
+#. module: invoice_kmitl
+#: model:ir.model.fields,help:invoice_kmitl.field_kmitl_invoice__state
+msgid "Where the invoice stands for the department. 'Paid' means the department took the money and issued the receipt; whether the books show the debt settled is the Accounting Payment Status."
+msgstr "สถานะของใบแจ้งหนี้ในมุมมองของหน่วยงาน “ชำระแล้ว” หมายถึงหน่วยงานรับเงินและออกใบเสร็จแล้ว ส่วนบัญชีตัดลูกหนี้แล้วหรือยังดูได้จากสถานะการชำระเงินทางบัญชี"

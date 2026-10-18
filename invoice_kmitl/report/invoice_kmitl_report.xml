@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        Official KMITL invoice (ใบแจ้งหนี้ / INVOICE).
+        Like the official receipt, a fixed-format document handed to the debtor, so it
+        is intentionally BILINGUAL (Thai + English on every label) and the labels are
+        inline rather than translated via i18n.
+    -->
+    <template id="report_invoice_kmitl_document">
+        <t t-call="web.basic_layout">
+            <style>
+                * { font-family: 'THSarabunNew', Arial, sans-serif; }
+                .page, .page p, .page span, .page div, .page td, .page th {
+                    font-size: 16pt;
+                    line-height: 1.25;
+                }
+            </style>
+            <div class="page">
+                <t t-if="o.state == 'cancelled'">
+                    <div style="position: absolute; top: 320px; left: 180px;
+                                transform: rotate(-30deg); font-size: 96px;
+                                color: red; opacity: 0.25; z-index: 1000;">
+                        ยกเลิก / CANCELLED
+                    </div>
+                </t>
+
+                <!-- Top: No. -->
+                <div style="position: absolute; top: 10pt; right: 28pt;">
+                    <div>เลขที่ / No.</div>
+                    <div t-field="o.name"/>
+                </div>
+
+                <!-- Title -->
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 70px;" alt="Logo"/>
+                    </div>
+                    <div class="col-12 text-center">
+                        <h3 style="margin-bottom: 0;">ใบแจ้งหนี้</h3>
+                        <h4 style="margin-top: 0;">INVOICE</h4>
+                        <div>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหาร ลาดกระบัง</div>
+                        <div>King Mongkut's Institute of Technology Ladkrabang</div>
+                        <div>ถนนฉลองกรุง เขตลาดกระบัง กรุงเทพ 10520</div>
+                        <div>Chalongkrung Road, Ladkrabang Bangkok 10520</div>
+                    </div>
+                </div>
+
+                <!-- Dates -->
+                <div class="row mt8">
+                    <div class="col-12 text-right">
+                        <div>
+                            <span>วันที่ / Date</span>
+                            <span t-field="o.date"/>
+                        </div>
+                        <div>
+                            <span>ครบกำหนดชำระ / Due Date</span>
+                            <span t-field="o.date_due"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer -->
+                <div class="row mt8">
+                    <div class="col-12">
+                        <div class="mb-1">
+                            <strong>ลูกค้า / CUSTOMER</strong>
+                            <span t-esc="o.partner_id.name or ''"/>
+                        </div>
+                        <div class="mb-1">
+                            <strong>ที่อยู่ / ADDRESS</strong>
+                            <span t-esc="o.partner_id.contact_address.replace('\n', ' ') if o.partner_id.contact_address else ''"/>
+                        </div>
+                        <div class="mb-1" t-if="o.partner_id.vat">
+                            <strong>เลขประจำตัวผู้เสียภาษี / TAX ID</strong>
+                            <span t-esc="o.partner_id.vat"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lines -->
+                <div class="row mt8">
+                    <div class="col-12">
+                        <table class="table table-bordered" style="margin-bottom: 0;">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">ลำดับ / NO.</th>
+                                    <th class="text-center">รายการ / DESCRIPTION</th>
+                                    <th class="text-center">จำนวน / QTY</th>
+                                    <th class="text-center">ราคาต่อหน่วย / UNIT PRICE</th>
+                                    <th class="text-center">จำนวนเงิน / AMOUNT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.line_ids" t-as="line">
+                                    <td class="text-center">
+                                        <span t-esc="line_index + 1"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="line.name"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="'{:,.2f}'.format(line.quantity)"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="'{:,.2f}'.format(line.price_unit)"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="'{:,.2f}'.format(line.amount)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="text-right">
+                                        <strong>รวมเป็นเงิน / TOTAL</strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong t-esc="'{:,.2f}'.format(o.amount_total)"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="mt8" style="font-style: italic;">
+                            (
+                            <span t-esc="o.currency_id.with_context(lang='th_TH').amount_to_text(o.amount_total)"/>
+                            /
+                            <span t-esc="o.currency_id.with_context(lang='en_US').amount_to_text(o.amount_total)"/>
+                            )
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Issuer -->
+                <div class="row" style="margin-top: 40px;">
+                    <div class="col-7"/>
+                    <div class="col-5 text-center">
+                        <div>ผู้ออกใบแจ้งหนี้ / Issued by</div>
+                        <div style="margin-top: 40px;">............................................</div>
+                        <div t-esc="o.user_id.name or ''"/>
+                        <div t-esc="o.department_analytic_id.display_name or ''"/>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_invoice_kmitl">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="invoice_kmitl.report_invoice_kmitl_document"
+                   t-lang="o.partner_id.lang or 'th_TH'"/>
+            </t>
+        </t>
+    </template>
+</odoo>

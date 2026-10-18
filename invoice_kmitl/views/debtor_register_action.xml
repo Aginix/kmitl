@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        The debtor register (ทะเบียนคุมลูกหนี้) is not a model of its own: it is this
+        list and pivot over the invoices, which already carry every debtor from the
+        day they are issued. A worklist is a list view (finance_kmitl ADR-0008).
+        Both statuses sit side by side so the stretch where the money is on its way
+        (paid for the department, not yet settled in the books) can be seen.
+    -->
+    <record id="view_debtor_register_tree" model="ir.ui.view">
+        <field name="name">kmitl.invoice.debtor.register.tree</field>
+        <field name="model">kmitl.invoice</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'cancelled'"
+                  decoration-danger="state not in ('paid', 'cancelled') and date_due &lt; current_date">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="department_analytic_id" optional="show"/>
+                <field name="source_analytic_id" optional="hide"/>
+                <field name="fund_analytic_id" optional="hide"/>
+                <field name="date"/>
+                <field name="date_due"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="amount_residual" sum="Total" optional="hide"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state in ('submitted', 'accepted')"
+                       decoration-primary="state == 'issued'"
+                       decoration-success="state == 'paid'"
+                       decoration-muted="state == 'cancelled'"/>
+                <field name="payment_state" widget="badge"
+                       decoration-success="payment_state in ('paid', 'reversed')"
+                       decoration-warning="payment_state == 'partial'"
+                       decoration-danger="payment_state == 'not_paid'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_debtor_register" model="ir.actions.act_window">
+        <field name="name">Debtor Register</field>
+        <field name="res_model">kmitl.invoice</field>
+        <field name="view_mode">tree,pivot,form</field>
+        <field name="search_view_id" ref="view_invoice_kmitl_search"/>
+    </record>
+
+    <record id="action_debtor_register_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="10"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_debtor_register_tree"/>
+        <field name="act_window_id" ref="action_debtor_register"/>
+    </record>
+</odoo>
