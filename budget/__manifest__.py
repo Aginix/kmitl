@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budgeting",
-    "version": "16.0.2.4.0",
+    "version": "16.0.2.5.0",
     "summary": """ KMITL Budgeting""",
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
@@ -11,6 +11,7 @@
         "account_fiscal_year",
         "mail",
         "l10n_th_base_sequence",
+        "agx_floating_window",
     ],
     "data": [
         "data/budget_journal.xml",

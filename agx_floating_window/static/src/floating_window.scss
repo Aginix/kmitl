@@ -1,0 +1,64 @@
+.o_agx_floating_window {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    min-width: 320px;
+    min-height: 200px;
+    overflow: hidden;
+    resize: both;
+    background-color: $o-view-background-color;
+    border: 1px solid rgba(0, 0, 0, 0.32);
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+
+    &:focus {
+        outline: none;
+    }
+
+    // Keep the content from catching the pointer while the window moves.
+    &.o_agx_floating_window_moving .o_agx_floating_window_body {
+        pointer-events: none;
+    }
+
+    &.o_agx_floating_window_maximized {
+        inset: 0;
+        resize: none;
+        border-radius: 0;
+    }
+}
+
+.o_agx_floating_window_header {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 4px 2px 12px;
+    cursor: move;
+    user-select: none;
+    background-color: $o-gray-100;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+
+    .o_agx_floating_window_maximized & {
+        cursor: default;
+    }
+
+    .btn {
+        padding: 2px 6px;
+        color: $o-gray-700;
+    }
+}
+
+.o_agx_floating_window_title {
+    flex: 1 1 auto;
+    overflow: hidden;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.o_agx_floating_window_body {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
