@@ -69,6 +69,55 @@ class WorkAcceptance(models.Model):
         "attachment_id",
         string="Supporting Documents",
     )
+    _ATTACHMENT_FIELDS = ("attachment_ids", "supporting_document_ids")
+
+    def _normalize_wa_attachments(self):
+        # many2many_binary uploads via /web/binary/upload_attachment with the
+        # record's current id — which is 0 for an unsaved form. The pivot is
+        # then written on save, but ir.attachment.res_id stays 0 and
+        # ir_attachment.check() denies any non-system user that isn't the
+        # creator. Repoint such attachments at this WA so committee reviewers
+        # (who pass the WA's ir.rule) can read them. Also clear any stray
+        # res_field — ir_attachment.check() rejects that for non-system users
+        # on the same line.
+        for rec in self:
+            if not rec.id:
+                continue
+            atts = rec.attachment_ids | rec.supporting_document_ids
+            for att in atts.sudo():
+                if (
+                    att.res_model == "work.acceptance"
+                    and att.res_id == rec.id
+                    and not att.res_field
+                ):
+                    continue
+                # Keep attachments that already belong to another real record.
+                if (
+                    att.res_model
+                    and att.res_id
+                    and att.res_model in self.env
+                    and self.env[att.res_model]
+                    .sudo()
+                    .browse(att.res_id)
+                    .exists()
+                ):
+                    continue
+                att.write({
+                    "res_model": "work.acceptance",
+                    "res_id": rec.id,
+                    "res_field": False,
+                })
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        if any(
+            f in vals
+            for vals in vals_list
+            for f in self._ATTACHMENT_FIELDS
+        ):
+            records._normalize_wa_attachments()
+        return records
 
     def write(self, vals):
         # many2many_binary removes chips with FORGET, leaving the underlying
@@ -77,7 +126,7 @@ class WorkAcceptance(models.Model):
         # removal from either widget as "delete the file" and unlink the
         # attachment physically. Compare against the union so moving a file
         # between the two widgets in one write is not mistaken for a delete.
-        tracked = "attachment_ids" in vals or "supporting_document_ids" in vals
+        tracked = any(f in vals for f in self._ATTACHMENT_FIELDS)
         before = {}
         if tracked:
             for rec in self:
@@ -98,6 +147,7 @@ class WorkAcceptance(models.Model):
                 self.env["ir.attachment"].browse(
                     list(orphan_ids)
                 ).exists().unlink()
+            self._normalize_wa_attachments()
         return res
 
     work_acceptance_committee_ids = fields.One2many(

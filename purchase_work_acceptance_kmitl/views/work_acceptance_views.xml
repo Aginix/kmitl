@@ -382,8 +382,7 @@
                                widget="many2many_binary"
                                colspan="2"
                                nolabel="1"
-                               attrs="{'readonly': [('state', '!=', 'draft')]}"
-                               context="{'default_res_model': 'work.acceptance', 'default_res_id': active_id}"/>
+                               attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                     </group>
                 </group>
                 <group string="Supporting Documents" name="support_document">
