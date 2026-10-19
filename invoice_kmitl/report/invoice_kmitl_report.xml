@@ -22,6 +22,19 @@
                     line-height: 1.25;
                 }
                 .kmitl-inv-box { border: 1px solid #000; padding: 4px 8px; }
+                /* One table, not two floated boxes: wkhtmltopdf's WebKit does not
+                   equalise flex/grid heights, but table cells in a row are equal
+                   in every renderer. Same reason the header of
+                   accounting_kmitl_reports' templates is a table. */
+                table.kmitl-inv-head { width: 100%; border-collapse: collapse; }
+                table.kmitl-inv-head td {
+                    border: 1px solid #000; padding: 4px 8px; vertical-align: top;
+                }
+                .kmitl-inv-stamp {
+                    position: absolute; top: 0; right: 0; font-size: 18pt;
+                    font-weight: bold; border: 2px solid #333; padding: 1px 10px;
+                    white-space: nowrap;
+                }
                 table.kmitl-inv-lines { width: 100%; border-collapse: collapse; }
                 table.kmitl-inv-lines th, table.kmitl-inv-lines td {
                     border: 1px solid #000; padding: 2px 6px; vertical-align: top;
@@ -52,8 +65,7 @@
                 </t>
 
                 <!-- Original / Copy -->
-                <div style="position: absolute; top: 0; right: 0; font-size: 18pt;
-                            font-weight: bold; border: 2px solid #333; padding: 1px 10px;">
+                <div class="kmitl-inv-stamp">
                     <t t-if="is_copy">สำเนา / Copy</t>
                     <t t-else="">ต้นฉบับ / Original</t>
                 </div>
@@ -67,26 +79,26 @@
                     <h4 style="margin: 0 0 4px 0;">INVOICE</h4>
                 </div>
 
-                <!-- Issuer + document panel -->
-                <div class="row">
-                    <div class="col-7">
-                        <div class="kmitl-inv-box" style="min-height: 104px;">
+                <!-- Issuer, document panel and debtor: one table, so the
+                     cells of a row share a height and every rule lines up. -->
+                <table class="kmitl-inv-head">
+                    <tr>
+                        <td style="width: 58%;">
                             <div><strong>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหาร ลาดกระบัง</strong></div>
                             <div>King Mongkut's Institute of Technology Ladkrabang</div>
                             <div>ถนนฉลองกรุง เขตลาดกระบัง กรุงเทพ 10520</div>
                             <div>Chalongkrung Road, Ladkrabang Bangkok 10520</div>
                             <div>
                                 <span>เลขประจำตัวผู้เสียภาษีอากร / Tax ID</span>
-                                <span t-esc="o.company_id.vat or ''"/>
-                                <span style="margin-left: 10px;">สำนักงานใหญ่</span>
-                                <span t-if="o.company_id.phone" style="margin-left: 10px;">
-                                    โทร. <t t-esc="o.company_id.phone"/>
-                                </span>
+                                <span t-esc="o.company_id.vat or '-'"/>
+                                <span style="margin-left: 12px;">สำนักงานใหญ่</span>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-5">
-                        <div class="kmitl-inv-box" style="min-height: 104px;">
+                            <div t-if="o.company_id.phone">
+                                <span>โทรศัพท์ / Tel.</span>
+                                <span t-esc="o.company_id.phone"/>
+                            </div>
+                        </td>
+                        <td>
                             <div>
                                 <span>เลขที่ / No.</span>
                                 <strong t-field="o.name"/>
@@ -103,14 +115,10 @@
                                 <span>ส่วนงาน / Department</span>
                                 <span t-esc="o.department_analytic_id.display_name or ''"/>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Debtor -->
-                <div class="row mt-2">
-                    <div class="col-12">
-                        <div class="kmitl-inv-box">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
                             <div>
                                 <strong>ลูกหนี้ / CUSTOMER</strong>
                                 <span t-esc="o.partner_id.name or ''"/>
@@ -121,7 +129,7 @@
                             </div>
                             <div>
                                 <strong>เลขประจำตัวผู้เสียภาษีอากร / Tax ID</strong>
-                                <span t-esc="o.partner_id.vat or ''"/>
+                                <span t-esc="o.partner_id.vat or '-'"/>
                                 <span style="margin-left: 16px;" class="kmitl-inv-tick">
                                     <t t-if="not cust_branch">✓</t>
                                 </span>
@@ -132,72 +140,68 @@
                                 <span>สาขาที่ / Branch</span>
                                 <span t-esc="cust_branch or ''"/>
                             </div>
-                        </div>
-                    </div>
-                </div>
+                        </td>
+                    </tr>
+                </table>
 
                 <!-- Lines -->
-                <div class="row mt-2">
-                    <div class="col-12">
-                        <table class="kmitl-inv-lines">
-                            <thead>
-                                <tr>
-                                    <th style="width: 7%;">ลำดับ<br/>No.</th>
-                                    <th>รายการ<br/>Description</th>
-                                    <th style="width: 10%;">จำนวน<br/>Qty.</th>
-                                    <th style="width: 12%;">หน่วย<br/>Unit</th>
-                                    <th style="width: 16%;">ราคาต่อหน่วย<br/>Unit Price</th>
-                                    <th style="width: 18%;">จำนวนเงิน<br/>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr t-foreach="o.line_ids" t-as="line">
-                                    <td class="text-center">
-                                        <span t-esc="line_index + 1"/>
-                                    </td>
-                                    <td>
-                                        <span t-esc="line.name"/>
-                                    </td>
-                                    <td class="text-end">
-                                        <span t-esc="'{:,.0f}'.format(line.quantity) if float(line.quantity).is_integer() else '{:,.2f}'.format(line.quantity)"/>
-                                    </td>
-                                    <td class="text-center">
-                                        <span t-esc="line.product_id.uom_id.name if line.product_id else ''"/>
-                                    </td>
-                                    <td class="text-end">
-                                        <span t-esc="'{:,.2f}'.format(line.price_unit)"/>
-                                    </td>
-                                    <td class="text-end">
-                                        <span t-esc="'{:,.2f}'.format(line.amount)"/>
-                                    </td>
-                                </tr>
-                                <tr t-foreach="range(max(0, min_rows - len(o.line_ids)))" t-as="filler">
-                                    <td class="text-center">&#160;</td>
-                                    <td/>
-                                    <td/>
-                                    <td/>
-                                    <td/>
-                                    <td/>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" style="font-style: italic;">
-                                        (
-                                        <span t-esc="o.currency_id.with_context(lang='th_TH').amount_to_text(o.amount_total)"/>
-                                        /
-                                        <span t-esc="o.currency_id.with_context(lang='en_US').amount_to_text(o.amount_total)"/>
-                                        )
-                                    </td>
-                                    <td class="text-center">
-                                        <strong>รวมทั้งสิ้น<br/>Total</strong>
-                                    </td>
-                                    <td class="text-end">
-                                        <strong t-esc="'{:,.2f}'.format(o.amount_total)"/>
-                                    </td>
-                                </tr>
+                <table class="kmitl-inv-lines" style="margin-top: 8px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 7%;">ลำดับ<br/>No.</th>
+                            <th>รายการ<br/>Description</th>
+                            <th style="width: 10%;">จำนวน<br/>Qty.</th>
+                            <th style="width: 12%;">หน่วย<br/>Unit</th>
+                            <th style="width: 16%;">ราคาต่อหน่วย<br/>Unit Price</th>
+                            <th style="width: 18%;">จำนวนเงิน<br/>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.line_ids" t-as="line">
+                            <td class="text-center">
+                                <span t-esc="line_index + 1"/>
+                            </td>
+                            <td>
+                                <span t-esc="line.name"/>
+                            </td>
+                            <td class="text-end">
+                                <span t-esc="'{:,.0f}'.format(line.quantity) if float(line.quantity).is_integer() else '{:,.2f}'.format(line.quantity)"/>
+                            </td>
+                            <td class="text-center">
+                                <span t-esc="line.product_id.uom_id.name if line.product_id else ''"/>
+                            </td>
+                            <td class="text-end">
+                                <span t-esc="'{:,.2f}'.format(line.price_unit)"/>
+                            </td>
+                            <td class="text-end">
+                                <span t-esc="'{:,.2f}'.format(line.amount)"/>
+                            </td>
+                        </tr>
+                        <tr t-foreach="range(max(0, min_rows - len(o.line_ids)))" t-as="filler">
+                            <td class="text-center">&#160;</td>
+                            <td/>
+                            <td/>
+                            <td/>
+                            <td/>
+                            <td/>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="font-style: italic;">
+                                (
+                                <span t-esc="o.currency_id.with_context(lang='th_TH').amount_to_text(o.amount_total)"/>
+                                /
+                                <span t-esc="o.currency_id.with_context(lang='en_US').amount_to_text(o.amount_total)"/>
+                                )
+                            </td>
+                            <td class="text-center">
+                                <strong>รวมทั้งสิ้น<br/>Total</strong>
+                            </td>
+                            <td class="text-end">
+                                <strong t-esc="'{:,.2f}'.format(o.amount_total)"/>
+                            </td>
+                        </tr>
                             </tbody>
-                        </table>
-                    </div>
-                </div>
+                </table>
 
                 <!-- Note -->
                 <div class="row mt-2" t-if="o.note">
