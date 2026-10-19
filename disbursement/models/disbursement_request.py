@@ -1013,9 +1013,9 @@ class DisbursementRequest(models.Model):
     def action_draft(self):
         """Reset to draft"""
         for record in self:
-            if record.state not in ("submitted", "signed", "cancel"):
+            if record.state not in ("submitted", "signed", "verified", "cancel"):
                 raise UserError(
-                    _("Only submitted, sent, or cancelled requests can be reset to draft.")
+                    _("Only submitted, signed, verified, or cancelled requests can be reset to draft.")
                 )
             record.state = "draft"
             record.exception_ids = False
