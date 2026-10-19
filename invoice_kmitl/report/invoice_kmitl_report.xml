@@ -43,9 +43,19 @@
                     text-align: center; font-weight: bold; background-color: #f0f0f0;
                 }
                 .kmitl-inv-sign { height: 54px; }
-                .kmitl-inv-tick { display: inline-block; width: 11px; height: 11px;
-                    border: 1px solid #000; text-align: center;
-                    line-height: 11px; font-size: 9px; }
+                /* The tick is drawn with borders rather than set as a ✓:
+                   THSarabunNew has no U+2713, so the renderer fell back to
+                   whatever font did, and that glyph's box did not fit the cell
+                   and spilled outside the frame. Borders have no such opinion.
+                   `transform` is safe here — the CANCELLED watermark above
+                   already relies on it. */
+                .kmitl-inv-tick { display: inline-block; box-sizing: border-box;
+                    width: 14px; height: 14px; border: 1px solid #000;
+                    position: relative; vertical-align: -2px; }
+                .kmitl-inv-tick span { position: absolute; left: 4px; top: 1px;
+                    width: 3px; height: 7px; border: solid #000;
+                    border-width: 0 2px 2px 0;
+                    -webkit-transform: rotate(40deg); transform: rotate(40deg); }
             </style>
 
             <div class="footer" style="text-align: right; font-size: 11pt;">
@@ -131,11 +141,11 @@
                                 <strong>เลขประจำตัวผู้เสียภาษีอากร / Tax ID</strong>
                                 <span t-esc="o.partner_id.vat or '-'"/>
                                 <span style="margin-left: 16px;" class="kmitl-inv-tick">
-                                    <t t-if="not cust_branch">✓</t>
+                                    <span t-if="not cust_branch"/>
                                 </span>
                                 <span>สำนักงานใหญ่ / Head Office</span>
                                 <span style="margin-left: 10px;" class="kmitl-inv-tick">
-                                    <t t-if="cust_branch">✓</t>
+                                    <span t-if="cust_branch"/>
                                 </span>
                                 <span>สาขาที่ / Branch</span>
                                 <span t-esc="cust_branch or ''"/>
