@@ -209,13 +209,23 @@ class PurchaseRequestApproval(models.Model):
 
     def action_view_disbursement_request(self):
         self.ensure_one()
-        return {
+        action = {
+            "name": _("Disbursement Requests"),
             "type": "ir.actions.act_window",
             "res_model": "disbursement.request",
-            "view_mode": "form,tree",
-            "res_id": self.disbursement_request_ids.id,
             "target": "current",
         }
+        if len(self.disbursement_request_ids) == 1:
+            action.update({
+                "view_mode": "form",
+                "res_id": self.disbursement_request_ids.id,
+            })
+        else:
+            action.update({
+                "view_mode": "tree,form",
+                "domain": [("id", "in", self.disbursement_request_ids.ids)],
+            })
+        return action
 
     def action_disbursement_request(self):
         self.ensure_one()
