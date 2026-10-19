@@ -3,10 +3,11 @@
 A monetary guarantee's money has to go back when the contract closes. Two routes
 existed in the repo already, and they disagree about what this is.
 
-**Chosen: a `disbursement.request` raised from the guarantee**, carrying the
+**Chosen: a `disbursement.request` raised from the guarantee**, linked by a
+bridge-owned `purchase_guarantee_id` (disbursement ADR-0004) and carrying the
 เงินหลักประกัน product, the Guarantee Kind's own deposit account, the
 guarantee's dimensions and its supplier — and flagged **No Budget Consumed**
-(disbursement ADR-0003).
+(`disbursement_budget` ADR-0001).
 
 ## Considered options
 
@@ -28,9 +29,10 @@ guarantee's dimensions and its supplier — and flagged **No Budget Consumed**
 
 ## Consequences
 
-- **The budget layer needed a seam.** Nothing in `disbursement` could express
-  "this consumes no budget" — see disbursement ADR-0003, which this decision
-  forced.
+- **The budget layer needed a seam.** Nothing could express "this consumes no
+  budget" for a request that *does* have a source document — see
+  `disbursement_budget` ADR-0001, which this decision forced. (Core's own
+  Stand-alone request does not fit: it has no source document either.)
 - **"Returned" means paid, not approved.** `amount_returned` and `date_return`
   are computed from requests that reached `paid`/`cleared`, so this module
   depends on `disbursement_finance_kmitl` rather than plain `disbursement`.

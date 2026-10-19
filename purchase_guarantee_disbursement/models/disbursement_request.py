@@ -6,28 +6,20 @@ from odoo import api, fields, models
 class DisbursementRequest(models.Model):
     _inherit = "disbursement.request"
 
-    reference = fields.Reference(
-        selection_add=[("purchase.guarantee", "Purchase Guarantee")],
-        ondelete={"purchase.guarantee": "set null"},
-    )
-
+    # A bridge-owned Many2one set at create, not a generic reference — see
+    # disbursement ADR-0004.
     purchase_guarantee_id = fields.Many2one(
         comodel_name="purchase.guarantee",
         string="Purchase Guarantee",
-        compute="_compute_reference_fields",
-        store=True,
+        readonly=True,
+        copy=False,
         index=True,
         tracking=True,
+        ondelete="set null",
     )
 
-    @api.depends("reference")
-    def _compute_reference_fields(self):
-        super()._compute_reference_fields()
-        for rec in self:
-            if rec.reference and rec.reference._name == "purchase.guarantee":
-                rec.purchase_guarantee_id = rec.reference
-            else:
-                rec.purchase_guarantee_id = False
+    def _get_source_document(self):
+        return self.purchase_guarantee_id or super()._get_source_document()
 
     @api.depends("purchase_guarantee_id")
     def _compute_is_non_budget(self):
@@ -35,7 +27,7 @@ class DisbursementRequest(models.Model):
 
         The money has been sitting on a deposit liability since the guarantee
         was receipted; paying it back settles that liability and cuts no
-        appropriation — see ADR-0001 and disbursement's ADR-0003.
+        appropriation — see ADR-0001 and disbursement_budget's ADR-0001.
         """
         super()._compute_is_non_budget()
         for rec in self.filtered("purchase_guarantee_id"):

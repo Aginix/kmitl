@@ -10,6 +10,9 @@
         # Not plain `disbursement`: "returned" means the money actually left,
         # which only the payment-execution phase knows.
         "disbursement_finance_kmitl",
+        # is_non_budget lives here, not in core — disbursement knows nothing
+        # about budget after its ADR-0003.
+        "disbursement_budget",
     ],
     "data": [
         "views/disbursement_request_views.xml",

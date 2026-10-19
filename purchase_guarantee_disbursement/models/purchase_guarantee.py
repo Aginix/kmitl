@@ -81,8 +81,10 @@ class PurchaseGuarantee(models.Model):
             "purchase_guarantee_receipt_kmitl.product_guarantee"
         ).product_variant_id
         return {
-            "reference": "%s,%s" % (self._name, self.id),
-            "partner_type": "multi",
+            "purchase_guarantee_id": self.id,
+            "partner_type_id": self.env["disbursement.request"]
+            ._get_payee_type(self.partner_id)
+            .id,
             "analytic_distribution": self.analytic_distribution,
             "line_ids": [
                 (
