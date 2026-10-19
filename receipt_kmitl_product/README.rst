@@ -40,8 +40,11 @@ Product fields
 Known issues / Roadmap
 ======================
 
-* The data is **not** ``noupdate``: upgrading the module re-syncs product names
-  with the chart of accounts, overwriting names edited in the UI. Fields the
-  records do not set (price, extra flags) are left untouched.
+* The data is ``noupdate="1"``: products edited in the UI (price, name,
+  archived state) survive an upgrade, but names are **not** re-synced when the
+  chart of accounts changes — fix those by hand.
+* Adding a record to the data file still reaches an installed database on
+  ``-u``, since the external id does not exist yet. Changing a field on an
+  existing record does **not** — that needs a migration script.
 * To narrow what cashiers see, archive the unused products — no need to edit
   the data file.
