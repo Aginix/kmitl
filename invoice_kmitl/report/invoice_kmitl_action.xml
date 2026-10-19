@@ -11,4 +11,18 @@
         <field name="binding_model_id" eval="False"/>
         <field name="binding_type">report</field>
     </record>
+
+    <!-- Same document, stamped สำเนา instead of ต้นฉบับ. A separate action rather
+         than a context flag on the button: ir.actions.report carries no context. -->
+    <record id="action_report_invoice_kmitl_copy" model="ir.actions.report">
+        <field name="name">Invoice (Copy)</field>
+        <field name="model">kmitl.invoice</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">invoice_kmitl.report_invoice_kmitl_copy</field>
+        <field name="report_file">invoice_kmitl.report_invoice_kmitl_copy</field>
+        <field name="print_report_name">'Invoice Copy - %s' % (object.name or '').replace('/', '-')</field>
+        <field name="paperformat_id" ref="paperformat_invoice_kmitl"/>
+        <field name="binding_model_id" eval="False"/>
+        <field name="binding_type">report</field>
+    </record>
 </odoo>

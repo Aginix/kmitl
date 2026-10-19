@@ -28,7 +28,13 @@ REQUIRED_DIMENSIONS = (
 class InvoiceKmitl(models.Model):
     _name = "kmitl.invoice"
     _description = "KMITL Invoice"
-    _inherit = ["mail.thread", "mail.activity.mixin", "analytic.mixin"]
+    _inherit = [
+        "mail.thread",
+        "mail.activity.mixin",
+        "analytic.mixin",
+        # Buddhist-era dates on the printed ใบแจ้งหนี้.
+        "thai.date.mixin",
+    ]
     _order = "date desc, id desc"
     _analytic_keys = ANALYTIC_KEYS
 
@@ -642,6 +648,19 @@ class InvoiceKmitl(models.Model):
             # no accounting-manager right, so force_delete stands in for it.
             move.with_context(force_delete=True).unlink()
         self.state = "cancelled"
+
+    # -------------------------------------------------------------------------
+    # Printed document
+    # -------------------------------------------------------------------------
+    def _partner_branch(self):
+        """The debtor's สาขา for the printed invoice, or False for สำนักงานใหญ่.
+
+        ``branch`` comes from ``l10n_th``, which this module only reaches through
+        ``account_kmitl``; guard it the way ``kmitl.receipt._sync_customer_snapshot``
+        does rather than assume it, since nothing in this repo declares the field.
+        """
+        self.ensure_one()
+        return getattr(self.partner_id, "branch", False)
 
     # -------------------------------------------------------------------------
     # Navigation

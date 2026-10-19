@@ -63,6 +63,10 @@
                             type="action"
                             string="Print"
                             icon="fa-print"/>
+                    <button name="%(invoice_kmitl.action_report_invoice_kmitl_copy)d"
+                            type="action"
+                            string="Print Copy"
+                            icon="fa-copy"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,submitted,accepted,issued,paid"/>
                 </header>

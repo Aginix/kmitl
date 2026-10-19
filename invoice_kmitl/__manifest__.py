@@ -17,6 +17,7 @@
         "accounting_kmitl_workflow",
         "receipt_kmitl",
         "l10n_th_amount_to_text",
+        "thai_date_utils",
     ],
     "data": [
         "security/security.xml",

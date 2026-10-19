@@ -274,6 +274,11 @@ msgid "Invoice"
 msgstr "ใบแจ้งหนี้"
 
 #. module: invoice_kmitl
+#: model:ir.actions.report,name:invoice_kmitl.action_report_invoice_kmitl_copy
+msgid "Invoice (Copy)"
+msgstr "ใบแจ้งหนี้ (สำเนา)"
+
+#. module: invoice_kmitl
 #. odoo-python
 #: code:addons/invoice_kmitl/models/invoice_submission.py:0
 #, python-format
@@ -597,6 +602,11 @@ msgstr "กรุณาระบุเหตุผลที่ปฏิเสธ
 #: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
 msgid "Print"
 msgstr "พิมพ์"
+
+#. module: invoice_kmitl
+#: model_terms:ir.ui.view,arch_db:invoice_kmitl.view_invoice_kmitl_form
+msgid "Print Copy"
+msgstr "พิมพ์สำเนา"
 
 #. module: invoice_kmitl
 #: model:ir.model.fields,field_description:invoice_kmitl.field_kmitl_invoice__procurement_plan_analytic_id
