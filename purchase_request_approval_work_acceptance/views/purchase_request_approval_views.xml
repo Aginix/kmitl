@@ -54,10 +54,11 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_disbursement_request']" position="before">
                 <field name="pending_wa_count" invisible="1"/>
+                <field name="active_disbursement_request_count" invisible="1"/>
             </xpath>
             <xpath expr="//button[@name='action_disbursement_request']" position="attributes">
                 <attribute name="attrs">
-                    {'invisible': ['|', '|', '|', ('use_purchase_order', '=', True), ('disbursement_request_count', '&gt;', 0), ('state', 'not in', ['approved']), ('pending_wa_count', '=', 0)]}
+                    {'invisible': ['|', '|', '|', ('use_purchase_order', '=', True), ('active_disbursement_request_count', '&gt;', 0), ('state', 'not in', ['approved']), ('pending_wa_count', '=', 0)]}
                 </attribute>
             </xpath>
         </field>
